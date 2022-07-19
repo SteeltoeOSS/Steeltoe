@@ -11,10 +11,10 @@ public class NullLiteral : Literal
     public NullLiteral(int startPos, int endPos)
         : base(null, startPos, endPos)
     {
-        _exitTypeDescriptor = TypeDescriptor.OBJECT;
+        exitTypeDescriptor = TypeDescriptor.Object;
     }
 
-    public override ITypedValue GetLiteralValue() => TypedValue.NULL;
+    public override ITypedValue GetLiteralValue() => TypedValue.Null;
 
     public override string ToString() => "null";
 
@@ -23,6 +23,6 @@ public class NullLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         gen.Emit(OpCodes.Ldnull);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

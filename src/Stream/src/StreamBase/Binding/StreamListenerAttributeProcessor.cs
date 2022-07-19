@@ -19,7 +19,7 @@ namespace Steeltoe.Stream.Binding;
 
 public class StreamListenerAttributeProcessor
 {
-    internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> _mappedListenerMethods = new ();
+    internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> MappedListenerMethods = new ();
 
     private readonly IApplicationContext _context;
     private readonly IOptionsMonitor<SpringIntegrationOptions> _springIntegrationOptionsMonitor;
@@ -69,7 +69,7 @@ public class StreamListenerAttributeProcessor
             DoPostProcess(method);
         }
 
-        foreach (var mappedBindingEntry in _mappedListenerMethods)
+        foreach (var mappedBindingEntry in MappedListenerMethods)
         {
             var handlers = new List<DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper>();
             foreach (var mapping in mappedBindingEntry.Value)
@@ -108,7 +108,7 @@ public class StreamListenerAttributeProcessor
                 {
                     if (!h.IsVoid)
                     {
-                        throw new ArgumentException(StreamListenerErrorMessages.MULTIPLE_VALUE_RETURNING_METHODS);
+                        throw new ArgumentException(StreamListenerErrorMessages.MultipleValueReturningMethods);
                     }
                 }
             }
@@ -140,15 +140,15 @@ public class StreamListenerAttributeProcessor
             channel.Subscribe(handler);
         }
 
-        _mappedListenerMethods.Clear();
+        MappedListenerMethods.Clear();
     }
 
     internal void AddMappedListenerMethod(string key, StreamListenerHandlerMethodMapping mappedMethod)
     {
-        if (!_mappedListenerMethods.TryGetValue(key, out var mappings))
+        if (!MappedListenerMethods.TryGetValue(key, out var mappings))
         {
             mappings = new List<StreamListenerHandlerMethodMapping>();
-            _mappedListenerMethods.Add(key, mappings);
+            MappedListenerMethods.Add(key, mappings);
         }
 
         mappings.Add(mappedMethod);

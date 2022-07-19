@@ -8,10 +8,10 @@ public class Color
 {
     private Color(int rgb)
     {
-        RGB = rgb;
+        Rgb = rgb;
     }
 
-    public int RGB { get; }
+    public int Rgb { get; }
 
     public static Color Orange = new (1);
     public static Color Yellow = new (2);

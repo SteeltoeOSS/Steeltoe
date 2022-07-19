@@ -7,6 +7,7 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 public class Poco
 {
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
+    // ReSharper disable once InconsistentNaming
     public string field;
 #pragma warning restore SA1307 // Accessible fields should begin with upper-case letter
 

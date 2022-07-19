@@ -13,12 +13,12 @@ namespace Steeltoe.Connector.Hystrix;
 public static class HystrixProviderServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds HystrixConnectionFactory to your ServiceCollection
+    /// Adds HystrixConnectionFactory to your ServiceCollection.
     /// </summary>
-    /// <param name="services">Your Service Collection</param>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Your Service Collection.</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)
@@ -38,13 +38,13 @@ public static class HystrixProviderServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds HystrixConnectionFactory to your ServiceCollection
+    /// Adds HystrixConnectionFactory to your ServiceCollection.
     /// </summary>
-    /// <param name="services">Your Service Collection</param>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="serviceName">Cloud Foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Your Service Collection.</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="serviceName">Cloud Foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)

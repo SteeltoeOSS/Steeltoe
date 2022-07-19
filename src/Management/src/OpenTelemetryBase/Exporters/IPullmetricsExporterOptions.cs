@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
-internal interface IPullmetricsExporterOptions
+internal interface IPullMetricsExporterOptions
 {
     int ScrapeResponseCacheDurationMilliseconds { get; set; }
 }

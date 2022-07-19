@@ -10,13 +10,13 @@ namespace Steeltoe.Common.Util;
 public static class EncodingUtils
 {
     public static readonly Encoding Utf16 = new UnicodeEncoding(false, false);
-    public static readonly Encoding Utf16be = new UnicodeEncoding(true, false);
+    public static readonly Encoding Utf16BigEndian = new UnicodeEncoding(true, false);
 #pragma warning disable SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf7 = new UTF7Encoding(true);
 #pragma warning restore SYSLIB0001 // Type or member is obsolete
     public static readonly Encoding Utf8 = new UTF8Encoding(false);
     public static readonly Encoding Utf32 = new UTF32Encoding(false, false);
-    public static readonly Encoding Utf32be = new UTF32Encoding(true, false);
+    public static readonly Encoding Utf32BigEndian = new UTF32Encoding(true, false);
 
     public static Encoding GetDefaultEncoding()
     {
@@ -52,12 +52,12 @@ public static class EncodingUtils
 
         if (name.Equals("utf-32be", StringComparison.InvariantCultureIgnoreCase))
         {
-            return Utf32be;
+            return Utf32BigEndian;
         }
 
         if (name.Equals("utf-16be", StringComparison.InvariantCultureIgnoreCase))
         {
-            return Utf16be;
+            return Utf16BigEndian;
         }
 
         throw new ArgumentException("Invalid encoding name");
@@ -90,12 +90,12 @@ public static class EncodingUtils
             return "utf-32";
         }
 
-        if (name.Equals(Utf32be))
+        if (name.Equals(Utf32BigEndian))
         {
             return "utf-32be";
         }
 
-        if (name.Equals(Utf16be))
+        if (name.Equals(Utf16BigEndian))
         {
             return "utf-16be";
         }

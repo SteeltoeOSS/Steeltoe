@@ -225,7 +225,7 @@ public class FailOverDispatcherTest
 
         public CountingTestEndpoint(bool shouldAccept)
         {
-            ShouldAccept = shouldAccept;
+            this.ShouldAccept = shouldAccept;
         }
 
         public void HandleMessage(IMessage message)
@@ -245,7 +245,7 @@ public class FailOverDispatcherTest
 
         public LatchedProcessor(CountdownEvent latch)
         {
-            Latch = latch;
+            this.Latch = latch;
         }
 
         public object ProcessMessage(IMessage message)

@@ -7,7 +7,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class UserGenerationParameters : PasswordGenerationParameters
 {
     /// <summary>
-    /// Gets or sets user provided value for username
+    /// Gets or sets user provided value for username.
     /// </summary>
     public string Username { get; set; }
 }

@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using MSFTHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
+using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 
@@ -30,16 +30,16 @@ public class HealthEndpointCoreTest : BaseTest
         var contributors = new List<IHealthContributor>();
 
         var optionsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(null, _aggregator, contributors, ServiceOptions(), _provider));
-        var aggrgtrEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider));
+        var aggregatorEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, null, contributors, ServiceOptions(), _provider));
         var contribEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, null, ServiceOptions(), _provider));
         var svcOptsEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, null, _provider));
-        var svcPrvdEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null));
+        var providerEx = Assert.Throws<ArgumentNullException>(() => new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), null));
 
         Assert.Equal("options", optionsEx.ParamName);
-        Assert.Equal("aggregator", aggrgtrEx.ParamName);
+        Assert.Equal("aggregator", aggregatorEx.ParamName);
         Assert.Equal("contributors", contribEx.ParamName);
         Assert.Equal("serviceOptions", svcOptsEx.ParamName);
-        Assert.Equal("provider", svcPrvdEx.ParamName);
+        Assert.Equal("provider", providerEx.ParamName);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class HealthEndpointCoreTest : BaseTest
 
         var health = ep.Invoke(null);
         Assert.NotNull(health);
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
     }
 
     [Fact]
@@ -89,26 +89,26 @@ public class HealthEndpointCoreTest : BaseTest
             }
         }
 
-        Assert.Equal(HealthStatus.UP, info.Status);
+        Assert.Equal(HealthStatus.Up, info.Status);
     }
 
     [Fact]
     public void GetStatusCode_ReturnsExpected()
     {
-        var contribs = new List<IHealthContributor> { new DiskSpaceContributor() };
-        var ep = new HealthEndpointCore(_options, _aggregator, contribs, ServiceOptions(), _provider);
+        var contributors = new List<IHealthContributor> { new DiskSpaceContributor() };
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
 
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.DOWN }));
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OUT_OF_SERVICE }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UP }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.UNKNOWN }));
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Down }));
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OutOfService }));
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Up }));
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Unknown }));
     }
 
     [Fact]
     public void InvokeWithInvalidGroupReturnsAllContributors()
     {
-        var contribs = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfSserviceContributor(), new UnknownContributor(), new UpContributor() };
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), _provider);
+        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfServiceContributor(), new UnknownContributor(), new UpContributor() };
+        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
         context.GetRequestComponents().Returns(new[] { "health", "iNvAlId" });
 
@@ -122,15 +122,15 @@ public class HealthEndpointCoreTest : BaseTest
     public void InvokeWithLivenessGroupReturnsGroupResults()
     {
         var appAvailability = new ApplicationAvailability();
-        var contribs = new List<IHealthContributor> { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
-        var ep = new HealthEndpointCore(_options, _aggregator, contribs, ServiceOptions(), _provider);
+        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
         var context = Substitute.For<ISecurityContext>();
         context.GetRequestComponents().Returns(new[] { "cloudfoundryapplication", "health", "liVeness" });
         appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
         Assert.Equal(2, result.Groups.Count());
     }
@@ -139,15 +139,15 @@ public class HealthEndpointCoreTest : BaseTest
     public void InvokeWithReadinessGroupReturnsGroupResults()
     {
         var appAvailability = new ApplicationAvailability();
-        var contribs = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
-        var ep = new HealthEndpointCore(_options, _aggregator, contribs, ServiceOptions(), _provider);
+        var contributors = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceOptions(), _provider);
         var context = Substitute.For<ISecurityContext>();
         context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
         appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
         Assert.Equal(2, result.Groups.Count());
     }
@@ -156,25 +156,25 @@ public class HealthEndpointCoreTest : BaseTest
     public void InvokeWithReadinessGroupReturnsGroupResults2()
     {
         var appAvailability = new ApplicationAvailability();
-        var contribs = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
-        var ep = new HealthEndpointCore(_options, _aggregator, contribs, ServiceProviderWithMSFTHealth(), _provider);
+        var contributors = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
+        var ep = new HealthEndpointCore(_options, _aggregator, contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
         context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
         appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         var result = ep.Invoke(context);
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Single(result.Details.Keys);
         Assert.Equal(2, result.Groups.Count());
     }
 
     [Fact]
-    public void InvokeWithGroupFiltersMSFTResults()
+    public void InvokeWithGroupFiltersMicrosoftResults()
     {
         _options.Groups.Add("msft", new HealthGroupOptions { Include = "up,privatememory" });
-        var contribs = new List<IHealthContributor> { new UnknownContributor(), new UpContributor() };
-        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contribs, ServiceProviderWithMSFTHealth(), _provider);
+        var contributors = new List<IHealthContributor> { new UnknownContributor(), new UpContributor() };
+        var ep = new HealthEndpointCore(_options, new HealthRegistrationsAggregator(), contributors, ServiceProviderWithMicrosoftHealth(), _provider);
         var context = Substitute.For<ISecurityContext>();
         context.GetRequestComponents().Returns(new[] { "actuator", "health", "msft" });
 
@@ -186,20 +186,20 @@ public class HealthEndpointCoreTest : BaseTest
         Assert.Equal(3, result.Groups.Count());
     }
 
-    private IOptionsMonitor<MSFTHealth.HealthCheckServiceOptions> ServiceOptions()
+    private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceOptions()
     {
-        var options = Substitute.For<IOptionsMonitor<MSFTHealth.HealthCheckServiceOptions>>();
-        options.CurrentValue.Returns(new MSFTHealth.HealthCheckServiceOptions());
+        var options = Substitute.For<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
+        options.CurrentValue.Returns(new MicrosoftHealth.HealthCheckServiceOptions());
         return options;
     }
 
-    private IOptionsMonitor<MSFTHealth.HealthCheckServiceOptions> ServiceProviderWithMSFTHealth()
+    private IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions> ServiceProviderWithMicrosoftHealth()
     {
         var services = new ServiceCollection();
         services.AddHealthChecks()
             .AddPrivateMemoryHealthCheck(133_824_512)
             .AddWorkingSetHealthCheck(133_824_512);
 
-        return services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<MSFTHealth.HealthCheckServiceOptions>>();
+        return services.BuildServiceProvider().GetRequiredService<IOptionsMonitor<MicrosoftHealth.HealthCheckServiceOptions>>();
     }
 }

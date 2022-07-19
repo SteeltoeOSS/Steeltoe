@@ -8,32 +8,32 @@ using System;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// Configuration values used for the heartbeat checks
+/// Configuration values used for the heartbeat checks.
 /// </summary>
 public class ConsulHeartbeatOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating whether heartbeats are enabled, defaults true
+    /// Gets or sets a value indicating whether heartbeats are enabled, defaults true.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the time to live heartbeat time, defaults 30
+    /// Gets or sets the time to live heartbeat time, defaults 30.
     /// </summary>
     public int TtlValue { get; set; } = 30;
 
     /// <summary>
-    /// Gets or sets the time unit of the TtlValue, defaults = "s"
+    /// Gets or sets the time unit of the TtlValue, defaults = "s".
     /// </summary>
     public string TtlUnit { get; set; } = "s";
 
     /// <summary>
-    /// Gets or sets the interval ratio
+    /// Gets or sets the interval ratio.
     /// </summary>
     public double IntervalRatio { get; set; } = 2.0 / 3.0;
 
     /// <summary>
-    /// Gets the time to live setting
+    /// Gets the time to live setting.
     /// </summary>
     public string Ttl
     {
@@ -43,7 +43,7 @@ public class ConsulHeartbeatOptions
         }
     }
 
-    internal TimeSpan ComputeHearbeatInterval()
+    internal TimeSpan ComputeHeartbeatInterval()
     {
         var second = TimeSpan.FromSeconds(1);
         var ttl = DateTimeConversions.ToTimeSpan(TtlValue, TtlUnit);
@@ -52,8 +52,8 @@ public class ConsulHeartbeatOptions
         // no sooner than 1s from now
         var interval = TimeSpan.FromMilliseconds(ttl.TotalMilliseconds * IntervalRatio);
         var max = interval > second ? interval : second;
-        var ttlMinus1sec = ttl - second;
-        var min = ttlMinus1sec < max ? ttlMinus1sec : max;
+        var ttlMinus1Sec = ttl - second;
+        var min = ttlMinus1Sec < max ? ttlMinus1Sec : max;
         return min;
     }
 }

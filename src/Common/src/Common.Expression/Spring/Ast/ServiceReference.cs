@@ -21,7 +21,7 @@ public class ServiceReference : SpelNode
         var serviceResolver = state.EvaluationContext.ServiceResolver;
         if (serviceResolver == null)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.NO_SERVICE_RESOLVER_REGISTERED, _serviceName);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.NoServiceResolverRegistered, _serviceName);
         }
 
         try
@@ -30,11 +30,11 @@ public class ServiceReference : SpelNode
         }
         catch (AccessException ex)
         {
-            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_SERVICE_RESOLUTION, _serviceName, ex.Message);
+            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.ExceptionDuringServiceResolution, _serviceName, ex.Message);
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder();
         sb.Append('@');

@@ -14,7 +14,7 @@ public class ReadinessHealthContributor : AvailabilityHealthContributor
     private readonly ApplicationAvailability _availability;
 
     public ReadinessHealthContributor(ApplicationAvailability availability)
-        : base(new Dictionary<IAvailabilityState, HealthStatus> { { ReadinessState.AcceptingTraffic, HealthStatus.UP }, { ReadinessState.RefusingTraffic, HealthStatus.OUT_OF_SERVICE } })
+        : base(new Dictionary<IAvailabilityState, HealthStatus> { { ReadinessState.AcceptingTraffic, HealthStatus.Up }, { ReadinessState.RefusingTraffic, HealthStatus.OutOfService } })
     {
         _availability = availability;
     }

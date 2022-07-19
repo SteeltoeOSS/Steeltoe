@@ -30,7 +30,7 @@ public class RabbitMQHostBuilder : IHostBuilder
             })
             .ConfigureServices((hostBuilderContext, services) =>
             {
-                var rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.PREFIX);
+                var rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.Prefix);
                 services.Configure<RabbitOptions>(rabbitConfigSection);
 
                 services.AddRabbitServices();

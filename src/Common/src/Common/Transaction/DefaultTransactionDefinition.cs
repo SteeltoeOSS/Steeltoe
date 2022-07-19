@@ -8,10 +8,10 @@ namespace Steeltoe.Common.Transaction;
 
 public class DefaultTransactionDefinition : AbstractTransactionDefinition
 {
-    public const string PREFIX_PROPAGATION = "PROPAGATION_";
-    public const string PREFIX_ISOLATION = "ISOLATION_";
-    public const string PREFIX_TIMEOUT = "timeout_";
-    public const string READ_ONLY_MARKER = "readOnly";
+    public const string PrefixPropagation = "PROPAGATION_";
+    public const string PrefixIsolation = "ISOLATION_";
+    public const string PrefixTimeout = "timeout_";
+    public const string ReadOnlyMarker = "readOnly";
 
     public DefaultTransactionDefinition()
     {
@@ -62,16 +62,16 @@ public class DefaultTransactionDefinition : AbstractTransactionDefinition
         result.Append(PropagationBehavior);
         result.Append(',');
         result.Append(IsolationLevel);
-        if (Timeout != TIMEOUT_DEFAULT)
+        if (Timeout != TimeoutDefault)
         {
             result.Append(',');
-            result.Append(PREFIX_TIMEOUT).Append(Timeout);
+            result.Append(PrefixTimeout).Append(Timeout);
         }
 
         if (IsReadOnly)
         {
             result.Append(',');
-            result.Append(READ_ONLY_MARKER);
+            result.Append(ReadOnlyMarker);
         }
 
         return result;

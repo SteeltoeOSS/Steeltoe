@@ -11,13 +11,13 @@ namespace Steeltoe.Stream.StubBinder1;
 
 public sealed class StubBinder1 : IBinder<object>
 {
-    public const string BINDER_NAME = "binder1";
+    public const string BinderName = "binder1";
 
     public Func<string, string, object, IConsumerOptions, IBinding> BindConsumerFunc { get; set; }
 
     public Func<string, object, IProducerOptions, IBinding> BindProducerFunc { get; set; }
 
-    public string ServiceName { get; set; } = BINDER_NAME;
+    public string ServiceName { get; set; } = BinderName;
 
     public Type TargetType => typeof(object);
 

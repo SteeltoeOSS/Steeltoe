@@ -7,14 +7,14 @@ using RC=RabbitMQ.Client;
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 /// <summary>
-/// Factory for creating publisher callbacks
+/// Factory for creating publisher callbacks.
 /// </summary>
 public interface IPublisherCallbackChannelFactory
 {
     /// <summary>
-    /// Create a publisher callback for the given channel
+    /// Create a publisher callback for the given channel.
     /// </summary>
-    /// <param name="channel">the channel</param>
-    /// <returns>the callback</returns>
+    /// <param name="channel">the channel.</param>
+    /// <returns>the callback.</returns>
     IPublisherCallbackChannel CreateChannel(RC.IModel channel);
 }

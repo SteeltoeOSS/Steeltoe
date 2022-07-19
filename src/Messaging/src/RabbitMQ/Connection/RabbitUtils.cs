@@ -19,18 +19,18 @@ public static class RabbitUtils
 {
     public const int ReplySuccess = 200;
     public const int NotFound = 404;
-    public const int Precondition_Failed = 406;
-    public const int Command_Invalid = 503;
+    public const int PreconditionFailed = 406;
+    public const int CommandInvalid = 503;
 
-    public const ushort Exchange_ClassId = 40;
-    public const ushort Queue_ClassId = 50;
-    public const ushort Declare_MethodId = 10;
-    public const ushort ChannelClose_ClassId = 20;
-    public const ushort ChannelClose_MethodId = 40;
-    public const ushort ConnectionClose_ClassId = 10;
-    public const ushort ConnectionClose_MethodId = 50;
+    public const ushort ExchangeClassId = 40;
+    public const ushort QueueClassId = 50;
+    public const ushort DeclareMethodId = 10;
+    public const ushort ChannelCloseClassId = 20;
+    public const ushort ChannelCloseMethodId = 40;
+    public const ushort ConnectionCloseClassId = 10;
+    public const ushort ConnectionCloseMethodId = 50;
 
-    private static readonly AsyncLocal<bool?> _physicalCloseRequired = new ();
+    private static readonly AsyncLocal<bool?> PhysicalCloseRequired = new ();
 
     public static void CloseConnection(IConnection connection, ILogger logger = null)
     {
@@ -178,20 +178,20 @@ public static class RabbitUtils
     {
         if (channel is IChannelProxy)
         {
-            _physicalCloseRequired.Value = b;
+            PhysicalCloseRequired.Value = b;
         }
     }
 
     public static bool IsPhysicalCloseRequired()
     {
-        var mustClose = _physicalCloseRequired.Value;
+        var mustClose = PhysicalCloseRequired.Value;
         if (mustClose == null)
         {
             mustClose = false;
         }
         else
         {
-            _physicalCloseRequired.Value = null;
+            PhysicalCloseRequired.Value = null;
         }
 
         return mustClose.Value;
@@ -200,8 +200,8 @@ public static class RabbitUtils
     public static bool IsNormalChannelClose(RC.ShutdownEventArgs args)
     {
         return IsNormalShutdown(args) ||
-               (args.ClassId == ChannelClose_ClassId
-                && args.MethodId == ChannelClose_MethodId
+               (args.ClassId == ChannelCloseClassId
+                && args.MethodId == ChannelCloseMethodId
                 && args.ReplyCode == ReplySuccess
                 && args.ReplyText == "OK") ||
                (args.Initiator == RC.ShutdownInitiator.Application
@@ -211,8 +211,8 @@ public static class RabbitUtils
 
     public static bool IsNormalShutdown(ShutdownSignalException sig)
     {
-        return (sig.ClassId == ConnectionClose_ClassId
-                && sig.MethodId == ConnectionClose_MethodId
+        return (sig.ClassId == ConnectionCloseClassId
+                && sig.MethodId == ConnectionCloseMethodId
                 && sig.ReplyCode == ReplySuccess
                 && sig.ReplyText == "OK") ||
                (sig.Initiator == RC.ShutdownInitiator.Application
@@ -222,8 +222,8 @@ public static class RabbitUtils
 
     public static bool IsNormalShutdown(RC.ShutdownEventArgs args)
     {
-        return (args.ClassId == ConnectionClose_ClassId
-                && args.MethodId == ConnectionClose_MethodId
+        return (args.ClassId == ConnectionCloseClassId
+                && args.MethodId == ConnectionCloseMethodId
                 && args.ReplyCode == ReplySuccess
                 && args.ReplyText == "OK") ||
                (args.Initiator == RC.ShutdownInitiator.Application
@@ -246,8 +246,8 @@ public static class RabbitUtils
 
         if (cause != null)
         {
-            return (cause.ClassId == Exchange_ClassId || cause.ClassId == Queue_ClassId)
-                   && cause.MethodId == Declare_MethodId
+            return (cause.ClassId == ExchangeClassId || cause.ClassId == QueueClassId)
+                   && cause.MethodId == DeclareMethodId
                    && cause.ReplyCode == NotFound;
         }
 
@@ -285,9 +285,9 @@ public static class RabbitUtils
 
     public static bool IsMismatchedQueueArgs(RC.ShutdownEventArgs args)
     {
-        return args.ClassId == Queue_ClassId
-               && args.MethodId == Declare_MethodId
-               && args.ReplyCode == Precondition_Failed;
+        return args.ClassId == QueueClassId
+               && args.MethodId == DeclareMethodId
+               && args.ReplyCode == PreconditionFailed;
     }
 
     public static int GetMaxFrame(IConnectionFactory connectionFactory)
@@ -323,8 +323,8 @@ public static class RabbitUtils
             return false;
         }
 
-        return args.ClassId == Exchange_ClassId &&
-               args.MethodId == Declare_MethodId &&
-               args.ReplyCode == Command_Invalid;
+        return args.ClassId == ExchangeClassId &&
+               args.MethodId == DeclareMethodId &&
+               args.ReplyCode == CommandInvalid;
     }
 }

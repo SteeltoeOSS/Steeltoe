@@ -36,11 +36,11 @@ public class ConfigServerConfigurationSourceTest
         Assert.Equal(settings, source.DefaultSettings);
         Assert.Equal(factory, source.LogFactory);
         Assert.Null(source.Configuration);
-        Assert.NotSame(sources, source._sources);
-        Assert.Single(source._sources);
-        Assert.Equal(memSource, source._sources[0]);
-        Assert.Single(source._properties);
-        Assert.Equal("bar", source._properties["foo"]);
+        Assert.NotSame(sources, source.Sources);
+        Assert.Single(source.Sources);
+        Assert.Equal(memSource, source.Sources[0]);
+        Assert.Single(source.Properties);
+        Assert.Equal("bar", source.Properties["foo"]);
 
         var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
         source = new ConfigServerConfigurationSource(settings, config, factory);

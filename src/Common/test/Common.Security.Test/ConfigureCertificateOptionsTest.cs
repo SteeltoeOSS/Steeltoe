@@ -31,9 +31,9 @@ public class ConfigureCertificateOptionsTest
             .AddInMemoryCollection(new Dictionary<string, string> { { "certificate", string.Empty } })
             .Build();
         Assert.NotNull(config["certificate"]);
-        var pkcs12Config = new ConfigureCertificateOptions(config);
+        var options = new ConfigureCertificateOptions(config);
         var opts = new CertificateOptions();
-        pkcs12Config.Configure(opts);
+        options.Configure(opts);
         Assert.Null(opts.Certificate);
         Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
     }
@@ -48,9 +48,9 @@ public class ConfigureCertificateOptionsTest
             .AddCertificateFile("instance.p12")
             .Build();
         Assert.NotNull(config["certificate"]);
-        var pkcs12Config = new ConfigureCertificateOptions(config);
+        var options = new ConfigureCertificateOptions(config);
         var opts = new CertificateOptions();
-        pkcs12Config.Configure(opts);
+        options.Configure(opts);
         Assert.NotNull(opts.Certificate);
         Assert.Equal(Microsoft.Extensions.Options.Options.DefaultName, opts.Name);
         Assert.True(opts.Certificate.HasPrivateKey);

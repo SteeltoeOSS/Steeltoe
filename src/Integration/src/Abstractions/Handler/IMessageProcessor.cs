@@ -14,10 +14,10 @@ namespace Steeltoe.Integration.Handler;
 public interface IMessageProcessor
 {
     /// <summary>
-    /// Process a message and return a value or null
+    /// Process a message and return a value or null.
     /// </summary>
-    /// <param name="message">message to process</param>
-    /// <returns>resulting object</returns>
+    /// <param name="message">message to process.</param>
+    /// <returns>resulting object.</returns>
     object ProcessMessage(IMessage message);
 }
 
@@ -26,13 +26,13 @@ public interface IMessageProcessor
 /// some Object(or null). Implementations will be focused on generic concerns,
 /// such as invoking a method, running a script, or evaluating an expression.
 /// </summary>
-/// <typeparam name="T">the type of the processing result</typeparam>
+/// <typeparam name="T">the type of the processing result.</typeparam>
 public interface IMessageProcessor<out T> : IMessageProcessor
 {
     /// <summary>
-    /// Process a message and return a value or null
+    /// Process a message and return a value or null.
     /// </summary>
-    /// <param name="message">message to process</param>
-    /// <returns>result after processing</returns>
+    /// <param name="message">message to process.</param>
+    /// <returns>result after processing.</returns>
     new T ProcessMessage(IMessage message);
 }

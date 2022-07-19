@@ -21,7 +21,7 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     protected int completedTasks;
     protected bool allowMaxToDivergeFromCore;
 
-    private const int DEFAULT_MIN_WORKTHREADS = 50;
+    private const int DefaultMinWorkThreads = 50;
 
     protected HystrixTaskScheduler(IHystrixThreadPoolOptions options)
     {
@@ -44,10 +44,9 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
 
         System.Threading.ThreadPool.GetMinThreads(out var workThreads, out var compThreads);
 
-        System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DEFAULT_MIN_WORKTHREADS), compThreads);
+        System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DefaultMinWorkThreads), compThreads);
     }
 
-    #region IHystrixTaskScheduler
     public virtual int CurrentActiveCount => runningTasks;
 
     public virtual int CurrentCompletedTaskCount => completedTasks;
@@ -93,7 +92,6 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
         GC.SuppressFinalize(this);
     }
 
-    #endregion IHystrixTaskScheduler
     public override int MaximumConcurrencyLevel => maximumPoolSize;
 
     public bool IsShutdown => shutdown;

@@ -39,19 +39,19 @@ internal sealed class ResolvableMethod
         return new ArgResolver(this).Arg(type);
     }
 
-    public ArgResolver Annot(params IPredicate<ParameterInfo>[] filters)
+    public ArgResolver Annotation(params IPredicate<ParameterInfo>[] filters)
     {
         return new ArgResolver(this, filters);
     }
 
-    public ArgResolver AnnotPresent(params Type[] annotationTypes)
+    public ArgResolver AnnotationPresent(params Type[] annotationTypes)
     {
-        return new ArgResolver(this).AnnotPresent(annotationTypes);
+        return new ArgResolver(this).AnnotationPresent(annotationTypes);
     }
 
-    public ArgResolver AnnotNotPresent(params Type[] annotationTypes)
+    public ArgResolver AnnotationNotPresent(params Type[] annotationTypes)
     {
-        return new ArgResolver(this).AnnotNotPresent(annotationTypes);
+        return new ArgResolver(this).AnnotationNotPresent(annotationTypes);
     }
 
     public override string ToString()
@@ -100,20 +100,20 @@ internal sealed class ResolvableMethod
             return this;
         }
 
-        public Builder<T> Annot(params IPredicate<MethodInfo>[] filters)
+        public Builder<T> Annotation(params IPredicate<MethodInfo>[] filters)
         {
             _filters.AddRange(filters);
             return this;
         }
 
-        public Builder<T> AnnotPresent(params Type[] annotationTypes)
+        public Builder<T> AnnotationPresent(params Type[] annotationTypes)
         {
             var message = $"annotationPresent={string.Join<Type>(",", annotationTypes)}";
             AddFilter(message, method =>
             {
-                foreach (var anno in annotationTypes)
+                foreach (var type in annotationTypes)
                 {
-                    if (method.GetCustomAttribute(anno) == null)
+                    if (method.GetCustomAttribute(type) == null)
                     {
                         return false;
                     }
@@ -124,16 +124,16 @@ internal sealed class ResolvableMethod
             return this;
         }
 
-        public Builder<T> AnnotNotPresent(params Type[] annotationTypes)
+        public Builder<T> AnnotationNotPresent(params Type[] annotationTypes)
         {
             var message = $"annotationNotPresent={string.Join<Type>(",", annotationTypes)}";
             AddFilter(message, method =>
             {
                 if (annotationTypes.Length != 0)
                 {
-                    foreach (var anno in annotationTypes)
+                    foreach (var type in annotationTypes)
                     {
-                        if (method.GetCustomAttribute(anno) != null)
+                        if (method.GetCustomAttribute(type) != null)
                         {
                             return false;
                         }
@@ -275,13 +275,13 @@ internal sealed class ResolvableMethod
             _filters.AddRange(filters);
         }
 
-        public ArgResolver Annot(params IPredicate<ParameterInfo>[] filters)
+        public ArgResolver Annotation(params IPredicate<ParameterInfo>[] filters)
         {
             _filters.AddRange(filters);
             return this;
         }
 
-        public ArgResolver AnnotPresent(params Type[] annotationTypes)
+        public ArgResolver AnnotationPresent(params Type[] annotationTypes)
         {
             _filters.Add(new FuncPredicate(param =>
             {
@@ -299,7 +299,7 @@ internal sealed class ResolvableMethod
             return this;
         }
 
-        public ArgResolver AnnotNotPresent(params Type[] annotationTypes)
+        public ArgResolver AnnotationNotPresent(params Type[] annotationTypes)
         {
             _filters.Add(new FuncPredicate(param =>
             {

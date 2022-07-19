@@ -61,8 +61,8 @@ public class MethodInvokingMessageProcessorTest
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var recvd = outChan.Receive();
-        Assert.Equal("A1", recvd.Headers.Get<string>("A1"));
+        var received = outChan.Receive();
+        Assert.Equal("A1", received.Headers.Get<string>("A1"));
 
         await lifeCycleProcessor.Stop();
     }
@@ -80,8 +80,8 @@ public class MethodInvokingMessageProcessorTest
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var recvd = outChan.Receive();
-        Assert.Equal("C2", recvd.Headers.Get<string>("C2"));
+        var received = outChan.Receive();
+        Assert.Equal("C2", received.Headers.Get<string>("C2"));
 
         await lifeCycleProcessor.Stop();
     }
@@ -99,8 +99,8 @@ public class MethodInvokingMessageProcessorTest
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var recvd = outChan.Receive();
-        Assert.Equal("C3", recvd.Headers.Get<string>("C3"));
+        var received = outChan.Receive();
+        Assert.Equal("C3", received.Headers.Get<string>("C3"));
 
         await lifeCycleProcessor.Stop();
     }
@@ -265,9 +265,9 @@ public class MethodInvokingMessageProcessorTest
         var context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, service, typeof(ServiceActivatorAttribute));
         processor.ProcessMessage(MessageBuilder.WithPayload(123).Build());
-        Assert.NotNull(service._lastArg);
-        Assert.IsType<string>(service._lastArg);
-        Assert.Equal("123", service._lastArg);
+        Assert.NotNull(service.LastArg);
+        Assert.IsType<string>(service.LastArg);
+        Assert.Equal("123", service.LastArg);
     }
 
     [Fact]
@@ -428,17 +428,17 @@ public class MethodInvokingMessageProcessorTest
 
     public class OverloadedMethodService
     {
-        public volatile object _lastArg;
+        public volatile object LastArg;
 
         public void Foo(bool b)
         {
-            _lastArg = b;
+            LastArg = b;
         }
 
         [ServiceActivator]
         public string Foo(string s)
         {
-            _lastArg = s;
+            LastArg = s;
             return s;
         }
     }
@@ -636,9 +636,9 @@ public class MethodInvokingMessageProcessorTest
     {
         public string Name { get; }
 
-        public Person(string fname, string lname)
+        public Person(string firstName, string lastName)
         {
-            Name = $"{fname} {lname}";
+            Name = $"{firstName} {lastName}";
         }
 
         public override string ToString()

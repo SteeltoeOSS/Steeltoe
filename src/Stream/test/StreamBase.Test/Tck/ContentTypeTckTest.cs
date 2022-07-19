@@ -87,7 +87,7 @@ public class ContentTypeTckTest : AbstractTest
         var target = provider.GetService<OutputDestination>();
         var jsonPayload = "{\"name\":\"oleg\"}";
         var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
-            .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
+            .SetHeader(MessageHeaders.ContentType, "text/plain")
             .SetHeader("originalContentType", "application/json;charset=UTF-8")
             .Build();
         source.Send((IMessage<byte[]>)message);
@@ -130,7 +130,7 @@ public class ContentTypeTckTest : AbstractTest
 
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -149,7 +149,7 @@ public class ContentTypeTckTest : AbstractTest
 
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
@@ -173,7 +173,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
@@ -239,7 +239,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -263,7 +263,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -286,7 +286,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -309,7 +309,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -332,7 +332,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -349,9 +349,9 @@ public class ContentTypeTckTest : AbstractTest
         streamProcessor.Initialize();
 
         var jsonPayload = "{\"name\":\"oleg\"}";
-        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
+        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeType.ToMimeType("text/plain")));
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -372,9 +372,9 @@ public class ContentTypeTckTest : AbstractTest
         streamProcessor.Initialize();
 
         var jsonPayload = "{\"name\":\"oleg\"}";
-        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeType.ToMimeType("text/plain")));
+        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeType.ToMimeType("text/plain")));
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -391,9 +391,9 @@ public class ContentTypeTckTest : AbstractTest
         streamProcessor.Initialize();
 
         var jsonPayload = "{\"name\":\"oleg\"}";
-        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, new MimeType("text")));
+        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, new MimeType("text")));
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         var str = Encoding.UTF8.GetString(payload);
@@ -411,9 +411,9 @@ public class ContentTypeTckTest : AbstractTest
         streamProcessor.Initialize();
 
         var jsonPayload = "{\"name\":\"oleg\"}";
-        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN));
+        var outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeTypeUtils.TextPlain));
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -436,7 +436,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -453,10 +453,10 @@ public class ContentTypeTckTest : AbstractTest
         streamProcessor.Initialize();
 
         var jsonPayload = "{\"name\":\"oleg\"}";
-        var message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN } }));
+        var message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.ContentType, MimeTypeUtils.TextPlain } }));
         var outputMessage = DoSendReceive(provider, message);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal(jsonPayload, Encoding.UTF8.GetString(payload));
@@ -516,7 +516,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
@@ -537,7 +537,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
@@ -557,7 +557,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.APPLICATION_JSON, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("{\"name\":\"bob\"}", Encoding.UTF8.GetString(payload));
@@ -577,7 +577,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "{\"name\":\"oleg\"}";
         var outputMessage = DoSendReceive(provider, jsonPayload);
 
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("oleg", Encoding.UTF8.GetString(payload));
@@ -604,7 +604,7 @@ public class ContentTypeTckTest : AbstractTest
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("AlwaysStringMessageConverter", Encoding.UTF8.GetString(payload));
-        Assert.Equal(MimeType.ToMimeType("application/x-java-object"), outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeType.ToMimeType("application/x-java-object"), outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
     }
 
     [Fact]
@@ -628,7 +628,7 @@ public class ContentTypeTckTest : AbstractTest
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.Equal("FooBarMessageConverter", Encoding.UTF8.GetString(payload));
-        Assert.Equal(MimeType.ToMimeType("foo/bar"), outputMessage.Headers.Get<MimeType>(MessageHeaders.CONTENT_TYPE));
+        Assert.Equal(MimeType.ToMimeType("foo/bar"), outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
     }
 
     [Fact]
@@ -765,8 +765,8 @@ public class ContentTypeTckTest : AbstractTest
         var payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
         Assert.NotEqual(jsonPayload, Encoding.UTF8.GetString(payload));
-        Assert.True(outputMessage.Headers.ContainsKey(MessageHeaders.ID));
-        Assert.True(outputMessage.Headers.ContainsKey(MessageHeaders.CONTENT_TYPE));
+        Assert.True(outputMessage.Headers.ContainsKey(MessageHeaders.IdName));
+        Assert.True(outputMessage.Headers.ContainsKey(MessageHeaders.ContentType));
     }
 
     [Fact]
@@ -782,7 +782,7 @@ public class ContentTypeTckTest : AbstractTest
         var jsonPayload = "[\"foo\",\"bar\"]";
         var message = MessageBuilder
             .WithPayload(Encoding.UTF8.GetBytes(jsonPayload))
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson)
             .Build();
         var outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
@@ -794,7 +794,7 @@ public class ContentTypeTckTest : AbstractTest
     [Fact]
     public async Task TestWithTypelessInputParameterAndServiceActivator()
     {
-        _container.AddServiceActivators<TypelessPayloadConfigurationSA>();
+        _container.AddServiceActivators<TypelessPayloadConfigurationSa>();
         var provider = _container.BuildServiceProvider();
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
@@ -816,7 +816,7 @@ public class ContentTypeTckTest : AbstractTest
     [Fact]
     public async Task TestWithTypelessMessageInputParameterAndServiceActivator()
     {
-        _container.AddServiceActivators<TypelessMessageConfigurationSA>();
+        _container.AddServiceActivators<TypelessMessageConfigurationSa>();
         var provider = _container.BuildServiceProvider();
 
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();

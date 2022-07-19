@@ -12,32 +12,13 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
-public class ConfigServerHostedServiceTest
+public partial class ConfigServerHostedServiceTest
 {
     [Fact]
     public void Constructor_ThrowsOnNull()
     {
         Assert.Throws<ArgumentNullException>(() => new ConfigServerHostedService(null, null));
     }
-
-#if NET6_0_OR_GREATER
-    [Fact]
-    public async Task ServiceConstructsAndOperatesWithConfigurationManager()
-    {
-        var configurationManager = new ConfigurationManager();
-        configurationManager.AddInMemoryCollection(TestHelpers._fastTestsConfiguration);
-        configurationManager.AddConfigServer();
-        var service = new ConfigServerHostedService(configurationManager, null);
-
-        var startStopAction = async () =>
-        {
-            await service.StartAsync(default);
-            await service.StopAsync(default);
-        };
-
-        await startStopAction.Should().NotThrowAsync("ConfigServerHostedService should start");
-    }
-#endif
 
     [Fact]
     public async Task ServiceConstructsAndOperatesWithConfigurationRoot()

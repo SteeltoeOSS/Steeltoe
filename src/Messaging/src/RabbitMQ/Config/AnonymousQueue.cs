@@ -15,13 +15,13 @@ public class AnonymousQueue : Queue
     }
 
     public AnonymousQueue(string serviceName)
-        : this(Base64UrlNamingStrategy.DEFAULT, null)
+        : this(Base64UrlNamingStrategy.Default, null)
     {
         ServiceName = serviceName;
     }
 
     public AnonymousQueue(Dictionary<string, object> arguments)
-        : this(Base64UrlNamingStrategy.DEFAULT, arguments)
+        : this(Base64UrlNamingStrategy.Default, arguments)
     {
     }
 
@@ -33,7 +33,7 @@ public class AnonymousQueue : Queue
     public AnonymousQueue(INamingStrategy namingStrategy, Dictionary<string, object> arguments)
         : base(namingStrategy.GenerateName(), false, true, true, arguments)
     {
-        if (!Arguments.ContainsKey(X_QUEUE_MASTER_LOCATOR))
+        if (!Arguments.ContainsKey(XQueueMasterLocator))
         {
             MasterLocator = "client-local";
         }

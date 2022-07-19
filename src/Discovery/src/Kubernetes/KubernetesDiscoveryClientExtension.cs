@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Kubernetes;
 
 public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
+    private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
 
     public void ApplyServices(IServiceCollection services)
     {
@@ -30,7 +30,7 @@ public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
     {
         return configuration
-            .GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX)
+            .GetSection(KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix)
             .GetChildren()
             .Any();
     }
@@ -42,19 +42,19 @@ public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
             .AddOptions<KubernetesDiscoveryOptions>()
             .Configure<IConfiguration>((options, config) =>
             {
-                config.GetSection(KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX).Bind(options);
+                config.GetSection(KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix).Bind(options);
 
                 // Kubernetes discovery is enabled by default. If spring:cloud:kubernetes:discovery:enabled was not set then check spring:cloud:discovery:enabled
                 if (options.Enabled &&
-                    config.GetValue<bool?>($"{KubernetesDiscoveryOptions.KUBERNETES_DISCOVERY_CONFIGURATION_PREFIX}:enabled") is null &&
-                    config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    config.GetValue<bool?>($"{KubernetesDiscoveryOptions.KubernetesDiscoveryConfigurationPrefix}:enabled") is null &&
+                    config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
                 {
                     options.Enabled = false;
                 }
             })
             .PostConfigure<KubernetesApplicationOptions>((options, appOptions) =>
             {
-                options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, $"{appOptions.KubernetesRoot}:discovery:servicename");
+                options.ServiceName = appOptions.ApplicationNameInContext(SteeltoeComponent.Kubernetes, $"{ApplicationInstanceInfo.KubernetesRoot}:discovery:servicename");
                 if (options.Namespace == "default" && appOptions.NameSpace != "default")
                 {
                     options.Namespace = appOptions.NameSpace;
@@ -69,7 +69,7 @@ public class KubernetesDiscoveryClientExtension : IDiscoveryClientExtension
         services.TryAddSingleton(serviceProvider =>
         {
             var clientOptions = serviceProvider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
+            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl) };
         });
     }
 }

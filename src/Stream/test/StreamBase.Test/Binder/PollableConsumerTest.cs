@@ -243,11 +243,11 @@ public class PollableConsumerTest : AbstractTest
         {
             var original = new MessageValues(
                 Encoding.UTF8.GetBytes("foo"),
-                new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
+                new Dictionary<string, object> { { MessageHeaders.ContentType, "application/octet-stream" } });
             var payload = Array.Empty<byte>();
             try
             {
-                payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.CONTENT_TYPE);
+                payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.ContentType);
             }
             catch (Exception e)
             {
@@ -265,7 +265,7 @@ public class PollableConsumerTest : AbstractTest
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-        pollableSource.AddInterceptor(new TestEmbededChannelInterceptor());
+        pollableSource.AddInterceptor(new TestEmbeddedChannelInterceptor());
 
         binder.BindConsumer("foo", "bar", pollableSource, bindingOptions.Consumer);
 
@@ -275,7 +275,7 @@ public class PollableConsumerTest : AbstractTest
         Assert.IsType<string>(handler.Payload);
         var str = handler.Payload as string;
         Assert.Equal("FOO", str);
-        handler.Message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var contentType);
+        handler.Message.Headers.TryGetValue(MessageHeaders.ContentType, out var contentType);
         Assert.Equal("application/octet-stream", contentType.ToString());
     }
 
@@ -307,7 +307,7 @@ public class PollableConsumerTest : AbstractTest
 
         var latch = new CountdownEvent(2);
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME) as ISubscribableChannel;
+        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as ISubscribableChannel;
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
@@ -360,7 +360,7 @@ public class PollableConsumerTest : AbstractTest
 
         var latch = new CountdownEvent(1);
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME) as ISubscribableChannel;
+        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as ISubscribableChannel;
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
@@ -402,7 +402,7 @@ public class PollableConsumerTest : AbstractTest
 
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);
-        mockCallback.Verify(call => call.Acknowledge(Status.REQUEUE));
+        mockCallback.Verify(call => call.Acknowledge(Status.Requeue));
     }
 
     private sealed class TestErrorsErrorChannelHandler : IMessageHandler
@@ -508,7 +508,7 @@ public class PollableConsumerTest : AbstractTest
         public void HandleMessage(IMessage message)
         {
             Assert.Equal("POLLED DATA", message.Payload);
-            var contentType = message.Headers[MessageHeaders.CONTENT_TYPE];
+            var contentType = message.Headers[MessageHeaders.ContentType];
             Assert.Equal("text/plain", contentType.ToString());
             Count++;
             if (Count == 1)
@@ -531,12 +531,12 @@ public class PollableConsumerTest : AbstractTest
         {
             return MessageBuilder
                 .FromMessage(message)
-                .SetHeader(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, Mock.Object)
+                .SetHeader(IntegrationMessageHeaderAccessor.AcknowledgmentCallback, Mock.Object)
                 .Build();
         }
     }
 
-    private sealed class TestEmbededChannelInterceptor : AbstractChannelInterceptor
+    private sealed class TestEmbeddedChannelInterceptor : AbstractChannelInterceptor
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {

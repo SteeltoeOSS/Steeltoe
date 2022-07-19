@@ -8,8 +8,8 @@ using System;
 
 namespace Steeltoe.Stream.Binder;
 
-public class AbstractPollableConsumerTestBinder<C> : AbstractTestBinder<C>, IPollableConsumerBinder<IMessageHandler>
-    where C : AbstractBinder<IMessageChannel>
+public class AbstractPollableConsumerTestBinder<TBinder> : AbstractTestBinder<TBinder>, IPollableConsumerBinder<IMessageHandler>
+    where TBinder : AbstractBinder<IMessageChannel>
 {
     private IPollableConsumerBinder<IMessageHandler> _binder;
 
@@ -18,7 +18,7 @@ public class AbstractPollableConsumerTestBinder<C> : AbstractTestBinder<C>, IPol
         get => _binder;
         set
         {
-            Binder = (C)value;
+            Binder = (TBinder)value;
             _binder = value;
         }
     }

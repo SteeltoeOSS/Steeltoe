@@ -24,9 +24,9 @@ public class TypeDescriptor
     public static readonly TypeDescriptor P = new (typeof(IntPtr));
     public static readonly TypeDescriptor Q = new (typeof(UIntPtr));
 
-    public static readonly TypeDescriptor OBJECT = new (typeof(object));
-    public static readonly TypeDescriptor STRING = new (typeof(string));
-    public static readonly TypeDescriptor TYPE = new (typeof(Type));
+    public static readonly TypeDescriptor Object = new (typeof(object));
+    public static readonly TypeDescriptor String = new (typeof(string));
+    public static readonly TypeDescriptor Type = new (typeof(Type));
 
     private TypeDescriptor _boxed;
     private TypeDescriptor _unBoxed;

@@ -20,9 +20,9 @@ public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicConsoleLoggerProvider"/> class.
     /// </summary>
-    /// <param name="options">Pass-through to ConsoleLoggerProvider constructor</param>
-    /// <param name="filterOptions">Logger filters</param>
-    /// <param name="messageProcessors">message processors to apply to message</param>
+    /// <param name="options">Pass-through to ConsoleLoggerProvider constructor.</param>
+    /// <param name="filterOptions">Logger filters.</param>
+    /// <param name="messageProcessors">message processors to apply to message.</param>
     public DynamicConsoleLoggerProvider(IOptionsMonitor<ConsoleLoggerOptions> options, IOptionsMonitor<LoggerFilterOptions> filterOptions, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         : base(() => new ConsoleLoggerProvider(options), GetInitialLevelsFromOptions(filterOptions), messageProcessors)
     {

@@ -14,7 +14,7 @@ public class KubernetesServiceInstance : IServiceInstance
     private const string HttpPrefix = "http";
     private const string HttpsPrefix = "https";
     private const string Dsl = "//";
-    private const string Coln = ":";
+    private const string Colon = ":";
 
     private readonly V1EndpointAddress _endpointAddress;
     private readonly Corev1EndpointPort _endpointPort;
@@ -29,7 +29,7 @@ public class KubernetesServiceInstance : IServiceInstance
 
     public bool IsSecure { get; }
 
-    public Uri Uri => new ($"{GetScheme()}{Coln}{Dsl}{Host}{Coln}{Port}");
+    public Uri Uri => new ($"{GetScheme()}{Colon}{Dsl}{Host}{Colon}{Port}");
 
     public IDictionary<string, string> Metadata { get; }
 

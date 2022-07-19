@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 /// <summary>
-/// Replace bootstrapped components used by ConfigServerConfigurationProvider with objects provided by Dependency Injection
+/// Replace bootstrapped components used by ConfigServerConfigurationProvider with objects provided by Dependency Injection.
 /// </summary>
 public class ConfigServerHostedService : IHostedService
 {

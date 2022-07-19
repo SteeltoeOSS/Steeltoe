@@ -8,7 +8,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
+    private const string ManagementInfoPrefix = "management:endpoints:dump";
 
     public ThreadDumpEndpointOptions()
     {
@@ -16,7 +16,7 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
     }
 
     public ThreadDumpEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {

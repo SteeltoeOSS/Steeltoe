@@ -9,18 +9,18 @@ namespace Steeltoe.Stream.Config;
 
 public class ConsumerOptions : IConsumerOptions
 {
-    private const bool AutoStartup_Default = true;
-    private const int Concurrency_Default = 1;
-    private const bool IsPartitioned_Default = false;
-    private const int InstanceCount_Default = -1;
-    private const int InstanceIndex_Default = -1;
-    private const int MaxAttempts_Default = 3;
-    private const int BackOffInitialInterval_Default = 1000;
-    private const int BackOffMaxInterval_Default = 10000;
-    private const double BackOffMultiplier_Default = 2.0;
-    private const bool DefaultRetryable_Default = true;
-    private const bool UseNativeDecoding_Default = false;
-    private const bool Multiplex_Default = false;
+    private const bool AutoStartupDefault = true;
+    private const int ConcurrencyDefault = 1;
+    private const bool IsPartitionedDefault = false;
+    private const int InstanceCountDefault = -1;
+    private const int InstanceIndexDefault = -1;
+    private const int MaxAttemptsDefault = 3;
+    private const int BackOffInitialIntervalDefault = 1000;
+    private const int BackOffMaxIntervalDefault = 10000;
+    private const double BackOffMultiplierDefault = 2.0;
+    private const bool DefaultRetryableDefault = true;
+    private const bool UseNativeDecodingDefault = false;
+    private const bool MultiplexDefault = false;
 
     public ConsumerOptions()
     {
@@ -86,50 +86,50 @@ public class ConsumerOptions : IConsumerOptions
     internal void PostProcess(string name, ConsumerOptions @default = null)
     {
         BindingName = name;
-        Multiplex ??= @default != null ? @default.Multiplex : Multiplex_Default;
-        UseNativeDecoding ??= @default != null ? @default.UseNativeDecoding : UseNativeDecoding_Default;
+        Multiplex ??= @default != null ? @default.Multiplex : MultiplexDefault;
+        UseNativeDecoding ??= @default != null ? @default.UseNativeDecoding : UseNativeDecodingDefault;
         HeaderMode ??= @default != null ? @default.HeaderMode : Config.HeaderMode.None;
         RetryableExceptions ??= @default != null ? @default.RetryableExceptions : new List<string>();
-        DefaultRetryable ??= @default != null ? @default.DefaultRetryable : DefaultRetryable_Default;
+        DefaultRetryable ??= @default != null ? @default.DefaultRetryable : DefaultRetryableDefault;
 
         if (double.IsNaN(BackOffMultiplier))
         {
-            BackOffMultiplier = @default?.BackOffMultiplier ?? BackOffMultiplier_Default;
+            BackOffMultiplier = @default?.BackOffMultiplier ?? BackOffMultiplierDefault;
         }
 
         if (BackOffMaxInterval == int.MinValue)
         {
-            BackOffMaxInterval = @default?.BackOffMaxInterval ?? BackOffMaxInterval_Default;
+            BackOffMaxInterval = @default?.BackOffMaxInterval ?? BackOffMaxIntervalDefault;
         }
 
         if (BackOffInitialInterval == int.MinValue)
         {
-            BackOffInitialInterval = @default?.BackOffInitialInterval ?? BackOffInitialInterval_Default;
+            BackOffInitialInterval = @default?.BackOffInitialInterval ?? BackOffInitialIntervalDefault;
         }
 
         if (MaxAttempts == int.MinValue)
         {
-            MaxAttempts = @default?.MaxAttempts ?? MaxAttempts_Default;
+            MaxAttempts = @default?.MaxAttempts ?? MaxAttemptsDefault;
         }
 
         if (InstanceIndex == int.MinValue)
         {
-            InstanceIndex = @default?.InstanceIndex ?? InstanceIndex_Default;
+            InstanceIndex = @default?.InstanceIndex ?? InstanceIndexDefault;
         }
 
         if (InstanceCount == int.MinValue)
         {
-            InstanceCount = @default?.InstanceCount ?? InstanceCount_Default;
+            InstanceCount = @default?.InstanceCount ?? InstanceCountDefault;
         }
 
         InstanceIndexList ??= @default != null ? @default.InstanceIndexList : new List<int>();
-        Partitioned ??= @default != null ? @default.Partitioned : IsPartitioned_Default;
+        Partitioned ??= @default != null ? @default.Partitioned : IsPartitionedDefault;
 
         if (Concurrency == int.MinValue)
         {
-            Concurrency = @default?.Concurrency ?? Concurrency_Default;
+            Concurrency = @default?.Concurrency ?? ConcurrencyDefault;
         }
 
-        AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartup_Default;
+        AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartupDefault;
     }
 }

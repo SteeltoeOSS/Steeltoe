@@ -11,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector.RabbitMQ;
 
@@ -57,23 +58,23 @@ public class RabbitMQHealthContributor : IHealthContributor
                 throw new ConnectorException("Failed to open RabbitMQ connection!");
             }
 
-            if (RabbitMQTypeLocator.IConnection.GetProperty("IsOpen").GetValue(_connection).Equals(false))
+            if (RabbitMQTypeLocator.ConnectionInterface.GetProperty("IsOpen").GetValue(_connection).Equals(false))
             {
                 throw new ConnectorException("RabbitMQ connection is closed!");
             }
 
             try
             {
-                var serverproperties = RabbitMQTypeLocator.IConnection.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
-                result.Details.Add("version", Encoding.UTF8.GetString(serverproperties["version"] as byte[]));
+                var serverProperties = RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
+                result.Details.Add("version", Encoding.UTF8.GetString(serverProperties["version"] as byte[]));
             }
             catch (Exception e)
             {
                 _logger?.LogTrace(e, "Failed to find server version while checking RabbitMQ connection health");
             }
 
-            result.Details.Add("status", HealthStatus.UP.ToString());
-            result.Status = HealthStatus.UP;
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Up;
             _logger?.LogTrace("RabbitMQ connection up!");
         }
         catch (Exception e)
@@ -85,8 +86,8 @@ public class RabbitMQHealthContributor : IHealthContributor
 
             _logger?.LogError("RabbitMQ connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.DOWN.ToString());
-            result.Status = HealthStatus.DOWN;
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Down;
             result.Description = e.Message;
         }
 

@@ -21,8 +21,8 @@ namespace Steeltoe.Discovery.Consul;
 
 public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string CONSUL_PREFIX = "consul";
-    private const string _springDiscoveryEnabled = "spring:cloud:discovery:enabled";
+    public const string ConsulPrefix = "consul";
+    private const string SpringDiscoveryEnabled = "spring:cloud:discovery:enabled";
 
     /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
@@ -32,39 +32,39 @@ public class ConsulDiscoveryClientExtension : IDiscoveryClientExtension
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
-        => configuration.GetSection(CONSUL_PREFIX).GetChildren().Any();
+        => configuration.GetSection(ConsulPrefix).GetChildren().Any();
 
     internal static void ConfigureConsulServices(IServiceCollection services)
     {
         services
             .AddOptions<ConsulOptions>()
-            .Configure<IConfiguration>((options, config) => config.GetSection(ConsulOptions.CONSUL_CONFIGURATION_PREFIX).Bind(options))
+            .Configure<IConfiguration>((options, config) => config.GetSection(ConsulOptions.ConsulConfigurationPrefix).Bind(options))
             .PostConfigure(ConsulPostConfigurer.ValidateConsulOptions);
 
         services
             .AddOptions<ConsulDiscoveryOptions>()
             .Configure<IConfiguration>((options, config) =>
             {
-                config.GetSection(ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX).Bind(options);
+                config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(options);
 
                 // Consul is enabled by default. If consul:discovery:enabled was not set then check spring:cloud:discovery:enabled
                 if (options.Enabled &&
-                    config.GetValue<bool?>($"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:enabled") is null &&
-                    config.GetValue<bool?>(_springDiscoveryEnabled) == false)
+                    config.GetValue<bool?>($"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:enabled") is null &&
+                    config.GetValue<bool?>(SpringDiscoveryEnabled) == false)
                 {
                     options.Enabled = false;
                 }
             })
             .PostConfigure<IConfiguration>((options, config) =>
             {
-                var netOptions = config.GetSection(InetOptions.PREFIX).Get<InetOptions>();
+                var netOptions = config.GetSection(InetOptions.Prefix).Get<InetOptions>();
                 ConsulPostConfigurer.UpdateDiscoveryOptions(config, options, netOptions);
             });
 
         services.TryAddSingleton(serviceProvider =>
         {
             var clientOptions = serviceProvider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
-            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTTL) };
+            return new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(clientOptions.Value.CacheTtl) };
         });
     }
 

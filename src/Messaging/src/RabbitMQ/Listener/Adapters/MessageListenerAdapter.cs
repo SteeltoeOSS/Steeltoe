@@ -18,10 +18,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessageListenerAdapter : AbstractMessageListenerAdapter
 {
-    public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
+    public const string OriginalDefaultListenerMethod = "HandleMessage";
     private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
 
-    public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
+    public string DefaultListenerMethod { get; set; } = OriginalDefaultListenerMethod;
 
     public object Instance { get; set; }
 
@@ -31,21 +31,21 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         Instance = this;
     }
 
-    public MessageListenerAdapter(IApplicationContext context, object delgate, ILogger logger = null)
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, ILogger logger = null)
         : base(context, logger)
     {
-        Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
+        Instance = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
     }
 
-    public MessageListenerAdapter(IApplicationContext context, object delgate, ISmartMessageConverter messageConverter, ILogger logger = null)
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, ISmartMessageConverter messageConverter, ILogger logger = null)
         : base(context, logger)
     {
-        Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
+        Instance = @delegate ?? throw new ArgumentNullException(nameof(@delegate));
         MessageConverter = messageConverter;
     }
 
-    public MessageListenerAdapter(IApplicationContext context, object delgate, string defaultListenerMethod, ILogger logger = null)
-        : this(context, delgate, logger)
+    public MessageListenerAdapter(IApplicationContext context, object @delegate, string defaultListenerMethod, ILogger logger = null)
+        : this(context, @delegate, logger)
     {
         DefaultListenerMethod = defaultListenerMethod;
     }
@@ -106,7 +106,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         }
         else
         {
-            _logger?.LogTrace("No result object given - no result to handle");
+            Logger?.LogTrace("No result object given - no result to handle");
         }
     }
 

@@ -14,8 +14,8 @@ public interface IPartitionSelectorStrategy : IServiceNameAware
     /// <summary>
     /// Determine the partition based on a key. The partitionCount is 1 greater than the maximum value of a valid partition.
     /// </summary>
-    /// <param name="key">the key</param>
-    /// <param name="partitionCount">the number of partitions</param>
-    /// <returns>the selected partition</returns>
+    /// <param name="key">the key.</param>
+    /// <param name="partitionCount">the number of partitions.</param>
+    /// <returns>the selected partition.</returns>
     int SelectPartition(object key, int partitionCount);
 }

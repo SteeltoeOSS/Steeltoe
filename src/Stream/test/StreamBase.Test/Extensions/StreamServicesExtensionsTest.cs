@@ -114,8 +114,8 @@ public class StreamServicesExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IStreamListenerResultAdapter>());
         Assert.NotNull(serviceProvider.GetService<OutputBindingLifecycle>());
         Assert.NotNull(serviceProvider.GetService<InputBindingLifecycle>());
-        var lifes = serviceProvider.GetServices<ILifecycle>();
-        Assert.Equal(3, lifes.Count());
+        var lifecycles = serviceProvider.GetServices<ILifecycle>();
+        Assert.Equal(3, lifecycles.Count());
         Assert.NotNull(serviceProvider.GetService<StreamListenerAttributeProcessor>());
     }
 

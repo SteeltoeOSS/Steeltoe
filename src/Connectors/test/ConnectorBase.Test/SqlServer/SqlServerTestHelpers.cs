@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.SqlServer.Test;
 
 public static class SqlServerTestHelpers
 {
-    public static string SingleServerVCAP = @"
+    public static string SingleServerVcap = @"
             {
                 ""SqlServer"": [
                     {
@@ -28,7 +28,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string SingleServerVCAPNoTag = @"
+    public static string SingleServerVcapNoTag = @"
             {
                 ""SqlServer"": [
                     {
@@ -49,7 +49,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string SingleServerVCAPIgnoreName = @"
+    public static string SingleServerVcapIgnoreName = @"
             {
                 ""user-provided"": [{
                         ""credentials"": {
@@ -68,7 +68,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string SingleServerVCAP_CredsInUrl = @"
+    public static string SingleServerVcapCredentialsInUrl = @"
             {
                 ""SqlServer"": [{
                         ""credentials"": {
@@ -85,7 +85,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string TwoServerVCAP = @"
+    public static string TwoServerVcap = @"
             {
                 ""SqlServer"": [{
                         ""credentials"": {

@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 public class AbstractEndpointTest : BaseTest
 {
     [Fact]
-    public void ThrowsIfOptionsull()
+    public void ThrowsIfOptionsNull()
     {
         Assert.Throws<ArgumentNullException>(() => new TestEndpoint(null));
     }

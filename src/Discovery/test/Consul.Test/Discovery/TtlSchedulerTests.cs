@@ -30,7 +30,7 @@ public class TtlSchedulerTests
         var opts = new ConsulDiscoveryOptions { Heartbeat = null };
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
-        Assert.Empty(sch._serviceHeartbeats);
+        Assert.Empty(sch.ServiceHeartbeats);
     }
 
     [Fact]
@@ -47,8 +47,8 @@ public class TtlSchedulerTests
         };
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
-        Assert.NotEmpty(sch._serviceHeartbeats);
-        Assert.True(sch._serviceHeartbeats.TryRemove("foobar", out var timer));
+        Assert.NotEmpty(sch.ServiceHeartbeats);
+        Assert.True(sch.ServiceHeartbeats.TryRemove("foobar", out var timer));
         Assert.NotNull(timer);
         timer.Dispose();
     }
@@ -90,11 +90,11 @@ public class TtlSchedulerTests
         };
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
-        Assert.NotEmpty(sch._serviceHeartbeats);
-        Assert.True(sch._serviceHeartbeats.TryGetValue("foobar", out var timer));
+        Assert.NotEmpty(sch.ServiceHeartbeats);
+        Assert.True(sch.ServiceHeartbeats.TryGetValue("foobar", out var timer));
         Assert.NotNull(timer);
         sch.Remove("foobar");
-        Assert.False(sch._serviceHeartbeats.TryGetValue("foobar", out _));
+        Assert.False(sch.ServiceHeartbeats.TryGetValue("foobar", out _));
     }
 
     [Fact]

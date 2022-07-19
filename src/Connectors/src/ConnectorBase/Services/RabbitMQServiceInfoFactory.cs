@@ -8,12 +8,12 @@ namespace Steeltoe.Connector.Services;
 
 public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 {
-    public static readonly Tags RABBIT_SERVICE_TAGS = new ("rabbit");
+    public static readonly Tags RabbitServiceTags = new ("rabbit");
 
-    private static readonly string[] _scheme = { RabbitMQServiceInfo.AMQP_SCHEME, RabbitMQServiceInfo.AMQPS_SCHEME };
+    private static readonly string[] Scheme = { RabbitMQServiceInfo.AmqpScheme, RabbitMQServiceInfo.AmqpSecureScheme };
 
     public RabbitMQServiceInfoFactory()
-        : base(RABBIT_SERVICE_TAGS, _scheme)
+        : base(RabbitServiceTags, Scheme)
     {
     }
 
@@ -22,7 +22,7 @@ public class RabbitMQServiceInfoFactory : ServiceInfoFactory
         var result = base.Accepts(binding);
         if (result)
         {
-            result = !HystrixRabbitMQServiceInfoFactory.HYSTRIX_RABBIT_SERVICE_TAGS.ContainsOne(binding.Tags);
+            result = !HystrixRabbitMQServiceInfoFactory.HystrixRabbitServiceTags.ContainsOne(binding.Tags);
         }
 
         return result;

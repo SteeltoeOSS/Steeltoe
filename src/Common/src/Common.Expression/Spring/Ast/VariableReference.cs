@@ -12,8 +12,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 public class VariableReference : SpelNode
 {
     // Well known variables:
-    private static readonly string THIS = "this";  // currently active context object
-    private static readonly string ROOT = "root";  // root context object
+    private static readonly string This = "this";  // currently active context object
+    private static readonly string Root = "root";  // root context object
 
     private readonly string _name;
     private MethodInfo _method;
@@ -26,15 +26,15 @@ public class VariableReference : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        if (_name.Equals(THIS))
+        if (_name.Equals(This))
         {
             return state.GetActiveContextObject();
         }
 
-        if (_name.Equals(ROOT))
+        if (_name.Equals(Root))
         {
             var obj = state.RootContextObject;
-            _exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
+            exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
             return obj;
         }
 
@@ -46,11 +46,11 @@ public class VariableReference : SpelNode
             // then an IllegalAccessError will occur.
             // If resorting to Object isn't sufficient, the hierarchy could be traversed for
             // the first public type.
-            _exitTypeDescriptor = TypeDescriptor.OBJECT;
+            exitTypeDescriptor = TypeDescriptor.Object;
         }
         else
         {
-            _exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(value);
+            exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(value);
         }
 
         // a null value will mean either the value was null or the variable was not found
@@ -62,24 +62,24 @@ public class VariableReference : SpelNode
         state.SetVariable(_name, newValue);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         return $"#{_name}";
     }
 
     public override bool IsWritable(ExpressionState state)
     {
-        return !(_name.Equals(THIS) || _name.Equals(ROOT));
+        return !(_name.Equals(This) || _name.Equals(Root));
     }
 
     public override bool IsCompilable()
     {
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        if (_name.Equals(ROOT))
+        if (_name.Equals(Root))
         {
             CodeFlow.LoadTarget(gen);
         }
@@ -90,18 +90,18 @@ public class VariableReference : SpelNode
             gen.Emit(OpCodes.Callvirt, GetLookUpVariableMethod());
         }
 
-        CodeFlow.InsertCastClass(gen, _exitTypeDescriptor);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        CodeFlow.InsertCastClass(gen, exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
-        if (_name.Equals(THIS))
+        if (_name.Equals(This))
         {
             return new TypedValueHolderValueRef(state.GetActiveContextObject(), this);
         }
 
-        if (_name.Equals(ROOT))
+        if (_name.Equals(Root))
         {
             return new TypedValueHolderValueRef(state.RootContextObject, this);
         }

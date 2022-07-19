@@ -11,8 +11,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class PojoToByteArrayStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public byte[] Echo(Person value)
     {
         return Encoding.UTF8.GetBytes(value.ToString());

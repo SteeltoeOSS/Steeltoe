@@ -20,8 +20,8 @@ public class DestinationVariableMethodArgumentResolverTest
     [Fact]
     public void SupportsParameter()
     {
-        Assert.True(_resolver.SupportsParameter(_resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg()));
-        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotNotPresent(typeof(DestinationVariableAttribute)).Arg()));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg()));
+        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotationNotPresent(typeof(DestinationVariableAttribute)).Arg()));
     }
 
     [Fact]
@@ -33,13 +33,13 @@ public class DestinationVariableMethodArgumentResolverTest
             { "name", "value" }
         };
 
-        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DESTINATION_TEMPLATE_VARIABLES_HEADER, vars).Build();
+        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DestinationTemplateVariablesHeader, vars).Build();
 
-        var param = _resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg();
+        var param = _resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg();
         var result = _resolver.ResolveArgument(param, message);
         Assert.Equal("bar", result);
 
-        param = _resolvable.Annot(MessagingPredicates.DestinationVar("name")).Arg();
+        param = _resolvable.Annotation(MessagingPredicates.DestinationVar("name")).Arg();
         result = _resolver.ResolveArgument(param, message);
         Assert.Equal("value", result);
     }
@@ -48,7 +48,7 @@ public class DestinationVariableMethodArgumentResolverTest
     public void ResolveArgumentNotFound()
     {
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
+        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
     }
 
     private void HandleMessage([DestinationVariable] string foo, [DestinationVariable("name")] string param1, string param3)

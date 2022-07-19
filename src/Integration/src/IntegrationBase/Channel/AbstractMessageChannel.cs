@@ -22,7 +22,7 @@ namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IChannelInterceptorAware
 {
-    protected const int INDEFINITE_TIMEOUT = -1;
+    protected const int IndefiniteTimeout = -1;
     private IIntegrationServices _integrationServices;
     private IMessageConverter _messageConverter;
 
@@ -34,7 +34,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
     {
         ApplicationContext = context;
-        this.logger = logger;
+        this.Logger = logger;
         ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
         Interceptors = new ChannelInterceptorList(logger);
     }
@@ -62,7 +62,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     {
         get
         {
-            _messageConverter ??= ApplicationContext.GetService<DefaultDatatypeChannelMessageConverter>();
+            _messageConverter ??= ApplicationContext.GetService<DefaultDataTypeChannelMessageConverter>();
             return _messageConverter;
         }
 
@@ -133,7 +133,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     internal ChannelInterceptorList Interceptors { get; set; }
 
-    protected ILogger logger;
+    protected readonly ILogger Logger;
 
     protected virtual bool DoSend(IMessage message, int timeout)
     {
@@ -161,7 +161,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 message = ConvertPayloadIfNecessary(message);
             }
 
-            logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PreSend on channel '" + ServiceName + "', message: " + message);
 
             if (Interceptors.Count > 0)
             {
@@ -175,7 +175,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
             sent = DoSendInternal(message, cancellationToken);
 
-            logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
+            Logger?.LogDebug("PostSend (sent=" + sent + ") on channel '" + ServiceName + "', message: " + message);
 
             if (interceptorStack != null)
             {
@@ -206,10 +206,10 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     private IMessage ConvertPayloadIfNecessary(IMessage message)
     {
-        // first pass checks if the payload type already matches any of the datatypes
-        foreach (var datatype in DataTypes)
+        // first pass checks if the payload type already matches any of the data types
+        foreach (var dataType in DataTypes)
         {
-            if (datatype.IsInstanceOfType(message.Payload))
+            if (dataType.IsInstanceOfType(message.Payload))
             {
                 return message;
             }
@@ -217,10 +217,10 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         if (MessageConverter != null)
         {
-            // second pass applies conversion if possible, attempting datatypes in order
-            foreach (var datatype in DataTypes)
+            // second pass applies conversion if possible, attempting data types in order
+            foreach (var dataType in DataTypes)
             {
-                var converted = MessageConverter.FromMessage(message, datatype);
+                var converted = MessageConverter.FromMessage(message, dataType);
                 if (converted != null)
                 {
                     return converted as IMessage ?? IntegrationServices
@@ -234,7 +234,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         throw new MessageDeliveryException(
             message,
-            $"Channel '{ServiceName}' expected one of the following datataypes [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
+            $"Channel '{ServiceName}' expected one of the following data types [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
     }
 
     internal sealed class ChannelInterceptorList

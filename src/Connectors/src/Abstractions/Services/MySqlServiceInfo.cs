@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Services;
 
 public class MySqlServiceInfo : UriServiceInfo
 {
-    public const string MYSQL_SCHEME = "mysql";
+    public const string MysqlScheme = "mysql";
 
     public MySqlServiceInfo(string id, string url)
         : base(id, url)

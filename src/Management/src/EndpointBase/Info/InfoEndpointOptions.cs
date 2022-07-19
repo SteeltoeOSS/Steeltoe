@@ -8,25 +8,25 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class InfoEndpointOptions : AbstractEndpointOptions, IInfoOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:info";
+    private const string ManagementInfoPrefix = "management:endpoints:info";
 
     public InfoEndpointOptions()
     {
         Id = "info";
-        RequiredPermissions = Permissions.RESTRICTED;
+        RequiredPermissions = Permissions.Restricted;
     }
 
     public InfoEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
             Id = "info";
         }
 
-        if (RequiredPermissions == Permissions.UNDEFINED)
+        if (RequiredPermissions == Permissions.Undefined)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.Restricted;
         }
     }
 }

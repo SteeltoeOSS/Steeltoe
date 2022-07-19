@@ -42,7 +42,7 @@ public class ServiceInfoCreatorFactoryTest
     [Fact]
     public void FactoryReturnsCloudFoundryCreatorForCloudFoundry()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         var serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddCloudFoundry().Build());
         Assert.IsType<CloudFoundryServiceInfoCreator>(serviceInfoCreator);
     }

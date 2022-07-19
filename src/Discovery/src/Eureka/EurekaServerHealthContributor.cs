@@ -7,6 +7,7 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -53,7 +54,7 @@ public class EurekaServerHealthContributor : IHealthContributor
             result.Status = heartBeatStatus;
         }
 
-        result.Details.Add("status", result.Status.ToString());
+        result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
     }
 
     internal HealthStatus AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
@@ -71,27 +72,27 @@ public class EurekaServerHealthContributor : IHealthContributor
             if (lastGoodHeartbeatPeriod <= 0)
             {
                 result.Details.Add("heartbeat", "Not yet successfully connected");
-                result.Details.Add("heartbeatStatus", HealthStatus.UNKNOWN.ToString());
+                result.Details.Add("heartbeatStatus", HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("heartbeatTime", "UNKNOWN");
-                return HealthStatus.UNKNOWN;
+                return HealthStatus.Unknown;
             }
             else if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
-                result.Details.Add("heartbeatStatus", HealthStatus.DOWN.ToString());
+                result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s"));
                 result.Details.Add("heartbeatFailures", lastGoodHeartbeatPeriod / (instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond));
-                return HealthStatus.DOWN;
+                return HealthStatus.Down;
             }
 
             result.Details.Add("heartbeat", "Successful");
-            result.Details.Add("heartbeatStatus", HealthStatus.UP.ToString());
+            result.Details.Add("heartbeatStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Details.Add("heartbeatTime", new DateTime(lastGoodHeartbeatTimeTicks).ToString("s"));
-            return HealthStatus.UP;
+            return HealthStatus.Up;
         }
 
         result.Details.Add("heartbeatStatus", "Not registering");
-        return HealthStatus.UNKNOWN;
+        return HealthStatus.Unknown;
     }
 
     internal HealthStatus AddFetchStatus(IEurekaClientConfig clientConfig, HealthCheckResult result, long lastGoodFetchTimeTicks)
@@ -102,47 +103,47 @@ public class EurekaServerHealthContributor : IHealthContributor
             if (lastGoodFetchPeriod <= 0)
             {
                 result.Details.Add("fetch", "Not yet successfully connected");
-                result.Details.Add("fetchStatus", HealthStatus.UNKNOWN.ToString());
+                result.Details.Add("fetchStatus", HealthStatus.Unknown.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("fetchTime", "UNKNOWN");
-                return HealthStatus.UNKNOWN;
+                return HealthStatus.Unknown;
             }
             else if (lastGoodFetchPeriod > clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("fetch", "Reporting failures connecting");
-                result.Details.Add("fetchStatus", HealthStatus.DOWN.ToString());
+                result.Details.Add("fetchStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s"));
                 result.Details.Add("fetchFailures", lastGoodFetchPeriod / (clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond));
-                return HealthStatus.DOWN;
+                return HealthStatus.Down;
             }
 
             result.Details.Add("fetch", "Successful");
-            result.Details.Add("fetchStatus", HealthStatus.UP.ToString());
+            result.Details.Add("fetchStatus", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             result.Details.Add("fetchTime", new DateTime(lastGoodFetchTimeTicks).ToString("s"));
-            return HealthStatus.UP;
+            return HealthStatus.Up;
         }
 
         result.Details.Add("fetchStatus", "Not fetching");
-        return HealthStatus.UNKNOWN;
+        return HealthStatus.Unknown;
     }
 
     internal HealthStatus MakeHealthStatus(InstanceStatus lastRemoteInstanceStatus)
     {
-        if (lastRemoteInstanceStatus == InstanceStatus.DOWN)
+        if (lastRemoteInstanceStatus == InstanceStatus.Down)
         {
-            return HealthStatus.DOWN;
+            return HealthStatus.Down;
         }
 
-        if (lastRemoteInstanceStatus == InstanceStatus.OUT_OF_SERVICE)
+        if (lastRemoteInstanceStatus == InstanceStatus.OutOfService)
         {
-            return HealthStatus.OUT_OF_SERVICE;
+            return HealthStatus.OutOfService;
         }
 
-        if (lastRemoteInstanceStatus == InstanceStatus.UP)
+        if (lastRemoteInstanceStatus == InstanceStatus.Up)
         {
-            return HealthStatus.UP;
+            return HealthStatus.Up;
         }
 
-        return HealthStatus.UNKNOWN;
+        return HealthStatus.Unknown;
     }
 
     internal void AddApplications(Applications applications, HealthCheckResult result)

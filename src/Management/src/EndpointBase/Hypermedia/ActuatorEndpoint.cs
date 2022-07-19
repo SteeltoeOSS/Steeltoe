@@ -7,17 +7,17 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 /// <summary>
-/// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
+/// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators.
 /// </summary>
 public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
 {
     private readonly ILogger<ActuatorEndpoint> _logger;
-    private readonly ActuatorManagementOptions _mgmtOption;
+    private readonly ActuatorManagementOptions _managementOption;
 
-    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions managementOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
     {
-        _mgmtOption = mgmtOptions;
+        _managementOption = managementOptions;
         _logger = logger;
     }
 
@@ -25,7 +25,7 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
 
     public override Links Invoke(string baseUrl)
     {
-        var service = new HypermediaService(_mgmtOption, options, _logger);
+        var service = new HypermediaService(_managementOption, options, _logger);
         return service.Invoke(baseUrl);
     }
 }

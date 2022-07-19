@@ -134,7 +134,7 @@ public class DefaultMessageHandlerMethodFactoryTest
 
     internal sealed class SampleBeanConverter : AbstractConverter<SampleBean, string>
     {
-        public override string Convert(SampleBean soruce)
+        public override string Convert(SampleBean source)
         {
             return "foo bar";
         }

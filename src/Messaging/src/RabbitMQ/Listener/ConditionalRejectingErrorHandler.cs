@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class ConditionalRejectingErrorHandler : IErrorHandler
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(ConditionalRejectingErrorHandler);
+    public const string DefaultServiceName = nameof(ConditionalRejectingErrorHandler);
 
     private readonly ILogger _logger;
     private readonly IFatalExceptionStrategy _exceptionStrategy;
@@ -30,18 +30,18 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
         _exceptionStrategy = exceptionStrategy;
     }
 
-    public virtual bool DiscardFatalsWithXDeath { get; set; } = true;
+    public virtual bool DiscardFatalErrorsWithXDeath { get; set; } = true;
 
     public virtual bool RejectManual { get; set; } = true;
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public virtual bool HandleError(Exception exception)
     {
         _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
-        if (!CauseChainContainsRRADRE(exception) && _exceptionStrategy.IsFatal(exception))
+        if (!CauseChainContainsRabbitRejectAndDoNotRequeueException(exception) && _exceptionStrategy.IsFatal(exception))
         {
-            if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException listenerException)
+            if (DiscardFatalErrorsWithXDeath && exception is ListenerExecutionFailedException listenerException)
             {
                 var failed = listenerException.FailedMessage;
                 if (failed != null)
@@ -58,18 +58,18 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
                 }
             }
 
-            throw new RabbitRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
+            throw new RabbitRejectAndDoNotRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
         }
 
         return true;
     }
 
-    protected virtual bool CauseChainContainsRRADRE(Exception exception)
+    protected virtual bool CauseChainContainsRabbitRejectAndDoNotRequeueException(Exception exception)
     {
         var cause = exception.InnerException;
         while (cause != null)
         {
-            if (cause is RabbitRejectAndDontRequeueException)
+            if (cause is RabbitRejectAndDoNotRequeueException)
             {
                 return true;
             }

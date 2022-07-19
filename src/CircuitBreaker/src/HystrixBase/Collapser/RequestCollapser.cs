@@ -9,29 +9,29 @@ using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgumentType>
+public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
 {
-    private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
+    private readonly HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> _commandCollapser;
     private readonly AtomicReference<TimerReference> _timerListenerReference = new ();
     private readonly AtomicBoolean _timerListenerRegistered = new ();
     private readonly ICollapserTimer _timer;
     private readonly HystrixConcurrencyStrategy _concurrencyStrategy;
 
-    public AtomicReference<RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>> Batch { get; } = new ();
+    public AtomicReference<RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>> Batch { get; } = new ();
 
     public IHystrixCollapserOptions Properties { get; }
 
-    internal RequestCollapser(HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
+    internal RequestCollapser(HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
     {
         // the command with implementation of abstract methods we need
         _commandCollapser = commandCollapser;
         _concurrencyStrategy = concurrencyStrategy;
         Properties = properties;
         _timer = timer;
-        Batch.Value = new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(properties, commandCollapser, properties.MaxRequestsInBatch);
+        Batch.Value = new RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>(properties, commandCollapser, properties.MaxRequestsInBatch);
     }
 
-    public CollapsedRequest<RequestResponseType, RequestArgumentType> SubmitRequest(RequestArgumentType arg, CancellationToken token)
+    public CollapsedRequest<TRequestResponse, TRequestArgument> SubmitRequest(TRequestArgument arg, CancellationToken token)
     {
         /*
          * We only want the timer ticking if there are actually things to do so we register it the first time something is added.
@@ -39,7 +39,7 @@ public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgum
         if (!_timerListenerRegistered.Value && _timerListenerRegistered.CompareAndSet(false, true))
         {
             /* schedule the collapsing task to be executed every x milliseconds (x defined inside CollapsedTask) */
-            _timerListenerReference.Value = _timer.AddListener(new CollapsedTask<BatchReturnType, RequestResponseType, RequestArgumentType>(this));
+            _timerListenerReference.Value = _timer.AddListener(new CollapsedTask<TBatchReturn, TRequestResponse, TRequestArgument>(this));
         }
 
         // loop until succeed (compare-and-set spin-loop)
@@ -81,14 +81,14 @@ public class RequestCollapser<BatchReturnType, RequestResponseType, RequestArgum
         }
     }
 
-    internal void CreateNewBatchAndExecutePreviousIfNeeded(RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType> previousBatch)
+    internal void CreateNewBatchAndExecutePreviousIfNeeded(RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument> previousBatch)
     {
         if (previousBatch == null)
         {
             throw new InvalidOperationException("Trying to start null batch which means it was shutdown already.");
         }
 
-        if (Batch.CompareAndSet(previousBatch, new RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>(Properties, _commandCollapser, Properties.MaxRequestsInBatch)))
+        if (Batch.CompareAndSet(previousBatch, new RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>(Properties, _commandCollapser, Properties.MaxRequestsInBatch)))
         {
             previousBatch.ExecuteBatchIfNotAlreadyStarted();
         }

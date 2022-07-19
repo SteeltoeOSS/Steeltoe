@@ -73,7 +73,7 @@ public class HystrixSyncTaskSchedulerTest
 
         public TaskActionClass(ITestOutputHelper output, int val)
         {
-            Output = output;
+            this.Output = output;
             Value = val;
         }
 

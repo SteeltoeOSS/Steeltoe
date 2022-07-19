@@ -16,11 +16,11 @@ public class EurekaServerHealthContributorTest
     public void MakeHealthStatus_ReturnsExpected()
     {
         var contrib = new EurekaServerHealthContributor();
-        Assert.Equal(HealthStatus.DOWN, contrib.MakeHealthStatus(InstanceStatus.DOWN));
-        Assert.Equal(HealthStatus.UP, contrib.MakeHealthStatus(InstanceStatus.UP));
-        Assert.Equal(HealthStatus.UNKNOWN, contrib.MakeHealthStatus(InstanceStatus.STARTING));
-        Assert.Equal(HealthStatus.UNKNOWN, contrib.MakeHealthStatus(InstanceStatus.UNKNOWN));
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, contrib.MakeHealthStatus(InstanceStatus.OUT_OF_SERVICE));
+        Assert.Equal(HealthStatus.Down, contrib.MakeHealthStatus(InstanceStatus.Down));
+        Assert.Equal(HealthStatus.Up, contrib.MakeHealthStatus(InstanceStatus.Up));
+        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Starting));
+        Assert.Equal(HealthStatus.Unknown, contrib.MakeHealthStatus(InstanceStatus.Unknown));
+        Assert.Equal(HealthStatus.OutOfService, contrib.MakeHealthStatus(InstanceStatus.OutOfService));
     }
 
     [Fact]
@@ -97,13 +97,13 @@ public class EurekaServerHealthContributorTest
         Assert.Equal("Not registering", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
-        var clientconfig = new EurekaClientConfig
+        var clientConfig = new EurekaClientConfig
         {
             ShouldRegisterWithEureka = true
         };
-        var instconfig = new EurekaInstanceConfig();
+        var instanceConfig = new EurekaInstanceConfig();
 
-        contrib.AddHeartbeatStatus(clientconfig, instconfig, results, 0);
+        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, 0);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Not yet successfully connected", (string)results.Details["heartbeat"]);
         Assert.Contains("heartbeatTime", results.Details.Keys);
@@ -112,9 +112,9 @@ public class EurekaServerHealthContributorTest
         Assert.Equal("UNKNOWN", results.Details["heartbeatStatus"]);
 
         results = new HealthCheckResult();
-        var ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * instconfig.LeaseRenewalIntervalInSeconds * 10);
+        var ticks = DateTime.UtcNow.Ticks - (TimeSpan.TicksPerSecond * instanceConfig.LeaseRenewalIntervalInSeconds * 10);
         var dateTime = new DateTime(ticks);
-        contrib.AddHeartbeatStatus(clientconfig, instconfig, results, ticks);
+        contrib.AddHeartbeatStatus(clientConfig, instanceConfig, results, ticks);
         Assert.Contains("heartbeat", results.Details.Keys);
         Assert.Contains("Reporting failures", (string)results.Details["heartbeat"]);
         Assert.Contains("heartbeatTime", results.Details.Keys);

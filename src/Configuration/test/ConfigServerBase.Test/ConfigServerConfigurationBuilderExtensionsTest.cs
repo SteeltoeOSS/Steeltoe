@@ -139,10 +139,10 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var csettings = new ConfigServerClientSettings();
+        var clientSettings = new ConfigServerClientSettings();
         configurationBuilder.AddJsonFile(fileName);
 
-        configurationBuilder.AddConfigServer(csettings);
+        configurationBuilder.AddConfigServer(clientSettings);
         var config = configurationBuilder.Build();
 
         var configServerProvider =
@@ -154,7 +154,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -194,10 +194,10 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var csettings = new ConfigServerClientSettings();
+        var clientSettings = new ConfigServerClientSettings();
         configurationBuilder.AddXmlFile(fileName);
 
-        configurationBuilder.AddConfigServer(csettings);
+        configurationBuilder.AddConfigServer(clientSettings);
         var config = configurationBuilder.Build();
 
         var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
@@ -208,7 +208,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -235,10 +235,10 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var csettings = new ConfigServerClientSettings();
+        var clientSettings = new ConfigServerClientSettings();
         configurationBuilder.AddIniFile(fileName);
 
-        configurationBuilder.AddConfigServer(csettings);
+        configurationBuilder.AddConfigServer(clientSettings);
         var config = configurationBuilder.Build();
 
         var configServerProvider =
@@ -250,7 +250,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -272,10 +272,10 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        var csettings = new ConfigServerClientSettings();
+        var clientSettings = new ConfigServerClientSettings();
         configurationBuilder.AddCommandLine(appsettings);
 
-        configurationBuilder.AddConfigServer(csettings);
+        configurationBuilder.AddConfigServer(clientSettings);
         var config = configurationBuilder.Build();
         var configServerProvider =
             config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
@@ -286,7 +286,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("myName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
@@ -329,10 +329,10 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var csettings = new ConfigServerClientSettings();
+        var clientSettings = new ConfigServerClientSettings();
         configurationBuilder.AddJsonFile(fileName);
 
-        configurationBuilder.AddConfigServer(csettings);
+        configurationBuilder.AddConfigServer(clientSettings);
         var config = configurationBuilder.Build();
 
         var configServerProvider =
@@ -344,14 +344,14 @@ public class ConfigServerConfigurationBuilderExtensionsTest
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, settings.Environment);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
         Assert.Equal("testName", settings.Name);
         Assert.Equal("myLabel", settings.Label);
         Assert.Equal("myUsername", settings.Username);
         Assert.Equal("myPassword", settings.Password);
     }
 
-    private const string VCAPServicesV2 = @"
+    private const string VcapServicesV2 = @"
                 {
                     ""p-config-server"": [
                     {
@@ -376,7 +376,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     }]
                 }";
 
-    private const string VCAPServicesV3 = @"
+    private const string VcapServicesV3 = @"
                 {
                     ""p.config-server"": [
                     {
@@ -401,7 +401,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     }]
                 }";
 
-    private const string VCAPServicesAlt = @"
+    private const string VcapServicesAlt = @"
                 {
                     ""config-server"": [
                     {
@@ -427,15 +427,15 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                 }";
 
     [Theory]
-    [InlineData(VCAPServicesV2)]
-    [InlineData(VCAPServicesV3)]
-    [InlineData(VCAPServicesAlt)]
-    public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapservices)
+    [InlineData(VcapServicesV2)]
+    [InlineData(VcapServicesV3)]
+    [InlineData(VcapServicesAlt)]
+    public void AddConfigServer_VCAP_SERVICES_Override_Defaults(string vcapServices)
     {
         var configurationBuilder = new ConfigurationBuilder();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapservices);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
         var settings = new ConfigServerClientSettings { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
         configurationBuilder

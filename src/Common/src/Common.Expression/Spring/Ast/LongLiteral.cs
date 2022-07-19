@@ -14,7 +14,7 @@ public class LongLiteral : Literal
         : base(payload, startPos, endPos)
     {
         _value = new TypedValue(value);
-        _exitTypeDescriptor = TypeDescriptor.J;
+        exitTypeDescriptor = TypeDescriptor.J;
     }
 
     public override ITypedValue GetLiteralValue() => _value;
@@ -24,6 +24,6 @@ public class LongLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         gen.Emit(OpCodes.Ldc_I8, (long)_value.Value);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

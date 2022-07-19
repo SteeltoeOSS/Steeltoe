@@ -147,7 +147,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
         }
 
         var headerAccessor = MessageHeaderAccessor.GetMutableAccessor(message);
-        headerAccessor.SetHeader(DestinationPatternsMessageCondition.LOOKUP_DESTINATION_HEADER, lookupDestination);
+        headerAccessor.SetHeader(DestinationPatternsMessageCondition.LookupDestinationHeader, lookupDestination);
         headerAccessor.LeaveMutable = true;
         message = MessageBuilder.CreateMessage(message.Payload, headerAccessor.MessageHeaders);
 

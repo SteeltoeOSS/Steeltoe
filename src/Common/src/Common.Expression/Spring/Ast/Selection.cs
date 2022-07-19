@@ -11,9 +11,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class Selection : SpelNode
 {
-    public const int ALL = 0;
-    public const int FIRST = 1;
-    public const int LAST = 2;
+    public const int All = 0;
+    public const int First = 1;
+    public const int Last = 2;
 
     private readonly int _variant;
 
@@ -31,24 +31,24 @@ public class Selection : SpelNode
         return GetValueRef(state).GetValue();
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"{GetPrefix()}{GetChild(0).ToStringAST()}]";
+        return $"{GetPrefix()}{GetChild(0).ToStringAst()}]";
     }
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
         var op = state.GetActiveContextObject();
         var operand = op.Value;
-        var selectionCriteria = _children[0];
+        var selectionCriteria = children[0];
 
-        if (operand is IDictionary mapdata)
+        if (operand is IDictionary mapData)
         {
             // Don't lose generic info for the new map
             var result = new Dictionary<object, object>();
             object lastKey = null;
 
-            foreach (DictionaryEntry entry in mapdata)
+            foreach (DictionaryEntry entry in mapData)
             {
                 try
                 {
@@ -60,7 +60,7 @@ public class Selection : SpelNode
                     {
                         if (boolean)
                         {
-                            if (_variant == FIRST)
+                            if (_variant == First)
                             {
                                 result[entry.Key] = entry.Value;
                                 return new TypedValueHolderValueRef(new TypedValue(result), this);
@@ -72,7 +72,7 @@ public class Selection : SpelNode
                     }
                     else
                     {
-                        throw new SpelEvaluationException(selectionCriteria.StartPosition, SpelMessage.RESULT_OF_SELECTION_CRITERIA_IS_NOT_BOOLEAN);
+                        throw new SpelEvaluationException(selectionCriteria.StartPosition, SpelMessage.ResultOfSelectionCriteriaIsNotBoolean);
                     }
                 }
                 finally
@@ -82,12 +82,12 @@ public class Selection : SpelNode
                 }
             }
 
-            if ((_variant == FIRST || _variant == LAST) && result.Count == 0)
+            if ((_variant == First || _variant == Last) && result.Count == 0)
             {
                 return new TypedValueHolderValueRef(new TypedValue(null), this);
             }
 
-            if (_variant == LAST)
+            if (_variant == Last)
             {
                 var resultMap = new Dictionary<object, object>();
                 result.TryGetValue(lastKey, out var lastValue);
@@ -115,7 +115,7 @@ public class Selection : SpelNode
                     {
                         if (boolean)
                         {
-                            if (_variant == FIRST)
+                            if (_variant == First)
                             {
                                 return new TypedValueHolderValueRef(new TypedValue(element), this);
                             }
@@ -125,7 +125,7 @@ public class Selection : SpelNode
                     }
                     else
                     {
-                        throw new SpelEvaluationException(selectionCriteria.StartPosition, SpelMessage.RESULT_OF_SELECTION_CRITERIA_IS_NOT_BOOLEAN);
+                        throw new SpelEvaluationException(selectionCriteria.StartPosition, SpelMessage.ResultOfSelectionCriteriaIsNotBoolean);
                     }
 
                     index++;
@@ -137,12 +137,12 @@ public class Selection : SpelNode
                 }
             }
 
-            if ((_variant == FIRST || _variant == LAST) && result.Count == 0)
+            if ((_variant == First || _variant == Last) && result.Count == 0)
             {
-                return NullValueRef.INSTANCE;
+                return NullValueRef.Instance;
             }
 
-            if (_variant == LAST)
+            if (_variant == Last)
             {
                 var lastElem = result == null || result.Count == 0 ? null : result[result.Count - 1];
                 return new TypedValueHolderValueRef(new TypedValue(lastElem), this);
@@ -178,22 +178,22 @@ public class Selection : SpelNode
         {
             if (_nullSafe)
             {
-                return NullValueRef.INSTANCE;
+                return NullValueRef.Instance;
             }
 
-            throw new SpelEvaluationException(StartPosition, SpelMessage.INVALID_TYPE_FOR_SELECTION, "null");
+            throw new SpelEvaluationException(StartPosition, SpelMessage.InvalidTypeForSelection, "null");
         }
 
-        throw new SpelEvaluationException(StartPosition, SpelMessage.INVALID_TYPE_FOR_SELECTION, operand.GetType().FullName);
+        throw new SpelEvaluationException(StartPosition, SpelMessage.InvalidTypeForSelection, operand.GetType().FullName);
     }
 
     private string GetPrefix()
     {
         return _variant switch
         {
-            ALL => "?[",
-            FIRST => "^[",
-            LAST => "$[",
+            All => "?[",
+            First => "^[",
+            Last => "$[",
             _ => string.Empty,
         };
     }

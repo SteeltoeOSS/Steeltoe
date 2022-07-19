@@ -17,7 +17,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test;
 public class ConsulServiceRegistryTest
 {
     [Fact]
-    public void Construtor_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNulls()
     {
         var clientMoq = new Mock<IConsulClient>();
         Assert.Throws<ArgumentNullException>(() => new ConsulServiceRegistry(null, new ConsulDiscoveryOptions()));
@@ -62,13 +62,13 @@ public class ConsulServiceRegistryTest
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
-        Assert.Single(sch._serviceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
+        Assert.Single(sch.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
         sch.Remove(registration.InstanceId);
     }
 
     [Fact]
-    public void DeegisterAsync_ThrowsOnNull()
+    public void DeregisterAsync_ThrowsOnNull()
     {
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
@@ -105,12 +105,12 @@ public class ConsulServiceRegistryTest
 
         agentMoq.Verify(a => a.ServiceRegister(registration.Service, default), Times.Once);
 
-        Assert.Single(sch._serviceHeartbeats);
-        Assert.Contains(registration.InstanceId, sch._serviceHeartbeats.Keys);
+        Assert.Single(sch.ServiceHeartbeats);
+        Assert.Contains(registration.InstanceId, sch.ServiceHeartbeats.Keys);
 
         await reg.DeregisterAsync(registration);
         agentMoq.Verify(a => a.ServiceDeregister(registration.Service.ID, default), Times.Once);
-        Assert.Empty(sch._serviceHeartbeats);
+        Assert.Empty(sch.ServiceHeartbeats);
     }
 
     [Fact]

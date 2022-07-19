@@ -12,21 +12,21 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public static class CredHubServiceCollectionExtensions
 {
     /// <summary>
-    /// Make a CredHubClient available to DI
+    /// Make a CredHubClient available to DI.
     /// </summary>
-    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS</remarks>
-    /// <param name="services">Service collection</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="loggerFactory">Logger factory</param>
-    /// <returns>Service collection with CredHubClient added in</returns>
+    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS.</remarks>
+    /// <param name="services">Service collection.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="loggerFactory">Logger factory.</param>
+    /// <returns>Service collection with CredHubClient added in.</returns>
     public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
-        ILogger credhubLogger = null;
+        ILogger credHubLogger = null;
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
-            credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
         var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
@@ -36,7 +36,7 @@ public static class CredHubServiceCollectionExtensions
         try
         {
             startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-            credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+            credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credHubLogger).GetAwaiter().GetResult();
 
             services.AddSingleton<ICredHubClient>(credHubClient);
         }

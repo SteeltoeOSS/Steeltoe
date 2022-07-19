@@ -43,9 +43,9 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("localhost:foo", result.InstanceId);
         Assert.Equal("localhost", result.HostName);
         Assert.Equal("FOO", result.AppName);
-        Assert.Equal("192.168.56.1", result.IpAddr);
-        Assert.Equal(InstanceStatus.UP, result.Status);
-        Assert.Equal(InstanceStatus.UNKNOWN, result.OverriddenStatus);
+        Assert.Equal("192.168.56.1", result.IpAddress);
+        Assert.Equal(InstanceStatus.Up, result.Status);
+        Assert.Equal(InstanceStatus.Unknown, result.OverriddenStatus);
         var port = result.Port;
         Assert.True(port.Enabled);
         Assert.Equal(8080, port.Port);
@@ -75,6 +75,6 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.False(result.IsCoordinatingDiscoveryServer);
         Assert.Equal(1_457_714_988_223, result.LastUpdatedTimestamp);
         Assert.Equal(1_457_714_988_172, result.LastDirtyTimestamp);
-        Assert.Equal(ActionType.ADDED, result.Actiontype);
+        Assert.Equal(ActionType.Added, result.ActionType);
     }
 }

@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Binding;
 
 public class InputBindingLifecycle : AbstractBindingLifecycle
 {
-    internal List<IBinding> _inputBindings = new ();
+    internal List<IBinding> InputBindings = new ();
 
     public InputBindingLifecycle(IBindingService bindingService, IEnumerable<IBindable> bindables)
         : base(bindingService, bindables)
@@ -20,16 +20,16 @@ public class InputBindingLifecycle : AbstractBindingLifecycle
 
     protected override void DoStartWithBindable(IBindable bindable)
     {
-        var bindableBindings = bindable.CreateAndBindInputs(_bindingService);
+        var bindableBindings = bindable.CreateAndBindInputs(BindingService);
 
         if (bindableBindings != null)
         {
-            _inputBindings.AddRange(bindableBindings);
+            InputBindings.AddRange(bindableBindings);
         }
     }
 
     protected override void DoStopWithBindable(IBindable bindable)
     {
-        bindable.UnbindInputs(_bindingService);
+        bindable.UnbindInputs(BindingService);
     }
 }

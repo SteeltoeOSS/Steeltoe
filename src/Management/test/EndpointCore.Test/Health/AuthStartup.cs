@@ -12,15 +12,15 @@ public class AuthStartup
 {
     public AuthStartup(IConfiguration configuration)
     {
-        _configuration = configuration;
+        this.Configuration = configuration;
     }
 
-    public IConfiguration _configuration;
+    public IConfiguration Configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddRouting();
-        services.AddHealthActuator(_configuration);
+        services.AddHealthActuator(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)

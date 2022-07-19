@@ -65,7 +65,7 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     }
 
     [Fact]
-    public void TestNoRequestContextOnSimpleConcurencyStrategyWithoutException()
+    public void TestNoRequestContextOnSimpleConcurrencyStrategyWithoutException()
     {
         Dispose();
         var opts = new HystrixCommandOptions

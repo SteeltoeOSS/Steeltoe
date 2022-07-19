@@ -15,7 +15,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
 {
-    private const int NUM_CONCURRENT_COMMANDS = 30;
+    private const int NumConcurrentCommands = 30;
     private readonly ITestOutputHelper _output;
 
     public HystrixCommandTimeoutConcurrencyTesting(ITestOutputHelper output)
@@ -26,9 +26,9 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     [Fact]
     public async Task TestTimeoutRace()
     {
-        var num_trials = 10;
+        var numTrials = 10;
 
-        for (var i = 0; i < num_trials; i++)
+        for (var i = 0; i < numTrials; i++)
         {
             var observables = new List<IObservable<string>>();
             HystrixRequestContext context = null;
@@ -36,7 +36,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
             try
             {
                 context = HystrixRequestContext.InitializeContext();
-                for (var j = 0; j < NUM_CONCURRENT_COMMANDS; j++)
+                for (var j = 0; j < NumConcurrentCommands; j++)
                 {
                     observables.Add(new TestCommand().Observe());
                 }
@@ -119,7 +119,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                 CommandKey = HystrixCommandKeyDefault.AsKey("testTimeoutConcurrencyCommand"),
                 ExecutionTimeoutInMilliseconds = 3,
                 CircuitBreakerEnabled = false,
-                FallbackIsolationSemaphoreMaxConcurrentRequests = NUM_CONCURRENT_COMMANDS,
+                FallbackIsolationSemaphoreMaxConcurrentRequests = NumConcurrentCommands,
                 ThreadPoolOptions = GetThreadPoolOptions()
             };
             return opts;
@@ -129,9 +129,9 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
         {
             var opts = new HystrixThreadPoolOptions
             {
-                CoreSize = NUM_CONCURRENT_COMMANDS,
-                MaxQueueSize = NUM_CONCURRENT_COMMANDS,
-                QueueSizeRejectionThreshold = NUM_CONCURRENT_COMMANDS
+                CoreSize = NumConcurrentCommands,
+                MaxQueueSize = NumConcurrentCommands,
+                QueueSizeRejectionThreshold = NumConcurrentCommands
             };
             return opts;
         }

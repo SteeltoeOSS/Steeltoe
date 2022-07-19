@@ -58,12 +58,12 @@ public class HttpClientDesktopObserverTest : BaseTest
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
         observer.ProcessEvent("foobar", null);
-        observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopEvent, null);
 
         var act = new Activity("Test");
         act.Start();
-        observer.ProcessEvent(HttpClientDesktopObserver.STOP_EVENT, null);
-        observer.ProcessEvent(HttpClientDesktopObserver.STOPEX_EVENT, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopEvent, null);
+        observer.ProcessEvent(HttpClientDesktopObserver.StopExEvent, null);
         act.Stop();
     }
 
@@ -92,11 +92,11 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var scraperOptions = new PullmetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
+        var scraperOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
         var exporter = new SteeltoeExporter(scraperOptions);
 
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
 
@@ -124,7 +124,7 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         Assert.Equal(2, countSummary.Value);
 
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Min, 950.0, 1500.0);
         // Assert.InRange(processor.GetMetricByName<double>((string)"http.desktop.client.request.time").Max, 950.0, 1500.0);
         act.Stop();

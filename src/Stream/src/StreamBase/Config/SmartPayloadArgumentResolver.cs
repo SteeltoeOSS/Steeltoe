@@ -61,13 +61,13 @@ public class SmartPayloadArgumentResolver : PayloadMethodArgumentResolver
         }
         else
         {
-            if (_converter is ISmartMessageConverter smartConverter)
+            if (Converter is ISmartMessageConverter smartConverter)
             {
                 payload = smartConverter.FromMessage(message, targetClass, parameter);
             }
             else
             {
-                payload = _converter.FromMessage(message, targetClass);
+                payload = Converter.FromMessage(message, targetClass);
             }
 
             if (payload == null)

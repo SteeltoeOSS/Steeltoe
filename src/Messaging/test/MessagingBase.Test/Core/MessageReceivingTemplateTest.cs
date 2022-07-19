@@ -112,7 +112,7 @@ public class MessageReceivingTemplateTest
     }
 
     [Fact]
-    public void ReceiveAndConverFromDestination()
+    public void ReceiveAndConvertFromDestination()
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;

@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class Elvis : SpelNode
 {
-    private static readonly MethodInfo _equalsMethod = typeof(object).GetMethod(nameof(Equals), new[] { typeof(object) });
+    private static readonly MethodInfo EqualsMethod = typeof(object).GetMethod(nameof(Equals), new[] { typeof(object) });
 
     public Elvis(int startPos, int endPos, params SpelNode[] args)
         : base(startPos, endPos, args)
@@ -20,7 +20,7 @@ public class Elvis : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var value = _children[0].GetValueInternal(state);
+        var value = children[0].GetValueInternal(state);
 
         // If this check is changed, the generateCode method will need changing too
         if (!(value.Value == null || string.Empty.Equals(value.Value)))
@@ -29,21 +29,21 @@ public class Elvis : SpelNode
         }
         else
         {
-            var result = _children[1].GetValueInternal(state);
+            var result = children[1].GetValueInternal(state);
             ComputeExitTypeDescriptor();
             return result;
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"{GetChild(0).ToStringAST()} ?: {GetChild(1).ToStringAST()}";
+        return $"{GetChild(0).ToStringAst()} ?: {GetChild(1).ToStringAst()}";
     }
 
     public override bool IsCompilable()
     {
-        var condition = _children[0];
-        var ifNullValue = _children[1];
+        var condition = children[0];
+        var ifNullValue = children[1];
         return condition.IsCompilable() && ifNullValue.IsCompilable() &&
                condition.ExitDescriptor != null && ifNullValue.ExitDescriptor != null;
     }
@@ -54,7 +54,7 @@ public class Elvis : SpelNode
         ComputeExitTypeDescriptor();
         cf.EnterCompilationScope();
 
-        _children[0].GenerateCode(gen, cf);
+        children[0].GenerateCode(gen, cf);
         var lastDesc = cf.LastDescriptor();
         if (lastDesc == null)
         {
@@ -66,7 +66,7 @@ public class Elvis : SpelNode
         cf.ExitCompilationScope();
 
         var ifResult = gen.DeclareLocal(typeof(bool));
-        var finalResult = gen.DeclareLocal(_exitTypeDescriptor.Value);
+        var finalResult = gen.DeclareLocal(exitTypeDescriptor.Value);
         var loadFinalResult = gen.DefineLabel();
 
         // Save off child1 result
@@ -82,7 +82,7 @@ public class Elvis : SpelNode
         // Check for empty string
         gen.Emit(OpCodes.Ldstr, string.Empty);
         gen.Emit(OpCodes.Ldloc, child1Result);
-        gen.Emit(OpCodes.Callvirt, _equalsMethod);
+        gen.Emit(OpCodes.Callvirt, EqualsMethod);
         gen.Emit(OpCodes.Ldc_I4_0);
         gen.Emit(OpCodes.Ceq);
 
@@ -104,7 +104,7 @@ public class Elvis : SpelNode
         gen.Emit(OpCodes.Ldloc, ifResult);
         var callChild2 = gen.DefineLabel();
 
-        // If faild, call child2 for results
+        // If failed, call child2 for results
         gen.Emit(OpCodes.Brfalse, callChild2);
 
         // Final result is child 1, save final
@@ -114,9 +114,9 @@ public class Elvis : SpelNode
 
         gen.MarkLabel(callChild2);
         cf.EnterCompilationScope();
-        _children[1].GenerateCode(gen, cf);
+        children[1].GenerateCode(gen, cf);
 
-        if (!CodeFlow.IsValueType(_exitTypeDescriptor))
+        if (!CodeFlow.IsValueType(exitTypeDescriptor))
         {
             lastDesc = cf.LastDescriptor();
             if (lastDesc == null)
@@ -140,23 +140,23 @@ public class Elvis : SpelNode
         // Load final result on stack
         gen.MarkLabel(loadFinalResult);
         gen.Emit(OpCodes.Ldloc, finalResult);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private void ComputeExitTypeDescriptor()
     {
-        if (_exitTypeDescriptor == null && _children[0].ExitDescriptor != null && _children[1].ExitDescriptor != null)
+        if (exitTypeDescriptor == null && children[0].ExitDescriptor != null && children[1].ExitDescriptor != null)
         {
-            var conditionDescriptor = _children[0].ExitDescriptor;
-            var ifNullValueDescriptor = _children[1].ExitDescriptor;
+            var conditionDescriptor = children[0].ExitDescriptor;
+            var ifNullValueDescriptor = children[1].ExitDescriptor;
             if (ObjectUtils.NullSafeEquals(conditionDescriptor, ifNullValueDescriptor))
             {
-                _exitTypeDescriptor = conditionDescriptor;
+                exitTypeDescriptor = conditionDescriptor;
             }
             else
             {
                 // Use the easiest to compute common super type
-                _exitTypeDescriptor = TypeDescriptor.OBJECT;
+                exitTypeDescriptor = TypeDescriptor.Object;
             }
         }
     }

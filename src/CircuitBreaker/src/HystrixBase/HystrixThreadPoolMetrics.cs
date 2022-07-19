@@ -16,9 +16,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixThreadPoolMetrics : HystrixMetrics
 {
-    private static readonly IList<HystrixEventType> ALL_COMMAND_EVENT_TYPES = HystrixEventTypeHelper.Values;
-    private static readonly IList<ThreadPoolEventType> ALL_THREADPOOL_EVENT_TYPES = ThreadPoolEventTypeHelper.Values;
-    private static readonly int NUMBER_THREADPOOL_EVENT_TYPES = ALL_THREADPOOL_EVENT_TYPES.Count;
+    private static readonly IList<HystrixEventType> AllCommandEventTypes = HystrixEventTypeHelper.Values;
+    private static readonly IList<ThreadPoolEventType> AllThreadpoolEventTypes = ThreadPoolEventTypeHelper.Values;
+    private static readonly int NumberThreadpoolEventTypes = AllThreadpoolEventTypes.Count;
 
     // String is HystrixThreadPoolKey.name() (we can't use HystrixThreadPoolKey directly as we can't guarantee it implements hashcode/equals correctly)
     private static readonly ConcurrentDictionary<string, HystrixThreadPoolMetrics> Metrics = new ();
@@ -56,11 +56,11 @@ public class HystrixThreadPoolMetrics : HystrixMetrics
     public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
     {
         var eventCounts = execution.Eventcounts;
-        foreach (var eventType in ALL_COMMAND_EVENT_TYPES)
+        foreach (var eventType in AllCommandEventTypes)
         {
             long eventCount = eventCounts.GetCount(eventType);
             var threadPoolEventType = eventType.From();
-            if (threadPoolEventType != ThreadPoolEventType.UNKNOWN)
+            if (threadPoolEventType != ThreadPoolEventType.Unknown)
             {
                 var ordinal = (long)threadPoolEventType;
                 initialCountArray[ordinal] += eventCount;
@@ -72,7 +72,7 @@ public class HystrixThreadPoolMetrics : HystrixMetrics
 
     public static Func<long[], long[], long[]> CounterAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
-        for (var i = 0; i < NUMBER_THREADPOOL_EVENT_TYPES; i++)
+        for (var i = 0; i < NumberThreadpoolEventTypes; i++)
         {
             cumulativeEvents[i] += bucketEventCounts[i];
         }
@@ -139,13 +139,13 @@ public class HystrixThreadPoolMetrics : HystrixMetrics
         _concurrentExecutionCount.IncrementAndGet();
     }
 
-    public long RollingCountThreadsExecuted => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
+    public long RollingCountThreadsExecuted => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.Executed);
 
-    public long CumulativeCountThreadsExecuted => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
+    public long CumulativeCountThreadsExecuted => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.Executed);
 
-    public long RollingCountThreadsRejected => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
+    public long RollingCountThreadsRejected => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.Rejected);
 
-    public long CumulativeCountThreadsRejected => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
+    public long CumulativeCountThreadsRejected => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.Rejected);
 
     public long GetRollingCount(ThreadPoolEventType @event)
     {

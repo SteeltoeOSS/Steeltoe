@@ -19,19 +19,19 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 internal sealed class SpringBootAdminClientHostedService : IHostedService
 {
     private readonly SpringBootAdminClientOptions _options;
-    private readonly ManagementEndpointOptions _mgmtOptions;
+    private readonly ManagementEndpointOptions _managementOptions;
     private readonly HealthEndpointOptions _healthOptions;
     private readonly HttpClient _httpClient;
     private readonly ILogger<SpringBootAdminClientHostedService> _logger;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions mgmtOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
-        _mgmtOptions = mgmtOptions;
+        _managementOptions = managementOptions;
         _healthOptions = healthOptions;
-        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMS);
+        _httpClient = httpClient ?? HttpClientHelper.GetHttpClient(_options.ValidateCertificates, _options.ConnectionTimeoutMs);
         _logger = logger ?? NullLogger<SpringBootAdminClientHostedService>.Instance;
     }
 
@@ -42,14 +42,14 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         var app = new Application
         {
             Name = _options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{_mgmtOptions.Path}/{_healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{_mgmtOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
+            ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
         };
         app.Metadata.Merge(_options.Metadata);
 
-        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMS);
+        _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
 
         HttpResponseMessage result = null;
         try

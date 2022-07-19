@@ -26,9 +26,3 @@ internal sealed class Application
     [JsonPropertyName("metadata")]
     public Dictionary<string, object> Metadata { get; set; }
 }
-
-[Obsolete("This class is moving to EndpointBase")]
-internal sealed class RegistrationResult
-{
-    public string Id { get; set; }
-}

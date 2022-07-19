@@ -12,7 +12,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 
 public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 {
-    private static readonly object[] EMPTY_ARGS = Array.Empty<object>();
+    private static readonly object[] EmptyArgs = Array.Empty<object>();
     private readonly ILogger _logger;
 
     public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new ();
@@ -35,11 +35,11 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
     public virtual object Invoke(IMessage requestMessage, params object[] args)
     {
-        var argVals = GetMethodArgumentValues(requestMessage, args);
+        var argValues = GetMethodArgumentValues(requestMessage, args);
 
         _logger?.LogTrace("Arguments: " + string.Join(", ", args));
 
-        return DoInvoke(argVals);
+        return DoInvoke(argValues);
     }
 
     protected virtual object[] GetMethodArgumentValues(IMessage message, params object[] providedArgs)
@@ -48,7 +48,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
         if (parameters.Length == 0)
         {
-            return EMPTY_ARGS;
+            return EmptyArgs;
         }
 
         var args = new object[parameters.Length];
@@ -92,12 +92,12 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
     {
         try
         {
-            if (_argCount != args.Length)
+            if (InnerArgCount != args.Length)
             {
                 throw new InvalidOperationException(FormatInvokeError("Argument count mismatch", args), new TargetParameterCountException());
             }
 
-            var result = _invoker(_handler, args);
+            var result = InnerInvoker(InnerHandler, args);
 
             if (result is Task resultAsTask)
             {

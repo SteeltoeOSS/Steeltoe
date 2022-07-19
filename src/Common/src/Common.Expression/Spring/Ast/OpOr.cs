@@ -12,7 +12,7 @@ public class OpOr : Operator
     public OpOr(int startPos, int endPos, params SpelNode[] operands)
         : base("or", startPos, endPos, operands)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
@@ -20,7 +20,7 @@ public class OpOr : Operator
         if (GetBooleanValue(state, LeftOperand))
         {
             // no need to evaluate right operand
-            return BooleanTypedValue.TRUE;
+            return BooleanTypedValue.True;
         }
 
         return BooleanTypedValue.ForValue(GetBooleanValue(state, RightOperand));
@@ -58,7 +58,7 @@ public class OpOr : Operator
         gen.Emit(OpCodes.Stloc, result);
         gen.MarkLabel(endIfTarget);
         gen.Emit(OpCodes.Ldloc, result);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private bool GetBooleanValue(ExpressionState state, SpelNode operand)

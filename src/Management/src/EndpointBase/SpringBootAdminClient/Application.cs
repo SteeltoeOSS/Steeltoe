@@ -25,8 +25,3 @@ internal sealed class Application
     [JsonPropertyName("metadata")]
     public Dictionary<string, object> Metadata { get; set; }
 }
-
-internal sealed class RegistrationResult
-{
-    public string Id { get; set; }
-}

@@ -2,23 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-#if NET6_0_OR_GREATER
-using MySqlConnector;
-#else
-using MySql.Data.MySqlClient;
-#endif
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
+#if NET6_0_OR_GREATER
+using MySqlConnectionAlias = MySqlConnector.MySqlConnection;
+#else
+using MySqlConnectionAlias = MySql.Data.MySqlClient.MySqlConnection;
+#endif
 
 namespace Steeltoe.Connector.MySql.EFCore.Test;
 
-public class MySqlDbContextOptionsExtensionsTest
+public partial class MySqlDbContextOptionsExtensionsTest
 {
     public MySqlDbContextOptionsExtensionsTest()
     {
@@ -87,37 +86,14 @@ public class MySqlDbContextOptionsExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
-#if NET6_0_OR_GREATER
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#endif
+        AddMySqlDbContext(services, config);
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con is MySqlConnection);
+        Assert.True(con is MySqlConnectionAlias);
     }
-
-#if NET6_0_OR_GREATER
-    // Run a MySQL server with Docker to match creds below with this command
-    // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
-    [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
-    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
-    {
-        IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
-
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-
-        var service = services.BuildServiceProvider().GetService<GoodDbContext>();
-        Assert.NotNull(service);
-        var con = service.Database.GetDbConnection();
-        Assert.NotNull(con);
-        Assert.NotNull(con as MySqlConnection);
-    }
-#endif
 
     [Fact]
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
@@ -136,8 +112,8 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -154,18 +130,14 @@ public class MySqlDbContextOptionsExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NET6_0_OR_GREATER
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
-#endif
+        AddMySqlDbContext(services, config, "spring-cloud-broker-db2");
 
         var built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -173,7 +145,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnection>(con);
+        Assert.IsType<MySqlConnectionAlias>(con);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -188,18 +160,14 @@ public class MySqlDbContextOptionsExtensionsTest
     public void AddDbContexts_WithVCAPs_AddsDbContexts()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
 
-#if NET6_0_OR_GREATER
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
-#else
-        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
-#endif
+        AddMySqlDbContext(services, config);
 
         var built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
@@ -207,7 +175,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnection>(con);
+        Assert.IsType<MySqlConnectionAlias>(con);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);

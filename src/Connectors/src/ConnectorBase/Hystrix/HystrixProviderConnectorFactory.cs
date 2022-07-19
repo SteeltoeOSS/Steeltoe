@@ -18,10 +18,10 @@ public class HystrixProviderConnectorFactory
 
     private readonly MethodInfo _setUri;
 
-    public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
+    public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo serviceInfo, HystrixProviderConnectorOptions options, Type connectFactory)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
         _setUri = FindSetUriMethod(_type);
         if (_setUri == null)

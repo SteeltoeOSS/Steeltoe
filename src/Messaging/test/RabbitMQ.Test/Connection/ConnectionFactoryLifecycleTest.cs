@@ -38,7 +38,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         provider.Dispose();
 
         Assert.False(myLifecycle.IsRunning);
-        Assert.True(cf._stopped);
+        Assert.True(cf.Stopped);
         Assert.Throws<RabbitApplicationContextClosedException>(() => cf.CreateConnection());
     }
 

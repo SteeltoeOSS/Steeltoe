@@ -38,14 +38,14 @@ public class ServiceFactoryAccessorTests
             ServiceResolver = new ServiceFactoryResolver(appContext)
         };
 
-        var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Colour");
+        var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
-        expr = new SpelExpressionParser().ParseRaw("@car.Colour");
+        expr = new SpelExpressionParser().ParseRaw("@car.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
 
-        expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Boat)boat'.Colour");
+        expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Boat)boat'.Color");
         Assert.Equal("blue", expr.GetValue<string>(context));
-        expr = new SpelExpressionParser().ParseRaw("@boat.Colour");
+        expr = new SpelExpressionParser().ParseRaw("@boat.Color");
         Assert.Equal("blue", expr.GetValue<string>(context));
 
         var noServiceExpr = new SpelExpressionParser().ParseRaw("@truck");
@@ -54,14 +54,14 @@ public class ServiceFactoryAccessorTests
 
     public class Car : IServiceNameAware
     {
-        public string Colour => "red";
+        public string Color => "red";
 
         public string ServiceName { get; set; } = "car";
     }
 
     public class Boat : IServiceNameAware
     {
-        public string Colour => "blue";
+        public string Color => "blue";
 
         public string ServiceName { get; set; } = "boat";
     }

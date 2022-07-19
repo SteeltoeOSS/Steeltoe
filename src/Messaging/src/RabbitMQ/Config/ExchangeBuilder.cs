@@ -27,39 +27,39 @@ public class ExchangeBuilder : AbstractBuilder
 
     public static ExchangeBuilder DirectExchange(string name)
     {
-        return new ExchangeBuilder(name, ExchangeType.DIRECT);
+        return new ExchangeBuilder(name, ExchangeType.Direct);
     }
 
     public static ExchangeBuilder TopicExchange(string name)
     {
-        return new ExchangeBuilder(name, ExchangeType.TOPIC);
+        return new ExchangeBuilder(name, ExchangeType.Topic);
     }
 
-    public static ExchangeBuilder FanoutExchange(string name)
+    public static ExchangeBuilder FanOutExchange(string name)
     {
-        return new ExchangeBuilder(name, ExchangeType.FANOUT);
+        return new ExchangeBuilder(name, ExchangeType.FanOut);
     }
 
     public static ExchangeBuilder HeadersExchange(string name)
     {
-        return new ExchangeBuilder(name, ExchangeType.HEADERS);
+        return new ExchangeBuilder(name, ExchangeType.Headers);
     }
 
     public static IExchange Create(string exchangeName, string exchangeType)
     {
-        if (ExchangeType.DIRECT.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+        if (ExchangeType.Direct.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new DirectExchange(exchangeName);
         }
-        else if (ExchangeType.TOPIC.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+        else if (ExchangeType.Topic.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new TopicExchange(exchangeName);
         }
-        else if (ExchangeType.FANOUT.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+        else if (ExchangeType.FanOut.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
-            return new FanoutExchange(exchangeName);
+            return new FanOutExchange(exchangeName);
         }
-        else if (ExchangeType.HEADERS.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+        else if (ExchangeType.Headers.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new HeadersExchange(exchangeName);
         }

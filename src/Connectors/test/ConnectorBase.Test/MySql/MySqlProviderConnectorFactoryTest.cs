@@ -14,11 +14,11 @@ public class MySqlProviderConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const MySqlProviderConnectorOptions config = null;
+        const MySqlProviderConnectorOptions options = null;
         const MySqlServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, config, typeof(MySqlConnection)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new MySqlProviderConnectorFactory(si, options, typeof(MySqlConnection)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

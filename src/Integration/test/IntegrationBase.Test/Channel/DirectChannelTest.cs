@@ -57,7 +57,7 @@ public class DirectChannelTest
         /*
          *  INT-3308 - used to run 12 million/sec
          *  1. optimize for single handler 20 million/sec
-         *  2. Don't iterate over empty datatypes 23 million/sec
+         *  2. Don't iterate over empty data types 23 million/sec
          *  3. Don't iterate over empty interceptors 31 million/sec
          *  4. Move single handler optimization to dispatcher 34 million/sec
          *
@@ -185,7 +185,7 @@ public class DirectChannelTest
 
         public ThreadNameExtractingTestTarget(CountdownEvent latch)
         {
-            Latch = latch;
+            this.Latch = latch;
         }
 
         public void HandleMessage(IMessage message)

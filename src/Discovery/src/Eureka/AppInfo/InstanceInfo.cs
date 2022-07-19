@@ -7,6 +7,7 @@ using Steeltoe.Discovery.Eureka.Util;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -18,7 +19,8 @@ public class InstanceInfo
 
     public string AppGroupName { get; internal set; }
 
-    public string IpAddr { get; internal set; }
+    [JsonPropertyName("IpAddr")]
+    public string IpAddress { get; internal set; }
 
     private string _sid;
 
@@ -103,11 +105,11 @@ public class InstanceInfo
 
     public long LastDirtyTimestamp { get; internal set; }
 
-    public ActionType Actiontype { get; internal set; }
+    public ActionType ActionType { get; internal set; }
 
     public string AsgName { get; internal set; }
 
-    public bool IsUnsecurePortEnabled { get; internal set; }
+    public bool IsInsecurePortEnabled { get; internal set; }
 
     public bool IsSecurePortEnabled { get; internal set; }
 
@@ -158,11 +160,11 @@ public class InstanceInfo
         sb.Append(',');
         sb.Append($"HostName={HostName}");
         sb.Append(',');
-        sb.Append($"IpAddr={IpAddr}");
+        sb.Append($"IpAddr={IpAddress}");
         sb.Append(',');
         sb.Append($"Status={Status}");
         sb.Append(',');
-        sb.Append($"IsUnsecurePortEnabled={IsUnsecurePortEnabled}");
+        sb.Append($"IsInsecurePortEnabled={IsInsecurePortEnabled}");
         sb.Append(',');
         sb.Append($"Port={Port}");
         sb.Append(',');
@@ -174,17 +176,17 @@ public class InstanceInfo
         sb.Append(',');
         sb.Append($"SecureVipAddress={SecureVipAddress}");
         sb.Append(',');
-        sb.Append($"ActionType={Actiontype}");
+        sb.Append($"ActionType={ActionType}");
         sb.Append(']');
         return sb.ToString();
     }
 
     internal InstanceInfo()
     {
-        OverriddenStatus = InstanceStatus.UNKNOWN;
+        OverriddenStatus = InstanceStatus.Unknown;
         IsSecurePortEnabled = false;
         IsCoordinatingDiscoveryServer = false;
-        IsUnsecurePortEnabled = true;
+        IsInsecurePortEnabled = true;
         CountryId = 1;
         Port = 7001;
         SecurePort = 7002;
@@ -192,7 +194,7 @@ public class InstanceInfo
         _sid = "na";
         _metaData = new Dictionary<string, string>();
         _isDirty = false;
-        _status = InstanceStatus.UP;
+        _status = InstanceStatus.Up;
     }
 
     internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
@@ -216,22 +218,22 @@ public class InstanceInfo
         info.AppName = instanceConfig.AppName.ToUpperInvariant();
         info.AppGroupName = instanceConfig.AppGroupName?.ToUpperInvariant();
         info.DataCenterInfo = instanceConfig.DataCenterInfo;
-        info.IpAddr = instanceConfig.IpAddress;
+        info.IpAddress = instanceConfig.IpAddress;
         info.HostName = defaultAddress;
-        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.Default_NonSecurePort : instanceConfig.NonSecurePort;
-        info.IsUnsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
-        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.Default_SecurePort : instanceConfig.SecurePort;
+        info.Port = instanceConfig.NonSecurePort == -1 ? EurekaInstanceConfig.DefaultNonSecurePort : instanceConfig.NonSecurePort;
+        info.IsInsecurePortEnabled = instanceConfig.IsNonSecurePortEnabled;
+        info.SecurePort = instanceConfig.SecurePort == -1 ? EurekaInstanceConfig.DefaultSecurePort : instanceConfig.SecurePort;
         info.IsSecurePortEnabled = instanceConfig.SecurePortEnabled;
         info.VipAddress = instanceConfig.VirtualHostName;
         info.SecureVipAddress = instanceConfig.SecureVirtualHostName;
         info.HomePageUrl = MakeUrl(info, instanceConfig.HomePageUrlPath, instanceConfig.HomePageUrl);
         info.StatusPageUrl = MakeUrl(info, instanceConfig.StatusPageUrlPath, instanceConfig.StatusPageUrl);
-        info.AsgName = instanceConfig.ASGName;
+        info.AsgName = instanceConfig.AsgName;
         info.HealthCheckUrl = MakeUrl(info, instanceConfig.HealthCheckUrlPath, instanceConfig.HealthCheckUrl, instanceConfig.SecureHealthCheckUrl);
 
         if (!instanceConfig.IsInstanceEnabledOnInit)
         {
-            info._status = InstanceStatus.STARTING;
+            info._status = InstanceStatus.Starting;
         }
 
         if (!string.IsNullOrEmpty(info.InstanceId))
@@ -259,9 +261,9 @@ public class InstanceInfo
             info._sid = json.Sid ?? "na";
             info.AppName = json.AppName;
             info.AppGroupName = json.AppGroupName;
-            info.IpAddr = json.IpAddr;
+            info.IpAddress = json.IpAddress;
             info.Port = json.Port?.Port ?? 0;
-            info.IsUnsecurePortEnabled = json.Port != null && json.Port.Enabled;
+            info.IsInsecurePortEnabled = json.Port != null && json.Port.Enabled;
             info.SecurePort = json.SecurePort?.Port ?? 0;
             info.IsSecurePortEnabled = json.SecurePort != null && json.SecurePort.Enabled;
             info.HomePageUrl = json.HomePageUrl;
@@ -279,7 +281,7 @@ public class InstanceInfo
             info.IsCoordinatingDiscoveryServer = json.IsCoordinatingDiscoveryServer;
             info.LastUpdatedTimestamp = DateTimeConversions.FromJavaMillis(json.LastUpdatedTimestamp).Ticks;
             info.LastDirtyTimestamp = DateTimeConversions.FromJavaMillis(json.LastDirtyTimestamp).Ticks;
-            info.Actiontype = json.Actiontype;
+            info.ActionType = json.ActionType;
             info.AsgName = json.AsgName;
             info._metaData = GetMetaDataFromJson(json.Metadata);
             info.InstanceId = GetInstanceIdFromJson(json, info._metaData);
@@ -290,14 +292,14 @@ public class InstanceInfo
 
     internal JsonInstanceInfo ToJsonInstance()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             InstanceId = InstanceId,
             Sid = Sid ?? "na",
             AppName = AppName,
             AppGroupName = AppGroupName,
-            IpAddr = IpAddr,
-            Port = new JsonInstanceInfo.JsonPortWrapper(IsUnsecurePortEnabled, Port),
+            IpAddress = IpAddress,
+            Port = new JsonInstanceInfo.JsonPortWrapper(IsInsecurePortEnabled, Port),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(IsSecurePortEnabled, SecurePort),
             HomePageUrl = HomePageUrl,
             StatusPageUrl = StatusPageUrl,
@@ -314,12 +316,12 @@ public class InstanceInfo
             IsCoordinatingDiscoveryServer = IsCoordinatingDiscoveryServer,
             LastUpdatedTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastUpdatedTimestamp, DateTimeKind.Utc)),
             LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
-            Actiontype = Actiontype,
+            ActionType = ActionType,
             AsgName = AsgName,
             Metadata = Metadata.Count == 0 ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
         };
 
-        return jinfo;
+        return instanceInfo;
     }
 
     private static Dictionary<string, string> GetMetaDataFromJson(Dictionary<string, string> json)
@@ -337,9 +339,9 @@ public class InstanceInfo
         return new Dictionary<string, string>(json);
     }
 
-    private static string GetInstanceIdFromJson(JsonInstanceInfo jinfo, Dictionary<string, string> metaData)
+    private static string GetInstanceIdFromJson(JsonInstanceInfo instanceInfo, Dictionary<string, string> metaData)
     {
-        if (string.IsNullOrEmpty(jinfo.InstanceId))
+        if (string.IsNullOrEmpty(instanceInfo.InstanceId))
         {
             if (metaData == null)
             {
@@ -348,14 +350,14 @@ public class InstanceInfo
 
             if (metaData.TryGetValue("instanceId", out var mid))
             {
-                return $"{jinfo.HostName}:{mid}";
+                return $"{instanceInfo.HostName}:{mid}";
             }
 
             return null;
         }
         else
         {
-            return jinfo.InstanceId;
+            return instanceInfo.InstanceId;
         }
     }
 
@@ -365,7 +367,7 @@ public class InstanceInfo
         {
             return explicitUrl;
         }
-        else if (!string.IsNullOrEmpty(relativeUrl) && info.IsUnsecurePortEnabled)
+        else if (!string.IsNullOrEmpty(relativeUrl) && info.IsInsecurePortEnabled)
         {
             return $"http://{info.HostName}:{info.Port}{relativeUrl}";
         }
@@ -381,20 +383,4 @@ public class InstanceInfo
 
         return string.Empty;
     }
-}
-
-public enum InstanceStatus
-{
-    UP,
-    DOWN,
-    STARTING,
-    OUT_OF_SERVICE,
-    UNKNOWN
-}
-
-public enum ActionType
-{
-    ADDED,
-    MODIFIED,
-    DELETED
 }

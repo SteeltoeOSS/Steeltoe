@@ -20,7 +20,7 @@ public class OperatorBetween : Operator
         var right = RightOperand.GetValueInternal(state).Value;
         if (right is not IList list || list.Count != 2)
         {
-            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.BETWEEN_RIGHT_OPERAND_MUST_BE_TWO_ELEMENT_LIST);
+            throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.BetweenRightOperandMustBeTwoElementList);
         }
 
         var low = list[0];

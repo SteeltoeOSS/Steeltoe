@@ -92,7 +92,7 @@ public class CorrelationIdTest
     }
 
     [Fact]
-    public async Task TestCorrelationNotCopiedFromRequestMessgeIdIfAlreadySetByHandler()
+    public async Task TestCorrelationNotCopiedFromRequestMessageIdIfAlreadySetByHandler()
     {
         IMessage message = Message.Create("test");
         var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());

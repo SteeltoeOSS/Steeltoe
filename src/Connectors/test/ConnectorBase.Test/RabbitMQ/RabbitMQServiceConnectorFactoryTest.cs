@@ -14,11 +14,11 @@ public class RabbitMQServiceConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const RabbitMQProviderConnectorOptions config = null;
+        const RabbitMQProviderConnectorOptions options = null;
         const RabbitMQServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new RabbitMQProviderConnectorFactory(si, options, typeof(ConnectionFactory)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

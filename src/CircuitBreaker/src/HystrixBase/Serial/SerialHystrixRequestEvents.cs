@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using System.Collections.Generic;
 using System.IO;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
 
@@ -42,19 +43,19 @@ public static class SerialHystrixRequestEvents
         var eventCounts = executionSignature.Eventcounts;
         foreach (var eventType in HystrixEventTypeHelper.Values)
         {
-            if (!eventType.Equals(HystrixEventType.COLLAPSED) && eventCounts.Contains(eventType))
+            if (!eventType.Equals(HystrixEventType.Collapsed) && eventCounts.Contains(eventType))
             {
                 var eventCount = eventCounts.GetCount(eventType);
                 if (eventCount > 1)
                 {
                     json.WriteStartObject();
-                    json.WriteStringField("name", eventType.ToString());
+                    json.WriteStringField("name", eventType.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                     json.WriteIntegerField("count", eventCount);
                     json.WriteEndObject();
                 }
                 else
                 {
-                    json.WriteValue(eventType.ToString());
+                    json.WriteValue(eventType.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
                 }
             }
         }
@@ -72,7 +73,7 @@ public static class SerialHystrixRequestEvents
             json.WriteIntegerField("cached", executionSignature.CachedCount);
         }
 
-        if (executionSignature.Eventcounts.Contains(HystrixEventType.COLLAPSED))
+        if (executionSignature.Eventcounts.Contains(HystrixEventType.Collapsed))
         {
             json.WriteObjectFieldStart("collapsed");
             json.WriteStringField("name", executionSignature.CollapserKey.Name);

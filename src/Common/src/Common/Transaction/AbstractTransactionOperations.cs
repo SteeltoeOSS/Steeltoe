@@ -10,7 +10,7 @@ public abstract class AbstractTransactionOperations : ITransactionOperations
 {
     public static ITransactionOperations WithoutTransaction()
     {
-        return WithoutTransactionOperations.INSTANCE;
+        return WithoutTransactionOperations.Instance;
     }
 
     public abstract T Execute<T>(Func<ITransactionStatus, T> action);

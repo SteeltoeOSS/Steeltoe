@@ -65,7 +65,7 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddLoadBalancerT_DoesntAddT_ToServices()
+    public void AddLoadBalancerT_DoesNotAddT_ToServices()
     {
         var services = new ServiceCollection();
 
@@ -103,18 +103,18 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddHttpClient("testFake").AddLoadBalancer<FakeLoadBalancer>();
         services.AddHttpClient("testFake2").AddLoadBalancer<FakeLoadBalancer>();
         var factory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-        var randomLBClient = factory.CreateClient("testRandom");
-        var randomLBClient2 = factory.CreateClient("testRandom2");
-        var roundRobinLBClient = factory.CreateClient("testRoundRobin");
-        var roundRobinLBClient2 = factory.CreateClient("testRoundRobin2");
-        var fakeLBClient = factory.CreateClient("testFake");
-        var fakeLBClient2 = factory.CreateClient("testFake2");
+        var randomLbClient = factory.CreateClient("testRandom");
+        var randomLbClient2 = factory.CreateClient("testRandom2");
+        var roundRobinLbClient = factory.CreateClient("testRoundRobin");
+        var roundRobinLbClient2 = factory.CreateClient("testRoundRobin2");
+        var fakeLbClient = factory.CreateClient("testFake");
+        var fakeLbClient2 = factory.CreateClient("testFake2");
 
-        Assert.NotNull(randomLBClient);
-        Assert.NotNull(randomLBClient2);
-        Assert.NotNull(roundRobinLBClient);
-        Assert.NotNull(roundRobinLBClient2);
-        Assert.NotNull(fakeLBClient);
-        Assert.NotNull(fakeLBClient2);
+        Assert.NotNull(randomLbClient);
+        Assert.NotNull(randomLbClient2);
+        Assert.NotNull(roundRobinLbClient);
+        Assert.NotNull(roundRobinLbClient2);
+        Assert.NotNull(fakeLbClient);
+        Assert.NotNull(fakeLbClient2);
     }
 }

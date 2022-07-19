@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 /// <summary>
-/// Replace bootstrapped components used by KubernetesConfigurationProvider with objects provided by Dependency Injection
+/// Replace bootstrapped components used by KubernetesConfigurationProvider with objects provided by Dependency Injection.
 /// </summary>
 public class KubernetesHostedService : IHostedService
 {

@@ -10,39 +10,39 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaInstanceConfig : IEurekaInstanceConfig
 {
-    public const int Default_NonSecurePort = 80;
-    public const int Default_SecurePort = 443;
-    public const int Default_LeaseRenewalIntervalInSeconds = 30;
-    public const int Default_LeaseExpirationDurationInSeconds = 90;
-    public const string Default_Appname = "unknown";
-    public const string Default_StatusPageUrlPath = "/Status";
-    public const string Default_HomePageUrlPath = "/";
-    public const string Default_HealthCheckUrlPath = "/healthcheck";
+    public const int DefaultNonSecurePort = 80;
+    public const int DefaultSecurePort = 443;
+    public const int DefaultLeaseRenewalIntervalInSeconds = 30;
+    public const int DefaultLeaseExpirationDurationInSeconds = 90;
+    public const string DefaultAppName = "unknown";
+    public const string DefaultStatusPageUrlPath = "/Status";
+    public const string DefaultHomePageUrlPath = "/";
+    public const string DefaultHealthCheckUrlPath = "/healthcheck";
 
-    protected string _thisHostAddress;
-    protected string _thisHostName;
+    protected string thisHostAddress;
+    protected string thisHostName;
 
     public EurekaInstanceConfig()
     {
 #pragma warning disable S1699 // Constructors should only call non-overridable methods
-        _thisHostName = GetHostName(true);
-        _thisHostAddress = GetHostAddress(true);
+        thisHostName = GetHostName(true);
+        thisHostAddress = GetHostAddress(true);
 #pragma warning restore S1699 // Constructors should only call non-overridable methods
 
         IsInstanceEnabledOnInit = false;
-        NonSecurePort = Default_NonSecurePort;
-        SecurePort = Default_SecurePort;
+        NonSecurePort = DefaultNonSecurePort;
+        SecurePort = DefaultSecurePort;
         IsNonSecurePortEnabled = true;
         SecurePortEnabled = false;
-        LeaseRenewalIntervalInSeconds = Default_LeaseRenewalIntervalInSeconds;
-        LeaseExpirationDurationInSeconds = Default_LeaseExpirationDurationInSeconds;
-        VirtualHostName = $"{_thisHostName}:{NonSecurePort}";
-        SecureVirtualHostName = $"{_thisHostName}:{SecurePort}";
-        IpAddress = _thisHostAddress;
-        AppName = Default_Appname;
-        StatusPageUrlPath = Default_StatusPageUrlPath;
-        HomePageUrlPath = Default_HomePageUrlPath;
-        HealthCheckUrlPath = Default_HealthCheckUrlPath;
+        LeaseRenewalIntervalInSeconds = DefaultLeaseRenewalIntervalInSeconds;
+        LeaseExpirationDurationInSeconds = DefaultLeaseExpirationDurationInSeconds;
+        VirtualHostName = $"{thisHostName}:{NonSecurePort}";
+        SecureVirtualHostName = $"{thisHostName}:{SecurePort}";
+        IpAddress = thisHostAddress;
+        AppName = DefaultAppName;
+        StatusPageUrlPath = DefaultStatusPageUrlPath;
+        HomePageUrlPath = DefaultHomePageUrlPath;
+        HealthCheckUrlPath = DefaultHealthCheckUrlPath;
         MetadataMap = new Dictionary<string, string>();
         DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
         PreferIpAddress = false;
@@ -55,7 +55,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
             var host = NetUtils.FindFirstNonLoopbackHostInfo();
             if (host.Hostname != null)
             {
-                _thisHostName = host.Hostname;
+                thisHostName = host.Hostname;
             }
 
             IpAddress = host.IpAddress;
@@ -81,7 +81,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     public virtual int LeaseExpirationDurationInSeconds { get; set; }
 
     // eureka:instance:asgName, null
-    public virtual string ASGName { get; set; }
+    public virtual string AsgName { get; set; }
 
     // eureka:instance:metadataMap
     public virtual IDictionary<string, string> MetadataMap { get; set; }
@@ -113,9 +113,9 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     // eureka:instance:hostName
     public virtual string HostName
     {
-        get => _thisHostName;
+        get => thisHostName;
 
-        set => _thisHostName = value;
+        set => thisHostName = value;
     }
 
     public virtual string IpAddress { get; set; }
@@ -142,7 +142,7 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
 
     public virtual string GetHostName(bool refresh)
     {
-        if (refresh || string.IsNullOrEmpty(_thisHostName))
+        if (refresh || string.IsNullOrEmpty(thisHostName))
         {
             if (UseNetUtils && NetUtils != null)
             {
@@ -150,31 +150,31 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
             }
             else
             {
-                _thisHostName = DnsTools.ResolveHostName();
+                thisHostName = DnsTools.ResolveHostName();
             }
         }
 
-        return _thisHostName;
+        return thisHostName;
     }
 
     internal virtual string GetHostAddress(bool refresh)
     {
-        if (refresh || string.IsNullOrEmpty(_thisHostAddress))
+        if (refresh || string.IsNullOrEmpty(thisHostAddress))
         {
             if (UseNetUtils && NetUtils != null)
             {
-                _thisHostAddress = NetUtils.FindFirstNonLoopbackAddress().ToString();
+                thisHostAddress = NetUtils.FindFirstNonLoopbackAddress().ToString();
             }
             else
             {
                 var hostName = GetHostName(refresh);
                 if (!string.IsNullOrEmpty(hostName))
                 {
-                    _thisHostAddress = DnsTools.ResolveHostAddress(hostName);
+                    thisHostAddress = DnsTools.ResolveHostAddress(hostName);
                 }
             }
         }
 
-        return _thisHostAddress;
+        return thisHostAddress;
     }
 }

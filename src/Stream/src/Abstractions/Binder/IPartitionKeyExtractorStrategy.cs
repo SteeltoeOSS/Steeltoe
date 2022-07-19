@@ -13,9 +13,9 @@ namespace Steeltoe.Stream.Binder;
 public interface IPartitionKeyExtractorStrategy : IServiceNameAware
 {
     /// <summary>
-    /// Extract the partition key from the incoming message
+    /// Extract the partition key from the incoming message.
     /// </summary>
-    /// <param name="message">the message to process</param>
-    /// <returns>the key</returns>
+    /// <param name="message">the message to process.</param>
+    /// <returns>the key.</returns>
     object ExtractKey(IMessage message);
 }

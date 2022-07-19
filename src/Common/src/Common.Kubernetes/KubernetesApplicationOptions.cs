@@ -35,22 +35,22 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     public string NameSpace { get; set; } = "default";
 
     /// <summary>
-    /// Gets or sets properties for if/how reloading config data
+    /// Gets or sets properties for if/how reloading config data.
     /// </summary>
     public ReloadSettings Reload { get; set; }
 
     /// <summary>
-    /// Gets or sets general Kubernetes and ConfigMap configuration properties
+    /// Gets or sets general Kubernetes and ConfigMap configuration properties.
     /// </summary>
     public KubernetesConfiguration Config { get; set; }
 
     /// <summary>
-    /// Gets or sets configuration properties of secrets
+    /// Gets or sets configuration properties of secrets.
     /// </summary>
     public WatchableResource Secrets { get; set; }
 
     /// <summary>
-    /// Gets or sets the character used to separate the app and environment names when used for retrieving config maps or secrets
+    /// Gets or sets the character used to separate the app and environment names when used for retrieving config maps or secrets.
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
 }

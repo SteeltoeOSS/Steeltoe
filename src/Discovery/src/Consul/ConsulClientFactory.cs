@@ -10,15 +10,15 @@ using System.Net;
 namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
-/// A factory to use in configuring and creating a Consul client
+/// A factory to use in configuring and creating a Consul client.
 /// </summary>
 public static class ConsulClientFactory
 {
     /// <summary>
-    /// Create a Consul client using the provided configuration options
+    /// Create a Consul client using the provided configuration options.
     /// </summary>
-    /// <param name="options">the configuration options</param>
-    /// <returns>a Consul client</returns>
+    /// <param name="options">the configuration options.</param>
+    /// <returns>a Consul client.</returns>
     public static IConsulClient CreateClient(ConsulOptions options)
     {
         if (options == null)

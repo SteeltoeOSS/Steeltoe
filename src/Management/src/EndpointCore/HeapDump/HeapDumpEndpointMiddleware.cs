@@ -14,15 +14,15 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleHeapDumpRequestAsync(context);
         }
@@ -32,8 +32,8 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
-        var filename = _endpoint.Invoke();
-        _logger?.LogDebug("Returning: {0}", filename);
+        var filename = endpoint.Invoke();
+        logger?.LogDebug("Returning: {0}", filename);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
         if (!File.Exists(filename))

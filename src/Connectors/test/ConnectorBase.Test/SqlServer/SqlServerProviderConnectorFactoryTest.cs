@@ -14,10 +14,10 @@ public class SqlServerProviderConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const SqlServerProviderConnectorOptions config = null;
+        const SqlServerProviderConnectorOptions options = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlConnection)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, options, typeof(SqlConnection)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

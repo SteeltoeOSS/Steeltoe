@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Stream.StreamHost;
 
 /// <summary>
-/// Implements a hosted service to be used in a Generic Host (as opposed to streams host)
+/// Implements a hosted service to be used in a Generic Host (as opposed to streams host).
 /// </summary>
 public class StreamLifeCycleService : IHostedService
 {

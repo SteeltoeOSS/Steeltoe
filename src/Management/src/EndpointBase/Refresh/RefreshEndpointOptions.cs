@@ -8,37 +8,37 @@ namespace Steeltoe.Management.Endpoint.Refresh;
 
 public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:refresh";
-    private const bool RETURN_CONFIGURATION = true;
+    private const string ManagementInfoPrefix = "management:endpoints:refresh";
+    private const bool DefaultReturnConfiguration = true;
 
     public RefreshEndpointOptions()
     {
         Id = "refresh";
-        RequiredPermissions = Permissions.RESTRICTED;
-        _returnConfiguration = RETURN_CONFIGURATION;
+        RequiredPermissions = Permissions.Restricted;
+        _returnConfiguration = DefaultReturnConfiguration;
     }
 
     public RefreshEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
             Id = "refresh";
         }
 
-        if (RequiredPermissions == Permissions.UNDEFINED)
+        if (RequiredPermissions == Permissions.Undefined)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.Restricted;
         }
 
-        _returnConfiguration ??= RETURN_CONFIGURATION;
+        _returnConfiguration ??= DefaultReturnConfiguration;
     }
 
     private bool? _returnConfiguration;
 
     public bool ReturnConfiguration
     {
-        get => _returnConfiguration ?? RETURN_CONFIGURATION;
+        get => _returnConfiguration ?? DefaultReturnConfiguration;
 
         set
         {

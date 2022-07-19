@@ -25,8 +25,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class BlockingQueueConsumer
 {
-    private const int DEFAULT_DECLARATION_RETRIES = 3;
-    private const int DEFAULT_RETRY_DECLARATION_INTERVAL = 60000;
+    private const int DefaultDeclarationRetries = 3;
+    private const int DefaultRetryDeclarationInterval = 60000;
 
     public BlockingQueueConsumer(
         IConnectionFactory connectionFactory,
@@ -167,11 +167,11 @@ public class BlockingQueueConsumer
 
     public int ShutdownTimeout { get; set; }
 
-    public int DeclarationRetries { get; set; } = DEFAULT_DECLARATION_RETRIES;
+    public int DeclarationRetries { get; set; } = DefaultDeclarationRetries;
 
-    public int FailedDeclarationRetryInterval { get; set; } = AbstractMessageListenerContainer.DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL;
+    public int FailedDeclarationRetryInterval { get; set; } = AbstractMessageListenerContainer.DefaultFailedDeclarationRetryInterval;
 
-    public int RetryDeclarationInterval { get; set; } = DEFAULT_RETRY_DECLARATION_INTERVAL;
+    public int RetryDeclarationInterval { get; set; } = DefaultRetryDeclarationInterval;
 
     public IConsumerTagStrategy TagStrategy { get; set; }
 
@@ -472,7 +472,7 @@ public class BlockingQueueConsumer
         }
         else if (e.FailedQueues.Count < Queues.Count)
         {
-            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notavail}", string.Join(',', Queues), string.Join(',', e.FailedQueues));
+            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}", string.Join(',', Queues), string.Join(',', e.FailedQueues));
             lock (MissingQueues)
             {
                 foreach (var q in e.FailedQueues)
@@ -647,10 +647,10 @@ public class BlockingQueueConsumer
 
         var body = delivery.Body;
         var messageProperties = MessageHeadersConverter.ToMessageHeaders(delivery.Properties, delivery.Envelope, EncodingUtils.Utf8);
-        var accesor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
-        accesor.ConsumerTag = delivery.ConsumerTag;
-        accesor.ConsumerQueue = delivery.Queue;
-        var message = Message.Create(body, accesor.MessageHeaders);
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        accessor.ConsumerTag = delivery.ConsumerTag;
+        accessor.ConsumerQueue = delivery.Queue;
+        var message = Message.Create(body, accessor.MessageHeaders);
         Logger?.LogDebug("Received message: {message}", message);
         if (messageProperties.DeliveryTag() != null)
         {

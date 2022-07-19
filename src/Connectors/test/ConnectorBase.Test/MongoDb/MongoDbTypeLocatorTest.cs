@@ -13,7 +13,7 @@ public class MongoDbTypeLocatorTest
     public void Property_Can_Locate_ConnectionTypes()
     {
         // arrange -- handled by including a compatible MongoDB NuGet package
-        var interfaceType = MongoDbTypeLocator.IMongoClient;
+        var interfaceType = MongoDbTypeLocator.MongoClientInterface;
         var implementationType = MongoDbTypeLocator.MongoClient;
         var mongoUrlType = MongoDbTypeLocator.MongoUrl;
 
@@ -28,7 +28,7 @@ public class MongoDbTypeLocatorTest
         var types = MongoDbTypeLocator.ConnectionInterfaceTypeNames;
         MongoDbTypeLocator.ConnectionInterfaceTypeNames = new[] { "something-Wrong" };
 
-        var exception = Assert.Throws<TypeLoadException>(() => MongoDbTypeLocator.IMongoClient);
+        var exception = Assert.Throws<TypeLoadException>(() => MongoDbTypeLocator.MongoClientInterface);
 
         Assert.Equal("Unable to find IMongoClient, are you missing a MongoDB driver?", exception.Message);
 

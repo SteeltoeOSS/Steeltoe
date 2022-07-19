@@ -84,8 +84,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBinding_Enterprise_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -99,8 +99,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_With_Enterprise_VCAPs_AddsMongoClient()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingEnterpriseVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -121,8 +121,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_With_a9s_single_VCAPs_AddsMongoClient()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_SingleServer_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingA9SSingleServerVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -142,8 +142,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_With_a9s_replicas_VCAPs_AddsMongoClient()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_a9s_WithReplicas_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingA9SWithReplicasVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -163,8 +163,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     public void AddMongoClient_With_UPS_VCAPs_AddsMongoClient()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.Single_UserProvidedService);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleUserProvidedService);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -196,12 +196,12 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMongoClientConnection_AddingCommunityContributor_DoesntAddSteeltoeHealthCheck()
+    public void AddMongoClientConnection_AddingCommunityContributor_DoesNotAddSteeltoeHealthCheck()
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingEnterpriseVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -222,8 +222,8 @@ public class MongoDbProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBinding_Enterprise_VCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.SingleBindingEnterpriseVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

@@ -710,7 +710,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             if (stackDescriptor == null)
             {
                 CodeFlow.LoadTarget(gen);
-                stackDescriptor = Spring.TypeDescriptor.OBJECT;
+                stackDescriptor = Spring.TypeDescriptor.Object;
             }
 
             if (!method.IsStatic)
@@ -758,7 +758,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             if (stackDescriptor == null)
             {
                 CodeFlow.LoadTarget(gen);
-                stackDescriptor = Spring.TypeDescriptor.OBJECT;
+                stackDescriptor = Spring.TypeDescriptor.Object;
             }
 
             if (!field.IsStatic)

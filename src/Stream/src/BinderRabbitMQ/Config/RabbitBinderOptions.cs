@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
 public class RabbitBinderOptions
 {
-    public const string PREFIX = "spring:cloud:stream:rabbit:binder";
+    public const string Prefix = "spring:cloud:stream:rabbit:binder";
 
     public RabbitBinderOptions()
     {

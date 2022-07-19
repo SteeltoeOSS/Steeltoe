@@ -11,41 +11,41 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 internal sealed class Tokenizer
 {
     // If this gets changed, it must remain sorted...
-    private static readonly string[] ALTERNATIVE_OPERATOR_NAMES = { "DIV", "EQ", "GE", "GT", "LE", "LT", "MOD", "NE", "NOT" };
+    private static readonly string[] AlternativeOperatorNames = { "DIV", "EQ", "GE", "GT", "LE", "LT", "MOD", "NE", "NOT" };
 
-    private static readonly byte[] FLAGS = new byte[256];
+    private static readonly byte[] Flags = new byte[256];
 
-    private static readonly byte IS_DIGIT = 0x01;
+    private static readonly byte IsDigitFlag = 0x01;
 
-    private static readonly byte IS_HEXDIGIT = 0x02;
+    private static readonly byte IsHexDigitFlag = 0x02;
 
-    private static readonly byte IS_ALPHA = 0x04;
+    private static readonly byte IsAlphaFlag = 0x04;
 
     static Tokenizer()
     {
         for (int ch = '0'; ch <= '9'; ch++)
         {
-            FLAGS[ch] |= (byte)(IS_DIGIT | IS_HEXDIGIT);
+            Flags[ch] |= (byte)(IsDigitFlag | IsHexDigitFlag);
         }
 
         for (int ch = 'A'; ch <= 'F'; ch++)
         {
-            FLAGS[ch] |= IS_HEXDIGIT;
+            Flags[ch] |= IsHexDigitFlag;
         }
 
         for (int ch = 'a'; ch <= 'f'; ch++)
         {
-            FLAGS[ch] |= IS_HEXDIGIT;
+            Flags[ch] |= IsHexDigitFlag;
         }
 
         for (int ch = 'A'; ch <= 'Z'; ch++)
         {
-            FLAGS[ch] |= IS_ALPHA;
+            Flags[ch] |= IsAlphaFlag;
         }
 
         for (int ch = 'a'; ch <= 'z'; ch++)
         {
-            FLAGS[ch] |= IS_ALPHA;
+            Flags[ch] |= IsAlphaFlag;
         }
     }
 
@@ -83,13 +83,13 @@ internal sealed class Tokenizer
 #pragma warning restore S1479 // "switch" statements should not have too many "case" clauses
                 {
                     case '+':
-                        if (IsTwoCharToken(TokenKind.INC))
+                        if (IsTwoCharToken(TokenKind.Inc))
                         {
-                            PushPairToken(TokenKind.INC);
+                            PushPairToken(TokenKind.Inc);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.PLUS);
+                            PushCharToken(TokenKind.Plus);
                         }
 
                         break;
@@ -97,137 +97,137 @@ internal sealed class Tokenizer
                         LexIdentifier();
                         break;
                     case '-':
-                        if (IsTwoCharToken(TokenKind.DEC))
+                        if (IsTwoCharToken(TokenKind.Dec))
                         {
-                            PushPairToken(TokenKind.DEC);
+                            PushPairToken(TokenKind.Dec);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.MINUS);
+                            PushCharToken(TokenKind.Minus);
                         }
 
                         break;
                     case ':':
-                        PushCharToken(TokenKind.COLON);
+                        PushCharToken(TokenKind.Colon);
                         break;
                     case '.':
-                        PushCharToken(TokenKind.DOT);
+                        PushCharToken(TokenKind.Dot);
                         break;
                     case ',':
-                        PushCharToken(TokenKind.COMMA);
+                        PushCharToken(TokenKind.Comma);
                         break;
                     case '*':
-                        PushCharToken(TokenKind.STAR);
+                        PushCharToken(TokenKind.Star);
                         break;
                     case '/':
-                        PushCharToken(TokenKind.DIV);
+                        PushCharToken(TokenKind.Div);
                         break;
                     case '%':
-                        PushCharToken(TokenKind.MOD);
+                        PushCharToken(TokenKind.Mod);
                         break;
                     case '(':
-                        PushCharToken(TokenKind.LPAREN);
+                        PushCharToken(TokenKind.LeftParen);
                         break;
                     case ')':
-                        PushCharToken(TokenKind.RPAREN);
+                        PushCharToken(TokenKind.RightParen);
                         break;
                     case '[':
-                        PushCharToken(TokenKind.LSQUARE);
+                        PushCharToken(TokenKind.LeftSquare);
                         break;
                     case '#':
-                        PushCharToken(TokenKind.HASH);
+                        PushCharToken(TokenKind.Hash);
                         break;
                     case ']':
-                        PushCharToken(TokenKind.RSQUARE);
+                        PushCharToken(TokenKind.RightSquare);
                         break;
                     case '{':
-                        PushCharToken(TokenKind.LCURLY);
+                        PushCharToken(TokenKind.LeftCurly);
                         break;
                     case '}':
-                        PushCharToken(TokenKind.RCURLY);
+                        PushCharToken(TokenKind.RightCurly);
                         break;
                     case '@':
-                        PushCharToken(TokenKind.SERVICE_REF);
+                        PushCharToken(TokenKind.ServiceRef);
                         break;
                     case '^':
-                        if (IsTwoCharToken(TokenKind.SELECT_FIRST))
+                        if (IsTwoCharToken(TokenKind.SelectFirst))
                         {
-                            PushPairToken(TokenKind.SELECT_FIRST);
+                            PushPairToken(TokenKind.SelectFirst);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.POWER);
+                            PushCharToken(TokenKind.Power);
                         }
 
                         break;
                     case '!':
-                        if (IsTwoCharToken(TokenKind.NE))
+                        if (IsTwoCharToken(TokenKind.Ne))
                         {
-                            PushPairToken(TokenKind.NE);
+                            PushPairToken(TokenKind.Ne);
                         }
-                        else if (IsTwoCharToken(TokenKind.PROJECT))
+                        else if (IsTwoCharToken(TokenKind.Project))
                         {
-                            PushPairToken(TokenKind.PROJECT);
+                            PushPairToken(TokenKind.Project);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.NOT);
+                            PushCharToken(TokenKind.Not);
                         }
 
                         break;
                     case '=':
-                        if (IsTwoCharToken(TokenKind.EQ))
+                        if (IsTwoCharToken(TokenKind.Eq))
                         {
-                            PushPairToken(TokenKind.EQ);
+                            PushPairToken(TokenKind.Eq);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.ASSIGN);
+                            PushCharToken(TokenKind.Assign);
                         }
 
                         break;
                     case '&':
-                        if (IsTwoCharToken(TokenKind.SYMBOLIC_AND))
+                        if (IsTwoCharToken(TokenKind.SymbolicAnd))
                         {
-                            PushPairToken(TokenKind.SYMBOLIC_AND);
+                            PushPairToken(TokenKind.SymbolicAnd);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.FACTORY_SERVICE_REF);
+                            PushCharToken(TokenKind.FactoryServiceRef);
                         }
 
                         break;
                     case '|':
-                        if (!IsTwoCharToken(TokenKind.SYMBOLIC_OR))
+                        if (!IsTwoCharToken(TokenKind.SymbolicOr))
                         {
-                            RaiseParseException(_pos, SpelMessage.MISSING_CHARACTER, "|");
+                            RaiseParseException(_pos, SpelMessage.MissingCharacter, "|");
                         }
 
-                        PushPairToken(TokenKind.SYMBOLIC_OR);
+                        PushPairToken(TokenKind.SymbolicOr);
                         break;
                     case '?':
-                        if (IsTwoCharToken(TokenKind.SELECT))
+                        if (IsTwoCharToken(TokenKind.Select))
                         {
-                            PushPairToken(TokenKind.SELECT);
+                            PushPairToken(TokenKind.Select);
                         }
-                        else if (IsTwoCharToken(TokenKind.ELVIS))
+                        else if (IsTwoCharToken(TokenKind.Elvis))
                         {
-                            PushPairToken(TokenKind.ELVIS);
+                            PushPairToken(TokenKind.Elvis);
                         }
-                        else if (IsTwoCharToken(TokenKind.SAFE_NAVI))
+                        else if (IsTwoCharToken(TokenKind.SafeNavigator))
                         {
-                            PushPairToken(TokenKind.SAFE_NAVI);
+                            PushPairToken(TokenKind.SafeNavigator);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.QMARK);
+                            PushCharToken(TokenKind.QuestionMark);
                         }
 
                         break;
                     case '$':
-                        if (IsTwoCharToken(TokenKind.SELECT_LAST))
+                        if (IsTwoCharToken(TokenKind.SelectLast))
                         {
-                            PushPairToken(TokenKind.SELECT_LAST);
+                            PushPairToken(TokenKind.SelectLast);
                         }
                         else
                         {
@@ -236,24 +236,24 @@ internal sealed class Tokenizer
 
                         break;
                     case '>':
-                        if (IsTwoCharToken(TokenKind.GE))
+                        if (IsTwoCharToken(TokenKind.Ge))
                         {
-                            PushPairToken(TokenKind.GE);
+                            PushPairToken(TokenKind.Ge);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.GT);
+                            PushCharToken(TokenKind.Gt);
                         }
 
                         break;
                     case '<':
-                        if (IsTwoCharToken(TokenKind.LE))
+                        if (IsTwoCharToken(TokenKind.Le))
                         {
-                            PushPairToken(TokenKind.LE);
+                            PushPairToken(TokenKind.Le);
                         }
                         else
                         {
-                            PushCharToken(TokenKind.LT);
+                            PushCharToken(TokenKind.Lt);
                         }
 
                         break;
@@ -287,7 +287,7 @@ internal sealed class Tokenizer
                         _pos++;  // will take us to the end
                         break;
                     case '\\':
-                        RaiseParseException(_pos, SpelMessage.UNEXPECTED_ESCAPE_CHAR);
+                        RaiseParseException(_pos, SpelMessage.UnexpectedEscapeChar);
                         break;
                     default:
                         throw new InvalidOperationException($"Cannot handle ({(int)ch}) '{ch}'");
@@ -322,12 +322,12 @@ internal sealed class Tokenizer
 
             if (IsExhausted())
             {
-                RaiseParseException(start, SpelMessage.NON_TERMINATING_QUOTED_STRING);
+                RaiseParseException(start, SpelMessage.NonTerminatingQuotedString);
             }
         }
 
         _pos++;
-        _tokens.Add(new Token(TokenKind.LITERAL_STRING, Subarray(start, _pos), start, _pos));
+        _tokens.Add(new Token(TokenKind.LiteralString, SubArray(start, _pos), start, _pos));
     }
 
     // DQ_STRING_LITERAL: '"'! (~'"')* '"'!;
@@ -354,12 +354,12 @@ internal sealed class Tokenizer
 
             if (IsExhausted())
             {
-                RaiseParseException(start, SpelMessage.NON_TERMINATING_DOUBLE_QUOTED_STRING);
+                RaiseParseException(start, SpelMessage.NonTerminatingDoubleQuotedString);
             }
         }
 
         _pos++;
-        _tokens.Add(new Token(TokenKind.LITERAL_STRING, Subarray(start, _pos), start, _pos));
+        _tokens.Add(new Token(TokenKind.LiteralString, SubArray(start, _pos), start, _pos));
     }
 
     // REAL_LITERAL :
@@ -395,12 +395,12 @@ internal sealed class Tokenizer
             while (IsHexadecimalDigit(_charsToProcess[_pos]));
             if (IsChar('L', 'l'))
             {
-                PushHexIntToken(Subarray(start + 2, _pos), true, start, _pos);
+                PushHexIntToken(SubArray(start + 2, _pos), true, start, _pos);
                 _pos++;
             }
             else
             {
-                PushHexIntToken(Subarray(start + 2, _pos), false, start, _pos);
+                PushHexIntToken(SubArray(start + 2, _pos), false, start, _pos);
             }
 
             return;
@@ -420,7 +420,7 @@ internal sealed class Tokenizer
         if (ch == '.')
         {
             isReal = true;
-            var dotpos = _pos;
+            var dotPos = _pos;
 
             // carry on consuming digits
             do
@@ -428,13 +428,13 @@ internal sealed class Tokenizer
                 _pos++;
             }
             while (IsDigit(_charsToProcess[_pos]));
-            if (_pos == dotpos + 1)
+            if (_pos == dotPos + 1)
             {
                 // the number is something like '3.'. It is really an int but may be
                 // part of something like '3.toString()'. In this case process it as
                 // an int and leave the dot as a separate token.
-                _pos = dotpos;
-                PushIntToken(Subarray(start, _pos), false, start, _pos);
+                _pos = dotPos;
+                PushIntToken(SubArray(start, _pos), false, start, _pos);
                 return;
             }
         }
@@ -449,10 +449,10 @@ internal sealed class Tokenizer
             if (isReal)
             {
                 // 3.4L - not allowed
-                RaiseParseException(start, SpelMessage.REAL_CANNOT_BE_LONG);
+                RaiseParseException(start, SpelMessage.RealCannotBeLong);
             }
 
-            PushIntToken(Subarray(start, endOfNumber), true, start, endOfNumber);
+            PushIntToken(SubArray(start, endOfNumber), true, start, endOfNumber);
             _pos++;
         }
         else if (IsExponentChar(_charsToProcess[_pos]))
@@ -481,7 +481,7 @@ internal sealed class Tokenizer
                 ++_pos;
             }
 
-            PushRealToken(Subarray(start, _pos), isFloat, start, _pos);
+            PushRealToken(SubArray(start, _pos), isFloat, start, _pos);
         }
         else
         {
@@ -501,11 +501,11 @@ internal sealed class Tokenizer
 
             if (isReal)
             {
-                PushRealToken(Subarray(start, endOfNumber), isFloat, start, endOfNumber);
+                PushRealToken(SubArray(start, endOfNumber), isFloat, start, endOfNumber);
             }
             else
             {
-                PushIntToken(Subarray(start, endOfNumber), false, start, endOfNumber);
+                PushIntToken(SubArray(start, endOfNumber), false, start, endOfNumber);
             }
         }
     }
@@ -518,29 +518,29 @@ internal sealed class Tokenizer
             _pos++;
         }
         while (IsIdentifier(_charsToProcess[_pos]));
-        var subarray = Subarray(start, _pos);
+        var subArray = SubArray(start, _pos);
 
         // Check if this is the alternative (textual) representation of an operator (see
         // alternativeOperatorNames)
         if (_pos - start == 2 || _pos - start == 3)
         {
-            var asString = new string(subarray).ToUpper();
-            var idx = Array.BinarySearch(ALTERNATIVE_OPERATOR_NAMES, asString);
+            var asString = new string(subArray).ToUpper();
+            var idx = Array.BinarySearch(AlternativeOperatorNames, asString);
             if (idx >= 0)
             {
-                PushOneCharOrTwoCharToken(TokenKind.ValueOf(asString), start, subarray);
+                PushOneCharOrTwoCharToken(TokenKind.ValueOf(asString), start, subArray);
                 return;
             }
         }
 
-        _tokens.Add(new Token(TokenKind.IDENTIFIER, subarray, start, _pos));
+        _tokens.Add(new Token(TokenKind.Identifier, subArray, start, _pos));
     }
 
     private void PushIntToken(char[] data, bool isLong, int start, int end)
     {
         _tokens.Add(isLong
-            ? new Token(TokenKind.LITERAL_LONG, data, start, end)
-            : new Token(TokenKind.LITERAL_INT, data, start, end));
+            ? new Token(TokenKind.LiteralLong, data, start, end)
+            : new Token(TokenKind.LiteralInt, data, start, end));
     }
 
     private void PushHexIntToken(char[] data, bool isLong, int start, int end)
@@ -549,27 +549,27 @@ internal sealed class Tokenizer
         {
             if (isLong)
             {
-                RaiseParseException(start, SpelMessage.NOT_A_LONG, _expressionString.Substring(start, end + 1 - start));
+                RaiseParseException(start, SpelMessage.NotALong, _expressionString.Substring(start, end + 1 - start));
             }
             else
             {
-                RaiseParseException(start, SpelMessage.NOT_AN_INTEGER, _expressionString.Substring(start, end - start));
+                RaiseParseException(start, SpelMessage.NotAnInteger, _expressionString.Substring(start, end - start));
             }
         }
 
         _tokens.Add(isLong
-            ? new Token(TokenKind.LITERAL_HEXLONG, data, start, end)
-            : new Token(TokenKind.LITERAL_HEXINT, data, start, end));
+            ? new Token(TokenKind.LiteralHexLong, data, start, end)
+            : new Token(TokenKind.LiteralHexInt, data, start, end));
     }
 
     private void PushRealToken(char[] data, bool isFloat, int start, int end)
     {
         _tokens.Add(isFloat
-            ? new Token(TokenKind.LITERAL_REAL_FLOAT, data, start, end)
-            : new Token(TokenKind.LITERAL_REAL, data, start, end));
+            ? new Token(TokenKind.LiteralRealFloat, data, start, end)
+            : new Token(TokenKind.LiteralReal, data, start, end));
     }
 
-    private char[] Subarray(int start, int end)
+    private char[] SubArray(int start, int end)
     {
         var result = new char[end - start];
         Array.Copy(_charsToProcess, start, result, 0, end - start);
@@ -639,7 +639,7 @@ internal sealed class Tokenizer
             return false;
         }
 
-        return (FLAGS[ch] & IS_DIGIT) != 0;
+        return (Flags[ch] & IsDigitFlag) != 0;
     }
 
     private bool IsAlphabetic(char ch)
@@ -649,7 +649,7 @@ internal sealed class Tokenizer
             return false;
         }
 
-        return (FLAGS[ch] & IS_ALPHA) != 0;
+        return (Flags[ch] & IsAlphaFlag) != 0;
     }
 
     private bool IsHexadecimalDigit(char ch)
@@ -659,7 +659,7 @@ internal sealed class Tokenizer
             return false;
         }
 
-        return (FLAGS[ch] & IS_HEXDIGIT) != 0;
+        return (Flags[ch] & IsHexDigitFlag) != 0;
     }
 
     private bool IsExhausted()

@@ -9,7 +9,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class CachedValuesHistogram
 {
-    private const int NUMBER_SIGNIFICANT_DIGITS = 3;
+    private const int NumberSignificantDigits = 3;
 
     private readonly int _mean;
     private readonly int _p0;
@@ -33,19 +33,19 @@ public class CachedValuesHistogram
     private readonly int _p90;
     private readonly int _p95;
     private readonly int _p99;
-    private readonly int _p99_5;
-    private readonly int _p99_9;
-    private readonly int _p99_95;
-    private readonly int _p99_99;
+    private readonly int _p99Dot5;
+    private readonly int _p99Dot9;
+    private readonly int _p99Dot95;
+    private readonly int _p99Dot99;
     private readonly int _p100;
 
     private readonly long _totalCount;
 
     public static LongHistogram GetNewHistogram()
     {
-        var histo = new LongHistogram(1, 2, NUMBER_SIGNIFICANT_DIGITS);
-        histo.Reset();
-        return histo;
+        var histogram = new LongHistogram(1, 2, NumberSignificantDigits);
+        histogram.Reset();
+        return histogram;
     }
 
     public static CachedValuesHistogram BackedBy(LongHistogram underlying)
@@ -84,10 +84,10 @@ public class CachedValuesHistogram
             _p90 = (int)underlying.GetValueAtPercentile(90);
             _p95 = (int)underlying.GetValueAtPercentile(95);
             _p99 = (int)underlying.GetValueAtPercentile(99);
-            _p99_5 = (int)underlying.GetValueAtPercentile(99.5);
-            _p99_9 = (int)underlying.GetValueAtPercentile(99.9);
-            _p99_95 = (int)underlying.GetValueAtPercentile(99.95);
-            _p99_99 = (int)underlying.GetValueAtPercentile(99.99);
+            _p99Dot5 = (int)underlying.GetValueAtPercentile(99.5);
+            _p99Dot9 = (int)underlying.GetValueAtPercentile(99.9);
+            _p99Dot95 = (int)underlying.GetValueAtPercentile(99.95);
+            _p99Dot99 = (int)underlying.GetValueAtPercentile(99.99);
             _p100 = (int)underlying.GetValueAtPercentile(100);
 
             _totalCount = underlying.TotalCount;
@@ -127,10 +127,10 @@ public class CachedValuesHistogram
             9000 => _p90,
             9500 => _p95,
             9900 => _p99,
-            9950 => _p99_5,
-            9990 => _p99_9,
-            9995 => _p99_95,
-            9999 => _p99_99,
+            9950 => _p99Dot5,
+            9990 => _p99Dot9,
+            9995 => _p99Dot95,
+            9999 => _p99Dot99,
             10000 => _p100,
             _ => throw new ArgumentException($"Percentile ({percentile}) is not currently cached"),
         };

@@ -13,13 +13,13 @@ using Xunit;
 
 namespace Steeltoe.Connector.Test;
 
-public class IConfigurationExtensionsTest
+public class ConfigurationExtensionsTest
 {
     [Fact]
     public void GetServiceInfos_GetsCFRedisServiceInfos()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
 
         var config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
@@ -55,8 +55,8 @@ public class IConfigurationExtensionsTest
     [Fact]
     public void AddConnectionStrings_GetConnectionString()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
         var config = new ConfigurationBuilder().AddCloudFoundry().AddConnectionStrings().Build();
 
         var connStringByName = config.GetConnectionString("spring-cloud-broker-db");

@@ -79,7 +79,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Success, 20);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -98,7 +98,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -120,7 +120,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.TIMEOUT);  // Timeout 1000
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Timeout);  // Timeout 1000
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -142,7 +142,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.BadRequest);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -164,9 +164,9 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -190,11 +190,11 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var failure1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
-        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+        var failure1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure3 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.Success);
+        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.Success);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -234,11 +234,11 @@ public class HealthCountsStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -280,16 +280,16 @@ public class HealthCountsStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 400));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        // 10 commands will saturate threadpools when called concurrently.
+        // 10 commands will saturate thread-pools when called concurrently.
         // submit 2 more requests and they should be THREADPOOL_REJECTED
         // should see 10 SUCCESSes, 2 THREADPOOL_REJECTED and 2 FALLBACK_SUCCESSes
         var tasks = new List<Task>();
@@ -320,7 +320,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_FAILURE);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 20, HystrixEventType.FallbackFailure);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -341,7 +341,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 20, HystrixEventType.FallbackMissing);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
@@ -364,11 +364,11 @@ public class HealthCountsStreamTest : CommandStreamTest
 
         for (var i = 0; i < 5; i++)
         {
-            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 500));
         }
 
-        var rejection1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-        var rejection2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+        var rejection1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
+        var rejection2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
@@ -405,11 +405,11 @@ public class HealthCountsStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = HealthCountsStream.GetInstance(key, 10, 100);
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 20);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Failure, 10);
 
         // by doing a take(30), we ensure that all rolling counts go back to 0
-        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         await cmd1.Observe();
@@ -445,7 +445,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         var zipped = o1.Zip(o2, (healthCounts, healthCounts2) => healthCounts == healthCounts2);
         var reduced = zipped.Aggregate(true, (a, b) => a && b).Select(n => n);
 
-        var rdisp = reduced.Subscribe(
+        var disposable = reduced.Subscribe(
             b =>
             {
                 _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Reduced OnNext : " + b);
@@ -465,14 +465,14 @@ public class HealthCountsStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
+            HystrixCommand<int> cmd = Command.From(GroupKey, key, HystrixEventType.Success, 20);
             cmd.Execute();
         }
 
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
         Assert.True(allEqual.Value);
 
-        rdisp.Dispose();
+        disposable.Dispose();
 
         // we should be getting the same object from both streams.  this ensures that multiple subscribers don't induce extra work
     }
@@ -540,7 +540,7 @@ public class HealthCountsStreamTest : CommandStreamTest
         // execute 5 commands, then unsubscribe from first stream. then execute the rest
         for (var i = 0; i < 10; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
+            HystrixCommand<int> cmd = Command.From(GroupKey, key, HystrixEventType.Success, 20);
             cmd.Execute();
             if (i == 5)
             {

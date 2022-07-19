@@ -11,11 +11,11 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 public class WavefrontExporterOptions : IWavefrontExporterOptions
 {
     // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.
-    public const string WAVEFRONT_PREFIX = "management:metrics:export:wavefront";
+    public const string WavefrontPrefix = "management:metrics:export:wavefront";
 
     public WavefrontExporterOptions(IConfiguration config)
     {
-        var section = config?.GetSection(WAVEFRONT_PREFIX) ?? throw new ArgumentNullException(nameof(config));
+        var section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
         section.Bind(this);
         ApplicationOptions = new WavefrontApplicationOptions(config);
     }
@@ -36,7 +36,7 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
 
     public string Name => ApplicationOptions?.Name ?? "SteeltoeApp";
 
-    public string Service => ApplicationOptions?.Service ?? "SteeltoeAppservice";
+    public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
 
     public string Cluster { get; set; }
 }

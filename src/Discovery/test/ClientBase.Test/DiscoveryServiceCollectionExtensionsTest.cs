@@ -112,7 +112,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         var serviceProvider = services.BuildServiceProvider();
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
         var innerHandler = GetInnerHttpHandler(handler);
 
@@ -479,7 +479,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         var serviceProvider = services.BuildServiceProvider();
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("_httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
         var innerHandler = GetInnerHttpHandler(handler);
 

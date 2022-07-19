@@ -12,7 +12,7 @@ public class OpAnd : Operator
     public OpAnd(int startPos, int endPos, params SpelNode[] operands)
         : base("and", startPos, endPos, operands)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
@@ -20,7 +20,7 @@ public class OpAnd : Operator
         if (!GetBooleanValue(state, LeftOperand))
         {
             // no need to evaluate right operand
-            return BooleanTypedValue.FALSE;
+            return BooleanTypedValue.False;
         }
 
         return BooleanTypedValue.ForValue(GetBooleanValue(state, RightOperand));
@@ -58,7 +58,7 @@ public class OpAnd : Operator
         gen.Emit(OpCodes.Stloc, result);
         gen.MarkLabel(endIfTarget);
         gen.Emit(OpCodes.Ldloc, result);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private bool GetBooleanValue(ExpressionState state, SpelNode operand)

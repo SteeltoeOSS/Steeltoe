@@ -11,7 +11,7 @@ namespace Steeltoe.Messaging.Handler;
 
 public class DestinationPatternsMessageCondition : AbstractMessageCondition<DestinationPatternsMessageCondition>
 {
-    public const string LOOKUP_DESTINATION_HEADER = "lookupDestination";
+    public const string LookupDestinationHeader = "lookupDestination";
     private readonly IRouteMatcher _routeMatcher;
 
     public DestinationPatternsMessageCondition(params string[] patterns)
@@ -86,7 +86,7 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     public override DestinationPatternsMessageCondition GetMatchingCondition(IMessage message)
     {
-        message.Headers.TryGetValue(LOOKUP_DESTINATION_HEADER, out var destination);
+        message.Headers.TryGetValue(LookupDestinationHeader, out var destination);
         if (destination == null)
         {
             return null;
@@ -119,7 +119,7 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     public override int CompareTo(DestinationPatternsMessageCondition other, IMessage message)
     {
-        message.Headers.TryGetValue(LOOKUP_DESTINATION_HEADER, out var destination);
+        message.Headers.TryGetValue(LookupDestinationHeader, out var destination);
         if (destination == null)
         {
             return 0;

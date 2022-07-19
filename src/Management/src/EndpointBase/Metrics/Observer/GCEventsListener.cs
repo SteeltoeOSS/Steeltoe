@@ -13,7 +13,7 @@ using System.Diagnostics.Tracing;
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 /// <summary>
-/// Events are fired when garbage collection occurs
+/// Events are fired when garbage collection occurs.
 /// </summary>
 [Obsolete("Use CLRRuntimeSource Instead")]
 public class GCEventsListener : EventSourceListener
@@ -22,9 +22,9 @@ public class GCEventsListener : EventSourceListener
     private const string GCHeapStats = "GCHeapStats_V1";
     private const string GCHeapStatsV2 = "GCHeapStats_V2";
     private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
-    private const string GENERATION_TAGVALUE_NAME = "gen";
+    private const string GenerationTagValueName = "gen";
 
-    private static readonly string[] _ignorePayloadNames =
+    private static readonly string[] IgnorePayloadNames =
     {
         "ClrInstanceID"
     };
@@ -56,7 +56,7 @@ public class GCEventsListener : EventSourceListener
         {
             if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture) || eventData.EventName.Equals(GCHeapStatsV2, StringComparison.InvariantCulture))
             {
-                ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, _ignorePayloadNames);
+                ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, IgnorePayloadNames);
                 RecordAdditionalMetrics(eventData);
             }
         }
@@ -89,8 +89,8 @@ public class GCEventsListener : EventSourceListener
                 count -= _previousCollectionCounts[i];
             }
 
-            var genKeylabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GENERATION_TAGVALUE_NAME + i) };
-            _collectionCount.Add(count, genKeylabelSet.AsReadonlySpan());
+            var genKeyLabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GenerationTagValueName + i) };
+            _collectionCount.Add(count, genKeyLabelSet.AsReadonlySpan());
         }
 
         _previousCollectionCounts = counts;

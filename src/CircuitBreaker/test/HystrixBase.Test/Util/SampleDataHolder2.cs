@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+// @formatter:wrap_array_initializer_style wrap_if_long
+
 namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 internal static class SampleDataHolder2

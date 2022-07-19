@@ -94,9 +94,9 @@ public class StandardTypeComparator : ITypeComparator
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(ex, SpelMessage.NOT_COMPARABLE, left.GetType(), right.GetType());
+            throw new SpelEvaluationException(ex, SpelMessage.NotComparable, left.GetType(), right.GetType());
         }
 
-        throw new SpelEvaluationException(SpelMessage.NOT_COMPARABLE, left.GetType(), right.GetType());
+        throw new SpelEvaluationException(SpelMessage.NotComparable, left.GetType(), right.GetType());
     }
 }

@@ -6,14 +6,14 @@ using System;
 
 namespace Steeltoe.Common.Expression.Internal;
 
-public class ValueExpression<V> : IExpression
+public class ValueExpression<TValue> : IExpression
 {
-    private readonly V _value;
+    private readonly TValue _value;
     private readonly Type _asClass;
 
     public string ExpressionString => _value.ToString();
 
-    public ValueExpression(V value)
+    public ValueExpression(TValue value)
     {
         _value = value;
         _asClass = value.GetType();

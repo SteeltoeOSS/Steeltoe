@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 
 /// <summary>
-/// Implements a subset of the Serilog Options needed for SerilogDynamicProvider
+/// Implements a subset of the Serilog Options needed for SerilogDynamicProvider.
 /// </summary>
 public class SerilogOptions : ISerilogOptions
 {
@@ -21,7 +21,7 @@ public class SerilogOptions : ISerilogOptions
 
     /// <summary>
     /// Gets or sets the minimum level for the root logger (and the "Default").
-    /// Limits the verbosity of all other overrides to this setting
+    /// Limits the verbosity of all other overrides to this setting.
     /// </summary>
     public MinimumLevel MinimumLevel { get; set; }
 
@@ -77,15 +77,8 @@ public class SerilogOptions : ISerilogOptions
     public LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+    public IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> FullnameExclusions => new List<string>();
-}
-
-public class MinimumLevel
-{
-    public LogEventLevel Default { get; set; } = (LogEventLevel)(-1);
-
-    public Dictionary<string, LogEventLevel> Override { get; set; }
+    public IEnumerable<string> FullNameExclusions => new List<string>();
 }

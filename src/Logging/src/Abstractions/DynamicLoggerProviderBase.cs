@@ -13,7 +13,7 @@ namespace Steeltoe.Extensions.Logging;
 
 public class DynamicLoggerProviderBase : IDynamicLoggerProvider
 {
-    private static readonly Filter _falseFilter = (_, _) => false;
+    private static readonly Filter FalseFilter = (_, _) => false;
 
     private readonly ConcurrentDictionary<string, LogLevel> _originalLevels;
     private readonly ConcurrentDictionary<string, Filter> _runningFilters;
@@ -27,9 +27,9 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     /// Initializes a new instance of the <see cref="DynamicLoggerProviderBase"/> class.
     /// Contains base functionality for DynamicLoggerProvider.
     /// </summary>
-    /// <param name="getDelegateLogger">Function to a delegate Logger</param>
-    /// <param name="initialLevels">Set the initialial filter levels</param>
-    /// <param name="messageProcessors">Any <see cref="IDynamicMessageProcessor" /> Messageprocesors </param>
+    /// <param name="getDelegateLogger">Function to a delegate Logger.</param>
+    /// <param name="initialLevels">Set the initial filter levels.</param>
+    /// <param name="messageProcessors">Any <see cref="IDynamicMessageProcessor" /> Message processors. </param>
     public DynamicLoggerProviderBase(Func<ILoggerProvider> getDelegateLogger, InitialLevels initialLevels, IEnumerable<IDynamicMessageProcessor> messageProcessors)
     {
         _delegate = getDelegateLogger?.Invoke() ?? throw new ArgumentNullException(nameof(getDelegateLogger));
@@ -37,23 +37,23 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
         _runningFilters = new ConcurrentDictionary<string, Filter>(initialLevels.RunningLevelFilters ?? throw new ArgumentNullException(nameof(initialLevels.RunningLevelFilters)));
 
         _messageProcessors = messageProcessors;
-        _filter = initialLevels.DefaultLevelFilter ?? _falseFilter;
+        _filter = initialLevels.DefaultLevelFilter ?? FalseFilter;
     }
 
     /// <summary>
-    /// Create or retrieve an instance of an ILogger
+    /// Create or retrieve an instance of an ILogger.
     /// </summary>
-    /// <param name="categoryName">Class name that will be using the logger</param>
-    /// <returns>A logger with level filtering for a given class</returns>
+    /// <param name="categoryName">Class name that will be using the logger.</param>
+    /// <returns>A logger with level filtering for a given class.</returns>
     public ILogger CreateLogger(string categoryName)
     {
         return _loggers.GetOrAdd(categoryName, CreateLoggerImplementation(categoryName));
     }
 
     /// <summary>
-    /// Get a list of logger configurations
+    /// Get a list of logger configurations.
     /// </summary>
-    /// <returns>Namespaces and loggers with minimum log levels</returns>
+    /// <returns>Namespaces and loggers with minimum log levels.</returns>
     public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
     {
         var results = new Dictionary<string, ILoggerConfiguration>();
@@ -88,10 +88,10 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Sets minimum log level for a given category and its decendants - resets to configured value if level is null
+    /// Sets minimum log level for a given category and its descendents - resets to configured value if level is null.
     /// </summary>
-    /// <param name="category">Namespace/qualified class name</param>
-    /// <param name="level">Minimum level to log, pass null to reset</param>
+    /// <param name="category">Namespace/qualified class name.</param>
+    /// <param name="level">Minimum level to log, pass null to reset.</param>
     public void SetLogLevel(string category, LogLevel? level)
     {
         Func<string, LogLevel, bool> filter = null;
@@ -168,10 +168,10 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Get or create the most applicable logging filter
+    /// Get or create the most applicable logging filter.
     /// </summary>
-    /// <param name="name">Fully qualified logger name</param>
-    /// <returns>A filter function for log level</returns>
+    /// <param name="name">Fully qualified logger name.</param>
+    /// <returns>A filter function for log level.</returns>
     private Func<string, LogLevel, bool> GetFilter(string name)
     {
         // check if there are any applicable filters
@@ -192,14 +192,14 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
             return _filter;
         }
 
-        return _falseFilter;
+        return FalseFilter;
     }
 
     /// <summary>
-    /// Determine the level a logger is set to log at right now
+    /// Determine the level a logger is set to log at right now.
     /// </summary>
-    /// <param name="name">Namespace/qualified class name</param>
-    /// <returns>Minimum logging level</returns>
+    /// <param name="name">Namespace/qualified class name.</param>
+    /// <returns>Minimum logging level.</returns>
     private LogLevel GetEffectiveLevel(string name)
     {
         var prefixes = GetKeyPrefixes(name);
@@ -218,11 +218,11 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Converts a filter function to a LogLevel
+    /// Converts a filter function to a LogLevel.
     /// </summary>
-    /// <param name="category">Namespace/class to check</param>
-    /// <param name="filter">Function to evaluate</param>
-    /// <returns>Minimum log level to be logged by this category of logger</returns>
+    /// <param name="category">Namespace/class to check.</param>
+    /// <param name="filter">Function to evaluate.</param>
+    /// <returns>Minimum log level to be logged by this category of logger.</returns>
     private LogLevel GetLogLevelFromFilter(string category, Func<string, LogLevel, bool> filter)
     {
         for (var i = 0; i < 6; i++)
@@ -238,10 +238,10 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Get parent namespaces
+    /// Get parent namespaces.
     /// </summary>
-    /// <param name="name">Fully namespaced class name</param>
-    /// <returns>List of parental namespaces</returns>
+    /// <param name="name">Fully namespaced class name.</param>
+    /// <returns>List of parental namespaces.</returns>
     private IEnumerable<string> GetKeyPrefixes(string name)
     {
         while (!string.IsNullOrEmpty(name))
@@ -259,10 +259,10 @@ public class DynamicLoggerProviderBase : IDynamicLoggerProvider
     }
 
     /// <summary>
-    /// Get the log level that was configured when the app started
+    /// Get the log level that was configured when the app started.
     /// </summary>
-    /// <param name="name">Namespace/qualified class name</param>
-    /// <returns>Log level from default filter, value from settings or else null</returns>
+    /// <param name="name">Namespace/qualified class name.</param>
+    /// <returns>Log level from default filter, value from settings or else null.</returns>
     private LogLevel? GetConfiguredLevel(string name)
     {
         if (_originalLevels != null && _originalLevels.TryGetValue(name, out var level))

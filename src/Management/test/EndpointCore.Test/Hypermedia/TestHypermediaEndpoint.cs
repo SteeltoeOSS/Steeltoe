@@ -8,8 +8,8 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
 internal sealed class TestHypermediaEndpoint : ActuatorEndpoint
 {
-    public TestHypermediaEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
-        : base(options, mgmtOptions, logger)
+    public TestHypermediaEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions managementOptions, ILogger<ActuatorEndpoint> logger = null)
+        : base(options, managementOptions, logger)
     {
     }
 

@@ -44,7 +44,7 @@ public class RabbitConsumerOptions : RabbitCommonOptions
 
     public int? FrameMaxHeadroom { get; set; }
 
-    public RabbitConfig.ContainerType? ContainerType { get; set; } = RabbitConfig.ContainerType.DIRECT;
+    public RabbitConfig.ContainerType? ContainerType { get; set; } = RabbitConfig.ContainerType.Direct;
 
     public string AnonymousGroupPrefix { get; set; }
 
@@ -53,13 +53,13 @@ public class RabbitConsumerOptions : RabbitCommonOptions
     internal void PostProcess(RabbitConsumerOptions defaultOptions = null)
     {
         Transacted ??= defaultOptions?.Transacted ?? false;
-        AcknowledgeMode ??= defaultOptions?.AcknowledgeMode ?? RabbitCore.AcknowledgeMode.AUTO;
+        AcknowledgeMode ??= defaultOptions?.AcknowledgeMode ?? RabbitCore.AcknowledgeMode.Auto;
         MaxConcurrency ??= defaultOptions?.MaxConcurrency ?? 1;
         Prefetch ??= defaultOptions?.Prefetch ?? 1;
         BatchSize ??= defaultOptions?.BatchSize ?? 1;
         DurableSubscription ??= defaultOptions?.DurableSubscription ?? true;
         RepublishToDlq ??= defaultOptions?.RepublishToDlq ?? true;
-        RepublishDeliveryMode ??= defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.PERSISTENT;
+        RepublishDeliveryMode ??= defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.Persistent;
         RequeueRejected ??= defaultOptions?.RequeueRejected ?? false;
         HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
         RecoveryInterval ??= defaultOptions?.RecoveryInterval ?? 5000;

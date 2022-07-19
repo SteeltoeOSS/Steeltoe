@@ -8,13 +8,13 @@ namespace Steeltoe.Messaging.Support;
 
 public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
 {
-    public IIDGenerator IdGenerator { get; set; }
+    public IIdGenerator IdGenerator { get; set; }
 
     public bool EnableTimestamp { get; set; }
 
     public void SetDisableIdGeneration()
     {
-        IdGenerator = new DisabledIDGenerator();
+        IdGenerator = new DisabledIdGenerator();
     }
 
     public void InitHeaders(IMessageHeaderAccessor headerAccessor)
@@ -28,11 +28,11 @@ public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
         headerAccessor.EnableTimestamp = EnableTimestamp;
     }
 
-    internal sealed class DisabledIDGenerator : IIDGenerator
+    internal sealed class DisabledIdGenerator : IIdGenerator
     {
         public string GenerateId()
         {
-            return MessageHeaders.ID_VALUE_NONE;
+            return MessageHeaders.IdValueNone;
         }
     }
 }

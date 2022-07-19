@@ -10,7 +10,6 @@ namespace Steeltoe.Management.OpenTelemetry.Metrics;
 public class MetricSample
 {
     [JsonPropertyName("statistic")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public MetricStatistic Statistic { get; }
 
     [JsonPropertyName("value")]

@@ -10,31 +10,31 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 public class HypermediaService
 {
     private readonly ILogger _logger;
-    private readonly IManagementOptions _mgmtOptions;
+    private readonly IManagementOptions _managementOptions;
     private readonly IEndpointOptions _options;
 
-    public HypermediaService(IManagementOptions mgmtOptions, IEndpointOptions options, ILogger logger = null)
+    public HypermediaService(IManagementOptions managementOptions, IEndpointOptions options, ILogger logger = null)
     {
         _logger = logger;
-        _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
+        _managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
         _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
     public Links Invoke(string baseUrl)
     {
-        var endpointOptions = _mgmtOptions.EndpointOptions;
+        var endpointOptions = _managementOptions.EndpointOptions;
         var links = new Links();
 
-        if (!_options.IsEnabled(_mgmtOptions))
+        if (!_options.IsEnabled(_managementOptions))
         {
             return links;
         }
 
-        _logger?.LogTrace("Processing hypermedia for  {ManagementOptions} ", _mgmtOptions);
+        _logger?.LogTrace("Processing hypermedia for  {ManagementOptions} ", _managementOptions);
 
         foreach (var opt in endpointOptions)
         {
-            if (!opt.IsEnabled(_mgmtOptions) || !opt.IsExposed(_mgmtOptions))
+            if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
             {
                 continue;
             }

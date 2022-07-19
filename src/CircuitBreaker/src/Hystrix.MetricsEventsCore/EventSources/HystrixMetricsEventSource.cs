@@ -37,12 +37,12 @@ public class HystrixMetricsEventSource : EventSource
     public void CommandMetrics(
         string commandKey,
         string commandGroup,
-        bool isCiruitBreakerOpen,
+        bool isCircuitBreakerOpen,
         long errorCount,
         long requestCount,
         int currentConcurrentExecutionCount,
-        int latencyExecute_mean,
-        int latencyTotal_mean,
+        int latencyExecuteMean,
+        int latencyTotalMean,
         int reportingHosts,
         string threadPool)
     {
@@ -52,12 +52,12 @@ public class HystrixMetricsEventSource : EventSource
                 1,
                 commandKey,
                 commandGroup,
-                isCiruitBreakerOpen,
+                isCircuitBreakerOpen,
                 errorCount,
                 requestCount,
                 currentConcurrentExecutionCount,
-                latencyExecute_mean,
-                latencyTotal_mean,
+                latencyExecuteMean,
+                latencyTotalMean,
                 reportingHosts,
                 threadPool);
         }
@@ -101,7 +101,7 @@ public class HystrixMetricsEventSource : EventSource
         long rollingCountRequestsBatched,
         long rollingCountBatches,
         long rollingCountResponsesFromCache,
-        int batchSize_mean,
+        int batchSizeMean,
         int reportingHosts)
     {
         if (IsEnabled())
@@ -112,7 +112,7 @@ public class HystrixMetricsEventSource : EventSource
                 rollingCountRequestsBatched,
                 rollingCountBatches,
                 rollingCountResponsesFromCache,
-                batchSize_mean,
+                batchSizeMean,
                 reportingHosts);
         }
     }

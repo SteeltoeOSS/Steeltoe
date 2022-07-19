@@ -38,9 +38,9 @@ public class CloudFoundryApplicationOptionsTest
         Assert.Null(options.Uris);
         Assert.Null(options.Version);
         Assert.Null(options.Instance_IP);
-        Assert.Null(options.InstanceIP);
+        Assert.Null(options.InstanceIp);
         Assert.Null(options.Internal_IP);
-        Assert.Null(options.InternalIP);
+        Assert.Null(options.InternalIp);
         Assert.Equal(-1, options.DiskLimit);
         Assert.Equal(-1, options.FileDescriptorLimit);
         Assert.Equal(-1, options.InstanceIndex);

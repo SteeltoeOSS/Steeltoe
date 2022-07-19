@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
-/// Response object from CredHub /info endpoint
+/// Response object from CredHub /info endpoint.
 /// </summary>
 public class CredHubServerInfo
 {

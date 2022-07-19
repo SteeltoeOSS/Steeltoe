@@ -9,18 +9,18 @@ using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
-public class SteeltoePrometheusExporter : IMetricsExporter
+public class SteeltoePrometheusExporter : MetricsExporter
 {
-    internal PullmetricsCollectionManager CollectionManager { get; }
+    internal PullMetricsCollectionManager CollectionManager { get; }
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
     private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
 
-    internal SteeltoePrometheusExporter(IPullmetricsExporterOptions options = null)
+    internal SteeltoePrometheusExporter(IPullMetricsExporterOptions options = null)
     {
         ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
-        CollectionManager = new PullmetricsCollectionManager(this);
+        CollectionManager = new PullMetricsCollectionManager(this);
     }
 
     public override Func<int, bool> Collect
@@ -55,7 +55,7 @@ public class SteeltoePrometheusExporter : IMetricsExporter
             {
                 try
                 {
-                    cursor = PrometheusSerializer.WriteMetric(_buffer, cursor, metric);
+                    cursor = PrometheusSerializerAdditions.WriteMetric(_buffer, cursor, metric);
                     break;
                 }
                 catch (IndexOutOfRangeException)
@@ -80,8 +80,8 @@ public class SteeltoePrometheusExporter : IMetricsExporter
             }
         }
 
-        var dataview = new ArraySegment<byte>(_buffer, 0, Math.Max(cursor - 1, 0));
-        return new PrometheusCollectionResponse(dataview, DateTime.Now);
+        var dataView = new ArraySegment<byte>(_buffer, 0, Math.Max(cursor - 1, 0));
+        return new PrometheusCollectionResponse(dataView, DateTime.Now);
     }
 
     internal override ICollectionResponse GetCollectionResponse(ICollectionResponse collectionResponse, DateTime updatedTime)

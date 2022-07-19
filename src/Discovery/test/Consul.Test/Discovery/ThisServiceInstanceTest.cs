@@ -24,14 +24,14 @@ public class ThisServiceInstanceTest
         };
         var opts = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration(serviceRegistration, opts);
-        var thiz = new ThisServiceInstance(registration);
-        Assert.Equal("test.foo.bar", thiz.Host);
-        Assert.Equal("foobar", thiz.ServiceId);
-        Assert.False(thiz.IsSecure);
-        Assert.Equal(1234, thiz.Port);
-        Assert.Single(thiz.Metadata);
-        Assert.Contains("foo", thiz.Metadata.Keys);
-        Assert.Contains("bar", thiz.Metadata.Values);
-        Assert.Equal(new Uri("http://test.foo.bar:1234"), thiz.Uri);
+        var instance = new ThisServiceInstance(registration);
+        Assert.Equal("test.foo.bar", instance.Host);
+        Assert.Equal("foobar", instance.ServiceId);
+        Assert.False(instance.IsSecure);
+        Assert.Equal(1234, instance.Port);
+        Assert.Single(instance.Metadata);
+        Assert.Contains("foo", instance.Metadata.Keys);
+        Assert.Contains("bar", instance.Metadata.Values);
+        Assert.Equal(new Uri("http://test.foo.bar:1234"), instance.Uri);
     }
 }

@@ -19,27 +19,27 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public class BlockingQueueConsumerIntegrationTest
 {
-    public const string QUEUE1_NAME = "test.queue1.BlockingQueueConsumerIntegrationTests";
-    public const string QUEUE2_NAME = "test.queue2.BlockingQueueConsumerIntegrationTests";
+    public const string Queue1Name = "test.queue1.BlockingQueueConsumerIntegrationTests";
+    public const string Queue2Name = "test.queue2.BlockingQueueConsumerIntegrationTests";
 
     [Fact]
     public void TestTransactionalLowLevel()
     {
         var connectionFactory = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(connectionFactory);
-        admin.DeclareQueue(new Queue(QUEUE1_NAME));
-        admin.DeclareQueue(new Queue(QUEUE2_NAME));
+        admin.DeclareQueue(new Queue(Queue1Name));
+        admin.DeclareQueue(new Queue(Queue2Name));
         var template = new RabbitTemplate(connectionFactory);
         var blockingQueueConsumer = new BlockingQueueConsumer(
             connectionFactory,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             null,
-            QUEUE1_NAME,
-            QUEUE2_NAME);
+            Queue1Name,
+            Queue2Name);
         var prefix = Guid.NewGuid().ToString();
         blockingQueueConsumer.TagStrategy = new TagStrategy(prefix);
         try
@@ -65,15 +65,15 @@ public class BlockingQueueConsumerIntegrationTest
 
             Assert.Equal(2, consumers.Count);
             var tags = new List<string> { consumers[0].ConsumerTag, consumers[1].ConsumerTag };
-            Assert.Contains($"{prefix}#{QUEUE1_NAME}", tags);
-            Assert.Contains($"{prefix}#{QUEUE2_NAME}", tags);
+            Assert.Contains($"{prefix}#{Queue1Name}", tags);
+            Assert.Contains($"{prefix}#{Queue2Name}", tags);
             blockingQueueConsumer.Stop();
-            Assert.Null(template.ReceiveAndConvert<object>(QUEUE1_NAME));
+            Assert.Null(template.ReceiveAndConvert<object>(Queue1Name));
         }
         finally
         {
-            admin.DeleteQueue(QUEUE1_NAME);
-            admin.DeleteQueue(QUEUE2_NAME);
+            admin.DeleteQueue(Queue1Name);
+            admin.DeleteQueue(Queue2Name);
             connectionFactory.Destroy();
         }
     }
@@ -87,7 +87,7 @@ public class BlockingQueueConsumerIntegrationTest
             connectionFactory,
             new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.AUTO,
+            AcknowledgeMode.Auto,
             true,
             1,
             null,

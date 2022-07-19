@@ -25,7 +25,7 @@ public class SimpleMessageConverterTest
         var converter = new SimpleMessageConverter();
         var message = Message.Create(Encoding.UTF8.GetBytes("test"), new MessageHeaders());
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
+        accessor.ContentType = MessageHeaders.ContentTypeTextPlain;
         var result = converter.FromMessage<string>(message);
         Assert.Equal("test", result);
     }
@@ -36,7 +36,7 @@ public class SimpleMessageConverterTest
         var converter = new SimpleMessageConverter();
         var message = Message.Create(new byte[] { 1, 2, 3 }, new MessageHeaders());
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
+        accessor.ContentType = MessageHeaders.ContentTypeBytes;
         var result = converter.FromMessage<byte[]>(message);
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
@@ -64,7 +64,7 @@ public class SimpleMessageConverterTest
         var message = converter.ToMessage(new byte[] { 1, 2, 3 }, new MessageHeaders());
         var contentType = message.Headers.ContentType();
         var body = message.Payload as byte[];
-        Assert.Equal(MessageHeaders.CONTENT_TYPE_BYTES, contentType);
+        Assert.Equal(MessageHeaders.ContentTypeBytes, contentType);
         Assert.Equal(3, body.Length);
         Assert.Equal(1, body[0]);
         Assert.Equal(2, body[1]);

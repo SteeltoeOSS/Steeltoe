@@ -17,7 +17,7 @@ public class HealthTest : BaseTest
     public void Constructor_InitializesDefaults()
     {
         var health = new HealthCheckResult();
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.NotNull(health.Details);
         Assert.Empty(health.Details);
         Assert.Null(health.Description);
@@ -36,7 +36,7 @@ public class HealthTest : BaseTest
     {
         var health = new HealthEndpointResponse(null)
         {
-            Status = HealthStatus.OUT_OF_SERVICE,
+            Status = HealthStatus.OutOfService,
             Description = "Test",
             Details = new Dictionary<string, object>
             {

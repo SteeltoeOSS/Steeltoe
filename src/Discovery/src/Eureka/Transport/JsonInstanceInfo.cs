@@ -21,7 +21,7 @@ internal sealed class JsonInstanceInfo
     public string AppGroupName { get; set; }
 
     [JsonPropertyName("ipAddr")]
-    public string IpAddr { get; set; }
+    public string IpAddress { get; set; }
 
     [JsonPropertyName("sid")]
     public string Sid { get; set; }
@@ -60,11 +60,9 @@ internal sealed class JsonInstanceInfo
     public string HostName { get; set; }
 
     [JsonPropertyName("status")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public InstanceStatus Status { get; set; }
 
     [JsonPropertyName("overriddenstatus")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public InstanceStatus OverriddenStatus { get; set; }
 
     [JsonPropertyName("leaseInfo")]
@@ -86,8 +84,7 @@ internal sealed class JsonInstanceInfo
     public long LastDirtyTimestamp { get; set; }
 
     [JsonPropertyName("actionType")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
-    public ActionType Actiontype { get; set; }
+    public ActionType ActionType { get; set; }
 
     [JsonPropertyName("asgName")]
     public string AsgName { get; set; }

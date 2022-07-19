@@ -44,11 +44,11 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleInfoRequestAsync_ReturnsExpected()
     {
         var opts = new InfoEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
-        var contribs = new List<IInfoContributor> { new GitInfoContributor() };
-        var ep = new TestInfoEndpoint(opts, contribs);
-        var middle = new InfoEndpointMiddleware(null, ep, mopts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var contributors = new List<IInfoContributor> { new GitInfoContributor() };
+        var ep = new TestInfoEndpoint(opts, contributors);
+        var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
         var context = CreateRequest("GET", "/loggers");
         await middle.HandleInfoRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);

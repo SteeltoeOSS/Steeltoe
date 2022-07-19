@@ -9,9 +9,9 @@ using System;
 
 namespace Steeltoe.Stream.Tck;
 
-public class TypelessMessageConfigurationSA
+public class TypelessMessageConfigurationSa
 {
-    [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
+    [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public object Echo(IMessage value)
     {
         Console.WriteLine(value.Payload);

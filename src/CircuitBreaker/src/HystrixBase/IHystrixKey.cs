@@ -8,18 +8,3 @@ public interface IHystrixKey
 {
     string Name { get; }
 }
-
-public abstract class HystrixKeyDefault : IHystrixKey
-{
-    protected HystrixKeyDefault(string name)
-    {
-        Name = name;
-    }
-
-    public string Name { get; }
-
-    public override string ToString()
-    {
-        return Name;
-    }
-}

@@ -12,14 +12,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 public class HystrixRollingPercentile
 {
-    internal readonly BucketCircularArray _buckets;
-    internal readonly int _timeInMilliseconds;
-    internal readonly int _numberOfBuckets;
-    internal readonly int _bucketDataLength;
-    internal readonly int _bucketSizeInMilliseconds;
-    internal readonly bool _enabled;
+    internal readonly BucketCircularArray Buckets;
+    internal readonly int TimeInMilliseconds;
+    internal readonly int NumberOfBuckets;
+    internal readonly int BucketDataLength;
+    internal readonly int BucketSizeInMilliseconds;
+    internal readonly bool Enabled;
 
-    private static readonly ITime Actual_time = new ActualTime();
+    private static readonly ITime ActualTime = new ActualTime();
     private readonly ITime _time;
 
     /*
@@ -29,7 +29,7 @@ public class HystrixRollingPercentile
     private volatile PercentileSnapshot _currentPercentileSnapshot = new (0);
 
     public HystrixRollingPercentile(int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
-        : this(Actual_time, timeInMilliseconds, numberOfBuckets, bucketDataLength, enabled)
+        : this(ActualTime, timeInMilliseconds, numberOfBuckets, bucketDataLength, enabled)
     {
     }
 
@@ -37,25 +37,25 @@ public class HystrixRollingPercentile
     internal HystrixRollingPercentile(ITime time, int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
     {
         _time = time;
-        _timeInMilliseconds = timeInMilliseconds;
-        _numberOfBuckets = numberOfBuckets;
-        _bucketDataLength = bucketDataLength;
-        _enabled = enabled;
+        this.TimeInMilliseconds = timeInMilliseconds;
+        this.NumberOfBuckets = numberOfBuckets;
+        this.BucketDataLength = bucketDataLength;
+        this.Enabled = enabled;
 
-        if (_timeInMilliseconds % _numberOfBuckets != 0)
+        if (this.TimeInMilliseconds % this.NumberOfBuckets != 0)
         {
             throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
         }
 
-        _bucketSizeInMilliseconds = _timeInMilliseconds / _numberOfBuckets;
+        BucketSizeInMilliseconds = this.TimeInMilliseconds / this.NumberOfBuckets;
 
-        _buckets = new BucketCircularArray(_numberOfBuckets);
+        Buckets = new BucketCircularArray(this.NumberOfBuckets);
     }
 
     public void AddValue(params int[] value)
     {
         /* no-op if disabled */
-        if (!_enabled)
+        if (!Enabled)
         {
             return;
         }
@@ -64,10 +64,10 @@ public class HystrixRollingPercentile
         {
             try
             {
-                var cbucket = GetCurrentBucket();
-                if (cbucket != null)
+                var currentBucket = GetCurrentBucket();
+                if (currentBucket != null)
                 {
-                    cbucket._data.AddValue(v);
+                    currentBucket.Data.AddValue(v);
                 }
             }
             catch (Exception)
@@ -80,7 +80,7 @@ public class HystrixRollingPercentile
     public int GetPercentile(double percentile)
     {
         /* no-op if disabled */
-        if (!_enabled)
+        if (!Enabled)
         {
             return -1;
         }
@@ -97,7 +97,7 @@ public class HystrixRollingPercentile
         get
         {
             /* no-op if disabled */
-            if (!_enabled)
+            if (!Enabled)
             {
                 return -1;
             }
@@ -113,16 +113,16 @@ public class HystrixRollingPercentile
     public void Reset()
     {
         /* no-op if disabled */
-        if (!_enabled)
+        if (!Enabled)
         {
             return;
         }
 
         // clear buckets so we start over again
-        _buckets.Clear();
+        Buckets.Clear();
 
         // and also make sure the percentile snapshot gets reset
-        _currentPercentileSnapshot = new PercentileSnapshot(_buckets.Array);
+        _currentPercentileSnapshot = new PercentileSnapshot(Buckets.Array);
     }
 
     private PercentileSnapshot CurrentPercentileSnapshot => _currentPercentileSnapshot;
@@ -139,8 +139,8 @@ public class HystrixRollingPercentile
          * Retrieve the latest bucket if the given time is BEFORE the end of the bucket window, otherwise it returns NULL.
          * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
          */
-        var currentBucket = _buckets.PeekLast;
-        if (currentBucket != null && currentTime < currentBucket._windowStart + _bucketSizeInMilliseconds)
+        var currentBucket = Buckets.PeekLast;
+        if (currentBucket != null && currentTime < currentBucket.WindowStart + BucketSizeInMilliseconds)
         {
             // if we're within the bucket 'window of time' return the current one
             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
@@ -175,46 +175,46 @@ public class HystrixRollingPercentile
             currentTime = _time.CurrentTimeInMillis;
             try
             {
-                if (_buckets.PeekLast == null)
+                if (Buckets.PeekLast == null)
                 {
                     // the list is empty so create the first bucket
-                    var newBucket = new Bucket(currentTime, _bucketDataLength);
-                    _buckets.AddLast(newBucket);
+                    var newBucket = new Bucket(currentTime, BucketDataLength);
+                    Buckets.AddLast(newBucket);
                     return newBucket;
                 }
                 else
                 {
                     // We go into a loop so that it will create as many buckets as needed to catch up to the current time
                     // as we want the buckets complete even if we don't have transactions during a period of time.
-                    for (var i = 0; i < _numberOfBuckets; i++)
+                    for (var i = 0; i < NumberOfBuckets; i++)
                     {
                         // we have at least 1 bucket so retrieve it
-                        var lastBucket = _buckets.PeekLast;
-                        if (currentTime < lastBucket._windowStart + _bucketSizeInMilliseconds)
+                        var lastBucket = Buckets.PeekLast;
+                        if (currentTime < lastBucket.WindowStart + BucketSizeInMilliseconds)
                         {
                             // if we're within the bucket 'window of time' return the current one
                             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
                             // we'll just use the latest as long as we're not AFTER the window
                             return lastBucket;
                         }
-                        else if (currentTime - (lastBucket._windowStart + _bucketSizeInMilliseconds) > _timeInMilliseconds)
+                        else if (currentTime - (lastBucket.WindowStart + BucketSizeInMilliseconds) > TimeInMilliseconds)
                         {
                             // the time passed is greater than the entire rolling counter so we want to clear it all and start from scratch
                             Reset();
 
                             // recursively call getCurrentBucket which will create a new bucket and return it
                             // return GetCurrentBucket();
-                            var newBucket = new Bucket(currentTime, _bucketDataLength);
-                            _buckets.AddLast(newBucket);
+                            var newBucket = new Bucket(currentTime, BucketDataLength);
+                            Buckets.AddLast(newBucket);
                             return newBucket;
                         }
                         else
                         {
                             // we're past the window so we need to create a new bucket
-                            var allBuckets = _buckets.Array;
+                            var allBuckets = Buckets.Array;
 
                             // create a new bucket and add it as the new 'last' (once this is done other threads will start using it on subsequent retrievals)
-                            _buckets.AddLast(new Bucket(lastBucket._windowStart + _bucketSizeInMilliseconds, _bucketDataLength));
+                            Buckets.AddLast(new Bucket(lastBucket.WindowStart + BucketSizeInMilliseconds, BucketDataLength));
 
                             // we created a new bucket so let's re-generate the PercentileSnapshot (not including the new bucket)
                             _currentPercentileSnapshot = new PercentileSnapshot(allBuckets);
@@ -222,7 +222,7 @@ public class HystrixRollingPercentile
                     }
 
                     // we have finished the for-loop and created all of the buckets, so return the lastBucket now
-                    return _buckets.PeekLast;
+                    return Buckets.PeekLast;
                 }
             }
             finally
@@ -232,7 +232,7 @@ public class HystrixRollingPercentile
         }
         else
         {
-            currentBucket = _buckets.PeekLast;
+            currentBucket = Buckets.PeekLast;
             if (currentBucket != null)
             {
                 // we didn't get the lock so just return the latest bucket while another thread creates the next one
@@ -242,9 +242,9 @@ public class HystrixRollingPercentile
             {
                 // the rare scenario where multiple threads raced to create the very first bucket
                 // wait slightly and then use recursion while the other thread finishes creating a bucket
-                if (Time.WaitUntil(() => _buckets.PeekLast != null, 500))
+                if (Time.WaitUntil(() => Buckets.PeekLast != null, 500))
                 {
-                    return _buckets.PeekLast;
+                    return Buckets.PeekLast;
                 }
                 else
                 {
@@ -256,14 +256,14 @@ public class HystrixRollingPercentile
 
     internal sealed class PercentileBucketData
     {
-        internal readonly int _datalength;
-        internal readonly AtomicIntegerArray _list;
-        internal readonly AtomicInteger _index = new ();
+        internal readonly int DataLength;
+        internal readonly AtomicIntegerArray List;
+        internal readonly AtomicInteger Index = new ();
 
         public PercentileBucketData(int dataLength)
         {
-            _datalength = dataLength;
-            _list = new AtomicIntegerArray(dataLength);
+            DataLength = dataLength;
+            List = new AtomicIntegerArray(dataLength);
         }
 
         public void AddValue(params int[] latency)
@@ -271,7 +271,7 @@ public class HystrixRollingPercentile
             foreach (var l in latency)
             {
                 /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
-                _list[_index.GetAndIncrement() % _datalength] = l;
+                List[Index.GetAndIncrement() % DataLength] = l;
 
                 // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
                 // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
@@ -283,13 +283,13 @@ public class HystrixRollingPercentile
         {
             get
             {
-                if (_index.Value > _list.Length)
+                if (Index.Value > List.Length)
                 {
-                    return _list.Length;
+                    return List.Length;
                 }
                 else
                 {
-                    return _index.Value;
+                    return Index.Value;
                 }
             }
         }
@@ -309,7 +309,7 @@ public class HystrixRollingPercentile
             // also this way we capture the actual index size rather than the max so size the int[] to only what we need
             foreach (var bd in buckets)
             {
-                lengthFromBuckets += bd._data._datalength;
+                lengthFromBuckets += bd.Data.DataLength;
             }
 
             _data = new int[lengthFromBuckets];
@@ -317,11 +317,11 @@ public class HystrixRollingPercentile
             var sum = 0;
             foreach (var bd in buckets)
             {
-                var pbd = bd._data;
+                var pbd = bd.Data;
                 var pbdLength = pbd.Length;
                 for (var i = 0; i < pbdLength; i++)
                 {
-                    var v = pbd._list[i];
+                    var v = pbd.List[i];
                     _data[index++] = v;
                     sum += v;
                 }
@@ -425,41 +425,41 @@ public class HystrixRollingPercentile
              * between ListState objects and multiple threads could maintain references across these
              * compound operations so I want the visibility/concurrency guarantees
              */
-            internal readonly AtomicReferenceArray<Bucket> _data;
-            internal readonly int _size;
-            internal readonly int _buckettail;
-            internal readonly int _head;
-            internal BucketCircularArray _cb;
+            internal readonly AtomicReferenceArray<Bucket> Data;
+            internal readonly int Size;
+            internal readonly int BucketTail;
+            internal readonly int Head;
+            internal BucketCircularArray Cb;
 
             public ListState(BucketCircularArray cb, AtomicReferenceArray<Bucket> data, int head, int tail)
             {
-                _cb = cb;
-                _head = head;
-                _buckettail = tail;
+                this.Cb = cb;
+                this.Head = head;
+                BucketTail = tail;
                 if (head == 0 && tail == 0)
                 {
-                    _size = 0;
+                    Size = 0;
                 }
                 else
                 {
-                    _size = (tail + cb._dataLength - head) % cb._dataLength;
+                    Size = (tail + cb._dataLength - head) % cb._dataLength;
                 }
 
-                _data = data;
+                this.Data = data;
             }
 
             public Bucket Tail
             {
                 get
                 {
-                    if (_size == 0)
+                    if (Size == 0)
                     {
                         return null;
                     }
                     else
                     {
                         // we want to get the last item, so size()-1
-                        return _data[Convert(_size - 1)];
+                        return Data[Convert(Size - 1)];
                     }
                 }
             }
@@ -474,9 +474,9 @@ public class HystrixRollingPercentile
                         * just potentially return stale data which we are okay with doing
                         */
                     var array = new List<Bucket>();
-                    for (var i = 0; i < _size; i++)
+                    for (var i = 0; i < Size; i++)
                     {
-                        array.Add(_data[Convert(i)]);
+                        array.Add(Data[Convert(i)]);
                     }
 
                     return array.ToArray();
@@ -485,7 +485,7 @@ public class HystrixRollingPercentile
 
             public ListState Clear()
             {
-                return new ListState(_cb, new AtomicReferenceArray<Bucket>(_cb._dataLength), 0, 0);
+                return new ListState(Cb, new AtomicReferenceArray<Bucket>(Cb._dataLength), 0, 0);
             }
 
             public ListState AddBucket(Bucket b)
@@ -497,7 +497,7 @@ public class HystrixRollingPercentile
                  * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                  * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                  */
-                _data[_buckettail] = b;
+                Data[BucketTail] = b;
                 return IncrementTail();
             }
 
@@ -505,21 +505,21 @@ public class HystrixRollingPercentile
             // always 0) and calculates the index within elementData
             private int Convert(int index)
             {
-                return (index + _head) % _cb._dataLength;
+                return (index + Head) % Cb._dataLength;
             }
 
             private ListState IncrementTail()
             {
                 /* if incrementing results in growing larger than 'length' which is the max we should be at, then also increment head (equivalent of removeFirst but done atomically) */
-                if (_size == _cb._numBuckets)
+                if (Size == Cb._numBuckets)
                 {
                     // increment tail and head
-                    return new ListState(_cb, _data, (_head + 1) % _cb._dataLength, (_buckettail + 1) % _cb._dataLength);
+                    return new ListState(Cb, Data, (Head + 1) % Cb._dataLength, (BucketTail + 1) % Cb._dataLength);
                 }
                 else
                 {
                     // increment only tail
-                    return new ListState(_cb, _data, _head, (_buckettail + 1) % _cb._dataLength);
+                    return new ListState(Cb, Data, Head, (BucketTail + 1) % Cb._dataLength);
                 }
             }
         }
@@ -585,7 +585,7 @@ public class HystrixRollingPercentile
         {
             // the size can also be worked out each time as:
             // return (tail + data.length() - head) % data.length();
-            get { return _state.Value._size; }
+            get { return _state.Value.Size; }
         }
 
         public Bucket PeekLast => _state.Value.Tail;
@@ -606,13 +606,13 @@ public class HystrixRollingPercentile
 
     internal sealed class Bucket
     {
-        internal readonly long _windowStart;
-        internal readonly PercentileBucketData _data;
+        internal readonly long WindowStart;
+        internal readonly PercentileBucketData Data;
 
         public Bucket(long startTime, int bucketDataLength)
         {
-            _windowStart = startTime;
-            _data = new PercentileBucketData(bucketDataLength);
+            WindowStart = startTime;
+            Data = new PercentileBucketData(bucketDataLength);
         }
     }
 }

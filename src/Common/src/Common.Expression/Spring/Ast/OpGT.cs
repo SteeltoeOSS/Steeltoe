@@ -9,12 +9,12 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
-public class OpGT : Operator
+public class OpGt : Operator
 {
-    public OpGT(int startPos, int endPos, params SpelNode[] operands)
+    public OpGt(int startPos, int endPos, params SpelNode[] operands)
         : base(">", startPos, endPos, operands)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
@@ -22,8 +22,8 @@ public class OpGT : Operator
         var left = LeftOperand.GetValueInternal(state).Value;
         var right = RightOperand.GetValueInternal(state).Value;
 
-        _leftActualDescriptor = CodeFlow.ToDescriptorFromObject(left);
-        _rightActualDescriptor = CodeFlow.ToDescriptorFromObject(right);
+        leftActualDescriptor = CodeFlow.ToDescriptorFromObject(left);
+        rightActualDescriptor = CodeFlow.ToDescriptorFromObject(right);
 
         if (IsNumber(left) && IsNumber(right))
         {

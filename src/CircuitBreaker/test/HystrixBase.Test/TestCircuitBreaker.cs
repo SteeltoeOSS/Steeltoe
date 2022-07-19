@@ -31,14 +31,14 @@ public class TestCircuitBreaker : ICircuitBreaker
     {
         get
         {
-            // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
+            // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
             if (_forceShortCircuit)
             {
                 return true;
             }
             else
             {
-                return Metrics.Healthcounts.ErrorCount >= 3;
+                return Metrics.HealthCounts.ErrorCount >= 3;
             }
         }
     }

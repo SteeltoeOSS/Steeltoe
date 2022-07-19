@@ -8,19 +8,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public static class HystrixCounters
 {
-    private static readonly AtomicInteger _concurrentThreadsExecuting = new (0);
+    private static readonly AtomicInteger ConcurrentThreadsExecuting = new (0);
 
     internal static int IncrementGlobalConcurrentThreads()
     {
-        return _concurrentThreadsExecuting.IncrementAndGet();
+        return ConcurrentThreadsExecuting.IncrementAndGet();
     }
 
     internal static int DecrementGlobalConcurrentThreads()
     {
-        return _concurrentThreadsExecuting.DecrementAndGet();
+        return ConcurrentThreadsExecuting.DecrementAndGet();
     }
 
-    public static int GlobalConcurrentThreadsExecuting => _concurrentThreadsExecuting.Value;
+    public static int GlobalConcurrentThreadsExecuting => ConcurrentThreadsExecuting.Value;
 
     public static int CommandCount => HystrixCommandKeyDefault.CommandCount;
 

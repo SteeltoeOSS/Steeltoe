@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.Support;
 
 public static class MessageBuilder
 {
-    public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
+    public static AbstractMessageBuilder FromMessage<TPayload>(IMessage<TPayload> message)
     {
-        return new MessageBuilder<P>(message);
+        return new MessageBuilder<TPayload>(message);
     }
 
     public static AbstractMessageBuilder FromMessage(IMessage message, Type payloadType = null)
@@ -29,9 +29,9 @@ public static class MessageBuilder
             null);
     }
 
-    public static AbstractMessageBuilder WithPayload<P>(P payload)
+    public static AbstractMessageBuilder WithPayload<TPayload>(TPayload payload)
     {
-        return new MessageBuilder<P>(payload, new MessageHeaderAccessor());
+        return new MessageBuilder<TPayload>(payload, new MessageHeaderAccessor());
     }
 
     public static AbstractMessageBuilder WithPayload(object payload, Type payloadType = null)
@@ -48,9 +48,9 @@ public static class MessageBuilder
             null);
     }
 
-    public static IMessage<P> CreateMessage<P>(P payload, IMessageHeaders messageHeaders)
+    public static IMessage<TPayload> CreateMessage<TPayload>(TPayload payload, IMessageHeaders messageHeaders)
     {
-        return (IMessage<P>)CreateMessage(payload, messageHeaders, typeof(P));
+        return (IMessage<TPayload>)CreateMessage(payload, messageHeaders, typeof(TPayload));
     }
 
     public static IMessage CreateMessage(object payload, IMessageHeaders messageHeaders, Type payloadType = null)
@@ -105,85 +105,13 @@ public static class MessageBuilder
     }
 }
 
-public abstract class AbstractMessageBuilder
-{
-    protected readonly object payload;
-
-    protected readonly IMessage originalMessage;
-
-    protected MessageHeaderAccessor headerAccessor;
-
-    protected AbstractMessageBuilder()
-    {
-    }
-
-    protected AbstractMessageBuilder(IMessage message)
-    {
-        if (message == null)
-        {
-            throw new ArgumentNullException(nameof(message));
-        }
-
-        payload = message.Payload;
-        originalMessage = message;
-        headerAccessor = new MessageHeaderAccessor(message);
-    }
-
-    protected AbstractMessageBuilder(MessageHeaderAccessor accessor)
-    {
-        payload = null;
-        originalMessage = null;
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
-    }
-
-    protected AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
-    {
-        this.payload = payload ?? throw new ArgumentNullException(nameof(payload));
-        originalMessage = null;
-        headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
-    }
-
-    public abstract AbstractMessageBuilder SetHeaders(MessageHeaderAccessor accessor);
-
-    public abstract AbstractMessageBuilder SetHeader(string headerName, object headerValue);
-
-    public abstract AbstractMessageBuilder SetHeaderIfAbsent(string headerName, object headerValue);
-
-    public abstract AbstractMessageBuilder RemoveHeaders(params string[] headerPatterns);
-
-    public abstract AbstractMessageBuilder RemoveHeader(string headerName);
-
-    public abstract AbstractMessageBuilder CopyHeaders(IDictionary<string, object> headersToCopy);
-
-    public abstract AbstractMessageBuilder CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy);
-
-    public abstract AbstractMessageBuilder SetReplyChannel(IMessageChannel replyChannel);
-
-    public abstract AbstractMessageBuilder SetReplyChannelName(string replyChannelName);
-
-    public abstract AbstractMessageBuilder SetErrorChannel(IMessageChannel errorChannel);
-
-    public abstract AbstractMessageBuilder SetErrorChannelName(string errorChannelName);
-
-    public virtual IMessage Build()
-    {
-        if (originalMessage != null && !headerAccessor.IsModified)
-        {
-            return originalMessage;
-        }
-
-        var headersToUse = headerAccessor.ToMessageHeaders();
-        return Message.Create(payload, headersToUse, payload.GetType());
-    }
-}
-
-public class MessageBuilder<P> : AbstractMessageBuilder
+public class MessageBuilder<TPayload> : AbstractMessageBuilder
 {
     protected internal MessageBuilder()
     {
     }
 
-    protected internal MessageBuilder(IMessage<P> message)
+    protected internal MessageBuilder(IMessage<TPayload> message)
         : base(message)
     {
     }
@@ -198,7 +126,7 @@ public class MessageBuilder<P> : AbstractMessageBuilder
     {
     }
 
-    protected internal MessageBuilder(P payload, MessageHeaderAccessor accessor)
+    protected internal MessageBuilder(TPayload payload, MessageHeaderAccessor accessor)
         : base(payload, accessor)
     {
     }
@@ -269,8 +197,8 @@ public class MessageBuilder<P> : AbstractMessageBuilder
         return this;
     }
 
-    public new IMessage<P> Build()
+    public new IMessage<TPayload> Build()
     {
-        return (IMessage<P>)base.Build();
+        return (IMessage<TPayload>)base.Build();
     }
 }

@@ -12,7 +12,7 @@ namespace Steeltoe.Stream.Binding;
 
 public abstract class AbstractBindingLifecycle : ISmartLifecycle
 {
-    protected readonly IBindingService _bindingService;
+    protected readonly IBindingService BindingService;
 
     private readonly List<IBindable> _bindables;
 
@@ -20,7 +20,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
 
     protected AbstractBindingLifecycle(IBindingService bindingService, IEnumerable<IBindable> bindables)
     {
-        _bindingService = bindingService;
+        BindingService = bindingService;
         _bindables = bindables.ToList();
     }
 

@@ -47,10 +47,10 @@ public class RabbitDestination
         }
 
         var result = ParseDestination(destination);
-        return new RabbitDestination(result.Item1, result.Item2);
+        return new RabbitDestination(result.ExchangeName, result.RoutingKey);
     }
 
-    private static (string, string) ParseDestination(string destination)
+    private static (string ExchangeName, string RoutingKey) ParseDestination(string destination)
     {
         var split = destination.Split('/');
         if (split.Length >= 2)

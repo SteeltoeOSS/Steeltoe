@@ -35,7 +35,7 @@ public class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -50,7 +50,7 @@ public class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public async Task AddServiceDiscovery_IHostBuilder_StartsUp()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
 
@@ -60,7 +60,7 @@ public class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();

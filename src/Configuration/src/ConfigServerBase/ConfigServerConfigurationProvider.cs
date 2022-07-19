@@ -36,36 +36,36 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// configuration settings (<see cref="ConfigServerClientSettings"/> are found.
     ///   (e.g. spring:cloud:config:env, spring:cloud:config:uri, spring:cloud:config:enabled, etc.)
     /// </summary>
-    public const string PREFIX = "spring:cloud:config";
+    public const string Prefix = "spring:cloud:config";
 
-    public const string TOKEN_HEADER = "X-Config-Token";
-    public const string STATE_HEADER = "X-Config-State";
+    public const string TokenHeader = "X-Config-Token";
+    public const string StateHeader = "X-Config-State";
 
-    protected ConfigServerClientSettings _settings; // Current settings
-    protected HttpClient _httpClient;
-    protected ILogger _logger;
-    protected ILoggerFactory _loggerFactory;
-    protected IConfiguration _configuration;
-    protected Timer _tokenRenewTimer;
-    protected Timer _refreshTimer;
-    protected bool _hasConfiguration;
+    protected ConfigServerClientSettings settings; // Current settings
+    protected HttpClient httpClient;
+    protected ILogger logger;
+    protected ILoggerFactory loggerFactory;
+    protected IConfiguration configuration;
+    protected Timer tokenRenewTimer;
+    protected Timer refreshTimer;
+    protected bool hasConfiguration;
 
     private const string ArrayPattern = @"(\[[0-9]+\])*$";
-    private const string VAULT_RENEW_PATH = "vault/v1/auth/token/renew-self";
-    private const string VAULT_TOKEN_HEADER = "X-Vault-Token";
-    private const string DELIMITER_STRING = ".";
-    private const char DELIMITER_CHAR = '.';
-    private const char ESCAPE_CHAR = '\\';
-    private const string ESCAPE_STRING = "\\";
+    private const string VaultRenewPath = "vault/v1/auth/token/renew-self";
+    private const string VaultTokenHeader = "X-Vault-Token";
+    private const string DelimiterString = ".";
+    private const char DelimiterChar = '.';
+    private const char EscapeChar = '\\';
+    private const string EscapeString = "\\";
 
-    private static readonly char[] COMMA_DELIMIT = { ',' };
-    private static readonly string[] EMPTY_LABELS = { string.Empty };
+    private static readonly char[] CommaDelimit = { ',' };
+    private static readonly string[] EmptyLabels = { string.Empty };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class with default
-    /// configuration settings. <see cref="ConfigServerClientSettings"/>
+    /// configuration settings. <see cref="ConfigServerClientSettings"/>.
     /// </summary>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ILoggerFactory logFactory = null)
         : this(new ConfigServerClientSettings(), logFactory)
     {
@@ -75,7 +75,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class.
     /// </summary>
     /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
         _ = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -88,7 +88,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// </summary>
     /// <param name="settings">the configuration settings the provider uses when accessing the server.</param>
     /// <param name="httpClient">a HttpClient the provider uses to make requests of the server.</param>
-    /// <param name="logFactory">optional logging factory</param>
+    /// <param name="logFactory">optional logging factory.</param>
     public ConfigServerConfigurationProvider(ConfigServerClientSettings settings, HttpClient httpClient, ILoggerFactory logFactory = null)
     {
         _ = settings ?? throw new ArgumentNullException(nameof(settings));
@@ -98,7 +98,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>.
     /// </summary>
     /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source)
@@ -108,10 +108,10 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>
+    /// Initializes a new instance of the <see cref="ConfigServerConfigurationProvider"/> class from a <see cref="ConfigServerConfigurationSource"/>.
     /// </summary>
     /// <param name="source">the <see cref="ConfigServerConfigurationSource"/> the provider uses when accessing the server.</param>
-    /// <param name="httpClient">the httpClient to use</param>
+    /// <param name="httpClient">the httpClient to use.</param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, HttpClient httpClient)
     {
         _ = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
@@ -120,59 +120,59 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal void Initialize(ConfigServerConfigurationSource source, HttpClient httpClient = null, ILoggerFactory logFactory = null)
     {
-        var settings = source.DefaultSettings;
-        var configuration = WrapWithPlaceholderResolver(source.Configuration);
-        Initialize(settings, configuration, httpClient, logFactory);
+        var newSettings = source.DefaultSettings;
+        var configurationValue = WrapWithPlaceholderResolver(source.Configuration);
+        Initialize(newSettings, configurationValue, httpClient, logFactory);
     }
 
     internal void Initialize(ConfigServerClientSettings settings, IConfiguration configuration = null, HttpClient httpClient = null, ILoggerFactory logFactory = null)
     {
-        _loggerFactory = logFactory ?? new NullLoggerFactory();
-        _logger = _loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
+        loggerFactory = logFactory ?? new NullLoggerFactory();
+        logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
         if (configuration != null)
         {
-            _configuration = configuration;
-            _hasConfiguration = true;
+            this.configuration = configuration;
+            hasConfiguration = true;
         }
         else
         {
-            _configuration = new ConfigurationBuilder().Build();
-            _hasConfiguration = false;
+            this.configuration = new ConfigurationBuilder().Build();
+            hasConfiguration = false;
         }
 
-        _settings = settings;
-        _httpClient = httpClient ?? GetHttpClient(_settings);
+        this.settings = settings;
+        this.httpClient = httpClient ?? GetHttpClient(this.settings);
 
         OnSettingsChanged();
     }
 
     private void OnSettingsChanged()
     {
-        var existingPollingInterval = _settings.PollingInterval;
-        if (_hasConfiguration)
+        var existingPollingInterval = settings.PollingInterval;
+        if (hasConfiguration)
         {
-            ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
-            _configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
+            ConfigurationSettingsHelper.Initialize(Prefix, settings, configuration);
+            configuration.GetReloadToken().RegisterChangeCallback(_ => OnSettingsChanged(), null);
         }
 
-        if (_settings.PollingInterval == TimeSpan.Zero)
+        if (settings.PollingInterval == TimeSpan.Zero)
         {
-            _refreshTimer?.Dispose();
+            refreshTimer?.Dispose();
         }
-        else if (_refreshTimer == null)
+        else if (refreshTimer == null)
         {
-            _refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, _settings.PollingInterval);
+            refreshTimer = new Timer(_ => DoLoad(), null, TimeSpan.Zero, settings.PollingInterval);
         }
-        else if (existingPollingInterval != _settings.PollingInterval)
+        else if (existingPollingInterval != settings.PollingInterval)
         {
-            _refreshTimer.Change(TimeSpan.Zero, _settings.PollingInterval);
+            refreshTimer.Change(TimeSpan.Zero, settings.PollingInterval);
         }
     }
 
     /// <summary>
     /// Gets the configuration settings the provider uses when accessing the server.
     /// </summary>
-    public virtual ConfigServerClientSettings Settings => _settings;
+    public virtual ConfigServerClientSettings Settings => settings;
 
     internal JsonSerializerOptions SerializerOptions { get; private set; } =
         new ()
@@ -185,13 +185,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal IDictionary<string, string> Properties => Data;
 
-    internal ILogger Logger => _logger;
+    internal ILogger Logger => logger;
 
-    internal ConfigServerDiscoveryService _configServerDiscoveryService;
+    internal ConfigServerDiscoveryService ConfigServerDiscoveryService;
 
     /// <summary>
     /// Loads configuration data from the Spring Cloud Configuration Server as specified by
-    /// the <see cref="Settings"/>
+    /// the <see cref="Settings"/>.
     /// </summary>
     public override void Load()
     {
@@ -212,48 +212,48 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             config.Add(s);
         }
 
-        _configuration = WrapWithPlaceholderResolver(config.Build());
-        ConfigurationSettingsHelper.Initialize(PREFIX, _settings, _configuration);
+        configuration = WrapWithPlaceholderResolver(config.Build());
+        ConfigurationSettingsHelper.Initialize(Prefix, settings, configuration);
         return this;
     }
 
     internal ConfigEnvironment LoadInternal(bool updateDictionary = true)
     {
-        if (!_settings.Enabled)
+        if (!settings.Enabled)
         {
-            _logger.LogInformation("Config Server client disabled, did not fetch configuration!");
+            logger.LogInformation("Config Server client disabled, did not fetch configuration!");
             return null;
         }
 
         if (IsDiscoveryFirstEnabled())
         {
-            _configServerDiscoveryService ??= new ConfigServerDiscoveryService(_configuration, _settings, _loggerFactory);
+            ConfigServerDiscoveryService ??= new ConfigServerDiscoveryService(configuration, settings, loggerFactory);
             DiscoverServerInstances();
         }
 
         // Adds client settings (e.g spring:cloud:config:uri, etc) to the Data dictionary
         AddConfigServerClientSettings();
 
-        if (_settings.RetryEnabled && _settings.FailFast)
+        if (settings.RetryEnabled && settings.FailFast)
         {
             var attempts = 0;
-            var backOff = _settings.RetryInitialInterval;
+            var backOff = settings.RetryInitialInterval;
             do
             {
-                _logger.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+                logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
                 try
                 {
                     return DoLoad(updateDictionary);
                 }
                 catch (ConfigServerException e)
                 {
-                    _logger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", _settings.Uri, e);
+                    logger.LogInformation("Failed fetching config from server at: {0}, Exception: {1}", settings.Uri, e);
                     attempts++;
-                    if (attempts < _settings.RetryAttempts)
+                    if (attempts < settings.RetryAttempts)
                     {
                         Thread.CurrentThread.Join(backOff);
-                        var nextBackoff = (int)(backOff * _settings.RetryMultiplier);
-                        backOff = Math.Min(nextBackoff, _settings.RetryMaxInterval);
+                        var nextBackOff = (int)(backOff * settings.RetryMultiplier);
+                        backOff = Math.Min(nextBackOff, settings.RetryMaxInterval);
                     }
                     else
                     {
@@ -265,7 +265,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
         else
         {
-            _logger.LogInformation("Fetching config from server at: {0}", _settings.Uri);
+            logger.LogInformation("Fetching config from server at: {0}", settings.Uri);
             return DoLoad(updateDictionary);
         }
     }
@@ -275,7 +275,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         Exception error = null;
 
         // Get arrays of config server uris to check
-        var uris = _settings.GetUris();
+        var uris = settings.GetUris();
 
         try
         {
@@ -285,7 +285,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
                 if (uris.Length > 1)
                 {
-                    _logger.LogInformation("Multiple Config Server Uris listed.");
+                    logger.LogInformation("Multiple Config Server Uris listed.");
 
                     // Invoke config servers
                     task = RemoteLoadAsync(uris, label);
@@ -307,7 +307,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 // Update config Data dictionary with any results
                 if (env != null)
                 {
-                    _logger.LogInformation(
+                    logger.LogInformation(
                         "Located environment: {name}, {profiles}, {label}, {version}, {state}", env.Name, env.Profiles, env.Label, env.Version, env.State);
                     if (updateDictionary)
                     {
@@ -360,9 +360,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             error = e;
         }
 
-        _logger.LogWarning("Could not locate PropertySource: " + error);
+        logger.LogWarning("Could not locate PropertySource: " + error);
 
-        if (_settings.FailFast)
+        if (settings.FailFast)
         {
             throw new ConfigServerException("Could not locate PropertySource, fail fast property is set, failing", error);
         }
@@ -372,20 +372,20 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     internal string[] GetLabels()
     {
-        if (string.IsNullOrWhiteSpace(_settings.Label))
+        if (string.IsNullOrWhiteSpace(settings.Label))
         {
-            return EMPTY_LABELS;
+            return EmptyLabels;
         }
 
-        return _settings.Label.Split(COMMA_DELIMIT, StringSplitOptions.RemoveEmptyEntries);
+        return settings.Label.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
     }
 
     internal void DiscoverServerInstances()
     {
-        var instances = _configServerDiscoveryService.GetConfigServerInstances();
+        var instances = ConfigServerDiscoveryService.GetConfigServerInstances();
         if (!instances.Any())
         {
-            if (_settings.FailFast)
+            if (settings.FailFast)
             {
                 throw new ConfigServerException("Could not locate config server via discovery, are you missing a Discovery service assembly?");
             }
@@ -393,7 +393,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             return;
         }
 
-        UpdateSettingsFromDiscovery(instances, _settings);
+        UpdateSettingsFromDiscovery(instances, settings);
     }
 
     internal void UpdateSettingsFromDiscovery(IEnumerable<IServiceInstance> instances, ConfigServerClientSettings settings)
@@ -435,61 +435,61 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         }
     }
 
-    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDI, ILoggerFactory loggerFactory)
+    internal async Task ProvideRuntimeReplacementsAsync(IDiscoveryClient discoveryClientFromDi, ILoggerFactory loggerFactory)
     {
-        if (_configServerDiscoveryService is not null)
+        if (ConfigServerDiscoveryService is not null)
         {
-            await _configServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDI, loggerFactory);
+            await ConfigServerDiscoveryService.ProvideRuntimeReplacementsAsync(discoveryClientFromDi, loggerFactory);
         }
     }
 
     internal async Task ShutdownAsync()
     {
-        if (_configServerDiscoveryService is not null)
+        if (ConfigServerDiscoveryService is not null)
         {
-            await _configServerDiscoveryService.ShutdownAsync();
+            await ConfigServerDiscoveryService.ShutdownAsync();
         }
     }
 
     /// <summary>
-    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server.
     /// </summary>
-    /// <param name="requestUri">the Uri used when accessing the server</param>
-    /// <param name="username">username to use if required</param>
-    /// <param name="password">password to use if required</param>
-    /// <returns>The HttpRequestMessage built from the path</returns>
+    /// <param name="requestUri">the Uri used when accessing the server.</param>
+    /// <param name="username">username to use if required.</param>
+    /// <param name="password">password to use if required.</param>
+    /// <returns>The HttpRequestMessage built from the path.</returns>
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri, string username, string password)
     {
-        var request = string.IsNullOrEmpty(_settings.AccessTokenUri)
+        var request = string.IsNullOrEmpty(settings.AccessTokenUri)
             ? HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, username, password)
             : HttpClientHelper.GetRequestMessage(HttpMethod.Get, requestUri, FetchAccessToken);
 
-        if (!string.IsNullOrEmpty(_settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(_settings.Uri))
+        if (!string.IsNullOrEmpty(settings.Token) && !ConfigServerClientSettings.IsMultiServerConfig(settings.Uri))
         {
-            if (!_settings.DisableTokenRenewal)
+            if (!settings.DisableTokenRenewal)
             {
-                RenewToken(_settings.Token);
+                RenewToken(settings.Token);
             }
 
-            request.Headers.Add(TOKEN_HEADER, _settings.Token);
+            request.Headers.Add(TokenHeader, settings.Token);
         }
 
         return request;
     }
 
     /// <summary>
-    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server
+    /// Create the HttpRequestMessage that will be used in accessing the Spring Cloud Configuration server.
     /// </summary>
-    /// <param name="requestUri">the Uri used when accessing the server</param>
-    /// <returns>The HttpRequestMessage built from the path</returns>
+    /// <param name="requestUri">the Uri used when accessing the server.</param>
+    /// <returns>The HttpRequestMessage built from the path.</returns>
     [Obsolete("Will be removed in next release. See GetRequestMessage(string, string, string)")]
     protected internal virtual HttpRequestMessage GetRequestMessage(string requestUri)
     {
-        return GetRequestMessage(requestUri, _settings.Username, _settings.Password);
+        return GetRequestMessage(requestUri, settings.Username, settings.Password);
     }
 
     /// <summary>
-    /// Adds the client settings for the Configuration Server to the Data dictionary
+    /// Adds the client settings for the Configuration Server to the Data dictionary.
     /// </summary>
     protected internal virtual void AddConfigServerClientSettings()
     {
@@ -501,46 +501,47 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Adds the client settings for the Configuration Server to the data dictionary
+    /// Adds the client settings for the Configuration Server to the data dictionary.
     /// </summary>
+    /// <param name="data">The client settings to add.</param>
     protected internal virtual void AddConfigServerClientSettings(IDictionary<string, string> data)
     {
         var culture = CultureInfo.InvariantCulture;
-        data["spring:cloud:config:enabled"] = _settings.Enabled.ToString(culture);
-        data["spring:cloud:config:failFast"] = _settings.FailFast.ToString(culture);
-        data["spring:cloud:config:env"] = _settings.Environment;
-        data["spring:cloud:config:label"] = _settings.Label;
-        data["spring:cloud:config:name"] = _settings.Name;
-        data["spring:cloud:config:password"] = _settings.Password;
-        data["spring:cloud:config:uri"] = _settings.Uri;
-        data["spring:cloud:config:username"] = _settings.Username;
-        data["spring:cloud:config:token"] = _settings.Token;
-        data["spring:cloud:config:timeout"] = _settings.Timeout.ToString(culture);
-        data["spring:cloud:config:validate_certificates"] = _settings.ValidateCertificates.ToString(culture);
-        data["spring:cloud:config:retry:enabled"] = _settings.RetryEnabled.ToString(culture);
-        data["spring:cloud:config:retry:maxAttempts"] = _settings.RetryAttempts.ToString(culture);
-        data["spring:cloud:config:retry:initialInterval"] = _settings.RetryInitialInterval.ToString(culture);
-        data["spring:cloud:config:retry:maxInterval"] = _settings.RetryMaxInterval.ToString(culture);
-        data["spring:cloud:config:retry:multiplier"] = _settings.RetryMultiplier.ToString(culture);
+        data["spring:cloud:config:enabled"] = settings.Enabled.ToString(culture);
+        data["spring:cloud:config:failFast"] = settings.FailFast.ToString(culture);
+        data["spring:cloud:config:env"] = settings.Environment;
+        data["spring:cloud:config:label"] = settings.Label;
+        data["spring:cloud:config:name"] = settings.Name;
+        data["spring:cloud:config:password"] = settings.Password;
+        data["spring:cloud:config:uri"] = settings.Uri;
+        data["spring:cloud:config:username"] = settings.Username;
+        data["spring:cloud:config:token"] = settings.Token;
+        data["spring:cloud:config:timeout"] = settings.Timeout.ToString(culture);
+        data["spring:cloud:config:validate_certificates"] = settings.ValidateCertificates.ToString(culture);
+        data["spring:cloud:config:retry:enabled"] = settings.RetryEnabled.ToString(culture);
+        data["spring:cloud:config:retry:maxAttempts"] = settings.RetryAttempts.ToString(culture);
+        data["spring:cloud:config:retry:initialInterval"] = settings.RetryInitialInterval.ToString(culture);
+        data["spring:cloud:config:retry:maxInterval"] = settings.RetryMaxInterval.ToString(culture);
+        data["spring:cloud:config:retry:multiplier"] = settings.RetryMultiplier.ToString(culture);
 
-        data["spring:cloud:config:access_token_uri"] = _settings.AccessTokenUri;
-        data["spring:cloud:config:client_secret"] = _settings.ClientSecret;
-        data["spring:cloud:config:client_id"] = _settings.ClientId;
-        data["spring:cloud:config:tokenTtl"] = _settings.TokenTtl.ToString(culture);
-        data["spring:cloud:config:tokenRenewRate"] = _settings.TokenRenewRate.ToString(culture);
-        data["spring:cloud:config:disableTokenRenewal"] = _settings.DisableTokenRenewal.ToString(culture);
+        data["spring:cloud:config:access_token_uri"] = settings.AccessTokenUri;
+        data["spring:cloud:config:client_secret"] = settings.ClientSecret;
+        data["spring:cloud:config:client_id"] = settings.ClientId;
+        data["spring:cloud:config:tokenTtl"] = settings.TokenTtl.ToString(culture);
+        data["spring:cloud:config:tokenRenewRate"] = settings.TokenRenewRate.ToString(culture);
+        data["spring:cloud:config:disableTokenRenewal"] = settings.DisableTokenRenewal.ToString(culture);
 
-        data["spring:cloud:config:discovery:enabled"] = _settings.DiscoveryEnabled.ToString(culture);
-        data["spring:cloud:config:discovery:serviceId"] = _settings.DiscoveryServiceId.ToString(culture);
+        data["spring:cloud:config:discovery:enabled"] = settings.DiscoveryEnabled.ToString(culture);
+        data["spring:cloud:config:discovery:serviceId"] = settings.DiscoveryServiceId.ToString(culture);
 
-        data["spring:cloud:config:health:enabled"] = _settings.HealthEnabled.ToString(culture);
-        data["spring:cloud:config:health:timeToLive"] = _settings.HealthTimeToLive.ToString(culture);
+        data["spring:cloud:config:health:enabled"] = settings.HealthEnabled.ToString(culture);
+        data["spring:cloud:config:health:timeToLive"] = settings.HealthTimeToLive.ToString(culture);
     }
 
     protected internal async Task<ConfigEnvironment> RemoteLoadAsync(string[] requestUris, string label)
     {
         // Get client if not already set
-        _httpClient ??= GetHttpClient(_settings);
+        httpClient ??= GetHttpClient(settings);
 
         Exception error = null;
         foreach (var requestUri in requestUris)
@@ -549,9 +550,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
             // Get a config server uri and username passwords to use
             var trimUri = requestUri.Trim();
-            var serverUri = _settings.GetRawUri(trimUri);
-            var username = _settings.GetUserName(trimUri);
-            var password = _settings.GetPassword(trimUri);
+            var serverUri = settings.GetRawUri(trimUri);
+            var username = settings.GetUserName(trimUri);
+            var password = settings.GetPassword(trimUri);
 
             // Make Config Server URI from settings
             var path = GetConfigServerUri(serverUri, label);
@@ -560,16 +561,16 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             var request = GetRequestMessage(path, username, password);
 
             // If certificate validation is disabled, inject a callback to handle properly
-            HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
+            HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
 
             // Invoke config server
             try
             {
-                using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+                using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
                 // Log status
                 var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
-                _logger.LogInformation(WebUtility.UrlEncode(message));
+                logger.LogInformation(WebUtility.UrlEncode(message));
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -595,7 +596,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             catch (Exception e)
             {
                 error = e;
-                _logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
+                logger.LogError(e, "Config Server exception, path: {requestUri}", WebUtility.UrlEncode(requestUri));
                 if (IsContinueExceptionType(e))
                 {
                     continue;
@@ -605,7 +606,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             }
             finally
             {
-                HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+                HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
             }
         }
 
@@ -619,26 +620,26 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     /// <summary>
     /// Asynchronously calls the Spring Cloud Configuration Server using the provided Uri and returning a
-    /// a task that can be used to obtain the results
+    /// a task that can be used to obtain the results.
     /// </summary>
-    /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server</param>
-    /// <returns>The task object representing the asynchronous operation</returns>
+    /// <param name="requestUri">the Uri used in accessing the Spring Cloud Configuration Server.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
     [Obsolete("Will be removed in next release. See RemoteLoadAsync(string[], string)")]
     protected internal virtual async Task<ConfigEnvironment> RemoteLoadAsync(string requestUri)
     {
         // Get client if not already set
-        _httpClient ??= GetHttpClient(_settings);
+        httpClient ??= GetHttpClient(settings);
 
         // Get the request message
         var request = GetRequestMessage(requestUri);
 
         // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(_settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(settings.ValidateCertificates, out var prevProtocols, out var prevValidator);
 
         // Invoke config server
         try
         {
-            using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(request).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 if (response.StatusCode == HttpStatusCode.NotFound)
@@ -649,7 +650,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 // Log status
                 var message = $"Config Server returned status: {response.StatusCode} invoking path: {requestUri}";
 
-                _logger.LogInformation(WebUtility.UrlEncode(message));
+                logger.LogInformation(WebUtility.UrlEncode(message));
 
                 // Throw if status >= 400
                 if (response.StatusCode >= HttpStatusCode.BadRequest)
@@ -667,21 +668,21 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         catch (Exception e)
         {
             // Log and rethrow
-            _logger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
+            logger.LogError("Config Server exception: {0}, path: {1}", e, WebUtility.UrlEncode(requestUri));
             throw;
         }
         finally
         {
-            HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+            HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
         }
     }
 
     /// <summary>
-    /// Create the Uri that will be used in accessing the Configuration Server
+    /// Create the Uri that will be used in accessing the Configuration Server.
     /// </summary>
-    /// <param name="baseRawUri">base server uri to use</param>
-    /// <param name="label">a label to add</param>
-    /// <returns>The request URI for the Configuration Server</returns>
+    /// <param name="baseRawUri">base server uri to use.</param>
+    /// <param name="label">a label to add.</param>
+    /// <returns>The request URI for the Configuration Server.</returns>
     protected internal virtual string GetConfigServerUri(string baseRawUri, string label)
     {
         if (string.IsNullOrEmpty(baseRawUri))
@@ -689,7 +690,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             throw new ArgumentException(nameof(baseRawUri));
         }
 
-        var path = $"{_settings.Name}/{_settings.Environment}";
+        var path = $"{settings.Name}/{settings.Environment}";
         if (!string.IsNullOrWhiteSpace(label))
         {
             // If label contains slash, replace it
@@ -710,21 +711,21 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Create the Uri that will be used in accessing the Configuration Server
+    /// Create the Uri that will be used in accessing the Configuration Server.
     /// </summary>
-    /// <param name="label">a label to add</param>
-    /// <returns>The request URI for the Configuration Server</returns>
+    /// <param name="label">a label to add.</param>
+    /// <returns>The request URI for the Configuration Server.</returns>
     [Obsolete("Will be removed in next release. See GetConfigServerUri(string, string)")]
     protected internal virtual string GetConfigServerUri(string label)
     {
-        return GetConfigServerUri(_settings.RawUri, label);
+        return GetConfigServerUri(settings.RawUri, label);
     }
 
     /// <summary>
-    /// Adds values from a PropertySource to the Configurtation Data dictionary managed
-    /// by this provider
+    /// Adds values from a PropertySource to the Configuration Data dictionary managed
+    /// by this provider.
     /// </summary>
-    /// <param name="source">a property source to add</param>
+    /// <param name="source">a property source to add.</param>
     [Obsolete("Will be removed in next release.")]
     protected internal virtual void AddPropertySource(PropertySource source)
     {
@@ -734,8 +735,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     /// <summary>
     /// Adds values from a PropertySource to the provided dictionary.
     /// </summary>
-    /// <param name="source">a property source to add</param>
-    /// <param name="data">the dictionary to add the property source to</param>
+    /// <param name="source">a property source to add.</param>
+    /// <param name="data">the dictionary to add the property source to.</param>
     protected internal void AddPropertySource(PropertySource source, IDictionary<string, string> data)
     {
         if (source == null || source.Source == null)
@@ -751,9 +752,9 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
                 var value = ConvertValue(kvp.Value);
                 data[key] = value;
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                _logger.LogError("Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
+                logger.LogError(exception, "Config Server exception, property: {0}={1}", kvp.Key, kvp.Value.GetType());
             }
         }
     }
@@ -785,13 +786,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         for (var i = 0; i < source.Length; i++)
         {
             var readEscapeChar = false;
-            if (source[i] == ESCAPE_CHAR)
+            if (source[i] == EscapeChar)
             {
                 readEscapeChar = true;
                 i++;
             }
 
-            if (!readEscapeChar && source[i] == DELIMITER_CHAR)
+            if (!readEscapeChar && source[i] == DelimiterChar)
             {
                 result.Add(UnEscapeString(
                     source.Substring(segmentStart, i - segmentStart)));
@@ -808,8 +809,8 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
         string UnEscapeString(string src)
         {
-            return src.Replace(ESCAPE_STRING + DELIMITER_STRING, DELIMITER_STRING)
-                .Replace(ESCAPE_STRING + ESCAPE_STRING, ESCAPE_STRING);
+            return src.Replace(EscapeString + DelimiterString, DelimiterString)
+                .Replace(EscapeString + EscapeString, EscapeString);
         }
     }
 
@@ -828,11 +829,11 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
     }
 
     /// <summary>
-    /// Encode the username password for a http request
+    /// Encode the username password for a http request.
     /// </summary>
-    /// <param name="user">the username</param>
-    /// <param name="password">the password</param>
-    /// <returns>Encoded user + password</returns>
+    /// <param name="user">the username.</param>
+    /// <param name="password">the password.</param>
+    /// <returns>Encoded user + password.</returns>
     protected internal string GetEncoded(string user, string password)
     {
         return HttpClientHelper.GetEncodedUserPassword(user, password);
@@ -840,33 +841,33 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     protected internal virtual void RenewToken(string token)
     {
-        _tokenRenewTimer ??= new Timer(
+        tokenRenewTimer ??= new Timer(
             RefreshVaultTokenAsync,
             null,
-            TimeSpan.FromMilliseconds(_settings.TokenRenewRate),
-            TimeSpan.FromMilliseconds(_settings.TokenRenewRate));
+            TimeSpan.FromMilliseconds(settings.TokenRenewRate),
+            TimeSpan.FromMilliseconds(settings.TokenRenewRate));
     }
 
     /// <summary>
     /// Conduct the OAuth2 client_credentials grant flow returning a task that can be used to obtain the
-    /// results
+    /// results.
     /// </summary>
-    /// <returns>The task object representing asynchronous operation</returns>
+    /// <returns>The task object representing asynchronous operation.</returns>
     protected internal string FetchAccessToken()
     {
-        if (string.IsNullOrEmpty(_settings.AccessTokenUri))
+        if (string.IsNullOrEmpty(settings.AccessTokenUri))
         {
             return null;
         }
 
         return HttpClientHelper.GetAccessToken(
-            _settings.AccessTokenUri,
-            _settings.ClientId,
-            _settings.ClientSecret,
-            _settings.Timeout,
-            _settings.ValidateCertificates,
-            _httpClient,
-            _logger).GetAwaiter().GetResult();
+            settings.AccessTokenUri,
+            settings.ClientId,
+            settings.ClientSecret,
+            settings.Timeout,
+            settings.ValidateCertificates,
+            httpClient,
+            logger).GetAwaiter().GetResult();
     }
 
     // fire and forget
@@ -883,32 +884,32 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
         // If certificate validation is disabled, inject a callback to handle properly
         HttpClientHelper.ConfigureCertificateValidation(
-            _settings.ValidateCertificates,
+            settings.ValidateCertificates,
             out var prevProtocols,
             out var prevValidator);
 
         try
         {
-            _httpClient ??= GetHttpClient(Settings);
+            httpClient ??= GetHttpClient(Settings);
 
             var uri = GetVaultRenewUri();
             var message = GetVaultRenewMessage(uri);
 
-            _logger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
+            logger.LogInformation("Renewing Vault token {0} for {1} milliseconds at Uri {2}", obscuredToken, Settings.TokenTtl, uri);
 
-            using var response = await _httpClient.SendAsync(message).ConfigureAwait(false);
+            using var response = await httpClient.SendAsync(message).ConfigureAwait(false);
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
+                logger.LogWarning("Renewing Vault token {0} returned status: {1}", obscuredToken, response.StatusCode);
             }
         }
         catch (Exception e)
         {
-            _logger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
+            logger.LogError("Unable to renew Vault token {0}. Is the token invalid or expired? - {1}", obscuredToken, e);
         }
         finally
         {
-            HttpClientHelper.RestoreCertificateValidation(_settings.ValidateCertificates, prevProtocols, prevValidator);
+            HttpClientHelper.RestoreCertificateValidation(settings.ValidateCertificates, prevProtocols, prevValidator);
         }
     }
 
@@ -920,7 +921,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             rawUri += "/";
         }
 
-        return rawUri + VAULT_RENEW_PATH;
+        return rawUri + VaultRenewPath;
     }
 
     protected internal virtual HttpRequestMessage GetVaultRenewMessage(string requestUri)
@@ -929,7 +930,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
         if (!string.IsNullOrEmpty(Settings.Token))
         {
-            request.Headers.Add(VAULT_TOKEN_HEADER, Settings.Token);
+            request.Headers.Add(VaultTokenHeader, Settings.Token);
         }
 
         var renewTtlSeconds = Settings.TokenTtl / 1000;
@@ -940,24 +941,18 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
         return request;
     }
 
-    [Obsolete("Will be removed in next release. See GetVaultRenewMessage(string)")]
-    protected internal virtual HttpRequestMessage GetValutRenewMessage(string requestUri)
-    {
-        return GetVaultRenewMessage(requestUri);
-    }
-
     protected internal bool IsDiscoveryFirstEnabled()
     {
-        var clientConfigsection = _configuration.GetSection(PREFIX);
-        return clientConfigsection.GetValue("discovery:enabled", _settings.DiscoveryEnabled);
+        var clientConfigSection = configuration.GetSection(Prefix);
+        return clientConfigSection.GetValue("discovery:enabled", settings.DiscoveryEnabled);
     }
 
     /// <summary>
-    /// Creates an appropriatly configured HttpClient that will be used in communicating with the
-    /// Spring Cloud Configuration Server
+    /// Creates an appropriately configured HttpClient that will be used in communicating with the
+    /// Spring Cloud Configuration Server.
     /// </summary>
-    /// <param name="settings">the settings used in configuring the HttpClient</param>
-    /// <returns>The HttpClient used by the provider</returns>
+    /// <param name="settings">the settings used in configuring the HttpClient.</param>
+    /// <returns>The HttpClient used by the provider.</returns>
     protected static HttpClient GetHttpClient(ConfigServerClientSettings settings)
     {
         var clientHandler = new HttpClientHandler();

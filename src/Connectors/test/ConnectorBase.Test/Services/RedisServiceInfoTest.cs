@@ -12,7 +12,7 @@ public class RedisServiceInfoTest
     public void Constructor_CreatesExpected()
     {
         var uri = "redis://joe:joes_password@localhost:1527/";
-        var r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
+        var r1 = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "localhost", 1527, "joes_password");
         var r2 = new RedisServiceInfo("myId", uri);
 
         Assert.Equal("myId", r1.Id);
@@ -37,7 +37,7 @@ public class RedisServiceInfoTest
     public void Constructor_CreatesExpected_withSecure()
     {
         var uri = "rediss://:joes_password@localhost:6380/";
-        var r1 = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "localhost", 1527, "joes_password");
+        var r1 = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "localhost", 1527, "joes_password");
         var r2 = new RedisServiceInfo("myId", uri);
 
         Assert.Equal("myId", r1.Id);

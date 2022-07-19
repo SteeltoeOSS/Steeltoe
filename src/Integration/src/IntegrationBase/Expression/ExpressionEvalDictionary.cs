@@ -31,7 +31,6 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
         return new ExpressionEvalDictionaryBuilder(expressions);
     }
 
-    #region IDictionary
     public object this[string key] { get => Get(key); set => throw new NotImplementedException(); }
 
     public ICollection<string> Keys => _original.Keys;
@@ -123,7 +122,6 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
     {
         throw new InvalidOperationException();
     }
-    #endregion
 
     public object Get(string key)
     {
@@ -182,7 +180,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
     public class ExpressionEvalDictionaryBuilder
     {
-        private static readonly IEvaluationCallback _simpleCallback = new SimpleCallback();
+        private static readonly IEvaluationCallback SimpleCallback = new SimpleCallback();
 
         private readonly IExpressionEvalMapComponentsBuilder _evalMapComponentsBuilder;
 
@@ -215,7 +213,7 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
         public IExpressionEvalMapFinalBuilder UsingSimpleCallback()
         {
-            return UsingCallback(_simpleCallback);
+            return UsingCallback(SimpleCallback);
         }
 
         public IExpressionEvalMapComponentsBuilder UsingEvaluationContext(IEvaluationContext context)

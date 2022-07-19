@@ -14,7 +14,7 @@ using Xunit;
 namespace Steeltoe.Connector.MySql.Test;
 
 /// <summary>
-/// Tests for the extension method that adds both the DbConnection and the health check
+/// Tests for the extension method that adds both the DbConnection and the health check.
 /// </summary>
 public class MySqlProviderServiceCollectionExtensionsTest
 {
@@ -88,8 +88,8 @@ public class MySqlProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -100,11 +100,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMySqlConnection_WithServiceName_AndVCAPS_AddsMySqlConnection()
+    public void AddMySqlConnection_WithServiceName_AndVCaps_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -124,8 +124,8 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_WithVCAPs_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -146,8 +146,8 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_WithAzureBrokerVCAPs_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerAzureVcap);
         var appsettings = new Dictionary<string, string>();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -181,7 +181,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddMySqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthExists()
+    public void AddMySqlConnection_DoesNotAddRelationalHealthContributor_WhenCommunityHealthExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

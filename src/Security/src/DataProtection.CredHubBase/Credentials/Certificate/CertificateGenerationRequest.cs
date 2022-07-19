@@ -11,12 +11,12 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="CertificateGenerationRequest"/> class.
-    /// Use to request a new Certificate
+    /// Use to request a new Certificate.
     /// </summary>
-    /// <param name="credentialName">Name of the credential</param>
-    /// <param name="parameters">Variables for certificate generation</param>
-    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-    public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
+    /// <param name="credentialName">Name of the credential.</param>
+    /// <param name="parameters">Variables for certificate generation.</param>
+    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
+    public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
         if (!AtLeastOneProvided(subjects))
@@ -35,9 +35,9 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
         Mode = overwriteMode;
     }
 
-    private bool AtLeastOneProvided(List<string> parms)
+    private bool AtLeastOneProvided(List<string> parameters)
     {
-        foreach (var s in parms)
+        foreach (var s in parameters)
         {
             if (!string.IsNullOrEmpty(s))
             {

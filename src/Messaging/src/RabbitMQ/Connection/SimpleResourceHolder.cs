@@ -12,25 +12,25 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public static class SimpleResourceHolder
 {
-    private const string FOR_KEY = "] for key [";
+    private const string ForKey = "] for key [";
 
-    private const string BOUND_TO_THREAD = "] bound to thread [";
+    private const string BoundToThread = "] bound to thread [";
 
-    private static readonly AsyncLocal<Dictionary<object, object>> _resources = new ();
+    private static readonly AsyncLocal<Dictionary<object, object>> Resources = new ();
 
-    private static readonly AsyncLocal<Dictionary<object, Stack<object>>> _stack = new ();
+    private static readonly AsyncLocal<Dictionary<object, Stack<object>>> Stack = new ();
 
-    private static readonly Dictionary<object, object> _empty = new ();
+    private static readonly Dictionary<object, object> Empty = new ();
 
     public static IDictionary<object, object> GetResources()
     {
-        var map = _resources.Value;
+        var map = Resources.Value;
         if (map != null)
         {
             return new ReadOnlyDictionary<object, object>(map);
         }
 
-        return _empty;
+        return Empty;
     }
 
     public static bool Has(object key, ILogger logger = null)
@@ -44,7 +44,7 @@ public static class SimpleResourceHolder
         var value = DoGet(key);
         if (value != null)
         {
-            logger?.LogTrace("Retrieved value [{value}]" + FOR_KEY + "{key}" + BOUND_TO_THREAD + "{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+            logger?.LogTrace("Retrieved value [{value}]" + ForKey + "{key}" + BoundToThread + "{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         return value;
@@ -57,23 +57,23 @@ public static class SimpleResourceHolder
             throw new ArgumentNullException(nameof(value));
         }
 
-        var map = _resources.Value;
+        var map = Resources.Value;
 
         // set ThreadLocal Map if none found
         if (map == null)
         {
             map = new Dictionary<object, object>();
-            _resources.Value = map;
+            Resources.Value = map;
         }
 
         map.TryGetValue(key, out var oldValue);
         map[key] = value;
         if (oldValue != null)
         {
-            throw new InvalidOperationException($"Already value [{oldValue}{FOR_KEY}{key}{BOUND_TO_THREAD}{Thread.CurrentThread.ManagedThreadId}]");
+            throw new InvalidOperationException($"Already value [{oldValue}{ForKey}{key}{BoundToThread}{Thread.CurrentThread.ManagedThreadId}]");
         }
 
-        logger?.LogTrace("Bound value [{value}" + FOR_KEY + "{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+        logger?.LogTrace("Bound value [{value}" + ForKey + "{key}] to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
     }
 
     public static void Push(object key, object value, ILogger logger = null)
@@ -85,11 +85,11 @@ public static class SimpleResourceHolder
         }
         else
         {
-            var dict = _stack.Value;
+            var dict = Stack.Value;
             if (dict == null)
             {
                 dict = new Dictionary<object, Stack<object>>();
-                _stack.Value = dict;
+                Stack.Value = dict;
             }
 
             if (!dict.TryGetValue(key, out var stack))
@@ -107,7 +107,7 @@ public static class SimpleResourceHolder
     public static object Pop(object key, ILogger logger = null)
     {
         var popped = Unbind(key);
-        var dict = _stack.Value;
+        var dict = Stack.Value;
         if (dict != null)
         {
             dict.TryGetValue(key, out var deque);
@@ -121,7 +121,7 @@ public static class SimpleResourceHolder
 
                 if (deque.Count == 0)
                 {
-                    _stack.Value = null;
+                    Stack.Value = null;
                 }
             }
         }
@@ -134,7 +134,7 @@ public static class SimpleResourceHolder
         var value = UnbindIfPossible(key);
         if (value == null)
         {
-            throw new InvalidOperationException($"No value for key [{key}{BOUND_TO_THREAD}{Thread.CurrentThread.ManagedThreadId}]");
+            throw new InvalidOperationException($"No value for key [{key}{BoundToThread}{Thread.CurrentThread.ManagedThreadId}]");
         }
 
         return value;
@@ -142,7 +142,7 @@ public static class SimpleResourceHolder
 
     public static object UnbindIfPossible(object key, ILogger logger = null)
     {
-        var map = _resources.Value;
+        var map = Resources.Value;
         if (map == null)
         {
             return null;
@@ -153,12 +153,12 @@ public static class SimpleResourceHolder
         // Remove entire ThreadLocal if empty...
         if (map.Count == 0)
         {
-            _resources.Value = null;
+            Resources.Value = null;
         }
 
         if (value != null)
         {
-            logger?.LogTrace("Removed value [{value}" + FOR_KEY + "{key}] from thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
+            logger?.LogTrace("Removed value [{value}" + ForKey + "{key}] from thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
         }
 
         return value;
@@ -166,13 +166,13 @@ public static class SimpleResourceHolder
 
     public static void Clear()
     {
-        _resources.Value = null;
-        _stack.Value = null;
+        Resources.Value = null;
+        Stack.Value = null;
     }
 
     private static object DoGet(object actualKey, ILogger logger = null)
     {
-        var map = _resources.Value;
+        var map = Resources.Value;
         if (map == null)
         {
             return null;

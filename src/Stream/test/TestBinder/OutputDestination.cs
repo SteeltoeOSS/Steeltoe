@@ -44,9 +44,9 @@ public class OutputDestination : AbstractDestination
 
         public string ServiceName { get; set; }
 
-        public MessageHandler(OutputDestination thiz)
+        public MessageHandler(OutputDestination destination)
         {
-            _outputDestination = thiz;
+            _outputDestination = destination;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 

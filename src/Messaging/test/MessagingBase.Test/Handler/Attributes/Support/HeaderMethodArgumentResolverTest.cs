@@ -21,15 +21,15 @@ public class HeaderMethodArgumentResolverTest
     [Fact]
     public void SupportsParameter()
     {
-        Assert.True(_resolver.SupportsParameter(_resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg()));
-        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotNotPresent(typeof(HeaderAttribute)).Arg()));
+        Assert.True(_resolver.SupportsParameter(_resolvable.Annotation(MessagingPredicates.HeaderPlain()).Arg()));
+        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotationNotPresent(typeof(HeaderAttribute)).Arg()));
     }
 
     [Fact]
     public void ResolveArgument()
     {
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader("param1", "foo").Build();
-        var result = _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message);
+        var result = _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.HeaderPlain()).Arg(), message);
         Assert.Equal("foo", result);
     }
 
@@ -39,7 +39,7 @@ public class HeaderMethodArgumentResolverTest
         var headers = new TestMessageHeaderAccessor();
         headers.SetNativeHeader("param1", "foo");
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeaders(headers).Build();
-        Assert.Equal("foo", _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
+        Assert.Equal("foo", _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.HeaderPlain()).Arg(), message));
     }
 
     [Fact]
@@ -50,22 +50,22 @@ public class HeaderMethodArgumentResolverTest
         headers.SetNativeHeader("param1", "native-foo");
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeaders(headers).Build();
 
-        Assert.Equal("foo", _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
-        Assert.Equal("native-foo", _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.Header("nativeHeaders.param1")).Arg(), message));
+        Assert.Equal("foo", _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.HeaderPlain()).Arg(), message));
+        Assert.Equal("native-foo", _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.Header("nativeHeaders.param1")).Arg(), message));
     }
 
     [Fact]
     public void ResolveArgumentNotFound()
     {
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.HeaderPlain()).Arg(), message));
+        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.HeaderPlain()).Arg(), message));
     }
 
     [Fact]
     public void ResolveArgumentDefaultValue()
     {
         var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-        var result = _resolver.ResolveArgument(_resolvable.Annot(MessagingPredicates.Header("name", "bar")).Arg(), message);
+        var result = _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.Header("name", "bar")).Arg(), message);
         Assert.Equal("bar", result);
     }
 
@@ -73,7 +73,7 @@ public class HeaderMethodArgumentResolverTest
     public void ResolveOptionalHeaderWithValue()
     {
         var message = MessageBuilder.WithPayload("foo").SetHeader("foo", "bar").Build();
-        var param = _resolvable.Annot(MessagingPredicates.Header("foo")).Arg();
+        var param = _resolvable.Annotation(MessagingPredicates.Header("foo")).Arg();
         var result = _resolver.ResolveArgument(param, message);
         Assert.Equal("bar", result);
     }
@@ -82,7 +82,7 @@ public class HeaderMethodArgumentResolverTest
     public void ResolveOptionalHeaderAsEmpty()
     {
         var message = MessageBuilder.WithPayload("foo").Build();
-        var param = _resolvable.Annot(MessagingPredicates.Header("foo")).Arg();
+        var param = _resolvable.Annotation(MessagingPredicates.Header("foo")).Arg();
         var result = _resolver.ResolveArgument(param, message);
         Assert.Null(result);
     }

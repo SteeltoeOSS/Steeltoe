@@ -16,16 +16,16 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
 {
     private readonly RequestDelegate _next;
 
-    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-        : base(mgmtOptions: mgmtOptions, logger: logger)
+    public HealthEndpointMiddleware(RequestDelegate next, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        : base(managementOptions: managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
     {
-        _endpoint = endpoint;
-        if (_endpoint.ShouldInvoke(_mgmtOptions))
+        base.endpoint = endpoint;
+        if (base.endpoint.ShouldInvoke(managementOptions))
         {
             return HandleHealthRequestAsync(context);
         }
@@ -36,18 +36,18 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
     protected internal Task HandleHealthRequestAsync(HttpContext context)
     {
         var serialInfo = DoRequest(context);
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 
     protected internal string DoRequest(HttpContext context)
     {
-        var result = _endpoint.Invoke(new CoreSecurityContext(context));
-        if (_mgmtOptions.UseStatusCodeFromResponse)
+        var result = endpoint.Invoke(new CoreSecurityContext(context));
+        if (managementOptions.UseStatusCodeFromResponse)
         {
-            context.Response.StatusCode = ((HealthEndpoint)_endpoint).GetStatusCode(result);
+            context.Response.StatusCode = ((HealthEndpoint)endpoint).GetStatusCode(result);
         }
 
         return Serialize(result);

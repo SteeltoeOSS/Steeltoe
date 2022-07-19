@@ -14,15 +14,15 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 {
     private readonly RequestDelegate _next;
 
-    public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<EnvEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleEnvRequestAsync(context);
         }
@@ -33,9 +33,9 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

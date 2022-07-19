@@ -10,33 +10,33 @@ namespace Steeltoe.Common.Util;
 
 public class TimerReference : IDisposable
 {
-    internal ITimerListener _listener;
-    internal CancellationTokenSource _tokenSource;
-    internal TimeSpan _period;
-    internal Task _timerTask;
+    internal ITimerListener Listener;
+    internal CancellationTokenSource TokenSource;
+    internal TimeSpan Period;
+    internal Task TimerTask;
 
     public TimerReference(ITimerListener listener, TimeSpan period)
     {
-        _listener = listener;
-        _tokenSource = new CancellationTokenSource();
-        _period = period;
-        _timerTask = new Task(() => { Run(_tokenSource); }, TaskCreationOptions.LongRunning);
+        this.Listener = listener;
+        TokenSource = new CancellationTokenSource();
+        this.Period = period;
+        TimerTask = new Task(() => { Run(TokenSource); }, TaskCreationOptions.LongRunning);
     }
 
     public void Start()
     {
-        _timerTask.Start();
+        TimerTask.Start();
     }
 
     public void Run(CancellationTokenSource tokenSource)
     {
         while (!tokenSource.IsCancellationRequested)
         {
-            Time.WaitUntil(() => tokenSource.IsCancellationRequested, (int)_period.TotalMilliseconds);
+            Time.WaitUntil(() => tokenSource.IsCancellationRequested, (int)Period.TotalMilliseconds);
 
             if (!tokenSource.IsCancellationRequested)
             {
-                _listener.Tick();
+                Listener.Tick();
             }
         }
     }
@@ -51,13 +51,13 @@ public class TimerReference : IDisposable
     {
         if (disposing)
         {
-            if (!_tokenSource.IsCancellationRequested)
+            if (!TokenSource.IsCancellationRequested)
             {
-                _tokenSource.Cancel();
+                TokenSource.Cancel();
             }
 
-            _listener = null;
-            _timerTask = null;
+            Listener = null;
+            TimerTask = null;
         }
     }
 }

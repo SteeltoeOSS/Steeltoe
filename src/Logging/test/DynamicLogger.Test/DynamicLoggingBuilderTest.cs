@@ -5,16 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.Test;
 
-public class DynamicLoggingBuilderTest
+public partial class DynamicLoggingBuilderTest
 {
     private static readonly Dictionary<string, string> Appsettings = new ()
     {
@@ -115,7 +112,7 @@ public class DynamicLoggingBuilderTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_ParmLessAddDynamic_NotBrokenByAddConfiguration()
+    public void DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var services = new ServiceCollection()
@@ -163,29 +160,6 @@ public class DynamicLoggingBuilderTest
     }
 
     [Fact]
-    public void DynamicLevelSetting_ParmLessAddDynamic_AddsConsoleOptions()
-    {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            })
-            .BuildServiceProvider();
-
-        var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
-
-        Assert.NotNull(options);
-        Assert.NotNull(options.CurrentValue);
-#if !NET6_0_OR_GREATER
-#pragma warning disable CS0618 // Type or member is obsolete
-        Assert.True(options.CurrentValue.DisableColors);
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-    }
-
-    [Fact]
     public void AddDynamicConsole_AddsAllLoggerProviders()
     {
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
@@ -197,10 +171,10 @@ public class DynamicLoggingBuilderTest
                 builder.AddDynamicConsole();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         var logProviders = services.GetServices<ILoggerProvider>();
 
-        Assert.NotNull(dlogProvider);
+        Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
         Assert.Single(logProviders);
         Assert.IsType<DynamicConsoleLoggerProvider>(logProviders.SingleOrDefault());
@@ -221,53 +195,9 @@ public class DynamicLoggingBuilderTest
                 builder.AddDynamicConsole();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
 
         services.Dispose();
-        dlogProvider.Dispose();
-    }
-
-    [Fact]
-    public void AddDynamicConsole_DoesntSetColorLocal()
-    {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
-
-        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
-
-        Assert.NotNull(options);
-#if !NET6_0_OR_GREATER
-#pragma warning disable CS0618 // Type or member is obsolete
-        Assert.False(options.Value.DisableColors);
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-    }
-
-    [Fact]
-    public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
-    {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
-
-        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
-
-        Assert.NotNull(options);
-#if !NET6_0_OR_GREATER
-#pragma warning disable CS0618 // Type or member is obsolete
-        Assert.True(options.Value.DisableColors);
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
+        dynamicLoggerProvider.Dispose();
     }
 }

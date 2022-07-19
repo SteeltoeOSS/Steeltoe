@@ -7,7 +7,7 @@ using Steeltoe.Messaging;
 namespace Steeltoe.Stream.Binder;
 
 /// <summary>
-/// A pollable source that calls a message handler with a message
+/// A pollable source that calls a message handler with a message.
 /// </summary>
 public interface IPollableMessageSource : IPollableSource<IMessageHandler>
 {

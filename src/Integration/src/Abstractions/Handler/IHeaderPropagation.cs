@@ -14,14 +14,14 @@ public interface IHeaderPropagation
 {
     /// <summary>
     /// Gets or sets the headers that should not be copied from inbound message if
-    /// handler is configured to copy headers
+    /// handler is configured to copy headers.
     /// </summary>
     IList<string> NotPropagatedHeaders { get; set; }
 
     /// <summary>
     /// Add headers that will not be copied from the inbound message if
-    /// handler is configured to copy headers
+    /// handler is configured to copy headers.
     /// </summary>
-    /// <param name="headers">the headers to not copy</param>
+    /// <param name="headers">the headers to not copy.</param>
     void AddNotPropagatedHeaders(params string[] headers);
 }

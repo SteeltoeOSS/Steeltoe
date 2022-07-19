@@ -35,37 +35,37 @@ public class EurekaApplicationHealthContributorTest
     {
         var contrib = new EurekaApplicationsHealthContributor();
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.UP });
-        app1.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.UP });
+        app1.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.Up });
+        app1.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.Up });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.DOWN });
-        app2.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.STARTING });
+        app2.Add(new InstanceInfo { InstanceId = "id1", Status = InstanceStatus.Down });
+        app2.Add(new InstanceInfo { InstanceId = "id2", Status = InstanceStatus.Starting });
 
         var result = new HealthCheckResult();
         contrib.AddApplicationHealthStatus("app1", null, result);
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("No instances found", result.Details["app1"]);
 
         result = new HealthCheckResult();
         contrib.AddApplicationHealthStatus("foobar", app1, result);
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("No instances found", result.Details["foobar"]);
 
         result = new HealthCheckResult
         {
-            Status = HealthStatus.UP
+            Status = HealthStatus.Up
         };
         contrib.AddApplicationHealthStatus("app1", app1, result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal("2 instances with UP status", result.Details["app1"]);
 
         result = new HealthCheckResult
         {
-            Status = HealthStatus.UP
+            Status = HealthStatus.Up
         };
         contrib.AddApplicationHealthStatus("app2", app2, result);
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
         Assert.Equal("0 instances with UP status", result.Details["app2"]);
     }
 }

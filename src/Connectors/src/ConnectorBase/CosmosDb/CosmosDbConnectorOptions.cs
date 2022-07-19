@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.CosmosDb;
 
 public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
 {
-    private const string COSMOSDB_CLIENT_SECTION_PREFIX = "cosmosdb:client";
+    private const string CosmosDbClientSectionPrefix = "cosmosdb:client";
 
     public CosmosDbConnectorOptions()
     {
@@ -19,7 +19,7 @@ public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
     public CosmosDbConnectorOptions(IConfiguration configuration)
         : base(configuration)
     {
-        var section = configuration.GetSection(COSMOSDB_CLIENT_SECTION_PREFIX);
+        var section = configuration.GetSection(CosmosDbClientSectionPrefix);
         section.Bind(this);
     }
 

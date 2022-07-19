@@ -6,8 +6,8 @@ namespace Steeltoe.Management;
 
 public enum Permissions
 {
-    UNDEFINED,
-    NONE,
-    RESTRICTED,
-    FULL
+    Undefined,
+    None,
+    Restricted,
+    Full
 }

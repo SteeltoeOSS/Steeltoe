@@ -62,18 +62,18 @@ public class EurekaPostConfigurerTest
 
         var instOpts = new EurekaInstanceOptions
         {
-            AppName = "dontChange",
-            InstanceId = "dontChange",
-            RegistrationMethod = "dontChange"
+            AppName = "doNotChange",
+            InstanceId = "doNotChange",
+            RegistrationMethod = "doNotChange"
         };
 
         EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
-        Assert.Equal("dontChange", instOpts.AppName);
-        Assert.Equal("dontChange", instOpts.InstanceId);
-        Assert.Equal("dontChange", instOpts.RegistrationMethod);
-        Assert.Equal("dontChange", instOpts.VirtualHostName);
-        Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instOpts.AppName);
+        Assert.Equal("doNotChange", instOpts.InstanceId);
+        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
+        Assert.Equal("doNotChange", instOpts.VirtualHostName);
+        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
     }
 
     [Fact]
@@ -113,18 +113,18 @@ public class EurekaPostConfigurerTest
 
         var instOpts = new EurekaInstanceOptions
         {
-            AppName = "dontChange",
-            InstanceId = "dontChange",
-            RegistrationMethod = "dontChange"
+            AppName = "doNotChange",
+            InstanceId = "doNotChange",
+            RegistrationMethod = "doNotChange"
         };
 
         EurekaPostConfigurer.UpdateConfiguration(root, instOpts, null);
 
-        Assert.Equal("dontChange", instOpts.AppName);
-        Assert.Equal("dontChange", instOpts.InstanceId);
-        Assert.Equal("dontChange", instOpts.RegistrationMethod);
-        Assert.Equal("dontChange", instOpts.VirtualHostName);
-        Assert.Equal("dontChange", instOpts.SecureVirtualHostName);
+        Assert.Equal("doNotChange", instOpts.AppName);
+        Assert.Equal("doNotChange", instOpts.InstanceId);
+        Assert.Equal("doNotChange", instOpts.RegistrationMethod);
+        Assert.Equal("doNotChange", instOpts.VirtualHostName);
+        Assert.Equal("doNotChange", instOpts.SecureVirtualHostName);
     }
 
     [Fact]
@@ -190,7 +190,7 @@ public class EurekaPostConfigurerTest
         var config = configurationBuilder.Build();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, null, clientOpts);
@@ -213,7 +213,7 @@ public class EurekaPostConfigurerTest
         Assert.True(co.ShouldRegisterWithEureka);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, null, instOpts, null);
@@ -233,7 +233,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
         Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.ASGName);
+        Assert.Equal("asgName", ro.AsgName);
 
         Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", ro.StatusPageUrl);
@@ -256,7 +256,7 @@ public class EurekaPostConfigurerTest
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
         var exception = Assert.Throws<InvalidOperationException>(() => EurekaPostConfigurer.UpdateConfiguration(null, null, new EurekaClientOptions()));
-        Assert.Contains(EurekaClientConfig.Default_ServerServiceUrl, exception.Message);
+        Assert.Contains(EurekaClientConfig.DefaultServerServiceUrl, exception.Message);
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);
     }
 
@@ -406,7 +406,7 @@ public class EurekaPostConfigurerTest
         var si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
@@ -432,7 +432,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
@@ -453,7 +453,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
         Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.ASGName);
+        Assert.Equal("asgName", ro.AsgName);
 
         Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", ro.StatusPageUrl);
@@ -468,10 +468,10 @@ public class EurekaPostConfigurerTest
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
         Assert.Equal("foo", map["bar"]);
-        Assert.Equal("instance_id", map[EurekaPostConfigurer.INSTANCE_ID]);
-        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CF_APP_GUID]);
-        Assert.Equal("1", map[EurekaPostConfigurer.CF_INSTANCE_INDEX]);
-        Assert.Equal(EurekaPostConfigurer.UNKNOWN_ZONE, map[EurekaPostConfigurer.ZONE]);
+        Assert.Equal("instance_id", map[EurekaPostConfigurer.InstanceId]);
+        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CFAppGuid]);
+        Assert.Equal("1", map[EurekaPostConfigurer.CFInstanceIndex]);
+        Assert.Equal(EurekaPostConfigurer.UnknownZone, map[EurekaPostConfigurer.Zone]);
     }
 
     [Fact]
@@ -612,7 +612,7 @@ public class EurekaPostConfigurerTest
         var si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
@@ -638,7 +638,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
@@ -659,7 +659,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
         Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.ASGName);
+        Assert.Equal("asgName", ro.AsgName);
 
         Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", ro.StatusPageUrl);
@@ -674,10 +674,10 @@ public class EurekaPostConfigurerTest
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
         Assert.Equal("foo", map["bar"]);
-        Assert.Equal("instance_id", map[EurekaPostConfigurer.INSTANCE_ID]);
-        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CF_APP_GUID]);
-        Assert.Equal("1", map[EurekaPostConfigurer.CF_INSTANCE_INDEX]);
-        Assert.Equal(EurekaPostConfigurer.UNKNOWN_ZONE, map[EurekaPostConfigurer.ZONE]);
+        Assert.Equal("instance_id", map[EurekaPostConfigurer.InstanceId]);
+        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CFAppGuid]);
+        Assert.Equal("1", map[EurekaPostConfigurer.CFInstanceIndex]);
+        Assert.Equal(EurekaPostConfigurer.UnknownZone, map[EurekaPostConfigurer.Zone]);
     }
 
     [Fact]
@@ -819,7 +819,7 @@ public class EurekaPostConfigurerTest
         var si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EUREKA_CLIENT_CONFIGURATION_PREFIX);
+        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
@@ -846,7 +846,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
@@ -867,7 +867,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
         Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.ASGName);
+        Assert.Equal("asgName", ro.AsgName);
 
         Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", ro.StatusPageUrl);
@@ -882,10 +882,10 @@ public class EurekaPostConfigurerTest
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
         Assert.Equal("foo", map["bar"]);
-        Assert.Equal("instance_id", map[EurekaPostConfigurer.INSTANCE_ID]);
-        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CF_APP_GUID]);
-        Assert.Equal("1", map[EurekaPostConfigurer.CF_INSTANCE_INDEX]);
-        Assert.Equal(EurekaPostConfigurer.UNKNOWN_ZONE, map[EurekaPostConfigurer.ZONE]);
+        Assert.Equal("instance_id", map[EurekaPostConfigurer.InstanceId]);
+        Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CFAppGuid]);
+        Assert.Equal("1", map[EurekaPostConfigurer.CFInstanceIndex]);
+        Assert.Equal(EurekaPostConfigurer.UnknownZone, map[EurekaPostConfigurer.Zone]);
     }
 
     [Fact]

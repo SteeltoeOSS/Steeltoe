@@ -74,17 +74,17 @@ public class Application
 
     internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ();
 
-    internal static Application FromJsonApplication(JsonApplication japp)
+    internal static Application FromJsonApplication(JsonApplication application)
     {
-        if (japp == null)
+        if (application == null)
         {
             return null;
         }
 
-        var app = new Application(japp.Name);
-        if (japp.Instances != null)
+        var app = new Application(application.Name);
+        if (application.Instances != null)
         {
-            foreach (var instance in japp.Instances)
+            foreach (var instance in application.Instances)
             {
                 var inst = InstanceInfo.FromJsonInstance(instance);
                 app.Add(inst);

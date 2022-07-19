@@ -14,18 +14,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 public class SimpleMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+    public const string DefaultServiceName = nameof(SimpleMessageConverter);
 
     public string DefaultCharset { get; set; } = "utf-8";
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public SimpleMessageConverter(ILogger<SimpleMessageConverter> logger = null)
         : base(logger)
     {
     }
 
-    public override object FromMessage(IMessage from, Type targetType, object convertionsHint)
+    public override object FromMessage(IMessage from, Type targetType, object conversionHint)
     {
         if (from is not IMessage<byte[]> message)
         {
@@ -53,7 +53,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 }
             }
             else if (contentType != null &&
-                     contentType.Equals(MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT))
+                     contentType.Equals(MessageHeaders.ContentTypeDotnetSerializedObject))
             {
                 try
                 {
@@ -71,15 +71,15 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 }
             }
             else if (contentType != null &&
-                     contentType.Equals(MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT))
+                     contentType.Equals(MessageHeaders.ContentTypeJavaSerializedObject))
             {
-                throw new MessageConversionException($"Content type: {MessageHeaders.CONTENT_TYPE_JAVA_SERIALIZED_OBJECT} unsupported");
+                throw new MessageConversionException($"Content type: {MessageHeaders.ContentTypeJavaSerializedObject} unsupported");
             }
         }
 
         if (content == null)
         {
-            _logger?.LogDebug("FromMessage() returning message payload unchanged");
+            Logger?.LogDebug("FromMessage() returning message payload unchanged");
             content = message.Payload;
         }
 
@@ -94,7 +94,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
         {
             case byte[] v:
                 bytes = v;
-                accessor.ContentType = MessageHeaders.CONTENT_TYPE_BYTES;
+                accessor.ContentType = MessageHeaders.ContentTypeBytes;
                 break;
             case string sPayload:
             {
@@ -108,7 +108,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert to Message content", e);
                 }
 
-                accessor.ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN;
+                accessor.ContentType = MessageHeaders.ContentTypeTextPlain;
                 accessor.ContentEncoding = DefaultCharset;
                 break;
             }
@@ -117,7 +117,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 if (payload.GetType().IsSerializable)
                 {
                     bytes = SerializeObject(payload);
-                    accessor.ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT;
+                    accessor.ContentType = MessageHeaders.ContentTypeDotnetSerializedObject;
                 }
 
                 break;

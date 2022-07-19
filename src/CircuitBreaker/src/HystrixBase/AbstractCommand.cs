@@ -25,29 +25,28 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixInvokableInfo, IHystrixInvokable
 {
-    #region NestedTypes
     protected enum TimedOutStatus
     {
-        NOT_EXECUTED,
-        COMPLETED,
-        TIMED_OUT
+        NotExecuted,
+        Completed,
+        TimedOut
     }
 
     protected enum CommandState
     {
-        NOT_STARTED,
-        OBSERVABLE_CHAIN_CREATED,
-        USER_CODE_EXECUTED,
-        UNSUBSCRIBED,
-        TERMINAL
+        NotStarted,
+        ObservableChainCreated,
+        UserCodeExecuted,
+        Unsubscribed,
+        Terminal
     }
 
     protected enum ThreadState
     {
-        NOT_USING_THREAD,
-        STARTED,
-        UNSUBSCRIBED,
-        TERMINAL
+        NotUsingThread,
+        Started,
+        Unsubscribed,
+        Terminal
     }
 
     protected class AtomicCommandState : AtomicInteger
@@ -59,9 +58,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new CommandState Value
         {
-            get => (CommandState)_value;
+            get => (CommandState)value;
 
-            set => _value = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(CommandState expected, CommandState update)
@@ -79,9 +78,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new ThreadState Value
         {
-            get => (ThreadState)_value;
+            get => (ThreadState)value;
 
-            set => _value = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(ThreadState expected, ThreadState update)
@@ -99,9 +98,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         public new TimedOutStatus Value
         {
-            get => (TimedOutStatus)_value;
+            get => (TimedOutStatus)value;
 
-            set => _value = (int)value;
+            set => base.value = (int)value;
         }
 
         public bool CompareAndSet(TimedOutStatus expected, TimedOutStatus update)
@@ -182,40 +181,34 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
     }
 
-    #endregion NestedTypes
+    protected internal readonly HystrixRequestLog CurrentRequestLog;
+    protected internal readonly HystrixRequestCache RequestCache;
+    protected internal readonly HystrixCommandExecutionHook ExecutionHook;
+    protected internal readonly HystrixCommandMetrics InnerMetrics;
+    protected internal readonly HystrixEventNotifier EventNotifier;
+    protected internal readonly ICircuitBreaker InnerCircuitBreaker;
+    protected internal readonly IHystrixThreadPool ThreadPool;
+    protected internal readonly SemaphoreSlim FallbackSemaphoreOverride;
+    protected internal readonly SemaphoreSlim ExecutionSemaphoreOverride;
+    protected internal readonly HystrixConcurrencyStrategy ConcurrencyStrategy;
+    protected internal long CommandStartTimestamp = -1L;
+    protected internal long ThreadStartTimestamp = -1L;
+    protected internal volatile bool InnerIsResponseFromCache;
+    protected internal Task ExecThreadTask;
+    protected internal CancellationTokenSource TimeoutTcs;
+    protected internal CancellationToken Token;
+    protected internal CancellationToken UsersToken;
+    protected internal volatile ExecutionResult ExecutionResult = Empty; // state on shared execution
+    protected internal volatile ExecutionResult ExecutionResultAtTimeOfCancellation;
 
-    #region Fields
-    protected internal readonly HystrixRequestLog _currentRequestLog;
-    protected internal readonly HystrixRequestCache _requestCache;
-    protected internal readonly HystrixCommandExecutionHook _executionHook;
-    protected internal readonly HystrixCommandMetrics _metrics;
-    protected internal readonly HystrixEventNotifier _eventNotifier;
-    protected internal readonly ICircuitBreaker _circuitBreaker;
-    protected internal readonly IHystrixThreadPool _threadPool;
-    protected internal readonly SemaphoreSlim _fallbackSemaphoreOverride;
-    protected internal readonly SemaphoreSlim _executionSemaphoreOverride;
-    protected internal readonly HystrixConcurrencyStrategy _concurrencyStrategy;
-    protected internal long _commandStartTimestamp = -1L;
-    protected internal long _threadStartTimestamp = -1L;
-    protected internal volatile bool _isResponseFromCache;
-    protected internal Task _execThreadTask;
-    protected internal CancellationTokenSource _timeoutTcs;
-    protected internal CancellationToken _token;
-    protected internal CancellationToken _usersToken;
-    protected internal volatile ExecutionResult _executionResult = EMPTY; // state on shared execution
-    protected internal volatile ExecutionResult _executionResultAtTimeOfCancellation;
-
-    protected readonly AtomicCommandState commandState = new (CommandState.NOT_STARTED);
-    protected readonly AtomicThreadState threadState = new (ThreadState.NOT_USING_THREAD);
-    protected readonly AtomicTimedOutStatus isCommandTimedOut = new (TimedOutStatus.NOT_EXECUTED);
-    protected readonly IHystrixCommandGroupKey commandGroup;
+    protected readonly AtomicCommandState InnerCommandState = new (CommandState.NotStarted);
+    protected readonly AtomicThreadState InnerThreadState = new (ThreadState.NotUsingThread);
+    protected readonly AtomicTimedOutStatus IsCommandTimedOut = new (TimedOutStatus.NotExecuted);
+    protected readonly IHystrixCommandGroupKey InnerCommandGroup;
 
     protected HystrixCompletionSource tcs;
     private readonly ILogger _logger;
 
-    #endregion Fields
-
-    #region Constructors
     protected AbstractCommand(
         IHystrixCommandGroupKey group,
         IHystrixCommandKey key,
@@ -232,32 +225,31 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         ILogger logger = null)
     {
         _logger = logger;
-        commandGroup = InitGroupKey(group);
-        commandKey = InitCommandKey(key, GetType());
-        options = InitCommandOptions(commandKey, optionsStrategy, commandOptionsDefaults);
-        this.threadPoolKey = InitThreadPoolKey(threadPoolKey, commandGroup, options.ExecutionIsolationThreadPoolKeyOverride);
-        _metrics = InitMetrics(metrics, commandGroup, this.threadPoolKey, commandKey, options);
-        _circuitBreaker = InitCircuitBreaker(options.CircuitBreakerEnabled, circuitBreaker, commandGroup, commandKey, options, _metrics);
+        InnerCommandGroup = InitGroupKey(group);
+        InnerCommandKey = InitCommandKey(key, GetType());
+        InnerOptions = InitCommandOptions(InnerCommandKey, optionsStrategy, commandOptionsDefaults);
+        this.InnerThreadPoolKey = InitThreadPoolKey(threadPoolKey, InnerCommandGroup, InnerOptions.ExecutionIsolationThreadPoolKeyOverride);
+        this.InnerMetrics = InitMetrics(metrics, InnerCommandGroup, this.InnerThreadPoolKey, InnerCommandKey, InnerOptions);
+        this.InnerCircuitBreaker = InitCircuitBreaker(InnerOptions.CircuitBreakerEnabled, circuitBreaker, InnerCommandGroup, InnerCommandKey, InnerOptions, this.InnerMetrics);
 
-        _threadPool = InitThreadPool(threadPool, this.threadPoolKey, threadPoolOptionsDefaults);
+        this.ThreadPool = InitThreadPool(threadPool, this.InnerThreadPoolKey, threadPoolOptionsDefaults);
 
         // Strategies from plugins
-        _eventNotifier = HystrixPlugins.EventNotifier;
-        _concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
-        HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(commandKey, commandGroup, _metrics, _circuitBreaker, options);
+        EventNotifier = HystrixPlugins.EventNotifier;
+        ConcurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
+        HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(InnerCommandKey, InnerCommandGroup, this.InnerMetrics, this.InnerCircuitBreaker, InnerOptions);
 
-        _executionHook = InitExecutionHook(executionHook);
+        this.ExecutionHook = InitExecutionHook(executionHook);
 
-        _requestCache = HystrixRequestCache.GetInstance(commandKey);
-        _currentRequestLog = InitRequestLog(options.RequestLogEnabled);
+        RequestCache = HystrixRequestCache.GetInstance(InnerCommandKey);
+        CurrentRequestLog = InitRequestLog(InnerOptions.RequestLogEnabled);
 
         /* fallback semaphore override if applicable */
-        _fallbackSemaphoreOverride = fallbackSemaphore;
+        FallbackSemaphoreOverride = fallbackSemaphore;
 
         /* execution semaphore override if applicable */
-        _executionSemaphoreOverride = executionSemaphore;
+        ExecutionSemaphoreOverride = executionSemaphore;
     }
-    #endregion Constructors
 
     internal void MarkAsCollapsedCommand(IHystrixCollapserKey collapserKey, int sizeOfBatch)
     {
@@ -266,15 +258,15 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected internal SemaphoreSlim GetExecutionSemaphore()
     {
-        if (options.ExecutionIsolationStrategy == ExecutionIsolationStrategy.SEMAPHORE)
+        if (InnerOptions.ExecutionIsolationStrategy == ExecutionIsolationStrategy.Semaphore)
         {
-            if (_executionSemaphoreOverride == null)
+            if (ExecutionSemaphoreOverride == null)
             {
-                return _executionSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.ExecutionIsolationSemaphoreMaxConcurrentRequests));
+                return ExecutionSemaphorePerCircuit.GetOrAddEx(InnerCommandKey.Name, _ => new SemaphoreSlim(InnerOptions.ExecutionIsolationSemaphoreMaxConcurrentRequests));
             }
             else
             {
-                return _executionSemaphoreOverride;
+                return ExecutionSemaphoreOverride;
             }
         }
         else
@@ -286,17 +278,16 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected internal SemaphoreSlim GetFallbackSemaphore()
     {
-        if (_fallbackSemaphoreOverride == null)
+        if (FallbackSemaphoreOverride == null)
         {
-            return _fallbackSemaphorePerCircuit.GetOrAddEx(commandKey.Name, _ => new SemaphoreSlim(options.FallbackIsolationSemaphoreMaxConcurrentRequests));
+            return FallbackSemaphorePerCircuit.GetOrAddEx(InnerCommandKey.Name, _ => new SemaphoreSlim(InnerOptions.FallbackIsolationSemaphoreMaxConcurrentRequests));
         }
         else
         {
-            return _fallbackSemaphoreOverride;
+            return FallbackSemaphoreOverride;
         }
     }
 
-    #region  Init
     protected static IHystrixCommandGroupKey InitGroupKey(IHystrixCommandGroupKey fromConstructor)
     {
         if (fromConstructor == null)
@@ -444,32 +435,31 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             return null;
         }
     }
-    #endregion
 
     protected void Setup()
     {
-        _timeoutTcs = CancellationTokenSource.CreateLinkedTokenSource(_usersToken);
-        _token = _timeoutTcs.Token;
+        TimeoutTcs = CancellationTokenSource.CreateLinkedTokenSource(UsersToken);
+        Token = TimeoutTcs.Token;
         tcs = new HystrixCompletionSource(this);
 
         /* this is a stateful object so can only be used once */
-        if (!commandState.CompareAndSet(CommandState.NOT_STARTED, CommandState.OBSERVABLE_CHAIN_CREATED))
+        if (!InnerCommandState.CompareAndSet(CommandState.NotStarted, CommandState.ObservableChainCreated))
         {
             var ex = new InvalidOperationException("This instance can only be executed once. Please instantiate a new instance.");
             throw new HystrixRuntimeException(
-                FailureType.BAD_REQUEST_EXCEPTION,
+                FailureType.BadRequestException,
                 GetType(),
                 $"{LogMessagePrefix} command executed multiple times - this is not permitted.",
                 ex,
                 null);
         }
 
-        _commandStartTimestamp = Time.CurrentTimeMillis;
+        CommandStartTimestamp = Time.CurrentTimeMillis;
 
-        if (CommandOptions.RequestLogEnabled && _currentRequestLog != null)
+        if (CommandOptions.RequestLogEnabled && CurrentRequestLog != null)
         {
             // log this command execution regardless of what happened
-            _currentRequestLog.AddExecutedCommand(this);
+            CurrentRequestLog.AddExecutedCommand(this);
         }
     }
 
@@ -479,11 +469,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         if (IsRequestCachingEnabled && CacheKey != null)
         {
             // wrap it for caching
-            fromCache = _requestCache.PutIfAbsent(CacheKey, hystrixTask);
+            fromCache = RequestCache.PutIfAbsent(CacheKey, hystrixTask);
             if (fromCache != null)
             {
                 // another thread beat us so we'll use the cached value instead
-                _isResponseFromCache = true;
+                InnerIsResponseFromCache = true;
                 HandleRequestCacheHitAndEmitValues(fromCache, this);
                 return true;
             }
@@ -494,7 +484,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     protected void ApplyHystrixSemantics()
     {
-        if (commandState.Value.Equals(CommandState.UNSUBSCRIBED))
+        if (InnerCommandState.Value.Equals(CommandState.Unsubscribed))
         {
             return;
         }
@@ -503,10 +493,10 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             // mark that we're starting execution on the ExecutionHook
             // if this hook throws an exception, then a fast-fail occurs with no fallback.  No state is left inconsistent
-            _executionHook.OnStart(this);
+            ExecutionHook.OnStart(this);
 
             /* determine if we're allowed to execute */
-            if (_circuitBreaker.AllowRequest)
+            if (InnerCircuitBreaker.AllowRequest)
             {
                 var executionSemaphore = GetExecutionSemaphore();
 
@@ -515,11 +505,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
                     try
                     {
                         /* used to track userThreadExecutionTime */
-                        _executionResult = _executionResult.SetInvocationStartTime(Time.CurrentTimeMillis);
+                        ExecutionResult = ExecutionResult.SetInvocationStartTime(Time.CurrentTimeMillis);
                         ExecuteCommandWithSpecifiedIsolation();
                         if (tcs.IsFaulted)
                         {
-                            _eventNotifier.MarkEvent(HystrixEventType.EXCEPTION_THROWN, CommandKey);
+                            EventNotifier.MarkEvent(HystrixEventType.ExceptionThrown, CommandKey);
                         }
                     }
                     finally
@@ -538,13 +528,13 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
                 if (tcs.IsFaulted)
                 {
-                    _eventNotifier.MarkEvent(HystrixEventType.EXCEPTION_THROWN, CommandKey);
+                    EventNotifier.MarkEvent(HystrixEventType.ExceptionThrown, CommandKey);
                 }
             }
         }
         finally
         {
-            if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+            if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
             {
                 UnsubscribeCommandCleanup();
                 FireOnCompletedHook();
@@ -557,14 +547,14 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            _execThreadTask.Start(_threadPool.GetTaskScheduler());
+            ExecThreadTask.Start(ThreadPool.GetTaskScheduler());
         }
         catch (Exception e)
         {
             HandleFallback(e);
             if (tcs.IsFaulted)
             {
-                _eventNotifier.MarkEvent(HystrixEventType.EXCEPTION_THROWN, CommandKey);
+                EventNotifier.MarkEvent(HystrixEventType.ExceptionThrown, CommandKey);
             }
 
             UnsubscribeCommandCleanup();
@@ -599,40 +589,39 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         // we don't know what kind of exception this is so create a generic message and throw a new HystrixRuntimeException
         var message = $"{LogMessagePrefix} failed while executing. {{0}}";
         _logger?.LogDebug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
-        return new HystrixRuntimeException(FailureType.COMMAND_EXCEPTION, GetType(), message, e, null);
+        return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
     }
 
     protected abstract TResult DoRun();
 
     protected abstract TResult DoFallback();
 
-    #region Handlers
     protected virtual void HandleCleanUpAfterResponseFromCache(bool commandExecutionStarted)
     {
-        var latency = Time.CurrentTimeMillis - _commandStartTimestamp;
-        _executionResult = _executionResult.AddEvent(-1, HystrixEventType.RESPONSE_FROM_CACHE)
+        var latency = Time.CurrentTimeMillis - CommandStartTimestamp;
+        ExecutionResult = ExecutionResult.AddEvent(-1, HystrixEventType.ResponseFromCache)
             .MarkUserThreadCompletion(latency)
             .SetNotExecutedInThread();
-        var cacheOnlyForMetrics = ExecutionResult.From(HystrixEventType.RESPONSE_FROM_CACHE)
+        var cacheOnlyForMetrics = ExecutionResult.From(HystrixEventType.ResponseFromCache)
             .MarkUserThreadCompletion(latency);
-        _metrics.MarkCommandDone(cacheOnlyForMetrics, commandKey, threadPoolKey, commandExecutionStarted);
-        _eventNotifier.MarkEvent(HystrixEventType.RESPONSE_FROM_CACHE, commandKey);
+        InnerMetrics.MarkCommandDone(cacheOnlyForMetrics, InnerCommandKey, InnerThreadPoolKey, commandExecutionStarted);
+        EventNotifier.MarkEvent(HystrixEventType.ResponseFromCache, InnerCommandKey);
     }
 
     protected virtual void HandleCommandEnd(bool commandExecutionStarted)
     {
-        var userThreadLatency = Time.CurrentTimeMillis - _commandStartTimestamp;
-        _executionResult = _executionResult.MarkUserThreadCompletion((int)userThreadLatency);
-        _metrics.MarkCommandDone(_executionResultAtTimeOfCancellation ?? _executionResult, commandKey, threadPoolKey, commandExecutionStarted);
+        var userThreadLatency = Time.CurrentTimeMillis - CommandStartTimestamp;
+        ExecutionResult = ExecutionResult.MarkUserThreadCompletion((int)userThreadLatency);
+        InnerMetrics.MarkCommandDone(ExecutionResultAtTimeOfCancellation ?? ExecutionResult, InnerCommandKey, InnerThreadPoolKey, commandExecutionStarted);
     }
 
     protected virtual void HandleThreadEnd()
     {
         HystrixCounters.DecrementGlobalConcurrentThreads();
-        _threadPool.MarkThreadCompletion();
+        ThreadPool.MarkThreadCompletion();
         try
         {
-            _executionHook.OnThreadComplete(this);
+            ExecutionHook.OnThreadComplete(this);
         }
         catch (Exception hookEx)
         {
@@ -642,11 +631,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void HandleFallbackOrThrowException(HystrixEventType eventType, FailureType failureType, string message, Exception originalException)
     {
-        var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+        var latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
 
         // record the executionResult
         // do this before executing fallback so it can be queried from within getFallback (see See https://github.com/Netflix/Hystrix/pull/144)
-        _executionResult = _executionResult.AddEvent((int)latency, eventType);
+        ExecutionResult = ExecutionResult.AddEvent((int)latency, eventType);
 
         if (IsUnrecoverableError(originalException))
         {
@@ -664,7 +653,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
                 _logger?.LogWarning("Recovered from Error by serving Hystrix fallback: {0}", originalException);
             }
 
-            if (options.FallbackEnabled)
+            if (InnerOptions.FallbackEnabled)
             {
                 /* fallback behavior is permitted so attempt */
 
@@ -729,10 +718,10 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         if (fe is InvalidOperationException)
         {
-            var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+            var latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
             _logger?.LogDebug("No fallback for HystrixCommand: {0} ", fe); // debug only since we're throwing the exception and someone higher will do something with it
-            _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_MISSING, commandKey);
-            _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.FALLBACK_MISSING);
+            EventNotifier.MarkEvent(HystrixEventType.FallbackMissing, InnerCommandKey);
+            ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.FallbackMissing);
 
             /* executionHook for all errors */
             e = WrapWithOnErrorHook(failureType, e);
@@ -746,10 +735,10 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         else
         {
-            var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
+            var latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
             _logger?.LogDebug("HystrixCommand execution {0} and fallback failed: {1}", failureType.ToString(), fe);
-            _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_FAILURE, commandKey);
-            _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.FALLBACK_FAILURE);
+            EventNotifier.MarkEvent(HystrixEventType.FallbackFailure, InnerCommandKey);
+            ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.FallbackFailure);
 
             /* executionHook for all errors */
             e = WrapWithOnErrorHook(failureType, e);
@@ -780,14 +769,14 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void HandleFallbackRejectionByEmittingError()
     {
-        var latencyWithFallback = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-        _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_REJECTION, commandKey);
-        _executionResult = _executionResult.AddEvent((int)latencyWithFallback, HystrixEventType.FALLBACK_REJECTION);
+        var latencyWithFallback = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
+        EventNotifier.MarkEvent(HystrixEventType.FallbackRejection, InnerCommandKey);
+        ExecutionResult = ExecutionResult.AddEvent((int)latencyWithFallback, HystrixEventType.FallbackRejection);
         _logger?.LogDebug("HystrixCommand Fallback Rejection."); // debug only since we're throwing the exception and someone higher will do something with it
 
         // if we couldn't acquire a permit, we "fail fast" by throwing an exception
         tcs.TrySetException(new HystrixRuntimeException(
-            FailureType.REJECTED_SEMAPHORE_FALLBACK,
+            FailureType.RejectedSemaphoreFallback,
             GetType(),
             $"{LogMessagePrefix} fallback execution rejected.",
             null,
@@ -797,14 +786,14 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     private void HandleSemaphoreRejectionViaFallback()
     {
         var semaphoreRejectionException = new Exception("could not acquire a semaphore for execution");
-        _executionResult = _executionResult.SetExecutionException(semaphoreRejectionException);
-        _eventNotifier.MarkEvent(HystrixEventType.SEMAPHORE_REJECTED, commandKey);
+        ExecutionResult = ExecutionResult.SetExecutionException(semaphoreRejectionException);
+        EventNotifier.MarkEvent(HystrixEventType.SemaphoreRejected, InnerCommandKey);
         _logger?.LogDebug("HystrixCommand Execution Rejection by Semaphore."); // debug only since we're throwing the exception and someone higher will do something with it
 
         // retrieve a fallback or throw an exception if no fallback available
         HandleFallbackOrThrowException(
-            HystrixEventType.SEMAPHORE_REJECTED,
-            FailureType.REJECTED_SEMAPHORE_EXECUTION,
+            HystrixEventType.SemaphoreRejected,
+            FailureType.RejectedSemaphoreExecution,
             "could not acquire a semaphore for execution",
             semaphoreRejectionException);
     }
@@ -812,16 +801,16 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     private void HandleShortCircuitViaFallback()
     {
         // record that we are returning a short-circuited fallback
-        _eventNotifier.MarkEvent(HystrixEventType.SHORT_CIRCUITED, commandKey);
+        EventNotifier.MarkEvent(HystrixEventType.ShortCircuited, InnerCommandKey);
 
         // short-circuit and go directly to fallback (or throw an exception if no fallback implemented)
         var shortCircuitException = new Exception("Hystrix circuit short-circuited and is OPEN");
-        _executionResult = _executionResult.SetExecutionException(shortCircuitException);
+        ExecutionResult = ExecutionResult.SetExecutionException(shortCircuitException);
         try
         {
             HandleFallbackOrThrowException(
-                HystrixEventType.SHORT_CIRCUITED,
-                FailureType.SHORTCIRCUIT,
+                HystrixEventType.ShortCircuited,
+                FailureType.Shortcircuit,
                 "short-circuited",
                 shortCircuitException);
         }
@@ -846,7 +835,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             e = e.InnerException;
         }
 
-        _executionResult = _executionResult.SetExecutionException(e);
+        ExecutionResult = ExecutionResult.SetExecutionException(e);
         if (e is RejectedExecutionException)
         {
             HandleThreadPoolRejectionViaFallback(e);
@@ -870,11 +859,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         _logger?.LogDebug("Error executing HystrixCommand.Run(). Proceeding to fallback logic...: {0}", underlying);
 
         // report failure
-        _eventNotifier.MarkEvent(HystrixEventType.FAILURE, commandKey);
+        EventNotifier.MarkEvent(HystrixEventType.Failure, InnerCommandKey);
 
         // record the exception
-        _executionResult = _executionResult.SetException(underlying);
-        HandleFallbackOrThrowException(HystrixEventType.FAILURE, FailureType.COMMAND_EXCEPTION, "failed", underlying);
+        ExecutionResult = ExecutionResult.SetException(underlying);
+        HandleFallbackOrThrowException(HystrixEventType.Failure, FailureType.CommandException, "failed", underlying);
     }
 
     private void HandleBadRequestByEmittingError(Exception underlying)
@@ -883,10 +872,10 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         try
         {
-            var executionLatency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-            _eventNotifier.MarkEvent(HystrixEventType.BAD_REQUEST, commandKey);
-            _executionResult = _executionResult.AddEvent((int)executionLatency, HystrixEventType.BAD_REQUEST);
-            var decorated = _executionHook.OnError(this, FailureType.BAD_REQUEST_EXCEPTION, underlying);
+            var executionLatency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
+            EventNotifier.MarkEvent(HystrixEventType.BadRequest, InnerCommandKey);
+            ExecutionResult = ExecutionResult.AddEvent((int)executionLatency, HystrixEventType.BadRequest);
+            var decorated = ExecutionHook.OnError(this, FailureType.BadRequestException, underlying);
 
             if (decorated is HystrixBadRequestException)
             {
@@ -907,54 +896,54 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void HandleTimeoutViaFallback()
     {
-        HandleFallbackOrThrowException(HystrixEventType.TIMEOUT, FailureType.TIMEOUT, "timed-out", new TimeoutException());
+        HandleFallbackOrThrowException(HystrixEventType.Timeout, FailureType.Timeout, "timed-out", new TimeoutException());
     }
 
     private void HandleThreadPoolRejectionViaFallback(Exception underlying)
     {
-        _eventNotifier.MarkEvent(HystrixEventType.THREAD_POOL_REJECTED, commandKey);
-        _threadPool.MarkThreadRejection();
+        EventNotifier.MarkEvent(HystrixEventType.ThreadPoolRejected, InnerCommandKey);
+        ThreadPool.MarkThreadRejection();
 
         // use a fallback instead (or throw exception if not implemented)
-        HandleFallbackOrThrowException(HystrixEventType.THREAD_POOL_REJECTED, FailureType.REJECTED_THREAD_EXECUTION, "could not be queued for execution", underlying);
+        HandleFallbackOrThrowException(HystrixEventType.ThreadPoolRejected, FailureType.RejectedThreadExecution, "could not be queued for execution", underlying);
     }
 
     private void HandleRequestCacheHitAndEmitValues(Task fromCache, AbstractCommand<TResult> cmd)
     {
         try
         {
-            _executionHook.OnCacheHit(this);
+            ExecutionHook.OnCacheHit(this);
         }
         catch (Exception hookEx)
         {
             _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onCacheHit: {0}", hookEx);
         }
 
-        if (cmd._token.IsCancellationRequested)
+        if (cmd.Token.IsCancellationRequested)
         {
-            cmd._executionResult = cmd._executionResult.AddEvent(HystrixEventType.CANCELLED);
-            cmd._executionResult = cmd._executionResult.SetExecutionLatency(-1);
+            cmd.ExecutionResult = cmd.ExecutionResult.AddEvent(HystrixEventType.Cancelled);
+            cmd.ExecutionResult = cmd.ExecutionResult.SetExecutionLatency(-1);
         }
         else
         {
             if (!fromCache.IsCompleted)
             {
-                fromCache.Wait(cmd._token);
+                fromCache.Wait(cmd.Token);
             }
 
             if (fromCache.AsyncState is AbstractCommand<TResult> originalCommand)
             {
-                cmd._executionResult = originalCommand._executionResult;
+                cmd.ExecutionResult = originalCommand.ExecutionResult;
             }
         }
 
-        if (cmd._token.IsCancellationRequested)
+        if (cmd.Token.IsCancellationRequested)
         {
-            if (commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.UNSUBSCRIBED))
+            if (InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.Unsubscribed))
             {
                 HandleCleanUpAfterResponseFromCache(false); // user code never ran
             }
-            else if (commandState.CompareAndSet(CommandState.USER_CODE_EXECUTED, CommandState.UNSUBSCRIBED))
+            else if (InnerCommandState.CompareAndSet(CommandState.UserCodeExecuted, CommandState.Unsubscribed))
             {
                 HandleCleanUpAfterResponseFromCache(true); // user code did run
             }
@@ -962,44 +951,42 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
         if (fromCache.IsCompleted)
         {
-            if (commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.TERMINAL))
+            if (InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.Terminal))
             {
                 HandleCleanUpAfterResponseFromCache(false); // user code never ran
             }
-            else if (commandState.CompareAndSet(CommandState.USER_CODE_EXECUTED, CommandState.TERMINAL))
+            else if (InnerCommandState.CompareAndSet(CommandState.UserCodeExecuted, CommandState.Terminal))
             {
                 HandleCleanUpAfterResponseFromCache(true); // user code did run
             }
         }
     }
 
-    #endregion Handlers
-
     private void TimeoutThreadAction()
     {
-        if (!Time.WaitUntil(() => isCommandTimedOut.Value == TimedOutStatus.COMPLETED, options.ExecutionTimeoutInMilliseconds))
+        if (!Time.WaitUntil(() => IsCommandTimedOut.Value == TimedOutStatus.Completed, InnerOptions.ExecutionTimeoutInMilliseconds))
         {
 #pragma warning disable S1066 // Collapsible "if" statements should be merged
-            if (isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.TIMED_OUT))
+            if (IsCommandTimedOut.CompareAndSet(TimedOutStatus.NotExecuted, TimedOutStatus.TimedOut))
 #pragma warning restore S1066 // Collapsible "if" statements should be merged
             {
-                _timeoutTcs.Cancel();
+                TimeoutTcs.Cancel();
 
                 // report timeout failure
-                _eventNotifier.MarkEvent(HystrixEventType.TIMEOUT, commandKey);
+                EventNotifier.MarkEvent(HystrixEventType.Timeout, InnerCommandKey);
 
-                if (threadState.CompareAndSet(ThreadState.STARTED, ThreadState.UNSUBSCRIBED))
+                if (InnerThreadState.CompareAndSet(ThreadState.Started, ThreadState.Unsubscribed))
                 {
                     HandleThreadEnd();
                 }
 
-                threadState.CompareAndSet(ThreadState.NOT_USING_THREAD, ThreadState.UNSUBSCRIBED);
+                InnerThreadState.CompareAndSet(ThreadState.NotUsingThread, ThreadState.Unsubscribed);
 
                 HandleFallback(new HystrixTimeoutException("timed out while executing run()"));
 
                 if (tcs.IsFaulted)
                 {
-                    _eventNotifier.MarkEvent(HystrixEventType.EXCEPTION_THROWN, CommandKey);
+                    EventNotifier.MarkEvent(HystrixEventType.ExceptionThrown, CommandKey);
                 }
 
                 UnsubscribeCommandCleanup();
@@ -1011,29 +998,29 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void ExecuteCommandWithThreadAction()
     {
-        _threadStartTimestamp = Time.CurrentTimeMillis;
+        ThreadStartTimestamp = Time.CurrentTimeMillis;
 
-        if (_token.IsCancellationRequested)
+        if (Token.IsCancellationRequested)
         {
             tcs.TrySetCanceled();
             UnsubscribeCommandCleanup();
-            threadState.CompareAndSet(ThreadState.NOT_USING_THREAD, ThreadState.UNSUBSCRIBED);
+            InnerThreadState.CompareAndSet(ThreadState.NotUsingThread, ThreadState.Unsubscribed);
             TerminateCommandCleanup();
             return;
         }
 
         try
         {
-            _executionResult = _executionResult.SetExecutionOccurred();
-            if (!commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.USER_CODE_EXECUTED))
+            ExecutionResult = ExecutionResult.SetExecutionOccurred();
+            if (!InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.UserCodeExecuted))
             {
-                tcs.TrySetException(new InvalidOperationException($"execution attempted while in state : {commandState.Value}"));
+                tcs.TrySetException(new InvalidOperationException($"execution attempted while in state : {InnerCommandState.Value}"));
                 return;
             }
 
-            _metrics.MarkCommandStart(commandKey, threadPoolKey, ExecutionIsolationStrategy.THREAD);
+            InnerMetrics.MarkCommandStart(InnerCommandKey, InnerThreadPoolKey, ExecutionIsolationStrategy.Thread);
 
-            if (isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
+            if (IsCommandTimedOut.Value == TimedOutStatus.TimedOut)
             {
                 // the command timed out in the wrapping thread so we will return immediately
                 // and not increment any of the counters below or other such logic
@@ -1041,53 +1028,53 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
                 return;
             }
 
-            if (threadState.CompareAndSet(ThreadState.NOT_USING_THREAD, ThreadState.STARTED))
+            if (InnerThreadState.CompareAndSet(ThreadState.NotUsingThread, ThreadState.Started))
             {
                 // we have not been unsubscribed, so should proceed
                 HystrixCounters.IncrementGlobalConcurrentThreads();
-                _threadPool.MarkThreadExecution();
+                ThreadPool.MarkThreadExecution();
 
                 // store the command that is being run
-                _executionResult = _executionResult.SetExecutedInThread();
+                ExecutionResult = ExecutionResult.SetExecutedInThread();
                 /*
                  * If any of these hooks throw an exception, then it appears as if the actual execution threw an error
                  */
                 try
                 {
-                    if (options.ExecutionTimeoutEnabled)
+                    if (InnerOptions.ExecutionTimeoutEnabled)
                     {
                         var timerTask = new Task(TimeoutThreadAction, TaskCreationOptions.LongRunning);
                         timerTask.Start(TaskScheduler.Default);
                     }
 
-                    _executionHook.OnThreadStart(this);
-                    _executionHook.OnExecutionStart(this);
+                    ExecutionHook.OnThreadStart(this);
+                    ExecutionHook.OnExecutionStart(this);
                     var result = ExecuteRun();
-                    if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+                    if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
                     {
                         MarkEmits();
                         result = WrapWithOnEmitHook(result);
                         tcs.TrySetResult(result);
                         WrapWithOnExecutionSuccess();
-                        if (threadState.CompareAndSet(ThreadState.STARTED, ThreadState.TERMINAL))
+                        if (InnerThreadState.CompareAndSet(ThreadState.Started, ThreadState.Terminal))
                         {
                             HandleThreadEnd();
                         }
 
-                        threadState.CompareAndSet(ThreadState.NOT_USING_THREAD, ThreadState.TERMINAL);
+                        InnerThreadState.CompareAndSet(ThreadState.NotUsingThread, ThreadState.Terminal);
                         MarkCompleted();
                     }
                 }
                 catch (Exception e)
                 {
-                    if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+                    if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
                     {
-                        if (threadState.CompareAndSet(ThreadState.STARTED, ThreadState.TERMINAL))
+                        if (InnerThreadState.CompareAndSet(ThreadState.Started, ThreadState.Terminal))
                         {
                             HandleThreadEnd();
                         }
 
-                        threadState.CompareAndSet(ThreadState.NOT_USING_THREAD, ThreadState.TERMINAL);
+                        InnerThreadState.CompareAndSet(ThreadState.NotUsingThread, ThreadState.Terminal);
                         HandleFallback(e);
                     }
                 }
@@ -1100,12 +1087,12 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         finally
         {
-            if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+            if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
             {
                 // applyHystrixSemantics.doOnError(markexceptionthrown)
                 if (tcs.IsFaulted)
                 {
-                    _eventNotifier.MarkEvent(HystrixEventType.EXCEPTION_THROWN, CommandKey);
+                    EventNotifier.MarkEvent(HystrixEventType.ExceptionThrown, CommandKey);
                 }
 
                 UnsubscribeCommandCleanup();
@@ -1117,26 +1104,26 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     private void ExecuteCommandWithSpecifiedIsolation()
     {
-        if (options.ExecutionIsolationStrategy == ExecutionIsolationStrategy.THREAD)
+        if (InnerOptions.ExecutionIsolationStrategy == ExecutionIsolationStrategy.Thread)
         {
             void ThreadExec(object command)
             {
                 ExecuteCommandWithThreadAction();
             }
 
-            _execThreadTask = new Task(ThreadExec, this, CancellationToken.None, TaskCreationOptions.LongRunning);
+            ExecThreadTask = new Task(ThreadExec, this, CancellationToken.None, TaskCreationOptions.LongRunning);
         }
         else
         {
-            _executionResult = _executionResult.SetExecutionOccurred();
-            if (!commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.USER_CODE_EXECUTED))
+            ExecutionResult = ExecutionResult.SetExecutionOccurred();
+            if (!InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.UserCodeExecuted))
             {
-                throw new InvalidOperationException($"execution attempted while in state : {commandState.Value}");
+                throw new InvalidOperationException($"execution attempted while in state : {InnerCommandState.Value}");
             }
 
-            _metrics.MarkCommandStart(commandKey, threadPoolKey, ExecutionIsolationStrategy.SEMAPHORE);
+            InnerMetrics.MarkCommandStart(InnerCommandKey, InnerThreadPoolKey, ExecutionIsolationStrategy.Semaphore);
 
-            if (options.ExecutionTimeoutEnabled)
+            if (InnerOptions.ExecutionTimeoutEnabled)
             {
                 var timerTask = new Task(TimeoutThreadAction, TaskCreationOptions.LongRunning);
                 timerTask.Start(TaskScheduler.Default);
@@ -1144,9 +1131,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
             try
             {
-                _executionHook.OnExecutionStart(this);
+                ExecutionHook.OnExecutionStart(this);
                 var result = ExecuteRun();
-                if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+                if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
                 {
                     MarkEmits();
                     result = WrapWithOnEmitHook(result);
@@ -1157,7 +1144,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             }
             catch (Exception e)
             {
-                if (isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT)
+                if (IsCommandTimedOut.Value != TimedOutStatus.TimedOut)
                 {
                     HandleFallback(e);
                 }
@@ -1170,18 +1157,18 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         try
         {
             var result = DoRun();
-            isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
+            IsCommandTimedOut.CompareAndSet(TimedOutStatus.NotExecuted, TimedOutStatus.Completed);
 
-            result = isCommandTimedOut.Value != TimedOutStatus.TIMED_OUT ? WrapWithOnExecutionEmitHook(result) : default;
+            result = IsCommandTimedOut.Value != TimedOutStatus.TimedOut ? WrapWithOnExecutionEmitHook(result) : default;
 
             return result;
         }
         catch (AggregateException e)
         {
-            isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
+            IsCommandTimedOut.CompareAndSet(TimedOutStatus.NotExecuted, TimedOutStatus.Completed);
 
             var flatten = GetException(e);
-            if (flatten.InnerException is TaskCanceledException && isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
+            if (flatten.InnerException is TaskCanceledException && IsCommandTimedOut.Value == TimedOutStatus.TimedOut)
             {
                 // End task pass
                 return default;
@@ -1197,9 +1184,9 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (OperationCanceledException e)
         {
-            isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
+            IsCommandTimedOut.CompareAndSet(TimedOutStatus.NotExecuted, TimedOutStatus.Completed);
 
-            if (isCommandTimedOut.Value == TimedOutStatus.TIMED_OUT)
+            if (IsCommandTimedOut.Value == TimedOutStatus.TimedOut)
             {
                 // End task pass
                 return default;
@@ -1215,7 +1202,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         }
         catch (Exception ex)
         {
-            isCommandTimedOut.CompareAndSet(TimedOutStatus.NOT_EXECUTED, TimedOutStatus.COMPLETED);
+            IsCommandTimedOut.CompareAndSet(TimedOutStatus.NotExecuted, TimedOutStatus.Completed);
 
             var returned = WrapWithOnExecutionErrorHook(ex);
             if (ex == returned)
@@ -1273,24 +1260,24 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         if (tcs.IsCanceled)
         {
-            if (commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.UNSUBSCRIBED))
+            if (InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.Unsubscribed))
             {
-                if (!_executionResult.ContainsTerminalEvent)
+                if (!ExecutionResult.ContainsTerminalEvent)
                 {
-                    _eventNotifier.MarkEvent(HystrixEventType.CANCELLED, CommandKey);
-                    _executionResultAtTimeOfCancellation = _executionResult
-                        .AddEvent((int)(Time.CurrentTimeMillis - _commandStartTimestamp), HystrixEventType.CANCELLED);
+                    EventNotifier.MarkEvent(HystrixEventType.Cancelled, CommandKey);
+                    ExecutionResultAtTimeOfCancellation = ExecutionResult
+                        .AddEvent((int)(Time.CurrentTimeMillis - CommandStartTimestamp), HystrixEventType.Cancelled);
                 }
 
                 HandleCommandEnd(false); // user code never ran
             }
-            else if (commandState.CompareAndSet(CommandState.USER_CODE_EXECUTED, CommandState.UNSUBSCRIBED))
+            else if (InnerCommandState.CompareAndSet(CommandState.UserCodeExecuted, CommandState.Unsubscribed))
             {
-                if (!_executionResult.ContainsTerminalEvent)
+                if (!ExecutionResult.ContainsTerminalEvent)
                 {
-                    _eventNotifier.MarkEvent(HystrixEventType.CANCELLED, CommandKey);
-                    _executionResultAtTimeOfCancellation = _executionResult
-                        .AddEvent((int)(Time.CurrentTimeMillis - _commandStartTimestamp), HystrixEventType.CANCELLED);
+                    EventNotifier.MarkEvent(HystrixEventType.Cancelled, CommandKey);
+                    ExecutionResultAtTimeOfCancellation = ExecutionResult
+                        .AddEvent((int)(Time.CurrentTimeMillis - CommandStartTimestamp), HystrixEventType.Cancelled);
                 }
 
                 HandleCommandEnd(true); // user code did run
@@ -1302,11 +1289,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         if (tcs.IsCompleted)
         {
-            if (commandState.CompareAndSet(CommandState.OBSERVABLE_CHAIN_CREATED, CommandState.TERMINAL))
+            if (InnerCommandState.CompareAndSet(CommandState.ObservableChainCreated, CommandState.Terminal))
             {
                 HandleCommandEnd(false); // user code never ran
             }
-            else if (commandState.CompareAndSet(CommandState.USER_CODE_EXECUTED, CommandState.TERMINAL))
+            else if (InnerCommandState.CompareAndSet(CommandState.UserCodeExecuted, CommandState.Terminal))
             {
                 HandleCommandEnd(true); // user code did run
             }
@@ -1321,7 +1308,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             try
             {
-                _executionHook.OnSuccess(this);
+                ExecutionHook.OnSuccess(this);
             }
             catch (Exception hookEx)
             {
@@ -1335,45 +1322,43 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         return e.Flatten();
     }
 
-    #region Marks
-
     private void MarkCollapsedCommand(IHystrixCollapserKey collapserKey, int sizeOfBatch)
     {
-        _eventNotifier.MarkEvent(HystrixEventType.COLLAPSED, commandKey);
-        _executionResult = _executionResult.MarkCollapsed(collapserKey, sizeOfBatch);
+        EventNotifier.MarkEvent(HystrixEventType.Collapsed, InnerCommandKey);
+        ExecutionResult = ExecutionResult.MarkCollapsed(collapserKey, sizeOfBatch);
     }
 
     private void MarkFallbackEmit()
     {
         if (ShouldOutputOnNextEvents)
         {
-            _executionResult = _executionResult.AddEvent(HystrixEventType.FALLBACK_EMIT);
-            _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_EMIT, commandKey);
+            ExecutionResult = ExecutionResult.AddEvent(HystrixEventType.FallbackEmit);
+            EventNotifier.MarkEvent(HystrixEventType.FallbackEmit, InnerCommandKey);
         }
     }
 
     private void MarkFallbackCompleted()
     {
-        var latency2 = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-        _eventNotifier.MarkEvent(HystrixEventType.FALLBACK_SUCCESS, commandKey);
-        _executionResult = _executionResult.AddEvent((int)latency2, HystrixEventType.FALLBACK_SUCCESS);
+        var latency2 = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
+        EventNotifier.MarkEvent(HystrixEventType.FallbackSuccess, InnerCommandKey);
+        ExecutionResult = ExecutionResult.AddEvent((int)latency2, HystrixEventType.FallbackSuccess);
     }
 
     private void MarkEmits()
     {
         if (ShouldOutputOnNextEvents)
         {
-            _executionResult = _executionResult.AddEvent(HystrixEventType.EMIT);
-            _eventNotifier.MarkEvent(HystrixEventType.EMIT, commandKey);
+            ExecutionResult = ExecutionResult.AddEvent(HystrixEventType.Emit);
+            EventNotifier.MarkEvent(HystrixEventType.Emit, InnerCommandKey);
         }
 
         if (CommandIsScalar)
         {
-            var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-            _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
-            _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
-            _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
-            _circuitBreaker.MarkSuccess();
+            var latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
+            EventNotifier.MarkCommandExecution(CommandKey, InnerOptions.ExecutionIsolationStrategy, (int)latency, ExecutionResult.OrderedList);
+            EventNotifier.MarkEvent(HystrixEventType.Success, InnerCommandKey);
+            ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.Success);
+            InnerCircuitBreaker.MarkSuccess();
         }
     }
 
@@ -1381,22 +1366,19 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         if (tcs.IsCompleted && !CommandIsScalar)
         {
-            var latency = Time.CurrentTimeMillis - _executionResult.StartTimestamp;
-            _eventNotifier.MarkCommandExecution(CommandKey, options.ExecutionIsolationStrategy, (int)latency, _executionResult.OrderedList);
-            _eventNotifier.MarkEvent(HystrixEventType.SUCCESS, commandKey);
-            _executionResult = _executionResult.AddEvent((int)latency, HystrixEventType.SUCCESS);
-            _circuitBreaker.MarkSuccess();
+            var latency = Time.CurrentTimeMillis - ExecutionResult.StartTimestamp;
+            EventNotifier.MarkCommandExecution(CommandKey, InnerOptions.ExecutionIsolationStrategy, (int)latency, ExecutionResult.OrderedList);
+            EventNotifier.MarkEvent(HystrixEventType.Success, InnerCommandKey);
+            ExecutionResult = ExecutionResult.AddEvent((int)latency, HystrixEventType.Success);
+            InnerCircuitBreaker.MarkSuccess();
         }
     }
 
-    #endregion Marks
-
-    #region Wraps
     private void WrapWithOnFallbackSuccessHook()
     {
         try
         {
-            _executionHook.OnFallbackSuccess(this);
+            ExecutionHook.OnFallbackSuccess(this);
         }
         catch (Exception hookEx)
         {
@@ -1408,7 +1390,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            return _executionHook.OnFallbackEmit(this, r);
+            return ExecutionHook.OnFallbackEmit(this, r);
         }
         catch (Exception hookEx)
         {
@@ -1421,7 +1403,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            _executionHook.OnFallbackStart(this);
+            ExecutionHook.OnFallbackStart(this);
         }
         catch (Exception hookEx)
         {
@@ -1433,7 +1415,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            return _executionHook.OnEmit(this, result);
+            return ExecutionHook.OnEmit(this, result);
         }
         catch (Exception hookEx)
         {
@@ -1446,7 +1428,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            return _executionHook.OnError(this, failureType, e);
+            return ExecutionHook.OnError(this, failureType, e);
         }
         catch (Exception hookEx)
         {
@@ -1459,7 +1441,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            _executionHook.OnExecutionSuccess(this);
+            ExecutionHook.OnExecutionSuccess(this);
         }
         catch (Exception hookEx)
         {
@@ -1471,7 +1453,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            return _executionHook.OnExecutionError(this, e);
+            return ExecutionHook.OnExecutionError(this, e);
         }
         catch (Exception hookEx)
         {
@@ -1484,7 +1466,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         try
         {
-            return _executionHook.OnExecutionEmit(this, r);
+            return ExecutionHook.OnExecutionEmit(this, r);
         }
         catch (Exception hookEx)
         {
@@ -1499,7 +1481,7 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
         {
             if (IsFallbackUserDefined)
             {
-                _executionHook.OnFallbackError(this, e);
+                ExecutionHook.OnFallbackError(this, e);
             }
         }
         catch (Exception hookEx)
@@ -1507,25 +1489,22 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
             _logger?.LogWarning("Error calling HystrixCommandExecutionHook.onFallbackError - {0}", hookEx);
         }
     }
-    #endregion Wraps
 
-    #region IHystrixInvokableInfo
+    public IHystrixCommandGroupKey CommandGroup => InnerCommandGroup;
 
-    public IHystrixCommandGroupKey CommandGroup => commandGroup;
+    protected readonly IHystrixCommandKey InnerCommandKey;
 
-    protected readonly IHystrixCommandKey commandKey;
+    public IHystrixCommandKey CommandKey => InnerCommandKey;
 
-    public IHystrixCommandKey CommandKey => commandKey;
+    protected readonly IHystrixThreadPoolKey InnerThreadPoolKey;
 
-    protected readonly IHystrixThreadPoolKey threadPoolKey;
+    public IHystrixThreadPoolKey ThreadPoolKey => InnerThreadPoolKey;
 
-    public IHystrixThreadPoolKey ThreadPoolKey => threadPoolKey;
+    protected readonly IHystrixCommandOptions InnerOptions;
 
-    protected readonly IHystrixCommandOptions options;
+    public IHystrixCommandOptions CommandOptions => InnerOptions;
 
-    public IHystrixCommandOptions CommandOptions => options;
-
-    public long CommandRunStartTimeInNanos => _executionResult.CommandRunStartTimeInNanos;
+    public long CommandRunStartTimeInNanoseconds => ExecutionResult.CommandRunStartTimeInNanoseconds;
 
     public ExecutionResult.EventCounts EventCounts => CommandResult.Eventcounts;
 
@@ -1533,64 +1512,60 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
 
     public int ExecutionTimeInMilliseconds => CommandResult.ExecutionLatency;
 
-    public Exception FailedExecutionException => _executionResult.Exception;
+    public Exception FailedExecutionException => ExecutionResult.Exception;
 
-    public bool IsCircuitBreakerOpen => options.CircuitBreakerForceOpen || (!options.CircuitBreakerForceClosed && _circuitBreaker.IsOpen);
+    public bool IsCircuitBreakerOpen => InnerOptions.CircuitBreakerForceOpen || (!InnerOptions.CircuitBreakerForceClosed && InnerCircuitBreaker.IsOpen);
 
     public bool IsExecutedInThread => CommandResult.IsExecutedInThread;
 
-    public bool IsExecutionComplete => commandState.Value == CommandState.TERMINAL;
+    public bool IsExecutionComplete => InnerCommandState.Value == CommandState.Terminal;
 
-    public bool IsFailedExecution => CommandResult.Eventcounts.Contains(HystrixEventType.FAILURE);
+    public bool IsFailedExecution => CommandResult.Eventcounts.Contains(HystrixEventType.Failure);
 
-    public bool IsResponseFromCache => _isResponseFromCache;
+    public bool IsResponseFromCache => InnerIsResponseFromCache;
 
-    public bool IsResponseFromFallback => CommandResult.Eventcounts.Contains(HystrixEventType.FALLBACK_SUCCESS);
+    public bool IsResponseFromFallback => CommandResult.Eventcounts.Contains(HystrixEventType.FallbackSuccess);
 
     public bool IsResponseRejected => CommandResult.IsResponseRejected;
 
     public bool IsResponseSemaphoreRejected => CommandResult.IsResponseSemaphoreRejected;
 
-    public bool IsResponseShortCircuited => CommandResult.Eventcounts.Contains(HystrixEventType.SHORT_CIRCUITED);
+    public bool IsResponseShortCircuited => CommandResult.Eventcounts.Contains(HystrixEventType.ShortCircuited);
 
     public bool IsResponseThreadPoolRejected => CommandResult.IsResponseThreadPoolRejected;
 
-    public bool IsResponseTimedOut => CommandResult.Eventcounts.Contains(HystrixEventType.TIMEOUT);
+    public bool IsResponseTimedOut => CommandResult.Eventcounts.Contains(HystrixEventType.Timeout);
 
-    public bool IsSuccessfulExecution => CommandResult.Eventcounts.Contains(HystrixEventType.SUCCESS);
+    public bool IsSuccessfulExecution => CommandResult.Eventcounts.Contains(HystrixEventType.Success);
 
-    public HystrixCommandMetrics Metrics => _metrics;
+    public HystrixCommandMetrics Metrics => InnerMetrics;
 
-    public int NumberCollapsed => CommandResult.Eventcounts.GetCount(HystrixEventType.COLLAPSED);
+    public int NumberCollapsed => CommandResult.Eventcounts.GetCount(HystrixEventType.Collapsed);
 
-    public int NumberEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.EMIT);
+    public int NumberEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.Emit);
 
-    public int NumberFallbackEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.FALLBACK_EMIT);
+    public int NumberFallbackEmissions => CommandResult.Eventcounts.GetCount(HystrixEventType.FallbackEmit);
 
-    public IHystrixCollapserKey OriginatingCollapserKey => _executionResult.CollapserKey;
+    public IHystrixCollapserKey OriginatingCollapserKey => ExecutionResult.CollapserKey;
 
     public string PublicCacheKey => CacheKey;
 
-    #endregion IHystrixInvokableInfo
-
-    #region Properties
-
-    protected bool _isFallbackUserDefined;
+    protected bool isFallbackUserDefined;
 
     public virtual bool IsFallbackUserDefined
     {
-        get => _isFallbackUserDefined;
+        get => isFallbackUserDefined;
 
-        set => _isFallbackUserDefined = value;
+        set => isFallbackUserDefined = value;
     }
 
-    public Exception ExecutionException => _executionResult.ExecutionException;
+    public Exception ExecutionException => ExecutionResult.ExecutionException;
 
-    internal ICircuitBreaker CircuitBreaker => _circuitBreaker;
+    internal ICircuitBreaker CircuitBreaker => InnerCircuitBreaker;
 
     protected virtual string CacheKey => null;
 
-    protected virtual bool IsRequestCachingEnabled => options.RequestCacheEnabled && CacheKey != null;
+    protected virtual bool IsRequestCachingEnabled => InnerOptions.RequestCacheEnabled && CacheKey != null;
 
     protected virtual string LogMessagePrefix => CommandKey.Name;
 
@@ -1598,11 +1573,11 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     {
         get
         {
-            var resultToReturn = _executionResultAtTimeOfCancellation ?? _executionResult;
+            var resultToReturn = ExecutionResultAtTimeOfCancellation ?? ExecutionResult;
 
-            if (_isResponseFromCache)
+            if (InnerIsResponseFromCache)
             {
-                resultToReturn = resultToReturn.AddEvent(HystrixEventType.RESPONSE_FROM_CACHE);
+                resultToReturn = resultToReturn.AddEvent(HystrixEventType.ResponseFromCache);
             }
 
             return resultToReturn;
@@ -1612,5 +1587,4 @@ public abstract class AbstractCommand<TResult> : AbstractCommandBase, IHystrixIn
     protected virtual bool ShouldOutputOnNextEvents => false;
 
     protected virtual bool CommandIsScalar => true;
-    #endregion
 }

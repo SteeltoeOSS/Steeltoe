@@ -12,8 +12,8 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 
 public class SerilogDynamicProvider : DynamicLoggerProviderBase
 {
-    private static readonly object _sync = new ();
-    private static Serilog.Core.Logger _serilogger;
+    private static readonly object Sync = new ();
+    private static Serilog.Core.Logger _serilogLogger;
 
     public SerilogDynamicProvider(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
         : base(() => GetDelegateLogger(serilogOptionsMonitor), GetInitialLevelsFromOptions(serilogOptionsMonitor), messageProcessors)
@@ -27,19 +27,19 @@ public class SerilogDynamicProvider : DynamicLoggerProviderBase
     /// </summary>
     internal static void ClearLogger()
     {
-        _serilogger = null;
+        _serilogLogger = null;
     }
 
     private static ILoggerProvider GetDelegateLogger(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)
     {
         var serilogOptions = serilogOptionsMonitor?.CurrentValue ?? throw new ArgumentNullException(nameof(serilogOptionsMonitor));
 
-        lock (_sync)
+        lock (Sync)
         {
-            _serilogger ??= serilogOptions.GetSerilogConfiguration().CreateLogger(); // Cannot create more than once, so protect with a lock and static property
+            _serilogLogger ??= serilogOptions.GetSerilogConfiguration().CreateLogger(); // Cannot create more than once, so protect with a lock and static property
         }
 
-        return new Serilog.Extensions.Logging.SerilogLoggerProvider(_serilogger);
+        return new Serilog.Extensions.Logging.SerilogLoggerProvider(_serilogLogger);
     }
 
     private static InitialLevels GetInitialLevelsFromOptions(IOptionsMonitor<SerilogOptions> serilogOptionsMonitor)

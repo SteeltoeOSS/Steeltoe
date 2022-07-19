@@ -13,11 +13,11 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 public static class KubernetesConfigurationBuilderExtensions
 {
     /// <summary>
-    /// Add configuration providers for ConfigMaps and Secrets
+    /// Add configuration providers for ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="configurationBuilder"><see cref="IConfigurationBuilder"/></param>
-    /// <param name="kubernetesClientConfiguration">Kubernetes client configuration customization</param>
-    /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within config providers</param>
+    /// <param name="configurationBuilder"><see cref="IConfigurationBuilder"/>.</param>
+    /// <param name="kubernetesClientConfiguration">Kubernetes client configuration customization.</param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within config providers.</param>
     public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
     {
         if (configurationBuilder == null)
@@ -44,9 +44,9 @@ public static class KubernetesConfigurationBuilderExtensions
                     .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory)))
                     .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
 
-                foreach (var configmap in appInfo.Config.Sources)
+                foreach (var configMap in appInfo.Config.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configmap.Namespace, configmap.Name, appInfo.Reload, loggerFactory)));
+                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configMap.Namespace, configMap.Name, appInfo.Reload, loggerFactory)));
                 }
             }
 

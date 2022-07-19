@@ -29,7 +29,7 @@ public class ThreadPoolEventsListener : EventSourceListener
     private const string EventSourceName = "Microsoft-Windows-DotNETRuntime";
     private const EventKeywords ThreadPoolEvents = (EventKeywords)0x10000;
 
-    private static readonly string[] _allowedEvents =
+    private static readonly string[] AllowedEvents =
     {
         "ThreadPoolWorkerThreadStart",
         "ThreadPoolWorkerThreadWait",
@@ -40,7 +40,7 @@ public class ThreadPoolEventsListener : EventSourceListener
         "IOThreadTerminate"
     };
 
-    private static readonly string[] _ignorePayloadNames =
+    private static readonly string[] IgnorePayloadNames =
     {
         "ClrInstanceID"
     };
@@ -63,9 +63,9 @@ public class ThreadPoolEventsListener : EventSourceListener
 
         try
         {
-            if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
+            if (AllowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
             {
-                ExtractAndRecordMetric(EventSourceName, eventData, GetLabelSet(eventData.EventName), _ignorePayloadNames);
+                ExtractAndRecordMetric(EventSourceName, eventData, GetLabelSet(eventData.EventName), IgnorePayloadNames);
                 RecordAdditionalMetrics(eventData);
             }
         }

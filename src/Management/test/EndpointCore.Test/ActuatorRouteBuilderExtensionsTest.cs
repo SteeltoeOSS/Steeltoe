@@ -25,9 +25,9 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint;
 
-public class ActuatorRouteBuilderExtensionsTest
+public partial class ActuatorRouteBuilderExtensionsTest
 {
-    public static IEnumerable<object[]> IEndpointImplementations
+    public static IEnumerable<object[]> EndpointImplementations
     {
         get
         {
@@ -38,7 +38,7 @@ public class ActuatorRouteBuilderExtensionsTest
         }
     }
 
-    public static IEnumerable<object[]> IEndpointImplementationsForCurrentPlatform
+    public static IEnumerable<object[]> EndpointImplementationsForCurrentPlatform
     {
         get
         {
@@ -54,7 +54,7 @@ public class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementations))]
+    [MemberData(nameof(EndpointImplementations))]
     public void LookupMiddlewareTest(Type type)
     {
         var (middleware, options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
@@ -63,7 +63,7 @@ public class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthSuccess(Type type)
     {
         var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
@@ -71,7 +71,7 @@ public class ActuatorRouteBuilderExtensionsTest
     }
 
     [Theory]
-    [MemberData(nameof(IEndpointImplementationsForCurrentPlatform))]
+    [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthFail(Type type)
     {
         var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
@@ -101,18 +101,7 @@ public class ActuatorRouteBuilderExtensionsTest
                             .UseRouting()
                             .UseAuthentication()
                             .UseAuthorization()
-                            .UseEndpoints(endpoints =>
-                            {
-                                endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
-#if NET6_0_OR_GREATER
-                                endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
-#else
-#pragma warning disable CS0618 // Type or member is obsolete
-                                endpoints.MapActuatorEndpoint(type).RequireAuthorization("TestAuth");
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-
-                            }))
+                            .UseEndpoints(endpoints => MapEndpoints(type, endpoints)))
                     .UseTestServer();
             });
 

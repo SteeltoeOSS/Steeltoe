@@ -12,12 +12,12 @@ public class BindingBuilder
 {
     public static DestinationConfigurer Bind(IQueue queue)
     {
-        return new DestinationConfigurer(queue.QueueName, DestinationType.QUEUE);
+        return new DestinationConfigurer(queue.QueueName, DestinationType.Queue);
     }
 
     public static DestinationConfigurer Bind(IExchange exchange)
     {
-        return new DestinationConfigurer(exchange.ExchangeName, DestinationType.EXCHANGE);
+        return new DestinationConfigurer(exchange.ExchangeName, DestinationType.Exchange);
     }
 
     private static Dictionary<string, object> CreateMapForKeys(params string[] keys)
@@ -43,7 +43,7 @@ public class BindingBuilder
             Type = type;
         }
 
-        public IBinding To(FanoutExchange exchange)
+        public IBinding To(FanOutExchange exchange)
         {
             var bindingName = $"{exchange.ExchangeName}.{Name}";
             return Binding.Create(bindingName, Name, Type, exchange.ExchangeName, string.Empty, new Dictionary<string, object>());
@@ -314,7 +314,7 @@ public class BindingBuilder
 
     public static IBinding Create(string bindingName, DestinationType type)
     {
-        if (type == DestinationType.EXCHANGE)
+        if (type == DestinationType.Exchange)
         {
             return new ExchangeBinding(bindingName);
         }

@@ -14,15 +14,15 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger)
+    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions managementOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -32,7 +32,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public override string HandleRequest()
     {
-        var result = _endpoint.Invoke();
+        var result = endpoint.Invoke();
         return result;
     }
 
@@ -41,7 +41,7 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
         var request = context.Request;
         var response = context.Response;
 
-        _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+        logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
         // GET /metrics/{metricName}?tag=key:value&tag=key:value
         var serialInfo = HandleRequest();

@@ -87,7 +87,7 @@ public class ConsulHealthContributorTest
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
         var result = contrib.Health();
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal(2, result.Details.Count);
 
         Assert.Contains("leader", result.Details.Keys);

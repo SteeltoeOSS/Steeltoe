@@ -27,32 +27,32 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public abstract class AbstractMessageListenerContainer : IMessageListenerContainer
 {
-    public const int DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL = 5000;
-    public const long DEFAULT_SHUTDOWN_TIMEOUT = 5000;
-    public const int DEFAULT_RECOVERY_INTERVAL = 5000;
-    public const bool DEFAULT_DEBATCHING_ENABLED = true;
-    public const int DEFAULT_PREFETCH_COUNT = 250;
+    public const int DefaultFailedDeclarationRetryInterval = 5000;
+    public const long DefaultShutdownTimeout = 5000;
+    public const int DefaultRecoveryInterval = 5000;
+    public const bool DefaultDebatchingEnabled = true;
+    public const int DefaultPrefetchCount = 250;
 
-    protected readonly object _consumersMonitor = new ();
-    protected readonly object _lock = new ();
-    protected readonly object _lifecycleMonitor = new ();
-    protected readonly ILogger _logger;
-    protected readonly ILoggerFactory _loggerFactory;
+    protected readonly object ConsumersMonitor = new ();
+    protected readonly object Lock = new ();
+    protected readonly object LifecycleMonitor = new ();
+    protected readonly ILogger Logger;
+    protected readonly ILoggerFactory LoggerFactory;
 
-    protected int _recoveryInterval = DEFAULT_RECOVERY_INTERVAL;
-    private string _listenerid;
+    protected int recoveryInterval = DefaultRecoveryInterval;
+    private string _listenerId;
     private IConnectionFactory _connectionFactory;
 
     private List<IQueue> Queues { get; set; } = new ();
 
     protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
     {
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory?.CreateLogger(GetType());
+        LoggerFactory = loggerFactory;
+        Logger = LoggerFactory?.CreateLogger(GetType());
         ApplicationContext = applicationContext;
         ConnectionFactory = connectionFactory;
-        ErrorHandler = new ConditionalRejectingErrorHandler(_logger);
-        MessageHeadersConverter = new DefaultMessageHeadersConverter(_logger);
+        ErrorHandler = new ConditionalRejectingErrorHandler(Logger);
+        MessageHeadersConverter = new DefaultMessageHeadersConverter(Logger);
         ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
         BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
         TransactionAttribute = new DefaultTransactionAttribute();
@@ -77,7 +77,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public IApplicationContext ApplicationContext { get; set; }
 
-    public virtual AcknowledgeMode AcknowledgeMode { get; set; } = AcknowledgeMode.AUTO;
+    public virtual AcknowledgeMode AcknowledgeMode { get; set; } = AcknowledgeMode.Auto;
 
     public virtual string ServiceName { get; set; }
 
@@ -87,7 +87,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual IErrorHandler ErrorHandler { get; set; }
 
-    public virtual bool IsDeBatchingEnabled { get; set; } = DEFAULT_DEBATCHING_ENABLED;
+    public virtual bool IsDeBatchingEnabled { get; set; } = DefaultDebatchingEnabled;
 
     public virtual IList<IMessagePostProcessor> AfterReceivePostProcessors { get; private set; }
 
@@ -99,9 +99,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual string ListenerId
     {
-        get => _listenerid ?? ServiceName;
+        get => _listenerId ?? ServiceName;
 
-        set => _listenerid = value;
+        set => _listenerId = value;
     }
 
     public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }
@@ -114,23 +114,23 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool DefaultRequeueRejected { get; set; } = true;
 
-    public virtual int PrefetchCount { get; set; } = DEFAULT_PREFETCH_COUNT;
+    public virtual int PrefetchCount { get; set; } = DefaultPrefetchCount;
 
-    public virtual long ShutdownTimeout { get; set; } = DEFAULT_SHUTDOWN_TIMEOUT;
+    public virtual long ShutdownTimeout { get; set; } = DefaultShutdownTimeout;
 
     public virtual long IdleEventInterval { get; set; }
 
     public virtual int RecoveryInterval
     {
-        get => _recoveryInterval;
+        get => recoveryInterval;
         set
         {
-            _recoveryInterval = value;
-            RecoveryBackOff = new FixedBackOff(_recoveryInterval, FixedBackOff.UNLIMITED_ATTEMPTS);
+            recoveryInterval = value;
+            RecoveryBackOff = new FixedBackOff(recoveryInterval, FixedBackOff.UnlimitedAttempts);
         }
     }
 
-    public IBackOff RecoveryBackOff { get; set; } = new FixedBackOff(DEFAULT_RECOVERY_INTERVAL, FixedBackOff.UNLIMITED_ATTEMPTS);
+    public IBackOff RecoveryBackOff { get; set; } = new FixedBackOff(DefaultRecoveryInterval, FixedBackOff.UnlimitedAttempts);
 
     public virtual IMessageHeadersConverter MessageHeadersConverter { get; set; }
 
@@ -144,7 +144,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual bool AutoDeclare { get; set; } = true;
 
-    public virtual long FailedDeclarationRetryInterval { get; set; } = DEFAULT_FAILED_DECLARATION_RETRY_INTERVAL;
+    public virtual long FailedDeclarationRetryInterval { get; set; } = DefaultFailedDeclarationRetryInterval;
 
     public virtual bool StatefulRetryFatalWithNullMessageId { get; set; } = true;
 
@@ -395,9 +395,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         ValidateConfiguration();
         try
         {
-            lock (_lifecycleMonitor)
+            lock (LifecycleMonitor)
             {
-                Monitor.PulseAll(_lifecycleMonitor);
+                Monitor.PulseAll(LifecycleMonitor);
             }
 
             CheckMissingQueuesFatalFromProperty();
@@ -406,12 +406,12 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
             if (!ExposeListenerChannel && TransactionManager != null)
             {
-                _logger?.LogWarning("exposeListenerChannel=false is ignored when using a TransactionManager");
+                Logger?.LogWarning("exposeListenerChannel=false is ignored when using a TransactionManager");
             }
 
             if (TransactionManager != null && !IsChannelTransacted)
             {
-                _logger?.LogDebug("The 'channelTransacted' is coerced to 'true', when 'transactionManager' is provided");
+                Logger?.LogDebug("The 'channelTransacted' is coerced to 'true', when 'transactionManager' is provided");
                 IsChannelTransacted = true;
             }
 
@@ -424,7 +424,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Error initializing listener container");
+            Logger?.LogError(e, "Error initializing listener container");
             throw ConvertRabbitAccessException(e);
         }
     }
@@ -445,19 +445,19 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual void Shutdown()
     {
-        lock (_lifecycleMonitor)
+        lock (LifecycleMonitor)
         {
             if (!IsActive)
             {
-                _logger?.LogInformation("Shutdown ignored - container is not active already");
+                Logger?.LogInformation("Shutdown ignored - container is not active already");
                 return;
             }
 
             IsActive = false;
-            Monitor.PulseAll(_lifecycleMonitor);
+            Monitor.PulseAll(LifecycleMonitor);
         }
 
-        _logger?.LogDebug("Shutting down RabbitMQ listener container");
+        Logger?.LogDebug("Shutting down RabbitMQ listener container");
 
         // Shut down the invokers.
         try
@@ -466,15 +466,15 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "DoShutdown error");
+            Logger?.LogError(ex, "DoShutdown error");
             throw ConvertRabbitAccessException(ex);
         }
         finally
         {
-            lock (_lifecycleMonitor)
+            lock (LifecycleMonitor)
             {
                 IsRunning = false;
-                Monitor.PulseAll(_lifecycleMonitor);
+                Monitor.PulseAll(LifecycleMonitor);
             }
         }
     }
@@ -488,7 +488,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         if (!Initialized)
         {
-            lock (_lifecycleMonitor)
+            lock (LifecycleMonitor)
             {
                 if (!Initialized)
                 {
@@ -499,14 +499,14 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         try
         {
-            _logger?.LogDebug("Starting RabbitMQ listener container {name}", ServiceName);
+            Logger?.LogDebug("Starting RabbitMQ listener container {name}", ServiceName);
             ConfigureAdminIfNeeded();
             CheckMismatchedQueues();
             DoStart();
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error Starting RabbitMQ listener container {name}", ServiceName);
+            Logger?.LogError(ex, "Error Starting RabbitMQ listener container {name}", ServiceName);
             throw ConvertRabbitAccessException(ex);
         }
         finally
@@ -525,15 +525,15 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Error stopping RabbitMQ listener container {name}", ServiceName);
+            Logger?.LogError(ex, "Error stopping RabbitMQ listener container {name}", ServiceName);
             throw ConvertRabbitAccessException(ex);
         }
         finally
         {
-            lock (_lifecycleMonitor)
+            lock (LifecycleMonitor)
             {
                 IsRunning = false;
-                Monitor.PulseAll(_lifecycleMonitor);
+                Monitor.PulseAll(LifecycleMonitor);
             }
         }
 
@@ -560,17 +560,17 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (MissingQueuesFatal)
             {
-                _logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), "
+                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), "
                                     + "for lazily loaded containers");
             }
             else
             {
-                _logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
             }
         }
         else if (MissingQueuesFatal)
         {
-            _logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), "
+            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), "
                                 + "for lazily loaded containers");
         }
 
@@ -594,7 +594,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     protected virtual void RedeclareElementsIfNecessary()
     {
-        lock (_lock)
+        lock (Lock)
         {
             var admin = RabbitAdmin;
             if (!IsLazyLoad && admin != null && AutoDeclare)
@@ -610,7 +610,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                         throw new FatalListenerStartupException("Mismatched queues", e);
                     }
 
-                    _logger?.LogError(e, "Failed to check/redeclare auto-delete queue(s). Container: {name}", ServiceName);
+                    Logger?.LogError(e, "Failed to check/redeclare auto-delete queue(s). Container: {name}", ServiceName);
                 }
             }
         }
@@ -626,13 +626,13 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Execution of Rabbit message listener failed, and the error handler threw an exception. Container: {name}", ServiceName);
+                Logger?.LogError(e, "Execution of Rabbit message listener failed, and the error handler threw an exception. Container: {name}", ServiceName);
                 throw;
             }
         }
         else
         {
-            _logger?.LogWarning(ex, "Execution of Rabbit message listener failed, and no ErrorHandler has been set. Container: {name}", ServiceName);
+            Logger?.LogWarning(ex, "Execution of Rabbit message listener failed, and no ErrorHandler has been set. Container: {name}", ServiceName);
         }
     }
 
@@ -640,7 +640,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (!IsRunning)
         {
-            _logger?.LogWarning("Rejecting received message(s) because the listener container {name} has been stopped {message}", ServiceName, message);
+            Logger?.LogWarning("Rejecting received message(s) because the listener container {name} has been stopped {message}", ServiceName, message);
             throw new MessageRejectedWhileStoppingException();
         }
 
@@ -668,7 +668,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
             if (bindChannel)
             {
-                var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
                 {
                     SynchronizedWithTransaction = true
                 };
@@ -706,7 +706,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
             if (bindChannel)
             {
-                var resourceHolder = new RabbitResourceHolder(channel, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
                 {
                     SynchronizedWithTransaction = true
                 };
@@ -790,7 +790,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
+            Logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
             throw WrapToListenerExecutionFailedExceptionIfNeeded(e, data);
         }
     }
@@ -803,7 +803,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
+            Logger?.LogError(e, "Exception in OnMessage call. Container: {name}", ServiceName);
             throw WrapToListenerExecutionFailedExceptionIfNeeded(e, message);
         }
     }
@@ -836,7 +836,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             // if locally transacted, bind the current channel to make it available to RabbitTemplate
             if (IsChannelLocallyTransacted)
             {
-                var localResourceHolder = new RabbitResourceHolder(channelToUse, false, _loggerFactory?.CreateLogger<RabbitResourceHolder>())
+                var localResourceHolder = new RabbitResourceHolder(channelToUse, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
                 {
                     SynchronizedWithTransaction = true
                 };
@@ -880,7 +880,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             // Rare case: listener thread failed after container shutdown.
             // Log at debug level, to avoid spamming the shutdown log.
-            _logger?.LogDebug(exception, "Listener exception after container shutdown. Container: {name}", ServiceName);
+            Logger?.LogDebug(exception, "Listener exception after container shutdown. Container: {name}", ServiceName);
         }
     }
 
@@ -905,7 +905,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 if (AutoDeclare || MismatchedQueuesFatal)
                 {
-                    _logger?.LogDebug(
+                    Logger?.LogDebug(
                         "For 'autoDeclare' and 'mismatchedQueuesFatal' to work, there must be exactly one "
                         + "RabbitAdmin in the context or you must inject one into this container; found: {count}"
                         + " for container {container}",
@@ -937,7 +937,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
             catch (RabbitConnectException e)
             {
-                _logger?.LogInformation(e, "Broker not available; cannot check queue declarations. Container: {name}", ServiceName);
+                Logger?.LogInformation(e, "Broker not available; cannot check queue declarations. Container: {name}", ServiceName);
             }
             catch (RabbitIOException e)
             {
@@ -947,7 +947,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                 }
                 else
                 {
-                    _logger?.LogInformation(e, "Failed to get connection during Start()");
+                    Logger?.LogInformation(e, "Failed to get connection during Start()");
                 }
             }
         }
@@ -963,7 +963,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
             catch (Exception e)
             {
-                _logger?.LogInformation(e, "Broker not available; cannot force queue declarations during start");
+                Logger?.LogInformation(e, "Broker not available; cannot force queue declarations during start");
             }
         }
     }
@@ -977,11 +977,11 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected virtual void DoStart()
     {
         // Reschedule paused tasks, if any.
-        lock (_lifecycleMonitor)
+        lock (LifecycleMonitor)
         {
             IsActive = true;
             IsRunning = true;
-            Monitor.PulseAll(_lifecycleMonitor);
+            Monitor.PulseAll(LifecycleMonitor);
         }
     }
 
@@ -1053,7 +1053,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 return true;
             }
-            else if (cause is RabbitRejectAndDontRequeueException)
+            else if (cause is RabbitRejectAndDoNotRequeueException)
             {
                 return false;
             }
@@ -1069,7 +1069,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         if (resourceHolder != null)
         {
             resourceHolder.RequeueOnRollback = AlwaysRequeueWithTxManagerRollback ||
-                                               ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, _logger);
+                                               ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, Logger);
         }
     }
 
@@ -1081,7 +1081,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (MismatchedQueuesFatal || (queueNames.Contains(entry.QueueName) && admin.GetQueueProperties(entry.QueueName) == null))
             {
-                _logger?.LogDebug("Redeclaring context exchanges, queues, bindings. Container: {name}", ServiceName);
+                Logger?.LogDebug("Redeclaring context exchanges, queues, bindings. Container: {name}", ServiceName);
                 admin.Initialize();
                 break;
             }
@@ -1100,7 +1100,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 throw new ListenerExecutionFailedException(
                     "Cannot retry message more than once without an ID",
-                    new RabbitRejectAndDontRequeueException("Not retryable; rejecting and not requeuing", ex),
+                    new RabbitRejectAndDoNotRequeueException("Not retryable; rejecting and not requeuing", ex),
                     message);
             }
         }
@@ -1127,7 +1127,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                  *  when there's no transaction manager, the exposed channel is committed
                  *  on each message, and not based on txSize.
                  */
-                RabbitUtils.CommitIfNecessary(channelToUse, _logger);
+                RabbitUtils.CommitIfNecessary(channelToUse, Logger);
             }
         }
     }

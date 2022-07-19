@@ -25,7 +25,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     };
 
     [Fact]
-    public void ConstributeWithConfigNull()
+    public void ContributeWithConfigNull()
     {
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
@@ -36,7 +36,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBUilderThrows()
+    public void ContributeWithNullBuilderThrows()
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_appSettings);

@@ -151,7 +151,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             return HasAnyRole(role);
         }
 
-        public virtual bool HasIpAddress(string ipaddr)
+        public virtual bool HasIpAddress(string ipAddress)
         {
             return true;
         }

@@ -13,16 +13,16 @@ namespace Steeltoe.Integration.Rabbit.Support;
 
 public class RabbitMessageHeaderErrorMessageStrategy : IErrorMessageStrategy
 {
-    public const string AMQP_RAW_MESSAGE = $"{MessageHeaders.INTERNAL}raw_message";
+    public const string AmqpRawMessage = $"{MessageHeaders.Internal}raw_message";
 
     public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor context)
     {
-        var inputMessage = context?.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
+        var inputMessage = context?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
         var headers = new Dictionary<string, object>();
         if (context != null)
         {
-            headers[AMQP_RAW_MESSAGE] = context.GetAttribute(AMQP_RAW_MESSAGE);
-            headers[IntegrationMessageHeaderAccessor.SOURCE_DATA] = context.GetAttribute(AMQP_RAW_MESSAGE);
+            headers[AmqpRawMessage] = context.GetAttribute(AmqpRawMessage);
+            headers[IntegrationMessageHeaderAccessor.SourceData] = context.GetAttribute(AmqpRawMessage);
         }
 
         return inputMessage is IMessage message

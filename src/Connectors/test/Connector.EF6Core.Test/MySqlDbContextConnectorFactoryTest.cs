@@ -47,7 +47,7 @@ public class MySqlDbContextConnectorFactoryTest
         var factory = new MySqlDbContextConnectorFactory(si, config, typeof(GoodMySqlDbContext));
         var context = factory.Create(null);
         Assert.NotNull(context);
-        var gcontext = context as GoodMySqlDbContext;
-        Assert.NotNull(gcontext);
+        var goodMySqlDbContext = context as GoodMySqlDbContext;
+        Assert.NotNull(goodMySqlDbContext);
     }
 }

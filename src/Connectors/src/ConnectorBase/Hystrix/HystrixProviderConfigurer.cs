@@ -23,7 +23,7 @@ public class HystrixProviderConfigurer
 
         if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si.Scheme.Equals(HystrixProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
+            if (si.Scheme.Equals(HystrixProviderConnectorOptions.DefaultSslScheme, System.StringComparison.OrdinalIgnoreCase))
             {
                 configuration.SslEnabled = true;
                 configuration.SslPort = si.Port;

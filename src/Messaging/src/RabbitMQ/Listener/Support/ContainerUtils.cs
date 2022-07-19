@@ -16,7 +16,7 @@ public static class ContainerUtils
         var e = exception;
         while (e != null)
         {
-            if (e is RabbitRejectAndDontRequeueException)
+            if (e is RabbitRejectAndDoNotRequeueException)
             {
                 shouldRequeue = false;
                 break;
@@ -34,5 +34,5 @@ public static class ContainerUtils
         return shouldRequeue;
     }
 
-    public static bool IsRejectManual(Exception exception) => exception is RabbitRejectAndDontRequeueException rejectException && rejectException.IsRejectManual;
+    public static bool IsRejectManual(Exception exception) => exception is RabbitRejectAndDoNotRequeueException rejectException && rejectException.IsRejectManual;
 }

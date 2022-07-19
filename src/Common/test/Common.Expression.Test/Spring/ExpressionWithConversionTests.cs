@@ -16,8 +16,8 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 {
     private static readonly List<string> ListOfString = new ();
     private static readonly List<int> ListOfInteger = new ();
-    private static Type typeDescriptorForListOfInteger;
-    private static Type typeDescriptorForListOfString;
+    private static Type _typeDescriptorForListOfInteger;
+    private static Type _typeDescriptorForListOfString;
 
     static ExpressionWithConversionTests()
     {
@@ -31,8 +31,8 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 
     public ExpressionWithConversionTests()
     {
-        typeDescriptorForListOfString = typeof(ExpressionWithConversionTests).GetField("ListOfString", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
-        typeDescriptorForListOfInteger = typeof(ExpressionWithConversionTests).GetField("ListOfInteger", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
+        _typeDescriptorForListOfString = typeof(ExpressionWithConversionTests).GetField("ListOfString", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
+        _typeDescriptorForListOfInteger = typeof(ExpressionWithConversionTests).GetField("ListOfInteger", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
     }
 
     [Fact]
@@ -41,16 +41,16 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         var tcs = new TypeConvertorUsingConversionService();
 
         // ArrayList containing List<Integer> to List<String>
-        var clazz = typeDescriptorForListOfString.GetGenericArguments()[0];
+        var clazz = _typeDescriptorForListOfString.GetGenericArguments()[0];
         Assert.Equal(typeof(string), clazz);
-        var l = tcs.ConvertValue(ListOfInteger, ListOfInteger.GetType(), typeDescriptorForListOfString) as List<string>;
+        var l = tcs.ConvertValue(ListOfInteger, ListOfInteger.GetType(), _typeDescriptorForListOfString) as List<string>;
         Assert.NotNull(l);
 
         // ArrayList containing List<String> to List<Integer>
-        clazz = typeDescriptorForListOfInteger.GetGenericArguments()[0];
+        clazz = _typeDescriptorForListOfInteger.GetGenericArguments()[0];
         Assert.Equal(typeof(int), clazz);
 
-        var l2 = tcs.ConvertValue(ListOfString, ListOfString.GetType(), typeDescriptorForListOfString) as List<string>;
+        var l2 = tcs.ConvertValue(ListOfString, ListOfString.GetType(), _typeDescriptorForListOfString) as List<string>;
         Assert.NotNull(l2);
     }
 
@@ -58,18 +58,18 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     public void TestSetParameterizedList()
     {
         var context = TestScenarioCreator.GetTestEvaluationContext();
-        var e = _parser.ParseExpression("ListOfInteger.Count");
+        var e = Parser.ParseExpression("ListOfInteger.Count");
         Assert.Equal(0, e.GetValue(context, typeof(int)));
         context.TypeConverter = new TypeConvertorUsingConversionService();
 
         // Assign a List<String> to the List<Integer> field - the component elements should be converted
-        _parser.ParseExpression("ListOfInteger").SetValue(context, ListOfString);
+        Parser.ParseExpression("ListOfInteger").SetValue(context, ListOfString);
 
         // size now 3
         Assert.Equal(3, e.GetValue(context, typeof(int)));
 
         // element type correctly Integer
-        var clazz = _parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
+        var clazz = Parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
         Assert.Equal(typeof(int), clazz);
     }
 
@@ -93,7 +93,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 
         // OK up to here, so the evaluation should be fine...
         // ... but this fails
-        var result2 = (int)_parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
+        var result2 = (int)Parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
         Assert.Equal(10, result2);
     }
 
@@ -106,26 +106,26 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         var context = new StandardEvaluationContext(root);
 
         // property access
-        var expression = _parser.ParseExpression("Foos");
+        var expression = Parser.ParseExpression("Foos");
         expression.SetValue(context, foos);
         var baz = root.Foos.Single();
         Assert.Equal("baz", baz.Value);
 
         // method call
-        expression = _parser.ParseExpression("Foos=#foos");
+        expression = Parser.ParseExpression("Foos=#foos");
         context.SetVariable("foos", foos);
         expression.GetValue(context);
         baz = root.Foos.Single();
         Assert.Equal("baz", baz.Value);
 
         // method call with result from method call
-        expression = _parser.ParseExpression("Foos=FoosAsStrings");
+        expression = Parser.ParseExpression("Foos=FoosAsStrings");
         expression.GetValue(context);
         baz = root.Foos.Single();
         Assert.Equal("baz", baz.Value);
 
         // method call with result from method call
-        expression = _parser.ParseExpression("Foos=FoosAsObjects");
+        expression = Parser.ParseExpression("Foos=FoosAsObjects");
         expression.GetValue(context);
         baz = root.Foos.Single();
         Assert.Equal("baz", baz.Value);
@@ -166,7 +166,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 
         public Foo(string value)
         {
-            Value = value;
+            this.Value = value;
         }
 
         public ICollection<Foo> Foos { get; set; }

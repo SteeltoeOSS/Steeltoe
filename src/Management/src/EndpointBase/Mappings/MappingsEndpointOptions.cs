@@ -8,25 +8,25 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class MappingsEndpointOptions : AbstractEndpointOptions, IMappingsOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:mappings";
+    private const string ManagementInfoPrefix = "management:endpoints:mappings";
 
     public MappingsEndpointOptions()
     {
         Id = "mappings";
-        RequiredPermissions = Permissions.RESTRICTED;
+        RequiredPermissions = Permissions.Restricted;
     }
 
     public MappingsEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
             Id = "mappings";
         }
 
-        if (RequiredPermissions == Permissions.UNDEFINED)
+        if (RequiredPermissions == Permissions.Undefined)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.Restricted;
         }
     }
 }

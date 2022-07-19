@@ -12,7 +12,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
 public class HystrixMetricsStreamPublisherTest : HystrixTestBase
 {
     [Fact]
-    public void Constructor_SetsupStream()
+    public void Constructor_SetsUpStream()
     {
         var stream = HystrixDashboardStream.GetInstance();
         var options = new OptionsWrapper<HystrixMetricsStreamOptions>

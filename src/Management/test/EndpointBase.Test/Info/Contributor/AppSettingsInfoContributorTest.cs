@@ -25,7 +25,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBUilderThrows()
+    public void ContributeWithNullBuilderThrows()
     {
         var appsettings = new Dictionary<string, string>
         {

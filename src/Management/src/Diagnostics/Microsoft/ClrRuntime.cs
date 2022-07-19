@@ -797,7 +797,7 @@ internal abstract class ClrMemoryRegion
     /// or "GC Segment").
     /// </summary>
     /// <param name="detailed">Whether or not to include additional data such as the module,
-    /// AppDomain, or GC Heap associaed with it.</param>
+    /// AppDomain, or GC Heap associated with it.</param>
     public abstract string ToString(bool detailed);
 
     /// <summary>

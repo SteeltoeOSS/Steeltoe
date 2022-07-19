@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public static class RabbitMessageBuilder
 {
-    public static AbstractMessageBuilder FromMessage<P>(IMessage<P> message)
+    public static AbstractMessageBuilder FromMessage<TPayload>(IMessage<TPayload> message)
     {
-        return new RabbitMessageBuilder<P>(message);
+        return new RabbitMessageBuilder<TPayload>(message);
     }
 
     public static AbstractMessageBuilder FromMessage(IMessage message, Type payloadType = null)
@@ -29,9 +29,9 @@ public static class RabbitMessageBuilder
             null);
     }
 
-    public static AbstractMessageBuilder WithPayload<P>(P payload)
+    public static AbstractMessageBuilder WithPayload<TPayload>(TPayload payload)
     {
-        return new RabbitMessageBuilder<P>(payload, new RabbitHeaderAccessor());
+        return new RabbitMessageBuilder<TPayload>(payload, new RabbitHeaderAccessor());
     }
 
     public static AbstractMessageBuilder WithPayload(object payload, Type payloadType = null)
@@ -64,13 +64,13 @@ public static class RabbitMessageBuilder
     }
 }
 
-public class RabbitMessageBuilder<P> : MessageBuilder<P>
+public class RabbitMessageBuilder<TPayload> : MessageBuilder<TPayload>
 {
     protected internal RabbitMessageBuilder()
     {
     }
 
-    protected internal RabbitMessageBuilder(IMessage<P> message)
+    protected internal RabbitMessageBuilder(IMessage<TPayload> message)
         : base(message)
     {
     }
@@ -85,7 +85,7 @@ public class RabbitMessageBuilder<P> : MessageBuilder<P>
     {
     }
 
-    protected internal RabbitMessageBuilder(P payload, RabbitHeaderAccessor accessor)
+    protected internal RabbitMessageBuilder(TPayload payload, RabbitHeaderAccessor accessor)
         : base(payload, accessor)
     {
     }

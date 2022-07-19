@@ -14,30 +14,30 @@ namespace Steeltoe.Extensions.Configuration.Placeholder;
 
 /// <summary>
 /// Configuration provider that resolves placeholders
-/// A placeholder takes the form of <code> ${some:config:reference?default_if_not_present}></code>
+/// A placeholder takes the form of: <code> ${some:config:reference?default_if_not_present}></code>
 /// </summary>
 public class PlaceholderResolverProvider : IPlaceholderResolverProvider
 {
-    internal IList<IConfigurationProvider> _providers = new List<IConfigurationProvider>();
-    internal ILogger<PlaceholderResolverProvider> _logger;
+    internal IList<IConfigurationProvider> InnerProviders = new List<IConfigurationProvider>();
+    internal ILogger<PlaceholderResolverProvider> Logger;
 
     private IConfigurationRoot _configuration;
 
     /// <summary>
-    /// Gets the configuration this placeholder resolver wraps
+    /// Gets the configuration this placeholder resolver wraps.
     /// </summary>
     public IConfiguration Configuration => _configuration;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PlaceholderResolverProvider"/> class.
-    /// The new placeholder resolver wraps the provided configuration
+    /// The new placeholder resolver wraps the provided configuration.
     /// </summary>
-    /// <param name="configuration">the configuration the provider uses when resolving placeholders</param>
-    /// <param name="logFactory">the logger factory to use</param>
+    /// <param name="configuration">the configuration the provider uses when resolving placeholders.</param>
+    /// <param name="logFactory">the logger factory to use.</param>
     public PlaceholderResolverProvider(IConfigurationRoot configuration, ILoggerFactory logFactory = null)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
     /// <summary>
@@ -45,15 +45,15 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// The new placeholder resolver wraps the provided configuration providers.  The <see cref="Configuration"/>
     /// will be created from these providers.
     /// </summary>
-    /// <param name="providers">the configuration providers the resolver uses when resolving placeholders</param>
-    /// <param name="logFactory">the logger factory to use</param>
+    /// <param name="providers">the configuration providers the resolver uses when resolving placeholders.</param>
+    /// <param name="logFactory">the logger factory to use.</param>
     public PlaceholderResolverProvider(IList<IConfigurationProvider> providers, ILoggerFactory logFactory = null)
     {
-        _providers = providers ?? throw new ArgumentNullException(nameof(providers));
-        _logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
+        this.InnerProviders = providers ?? throw new ArgumentNullException(nameof(providers));
+        Logger = logFactory?.CreateLogger<PlaceholderResolverProvider>();
     }
 
-    public IList<IConfigurationProvider> Providers => _providers;
+    public IList<IConfigurationProvider> Providers => InnerProviders;
 
     public IList<string> ResolvedKeys { get; } = new List<string>();
 
@@ -92,7 +92,7 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     /// <summary>
     /// Returns a change token if this provider supports change tracking, null otherwise.
     /// </summary>
-    /// <returns>changed token</returns>
+    /// <returns>changed token.</returns>
     public IChangeToken GetReloadToken()
     {
         EnsureInitialized();
@@ -101,7 +101,7 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
 
     /// <summary>
     /// Creates the <see cref="Configuration"/> from the providers if it has not done so already.
-    /// If Configuration already exists, it will call Reload() on the underlying configuration
+    /// If Configuration already exists, it will call Reload() on the underlying configuration.
     /// </summary>
     public void Load()
     {
@@ -131,7 +131,7 @@ public class PlaceholderResolverProvider : IPlaceholderResolverProvider
     {
         if (Configuration == null)
         {
-            _configuration = new ConfigurationRoot(_providers);
+            _configuration = new ConfigurationRoot(InnerProviders);
         }
     }
 }

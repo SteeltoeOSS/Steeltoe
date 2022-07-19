@@ -22,7 +22,3 @@ internal sealed class DummyCommand : HystrixCommand, IDummyCommand
         }
     }
 }
-
-internal interface IDummyCommand
-{
-}

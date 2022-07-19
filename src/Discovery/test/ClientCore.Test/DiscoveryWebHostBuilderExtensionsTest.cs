@@ -35,7 +35,7 @@ public class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         var host = hostBuilder.AddDiscoveryClient().Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -49,7 +49,7 @@ public class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddDiscoveryClient_IWebHostBuilder_AddsServiceDiscovery_Consul()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         var host = hostBuilder.AddDiscoveryClient().Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -63,7 +63,7 @@ public class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(EurekaSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
@@ -77,7 +77,7 @@ public class DiscoveryWebHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IWebHostBuilder_AddsServiceDiscovery_Consul()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ConsulSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
         var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
         var discoveryClient = host.Services.GetServices<IDiscoveryClient>();

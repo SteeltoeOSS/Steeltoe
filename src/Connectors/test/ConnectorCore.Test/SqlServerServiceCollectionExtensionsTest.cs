@@ -12,7 +12,7 @@ using Xunit;
 namespace Steeltoe.Connector.SqlServer.Test;
 
 /// <summary>
-/// Tests for the extension method that adds just the health check
+/// Tests for the extension method that adds just the health check.
 /// </summary>
 public class SqlServerServiceCollectionExtensionsTest
 {

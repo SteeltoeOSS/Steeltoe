@@ -13,12 +13,12 @@ public class DefaultContentTypeResolver : IContentTypeResolver
 
     public MimeType Resolve(IMessageHeaders headers)
     {
-        if (headers == null || !headers.ContainsKey(MessageHeaders.CONTENT_TYPE))
+        if (headers == null || !headers.ContainsKey(MessageHeaders.ContentType))
         {
             return DefaultMimeType;
         }
 
-        var value = headers[MessageHeaders.CONTENT_TYPE];
+        var value = headers[MessageHeaders.ContentType];
         if (value == null)
         {
             return null;

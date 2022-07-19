@@ -15,7 +15,7 @@ public class OutputAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="OutputAttribute"/> class.
     /// </summary>
-    /// <param name="name">the binding target name</param>
+    /// <param name="name">the binding target name.</param>
     public OutputAttribute(string name = null)
     {
         Name = name;

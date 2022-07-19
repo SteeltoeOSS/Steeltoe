@@ -41,13 +41,13 @@ public class EndpointServiceCollectionTest : BaseTest
         var serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IInfoOptions>();
         Assert.NotNull(options);
-        var contribs = serviceProvider.GetServices<IInfoContributor>();
+        var contributors = serviceProvider.GetServices<IInfoContributor>();
 
-        Assert.NotNull(contribs);
-        var listOfContribs = contribs.ToList();
-        Assert.Equal(4, listOfContribs.Count);
+        Assert.NotNull(contributors);
+        var listOfContributors = contributors.ToList();
+        Assert.Equal(4, listOfContributors.Count);
 
-        Assert.Contains(contribs, item =>
+        Assert.Contains(contributors, item =>
             item.GetType() == typeof(GitInfoContributor) ||
             item.GetType() == typeof(AppSettingsInfoContributor) ||
             item.GetType() == typeof(BuildInfoContributor) ||

@@ -35,7 +35,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryActuators_IWebHostBuilder()
     {
-        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings)).Configure(_ => { });
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings)).Configure(_ => { });
 
         var host = hostBuilder.AddCloudFoundryActuators().Build();
         var managementOptions = host.Services.GetServices<IManagementOptions>();
@@ -44,7 +44,7 @@ public class CloudFoundryHostBuilderExtensionsTest
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
 
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.NotNull(filters);
         Assert.Single(filters.OfType<CloudFoundryActuatorsStartupFilter>());
@@ -54,7 +54,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     public void AddCloudFoundryActuators_IWebHostBuilder_Serilog()
     {
         var hostBuilder = WebHost.CreateDefaultBuilder()
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings))
             .Configure(_ => { })
             .ConfigureLogging(logging => logging.AddDynamicSerilog());
 
@@ -64,7 +64,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var filters = host.Services.GetServices<IStartupFilter>();
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 
@@ -75,7 +75,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void AddCloudFoundryActuators_IHostBuilder()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings));
 
         var host = hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).Build();
         var managementOptions = host.Services.GetServices<IManagementOptions>();
@@ -96,7 +96,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder()
             .ConfigureWebHost(_testServerWithRouting)
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V2).StartAsync();
 
@@ -113,7 +113,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder()
             .ConfigureWebHost(_testServerWithRouting)
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings));
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings));
 
         var host = await hostBuilder.AddCloudFoundryActuators(MediaTypeVersion.V1).StartAsync();
 
@@ -130,7 +130,7 @@ public class CloudFoundryHostBuilderExtensionsTest
     {
         var hostBuilder = Host.CreateDefaultBuilder()
             .ConfigureLogging(logging => logging.AddDynamicSerilog())
-            .ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(ManagementSettings))
+            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ManagementSettings))
             .ConfigureWebHost(_testServerWithRouting)
             .AddCloudFoundryActuators();
 
@@ -140,7 +140,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var filters = host.Services.GetServices<IStartupFilter>();
 
         Assert.Contains(managementOptions, t => t.GetType() == typeof(CloudFoundryManagementOptions));
-        Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+        Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
 
         Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
 

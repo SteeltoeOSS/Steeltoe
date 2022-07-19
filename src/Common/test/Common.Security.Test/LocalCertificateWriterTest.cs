@@ -19,7 +19,7 @@ public class LocalCertificateWriterTest
         var certWriter = new LocalCertificateWriter();
 
         certWriter.Write(orgId, spaceId);
-        var rootCertificate = new X509Certificate2(certWriter.RootCAPfxPath);
+        var rootCertificate = new X509Certificate2(certWriter.RootCaPfxPath);
         var intermediateCert = new X509Certificate2(certWriter.IntermediatePfxPath);
         var clientCert =
             new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))

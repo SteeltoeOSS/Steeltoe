@@ -12,17 +12,17 @@ using System;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Add services used by the ThreadDump actuator
+/// Add services used by the ThreadDump actuator.
 /// </summary>
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Thread Dump actuator
+    /// Adds the services used by the Thread Dump actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <param name="version">The media version to use</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <param name="version">The media version to use.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
     {
         if (services == null)
@@ -48,12 +48,12 @@ public static partial class ServiceCollectionExtensions
                 options.Id = "threaddump";
             }
 
-            services.TryAddSingleton<ThreadDumpEndpoint_v2>();
-            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpoint_v2>());
+            services.TryAddSingleton<ThreadDumpEndpointV2>();
+            services.TryAddSingleton<IThreadDumpEndpointV2>(provider => provider.GetRequiredService<ThreadDumpEndpointV2>());
         }
 
         services.TryAddSingleton<IThreadDumpOptions>(options);
-        services.TryAddSingleton<IThreadDumper, ThreadDumperEP>();
+        services.TryAddSingleton<IThreadDumper, ThreadDumperEp>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
 
         return services;

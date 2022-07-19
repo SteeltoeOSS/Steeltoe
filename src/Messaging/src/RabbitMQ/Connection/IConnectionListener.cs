@@ -9,20 +9,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 public interface IConnectionListener
 {
     /// <summary>
-    /// Called when a new connection is established
+    /// Called when a new connection is established.
     /// </summary>
-    /// <param name="connection">the connection</param>
+    /// <param name="connection">the connection.</param>
     void OnCreate(IConnection connection);
 
     /// <summary>
-    /// Called when connection is closed
+    /// Called when connection is closed.
     /// </summary>
-    /// <param name="connection">the connection</param>
+    /// <param name="connection">the connection.</param>
     void OnClose(IConnection connection);
 
     /// <summary>
-    /// Called when connection is forced to close
+    /// Called when connection is forced to close.
     /// </summary>
-    /// <param name="args">the event</param>
+    /// <param name="args">the event.</param>
     void OnShutDown(RC.ShutdownEventArgs args);
 }

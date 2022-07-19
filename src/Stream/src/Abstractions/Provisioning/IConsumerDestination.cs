@@ -6,12 +6,12 @@ namespace Steeltoe.Stream.Provisioning;
 
 /// <summary>
 /// Represents a ConsumerDestination that provides the information about the destination
-/// that is physically provisioned through a provisioning provider
+/// that is physically provisioned through a provisioning provider.
 /// </summary>
 public interface IConsumerDestination
 {
     /// <summary>
-    /// Gets the destination name
+    /// Gets the destination name.
     /// </summary>
     string Name { get; }
 }

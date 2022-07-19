@@ -14,16 +14,16 @@ namespace Steeltoe.Messaging.Core.Test;
 
 public class GenericMessagingTemplateTest
 {
-    internal MessageChannelTemplate _template;
+    internal MessageChannelTemplate Template;
 
-    internal StubMessageChannel _messageChannel;
+    internal StubMessageChannel MessageChannel;
 
     public GenericMessagingTemplateTest()
     {
-        _messageChannel = new StubMessageChannel();
-        _template = new MessageChannelTemplate
+        MessageChannel = new StubMessageChannel();
+        Template = new MessageChannelTemplate
         {
-            DefaultSendDestination = _messageChannel,
+            DefaultSendDestination = MessageChannel,
             DestinationResolver = new TestDestinationResolver(this)
         };
     }
@@ -41,16 +41,16 @@ public class GenericMessagingTemplateTest
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
-            .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-            .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+            .SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000)
+            .SetHeader(MessageChannelTemplate.DefaultReceiveTimeoutHeader, 1)
             .Build();
 
-        _template.Send(channel, message);
+        Template.Send(channel, message);
 
         chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
         Assert.NotNull(sent);
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultSendTimeoutHeader));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultReceiveTimeoutHeader));
     }
 
     [Fact]
@@ -66,16 +66,16 @@ public class GenericMessagingTemplateTest
             .Returns(new ValueTask<bool>(true));
 
         var message = MessageBuilder.WithPayload("request")
-            .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-            .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+            .SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000)
+            .SetHeader(MessageChannelTemplate.DefaultReceiveTimeoutHeader, 1)
             .Build();
 
-        await _template.SendAsync(channel, message);
+        await Template.SendAsync(channel, message);
 
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
         Assert.NotNull(sent);
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultSendTimeoutHeader));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultReceiveTimeoutHeader));
     }
 
     [Fact]
@@ -95,12 +95,12 @@ public class GenericMessagingTemplateTest
             LeaveMutable = true
         };
         var message = Message.Create("request", accessor.MessageHeaders);
-        accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
-        await _template.SendAsync(channel, message);
+        accessor.SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000);
+        await Template.SendAsync(channel, message);
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
         Assert.NotNull(sent);
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultSendTimeoutHeader));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultReceiveTimeoutHeader));
     }
 
     [Fact]
@@ -120,12 +120,12 @@ public class GenericMessagingTemplateTest
             LeaveMutable = true
         };
         var message = Message.Create("request", accessor.MessageHeaders);
-        accessor.SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000);
-        _template.Send(channel, message);
+        accessor.SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000);
+        Template.Send(channel, message);
         chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
         Assert.NotNull(sent);
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER));
-        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultSendTimeoutHeader));
+        Assert.False(sent.Headers.ContainsKey(MessageChannelTemplate.DefaultReceiveTimeoutHeader));
     }
 
     [Fact]
@@ -134,7 +134,7 @@ public class GenericMessagingTemplateTest
         var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
         channel.Subscribe(new SendAndReceiveTestHandler());
 
-        var actual = _template.ConvertSendAndReceive<string>(channel, "request");
+        var actual = Template.ConvertSendAndReceive<string>(channel, "request");
         Assert.Equal("response", actual);
     }
 
@@ -144,7 +144,7 @@ public class GenericMessagingTemplateTest
         var channel = new TaskSchedulerSubscribableChannel(TaskScheduler.Default);
         channel.Subscribe(new SendAndReceiveTestHandler());
 
-        var actual = await _template.ConvertSendAndReceiveAsync<string>(channel, "request");
+        var actual = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
         Assert.Equal("response", actual);
     }
 
@@ -153,9 +153,9 @@ public class GenericMessagingTemplateTest
     {
         var latch = new CountdownEvent(1);
 
-        _template.ReceiveTimeout = 1;
-        _template.SendTimeout = 30000;
-        _template.ThrowExceptionOnLateReply = true;
+        Template.ReceiveTimeout = 1;
+        Template.SendTimeout = 30000;
+        Template.ThrowExceptionOnLateReply = true;
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -164,10 +164,10 @@ public class GenericMessagingTemplateTest
                 chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)))
             .Callback<IMessage, int>((m, _) => { Task.Run(() => handler.HandleMessage(m)); })
             .Returns(true);
-        var result = _template.ConvertSendAndReceive<string>(channel, "request");
+        var result = Template.ConvertSendAndReceive<string>(channel, "request");
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
     }
@@ -177,9 +177,9 @@ public class GenericMessagingTemplateTest
     {
         var latch = new CountdownEvent(1);
 
-        _template.ReceiveTimeout = 1;
-        _template.SendTimeout = 30000;
-        _template.ThrowExceptionOnLateReply = true;
+        Template.ReceiveTimeout = 1;
+        Template.SendTimeout = 30000;
+        Template.ThrowExceptionOnLateReply = true;
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -188,10 +188,10 @@ public class GenericMessagingTemplateTest
                 chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)))
             .Callback<IMessage, CancellationToken>((m, t) => { Task.Run(() => handler.HandleMessage(m), t); })
             .Returns(new ValueTask<bool>(true));
-        var result = await _template.ConvertSendAndReceiveAsync<string>(channel, "request");
+        var result = await Template.ConvertSendAndReceiveAsync<string>(channel, "request");
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
@@ -200,9 +200,9 @@ public class GenericMessagingTemplateTest
     public void SendAndReceiveVariableTimeout()
     {
         var latch = new CountdownEvent(1);
-        _template.ReceiveTimeout = 10000;
-        _template.SendTimeout = 20000;
-        _template.ThrowExceptionOnLateReply = true;
+        Template.ReceiveTimeout = 10000;
+        Template.SendTimeout = 20000;
+        Template.ThrowExceptionOnLateReply = true;
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -213,14 +213,14 @@ public class GenericMessagingTemplateTest
             .Returns(true);
 
         var message = MessageBuilder.WithPayload("request")
-            .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-            .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+            .SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000)
+            .SetHeader(MessageChannelTemplate.DefaultReceiveTimeoutHeader, 1)
             .Build();
 
-        var result = _template.SendAndReceive(channel, message);
+        var result = Template.SendAndReceive(channel, message);
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
     }
@@ -229,9 +229,9 @@ public class GenericMessagingTemplateTest
     public async Task SendAndReceiveAsyncVariableTimeout()
     {
         var latch = new CountdownEvent(1);
-        _template.ReceiveTimeout = 10000;
-        _template.SendTimeout = 20000;
-        _template.ThrowExceptionOnLateReply = true;
+        Template.ReceiveTimeout = 10000;
+        Template.SendTimeout = 20000;
+        Template.ThrowExceptionOnLateReply = true;
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -242,14 +242,14 @@ public class GenericMessagingTemplateTest
             .Returns(new ValueTask<bool>(true));
 
         var message = MessageBuilder.WithPayload("request")
-            .SetHeader(MessageChannelTemplate.DEFAULT_SEND_TIMEOUT_HEADER, 30000)
-            .SetHeader(MessageChannelTemplate.DEFAULT_RECEIVE_TIMEOUT_HEADER, 1)
+            .SetHeader(MessageChannelTemplate.DefaultSendTimeoutHeader, 30000)
+            .SetHeader(MessageChannelTemplate.DefaultReceiveTimeoutHeader, 1)
             .Build();
 
-        var result = await _template.SendAndReceiveAsync(channel, message);
+        var result = await Template.SendAndReceiveAsync(channel, message);
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
@@ -258,11 +258,11 @@ public class GenericMessagingTemplateTest
     public void SendAndReceiveVariableTimeoutCustomHeaders()
     {
         var latch = new CountdownEvent(1);
-        _template.ReceiveTimeout = 10000;
-        _template.SendTimeout = 20000;
-        _template.ThrowExceptionOnLateReply = true;
-        _template.SendTimeoutHeader = "sto";
-        _template.ReceiveTimeoutHeader = "rto";
+        Template.ReceiveTimeout = 10000;
+        Template.SendTimeout = 20000;
+        Template.ThrowExceptionOnLateReply = true;
+        Template.SendTimeoutHeader = "sto";
+        Template.ReceiveTimeoutHeader = "rto";
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -277,10 +277,10 @@ public class GenericMessagingTemplateTest
             .SetHeader("rto", 1)
             .Build();
 
-        var result = _template.SendAndReceive(channel, message);
+        var result = Template.SendAndReceive(channel, message);
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.Send(It.IsAny<IMessage>(), It.Is<int>(i => i == 30000)));
     }
@@ -289,11 +289,11 @@ public class GenericMessagingTemplateTest
     public async Task SendAndReceiveAsyncVariableTimeoutCustomHeaders()
     {
         var latch = new CountdownEvent(1);
-        _template.ReceiveTimeout = 10000;
-        _template.SendTimeout = 20000;
-        _template.ThrowExceptionOnLateReply = true;
-        _template.SendTimeoutHeader = "sto";
-        _template.ReceiveTimeoutHeader = "rto";
+        Template.ReceiveTimeout = 10000;
+        Template.SendTimeout = 20000;
+        Template.ThrowExceptionOnLateReply = true;
+        Template.SendTimeoutHeader = "sto";
+        Template.ReceiveTimeoutHeader = "rto";
 
         var handler = new LateReplierMessageHandler(latch);
         var chanMock = new Mock<ISubscribableChannel>();
@@ -308,22 +308,22 @@ public class GenericMessagingTemplateTest
             .SetHeader("rto", 1)
             .Build();
 
-        var result = await _template.SendAndReceiveAsync(channel, message);
+        var result = await Template.SendAndReceiveAsync(channel, message);
         Assert.Null(result);
         Assert.True(latch.Wait(10000));
-        Assert.Null(handler._failure);
+        Assert.Null(handler.Failure);
 
         chanMock.Verify(chan => chan.SendAsync(It.IsAny<IMessage>(), It.Is<CancellationToken>(t => !t.IsCancellationRequested)));
     }
 
     internal sealed class LateReplierMessageHandler : IMessageHandler
     {
-        public CountdownEvent _latch;
-        public Exception _failure;
+        public CountdownEvent Latch;
+        public Exception Failure;
 
         public LateReplierMessageHandler(CountdownEvent latch)
         {
-            _latch = latch;
+            this.Latch = latch;
         }
 
         public string ServiceName { get; set; } = nameof(LateReplierMessageHandler);
@@ -335,7 +335,7 @@ public class GenericMessagingTemplateTest
                 Thread.Sleep(1000);
                 var replyChannel = (IMessageChannel)message.Headers.ReplyChannel;
                 replyChannel.Send(Message.Create("response"));
-                _failure = new InvalidOperationException("Expected exception");
+                Failure = new InvalidOperationException("Expected exception");
             }
             catch (MessageDeliveryException ex)
             {
@@ -343,16 +343,16 @@ public class GenericMessagingTemplateTest
                 var actual = ex.Message;
                 if (!expected.Equals(actual))
                 {
-                    _failure = new InvalidOperationException($"Unexpected error: '{actual}'");
+                    Failure = new InvalidOperationException($"Unexpected error: '{actual}'");
                 }
             }
             catch (Exception e)
             {
-                _failure = e;
+                Failure = e;
             }
             finally
             {
-                _latch.Signal();
+                Latch.Signal();
             }
         }
     }
@@ -379,7 +379,7 @@ public class GenericMessagingTemplateTest
 
         public IMessageChannel ResolveDestination(string name)
         {
-            return _test._messageChannel;
+            return _test.MessageChannel;
         }
 
         object IDestinationResolver.ResolveDestination(string name)

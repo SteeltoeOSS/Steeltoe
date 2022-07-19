@@ -26,7 +26,7 @@ public class CollectionToCollectionConverter : AbstractToCollectionConverter
         if (ConversionUtils.CanCreateCompatListFor(targetType))
         {
             return ConversionUtils.CanConvertElements(
-                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
+                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), ConversionService);
         }
 
         return false;
@@ -59,7 +59,7 @@ public class CollectionToCollectionConverter : AbstractToCollectionConverter
             {
                 if (sourceElement != null)
                 {
-                    var targetElement = _conversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
+                    var targetElement = ConversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
                     list.Add(targetElement);
                 }
                 else

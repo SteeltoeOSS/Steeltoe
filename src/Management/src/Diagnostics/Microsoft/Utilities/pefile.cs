@@ -14,7 +14,7 @@ using System.IO;
 namespace Microsoft.Diagnostics.Runtime.Utilities;
 
 /// <summary>
-/// PEFile is a reader for the information in a Portable Exectable (PE) FILE.   This is what EXEs and DLLs are.  
+/// PEFile is a reader for the information in a Portable Executable (PE) FILE.   This is what EXEs and DLLs are.  
 /// 
 /// It can read both 32 and 64 bit PE files.  
 /// </summary>
@@ -77,7 +77,7 @@ internal sealed unsafe class PEFile : IDisposable
             throw new InvalidOperationException("Bad PE Header in " + filePath);
     }
     /// <summary>
-    /// The Header for the PE file.  This contains the infor in a link /dump /headers 
+    /// The Header for the PE file.  This contains the info in a link /dump /headers 
     /// </summary>
     public PEHeader Header { get; private set; }
 
@@ -212,7 +212,7 @@ internal sealed unsafe class PEFile : IDisposable
         return ret;
     }
     /// <summary>
-    /// For side by side dlls, the manifest that decribes the binding information is stored as the RT_MANIFEST resource, and it
+    /// For side by side dlls, the manifest that describes the binding information is stored as the RT_MANIFEST resource, and it
     /// is an XML string.   This routine returns this.  
     /// </summary>
     /// <returns></returns>
@@ -292,7 +292,7 @@ internal sealed unsafe class PEFile : IDisposable
 };
 
 /// <summary>
-/// A PEHeader is a reader of the data at the begining of a PEFile.    If the header bytes of a 
+/// A PEHeader is a reader of the data at the beginning of a PEFile.    If the header bytes of a 
 /// PEFile are read or mapped into memory, this class can parse it when given a pointer to it.
 /// It can read both 32 and 64 bit PE files.  
 /// </summary>
@@ -430,7 +430,7 @@ internal sealed unsafe class PEHeader
 
     // fields of code:IMAGE_NT_HEADERS
     /// <summary>   
-    /// Returns the 'Signture' of the PE HEader PE\0\0 = 0x4550, used for sanity checking.  
+    /// Returns the 'Signature' of the PE Header PE\0\0 = 0x4550, used for sanity checking.  
     /// </summary>
     public uint Signature { get { return _ntHeader->Signature; } }
 
@@ -440,7 +440,7 @@ internal sealed unsafe class PEHeader
     /// </summary>
     public MachineType Machine { get { return (MachineType)_ntHeader->FileHeader.Machine; } }
     /// <summary>
-    /// PE files have a number of sections that represent regions of memory with the access permisions.  This is the nubmer of such sections.  
+    /// PE files have a number of sections that represent regions of memory with the access permissions.  This is the number of such sections.  
     /// </summary>
     public ushort NumberOfSections { get { return _ntHeader->FileHeader.NumberOfSections; } }
     /// <summary>
@@ -622,7 +622,7 @@ internal sealed unsafe class PEHeader
     /// </summary>
     public IMAGE_DATA_DIRECTORY ExceptionDirectory { get { return Directory(3); } }
     /// <summary>
-    /// Return the data directory for DLL securiy certificates (Authenticode) see PE file spec for more
+    /// Return the data directory for DLL security certificates (AuthentiCode) see PE file spec for more
     /// </summary>
     public IMAGE_DATA_DIRECTORY CertificatesDirectory { get { return Directory(4); } }
     /// <summary>
@@ -642,7 +642,7 @@ internal sealed unsafe class PEHeader
     /// </summary>
     public IMAGE_DATA_DIRECTORY GlobalPointerDirectory { get { return Directory(8); } }
     /// <summary>
-    /// Return the data directory for THread local storage see PE file spec for more
+    /// Return the data directory for Thread local storage see PE file spec for more
     /// </summary>
     public IMAGE_DATA_DIRECTORY ThreadStorageDirectory { get { return Directory(9); } }
     /// <summary>
@@ -662,7 +662,7 @@ internal sealed unsafe class PEHeader
     /// </summary>
     public IMAGE_DATA_DIRECTORY DelayImportDirectory { get { return Directory(13); } }
     /// <summary>
-    ///  see PE file spec for more .NET Runtime infomration.  
+    ///  see PE file spec for more .NET Runtime information.  
     /// </summary>
     public IMAGE_DATA_DIRECTORY ComDescriptorDirectory { get { return Directory(14); } }
 
@@ -711,7 +711,7 @@ internal sealed unsafe class PEHeader
 }
 
 /// <summary>
-/// The Machine types supporte by the portable executable (PE) File format
+/// The Machine types support by the portable executable (PE) File format
 /// </summary>
 internal enum MachineType : ushort
 {
@@ -753,13 +753,13 @@ internal struct IMAGE_DATA_DIRECTORY
 }
 
 /// <summary>
-/// FileVersionInfo reprents the extended version formation that is optionally placed in the PE file resource area. 
+/// FileVersionInfo represents the extended version formation that is optionally placed in the PE file resource area. 
 /// </summary>
 internal sealed unsafe class FileVersionInfo
 {
     // TODO incomplete, but this is all I need.  
     /// <summary>
-    /// The verison string 
+    /// The version string 
     /// </summary>
     public string FileVersion { get; private set; }
 

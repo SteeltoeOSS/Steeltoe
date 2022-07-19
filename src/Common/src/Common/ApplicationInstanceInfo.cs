@@ -9,18 +9,19 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
+
 namespace Steeltoe.Common;
 
 public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
 {
-    public static readonly string ApplicationRoot = "application";
-    public readonly string SpringApplicationRoot = "spring:application";
-    public readonly string ServicesRoot = "services";
-    public readonly string EurekaRoot = "eureka";
-    public readonly string ConfigServerRoot = "spring:cloud:config";
-    public readonly string ConsulRoot = "consul";
-    public readonly string KubernetesRoot = "spring:cloud:kubernetes";
-    public readonly string ManagementRoot = "management";
+    public const string ApplicationRoot = "application";
+    public const string SpringApplicationRoot = "spring:application";
+    public const string ServicesRoot = "services";
+    public const string EurekaRoot = "eureka";
+    public const string ConfigServerRoot = "spring:cloud:config";
+    public const string ConsulRoot = "consul";
+    public const string KubernetesRoot = "spring:cloud:kubernetes";
+    public const string ManagementRoot = "management";
 
     public string DefaultAppName => Assembly.GetEntryAssembly().GetName().Name;
 
@@ -91,6 +92,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         SecondChanceSetIdProperties(this.configuration);
     }
 
+    // ReSharper disable once InconsistentNaming
     public string Instance_Id { get; set; }
 
     public virtual string InstanceId
@@ -99,6 +101,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
         set { Instance_Id = value; }
     }
 
+    // ReSharper disable once InconsistentNaming
     public string Application_Id { get; set; }
 
     public virtual string ApplicationId
@@ -141,7 +144,7 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
 
     public virtual int FileDescriptorLimit { get; set; } = -1;
 
-    public virtual string InstanceIP { get; set; }
+    public virtual string InstanceIp { get; set; }
 
-    public virtual string InternalIP { get; set; }
+    public virtual string InternalIp { get; set; }
 }

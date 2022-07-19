@@ -17,15 +17,15 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 {
     private readonly RequestDelegate _next;
 
-    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<MetricsEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger)
+    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleMetricsRequestAsync(context);
         }
@@ -35,7 +35,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     public override string HandleRequest(MetricsRequest arg)
     {
-        var result = _endpoint.Invoke(arg);
+        var result = endpoint.Invoke(arg);
         return result == null ? null : Serialize(result);
     }
 
@@ -44,7 +44,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         var request = context.Request;
         var response = context.Response;
 
-        _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+        logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
         var metricName = GetMetricName(request);
         if (!string.IsNullOrEmpty(metricName))
@@ -68,9 +68,9 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         {
             // GET /metrics
             var serialInfo = HandleRequest(null);
-            _logger?.LogDebug("Returning: {0}", serialInfo);
+            logger?.LogDebug("Returning: {0}", serialInfo);
 
-            context.HandleContentNegotiation(_logger);
+            context.HandleContentNegotiation(logger);
             context.Response.StatusCode = (int)HttpStatusCode.OK;
             await context.Response.WriteAsync(serialInfo).ConfigureAwait(false);
         }
@@ -78,12 +78,12 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal string GetMetricName(HttpRequest request)
     {
-        if (_mgmtOptions == null)
+        if (managementOptions == null)
         {
-            return GetMetricName(request, _endpoint.Path);
+            return GetMetricName(request, endpoint.Path);
         }
 
-        var path = $"{_mgmtOptions.Path}/{_endpoint.Id}".Replace("//", "/");
+        var path = $"{managementOptions.Path}/{endpoint.Id}".Replace("//", "/");
         var metricName = GetMetricName(request, path);
 
         return metricName;

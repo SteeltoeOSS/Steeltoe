@@ -63,7 +63,7 @@ internal class GCRoot
     /// <summary>
     /// Whether or not to allow GC root to search in parallel or not.  Note that GCRoot does not have to respect this
     /// flag.  Parallel searching of roots will only happen if a copy of the stack and heap were built using BuildCache,
-    /// and if the entire heap was cached.  Note that ClrMD and underlying APIs do NOT support multithreading, so this
+    /// and if the entire heap was cached.  Note that ClrMD and underlying APIs do NOT support multi-threading, so this
     /// is only used when we can ensure all relevant data is local memory and we do not need to touch the debuggee.
     /// </summary>
     public bool AllowParallelSearch { get; set; } = true;

@@ -10,8 +10,8 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultBinding<T> : AbstractBinding
 {
-    protected readonly T _target;
-    protected readonly ILifecycle _lifecycle;
+    protected readonly T Target;
+    protected readonly ILifecycle Lifecycle;
     private readonly bool _restartable;
 
     private bool _paused;
@@ -25,8 +25,8 @@ public class DefaultBinding<T> : AbstractBinding
 
         Name = name;
         Group = group;
-        _target = target;
-        _lifecycle = lifecycle;
+        Target = target;
+        Lifecycle = lifecycle;
         _restartable = !string.IsNullOrEmpty(group);
     }
 
@@ -47,7 +47,7 @@ public class DefaultBinding<T> : AbstractBinding
         get
         {
             var state = "N/A";
-            if (_lifecycle != null)
+            if (Lifecycle != null)
             {
                 if (IsPausable)
                 {
@@ -65,19 +65,19 @@ public class DefaultBinding<T> : AbstractBinding
 
     public override bool IsRunning
     {
-        get { return _lifecycle != null && _lifecycle.IsRunning; }
+        get { return Lifecycle != null && Lifecycle.IsRunning; }
     }
 
     public virtual bool IsPausable
     {
-        get { return _lifecycle is IPausable; }
+        get { return Lifecycle is IPausable; }
     }
 
     public override Task Start()
     {
-        if (!IsRunning && _lifecycle != null && _restartable)
+        if (!IsRunning && Lifecycle != null && _restartable)
         {
-            return _lifecycle.Start();
+            return Lifecycle.Start();
         } // else this.logger.warn("Can not re-bind an anonymous binding")
 
         return Task.CompletedTask;
@@ -87,7 +87,7 @@ public class DefaultBinding<T> : AbstractBinding
     {
         if (IsRunning)
         {
-            return _lifecycle.Stop();
+            return Lifecycle.Stop();
         }
 
         return Task.CompletedTask;
@@ -95,7 +95,7 @@ public class DefaultBinding<T> : AbstractBinding
 
     public override async Task Pause()
     {
-        if (_lifecycle is IPausable pausable)
+        if (Lifecycle is IPausable pausable)
         {
             await pausable.Pause();
             _paused = true;
@@ -108,7 +108,7 @@ public class DefaultBinding<T> : AbstractBinding
 
     public override async Task Resume()
     {
-        if (_lifecycle is IPausable pausable)
+        if (Lifecycle is IPausable pausable)
         {
             await pausable.Resume();
             _paused = false;
@@ -127,12 +127,12 @@ public class DefaultBinding<T> : AbstractBinding
 
     protected internal virtual ILifecycle Endpoint
     {
-        get { return _lifecycle; }
+        get { return Lifecycle; }
     }
 
     public override string ToString()
     {
-        return $" Binding [name={Name}, target={_target}, lifecycle={_lifecycle}]";
+        return $" Binding [name={Name}, target={Target}, lifecycle={Lifecycle}]";
     }
 
     protected virtual void AfterUnbind()

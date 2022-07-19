@@ -9,14 +9,14 @@ namespace Steeltoe.Messaging.Converter;
 
 public class ByteArrayMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(ByteArrayMessageConverter);
+    public const string DefaultServiceName = nameof(ByteArrayMessageConverter);
 
     public ByteArrayMessageConverter()
-        : base(MimeTypeUtils.APPLICATION_OCTET_STREAM)
+        : base(MimeTypeUtils.ApplicationOctetStream)
     {
     }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz)
     {

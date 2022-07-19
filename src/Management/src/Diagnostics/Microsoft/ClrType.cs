@@ -254,10 +254,10 @@ internal abstract class ClrType
     /// </summary>
     public abstract ulong GetSize(ulong objRef);
     /// <summary>
-    /// EnumeationRefsOfObject will call 'action' once for each object reference inside 'objRef'.  
-    /// 'action' is passed the address of the outgoing refernece as well as an integer that
+    /// EnumerationRefsOfObject will call 'action' once for each object reference inside 'objRef'.  
+    /// 'action' is passed the address of the outgoing reference as well as an integer that
     /// represents the field offset.  While often this is the physical offset of the outgoing
-    /// refernece, abstractly is simply something that can be given to GetFieldForOffset to 
+    /// reference, abstractly is simply something that can be given to GetFieldForOffset to 
     /// return the field information for that object reference  
     /// </summary>
     public abstract void EnumerateRefsOfObject(ulong objRef, Action<ulong, int> action);
@@ -351,7 +351,7 @@ internal abstract class ClrType
 
     /// <summary>
     /// Returns true if the finalization is suppressed for an object.  (The user program called
-    /// System.GC.SupressFinalize.  The behavior of this function is undefined if the object itself
+    /// System.GC.SuppressFinalize.  The behavior of this function is undefined if the object itself
     /// is not finalizable.
     /// </summary>
     public virtual bool IsFinalizeSuppressed(ulong obj) { throw new NotImplementedException(); }
@@ -373,12 +373,12 @@ internal abstract class ClrType
     public abstract bool IsPrivate { get; }
 
     /// <summary>
-    /// Returns true if this type is accessable only by items in its own assembly.
+    /// Returns true if this type is accessible only by items in its own assembly.
     /// </summary>
     public abstract bool IsInternal { get; }
 
     /// <summary>
-    /// Returns true if this nested type is accessable only by subtypes of its outer type.
+    /// Returns true if this nested type is accessible only by subtypes of its outer type.
     /// </summary>
     public abstract bool IsProtected { get; }
 
@@ -704,7 +704,7 @@ internal abstract class ClrField
 }
 
 /// <summary>
-/// Represents an instance field of a type.   Fundamentally it respresents a name and a type 
+/// Represents an instance field of a type.   Fundamentally it represents a name and a type 
 /// </summary>
 internal abstract class ClrInstanceField : ClrField
 {

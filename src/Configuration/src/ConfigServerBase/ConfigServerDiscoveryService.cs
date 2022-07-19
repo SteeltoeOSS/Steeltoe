@@ -20,19 +20,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 internal sealed class ConfigServerDiscoveryService
 {
-    internal IConfiguration _configuration;
-    internal ConfigServerClientSettings _settings;
-    internal ILoggerFactory _logFactory;
-    internal ILogger _logger;
-    internal IDiscoveryClient _discoveryClient;
+    internal IConfiguration Configuration;
+    internal ConfigServerClientSettings Settings;
+    internal ILoggerFactory LogFactory;
+    internal ILogger Logger;
+    internal IDiscoveryClient DiscoveryClient;
     private bool _usingInitialDiscoveryClient = true;
 
     internal ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
-        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        _settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        _logFactory = logFactory ?? BootstrapLoggerFactory.Instance;
-        _logger = _logFactory.CreateLogger<ConfigServerDiscoveryService>();
+        this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        this.LogFactory = logFactory ?? BootstrapLoggerFactory.Instance;
+        Logger = this.LogFactory.CreateLogger<ConfigServerDiscoveryService>();
         SetupDiscoveryClient();
     }
 
@@ -40,12 +40,12 @@ internal sealed class ConfigServerDiscoveryService
     internal void SetupDiscoveryClient()
     {
         var services = new ServiceCollection();
-        services.AddSingleton(_logFactory);
+        services.AddSingleton(LogFactory);
         services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
         // force settings to make sure we don't register the app here
         var cfgBuilder = new ConfigurationBuilder()
-            .AddConfiguration(_configuration)
+            .AddConfiguration(Configuration)
             .AddInMemoryCollection(
                 new Dictionary<string, string>
                 {
@@ -54,42 +54,42 @@ internal sealed class ConfigServerDiscoveryService
                 });
 
         services.AddSingleton<IConfiguration>(cfgBuilder.Build());
-        services.AddDiscoveryClient(_configuration);
+        services.AddDiscoveryClient(Configuration);
 
         using var startupServiceProvider = services.BuildServiceProvider();
-        _discoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
-        _logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", _discoveryClient.GetType());
+        DiscoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
+        Logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", DiscoveryClient.GetType());
     }
 
     internal IEnumerable<IServiceInstance> GetConfigServerInstances()
     {
         var attempts = 0;
-        var backOff = _settings.RetryInitialInterval;
+        var backOff = Settings.RetryInitialInterval;
         IEnumerable<IServiceInstance> instances;
         do
         {
             try
             {
-                _logger.LogDebug("Locating configserver {serviceId} via discovery", _settings.DiscoveryServiceId);
-                instances = _discoveryClient.GetInstances(_settings.DiscoveryServiceId);
+                Logger.LogDebug("Locating configserver {serviceId} via discovery", Settings.DiscoveryServiceId);
+                instances = DiscoveryClient.GetInstances(Settings.DiscoveryServiceId);
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "Exception invoking GetInstances() during config server lookup");
+                Logger.LogError(e, "Exception invoking GetInstances() during config server lookup");
                 instances = Enumerable.Empty<IServiceInstance>();
             }
 
-            if (!_settings.RetryEnabled || instances.Any())
+            if (!Settings.RetryEnabled || instances.Any())
             {
                 break;
             }
 
             attempts++;
-            if (attempts <= _settings.RetryAttempts)
+            if (attempts <= Settings.RetryAttempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                var nextBackoff = (int)(backOff * _settings.RetryMultiplier);
-                backOff = Math.Min(nextBackoff, _settings.RetryMaxInterval);
+                var nextBackOff = (int)(backOff * Settings.RetryMultiplier);
+                backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
             }
             else
             {
@@ -105,9 +105,9 @@ internal sealed class ConfigServerDiscoveryService
     {
         if (discoveryClientFromDI is not null)
         {
-            _logger.LogInformation("Replacing the IDiscoveryClient built at startup with one for runtime");
-            await _discoveryClient.ShutdownAsync().ConfigureAwait(false);
-            _discoveryClient = discoveryClientFromDI;
+            Logger.LogInformation("Replacing the IDiscoveryClient built at startup with one for runtime");
+            await DiscoveryClient.ShutdownAsync().ConfigureAwait(false);
+            DiscoveryClient = discoveryClientFromDI;
             _usingInitialDiscoveryClient = false;
         }
     }
@@ -116,7 +116,7 @@ internal sealed class ConfigServerDiscoveryService
     {
         if (_usingInitialDiscoveryClient)
         {
-            await _discoveryClient.ShutdownAsync();
+            await DiscoveryClient.ShutdownAsync();
         }
     }
 }

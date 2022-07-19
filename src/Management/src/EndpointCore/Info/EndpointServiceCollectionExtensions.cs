@@ -16,10 +16,10 @@ namespace Steeltoe.Management.Endpoint.Info;
 public static class EndpointServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds components of the Info actuator to Microsoft-DI
+    /// Adds components of the Info actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add info to</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info)</param>
+    /// <param name="services">Service collection to add info to.</param>
+    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info).</param>
     public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null)
     {
         var serviceProvider = services.BuildServiceProvider();
@@ -35,11 +35,11 @@ public static class EndpointServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds components of the info actuator to Microsoft-DI
+    /// Adds components of the info actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add info to</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info)</param>
-    /// <param name="contributors">Contributors to application information</param>
+    /// <param name="services">Service collection to add info to.</param>
+    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:info).</param>
+    /// <param name="contributors">Contributors to application information.</param>
     public static void AddInfoActuator(this IServiceCollection services, IConfiguration config = null, params IInfoContributor[] contributors)
     {
         if (services == null)

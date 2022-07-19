@@ -49,7 +49,7 @@ public class RabbitProducerOptions : RabbitCommonOptions
         BatchBufferLimit ??= defaultOptions?.BatchBufferLimit ?? 10000;
         BatchTimeout ??= defaultOptions?.BatchTimeout ?? 5000;
         Transacted ??= defaultOptions?.Transacted ?? false;
-        DeliveryMode ??= defaultOptions?.DeliveryMode ?? MessageDeliveryMode.PERSISTENT;
+        DeliveryMode ??= defaultOptions?.DeliveryMode ?? MessageDeliveryMode.Persistent;
         HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
         DelayExpression ??= defaultOptions?.DelayExpression;
         RoutingKeyExpression ??= defaultOptions?.RoutingKeyExpression;

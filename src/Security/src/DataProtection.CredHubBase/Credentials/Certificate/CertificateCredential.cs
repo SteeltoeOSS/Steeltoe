@@ -9,24 +9,24 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class CertificateCredential : ICredentialValue
 {
     /// <summary>
-    /// Gets or sets certificate of the Certificate Authority
+    /// Gets or sets certificate of the Certificate Authority.
     /// </summary>
     [JsonPropertyName("ca")]
     public string CertificateAuthority { get; set; }
 
     /// <summary>
-    /// Gets or sets name of CA credential in credhub that has signed this certificate
+    /// Gets or sets name of CA credential in credhub that has signed this certificate.
     /// </summary>
     [JsonPropertyName("ca_name")]
     public string CertificateAuthorityName { get; set; }
 
     /// <summary>
-    /// Gets or sets string representation of the certificate
+    /// Gets or sets string representation of the certificate.
     /// </summary>
     public string Certificate { get; set; }
 
     /// <summary>
-    /// Gets or sets private key for the certificate
+    /// Gets or sets private key for the certificate.
     /// </summary>
     [JsonPropertyName("private_key")]
     public string PrivateKey { get; set; }

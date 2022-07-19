@@ -11,11 +11,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 public abstract class AbstractMessageConverter : ISmartMessageConverter
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
     protected AbstractMessageConverter(ILogger logger = null)
     {
-        _logger = logger;
+        Logger = logger;
     }
 
     public bool CreateMessageIds { get; set; }

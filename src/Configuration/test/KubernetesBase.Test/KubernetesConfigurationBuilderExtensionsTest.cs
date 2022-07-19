@@ -33,7 +33,7 @@ public class KubernetesConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetes_Disabled_DoesntAddConfigMapAndSecretsToSourcesList()
+    public void AddKubernetes_Disabled_DoesNotAddConfigMapAndSecretsToSourcesList()
     {
         var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:enabled", "false" } });
 
@@ -44,7 +44,7 @@ public class KubernetesConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetes_ConfigMapDisabled_DoesntAddConfigMapToSourcesList()
+    public void AddKubernetes_ConfigMapDisabled_DoesNotAddConfigMapToSourcesList()
     {
         var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:config:enabled", "false" } });
 
@@ -55,7 +55,7 @@ public class KubernetesConfigurationBuilderExtensionsTest
     }
 
     [Fact]
-    public void AddKubernetes_SecretsDisabled_DoesntAddSecretsToSourcesList()
+    public void AddKubernetes_SecretsDisabled_DoesNotAddSecretsToSourcesList()
     {
         var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:secrets:enabled", "false" } });
 

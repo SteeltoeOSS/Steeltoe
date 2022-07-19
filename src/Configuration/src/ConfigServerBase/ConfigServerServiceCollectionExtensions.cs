@@ -31,7 +31,7 @@ public static class ConfigServerServiceCollectionExtensions
 
         services.AddOptions();
 
-        var section = config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX);
+        var section = config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix);
         services.Configure<ConfigServerClientSettingsOptions>(section);
 
         return services;
@@ -48,7 +48,7 @@ public static class ConfigServerServiceCollectionExtensions
             .AddOptions<ConfigServerClientSettingsOptions>()
             .Configure<IConfiguration>((options, config) =>
             {
-                config.GetSection(ConfigServerClientSettingsOptions.CONFIGURATION_PREFIX).Bind(options);
+                config.GetSection(ConfigServerClientSettingsOptions.ConfigurationPrefix).Bind(options);
             });
 
         return services;
@@ -57,8 +57,8 @@ public static class ConfigServerServiceCollectionExtensions
     /// <summary>
     /// Add the ConfigServerHealthContributor as a IHealthContributor to the service container.
     /// </summary>
-    /// <param name="services">the service container</param>
-    /// <returns>the service collection</returns>
+    /// <param name="services">the service container.</param>
+    /// <returns>the service collection.</returns>
     public static IServiceCollection AddConfigServerHealthContributor(this IServiceCollection services)
     {
         if (services == null)
@@ -73,9 +73,9 @@ public static class ConfigServerServiceCollectionExtensions
 
     /// <summary>
     /// Configures ConfigServerClientSettingsOptions, ConfigServerHostedService, Config Server Health Contributor
-    /// and ensures IConfigurationRoot is available
+    /// and ensures IConfigurationRoot is available.
     /// </summary>
-    /// <param name="services">Your <see cref="IServiceCollection"/></param>
+    /// <param name="services">Your <see cref="IServiceCollection"/>.</param>
     public static void AddConfigServerServices(this IServiceCollection services)
     {
         services.ConfigureConfigServerClientOptions();

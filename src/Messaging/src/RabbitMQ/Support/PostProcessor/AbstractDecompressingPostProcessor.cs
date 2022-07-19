@@ -29,7 +29,7 @@ public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor
 
     public virtual IMessage PostProcessMessage(IMessage message)
     {
-        var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
+        var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SpringAutoDecompress);
         if (AlwaysDecompress || (autoDecompress != null && autoDecompress.Value))
         {
             try
@@ -55,7 +55,7 @@ public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor
 
                 headers.ContentEncoding = colonAt < 0 ? null : headers.ContentEncoding.Substring(colonAt + 1);
 
-                headers.RemoveHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
+                headers.RemoveHeader(RabbitMessageHeaders.SpringAutoDecompress);
                 return Message.Create(outStream.ToArray(), headers.ToMessageHeaders());
             }
             catch (IOException e)

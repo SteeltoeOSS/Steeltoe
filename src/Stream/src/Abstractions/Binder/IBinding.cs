@@ -16,7 +16,7 @@ namespace Steeltoe.Stream.Binder;
 public interface IBinding : IPausable
 {
     /// <summary>
-    /// Gets the extended info associated with the binding
+    /// Gets the extended info associated with the binding.
     /// </summary>
     IDictionary<string, object> ExtendedInfo { get; }
 
@@ -31,13 +31,13 @@ public interface IBinding : IPausable
     string BindingName { get; }
 
     /// <summary>
-    /// Gets a value indicating whether this binding is an input binding
+    /// Gets a value indicating whether this binding is an input binding.
     /// </summary>
     bool IsInput { get; }
 
     /// <summary>
-    /// Unbinds the target component represented by this instance and stops any active components
+    /// Unbinds the target component represented by this instance and stops any active components.
     /// </summary>
-    /// <returns>task to signal results</returns>
+    /// <returns>task to signal results.</returns>
     Task Unbind();
 }

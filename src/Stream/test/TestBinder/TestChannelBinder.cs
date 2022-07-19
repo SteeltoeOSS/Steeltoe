@@ -108,7 +108,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         {
             var message = Message.Create(
                 "polled data",
-                new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.CONTENT_TYPE, "text/plain" } }));
+                new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.ContentType, "text/plain" } }));
             return message;
         }
     }
@@ -132,7 +132,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
 
     public class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
     {
-        private static readonly AsyncLocal<IAttributeAccessor> _attributesHolder = new ();
+        private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
         private readonly TestMessageListeningContainer _messageListenerContainer;
 
         public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer, ILogger logger)
@@ -185,7 +185,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
                         }
                         finally
                         {
-                            _attributesHolder.Value = null;
+                            AttributesHolder.Value = null;
                         }
                     }
                     else
@@ -213,7 +213,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
             {
                 if (_adapter.RecoveryCallback != null)
                 {
-                    _attributesHolder.Value = context;
+                    AttributesHolder.Value = context;
                 }
 
                 return true;
@@ -221,7 +221,7 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
 
             public void Close(IRetryContext context, Exception exception)
             {
-                _attributesHolder.Value = null;
+                AttributesHolder.Value = null;
             }
 
             public void OnError(IRetryContext context, Exception exception)

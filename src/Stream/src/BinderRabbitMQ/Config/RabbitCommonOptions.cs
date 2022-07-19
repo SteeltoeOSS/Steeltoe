@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
 public class RabbitCommonOptions
 {
-    public const string DEAD_LETTER_EXCHANGE = "DLX";
+    public const string DeadLetterExchangeName = "DLX";
 
     public string ExchangeType { get; set; }
 
@@ -89,7 +89,7 @@ public class RabbitCommonOptions
 
     internal void PostProcess(RabbitCommonOptions defaultOptions = null)
     {
-        ExchangeType ??= defaultOptions != null ? defaultOptions.ExchangeType : RabbitConfig.ExchangeType.TOPIC;
+        ExchangeType ??= defaultOptions != null ? defaultOptions.ExchangeType : RabbitConfig.ExchangeType.Topic;
         DeclareExchange ??= defaultOptions != null ? defaultOptions.DeclareExchange : true;
         ExchangeDurable ??= defaultOptions != null ? defaultOptions.ExchangeDurable : true;
         ExchangeAutoDelete ??= defaultOptions != null ? defaultOptions.ExchangeAutoDelete : false;
@@ -107,7 +107,7 @@ public class RabbitCommonOptions
         DeadLetterExchange ??= defaultOptions?.DeadLetterExchange;
 
         DeadLetterExchangeType ??=
-            defaultOptions != null ? defaultOptions.DeadLetterExchangeType : RabbitConfig.ExchangeType.DIRECT;
+            defaultOptions != null ? defaultOptions.DeadLetterExchangeType : RabbitConfig.ExchangeType.Direct;
 
         DeclareDlx ??= defaultOptions != null ? defaultOptions.DeclareDlx : true;
         DeadLetterRoutingKey ??= defaultOptions?.DeadLetterRoutingKey;

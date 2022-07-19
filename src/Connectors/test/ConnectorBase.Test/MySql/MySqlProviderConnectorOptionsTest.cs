@@ -37,13 +37,13 @@ public class MySqlProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new MySqlProviderConnectorOptions(config);
-        Assert.Equal("localhost", sconfig.Server);
-        Assert.Equal(1234, sconfig.Port);
-        Assert.True(sconfig.PersistSecurityInfo);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("username", sconfig.Username);
-        Assert.Null(sconfig.ConnectionString);
+        var options = new MySqlProviderConnectorOptions(config);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1234, options.Port);
+        Assert.True(options.PersistSecurityInfo);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("username", options.Username);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -57,9 +57,9 @@ public class MySqlProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(config);
 
-        Assert.Equal(appsettings["mysql:client:ConnectionString"], sconfig.ToString());
+        Assert.Equal(appsettings["mysql:client:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public class MySqlProviderConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -82,9 +82,9 @@ public class MySqlProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new MySqlProviderConnectorOptions(config);
+        var options = new MySqlProviderConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["mysql:client:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["mysql:client:ConnectionString"], options.ToString());
 
         // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,
         //          this test is only here to demonstrate that when a binding is present,

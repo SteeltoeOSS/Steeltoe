@@ -452,7 +452,7 @@ internal class LegacyRuntime : DesktopRuntimeBase
             module = module
         };
 
-        // TODO:  Blah, theres got to be a better way to do this.
+        // TODO:  Blah, there's got to be a better way to do this.
         byte[] input = GetByteArrayForStruct<LegacyModuleMapTraverseArgs>();
         IntPtr mem = Marshal.AllocHGlobal(input.Length);
         Marshal.StructureToPtr(args, mem, true);

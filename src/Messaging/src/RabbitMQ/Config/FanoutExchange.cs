@@ -6,22 +6,22 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public class FanoutExchange : AbstractExchange, IFanoutExchange
+public class FanOutExchange : AbstractExchange, IFanOutExchange
 {
-    public FanoutExchange(string name)
+    public FanOutExchange(string name)
         : base(name)
     {
     }
 
-    public FanoutExchange(string name, bool durable, bool autoDelete)
+    public FanOutExchange(string name, bool durable, bool autoDelete)
         : base(name, durable, autoDelete)
     {
     }
 
-    public FanoutExchange(string name, bool durable, bool autoDelete, Dictionary<string, object> arguments)
+    public FanOutExchange(string name, bool durable, bool autoDelete, Dictionary<string, object> arguments)
         : base(name, durable, autoDelete, arguments)
     {
     }
 
-    public override string Type { get; } = ExchangeType.FANOUT;
+    public override string Type { get; } = ExchangeType.FanOut;
 }

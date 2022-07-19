@@ -9,9 +9,9 @@ namespace Steeltoe.Integration.Support;
 
 public static class IntegrationUtils
 {
-    public const string INTEGRATION_CONVERSION_SERVICE_BEAN_NAME = "integrationConversionService";
+    public const string IntegrationConversionServiceBeanName = "integrationConversionService";
 
-    public const string INTEGRATION_MESSAGE_BUILDER_FACTORY_BEAN_NAME = "messageBuilderFactory";
+    public const string IntegrationMessageBuilderFactoryBeanName = "messageBuilderFactory";
 
     public static Exception WrapInDeliveryExceptionIfNecessary(IMessage message, string text, Exception e)
     {

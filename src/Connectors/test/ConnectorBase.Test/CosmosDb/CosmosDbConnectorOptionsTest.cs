@@ -37,13 +37,13 @@ public class CosmosDbConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new CosmosDbConnectorOptions(config);
-        Assert.Equal("https://localhost:443", sconfig.Host);
-        Assert.Equal("masterKey", sconfig.MasterKey);
-        Assert.Equal("readOnlyKey", sconfig.ReadOnlyKey);
-        Assert.Equal("databaseId", sconfig.DatabaseId);
-        Assert.Equal("databaseLink", sconfig.DatabaseLink);
-        Assert.Null(sconfig.ConnectionString);
+        var options = new CosmosDbConnectorOptions(config);
+        Assert.Equal("https://localhost:443", options.Host);
+        Assert.Equal("masterKey", options.MasterKey);
+        Assert.Equal("readOnlyKey", options.ReadOnlyKey);
+        Assert.Equal("databaseId", options.DatabaseId);
+        Assert.Equal("databaseLink", options.DatabaseLink);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -60,9 +60,9 @@ public class CosmosDbConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new CosmosDbConnectorOptions(config);
+        var options = new CosmosDbConnectorOptions(config);
 
-        Assert.Equal(appsettings["cosmosdb:client:ConnectionString"], sconfig.ToString());
+        Assert.Equal(appsettings["cosmosdb:client:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public class CosmosDbConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", CosmosDbTestHelpers.SingleVCAPBinding);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", CosmosDbTestHelpers.SingleVcapBinding);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -83,9 +83,9 @@ public class CosmosDbConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new CosmosDbConnectorOptions(config);
+        var options = new CosmosDbConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["cosmosdb:client:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["cosmosdb:client:ConnectionString"], options.ToString());
 
         // NOTE: for this test, we don't expect VCAP_SERVICES to be parsed,
         //          this test is only here to demonstrate that when a binding is present,

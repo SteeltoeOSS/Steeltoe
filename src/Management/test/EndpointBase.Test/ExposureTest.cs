@@ -63,7 +63,7 @@ public class ExposureTest
     }
 
     [Fact]
-    public void ExposureDoesntThrowOnInvalidSpringSettings()
+    public void ExposureDoesNotThrowOnInvalidSpringSettings()
     {
         var appSettings = new Dictionary<string, string>
         {

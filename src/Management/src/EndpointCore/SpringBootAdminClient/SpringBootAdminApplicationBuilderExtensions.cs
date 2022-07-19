@@ -26,11 +26,11 @@ public static class SpringBootAdminApplicationBuilderExtensions
     internal static RegistrationResult RegistrationResult { get; set; }
 
     /// <summary>
-    /// Register the application with a Spring-Boot-Admin server
+    /// Register the application with a Spring-Boot-Admin server.
     /// </summary>
-    /// <param name="builder"><see cref="IApplicationBuilder"/></param>
-    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided</param>
-    /// <param name="httpClient">A customized HttpClient. [Bring your own auth]</param>
+    /// <param name="builder"><see cref="IApplicationBuilder"/>.</param>
+    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided.</param>
+    /// <param name="httpClient">A customized HttpClient. [Bring your own auth].</param>
     public static void RegisterWithSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
     {
         if (builder is null)
@@ -43,7 +43,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
         var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
         var options = new SpringBootAdminClientOptions(configuration, appInfo);
-        var mgmtOptions = new ManagementEndpointOptions(configuration);
+        var managementOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
         var basePath = options.BasePath.TrimEnd('/');
         httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, _connectionTimeoutMs);
@@ -51,8 +51,8 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var app = new Application
         {
             Name = options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{mgmtOptions.Path}/{healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{mgmtOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{managementOptions.Path}/{healthOptions.Path}"),
+            ManagementUrl = new Uri($"{basePath}{managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
         };

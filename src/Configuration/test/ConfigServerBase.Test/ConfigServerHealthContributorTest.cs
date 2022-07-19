@@ -179,7 +179,7 @@ public class ConfigServerHealthContributorTest
         Assert.Null(contributor.Provider);
         var health = contributor.Health();
         Assert.NotNull(health);
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
     }
 
@@ -204,7 +204,7 @@ public class ConfigServerHealthContributorTest
         Assert.NotNull(contributor.Provider);
         var health = contributor.Health();
         Assert.NotNull(health);
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
     }
 
     [Fact]
@@ -229,7 +229,7 @@ public class ConfigServerHealthContributorTest
         Assert.NotNull(contributor.Provider);
         var health = contributor.Health();
         Assert.NotNull(health);
-        Assert.Equal(HealthStatus.UNKNOWN, health.Status);
+        Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
     }
 
@@ -259,7 +259,7 @@ public class ConfigServerHealthContributorTest
         };
         contributor.UpdateHealth(health, sources);
 
-        Assert.Equal(HealthStatus.UP, health.Status);
+        Assert.Equal(HealthStatus.Up, health.Status);
         Assert.True(health.Details.ContainsKey("propertySources"));
         var names = health.Details["propertySources"] as IList<string>;
         Assert.NotNull(names);

@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// A IDiscoveryClient implementation for Consul
+/// A IDiscoveryClient implementation for Consul.
 /// </summary>
 public class ConsulDiscoveryClient : IConsulDiscoveryClient
 {
@@ -42,10 +42,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
     /// </summary>
-    /// <param name="client">a Consul client</param>
-    /// <param name="options">the configuration options</param>
-    /// <param name="registrar">a Consul registrar service</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="client">a Consul client.</param>
+    /// <param name="options">the configuration options.</param>
+    /// <param name="registrar">a Consul registrar service.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -63,10 +63,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
     /// </summary>
-    /// <param name="client">a Consule client</param>
-    /// <param name="optionsMonitor">the configuration options</param>
-    /// <param name="registrar">a Consul registrar service</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="client">a Consul client.</param>
+    /// <param name="optionsMonitor">the configuration options.</param>
+    /// <param name="registrar">a Consul registrar service.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -80,8 +80,6 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
             _thisServiceInstance = new ThisServiceInstance(_registrar.Registration);
         }
     }
-
-    #region Implementation of IDiscoveryClient
 
     /// <inheritdoc/>
     public IServiceInstance GetLocalServiceInstance()
@@ -113,24 +111,22 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         }
     }
 
-    #endregion Implementation of IDiscoveryClient
-
     /// <summary>
-    /// Returns the instances for the provided service id
+    /// Returns the instances for the provided service ID.
     /// </summary>
-    /// <param name="serviceId">the service id to get instances for</param>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup</param>
-    /// <returns>the list of service instances</returns>
+    /// <param name="serviceId">the service id to get instances for.</param>
+    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
+    /// <returns>the list of service instances.</returns>
     public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
     {
         return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
     }
 
     /// <summary>
-    /// Returns all instances for all services
+    /// Returns all instances for all services.
     /// </summary>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup</param>
-    /// <returns>the list of service instances</returns>
+    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
+    /// <returns>the list of service instances.</returns>
     public IList<IServiceInstance> GetAllInstances(QueryOptions queryOptions = null)
     {
         return GetAllInstancesAsync().GetAwaiter().GetResult();
@@ -150,10 +146,10 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <summary>
-    /// Returns a list of service names in the catalog
+    /// Returns a list of service names in the catalog.
     /// </summary>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup</param>
-    /// <returns>the list of services</returns>
+    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
+    /// <returns>the list of services.</returns>
     public IList<string> GetServices(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
@@ -187,7 +183,7 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <summary>
-    /// Dispose of the client and also the Consul service registrar if provided
+    /// Dispose of the client and also the Consul service registrar if provided.
     /// </summary>
     public void Dispose()
     {

@@ -19,7 +19,7 @@ public static class ReflectionHelper
             throw new InvalidOperationException("Expected argument types and supplied argument types should be arrays of same length");
         }
 
-        ArgumentsMatchKind? match = ArgumentsMatchKind.EXACT;
+        ArgumentsMatchKind? match = ArgumentsMatchKind.Exact;
         for (var i = 0; i < expectedArgTypes.Count && match != null; i++)
         {
             var suppliedArg = suppliedArgTypes[i];
@@ -38,14 +38,14 @@ public static class ReflectionHelper
                 // if (suppliedArg.IsAssignableTo(expectedArg))
                 if (expectedArg.IsAssignableFrom(suppliedArg))
                 {
-                    if (match != ArgumentsMatchKind.REQUIRES_CONVERSION)
+                    if (match != ArgumentsMatchKind.RequiresConversion)
                     {
-                        match = ArgumentsMatchKind.CLOSE;
+                        match = ArgumentsMatchKind.Close;
                     }
                 }
                 else if (typeConverter.CanConvert(suppliedArg, expectedArg))
                 {
-                    match = ArgumentsMatchKind.REQUIRES_CONVERSION;
+                    match = ArgumentsMatchKind.RequiresConversion;
                 }
                 else
                 {
@@ -125,7 +125,7 @@ public static class ReflectionHelper
             throw new InvalidOperationException("Final expected argument should be array type (the varargs parameter)");
         }
 
-        ArgumentsMatchKind? match = ArgumentsMatchKind.EXACT;
+        ArgumentsMatchKind? match = ArgumentsMatchKind.Exact;
 
         // Check up until the varargs argument:
 
@@ -148,14 +148,14 @@ public static class ReflectionHelper
                 {
                     if (expectedArg.IsAssignableFrom(suppliedArg))
                     {
-                        if (match != ArgumentsMatchKind.REQUIRES_CONVERSION)
+                        if (match != ArgumentsMatchKind.RequiresConversion)
                         {
-                            match = ArgumentsMatchKind.CLOSE;
+                            match = ArgumentsMatchKind.Close;
                         }
                     }
                     else if (typeConverter.CanConvert(suppliedArg, expectedArg))
                     {
-                        match = ArgumentsMatchKind.REQUIRES_CONVERSION;
+                        match = ArgumentsMatchKind.RequiresConversion;
                     }
                     else
                     {
@@ -205,14 +205,14 @@ public static class ReflectionHelper
                     {
                         if (ClassUtils.IsAssignable(varargsParamType, suppliedArg))
                         {
-                            if (match != ArgumentsMatchKind.REQUIRES_CONVERSION)
+                            if (match != ArgumentsMatchKind.RequiresConversion)
                             {
-                                match = ArgumentsMatchKind.CLOSE;
+                                match = ArgumentsMatchKind.Close;
                             }
                         }
                         else if (typeConverter.CanConvert(suppliedArg, varargsParamType))
                         {
-                            match = ArgumentsMatchKind.REQUIRES_CONVERSION;
+                            match = ArgumentsMatchKind.RequiresConversion;
                         }
                         else
                         {

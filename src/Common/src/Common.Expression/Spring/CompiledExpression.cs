@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public abstract class CompiledExpression
 {
-    internal readonly Dictionary<string, object> _dynamicFields = new ();
+    internal readonly Dictionary<string, object> DynamicFields = new ();
 
     internal Delegate MethodDelegate { get; set; }
 

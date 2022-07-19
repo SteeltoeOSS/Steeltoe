@@ -89,7 +89,7 @@ internal struct ClrObject : IEquatable<ClrObject>
     public bool IsArray { get { return _type.IsArray; } }
 
     /// <summary>
-    /// Returns the count of elements in this array, or throws InvalidOperatonException if this object is not an array.
+    /// Returns the count of elements in this array, or throws InvalidOperationException if this object is not an array.
     /// </summary>
     public int Length
     {
@@ -103,7 +103,7 @@ internal struct ClrObject : IEquatable<ClrObject>
     }
 
     /// <summary>
-    /// Returns true if this object possibly contians GC pointers.
+    /// Returns true if this object possibly contains GC pointers.
     /// </summary>
     public bool ContainsPointers { get => _type != null && _type.ContainsPointers; }
 

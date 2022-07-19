@@ -49,7 +49,7 @@ public class ConfigServerHealthContributor : IHealthContributor
         if (Provider == null)
         {
             Logger?.LogDebug("No config server provider found");
-            health.Status = HealthStatus.UNKNOWN;
+            health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No config server provider found");
             return health;
         }
@@ -57,7 +57,7 @@ public class ConfigServerHealthContributor : IHealthContributor
         if (!IsEnabled())
         {
             Logger?.LogDebug("Config server health check disabled");
-            health.Status = HealthStatus.UNKNOWN;
+            health.Status = HealthStatus.Unknown;
             health.Details.Add("info", "Health check disabled");
             return health;
         }
@@ -66,7 +66,7 @@ public class ConfigServerHealthContributor : IHealthContributor
         if (sources == null || sources.Count == 0)
         {
             Logger?.LogDebug("No property sources found");
-            health.Status = HealthStatus.UNKNOWN;
+            health.Status = HealthStatus.Unknown;
             health.Details.Add("error", "No property sources found");
             return health;
         }
@@ -79,7 +79,7 @@ public class ConfigServerHealthContributor : IHealthContributor
     {
         Logger?.LogDebug("Config server health check returning UP");
 
-        health.Status = HealthStatus.UP;
+        health.Status = HealthStatus.Up;
         var names = new List<string>();
         foreach (var source in sources)
         {

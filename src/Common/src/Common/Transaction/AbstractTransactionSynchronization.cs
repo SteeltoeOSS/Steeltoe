@@ -6,11 +6,11 @@ namespace Steeltoe.Common.Transaction;
 
 public abstract class AbstractTransactionSynchronization : ITransactionSynchronization
 {
-    public const int STATUS_COMMITTED = 0;
+    public const int StatusCommitted = 0;
 
-    public const int STATUS_ROLLED_BACK = 1;
+    public const int StatusRolledBack = 1;
 
-    public const int STATUS_UNKNOWN = 2;
+    public const int StatusUnknown = 2;
 
     public abstract void AfterCommit();
 

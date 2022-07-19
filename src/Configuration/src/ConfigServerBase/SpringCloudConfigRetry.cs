@@ -6,13 +6,13 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class SpringCloudConfigRetry
 {
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_ENABLED;
+    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultRetryEnabled;
 
-    public int InitialInterval { get; set; } = ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
+    public int InitialInterval { get; set; } = ConfigServerClientSettings.DefaultInitialRetryInterval;
 
-    public int MaxInterval { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
+    public int MaxInterval { get; set; } = ConfigServerClientSettings.DefaultMaxRetryInterval;
 
-    public double Multiplier { get; set; } = ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
+    public double Multiplier { get; set; } = ConfigServerClientSettings.DefaultRetryMultiplier;
 
-    public int MaxAttempts { get; set; } = ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
+    public int MaxAttempts { get; set; } = ConfigServerClientSettings.DefaultMaxRetryAttempts;
 }

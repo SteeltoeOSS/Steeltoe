@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public abstract class AbstractDeclarable : IDeclarable
 {
-    protected List<object> _declaringAdmins = new ();
+    protected List<object> declaringAdmins = new ();
 
     protected AbstractDeclarable(Dictionary<string, object> arguments)
     {
@@ -25,12 +25,12 @@ public abstract class AbstractDeclarable : IDeclarable
     {
         get
         {
-            return _declaringAdmins;
+            return declaringAdmins;
         }
 
         set
         {
-            _declaringAdmins = value;
+            declaringAdmins = value;
         }
     }
 
@@ -58,7 +58,7 @@ public abstract class AbstractDeclarable : IDeclarable
             }
         }
 
-        _declaringAdmins = admins;
+        declaringAdmins = admins;
     }
 
     public void AddArgument(string name, object value)

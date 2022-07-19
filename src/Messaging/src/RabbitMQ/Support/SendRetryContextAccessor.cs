@@ -9,16 +9,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public static class SendRetryContextAccessor
 {
-    public const string MESSAGE = "message";
-    public const string ADDRESS = "address";
+    public const string Message = "message";
+    public const string Address = "address";
 
     public static IMessage GetMessage(IRetryContext context)
     {
-        return (IMessage)context.GetAttribute(MESSAGE);
+        return (IMessage)context.GetAttribute(Message);
     }
 
     public static Address GetAddress(IRetryContext context)
     {
-        return (Address)context.GetAttribute(ADDRESS);
+        return (Address)context.GetAttribute(Address);
     }
 }

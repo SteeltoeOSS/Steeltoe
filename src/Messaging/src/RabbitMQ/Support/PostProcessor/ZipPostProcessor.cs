@@ -36,7 +36,7 @@ public class ZipPostProcessor : AbstractDeflaterPostProcessor
 
             var compressed = zipped.ToArray();
 
-            _logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
+            Logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 
             return CreateMessage(message, compressed);
         }

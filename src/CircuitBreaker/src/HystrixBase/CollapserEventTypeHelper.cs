@@ -14,18 +14,18 @@ public static class CollapserEventTypeHelper
 
     static CollapserEventTypeHelper()
     {
-        Values.Add(CollapserEventType.BATCH_EXECUTED);
-        Values.Add(CollapserEventType.ADDED_TO_BATCH);
-        Values.Add(CollapserEventType.RESPONSE_FROM_CACHE);
+        Values.Add(CollapserEventType.BatchExecuted);
+        Values.Add(CollapserEventType.AddedToBatch);
+        Values.Add(CollapserEventType.ResponseFromCache);
     }
 
     public static CollapserEventType From(this HystrixRollingNumberEvent @event)
     {
         return @event switch
         {
-            HystrixRollingNumberEvent.COLLAPSER_BATCH => CollapserEventType.BATCH_EXECUTED,
-            HystrixRollingNumberEvent.COLLAPSER_REQUEST_BATCHED => CollapserEventType.ADDED_TO_BATCH,
-            HystrixRollingNumberEvent.RESPONSE_FROM_CACHE => CollapserEventType.RESPONSE_FROM_CACHE,
+            HystrixRollingNumberEvent.CollapserBatch => CollapserEventType.BatchExecuted,
+            HystrixRollingNumberEvent.CollapserRequestBatched => CollapserEventType.AddedToBatch,
+            HystrixRollingNumberEvent.ResponseFromCache => CollapserEventType.ResponseFromCache,
             _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.Collapser : {@event}"),
         };
     }

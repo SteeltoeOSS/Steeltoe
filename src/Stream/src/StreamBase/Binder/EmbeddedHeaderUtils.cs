@@ -82,11 +82,11 @@ public static class EmbeddedHeaderUtils
     {
         if (configuredHeaders == null || configuredHeaders.Length == 0)
         {
-            return BinderHeaders.STANDARD_HEADERS;
+            return BinderHeaders.StandardHeaders;
         }
         else
         {
-            var combinedHeadersToMap = new List<string>(BinderHeaders.STANDARD_HEADERS);
+            var combinedHeadersToMap = new List<string>(BinderHeaders.StandardHeaders);
             combinedHeadersToMap.AddRange(configuredHeaders);
             return combinedHeadersToMap.ToArray();
         }

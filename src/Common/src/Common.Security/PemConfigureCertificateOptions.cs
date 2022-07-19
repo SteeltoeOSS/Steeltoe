@@ -61,17 +61,17 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
     // source: https://stackoverflow.com/a/53439332/761468
     internal static RSA ReadRsaKeyFromString(string pemContents)
     {
-        const string RsaPrivateKeyHeader = "-----BEGIN RSA PRIVATE KEY-----";
-        const string RsaPrivateKeyFooter = "-----END RSA PRIVATE KEY-----";
+        const string rsaPrivateKeyHeader = "-----BEGIN RSA PRIVATE KEY-----";
+        const string rsaPrivateKeyFooter = "-----END RSA PRIVATE KEY-----";
 
-        if (pemContents.StartsWith(RsaPrivateKeyHeader))
+        if (pemContents.StartsWith(rsaPrivateKeyHeader))
         {
             var endIdx = pemContents.IndexOf(
-                RsaPrivateKeyFooter,
-                RsaPrivateKeyHeader.Length,
+                rsaPrivateKeyFooter,
+                rsaPrivateKeyHeader.Length,
                 StringComparison.Ordinal);
 
-            var base64 = pemContents[RsaPrivateKeyHeader.Length..endIdx];
+            var base64 = pemContents[rsaPrivateKeyHeader.Length..endIdx];
 
             var der = Convert.FromBase64String(base64);
             var rsa = RSA.Create();

@@ -36,7 +36,7 @@ public class HystrixRollingPercentileTest
         p.AddValue(1000);
         p.AddValue(2000);
 
-        Assert.Equal(1, p._buckets.Size);
+        Assert.Equal(1, p.Buckets.Size);
 
         // no bucket turnover yet so percentile not yet generated
         Assert.Equal(0, p.GetPercentile(50));
@@ -44,19 +44,19 @@ public class HystrixRollingPercentileTest
         time.Increment(6000);
 
         // still only 1 bucket until we touch it again
-        Assert.Equal(1, p._buckets.Size);
+        Assert.Equal(1, p.Buckets.Size);
 
         // a bucket has been created so we have a new percentile
         Assert.Equal(1000, p.GetPercentile(50));
 
         // now 2 buckets since getting a percentile causes bucket retrieval
-        Assert.Equal(2, p._buckets.Size);
+        Assert.Equal(2, p.Buckets.Size);
 
         p.AddValue(1000);
         p.AddValue(500);
 
         // should still be 2 buckets
-        Assert.Equal(2, p._buckets.Size);
+        Assert.Equal(2, p.Buckets.Size);
 
         p.AddValue(200);
         p.AddValue(200);
@@ -101,7 +101,7 @@ public class HystrixRollingPercentileTest
         p.AddValue(2000);
         p.AddValue(4000);
 
-        Assert.Equal(1, p._buckets.Size);
+        Assert.Equal(1, p.Buckets.Size);
 
         // no bucket turnover yet so percentile not yet generated
         Assert.Equal(0, p.GetPercentile(50));
@@ -109,7 +109,7 @@ public class HystrixRollingPercentileTest
         time.Increment(6000);
 
         // still only 1 bucket until we touch it again
-        Assert.Equal(1, p._buckets.Size);
+        Assert.Equal(1, p.Buckets.Size);
 
         // a bucket has been created so we have a new percentile
         Assert.Equal(1500, p.GetPercentile(50));
@@ -319,10 +319,10 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        var num_threads = 1000;  // .NET Core StackOverflow
-        var num_iterations = 1_000_000;
+        var numThreads = 1000;  // .NET Core StackOverflow
+        var numIterations = 1_000_000;
 
-        var latch = new CountdownEvent(num_threads);
+        var latch = new CountdownEvent(numThreads);
 
         var aggregateMetrics = new AtomicInteger(); // same as a blackhole
 
@@ -336,12 +336,12 @@ public class HystrixRollingPercentileTest
             }
         });
 
-        for (var i = 0; i < num_threads; i++)
+        for (var i = 0; i < numThreads; i++)
         {
             var threadId = i;
             Task.Run(() =>
             {
-                for (var j = 1; j < (num_iterations / num_threads) + 1; j++)
+                for (var j = 1; j < (numIterations / numThreads) + 1; j++)
                 {
                     var nextInt = r.Next(100);
                     p.AddValue(nextInt);
@@ -375,21 +375,21 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        var num_threads = 10;
-        var num_iterations = 1000;
+        var numThreads = 10;
+        var numIterations = 1000;
 
-        var latch = new CountdownEvent(num_threads);
+        var latch = new CountdownEvent(numThreads);
 
         var r = new Random();
 
         var added = new AtomicInteger(0);
 
-        for (var i = 0; i < num_threads; i++)
+        for (var i = 0; i < numThreads; i++)
         {
             var t = new Task(
                 () =>
                 {
-                    for (var j = 1; j < (num_iterations / num_threads) + 1; j++)
+                    for (var j = 1; j < (numIterations / numThreads) + 1; j++)
                     {
                         var nextInt = r.Next(100);
                         p.AddValue(nextInt);
@@ -406,7 +406,7 @@ public class HystrixRollingPercentileTest
         try
         {
             latch.Wait(TimeSpan.FromSeconds(100));
-            Assert.Equal(added.Value, p._buckets.PeekLast._data.Length);
+            Assert.Equal(added.Value, p.Buckets.PeekLast.Data.Length);
         }
         catch (Exception)
         {

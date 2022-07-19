@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Common.Util;
 
-public interface IClassifier<in C, out T>
+public interface IClassifier<in TSource, out TTarget>
 {
-    T Classify(C classifiable);
+    TTarget Classify(TSource classifiable);
 }

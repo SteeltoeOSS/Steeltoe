@@ -14,7 +14,7 @@ using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// A Health contributor which provides the health of the Consul server connection
+/// A Health contributor which provides the health of the Consul server connection.
 /// </summary>
 public class ConsulHealthContributor : IHealthContributor
 {
@@ -41,9 +41,9 @@ public class ConsulHealthContributor : IHealthContributor
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulHealthContributor"/> class.
     /// </summary>
-    /// <param name="client">a Consul client to use for health checks</param>
-    /// <param name="options">configuration options</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="client">a Consul client to use for health checks.</param>
+    /// <param name="options">configuration options.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulHealthContributor(IConsulClient client, ConsulDiscoveryOptions options, ILogger<ConsulHealthContributor> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -54,9 +54,9 @@ public class ConsulHealthContributor : IHealthContributor
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulHealthContributor"/> class.
     /// </summary>
-    /// <param name="client">a Consul client to use for health checks</param>
-    /// <param name="optionsMonitor">configuration options</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="client">a Consul client to use for health checks.</param>
+    /// <param name="optionsMonitor">configuration options.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILogger<ConsulHealthContributor> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -65,15 +65,15 @@ public class ConsulHealthContributor : IHealthContributor
     }
 
     /// <summary>
-    /// Compute the health of the Consul server connection
+    /// Compute the health of the Consul server connection.
     /// </summary>
-    /// <returns>the health check result</returns>
+    /// <returns>the health check result.</returns>
     public HealthCheckResult Health()
     {
         var result = new HealthCheckResult();
         var leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
         var services = GetCatalogServicesAsync().GetAwaiter().GetResult();
-        result.Status = HealthStatus.UP;
+        result.Status = HealthStatus.Up;
         result.Details.Add("leader", leaderStatus);
         result.Details.Add("services", services);
         return result;

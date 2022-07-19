@@ -15,15 +15,15 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
 {
     private readonly RequestDelegate _next;
 
-    public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public ThreadDumpEndpointMiddleware(RequestDelegate next, ThreadDumpEndpoint endpoint, IManagementOptions managementOptions, ILogger<ThreadDumpEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -34,9 +34,9 @@ public class ThreadDumpEndpointMiddleware : EndpointMiddleware<List<ThreadInfo>>
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

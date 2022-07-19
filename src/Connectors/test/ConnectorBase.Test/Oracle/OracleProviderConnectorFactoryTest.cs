@@ -14,11 +14,11 @@ public class OracleProviderConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const OracleProviderConnectorOptions config = null;
+        const OracleProviderConnectorOptions options = null;
         const OracleServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, config, typeof(OracleConnection)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, options, typeof(OracleConnection)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

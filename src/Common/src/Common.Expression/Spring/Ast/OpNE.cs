@@ -7,20 +7,20 @@ using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
-public class OpNE : Operator
+public class OpNe : Operator
 {
-    public OpNE(int startPos, int endPos, params SpelNode[] operands)
+    public OpNe(int startPos, int endPos, params SpelNode[] operands)
         : base("!=", startPos, endPos, operands)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         var leftValue = LeftOperand.GetValueInternal(state).Value;
         var rightValue = RightOperand.GetValueInternal(state).Value;
-        _leftActualDescriptor = CodeFlow.ToDescriptorFromObject(leftValue);
-        _rightActualDescriptor = CodeFlow.ToDescriptorFromObject(rightValue);
+        leftActualDescriptor = CodeFlow.ToDescriptorFromObject(leftValue);
+        rightActualDescriptor = CodeFlow.ToDescriptorFromObject(rightValue);
         return BooleanTypedValue.ForValue(!EqualityCheck(state.EvaluationContext, leftValue, rightValue));
     }
 
@@ -37,7 +37,7 @@ public class OpNE : Operator
 
         var leftDesc = left.ExitDescriptor;
         var rightDesc = right.ExitDescriptor;
-        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, _leftActualDescriptor, _rightActualDescriptor);
+        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
         return !dc.AreNumbers || dc.AreCompatible;
     }
 
@@ -66,7 +66,7 @@ public class OpNE : Operator
         }
 
         // returns bool
-        gen.Emit(OpCodes.Call, _equalityCheck);
+        gen.Emit(OpCodes.Call, EqualityCheckMethod);
 
         // Invert the boolean
         var result = gen.DeclareLocal(typeof(bool));

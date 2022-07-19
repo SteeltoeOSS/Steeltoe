@@ -9,19 +9,19 @@ namespace Steeltoe.Common.Converter;
 
 public abstract class AbstractToNumberConverter : AbstractGenericConditionalConverter
 {
-    protected ISet<(Type Source, Type Target)> _convertableTypes;
+    protected ISet<(Type Source, Type Target)> convertableTypes;
 
     protected AbstractToNumberConverter(ISet<(Type Source, Type Target)> convertableTypes)
         : base(null)
     {
-        _convertableTypes = convertableTypes;
+        this.convertableTypes = convertableTypes;
     }
 
     public override bool Matches(Type sourceType, Type targetType)
     {
         var targetCheck = ConversionUtils.GetNullableElementType(targetType);
         var pair = (sourceType, targetCheck);
-        return _convertableTypes.Contains(pair);
+        return convertableTypes.Contains(pair);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)

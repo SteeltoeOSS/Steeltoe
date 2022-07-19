@@ -13,7 +13,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class HystrixDashboardStream
 {
-    private const int Default_Dashboard_IntervalInMilliseconds = 500;
+    private const int DefaultDashboardIntervalInMilliseconds = 500;
     private readonly int _delayInMs;
     private readonly IObservable<DashboardData> _singleSource;
     private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
@@ -30,7 +30,7 @@ public class HystrixDashboardStream
 
     // The data emission interval is looked up on startup only
     private static readonly HystrixDashboardStream Instance =
-        new (Default_Dashboard_IntervalInMilliseconds);
+        new (DefaultDashboardIntervalInMilliseconds);
 
     public static HystrixDashboardStream GetInstance()
     {

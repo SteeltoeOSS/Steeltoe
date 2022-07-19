@@ -6,25 +6,25 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaClientConfig : IEurekaClientConfig
 {
-    public const int Default_RegistryFetchIntervalSeconds = 30;
-    public const int Default_InstanceInfoReplicationIntervalSeconds = 40;
-    public const int Default_EurekaServerConnectTimeoutSeconds = 5;
-    public const int Default_EurekaServerRetryCount = 3;
-    public const string Default_ServerServiceUrl = "http://localhost:8761/eureka/";
+    public const int DefaultRegistryFetchIntervalSeconds = 30;
+    public const int DefaultInstanceInfoReplicationIntervalSeconds = 40;
+    public const int DefaultEurekaServerConnectTimeoutSeconds = 5;
+    public const int DefaultEurekaServerRetryCount = 3;
+    public const string DefaultServerServiceUrl = "http://localhost:8761/eureka/";
 
     public EurekaClientConfig()
     {
-        RegistryFetchIntervalSeconds = Default_RegistryFetchIntervalSeconds;
+        RegistryFetchIntervalSeconds = DefaultRegistryFetchIntervalSeconds;
         ShouldGZipContent = true;
-        EurekaServerConnectTimeoutSeconds = Default_EurekaServerConnectTimeoutSeconds;
+        EurekaServerConnectTimeoutSeconds = DefaultEurekaServerConnectTimeoutSeconds;
         ShouldRegisterWithEureka = true;
         ShouldDisableDelta = false;
         ShouldFilterOnlyUpInstances = true;
         ShouldFetchRegistry = true;
         ShouldOnDemandUpdateStatusChange = true;
-        EurekaServerServiceUrls = Default_ServerServiceUrl;
+        EurekaServerServiceUrls = DefaultServerServiceUrl;
         ValidateCertificates = true;
-        EurekaServerRetryCount = Default_EurekaServerRetryCount;
+        EurekaServerRetryCount = DefaultEurekaServerRetryCount;
         HealthCheckEnabled = true;
         HealthContribEnabled = true;
     }

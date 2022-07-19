@@ -111,7 +111,7 @@ public class RoutingConnectionFactoryTest
         var defaultConnectionFactory = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
         var connection2 = new Mock<IConnection>();
-        var defautConnection = new Mock<IConnection>();
+        var defaultConnection = new Mock<IConnection>();
         var channel1 = new Mock<RC.IModel>();
         var channel2 = new Mock<RC.IModel>();
         var defaultChannel = new Mock<RC.IModel>();
@@ -124,7 +124,7 @@ public class RoutingConnectionFactoryTest
             .Returns(connection2.Object);
 
         defaultConnectionFactory.SetupSequence(f => f.CreateConnection())
-            .Returns(defautConnection.Object);
+            .Returns(defaultConnection.Object);
 
         connection1.Setup(c => c.IsOpen).Returns(true);
         connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
@@ -132,8 +132,8 @@ public class RoutingConnectionFactoryTest
         connection2.Setup(c => c.IsOpen).Returns(true);
         connection2.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel2.Object);
 
-        defautConnection.Setup(c => c.IsOpen).Returns(true);
-        defautConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(defaultChannel.Object);
+        defaultConnection.Setup(c => c.IsOpen).Returns(true);
+        defaultConnection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(defaultChannel.Object);
 
         channel1.Setup(c => c.IsOpen).Returns(true);
         channel2.Setup(c => c.IsOpen).Returns(true);
@@ -157,7 +157,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         connectionFactory1.Verify(f => f.CreateConnection(), Times.Never);
         connectionFactory2.Verify(f => f.CreateConnection(), Times.Exactly(2));
@@ -185,7 +185,7 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public async Task TestWithDMLCAndConnectionListener()
+    public async Task TestWithDmlcAndConnectionListener()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
@@ -222,7 +222,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
         await container.Stop();
@@ -231,7 +231,7 @@ public class RoutingConnectionFactoryTest
     }
 
     [Fact]
-    public async Task TestWithDRTDMLCAndConnectionListenerExistingRFK()
+    public async Task TestWithDrtDmlcAndConnectionListenerExistingRfk()
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connection1 = new Mock<IConnection>();
@@ -271,7 +271,7 @@ public class RoutingConnectionFactoryTest
         container.Initialize();
         await container.Start();
 
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
 
         var channelHolder = container.GetChannelHolder();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));

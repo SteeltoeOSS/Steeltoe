@@ -12,10 +12,10 @@ namespace Steeltoe.Common.Net;
 public static class DnsTools
 {
     /// <summary>
-    /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the host name
+    /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the host name.
     /// </summary>
-    /// <param name="hostName">The host name or address to use</param>
-    /// <returns>String representation of the IP Address or <see langword="null"/></returns>
+    /// <param name="hostName">The host name or address to use.</param>
+    /// <returns>String representation of the IP Address or <see langword="null"/>.</returns>
     public static string ResolveHostAddress(string hostName)
     {
         try

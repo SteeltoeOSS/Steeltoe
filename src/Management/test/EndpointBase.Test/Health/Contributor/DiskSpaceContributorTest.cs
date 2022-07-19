@@ -24,7 +24,7 @@ public class DiskSpaceContributorTest : BaseTest
         Assert.Equal("diskSpace", contrib.Id);
         var result = contrib.Health();
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
         Assert.True(result.Details.ContainsKey("total"));
         Assert.True(result.Details.ContainsKey("free"));

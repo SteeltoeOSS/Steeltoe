@@ -9,9 +9,9 @@ public class UserSetRequest : CredentialSetRequest
     /// <summary>
     /// Initializes a new instance of the <see cref="UserSetRequest"/> class.
     /// </summary>
-    /// <param name="credentialName">Name of credential</param>
-    /// <param name="userName">Name of the user</param>
-    /// <param name="password">Password of the user</param>
+    /// <param name="credentialName">Name of credential.</param>
+    /// <param name="userName">Name of the user.</param>
+    /// <param name="password">Password of the user.</param>
     public UserSetRequest(string credentialName, string userName, string password)
     {
         Name = credentialName;

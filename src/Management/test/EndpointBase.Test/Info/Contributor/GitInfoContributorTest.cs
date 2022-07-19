@@ -53,7 +53,7 @@ public class GitInfoContributorTest : BaseTest
     }
 
     [Fact]
-    public void ContributeWithNullBUilderThrows()
+    public void ContributeWithNullBuilderThrows()
     {
         // Uses git.properties file in test project
         var contrib = new GitInfoContributor();

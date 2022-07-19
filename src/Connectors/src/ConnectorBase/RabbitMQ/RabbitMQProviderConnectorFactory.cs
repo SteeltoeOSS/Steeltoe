@@ -16,11 +16,11 @@ public class RabbitMQProviderConnectorFactory
     private readonly RabbitMQProviderConfigurer _configurer = new ();
     private readonly MethodInfo _setUri;
 
-    public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo sinfo, RabbitMQProviderConnectorOptions config, Type connectFactory)
+    public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo serviceInfo, RabbitMQProviderConnectorOptions options, Type connectFactory)
     {
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         ConnectorType = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
-        _info = sinfo;
+        _info = serviceInfo;
         _setUri = FindSetUriMethod(ConnectorType);
         if (_setUri == null)
         {

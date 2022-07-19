@@ -14,7 +14,7 @@ public class LivenessHealthContributor : AvailabilityHealthContributor
     private readonly ApplicationAvailability _availability;
 
     public LivenessHealthContributor(ApplicationAvailability availability)
-        : base(new Dictionary<IAvailabilityState, HealthStatus> { { LivenessState.Correct, HealthStatus.UP }, { LivenessState.Broken, HealthStatus.DOWN } })
+        : base(new Dictionary<IAvailabilityState, HealthStatus> { { LivenessState.Correct, HealthStatus.Up }, { LivenessState.Broken, HealthStatus.Down } })
     {
         _availability = availability;
     }

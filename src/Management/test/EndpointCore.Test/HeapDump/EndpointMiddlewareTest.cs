@@ -40,8 +40,8 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleHeapDumpRequestAsync_ReturnsExpected()
     {
         var opts = new HeapDumpEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         IServiceCollection serviceCollection = new ServiceCollection();
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
@@ -54,7 +54,7 @@ public class EndpointMiddlewareTest : BaseTest
         var obs = new HeapDumper(opts, logger: logger1);
 
         var ep = new HeapDumpEndpoint(opts, obs, logger2);
-        var middle = new HeapDumpEndpointMiddleware(null, ep, mopts, logger3);
+        var middle = new HeapDumpEndpointMiddleware(null, ep, managementOptions, logger3);
         var context = CreateRequest("GET", "/heapdump");
         await middle.HandleHeapDumpRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
@@ -69,9 +69,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
         using var server = new TestServer(builder);

@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.Converter;
 
 public class StringMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(StringMessageConverter);
+    public const string DefaultServiceName = nameof(StringMessageConverter);
 
     private readonly Encoding _defaultCharset;
 
@@ -25,7 +25,7 @@ public class StringMessageConverter : AbstractMessageConverter
         _defaultCharset = defaultCharset ?? throw new ArgumentNullException(nameof(defaultCharset));
     }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz) => typeof(string) == clazz;
 

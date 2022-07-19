@@ -11,9 +11,9 @@ namespace Steeltoe.Messaging.Core;
 public interface IMessagePostProcessor
 {
     /// <summary>
-    /// Process the message
+    /// Process the message.
     /// </summary>
-    /// <param name="message">the messate to process</param>
-    /// <returns>the result of post processing</returns>
+    /// <param name="message">the message to process.</param>
+    /// <returns>the result of post processing.</returns>
     IMessage PostProcessMessage(IMessage message);
 }

@@ -16,18 +16,18 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 {
     public string IndexKeyPrefix = "LoadBalancerIndex-";
     internal readonly IServiceInstanceProvider ServiceInstanceProvider;
-    internal readonly IDistributedCache _distributedCache;
+    internal readonly IDistributedCache DistributedCache;
     internal readonly ConcurrentDictionary<string, int> NextIndexForService = new ();
     private readonly DistributedCacheEntryOptions _cacheOptions;
     private readonly ILogger _logger;
 
     public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
     {
-        ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
-        _distributedCache = distributedCache;
+        this.ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
+        this.DistributedCache = distributedCache;
         _cacheOptions = cacheEntryOptions;
         _logger = logger;
-        _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", _distributedCache == null);
+        _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", this.DistributedCache == null);
     }
 
     public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
@@ -37,7 +37,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         var cacheKey = IndexKeyPrefix + serviceName;
 
         // get instances for this service
-        var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, _distributedCache, _cacheOptions).ConfigureAwait(false);
+        var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions).ConfigureAwait(false);
         if (!availableServiceInstances.Any())
         {
             _logger?.LogError("No service instances available for {serviceName}", serviceName);
@@ -66,9 +66,9 @@ public class RoundRobinLoadBalancer : ILoadBalancer
     private async Task<int> GetOrInitNextIndex(string cacheKey, int initValue)
     {
         var index = initValue;
-        if (_distributedCache != null)
+        if (DistributedCache != null)
         {
-            var cacheEntry = await _distributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+            var cacheEntry = await DistributedCache.GetAsync(cacheKey).ConfigureAwait(false);
             if (cacheEntry != null && cacheEntry.Length > 0)
             {
                 index = BitConverter.ToInt16(cacheEntry, 0);
@@ -84,9 +84,9 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 
     private async Task SetNextIndex(string cacheKey, int currentValue)
     {
-        if (_distributedCache != null)
+        if (DistributedCache != null)
         {
-            await _distributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1)).ConfigureAwait(false);
+            await DistributedCache.SetAsync(cacheKey, BitConverter.GetBytes(currentValue + 1)).ConfigureAwait(false);
         }
         else
         {

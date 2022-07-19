@@ -82,7 +82,7 @@ public class JsonToObjectTransformer : AbstractTransformer
             return MessageBuilderFactory
                 .WithPayload(result)
                 .CopyHeaders(headers)
-                .RemoveHeaders(MessageHeaders.TYPE_ID, MessageHeaders.CONTENT_TYPE_ID, MessageHeaders.KEY_TYPE_ID)
+                .RemoveHeaders(MessageHeaders.TypeId, MessageHeaders.ContentTypeId, MessageHeaders.KeyTypeId)
                 .Build();
         }
 

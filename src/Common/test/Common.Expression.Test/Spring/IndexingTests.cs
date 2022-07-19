@@ -47,7 +47,7 @@ public class IndexingTests
     }
 
     [Fact]
-    public void IndexIntoGenericPropertyContainingMapobject()
+    public void IndexIntoGenericPropertyContainingMapObject()
     {
         var property = new Dictionary<string, Dictionary<string, string>>();
         var map = new Dictionary<string, string>
@@ -151,7 +151,7 @@ public class IndexingTests
     }
 
     [Fact]
-    public void SetGenericPropertyContainingListAutogrow()
+    public void SetGenericPropertyContainingListAutoGrow()
     {
         var property = new List<int>();
         Property = property;

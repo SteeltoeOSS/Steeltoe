@@ -17,8 +17,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
 {
-    protected new readonly Action _run;
-    protected new readonly Action _fallback;
+    protected new readonly Action RunCallback;
+    protected new readonly Action FallbackCallback;
 
     public HystrixCommand(IHystrixCommandGroupKey group, Action run = null, Action fallback = null, ILogger logger = null)
         : this(group, null, null, null, null, null, null, null, null, null, null, null, run, fallback, logger)
@@ -63,8 +63,8 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
         ILogger logger = null)
         : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, null, null, logger)
     {
-        _run = run ?? Run;
-        _fallback = fallback ?? RunFallback;
+        this.RunCallback = run ?? Run;
+        this.FallbackCallback = fallback ?? RunFallback;
     }
 
     public new void Execute()
@@ -88,7 +88,7 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
 
     protected override Unit DoRun()
     {
-        _run();
+        RunCallback();
         return Unit.Default;
     }
 
@@ -101,8 +101,8 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
 
 public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecutable<TResult>
 {
-    protected readonly Func<TResult> _run;
-    protected readonly Func<TResult> _fallback;
+    protected readonly Func<TResult> RunCallback;
+    protected readonly Func<TResult> FallbackCallback;
 
     public HystrixCommand(IHystrixCommandGroupKey group, Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
         : this(group, null, null, null, null, null, null, null, null, null, null, null, run, fallback, logger)
@@ -147,8 +147,8 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
         ILogger logger = null)
         : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, logger)
     {
-        _run = run ?? Run;
-        _fallback = fallback ?? RunFallback;
+        this.RunCallback = run ?? Run;
+        this.FallbackCallback = fallback ?? RunFallback;
     }
 
     public TResult Execute()
@@ -165,18 +165,18 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
 
     public Task<TResult> ExecuteAsync(CancellationToken token)
     {
-        _usersToken = token;
+        UsersToken = token;
 
         var toStart = ToTask();
         if (!toStart.IsCompleted)
         {
-            if (_execThreadTask != null)
+            if (ExecThreadTask != null)
             {
                 StartCommand();
             }
             else
             {
-                tcs.TrySetException(new HystrixRuntimeException(FailureType.BAD_REQUEST_EXCEPTION, GetType(), "Thread task missing"));
+                tcs.TrySetException(new HystrixRuntimeException(FailureType.BadRequestException, GetType(), "Thread task missing"));
                 tcs.Commit();
             }
         }
@@ -209,17 +209,17 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
         var observable = Observable.FromAsync(ct =>
         {
-            _usersToken = ct;
+            UsersToken = ct;
             var toStart = ToTask();
             if (!toStart.IsCompleted)
             {
-                if (_execThreadTask != null)
+                if (ExecThreadTask != null)
                 {
                     StartCommand();
                 }
                 else
                 {
-                    tcs.TrySetException(new HystrixRuntimeException(FailureType.BAD_REQUEST_EXCEPTION, GetType(), "Thread task missing"));
+                    tcs.TrySetException(new HystrixRuntimeException(FailureType.BadRequestException, GetType(), "Thread task missing"));
                     tcs.Commit();
                 }
             }
@@ -266,11 +266,11 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
 
     protected override TResult DoRun()
     {
-        return _run();
+        return RunCallback();
     }
 
     protected override TResult DoFallback()
     {
-        return _fallback();
+        return FallbackCallback();
     }
 }

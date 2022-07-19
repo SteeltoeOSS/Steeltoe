@@ -9,6 +9,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector.Redis;
 
@@ -70,8 +71,8 @@ public class RedisHealthContributor : IHealthContributor
             }
 
             // Spring Boot health checks also include cluster size and slot metrics
-            result.Details.Add("status", HealthStatus.UP.ToString());
-            result.Status = HealthStatus.UP;
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Up;
             _logger?.LogTrace("Redis connection up!");
         }
         catch (Exception e)
@@ -83,8 +84,8 @@ public class RedisHealthContributor : IHealthContributor
 
             _logger?.LogError("Redis connection down! {HealthCheckException}", e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.DOWN.ToString());
-            result.Status = HealthStatus.DOWN;
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Down;
             result.Description = "Redis health check failed";
         }
 

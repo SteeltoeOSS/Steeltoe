@@ -30,7 +30,7 @@ public class Startup
         app.UseRouting();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.Map<ThreadDumpEndpoint_v2>();
+            endpoints.Map<ThreadDumpEndpointV2>();
         });
     }
 }

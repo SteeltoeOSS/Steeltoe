@@ -5,6 +5,7 @@
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -20,7 +21,7 @@ public class HealthConverter : JsonConverter<HealthEndpointResponse>
         writer.WriteStartObject();
         if (value != null)
         {
-            writer.WriteString("status", value.Status.ToString());
+            writer.WriteString("status", value.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
             if (!string.IsNullOrEmpty(value.Description))
             {
                 writer.WriteString("description", value.Description);

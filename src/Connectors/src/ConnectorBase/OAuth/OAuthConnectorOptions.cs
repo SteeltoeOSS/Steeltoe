@@ -11,8 +11,8 @@ namespace Steeltoe.Connector.OAuth;
 
 public class OAuthConnectorOptions : AbstractServiceConnectorOptions
 {
-    private const string SECURITY_CLIENT_SECTION_PREFIX = "security:oauth2:client";
-    private const string SECURITY_RESOURCE_SECTION_PREFIX = "security:oauth2:resource";
+    private const string SecurityClientSectionPrefix = "security:oauth2:client";
+    private const string SecurityResourceSectionPrefix = "security:oauth2:resource";
 
     public OAuthConnectorOptions()
     {
@@ -25,36 +25,36 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(SECURITY_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(SecurityClientSectionPrefix);
         section.Bind(this);
         ValidateCertificates = GetCertificateValidation(section, config, ValidateCertificates);
 
-        section = config.GetSection(SECURITY_RESOURCE_SECTION_PREFIX);
+        section = config.GetSection(SecurityResourceSectionPrefix);
         section.Bind(this);
     }
 
-    public string OAuthServiceUrl { get; set; } = OAuthConnectorDefaults.Default_OAuthServiceUrl;
+    public string OAuthServiceUrl { get; set; } = OAuthConnectorDefaults.DefaultOAuthServiceUrl;
 
-    public string ClientId { get; set; } = OAuthConnectorDefaults.Default_ClientId;
+    public string ClientId { get; set; } = OAuthConnectorDefaults.DefaultClientId;
 
-    public string ClientSecret { get; set; } = OAuthConnectorDefaults.Default_ClientSecret;
+    public string ClientSecret { get; set; } = OAuthConnectorDefaults.DefaultClientSecret;
 
-    public string UserAuthorizationUri { get; set; } = OAuthConnectorDefaults.Default_AuthorizationUri;
+    public string UserAuthorizationUri { get; set; } = OAuthConnectorDefaults.DefaultAuthorizationUri;
 
-    public string AccessTokenUri { get; set; } = OAuthConnectorDefaults.Default_AccessTokenUri;
+    public string AccessTokenUri { get; set; } = OAuthConnectorDefaults.DefaultAccessTokenUri;
 
-    public string UserInfoUri { get; set; } = OAuthConnectorDefaults.Default_UserInfoUri;
+    public string UserInfoUri { get; set; } = OAuthConnectorDefaults.DefaultUserInfoUri;
 
-    public string TokenInfoUri { get; set; } = OAuthConnectorDefaults.Default_CheckTokenUri;
+    public string TokenInfoUri { get; set; } = OAuthConnectorDefaults.DefaultCheckTokenUri;
 
-    public string JwtKeyUri { get; set; } = OAuthConnectorDefaults.Default_JwtTokenKey;
+    public string JwtKeyUri { get; set; } = OAuthConnectorDefaults.DefaultJwtTokenKey;
 
     public List<string> Scope { get; set; }
 
-    public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.Default_ValidateCertificates;
+    public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.DefaultValidateCertificates;
 
-    private static bool GetCertificateValidation(IConfigurationSection clientConfigsection, IConfiguration resolve, bool def)
+    private static bool GetCertificateValidation(IConfigurationSection configurationSection, IConfiguration resolve, bool def)
     {
-        return ConfigurationValuesHelper.GetBoolean("validate_certificates", clientConfigsection, resolve, def);
+        return ConfigurationValuesHelper.GetBoolean("validate_certificates", configurationSection, resolve, def);
     }
 }

@@ -19,7 +19,7 @@ internal sealed class TestContrib : IInfoContributor
 
     public TestContrib(bool throws)
     {
-        Throws = throws;
+        this.Throws = throws;
     }
 
     public void Contribute(IInfoBuilder builder)

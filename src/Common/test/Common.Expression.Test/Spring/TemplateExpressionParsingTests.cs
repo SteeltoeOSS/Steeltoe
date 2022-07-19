@@ -11,15 +11,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class TemplateExpressionParsingTests : AbstractExpressionTests
 {
-    public static readonly IParserContext DEFAULT_TEMPLATE_PARSER_CONTEXT = new DefaultTemplateParserContext();
-
-    public static readonly IParserContext HASH_DELIMITED_PARSER_CONTEXT = new HashDelimitedParserContext();
+    internal static readonly IParserContext DefaultTemplateParserContextSingleton = new DefaultTemplateParserContext();
+    internal static readonly IParserContext HashDelimitedParserContextSingleton = new HashDelimitedParserContext();
 
     [Fact]
     public void TestParsingSimpleTemplateExpression01()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("hello ${'world'}", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var expr = parser.ParseExpression("hello ${'world'}", DefaultTemplateParserContextSingleton);
         var o = expr.GetValue();
         Assert.Equal("hello world", o.ToString());
     }
@@ -28,7 +27,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     public void TestParsingSimpleTemplateExpression02()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("hello ${'to'} you", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var expr = parser.ParseExpression("hello ${'to'} you", DefaultTemplateParserContextSingleton);
         var o = expr.GetValue();
         Assert.Equal("hello to you", o.ToString());
     }
@@ -37,7 +36,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     public void TestParsingSimpleTemplateExpression03()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("The quick ${'brown'} fox jumped over the ${'lazy'} dog", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var expr = parser.ParseExpression("The quick ${'brown'} fox jumped over the ${'lazy'} dog", DefaultTemplateParserContextSingleton);
         var o = expr.GetValue();
         Assert.Equal("The quick brown fox jumped over the lazy dog", o.ToString());
     }
@@ -46,19 +45,19 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     public void TestParsingSimpleTemplateExpression04()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("${'hello'} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var expr = parser.ParseExpression("${'hello'} world", DefaultTemplateParserContextSingleton);
         var o = expr.GetValue();
         Assert.Equal("hello world", o.ToString());
 
-        expr = parser.ParseExpression(string.Empty, DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        expr = parser.ParseExpression(string.Empty, DefaultTemplateParserContextSingleton);
         o = expr.GetValue();
         Assert.Equal(string.Empty, o.ToString());
 
-        expr = parser.ParseExpression("abc", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        expr = parser.ParseExpression("abc", DefaultTemplateParserContextSingleton);
         o = expr.GetValue();
         Assert.Equal("abc", o.ToString());
 
-        expr = parser.ParseExpression("abc", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        expr = parser.ParseExpression("abc", DefaultTemplateParserContextSingleton);
         o = expr.GetValue((object)null);
         Assert.Equal("abc", o.ToString());
     }
@@ -67,7 +66,7 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     public void TestCompositeStringExpression()
     {
         var parser = new SpelExpressionParser();
-        var ex = parser.ParseExpression("hello ${'world'}", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var ex = parser.ParseExpression("hello ${'world'}", DefaultTemplateParserContextSingleton);
         Assert.Equal("hello world", ex.GetValue());
         Assert.Equal("hello world", ex.GetValue(typeof(string)));
         Assert.Equal("hello world", ex.GetValue((object)null, typeof(string)));
@@ -101,28 +100,28 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
 
         // treat the nested ${..} as a part of the expression
-        var ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} world", DefaultTemplateParserContextSingleton);
         var s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello 4 world", s);
 
         // not a useful expression but Tests nested expression syntax that clashes with template prefix/suffix
-        ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]} world", DefaultTemplateParserContextSingleton);
         Assert.IsType<CompositeStringExpression>(ex);
         var cse = (CompositeStringExpression)ex;
-        var exprs = cse.Expressions;
-        Assert.Equal(3, exprs.Count);
-        Assert.Equal("ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]", exprs[1].ExpressionString);
+        var expressions = cse.Expressions;
+        Assert.Equal(3, expressions.Count);
+        Assert.Equal("ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1]==3]", expressions[1].ExpressionString);
         s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello  world", s);
 
-        ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} ${ListOfNumbersUpToTen.$[#this>5]} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        ex = parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} ${ListOfNumbersUpToTen.$[#this>5]} world", DefaultTemplateParserContextSingleton);
         s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello 4 10 world", s);
 
-        var pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} ${ListOfNumbersUpToTen.$[#this>5] world", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+        var pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#this<5]} ${ListOfNumbersUpToTen.$[#this>5] world", DefaultTemplateParserContextSingleton));
         Assert.Equal("No ending suffix '}' for expression starting at character 41: ${ListOfNumbersUpToTen.$[#this>5] world", pex.SimpleMessage);
 
-        pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1==3]} world", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+        pex = Assert.Throws<ParseException>(() => parser.ParseExpression("hello ${ListOfNumbersUpToTen.$[#root.ListOfNumbersUpToTen.$[#this%2==1==3]} world", DefaultTemplateParserContextSingleton));
         Assert.Equal("Found closing '}' at position 74 but most recent opening is '[' at position 30", pex.SimpleMessage);
     }
 
@@ -131,15 +130,15 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     public void TestClashingWithSuffixes()
     {
         // Just wanting to use the prefix or suffix within the template:
-        var ex = _parser.ParseExpression("hello ${3+4} world", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        var ex = Parser.ParseExpression("hello ${3+4} world", DefaultTemplateParserContextSingleton);
         var s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello 7 world", s);
 
-        ex = _parser.ParseExpression("hello ${3+4} wo${'${'}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        ex = Parser.ParseExpression("hello ${3+4} wo${'${'}rld", DefaultTemplateParserContextSingleton);
         s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello 7 wo${rld", s);
 
-        ex = _parser.ParseExpression("hello ${3+4} wo}rld", DEFAULT_TEMPLATE_PARSER_CONTEXT);
+        ex = Parser.ParseExpression("hello ${3+4} wo}rld", DefaultTemplateParserContextSingleton);
         s = ex.GetValue(TestScenarioCreator.GetTestEvaluationContext(), typeof(string));
         Assert.Equal("hello 7 wo}rld", s);
     }
@@ -147,21 +146,21 @@ public class TemplateExpressionParsingTests : AbstractExpressionTests
     [Fact]
     public void TestParsingNormalExpressionThroughTemplateParser()
     {
-        var expr = _parser.ParseExpression("1+2+3");
+        var expr = Parser.ParseExpression("1+2+3");
         Assert.Equal(6, expr.GetValue());
     }
 
     [Fact]
     public void TestErrorCases()
     {
-        var pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${'world'", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+        var pex = Assert.Throws<ParseException>(() => Parser.ParseExpression("hello ${'world'", DefaultTemplateParserContextSingleton));
 
         Assert.Equal("No ending suffix '}' for expression starting at character 6: ${'world'", pex.SimpleMessage);
         Assert.Equal("hello ${'world'", pex.ExpressionString);
 
-        pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${'wibble'${'world'}", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+        pex = Assert.Throws<ParseException>(() => Parser.ParseExpression("hello ${'wibble'${'world'}", DefaultTemplateParserContextSingleton));
         Assert.Equal("No ending suffix '}' for expression starting at character 6: ${'wibble'${'world'}", pex.SimpleMessage);
-        pex = Assert.Throws<ParseException>(() => _parser.ParseExpression("hello ${} world", DEFAULT_TEMPLATE_PARSER_CONTEXT));
+        pex = Assert.Throws<ParseException>(() => Parser.ParseExpression("hello ${} world", DefaultTemplateParserContextSingleton));
         Assert.Equal("No expression defined within delimiter '${}' at character 6", pex.SimpleMessage);
     }
 

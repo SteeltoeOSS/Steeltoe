@@ -13,13 +13,13 @@ namespace Steeltoe.Stream.Messaging;
 public interface ISink
 {
     /// <summary>
-    /// Default channel name
+    /// Default channel name.
     /// </summary>
-    const string INPUT = "input";
+    const string InputName = "input";
 
     /// <summary>
-    /// Gets the input channel
+    /// Gets the input channel.
     /// </summary>
-    [Input(INPUT)]
+    [Input(InputName)]
     ISubscribableChannel Input { get; }
 }

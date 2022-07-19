@@ -8,16 +8,16 @@ public static class AcknowledgeModeExtensions
 {
     public static bool IsTransactionAllowed(this AcknowledgeMode mode)
     {
-        return mode == AcknowledgeMode.AUTO || mode == AcknowledgeMode.MANUAL;
+        return mode == AcknowledgeMode.Auto || mode == AcknowledgeMode.Manual;
     }
 
     public static bool IsAutoAck(this AcknowledgeMode mode)
     {
-        return mode == AcknowledgeMode.NONE;
+        return mode == AcknowledgeMode.None;
     }
 
     public static bool IsManual(this AcknowledgeMode mode)
     {
-        return mode == AcknowledgeMode.MANUAL;
+        return mode == AcknowledgeMode.Manual;
     }
 }

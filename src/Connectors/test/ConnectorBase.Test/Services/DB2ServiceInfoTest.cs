@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Steeltoe.Connector.Services.Test;
 
-public class DB2ServiceInfoTest
+public class Db2ServiceInfoTest
 {
     [Fact]
     public void Constructor_CreatesExpected()
     {
         var uri = "db2://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355";
-        var r1 = new DB2ServiceInfo("myId", uri);
+        var r1 = new Db2ServiceInfo("myId", uri);
 
         Assert.Equal("myId", r1.Id);
         Assert.Equal("db2", r1.Scheme);

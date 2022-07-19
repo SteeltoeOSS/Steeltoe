@@ -23,5 +23,5 @@ public class TopicExchange : AbstractExchange, ITopicExchange
     {
     }
 
-    public override string Type { get; } = ExchangeType.TOPIC;
+    public override string Type { get; } = ExchangeType.Topic;
 }

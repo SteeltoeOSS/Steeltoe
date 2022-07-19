@@ -17,7 +17,7 @@ namespace Steeltoe.Integration.Dispatcher.Test;
 
 public class RoundRobinDispatcherConcurrentTest
 {
-    private const int TOTAL_EXECUTIONS = 40;
+    private const int TotalExecutions = 40;
 
     private readonly UnicastingDispatcher _dispatcher;
 
@@ -56,7 +56,7 @@ public class RoundRobinDispatcherConcurrentTest
         _dispatcher.AddHandler(_handlerMock4.Object);
 
         var start = new CountdownEvent(1);
-        var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone = new CountdownEvent(TotalExecutions);
         var message = _messageMock.Object;
         var failed = false;
         void MessageSenderTask()
@@ -71,7 +71,7 @@ public class RoundRobinDispatcherConcurrentTest
             allDone.Signal();
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -79,10 +79,10 @@ public class RoundRobinDispatcherConcurrentTest
         start.Signal();
         Assert.True(allDone.Wait(10000));
         Assert.False(failed);
-        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        _handlerMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
-        _handlerMock4.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 4));
+        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions / 4));
+        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions / 4));
+        _handlerMock3.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions / 4));
+        _handlerMock4.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions / 4));
     }
 
     [Fact]
@@ -90,7 +90,7 @@ public class RoundRobinDispatcherConcurrentTest
     {
         // dispatcher has no subscribers (shouldn't lead to deadlock)
         var start = new CountdownEvent(1);
-        var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone = new CountdownEvent(TotalExecutions);
         var message = _messageMock.Object;
         void MessageSenderTask()
         {
@@ -109,7 +109,7 @@ public class RoundRobinDispatcherConcurrentTest
             allDone.Signal();
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -125,7 +125,7 @@ public class RoundRobinDispatcherConcurrentTest
         _dispatcher.AddHandler(_handlerMock2.Object);
         _handlerMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessageRejectedException(_messageMock.Object, null));
         var start = new CountdownEvent(1);
-        var allDone = new CountdownEvent(TOTAL_EXECUTIONS);
+        var allDone = new CountdownEvent(TotalExecutions);
         var message = _messageMock.Object;
         var failed = false;
         void MessageSenderTask()
@@ -142,7 +142,7 @@ public class RoundRobinDispatcherConcurrentTest
             }
         }
 
-        for (var i = 0; i < TOTAL_EXECUTIONS; i++)
+        for (var i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -150,7 +150,7 @@ public class RoundRobinDispatcherConcurrentTest
         start.Signal();
         Assert.True(allDone.Wait(10000));
         Assert.False(failed);
-        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS / 2));
-        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TOTAL_EXECUTIONS));
+        _handlerMock1.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions / 2));
+        _handlerMock2.Verify(h => h.HandleMessage(_messageMock.Object), Times.Exactly(TotalExecutions));
     }
 }

@@ -7,16 +7,16 @@ using System.Text;
 
 namespace Steeltoe.Common.Net.Test;
 
-internal sealed class FakeMultipleProviderRouter : IMPR
+internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
 {
-    internal string _username;
-    internal string _password;
-    internal string _networkpath;
-    internal bool _shouldConnect;
+    internal string Username;
+    internal string Password;
+    internal string NetworkPath;
+    internal bool ShouldConnect;
 
     public FakeMultipleProviderRouter(bool shouldConnect = true)
     {
-        _shouldConnect = shouldConnect;
+        this.ShouldConnect = shouldConnect;
     }
 
     public int AddConnection(WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags)
@@ -36,10 +36,10 @@ internal sealed class FakeMultipleProviderRouter : IMPR
 
     public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
     {
-        _networkpath = netResource.RemoteName;
-        _username = username;
-        _password = password;
-        if (_shouldConnect)
+        NetworkPath = netResource.RemoteName;
+        this.Username = username;
+        this.Password = password;
+        if (ShouldConnect)
         {
             return 0;
         }

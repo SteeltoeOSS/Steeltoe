@@ -30,9 +30,9 @@ public abstract class MetricsObserver : DiagnosticObserver
         Options = options;
     }
 
-    public abstract override void ProcessEvent(string evnt, object arg);
+    public abstract override void ProcessEvent(string eventName, object arg);
 
-    protected internal double MilliToSeconds(double totalMilliseconds)
+    protected internal double MillisecondsToSeconds(double totalMilliseconds)
     {
         return totalMilliseconds / 1000;
     }

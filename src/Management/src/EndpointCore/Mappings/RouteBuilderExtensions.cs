@@ -10,9 +10,9 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 public static class RouteBuilderExtensions
 {
     /// <summary>
-    /// Add routes from RouteBuilder to mappings actuator
+    /// Add routes from RouteBuilder to mappings actuator.
     /// </summary>
-    /// <param name="builder">Your RouteBuilder builder</param>
+    /// <param name="builder">Your RouteBuilder builder.</param>
     public static void AddRoutesToMappingsActuator(this IRouteBuilder builder)
     {
         if (builder == null)

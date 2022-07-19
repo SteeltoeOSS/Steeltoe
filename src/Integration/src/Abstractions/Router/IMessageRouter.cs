@@ -12,7 +12,7 @@ namespace Steeltoe.Integration;
 public interface IMessageRouter
 {
     /// <summary>
-    /// Gets the default output channel
+    /// Gets the default output channel.
     /// </summary>
     IMessageChannel DefaultOutputChannel { get; }
 }

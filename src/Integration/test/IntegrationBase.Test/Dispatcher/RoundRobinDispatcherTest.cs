@@ -102,11 +102,11 @@ public class RoundRobinDispatcherTest
     public void TestNoExceptionEnhancement()
     {
         _dispatcher.AddHandler(_handlerMock.Object);
-        var dontReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
-        _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(dontReplaceThisMessage, "Mock Exception"));
+        var doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
+        _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(doNotReplaceThisMessage, "Mock Exception"));
         var ex = Assert.Throws<MessagingException>(() => _dispatcher.Dispatch(_messageMock.Object));
         Assert.Equal("Mock Exception", ex.Message);
-        Assert.Equal(dontReplaceThisMessage, ex.FailedMessage);
+        Assert.Equal(doNotReplaceThisMessage, ex.FailedMessage);
     }
 
     [Fact]

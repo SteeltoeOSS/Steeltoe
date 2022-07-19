@@ -30,11 +30,11 @@ public class ArrayConstructorTests : AbstractExpressionTests
     [Fact]
     public void MultidimensionalArrays()
     {
-        EvaluateAndCheckError("new int[][]{{1,2},{3,4}}", SpelMessage.MULTIDIM_ARRAY_INITIALIZER_NOT_SUPPORTED);
-        EvaluateAndCheckError("new int[3][]", SpelMessage.MISSING_ARRAY_DIMENSION);
-        EvaluateAndCheckError("new int[]", SpelMessage.MISSING_ARRAY_DIMENSION);
-        EvaluateAndCheckError("new String[]", SpelMessage.MISSING_ARRAY_DIMENSION);
-        EvaluateAndCheckError("new int[][1]", SpelMessage.MISSING_ARRAY_DIMENSION);
+        EvaluateAndCheckError("new int[][]{{1,2},{3,4}}", SpelMessage.MultidimensionalArrayInitializerNotSupported);
+        EvaluateAndCheckError("new int[3][]", SpelMessage.MissingArrayDimension);
+        EvaluateAndCheckError("new int[]", SpelMessage.MissingArrayDimension);
+        EvaluateAndCheckError("new String[]", SpelMessage.MissingArrayDimension);
+        EvaluateAndCheckError("new int[][1]", SpelMessage.MissingArrayDimension);
     }
 
     [Fact]
@@ -67,17 +67,17 @@ public class ArrayConstructorTests : AbstractExpressionTests
     [Fact]
     public void ErrorCases()
     {
-        EvaluateAndCheckError("new char[7]{'a','c','d','e'}", SpelMessage.INITIALIZER_LENGTH_INCORRECT);
-        EvaluateAndCheckError("new char[3]{'a','c','d','e'}", SpelMessage.INITIALIZER_LENGTH_INCORRECT);
-        EvaluateAndCheckError("new char[2]{'hello','world'}", SpelMessage.TYPE_CONVERSION_ERROR);
-        EvaluateAndCheckError("new String('a','c','d')", SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM);
+        EvaluateAndCheckError("new char[7]{'a','c','d','e'}", SpelMessage.InitializerLengthIncorrect);
+        EvaluateAndCheckError("new char[3]{'a','c','d','e'}", SpelMessage.InitializerLengthIncorrect);
+        EvaluateAndCheckError("new char[2]{'hello','world'}", SpelMessage.TypeConversionError);
+        EvaluateAndCheckError("new String('a','c','d')", SpelMessage.ConstructorInvocationProblem);
     }
 
     [Fact]
     public void TypeArrayConstructors()
     {
         Evaluate("new String[]{'a','b','c','d'}[1]", "b", typeof(string));
-        EvaluateAndCheckError("new String[]{'a','b','c','d'}.size()", SpelMessage.METHOD_NOT_FOUND, 30, "size()", "System.String[]");
+        EvaluateAndCheckError("new String[]{'a','b','c','d'}.size()", SpelMessage.MethodNotFound, 30, "size()", "System.String[]");
         Evaluate("new String[]{'a','b','c','d'}.Length", 4, typeof(int));
     }
 
@@ -97,16 +97,16 @@ public class ArrayConstructorTests : AbstractExpressionTests
     [Fact]
     public void ConstructorInvocation03()
     {
-        EvaluateAndCheckError("new String[]", SpelMessage.MISSING_ARRAY_DIMENSION);
+        EvaluateAndCheckError("new String[]", SpelMessage.MissingArrayDimension);
     }
 
     [Fact]
     public void ConstructorInvocation04()
     {
-        EvaluateAndCheckError("new int[3]{'3','ghi','5'}", SpelMessage.TYPE_CONVERSION_ERROR, 0);
+        EvaluateAndCheckError("new int[3]{'3','ghi','5'}", SpelMessage.TypeConversionError, 0);
     }
 
-    private void EvaluateArrayBuildingExpression(string expression, string expectedTostring)
+    private void EvaluateArrayBuildingExpression(string expression, string expectedToString)
     {
         var parser = new SpelExpressionParser();
         var e = parser.ParseExpression(expression);
@@ -217,6 +217,6 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
 
         s.Append(']');
-        Assert.Equal(expectedTostring, s.ToString());
+        Assert.Equal(expectedToString, s.ToString());
     }
 }

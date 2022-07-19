@@ -9,7 +9,7 @@ namespace Steeltoe.Stream.Binding;
 
 /// <summary>
 /// Handles binding of input/output targets by delegating to an underlying Binder.
-/// TODO: Try to make this internal interface
+/// TODO: Try to make this internal interface.
 /// </summary>
 public interface IBindingService
 {

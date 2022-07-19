@@ -8,20 +8,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixThreadPoolOptions : HystrixBaseOptions, IHystrixThreadPoolOptions
 {
-    internal const int Default_CoreSize = 10; // core size of thread pool
-    internal const int Default_MaximumSize = 10; // maximum size of thread pool
-    internal const int Default_KeepAliveTimeMinutes = 1; // minutes to keep a thread alive
-    internal const int Default_MaxQueueSize = -1; // size of queue (this can't be dynamically changed so we use 'queueSizeRejectionThreshold' to artificially limit and reject)
+    internal const int DefaultCoreSize = 10; // core size of thread pool
+    internal const int DefaultMaximumSize = 10; // maximum size of thread pool
+    internal const int DefaultKeepAliveTimeMinutes = 1; // minutes to keep a thread alive
+    internal const int DefaultMaxQueueSize = -1; // size of queue (this can't be dynamically changed so we use 'queueSizeRejectionThreshold' to artificially limit and reject)
 
     // -1 turns it off and makes us use SynchronousQueue
-    internal const bool Default_AllowMaximumSizeToDivergeFromCoreSize = false; // should the maximumSize config value get read and used in configuring the threadPool
+    internal const bool DefaultAllowMaximumSizeToDivergeFromCoreSize = false; // should the maximumSize config value get read and used in configuring the threadPool
 
     // turning this on should be a conscious decision by the user, so we default it to false
-    internal const int Default_QueueSizeRejectionThreshold = 5; // number of items in queue
-    internal const int Default_ThreadPoolRollingNumberStatisticalWindow = 10000; // milliseconds for rolling number
-    internal const int Default_ThreadPoolRollingNumberStatisticalWindowBuckets = 10; // number of buckets in rolling number (10 1-second buckets)
+    internal const int DefaultQueueSizeRejectionThreshold = 5; // number of items in queue
+    internal const int DefaultThreadPoolRollingNumberStatisticalWindow = 10000; // milliseconds for rolling number
+    internal const int DefaultThreadPoolRollingNumberStatisticalWindowBuckets = 10; // number of buckets in rolling number (10 1-second buckets)
 
-    protected const string HYSTRIX_THREADPOOL_PREFIX = "hystrix:threadpool";
+    protected const string HystrixThreadpoolPrefix = "hystrix:threadpool";
 
     protected IHystrixThreadPoolOptions defaults;
 
@@ -29,14 +29,14 @@ public class HystrixThreadPoolOptions : HystrixBaseOptions, IHystrixThreadPoolOp
         : this(defaults, dynamic)
     {
         ThreadPoolKey = key;
-        AllowMaximumSizeToDivergeFromCoreSize = GetBoolean(HYSTRIX_THREADPOOL_PREFIX, key.Name, "allowMaximumSizeToDivergeFromCoreSize", Default_AllowMaximumSizeToDivergeFromCoreSize, defaults?.AllowMaximumSizeToDivergeFromCoreSize);
-        CoreSize = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "coreSize", Default_CoreSize, defaults?.CoreSize);
-        MaximumSize = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "maximumSize", Default_MaximumSize, defaults?.MaximumSize);
-        KeepAliveTimeMinutes = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "keepAliveTimeMinutes", Default_KeepAliveTimeMinutes, defaults?.KeepAliveTimeMinutes);
-        MaxQueueSize = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "maxQueueSize", Default_MaxQueueSize, defaults?.MaxQueueSize);
-        QueueSizeRejectionThreshold = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "queueSizeRejectionThreshold", Default_QueueSizeRejectionThreshold, defaults?.QueueSizeRejectionThreshold);
-        MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "metrics.rollingStats.timeInMilliseconds", Default_ThreadPoolRollingNumberStatisticalWindow, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
-        MetricsRollingStatisticalWindowBuckets = GetInteger(HYSTRIX_THREADPOOL_PREFIX, key.Name, "metrics.rollingPercentile.numBuckets", Default_ThreadPoolRollingNumberStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);
+        AllowMaximumSizeToDivergeFromCoreSize = GetBoolean(HystrixThreadpoolPrefix, key.Name, "allowMaximumSizeToDivergeFromCoreSize", DefaultAllowMaximumSizeToDivergeFromCoreSize, defaults?.AllowMaximumSizeToDivergeFromCoreSize);
+        CoreSize = GetInteger(HystrixThreadpoolPrefix, key.Name, "coreSize", DefaultCoreSize, defaults?.CoreSize);
+        MaximumSize = GetInteger(HystrixThreadpoolPrefix, key.Name, "maximumSize", DefaultMaximumSize, defaults?.MaximumSize);
+        KeepAliveTimeMinutes = GetInteger(HystrixThreadpoolPrefix, key.Name, "keepAliveTimeMinutes", DefaultKeepAliveTimeMinutes, defaults?.KeepAliveTimeMinutes);
+        MaxQueueSize = GetInteger(HystrixThreadpoolPrefix, key.Name, "maxQueueSize", DefaultMaxQueueSize, defaults?.MaxQueueSize);
+        QueueSizeRejectionThreshold = GetInteger(HystrixThreadpoolPrefix, key.Name, "queueSizeRejectionThreshold", DefaultQueueSizeRejectionThreshold, defaults?.QueueSizeRejectionThreshold);
+        MetricsRollingStatisticalWindowInMilliseconds = GetInteger(HystrixThreadpoolPrefix, key.Name, "metrics.rollingStats.timeInMilliseconds", DefaultThreadPoolRollingNumberStatisticalWindow, defaults?.MetricsRollingStatisticalWindowInMilliseconds);
+        MetricsRollingStatisticalWindowBuckets = GetInteger(HystrixThreadpoolPrefix, key.Name, "metrics.rollingPercentile.numBuckets", DefaultThreadPoolRollingNumberStatisticalWindowBuckets, defaults?.MetricsRollingStatisticalWindowBuckets);
     }
 
     internal HystrixThreadPoolOptions(IHystrixThreadPoolOptions defaults = null, IHystrixDynamicOptions dynamic = null)
@@ -45,14 +45,14 @@ public class HystrixThreadPoolOptions : HystrixBaseOptions, IHystrixThreadPoolOp
         this.defaults = defaults;
         ThreadPoolKey = null;
 
-        AllowMaximumSizeToDivergeFromCoreSize = Default_AllowMaximumSizeToDivergeFromCoreSize;
-        CoreSize = Default_CoreSize;
-        MaximumSize = Default_MaximumSize;
-        KeepAliveTimeMinutes = Default_KeepAliveTimeMinutes;
-        MaxQueueSize = Default_MaxQueueSize;
-        QueueSizeRejectionThreshold = Default_QueueSizeRejectionThreshold;
-        MetricsRollingStatisticalWindowInMilliseconds = Default_ThreadPoolRollingNumberStatisticalWindow;
-        MetricsRollingStatisticalWindowBuckets = Default_ThreadPoolRollingNumberStatisticalWindowBuckets;
+        AllowMaximumSizeToDivergeFromCoreSize = DefaultAllowMaximumSizeToDivergeFromCoreSize;
+        CoreSize = DefaultCoreSize;
+        MaximumSize = DefaultMaximumSize;
+        KeepAliveTimeMinutes = DefaultKeepAliveTimeMinutes;
+        MaxQueueSize = DefaultMaxQueueSize;
+        QueueSizeRejectionThreshold = DefaultQueueSizeRejectionThreshold;
+        MetricsRollingStatisticalWindowInMilliseconds = DefaultThreadPoolRollingNumberStatisticalWindow;
+        MetricsRollingStatisticalWindowBuckets = DefaultThreadPoolRollingNumberStatisticalWindowBuckets;
     }
 
     public IHystrixThreadPoolKey ThreadPoolKey { get; internal set; }

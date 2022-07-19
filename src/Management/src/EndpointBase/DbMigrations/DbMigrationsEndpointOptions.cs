@@ -9,25 +9,25 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigrationsOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dbmigrations";
+    private const string ManagementInfoPrefix = "management:endpoints:dbmigrations";
 
     public DbMigrationsEndpointOptions()
     {
         Id = "dbmigrations";
-        RequiredPermissions = Permissions.RESTRICTED;
+        RequiredPermissions = Permissions.Restricted;
     }
 
     public DbMigrationsEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
             Id = "dbmigrations";
         }
 
-        if (RequiredPermissions == Permissions.UNDEFINED)
+        if (RequiredPermissions == Permissions.Undefined)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.Restricted;
         }
     }
 

@@ -103,7 +103,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
 #pragma warning disable S2699 // Tests should include assertions
-    public void TestDoubleDeclarationOfAutodeleteQueue()
+    public void TestDoubleDeclarationOfAutoDeleteQueue()
 #pragma warning restore S2699 // Tests should include assertions
     {
         _services.AddRabbitConnectionFactory("connectionFactory1", (_, f) =>
@@ -267,7 +267,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
-        var binding = new Binding("mybinding", queueName, DestinationType.QUEUE, exchange.ExchangeName, queueName, null);
+        var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
         rabbitAdmin.DeclareBinding(binding);
 
         // Pass by virtue of RabbitMQ not firing a 403 reply code for both exchange and binding declaration
@@ -282,7 +282,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
-        var binding = new Binding("mybinding", queueName, DestinationType.QUEUE, exchange.ExchangeName, queueName, null);
+        var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
         _services.AddRabbitBinding(binding);
         _provider = _services.BuildServiceProvider();
 
@@ -306,7 +306,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
-        var binding = new Binding("mybinding", queueName, DestinationType.QUEUE, string.Empty, queueName, null);
+        var binding = new Binding("mybinding", queueName, DestinationType.Queue, string.Empty, queueName, null);
         rabbitAdmin.RemoveBinding(binding);
 
         // Pass by virtue of RabbitMQ not firing a 403 reply code
@@ -324,7 +324,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
-        var binding = new Binding("mybinding", queueName, DestinationType.QUEUE, exchange.ExchangeName, "test.routingKey", null);
+        var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, "test.routingKey", null);
         var ex = Assert.Throws<RabbitIOException>(() => rabbitAdmin.DeclareBinding(binding));
         Exception cause = ex;
         Exception rootCause = null;
@@ -346,7 +346,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
-        var binding = new Binding("baz", queueName, DestinationType.QUEUE, exchange.ExchangeName, "test.routingKey", null);
+        var binding = new Binding("baz", queueName, DestinationType.Queue, exchange.ExchangeName, "test.routingKey", null);
         _services.AddRabbitBinding(binding);
         _provider = _services.BuildServiceProvider();
         var rabbitAdmin = _provider.GetRabbitAdmin();
@@ -388,7 +388,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         };
         var queue = new Queue(Guid.NewGuid().ToString(), true, false, false);
         var exchangeName = exchange.ExchangeName;
-        var binding = new Binding("baz", queue.QueueName, DestinationType.QUEUE, exchangeName, queue.QueueName, null);
+        var binding = new Binding("baz", queue.QueueName, DestinationType.Queue, exchangeName, queue.QueueName, null);
         try
         {
             rabbitAdmin.DeclareExchange(exchange);

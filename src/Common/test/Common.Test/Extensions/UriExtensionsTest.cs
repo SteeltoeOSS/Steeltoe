@@ -33,7 +33,7 @@ public class UriExtensionsTest
     }
 
     [Fact]
-    public void DontMaskStringIfNotBasicAuthenticationExists()
+    public void DoNotMaskStringIfNotBasicAuthenticationExists()
     {
         var uri = new Uri("http://www.example.com/");
         var expected = uri.ToString();
@@ -44,7 +44,7 @@ public class UriExtensionsTest
     }
 
     [Fact]
-    public void DontMaskUriIfNotBasicAuthenticationExists()
+    public void DoNotMaskUriIfNotBasicAuthenticationExists()
     {
         var uri = new Uri("http://www.example.com/");
         var expected = new Uri(uri.ToString());

@@ -11,8 +11,8 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
 {
-    protected readonly IMessageConverter _converter;
-    protected readonly bool _useDefaultResolution;
+    protected readonly IMessageConverter Converter;
+    protected readonly bool UseDefaultResolution;
 
     public PayloadMethodArgumentResolver(IMessageConverter messageConverter)
         : this(messageConverter, true)
@@ -21,11 +21,11 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
 
     public PayloadMethodArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
     {
-        _converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
-        _useDefaultResolution = useDefaultResolution;
+        Converter = messageConverter ?? throw new ArgumentNullException(nameof(messageConverter));
+        UseDefaultResolution = useDefaultResolution;
     }
 
-    public virtual bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
+    public virtual bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || UseDefaultResolution;
 
     public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
@@ -59,13 +59,13 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
         }
         else
         {
-            if (_converter is ISmartMessageConverter smartConverter)
+            if (Converter is ISmartMessageConverter smartConverter)
             {
                 payload = smartConverter.FromMessage(message, targetClass, parameter);
             }
             else
             {
-                payload = _converter.FromMessage(message, targetClass);
+                payload = Converter.FromMessage(message, targetClass);
             }
 
             if (payload == null)

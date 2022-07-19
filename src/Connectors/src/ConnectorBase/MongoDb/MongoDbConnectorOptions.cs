@@ -12,9 +12,9 @@ namespace Steeltoe.Connector.MongoDb;
 
 public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Server = "localhost";
-    public const int Default_Port = 27017;
-    private const string MONGODB_CLIENT_SECTION_PREFIX = "mongodb:client";
+    public const string DefaultServer = "localhost";
+    public const int DefaultPort = 27017;
+    private const string MongodbClientSectionPrefix = "mongodb:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public MongoDbConnectorOptions()
@@ -29,7 +29,7 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MONGODB_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(MongodbClientSectionPrefix);
         section.Bind(this);
 
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
@@ -37,9 +37,9 @@ public class MongoDbConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 

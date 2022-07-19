@@ -18,7 +18,7 @@ public class ContentTypeDelegatingMessageConverterTest
         var converter = new ContentTypeDelegatingMessageConverter();
         var messageConverter = new JsonMessageConverter();
         converter.AddDelegate("foo/bar", messageConverter);
-        converter.AddDelegate(MessageHeaders.CONTENT_TYPE_JSON, messageConverter);
+        converter.AddDelegate(MessageHeaders.ContentTypeJson, messageConverter);
 
         var props = new RabbitHeaderAccessor();
         var foo = new Foo
@@ -28,14 +28,14 @@ public class ContentTypeDelegatingMessageConverterTest
 
         props.ContentType = "foo/bar";
         var message = converter.ToMessage(foo, props.MessageHeaders);
-        Assert.Equal(MessageHeaders.CONTENT_TYPE_JSON, message.Headers.ContentType());
+        Assert.Equal(MessageHeaders.ContentTypeJson, message.Headers.ContentType());
         Assert.Equal("{\"fooString\":\"bar\"}", Encoding.UTF8.GetString((byte[])message.Payload));
         var converted = converter.FromMessage<Foo>(message);
         Assert.Equal("bar", converted.FooString);
 
         props = new RabbitHeaderAccessor
         {
-            ContentType = MessageHeaders.CONTENT_TYPE_JSON
+            ContentType = MessageHeaders.ContentTypeJson
         };
         message = converter.ToMessage(foo, props.MessageHeaders);
         Assert.Equal("{\"fooString\":\"bar\"}", Encoding.UTF8.GetString((byte[])message.Payload));

@@ -12,8 +12,8 @@ namespace Steeltoe.Stream.Binder;
 
 public class PartitionHandler
 {
-    internal readonly IPartitionKeyExtractorStrategy _partitionKeyExtractorStrategy;
-    internal readonly IPartitionSelectorStrategy _partitionSelectorStrategy;
+    internal readonly IPartitionKeyExtractorStrategy PartitionKeyExtractorStrategy;
+    internal readonly IPartitionSelectorStrategy PartitionSelectorStrategy;
 
     private readonly IProducerOptions _producerOptions;
 
@@ -30,8 +30,8 @@ public class PartitionHandler
         _expressionParser = expressionParser;
         _evaluationContext = evaluationContext ?? new StandardEvaluationContext();
         _producerOptions = options;
-        _partitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
-        _partitionSelectorStrategy = partitionSelectorStrategy;
+        PartitionKeyExtractorStrategy = partitionKeyExtractorStrategy;
+        PartitionSelectorStrategy = partitionSelectorStrategy;
         PartitionCount = _producerOptions.PartitionCount;
     }
 
@@ -49,7 +49,7 @@ public class PartitionHandler
         }
         else
         {
-            partition = _partitionSelectorStrategy.SelectPartition(key, PartitionCount);
+            partition = PartitionSelectorStrategy.SelectPartition(key, PartitionCount);
         }
 
         //// protection in case a user selector returns a negative.
@@ -75,9 +75,9 @@ public class PartitionHandler
 
     private object InvokeKeyExtractor(IMessage message)
     {
-        if (_partitionKeyExtractorStrategy != null)
+        if (PartitionKeyExtractorStrategy != null)
         {
-            return _partitionKeyExtractorStrategy.ExtractKey(message);
+            return PartitionKeyExtractorStrategy.ExtractKey(message);
         }
 
         return null;

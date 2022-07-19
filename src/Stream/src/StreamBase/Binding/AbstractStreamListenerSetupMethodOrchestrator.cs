@@ -11,11 +11,11 @@ namespace Steeltoe.Stream.Binding;
 
 public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamListenerSetupMethodOrchestrator
 {
-    protected readonly IApplicationContext _context;
+    protected readonly IApplicationContext Context;
 
     protected AbstractStreamListenerSetupMethodOrchestrator(IApplicationContext context)
     {
-        _context = context;
+        Context = context;
     }
 
     public object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters)
@@ -43,7 +43,7 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
 
             if (targetReferenceValue != null)
             {
-                var targetBean = BindingHelpers.GetBindableTarget(_context, targetReferenceValue);
+                var targetBean = BindingHelpers.GetBindableTarget(Context, targetReferenceValue);
 
                 // Iterate existing parameter adapters first
                 foreach (var streamListenerParameterAdapter in streamListenerParameterAdapters)
@@ -67,7 +67,7 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
             }
             else
             {
-                throw new InvalidOperationException(StreamListenerErrorMessages.INVALID_DECLARATIVE_METHOD_PARAMETERS);
+                throw new InvalidOperationException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
             }
         }
 

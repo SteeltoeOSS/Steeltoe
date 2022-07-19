@@ -7,7 +7,7 @@ using Steeltoe.Messaging;
 namespace Steeltoe.Integration;
 
 /// <summary>
-/// TODO: See if this can be internal
+/// TODO: See if this can be internal.
 /// </summary>
 public interface IMessageSelector : ISelector<IMessage>
 {

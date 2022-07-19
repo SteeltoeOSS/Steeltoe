@@ -12,7 +12,7 @@ namespace Steeltoe.Stream.Tck;
 
 public class FooBarMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(FooBarMessageConverter);
+    public const string DefaultServiceName = nameof(FooBarMessageConverter);
 
     public FooBarMessageConverter()
         : this(MimeType.ToMimeType("foo/bar"))
@@ -24,7 +24,7 @@ public class FooBarMessageConverter : AbstractMessageConverter
     {
     }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz)
     {

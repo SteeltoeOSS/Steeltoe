@@ -53,14 +53,14 @@ public class OpInc : Operator
         {
             try
             {
-                newValue = state.Operate(Operation.ADD, returnValue.Value, 1);
+                newValue = state.Operate(Operation.Add, returnValue.Value, 1);
             }
             catch (SpelEvaluationException ex)
             {
-                if (Equals(ex.MessageCode, SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES))
+                if (Equals(ex.MessageCode, SpelMessage.OperatorNotSupportedBetweenTypes))
                 {
                     // This means the operand is not incrementable
-                    throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OPERAND_NOT_INCREMENTABLE, operand.ToStringAST());
+                    throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotIncrementable, operand.ToStringAst());
                 }
 
                 throw;
@@ -75,9 +75,9 @@ public class OpInc : Operator
         catch (SpelEvaluationException see)
         {
             // If unable to set the value the operand is not writable (e.g. 1++ )
-            if (Equals(see.MessageCode, SpelMessage.SETVALUE_NOT_SUPPORTED))
+            if (Equals(see.MessageCode, SpelMessage.SetValueNotSupported))
             {
-                throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OPERAND_NOT_INCREMENTABLE);
+                throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotIncrementable);
             }
             else
             {
@@ -94,9 +94,9 @@ public class OpInc : Operator
         return returnValue;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"{LeftOperand.ToStringAST()}++";
+        return $"{LeftOperand.ToStringAst()}++";
     }
 
     public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");

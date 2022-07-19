@@ -7,17 +7,17 @@ using Steeltoe.Common.Util;
 namespace Steeltoe.Messaging.Support;
 
 /// <summary>
-/// A runnable to encapsulates a message and message handler
+/// A runnable to encapsulates a message and message handler.
 /// </summary>
 public interface IMessageHandlingRunnable : IRunnable
 {
     /// <summary>
-    /// Gets the message this runnable is processing
+    /// Gets the message this runnable is processing.
     /// </summary>
     IMessage Message { get; }
 
     /// <summary>
-    /// Gets the message handler that will process this message;
+    /// Gets the message handler that will process this message.
     /// </summary>
     IMessageHandler MessageHandler { get; }
 }

@@ -66,7 +66,7 @@ public class BootstrapperLoggerFactoryTests
                 It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
             Times.Never);
 
-        // upgrade bootstrapper with new logfactory, and confirm that it delegates to loggers spawned from it
+        // upgrade bootstrapper with new log factory, and confirm that it delegates to loggers spawned from it
         var newLogProvider = new Mock<ILoggerProvider>();
         var newMockLogger = new Mock<ILogger>();
         newLogProvider.Setup(provider => provider.CreateLogger(It.IsAny<string>())).Returns(() => newMockLogger.Object);

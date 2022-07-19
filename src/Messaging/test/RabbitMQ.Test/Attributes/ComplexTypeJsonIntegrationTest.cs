@@ -21,8 +21,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [Trait("Category", "Integration")]
 public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
 {
-    public const string TEST_QUEUE = "test.complex.send.and.receive";
-    public const string TEST_QUEUE2 = "test.complex.receive";
+    public const string TestQueue = "test.complex.send.and.receive";
+    public const string TestQueue2 = "test.complex.receive";
 
     private readonly ServiceProvider _provider;
     private readonly StartupFixture _fixture;
@@ -53,10 +53,10 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         object message = "foo";
         Assert.NotNull(template.ConvertSendAndReceiveAsType(message, typeof(Foo<Bar<Baz, Qux>>)));
         Assert.NotNull(template.ConvertSendAndReceiveAsType(message, pp, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(template.ConvertSendAndReceiveAsType(TEST_QUEUE, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(template.ConvertSendAndReceiveAsType(TEST_QUEUE, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(template.ConvertSendAndReceiveAsType(string.Empty, TEST_QUEUE, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(template.ConvertSendAndReceiveAsType(string.Empty, TEST_QUEUE, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(template.ConvertSendAndReceiveAsType(TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(template.ConvertSendAndReceiveAsType(TestQueue, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(template.ConvertSendAndReceiveAsType(string.Empty, TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(template.ConvertSendAndReceiveAsType(string.Empty, TestQueue, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         var template = _provider.GetRabbitTemplate();
         var foo = MakeAFoo();
         var pp = new TestPostProcessor();
-        template.ConvertAndSend(TEST_QUEUE2, foo, pp);
+        template.ConvertAndSend(TestQueue2, foo, pp);
         var result = template.ReceiveAndConvert<Foo<Bar<Baz, Qux>>>(10000);
         Assert.NotNull(result);
     }
@@ -76,7 +76,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         var template = _provider.GetRabbitTemplate();
         var foo = MakeAFoo();
         var pp = new TestPostProcessor();
-        template.ConvertAndSend(TEST_QUEUE2, foo, pp);
+        template.ConvertAndSend(TestQueue2, foo, pp);
         var result = template.ReceiveAndConvert<Foo<Bar<Baz, Qux>>>();
 
         var n = 0;
@@ -97,10 +97,10 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         object message = "foo";
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, typeof(Foo<Bar<Baz, Qux>>)));
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, pp, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TEST_QUEUE, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TEST_QUEUE, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TEST_QUEUE, message, typeof(Foo<Bar<Baz, Qux>>)));
-        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TEST_QUEUE, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
+        Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
     }
 
     public class EmptyPostProcessor : IMessagePostProcessor
@@ -171,12 +171,12 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitAdmin();
             services.AddRabbitTemplate((_, t) =>
             {
-                t.DefaultReceiveDestination = TEST_QUEUE2;
-                t.DefaultSendDestination = TEST_QUEUE;
+                t.DefaultReceiveDestination = TestQueue2;
+                t.DefaultSendDestination = TestQueue;
             });
 
-            services.AddRabbitQueue(TEST_QUEUE);
-            services.AddRabbitQueue(TEST_QUEUE2);
+            services.AddRabbitQueue(TestQueue);
+            services.AddRabbitQueue(TestQueue2);
 
             services.AddSingleton<Listener>();
             services.AddRabbitListeners<Listener>(config);
@@ -186,15 +186,15 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         public void Dispose()
         {
             var admin = Provider.GetRabbitAdmin();
-            admin.DeleteQueue(TEST_QUEUE);
-            admin.DeleteQueue(TEST_QUEUE2);
+            admin.DeleteQueue(TestQueue);
+            admin.DeleteQueue(TestQueue2);
             Provider.Dispose();
         }
     }
 
     public class Listener
     {
-        [RabbitListener(TEST_QUEUE)]
+        [RabbitListener(TestQueue)]
         public Foo<Bar<Baz, Qux>> Listen(string input)
         {
             return MakeAFoo();
@@ -211,11 +211,11 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class Bar<A, B>
+    public class Bar<TFieldA, TFieldB>
     {
-        public A AField { get; set; }
+        public TFieldA AField { get; set; }
 
-        public B BField { get; set; }
+        public TFieldB BField { get; set; }
 
         public override string ToString()
         {

@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Client;
 
 public static class ConfigurationUrlHelpers
 {
-    public const string WILDCARD_HOST = "---asterisk---";
+    public const string WildcardHost = "---asterisk---";
 
     public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
     {
@@ -24,7 +24,7 @@ public static class ConfigurationUrlHelpers
                 if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
                     && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
                 {
-                    Uri.TryCreate(address.Replace("*", WILDCARD_HOST).Replace("::", $"{WILDCARD_HOST}:").Replace("+", $"{WILDCARD_HOST}"), UriKind.Absolute, out uri);
+                    Uri.TryCreate(address.Replace("*", WildcardHost).Replace("::", $"{WildcardHost}:").Replace("+", $"{WildcardHost}"), UriKind.Absolute, out uri);
                 }
 
                 uris.Add(uri);

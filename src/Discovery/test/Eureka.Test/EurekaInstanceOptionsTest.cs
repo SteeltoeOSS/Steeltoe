@@ -19,7 +19,7 @@ namespace Steeltoe.Discovery.Eureka.Test;
 public class EurekaInstanceOptionsTest : AbstractBaseTest
 {
     [Fact]
-    public void Constructor_Intializes_Defaults()
+    public void Constructor_Initializes_Defaults()
     {
         var opts = new EurekaInstanceOptions();
         Assert.NotNull(opts.InstanceId);
@@ -30,18 +30,18 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal(443, opts.SecurePort);
         Assert.True(opts.IsNonSecurePortEnabled);
         Assert.False(opts.SecurePortEnabled);
-        Assert.Equal(EurekaInstanceConfig.Default_LeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);
-        Assert.Equal(EurekaInstanceConfig.Default_LeaseExpirationDurationInSeconds, opts.LeaseExpirationDurationInSeconds);
+        Assert.Equal(EurekaInstanceConfig.DefaultLeaseRenewalIntervalInSeconds, opts.LeaseRenewalIntervalInSeconds);
+        Assert.Equal(EurekaInstanceConfig.DefaultLeaseExpirationDurationInSeconds, opts.LeaseExpirationDurationInSeconds);
         Assert.Null(opts.VirtualHostName);
         Assert.Null(opts.SecureVirtualHostName);
-        Assert.Null(opts.ASGName);
+        Assert.Null(opts.AsgName);
         Assert.NotNull(opts.MetadataMap);
         Assert.Empty(opts.MetadataMap);
-        Assert.Equal(EurekaInstanceOptions.Default_StatusPageUrlPath, opts.StatusPageUrlPath);
+        Assert.Equal(EurekaInstanceOptions.DefaultStatusPageUrlPath, opts.StatusPageUrlPath);
         Assert.Null(opts.StatusPageUrl);
-        Assert.Equal(EurekaInstanceConfig.Default_HomePageUrlPath, opts.HomePageUrlPath);
+        Assert.Equal(EurekaInstanceConfig.DefaultHomePageUrlPath, opts.HomePageUrlPath);
         Assert.Null(opts.HomePageUrl);
-        Assert.Equal(EurekaInstanceOptions.Default_HealthCheckUrlPath, opts.HealthCheckUrlPath);
+        Assert.Equal(EurekaInstanceOptions.DefaultHealthCheckUrlPath, opts.HealthCheckUrlPath);
         Assert.Null(opts.HealthCheckUrl);
         Assert.Null(opts.SecureHealthCheckUrl);
         Assert.Equal(DataCenterName.MyOwn, opts.DataCenterInfo.Name);
@@ -121,7 +121,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         configurationBuilder.AddJsonFile(fileName);
         var config = configurationBuilder.Build();
 
-        var instSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         var ro = new EurekaInstanceOptions();
         instSection.Bind(ro);
 
@@ -137,7 +137,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         Assert.Equal(100, ro.LeaseRenewalIntervalInSeconds);
         Assert.Equal("secureVipAddress", ro.SecureVirtualHostName);
         Assert.Equal("vipAddress", ro.VirtualHostName);
-        Assert.Equal("asgName", ro.ASGName);
+        Assert.Equal("asgName", ro.AsgName);
 
         Assert.Equal("statusPageUrlPath", ro.StatusPageUrlPath);
         Assert.Equal("statusPageUrl", ro.StatusPageUrl);
@@ -157,14 +157,14 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
     }
 
     [Fact]
-    public void Options_DontUseInetUtilsByDefault()
+    public void Options_DoNotUseInetUtilsByDefault()
     {
         var mockNetUtils = new Mock<InetUtils>(null, null);
         mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
         var config = new ConfigurationBuilder().Build();
         var opts = new EurekaInstanceOptions { NetUtils = mockNetUtils.Object };
 
-        config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
+        config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(opts);
 
         mockNetUtils.Verify(n => n.FindFirstNonLoopbackHostInfo(), Times.Never);
     }
@@ -177,7 +177,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var opts = new EurekaInstanceOptions { NetUtils = mockNetUtils.Object };
-        config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
+        config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
 
@@ -192,16 +192,16 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
     {
         var appSettings = new Dictionary<string, string> { { "eureka:instance:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var opts = new EurekaInstanceOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.PREFIX).Get<InetOptions>()) };
-        config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX).Bind(opts);
+        var opts = new EurekaInstanceOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.Prefix).Get<InetOptions>()) };
+        config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix).Bind(opts);
 
-        var noSlowReverseDNSQuery = new Stopwatch();
-        noSlowReverseDNSQuery.Start();
+        var noSlowReverseDnsQuery = new Stopwatch();
+        noSlowReverseDnsQuery.Start();
         opts.ApplyNetUtils();
-        noSlowReverseDNSQuery.Stop();
+        noSlowReverseDnsQuery.Stop();
 
         Assert.NotNull(opts.HostName);
-        Assert.InRange(noSlowReverseDNSQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
+        Assert.InRange(noSlowReverseDnsQuery.ElapsedMilliseconds, 0, 1500); // testing with an actual reverse dns query results in around 5000 ms
     }
 
     [Fact]
@@ -210,7 +210,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "http://myapp:1233" } }).Build();
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         Assert.Equal("myapp", instOpts.HostName);
         Assert.Equal(1233, instOpts.Port);
@@ -224,7 +224,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         Assert.Equal("myapp", instOpts.HostName);
         Assert.Equal(1234, instOpts.SecurePort);
@@ -239,7 +239,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://+:443;http://+:80" } }).Build();
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         Assert.Equal(80, instOpts.Port);
         Assert.Equal(443, instOpts.SecurePort);
@@ -253,7 +253,7 @@ public class EurekaInstanceOptionsTest : AbstractBaseTest
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
         var instOpts = new EurekaInstanceOptions();
 
-        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WILDCARD_HOST);
+        instOpts.ApplyConfigUrls(config.GetAspNetCoreUrls(), ConfigurationUrlHelpers.WildcardHost);
 
         Assert.Equal(80, instOpts.Port);
         Assert.False(instOpts.SecurePortEnabled);

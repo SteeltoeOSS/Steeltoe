@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(RabbitListenerEndpointRegistry);
+    public const string DefaultServiceName = nameof(RabbitListenerEndpointRegistry);
 
     private readonly ILogger _logger;
     private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
@@ -35,7 +35,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public bool IsRunning => GetListenerContainers().Any(listener => listener.IsRunning);
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public IMessageListenerContainer GetListenerContainer(string id)
     {

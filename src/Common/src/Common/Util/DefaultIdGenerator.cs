@@ -6,7 +6,7 @@ using System;
 
 namespace Steeltoe.Common.Util;
 
-public class DefaultIdGenerator : IIDGenerator
+public class DefaultIdGenerator : IIdGenerator
 {
     public string GenerateId()
     {

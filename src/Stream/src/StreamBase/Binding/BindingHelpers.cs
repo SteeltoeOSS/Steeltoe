@@ -67,47 +67,47 @@ public static class BindingHelpers
             }
         }
 
-        foreach (var iface in binding.GetInterfaces())
+        foreach (var @interface in binding.GetInterfaces())
         {
-            CollectFromProperties(iface, targets);
+            CollectFromProperties(@interface, targets);
         }
     }
 
     internal static void CollectFromMethods(Type binding, IDictionary<string, Bindable> components)
     {
-        var meths = binding.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-        foreach (var meth in meths)
+        var methods = binding.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+        foreach (var method in methods)
         {
-            if (meth.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
+            if (method.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
             {
                 var target = new Bindable
                 {
                     IsInput = true,
-                    Name = attribute.Name ?? meth.Name,
-                    BindingTargetType = meth.ReturnType,
-                    FactoryMethod = meth
+                    Name = attribute.Name ?? method.Name,
+                    BindingTargetType = method.ReturnType,
+                    FactoryMethod = method
                 };
 
                 AddBindableComponent(target, components);
             }
 
-            if (meth.GetCustomAttribute(typeof(OutputAttribute)) is OutputAttribute attribute2)
+            if (method.GetCustomAttribute(typeof(OutputAttribute)) is OutputAttribute attribute2)
             {
                 var target = new Bindable
                 {
                     IsInput = false,
-                    Name = attribute2.Name ?? meth.Name,
-                    BindingTargetType = meth.ReturnType,
-                    FactoryMethod = meth
+                    Name = attribute2.Name ?? method.Name,
+                    BindingTargetType = method.ReturnType,
+                    FactoryMethod = method
                 };
 
                 AddBindableComponent(target, components);
             }
         }
 
-        foreach (var iface in binding.GetInterfaces())
+        foreach (var @interface in binding.GetInterfaces())
         {
-            CollectFromMethods(iface, components);
+            CollectFromMethods(@interface, components);
         }
     }
 
@@ -120,15 +120,4 @@ public static class BindingHelpers
 
         components.Add(component.Name, component);
     }
-}
-
-public struct Bindable
-{
-    public bool IsInput { get; set; }
-
-    public string Name { get; set; }
-
-    public Type BindingTargetType { get; set; }
-
-    public MethodInfo FactoryMethod { get; set; }
 }

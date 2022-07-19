@@ -15,8 +15,8 @@ namespace Steeltoe.Integration;
 
 public class ErrorMessagePublisher
 {
-    protected readonly MessagingTemplate _messagingTemplate;
-    protected readonly ILogger _logger;
+    protected readonly MessagingTemplate InnerMessagingTemplate;
+    protected readonly ILogger Logger;
 
     private readonly IApplicationContext _context;
     private IIntegrationServices _integrationServices;
@@ -27,8 +27,8 @@ public class ErrorMessagePublisher
     public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
     {
         _context = context;
-        _logger = logger;
-        _messagingTemplate = new MessagingTemplate(context);
+        this.Logger = logger;
+        InnerMessagingTemplate = new MessagingTemplate(context);
     }
 
     public IIntegrationServices IntegrationServices
@@ -74,12 +74,12 @@ public class ErrorMessagePublisher
     {
         get
         {
-            return _messagingTemplate.SendTimeout;
+            return InnerMessagingTemplate.SendTimeout;
         }
 
         set
         {
-            _messagingTemplate.SendTimeout = value;
+            InnerMessagingTemplate.SendTimeout = value;
         }
     }
 
@@ -99,7 +99,7 @@ public class ErrorMessagePublisher
 
     protected virtual MessagingTemplate MessagingTemplate
     {
-        get { return _messagingTemplate; }
+        get { return InnerMessagingTemplate; }
     }
 
     public virtual void Publish(MessagingException exception)
@@ -129,7 +129,7 @@ public class ErrorMessagePublisher
         var payload = DeterminePayload(exception, context);
         var errorMessage = _errorMessageStrategy.BuildErrorMessage(payload, context);
 
-        _messagingTemplate.Send(errorMessage);
+        InnerMessagingTemplate.Send(errorMessage);
     }
 
     protected virtual Exception DeterminePayload(Exception exception, IAttributeAccessor context)
@@ -141,7 +141,7 @@ public class ErrorMessagePublisher
         }
         else if (lastThrowable is not MessagingException)
         {
-            var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
+            var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FailedMessageContextKey);
             lastThrowable = message == null
                 ? new MessagingException(lastThrowable.Message, lastThrowable)
                 : new MessagingException(message, lastThrowable.Message, lastThrowable);
@@ -152,7 +152,7 @@ public class ErrorMessagePublisher
 
     protected virtual Exception PayloadWhenNull(IAttributeAccessor context)
     {
-        var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FAILED_MESSAGE_CONTEXT_KEY);
+        var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FailedMessageContextKey);
         return message == null
             ? new MessagingException("No root cause exception available")
             : new MessagingException(message, "No root cause exception available");
@@ -160,11 +160,11 @@ public class ErrorMessagePublisher
 
     private void PopulateChannel()
     {
-        if (_messagingTemplate.DefaultDestination == null)
+        if (InnerMessagingTemplate.DefaultDestination == null)
         {
             if (_channel == null)
             {
-                var recoveryChannelName = ChannelName ?? IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME;
+                var recoveryChannelName = ChannelName ?? IntegrationContextUtils.ErrorChannelBeanName;
 
                 if (_channelResolver != null)
                 {
@@ -172,7 +172,7 @@ public class ErrorMessagePublisher
                 }
             }
 
-            _messagingTemplate.DefaultDestination = _channel;
+            InnerMessagingTemplate.DefaultDestination = _channel;
         }
     }
 }

@@ -52,7 +52,7 @@ public class PropertyOrFieldReference : SpelNode
         return IsWritableProperty(Name, state.GetActiveContextObject(), state.EvaluationContext);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         return Name;
     }
@@ -106,7 +106,7 @@ public class PropertyOrFieldReference : SpelNode
         }
 
         accessorToUse.GenerateCode(Name, gen, cf);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
         if (_originalPrimitiveExitTypeDescriptor != null)
         {
             // The output of the accessor is a primitive but from the block above it might be null,
@@ -144,11 +144,11 @@ public class PropertyOrFieldReference : SpelNode
         if (IsNullSafe && CodeFlow.IsValueType(descriptor))
         {
             _originalPrimitiveExitTypeDescriptor = descriptor;
-            _exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
+            exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
         }
         else
         {
-            _exitTypeDescriptor = descriptor;
+            exitTypeDescriptor = descriptor;
         }
     }
 
@@ -219,11 +219,11 @@ public class PropertyOrFieldReference : SpelNode
                 }
                 catch (TargetInvocationException ex)
                 {
-                    throw new SpelEvaluationException(StartPosition, ex.InnerException, SpelMessage.UNABLE_TO_DYNAMICALLY_CREATE_OBJECT, result.TypeDescriptor);
+                    throw new SpelEvaluationException(StartPosition, ex.InnerException, SpelMessage.UnableToDynamicallyCreateObject, result.TypeDescriptor);
                 }
                 catch (Exception ex)
                 {
-                    throw new SpelEvaluationException(StartPosition, ex, SpelMessage.UNABLE_TO_DYNAMICALLY_CREATE_OBJECT, result.TypeDescriptor);
+                    throw new SpelEvaluationException(StartPosition, ex, SpelMessage.UnableToDynamicallyCreateObject, result.TypeDescriptor);
                 }
             }
         }
@@ -236,7 +236,7 @@ public class PropertyOrFieldReference : SpelNode
         var targetObject = contextObject.Value;
         if (targetObject == null && IsNullSafe)
         {
-            return TypedValue.NULL;
+            return TypedValue.Null;
         }
 
         var accessorToUse = _cachedReadAccessor;
@@ -282,16 +282,16 @@ public class PropertyOrFieldReference : SpelNode
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(ex, SpelMessage.EXCEPTION_DURING_PROPERTY_READ, name, ex.Message);
+            throw new SpelEvaluationException(ex, SpelMessage.ExceptionDuringPropertyRead, name, ex.Message);
         }
 
         if (contextObject.Value == null)
         {
-            throw new SpelEvaluationException(SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE_ON_NULL, name);
+            throw new SpelEvaluationException(SpelMessage.PropertyOrFieldNotReadableOnNull, name);
         }
         else
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, Name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
+            throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotReadable, Name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
         }
     }
 
@@ -304,7 +304,7 @@ public class PropertyOrFieldReference : SpelNode
 
         if (contextObject.Value == null)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, name);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotWritableOnNull, name);
         }
 
         var accessorToUse = _cachedWriteAccessor;
@@ -342,10 +342,10 @@ public class PropertyOrFieldReference : SpelNode
         }
         catch (AccessException ex)
         {
-            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_PROPERTY_WRITE, name, ex.Message);
+            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.ExceptionDuringPropertyWrite, name, ex.Message);
         }
 
-        throw new SpelEvaluationException(StartPosition, SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE, name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
+        throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotWritable, name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
     }
 
     private IList<IPropertyAccessor> GetPropertyAccessorsToTry(object contextObject, IList<IPropertyAccessor> propertyAccessors)

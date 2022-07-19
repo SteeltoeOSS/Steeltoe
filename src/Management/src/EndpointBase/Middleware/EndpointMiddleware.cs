@@ -13,36 +13,36 @@ namespace Steeltoe.Management.Endpoint.Middleware;
 
 public class EndpointMiddleware<TResult>
 {
-    protected IEndpoint<TResult> _endpoint;
-    protected ILogger _logger;
-    protected IManagementOptions _mgmtOptions;
+    protected IEndpoint<TResult> endpoint;
+    protected ILogger logger;
+    protected IManagementOptions managementOptions;
 
-    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
+    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
     {
-        _logger = logger;
-        _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
-        if (_mgmtOptions is ManagementEndpointOptions mgmt)
+        this.logger = logger;
+        this.managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
+        if (this.managementOptions is ManagementEndpointOptions options)
         {
-            mgmt.SerializerOptions = GetSerializerOptions(mgmt.SerializerOptions);
+            options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
         }
     }
 
-    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-        : this(mgmtOptions, logger)
+    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+        : this(managementOptions, logger)
     {
-        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
     public IEndpoint<TResult> Endpoint
     {
-        get => _endpoint;
+        get => endpoint;
 
-        set => _endpoint = value;
+        set => endpoint = value;
     }
 
     public virtual string HandleRequest()
     {
-        var result = _endpoint.Invoke();
+        var result = endpoint.Invoke();
         return Serialize(result);
     }
 
@@ -51,9 +51,9 @@ public class EndpointMiddleware<TResult>
         try
         {
             JsonSerializerOptions options;
-            if (_mgmtOptions is ManagementEndpointOptions mgmt)
+            if (managementOptions is ManagementEndpointOptions endpointOptions)
             {
-                options = mgmt.SerializerOptions;
+                options = endpointOptions.SerializerOptions;
             }
             else
             {
@@ -64,7 +64,7 @@ public class EndpointMiddleware<TResult>
         }
         catch (Exception e)
         {
-            _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
+            logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
         }
 
         return string.Empty;
@@ -92,29 +92,29 @@ public class EndpointMiddleware<TResult>
 
 public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 {
-    protected new IEndpoint<TResult, TRequest> _endpoint;
+    protected new IEndpoint<TResult, TRequest> endpoint;
 
     internal new IEndpoint<TResult, TRequest> Endpoint
     {
-        get => _endpoint;
+        get => endpoint;
 
-        set => _endpoint = value;
+        set => endpoint = value;
     }
 
-    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-        : base(mgmtOptions, logger)
+    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions managementOptions, ILogger logger = null)
+        : base(managementOptions, logger)
     {
-        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+        this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
-    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
-        : base(mgmtOptions, logger)
+    public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
+        : base(managementOptions, logger)
     {
     }
 
     public virtual string HandleRequest(TRequest arg)
     {
-        var result = _endpoint.Invoke(arg);
+        var result = endpoint.Invoke(arg);
         return Serialize(result);
     }
 }

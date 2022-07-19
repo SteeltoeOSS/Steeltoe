@@ -8,43 +8,43 @@ namespace Steeltoe.Common.Util.Test;
 
 public class AttributeAccessorTest
 {
-    private const string NAME = "foo";
+    private const string Name = "foo";
 
-    private const string VALUE = "bar";
+    private const string Value = "bar";
 
     private readonly SimpleAttributeAccessor _attributeAccessor = new ();
 
     [Fact]
     public void SetAndGet()
     {
-        _attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.Equal(VALUE, _attributeAccessor.GetAttribute(NAME));
+        _attributeAccessor.SetAttribute(Name, Value);
+        Assert.Equal(Value, _attributeAccessor.GetAttribute(Name));
     }
 
     [Fact]
     public void SetAndHas()
     {
-        Assert.False(_attributeAccessor.HasAttribute(NAME));
-        _attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.True(_attributeAccessor.HasAttribute(NAME));
+        Assert.False(_attributeAccessor.HasAttribute(Name));
+        _attributeAccessor.SetAttribute(Name, Value);
+        Assert.True(_attributeAccessor.HasAttribute(Name));
     }
 
     [Fact]
     public void Remove()
     {
-        Assert.False(_attributeAccessor.HasAttribute(NAME));
-        _attributeAccessor.SetAttribute(NAME, VALUE);
-        Assert.Equal(VALUE, _attributeAccessor.RemoveAttribute(NAME));
-        Assert.False(_attributeAccessor.HasAttribute(NAME));
+        Assert.False(_attributeAccessor.HasAttribute(Name));
+        _attributeAccessor.SetAttribute(Name, Value);
+        Assert.Equal(Value, _attributeAccessor.RemoveAttribute(Name));
+        Assert.False(_attributeAccessor.HasAttribute(Name));
     }
 
     [Fact]
     public void AttributeNames()
     {
-        _attributeAccessor.SetAttribute(NAME, VALUE);
+        _attributeAccessor.SetAttribute(Name, Value);
         _attributeAccessor.SetAttribute("abc", "123");
         var attributeNames = _attributeAccessor.AttributeNames;
-        Assert.Contains(NAME, attributeNames);
+        Assert.Contains(Name, attributeNames);
         Assert.Contains("abc", attributeNames);
     }
 

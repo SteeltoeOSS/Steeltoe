@@ -56,7 +56,7 @@ public class HystrixProviderConfigurerTest
     }
 
     [Fact]
-    public void UpdateConfiguration_WithHystrixRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
+    public void UpdateConfiguration_WithHystrixRabbitMQ_SSLServiceInfo_UpdatesConfigurationFromServiceInfo()
     {
         var configurer = new HystrixProviderConfigurer();
         var config = new HystrixProviderConnectorOptions
@@ -104,7 +104,7 @@ public class HystrixProviderConfigurerTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
         var config = new HystrixProviderConnectorOptions
         {
@@ -129,7 +129,7 @@ public class HystrixProviderConfigurerTest
     }
 
     [Fact]
-    public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
+    public void Configure_SSLServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
         var config = new HystrixProviderConnectorOptions
         {

@@ -12,19 +12,19 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public static class CredHubHostBuilderExtensions
 {
     /// <summary>
-    /// Reach out to a CredHub server to interpolate credentials found in VCAP_SERVICES
+    /// Reach out to a CredHub server to interpolate credentials found in VCAP_SERVICES.
     /// </summary>
-    /// <param name="webHostBuilder">Your app's host builder</param>
-    /// <param name="loggerFactory">To enable logging in the credhub client, pass in a loggerfactory</param>
-    /// <returns>Your application's host builder with credentials interpolated</returns>
+    /// <param name="webHostBuilder">Your app's host builder.</param>
+    /// <param name="loggerFactory">To enable logging in the credhub client, pass in a loggerfactory.</param>
+    /// <returns>Your application's host builder with credentials interpolated.</returns>
     public static IWebHostBuilder UseCredHubInterpolation(this IWebHostBuilder webHostBuilder, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
-        ILogger credhubLogger = null;
+        ILogger credHubLogger = null;
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
-            credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
+            credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
         var vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
@@ -42,7 +42,7 @@ public static class CredHubHostBuilderExtensions
                 try
                 {
                     startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                    credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+                    credHubClient = CredHubClient.CreateUaaClientAsync(credHubOptions, credHubLogger).GetAwaiter().GetResult();
                 }
                 catch (Exception e)
                 {

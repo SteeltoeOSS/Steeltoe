@@ -20,33 +20,3 @@ public class CustomPartitionSelectorClass : IPartitionSelectorStrategy
         return int.Parse((string)key);
     }
 }
-
-public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
-{
-    public CustomPartitionSelectorClassOne()
-    {
-        ServiceName = GetType().Name;
-    }
-
-    public string ServiceName { get; set; }
-
-    public int SelectPartition(object key, int partitionCount)
-    {
-        return int.Parse((string)key);
-    }
-}
-
-public class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
-{
-    public CustomPartitionSelectorClassTwo()
-    {
-        ServiceName = GetType().Name;
-    }
-
-    public string ServiceName { get; set; }
-
-    public int SelectPartition(object key, int partitionCount)
-    {
-        return int.Parse((string)key);
-    }
-}

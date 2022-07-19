@@ -21,7 +21,7 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
     {
         if (sourceType == typeof(string) && ConversionUtils.CanCreateCompatListFor(targetType))
         {
-            return ConversionUtils.CanConvertElements(sourceType, ConversionUtils.GetElementType(targetType), _conversionService);
+            return ConversionUtils.CanConvertElements(sourceType, ConversionUtils.GetElementType(targetType), ConversionService);
         }
 
         return false;
@@ -41,12 +41,12 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
         var list = ConversionUtils.CreateCompatListFor(targetType);
         if (list == null)
         {
-            throw new InvalidOperationException("Unable to create compatable list");
+            throw new InvalidOperationException("Unable to create compatible list");
         }
 
         foreach (var sourceElement in fields)
         {
-            var targetElement = _conversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
+            var targetElement = ConversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
             list.Add(targetElement);
         }
 

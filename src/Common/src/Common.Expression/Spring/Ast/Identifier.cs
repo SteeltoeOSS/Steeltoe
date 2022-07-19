@@ -14,7 +14,7 @@ public class Identifier : SpelNode
         _id = new TypedValue(payload);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         return _id.Value != null ? _id.Value.ToString() : "null";
     }

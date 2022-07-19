@@ -306,7 +306,7 @@ internal interface IMetadataImport
 
     //     STDMETHOD(GetEventProps)(               // S_OK, S_FALSE, or error. 
     //         mdEvent     ev,                     // [IN] event token 
-    //         mdTypeDef   *pClass,                // [OUT] typedef containing the event declarion.    
+    //         mdTypeDef   *pClass,                // [OUT] typedef containing the event declaration.    
     //         LPCWSTR     szEvent,                // [OUT] Event name 
     //         ULONG       cchEvent,               // [IN] the count of wchar of szEvent   
     //         ULONG       *pchEvent,              // [OUT] actual count of wchar for event's name 
@@ -523,7 +523,7 @@ internal interface IMetadataImport
 
     //     STDMETHOD(GetPropertyProps)(            // S_OK, S_FALSE, or error. 
     //         mdProperty  prop,                   // [IN] property token  
-    //         mdTypeDef   *pClass,                // [OUT] typedef containing the property declarion. 
+    //         mdTypeDef   *pClass,                // [OUT] typedef containing the property declaration. 
     //         LPCWSTR     szProperty,             // [OUT] Property name  
     //         ULONG       cchProperty,            // [IN] the count of wchar of szProperty    
     //         ULONG       *pchProperty,           // [OUT] actual count of wchar for property name    
@@ -913,7 +913,7 @@ internal interface IMetadataImport2 : IMetadataImport
 
     //     STDMETHOD(GetEventProps)(               // S_OK, S_FALSE, or error. 
     //         mdEvent     ev,                     // [IN] event token 
-    //         mdTypeDef   *pClass,                // [OUT] typedef containing the event declarion.    
+    //         mdTypeDef   *pClass,                // [OUT] typedef containing the event declaration.    
     //         LPCWSTR     szEvent,                // [OUT] Event name 
     //         ULONG       cchEvent,               // [IN] the count of wchar of szEvent   
     //         ULONG       *pchEvent,              // [OUT] actual count of wchar for event's name 
@@ -1129,7 +1129,7 @@ internal interface IMetadataImport2 : IMetadataImport
 
     //     STDMETHOD(GetPropertyProps)(            // S_OK, S_FALSE, or error. 
     //         mdProperty  prop,                   // [IN] property token  
-    //         mdTypeDef   *pClass,                // [OUT] typedef containing the property declarion. 
+    //         mdTypeDef   *pClass,                // [OUT] typedef containing the property declaration. 
     //         LPCWSTR     szProperty,             // [OUT] Property name  
     //         ULONG       cchProperty,            // [IN] the count of wchar of szProperty    
     //         ULONG       *pchProperty,           // [OUT] actual count of wchar for property name    
@@ -1219,7 +1219,7 @@ internal interface IMetadataImport2 : IMetadataImport
     //         mdToken     pd,                     // [IN] Type, Field, or Method token.
     //         int         *pbGlobal) PURE;        // [OUT] Put 1 if global, 0 otherwise.
     new void IsGlobal_();
-    #endregion // inheritted methods from IMetadataImport
+    #endregion // inherited methods from IMetadataImport
 
     //-----------------------------------------------------------------------------
     // Begin IMetaDataImport2
@@ -1236,7 +1236,7 @@ internal interface IMetadataImport2 : IMetadataImport
     void EnumGenericParams(
         ref IntPtr hEnum,
         int tk,
-        [ComAliasName("mdGenericParam*")] out int rGenericParams, // <strip>@todo - this is a tempoarary marshalling workaround. Only works if cMax == 1.</strip>
+        [ComAliasName("mdGenericParam*")] out int rGenericParams, // <strip>@todo - this is a temporary marshalling workaround. Only works if cMax == 1.</strip>
         uint cMax, // must be 1
         [ComAliasName("ULONG*")] out uint pcGenericParams
     );

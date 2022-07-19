@@ -18,7 +18,7 @@ namespace Steeltoe.Discovery.Eureka;
 /// </summary>
 public class EurekaHealthCheckHandler : IHealthCheckHandler
 {
-    protected internal IList<IHealthContributor> _contributors;
+    protected internal IList<IHealthContributor> Contributors;
     private readonly ILogger _logger;
 
     public EurekaHealthCheckHandler(ILogger logger = null)
@@ -29,12 +29,12 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
     public EurekaHealthCheckHandler(IEnumerable<IHealthContributor> contributors, ILogger<EurekaHealthCheckHandler> logger = null)
         : this(logger)
     {
-        _contributors = contributors.ToList();
+        this.Contributors = contributors.ToList();
     }
 
     public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
     {
-        var results = DoHealthChecks(_contributors);
+        var results = DoHealthChecks(Contributors);
         var status = AggregateStatus(results);
         return MapToInstanceStatus(status);
     }
@@ -64,7 +64,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         // Filter out warnings, ignored
         foreach (var result in results)
         {
-            if (result.Status != HealthStatus.WARNING)
+            if (result.Status != HealthStatus.Warning)
             {
                 considered.Add(result.Status);
             }
@@ -73,11 +73,11 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         // Nothing left
         if (considered.Count == 0)
         {
-            return HealthStatus.UNKNOWN;
+            return HealthStatus.Unknown;
         }
 
         // Compute final
-        var final = HealthStatus.UNKNOWN;
+        var final = HealthStatus.Unknown;
         foreach (var status in considered)
         {
             if (status > final)
@@ -91,21 +91,21 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
 
     protected internal virtual InstanceStatus MapToInstanceStatus(HealthStatus status)
     {
-        if (status == HealthStatus.OUT_OF_SERVICE)
+        if (status == HealthStatus.OutOfService)
         {
-            return InstanceStatus.OUT_OF_SERVICE;
+            return InstanceStatus.OutOfService;
         }
 
-        if (status == HealthStatus.DOWN)
+        if (status == HealthStatus.Down)
         {
-            return InstanceStatus.DOWN;
+            return InstanceStatus.Down;
         }
 
-        if (status == HealthStatus.UP)
+        if (status == HealthStatus.Up)
         {
-            return InstanceStatus.UP;
+            return InstanceStatus.Up;
         }
 
-        return InstanceStatus.UNKNOWN;
+        return InstanceStatus.Unknown;
     }
 }

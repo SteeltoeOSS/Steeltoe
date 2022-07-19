@@ -18,10 +18,10 @@ public class MySqlProviderConnectorFactory
     {
     }
 
-    public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config, Type type)
+    public MySqlProviderConnectorFactory(MySqlServiceInfo serviceInfo, MySqlProviderConnectorOptions options, Type type)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         ConnectorType = type;
     }
 

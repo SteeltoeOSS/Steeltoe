@@ -13,6 +13,7 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
 using System;
 using System.Data;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Connector;
 
@@ -78,12 +79,12 @@ public class RelationalDbHealthContributor : IHealthContributor
         return new RelationalDbHealthContributor(connection, logger);
     }
 
-    public readonly IDbConnection _connection;
+    public readonly IDbConnection Connection;
     private readonly ILogger<RelationalDbHealthContributor> _logger;
 
     public RelationalDbHealthContributor(IDbConnection connection, ILogger<RelationalDbHealthContributor> logger = null)
     {
-        _connection = connection;
+        this.Connection = connection;
         _logger = logger;
         Id = GetDbName(connection);
     }
@@ -97,25 +98,25 @@ public class RelationalDbHealthContributor : IHealthContributor
         result.Details.Add("database", Id);
         try
         {
-            _connection.Open();
-            var cmd = _connection.CreateCommand();
+            Connection.Open();
+            var cmd = Connection.CreateCommand();
             cmd.CommandText = Id.IndexOf("Oracle", StringComparison.OrdinalIgnoreCase) != -1 ? "SELECT 1 FROM dual" : "SELECT 1;";
             cmd.ExecuteScalar();
-            result.Details.Add("status", HealthStatus.UP.ToString());
-            result.Status = HealthStatus.UP;
+            result.Details.Add("status", HealthStatus.Up.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Up;
             _logger?.LogTrace("{DbConnection} up!", Id);
         }
         catch (Exception e)
         {
             _logger?.LogError("{DbConnection} down! {HealthCheckException}", Id, e.Message);
             result.Details.Add("error", $"{e.GetType().Name}: {e.Message}");
-            result.Details.Add("status", HealthStatus.DOWN.ToString());
-            result.Status = HealthStatus.DOWN;
+            result.Details.Add("status", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            result.Status = HealthStatus.Down;
             result.Description = $"{Id} health check failed";
         }
         finally
         {
-            _connection.Close();
+            Connection.Close();
         }
 
         return result;

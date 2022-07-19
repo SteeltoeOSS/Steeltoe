@@ -170,7 +170,7 @@ public class NewtonJsonMessageConverterTest
         Assert.Contains("\"array\":[\"Foo\",\"Bar\"]", actual);
         Assert.Contains("\"bool\":true", actual);
         Assert.Contains("\"bytes\":\"AQI=\"", actual);
-        Assert.Equal(new MimeType("application", "json", Encoding.UTF8), message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(new MimeType("application", "json", Encoding.UTF8), message.Headers[MessageHeaders.ContentType]);
     }
 
     [Fact]
@@ -181,7 +181,7 @@ public class NewtonJsonMessageConverterTest
         var contentType = new MimeType("application", "json", encoding);
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, contentType }
+            { MessageHeaders.ContentType, contentType }
         };
         var headers = new MessageHeaders(map);
         var payload = "H\u00e9llo W\u00f6rld";
@@ -189,7 +189,7 @@ public class NewtonJsonMessageConverterTest
         var actual = encoding.GetString((byte[])message.Payload);
         var expected = $"\"{payload}\"";
         Assert.Equal(expected, actual);
-        Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(contentType, message.Headers[MessageHeaders.ContentType]);
     }
 
     [Fact]
@@ -203,14 +203,14 @@ public class NewtonJsonMessageConverterTest
         var contentType = new MimeType("application", "json", encoding);
         var map = new Dictionary<string, object>
         {
-            { MessageHeaders.CONTENT_TYPE, contentType }
+            { MessageHeaders.ContentType, contentType }
         };
         var headers = new MessageHeaders(map);
         var payload = "H\u00e9llo W\u00f6rld";
         var message = converter.ToMessage(payload, headers);
 
         Assert.Equal($"\"{payload}\"", message.Payload);
-        Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(contentType, message.Headers[MessageHeaders.ContentType]);
     }
 
     [Fact]

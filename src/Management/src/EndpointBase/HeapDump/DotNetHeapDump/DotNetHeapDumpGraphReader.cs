@@ -983,7 +983,7 @@ internal sealed class DotNetHeapDumpGraphReader
 
     // The graph we generating.  
     private MemoryGraph m_graph;
-    private MemoryNodeBuilder m_root;       // Used to create pseduo-nodes for the roots of the graph.  
+    private MemoryNodeBuilder m_root;       // Used to create pseudo-nodes for the roots of the graph.  
 
     // Heap information for .NET heaps.
 

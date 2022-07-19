@@ -10,25 +10,25 @@ using System.Collections.Generic;
 namespace Steeltoe.Connector;
 
 /// <summary>
-/// Useful for getting connection information from <see cref="IConfiguration"/>
+/// Useful for getting connection information from <see cref="IConfiguration"/>.
 /// </summary>
 public class ConnectionStringManager
 {
-    internal List<IConnectionInfo> _connectionInfos;
+    internal List<IConnectionInfo> ConnectionInfos;
     private readonly IConfiguration _configuration;
 
     public ConnectionStringManager(IConfiguration configuration)
     {
         _configuration = configuration;
-        _connectionInfos = GetIConnectionTypes();
+        ConnectionInfos = GetIConnectionTypes();
     }
 
     /// <summary>
-    /// Get connection information of the specified type, optionally from a named service binding
+    /// Get connection information of the specified type, optionally from a named service binding.
     /// </summary>
-    /// <typeparam name="T">The type of <see cref="IConnectionInfo"/> to get</typeparam>
-    /// <param name="serviceName">The name of a service binding</param>
-    /// <returns><see cref="Connection"/></returns>
+    /// <typeparam name="T">The type of <see cref="IConnectionInfo"/> to get.</typeparam>
+    /// <param name="serviceName">The name of a service binding.</param>
+    /// <returns><see cref="Connection"/>.</returns>
     public Connection Get<T>(string serviceName = null)
         where T : IConnectionInfo, new()
     {
@@ -37,7 +37,7 @@ public class ConnectionStringManager
 
     internal Connection GetByTypeName(string typeName)
     {
-        foreach (var t in _connectionInfos)
+        foreach (var t in ConnectionInfos)
         {
             if (t.IsSameType(typeName))
             {
@@ -50,7 +50,7 @@ public class ConnectionStringManager
 
     internal Connection GetFromServiceInfo(IServiceInfo serviceInfo)
     {
-        foreach (var connectionInfo in _connectionInfos)
+        foreach (var connectionInfo in ConnectionInfos)
         {
             if (connectionInfo.IsSameType(serviceInfo))
             {

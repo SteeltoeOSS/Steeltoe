@@ -18,10 +18,10 @@ public class CosmosDbConnectorFactory
     {
     }
 
-    public CosmosDbConnectorFactory(CosmosDbServiceInfo sinfo, CosmosDbConnectorOptions config, Type type)
+    public CosmosDbConnectorFactory(CosmosDbServiceInfo serviceInfo, CosmosDbConnectorOptions options, Type type)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         ConnectorType = type;
     }
 

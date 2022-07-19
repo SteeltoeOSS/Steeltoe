@@ -12,17 +12,17 @@ namespace Steeltoe.Integration.Rabbit.Support;
 
 public static class EndpointUtils
 {
-    private const string LEFE_MESSAGE = "Message conversion failed";
+    private const string ErrorMessage = "Message conversion failed";
 
     public static ListenerExecutionFailedException CreateErrorMessagePayload(IMessage message, IModel channel, bool isManualAck, Exception e)
     {
         if (isManualAck)
         {
-            return new ManualAckListenerExecutionFailedException(LEFE_MESSAGE, e, message, channel, message.Headers.DeliveryTag().Value);
+            return new ManualAckListenerExecutionFailedException(ErrorMessage, e, message, channel, message.Headers.DeliveryTag().Value);
         }
         else
         {
-            return new ListenerExecutionFailedException(LEFE_MESSAGE, e, message);
+            return new ListenerExecutionFailedException(ErrorMessage, e, message);
         }
     }
 }

@@ -36,12 +36,12 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
-        Assert.Equal("servername", sconfig.Server);
-        Assert.Equal(1433, sconfig.Port);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("username", sconfig.Username);
-        Assert.Null(sconfig.ConnectionString);
+        var options = new SqlServerProviderConnectorOptions(config);
+        Assert.Equal("servername", options.Server);
+        Assert.Equal(1433, options.Port);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("username", options.Username);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -55,9 +55,9 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(config);
 
-        Assert.Equal(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
+        Assert.Equal(appsettings["sqlserver:credentials:ConnectionString"], options.ToString());
     }
 
     [Fact]
@@ -70,8 +70,8 @@ public class SqlServerProviderConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcap);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -80,16 +80,16 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], options.ToString());
     }
 
     [Fact]
     public void CloudFoundryConfig_Found_By_Name()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPNoTag);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapNoTag);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -97,19 +97,19 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(config);
 
-        Assert.NotEqual("192.168.0.80", sconfig.Server);
-        Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
-        Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
-        Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", sconfig.Password);
+        Assert.NotEqual("192.168.0.80", options.Server);
+        Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", options.Database);
+        Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", options.Username);
+        Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", options.Password);
     }
 
     [Fact]
     public void CloudFoundryConfig_Found_By_Tag()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAPIgnoreName);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapIgnoreName);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -117,16 +117,16 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(config);
 
-        Assert.NotEqual("192.168.0.80", sconfig.Server);
-        Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", sconfig.Database);
-        Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", sconfig.Username);
-        Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", sconfig.Password);
+        Assert.NotEqual("192.168.0.80", options.Server);
+        Assert.NotEqual("de5aa3a747c134b3d8780f8cc80be519e", options.Database);
+        Assert.NotEqual("uf33b2b30783a4087948c30f6c3b0c90f", options.Username);
+        Assert.NotEqual("Pefbb929c1e0945b5bab5b8f0d110c503", options.Password);
     }
 
     [Fact]
-    public void ConnectionString_Overridden_By_CloudFoundryConfig_CredsInUrl()
+    public void ConnectionString_Overridden_By_CloudFoundryConfig_CredentialsInUrl()
     {
         // simulate an appsettings file
         var appsettings = new Dictionary<string, string>
@@ -135,8 +135,8 @@ public class SqlServerProviderConnectorOptionsTest
         };
 
         // add environment variables as Cloud Foundry would
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP_CredsInUrl);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVcapCredentialsInUrl);
 
         // add settings to config
         var configurationBuilder = new ConfigurationBuilder();
@@ -145,8 +145,8 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddCloudFoundry();
         var config = configurationBuilder.Build();
 
-        var sconfig = new SqlServerProviderConnectorOptions(config);
+        var options = new SqlServerProviderConnectorOptions(config);
 
-        Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], sconfig.ToString());
+        Assert.NotEqual(appsettings["sqlserver:credentials:ConnectionString"], options.ToString());
     }
 }

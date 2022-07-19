@@ -9,9 +9,9 @@ namespace Steeltoe.Common.Util;
 
 public static class Time
 {
-    private const int SPIN_WAIT_ITERATIONS = 5;
-    private const long YIELD_THRESHOLD = 1000;
-    private const long SLEEP_THRESHOLD = TimeSpan.TicksPerMillisecond;
+    private const int SpinWaitIterations = 5;
+    private const long YieldThreshold = 1000;
+    private const long SleepThreshold = TimeSpan.TicksPerMillisecond;
 
     public static long CurrentTimeMillis
     {
@@ -29,9 +29,9 @@ public static class Time
         }
     }
 
-    public static bool WaitUntil(Func<bool> check, int maxWaitMilli)
+    public static bool WaitUntil(Func<bool> check, int maxWaitMilliseconds)
     {
-        var ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+        var ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
         var start = DateTime.Now.Ticks;
 
         while (true)
@@ -64,16 +64,16 @@ public static class Time
     }
 
     // Used by unit tests only
-    public static void Wait(int maxWaitMilli)
+    public static void Wait(int maxWaitMilliseconds)
     {
-        if (maxWaitMilli <= 0)
+        if (maxWaitMilliseconds <= 0)
         {
             return;
         }
 
-        Thread.Sleep(maxWaitMilli);
+        Thread.Sleep(maxWaitMilliseconds);
 
-        // long ticksToWait = maxWaitMilli * TimeSpan.TicksPerMillisecond;
+        // long ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
 
         // if (ticksToWait <= 0)
         // {
@@ -98,17 +98,17 @@ public static class Time
 
     private static void DoWait(long ticksLeft)
     {
-        if (ticksLeft > SLEEP_THRESHOLD)
+        if (ticksLeft > SleepThreshold)
         {
             Thread.Sleep(1);
         }
-        else if (ticksLeft > YIELD_THRESHOLD)
+        else if (ticksLeft > YieldThreshold)
         {
             Thread.Yield();
         }
         else
         {
-            Thread.SpinWait(SPIN_WAIT_ITERATIONS);
+            Thread.SpinWait(SpinWaitIterations);
         }
     }
 }

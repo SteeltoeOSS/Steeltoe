@@ -17,7 +17,7 @@ public class MappingsEndpointOptionsTest : BaseTest
         var opts = new MappingsEndpointOptions();
         Assert.Null(opts.Enabled);
         Assert.Equal("mappings", opts.Id);
-        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+        Assert.Equal(Permissions.Restricted, opts.RequiredPermissions);
     }
 
     [Fact]

@@ -10,7 +10,7 @@ namespace Steeltoe.Discovery.Consul.Discovery.Test;
 public class ConsulHeartbeatOptionsTest
 {
     [Fact]
-    public void Constructor_InitsDefaults()
+    public void Constructor_InitializesDefaults()
     {
         var opts = new ConsulHeartbeatOptions();
         Assert.Equal(30, opts.TtlValue);
@@ -37,7 +37,7 @@ public class ConsulHeartbeatOptionsTest
             IntervalRatio = ratio
         };
 
-        var period = opts.ComputeHearbeatInterval();
+        var period = opts.ComputeHeartbeatInterval();
         Assert.Equal(TimeSpan.FromMilliseconds(expected), period);
     }
 }

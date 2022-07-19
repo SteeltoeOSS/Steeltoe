@@ -17,10 +17,10 @@ public class SpelParserTests
         var parser = new SpelExpressionParser();
         var expr = parser.ParseRaw("2") as SpelExpression;
         Assert.NotNull(expr);
-        Assert.NotNull(expr.AST);
+        Assert.NotNull(expr.Ast);
         Assert.Equal(2, expr.GetValue());
         Assert.Equal(typeof(int), expr.GetValueType());
-        Assert.Equal(2, expr.AST.GetValue(null));
+        Assert.Equal(2, expr.Ast.GetValue(null));
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class SpelParserTests
         var parser = new SpelExpressionParser();
         var expr = parser.ParseRaw("2+2") as SpelExpression;
         Assert.NotNull(expr);
-        Assert.NotNull(expr.AST);
+        Assert.NotNull(expr.Ast);
         Assert.Equal(4, expr.GetValue());
     }
 
@@ -78,7 +78,7 @@ public class SpelParserTests
         var parser = new SpelExpressionParser();
         var expr = parser.ParseRaw("2*3") as SpelExpression;
         Assert.NotNull(expr);
-        Assert.NotNull(expr.AST);
+        Assert.NotNull(expr.Ast);
 
         // printAst(expr.getAST(),0);
         Assert.Equal(6, expr.GetValue());
@@ -100,7 +100,7 @@ public class SpelParserTests
             var parser = new SpelExpressionParser();
             parser.ParseRaw("new String");
         });
-        ParseExceptionRequirements(ex, SpelMessage.MISSING_CONSTRUCTOR_ARGS, 10);
+        ParseExceptionRequirements(ex, SpelMessage.MissingConstructorArgs, 10);
 
         ex = Assert.Throws<SpelParseException>(() =>
         {
@@ -108,7 +108,7 @@ public class SpelParserTests
             parser.ParseRaw("new String(3,");
         });
 
-        ParseExceptionRequirements(ex, SpelMessage.RUN_OUT_OF_ARGUMENTS, 10);
+        ParseExceptionRequirements(ex, SpelMessage.RunOutOfArguments, 10);
 
         ex = Assert.Throws<SpelParseException>(() =>
         {
@@ -116,7 +116,7 @@ public class SpelParserTests
             parser.ParseRaw("new String(3");
         });
 
-        ParseExceptionRequirements(ex, SpelMessage.RUN_OUT_OF_ARGUMENTS, 10);
+        ParseExceptionRequirements(ex, SpelMessage.RunOutOfArguments, 10);
 
         ex = Assert.Throws<SpelParseException>(() =>
         {
@@ -124,21 +124,21 @@ public class SpelParserTests
             parser.ParseRaw("new String(");
         });
 
-        ParseExceptionRequirements(ex, SpelMessage.RUN_OUT_OF_ARGUMENTS, 10);
+        ParseExceptionRequirements(ex, SpelMessage.RunOutOfArguments, 10);
 
         ex = Assert.Throws<SpelParseException>(() =>
         {
             var parser = new SpelExpressionParser();
             parser.ParseRaw("\"abc");
         });
-        ParseExceptionRequirements(ex, SpelMessage.NON_TERMINATING_DOUBLE_QUOTED_STRING, 0);
+        ParseExceptionRequirements(ex, SpelMessage.NonTerminatingDoubleQuotedString, 0);
 
         ex = Assert.Throws<SpelParseException>(() =>
         {
             var parser = new SpelExpressionParser();
             parser.ParseRaw("'abc");
         });
-        ParseExceptionRequirements(ex, SpelMessage.NON_TERMINATING_QUOTED_STRING, 0);
+        ParseExceptionRequirements(ex, SpelMessage.NonTerminatingQuotedString, 0);
     }
 
     [Fact]
@@ -246,14 +246,14 @@ public class SpelParserTests
         var ex = Assert.Throws<SpelParseException>(() => new SpelExpressionParser().ParseRaw("\"double quote: \\\"\\\".\""));
 
         Assert.Equal(17, ex.Position);
-        Assert.Equal(SpelMessage.UNEXPECTED_ESCAPE_CHAR, ex.MessageCode);
+        Assert.Equal(SpelMessage.UnexpectedEscapeChar, ex.MessageCode);
     }
 
     [Fact]
     public void PositionalInformation()
     {
         var expr = new SpelExpressionParser().ParseRaw("true and true or false") as SpelExpression;
-        var rootAst = expr.AST;
+        var rootAst = expr.Ast;
         var operatorOr = (OpOr)rootAst;
         var operatorAnd = (OpAnd)operatorOr.LeftOperand;
         var rightOrOperand = operatorOr.RightOperand;
@@ -282,15 +282,15 @@ public class SpelParserTests
     [Fact]
     public void Test_TokenKind()
     {
-        var tk = TokenKind.NOT;
+        var tk = TokenKind.Not;
         Assert.False(tk.HasPayload);
         Assert.Equal("NOT(!)", tk.ToString());
 
-        tk = TokenKind.MINUS;
+        tk = TokenKind.Minus;
         Assert.False(tk.HasPayload);
         Assert.Equal("MINUS(-)", tk.ToString());
 
-        tk = TokenKind.LITERAL_STRING;
+        tk = TokenKind.LiteralString;
         Assert.Equal("LITERAL_STRING", tk.ToString());
         Assert.True(tk.HasPayload);
     }
@@ -298,14 +298,14 @@ public class SpelParserTests
     [Fact]
     public void Test_Token()
     {
-        var token = new Token(TokenKind.NOT, 0, 3);
-        Assert.Equal(TokenKind.NOT, token.Kind);
+        var token = new Token(TokenKind.Not, 0, 3);
+        Assert.Equal(TokenKind.Not, token.Kind);
         Assert.Equal(0, token.StartPos);
         Assert.Equal(3, token.EndPos);
         Assert.Equal("[NOT(!)](0,3)", token.ToString());
 
-        token = new Token(TokenKind.LITERAL_STRING, "abc".ToCharArray(), 0, 3);
-        Assert.Equal(TokenKind.LITERAL_STRING, token.Kind);
+        token = new Token(TokenKind.LiteralString, "abc".ToCharArray(), 0, 3);
+        Assert.Equal(TokenKind.LiteralString, token.Kind);
         Assert.Equal(0, token.StartPos);
         Assert.Equal(3, token.EndPos);
         Assert.Equal("[LITERAL_STRING:abc](0,3)", token.ToString());
@@ -352,10 +352,10 @@ public class SpelParserTests
         CheckNumber("0xa", 10, typeof(int));
         CheckNumber("0xAL", 10L, typeof(long));
 
-        CheckNumberError("0x", SpelMessage.NOT_AN_INTEGER);
-        CheckNumberError("0xL", SpelMessage.NOT_A_LONG);
-        CheckNumberError(".324", SpelMessage.UNEXPECTED_DATA_AFTER_DOT);
-        CheckNumberError("3.4L", SpelMessage.REAL_CANNOT_BE_LONG);
+        CheckNumberError("0x", SpelMessage.NotAnInteger);
+        CheckNumberError("0xL", SpelMessage.NotALong);
+        CheckNumberError(".324", SpelMessage.UnexpectedDataAfterDot);
+        CheckNumberError("3.4L", SpelMessage.RealCannotBeLong);
 
         CheckNumber("3.5f", 3.5f, typeof(float));
         CheckNumber("1.2e3", 1.2e3d, typeof(double));

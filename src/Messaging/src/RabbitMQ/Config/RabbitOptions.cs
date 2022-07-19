@@ -12,12 +12,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class RabbitOptions
 {
-    public const string PREFIX = "spring:rabbitmq";
+    public const string Prefix = "spring:rabbitmq";
 
-    public const string DEFAULT_HOST = "localhost";
-    public const int DEFAULT_PORT = 5672;
-    public const string DEFAULT_USERNAME = "guest";
-    public const string DEFAULT_PASSWORD = "guest";
+    public const string DefaultHost = "localhost";
+    public const int DefaultPort = 5672;
+    public const string DefaultUsername = "guest";
+    public const string DefaultPassword = "guest";
 
     public RabbitOptions()
     {
@@ -27,7 +27,7 @@ public class RabbitOptions
         Template = new TemplateOptions();
     }
 
-    public string Host { get; set; } = DEFAULT_HOST;
+    public string Host { get; set; } = DefaultHost;
 
     public string DetermineHost()
     {
@@ -40,7 +40,7 @@ public class RabbitOptions
         return parsed[0].Host;
     }
 
-    public int Port { get; set; } = DEFAULT_PORT;
+    public int Port { get; set; } = DefaultPort;
 
     public int DeterminePort()
     {
@@ -96,7 +96,7 @@ public class RabbitOptions
         return parsedAddresses;
     }
 
-    public string Username { get; set; } = DEFAULT_USERNAME;
+    public string Username { get; set; } = DefaultUsername;
 
     public string DetermineUsername()
     {
@@ -110,7 +110,7 @@ public class RabbitOptions
         return address.Username ?? Username;
     }
 
-    public string Password { get; set; } = DEFAULT_PASSWORD;
+    public string Password { get; set; } = DefaultPassword;
 
     public string DeterminePassword()
     {
@@ -176,7 +176,7 @@ public class RabbitOptions
 
         public string CertPath { get; set; }
 
-        public string CertPassphrase { get; set; }
+        public string CertPassPhrase { get; set; }
 
         public string ServerHostName { get; set; }
 
@@ -192,7 +192,7 @@ public class RabbitOptions
 
     public class ListenerOptions
     {
-        public ContainerType Type { get; } = ContainerType.DIRECT;
+        public ContainerType Type { get; } = ContainerType.Direct;
 
         public DirectContainerOptions Direct { get; set; } = new ();
     }
@@ -223,7 +223,7 @@ public class RabbitOptions
 
     public class ConnectionOptions
     {
-        public CachingMode Mode { get; set; } = CachingMode.CHANNEL;
+        public CachingMode Mode { get; set; } = CachingMode.Channel;
 
         public int? Size { get; set; }
     }
@@ -269,8 +269,8 @@ public class RabbitOptions
 
     private sealed class Address
     {
-        private const string PREFIX_AMQP = "amqp://";
-        private const string PREFIX_AMQP_SECURE = "amqps://";
+        private const string PrefixAmqp = "amqp://";
+        private const string PrefixAmqpSecure = "amqps://";
 
         public Address(string input)
         {
@@ -295,14 +295,14 @@ public class RabbitOptions
 
         private string TrimPrefix(string input)
         {
-            if (input.StartsWith(PREFIX_AMQP))
+            if (input.StartsWith(PrefixAmqp))
             {
-                input = input.Substring(PREFIX_AMQP.Length);
+                input = input.Substring(PrefixAmqp.Length);
                 SecureConnection = false;
             }
-            else if (input.StartsWith(PREFIX_AMQP_SECURE))
+            else if (input.StartsWith(PrefixAmqpSecure))
             {
-                input = input.Substring(PREFIX_AMQP_SECURE.Length);
+                input = input.Substring(PrefixAmqpSecure.Length);
                 SecureConnection = true;
             }
 
@@ -314,9 +314,9 @@ public class RabbitOptions
             if (input.Contains("@"))
             {
                 var split = input.Split("@", StringSplitOptions.RemoveEmptyEntries);
-                var creds = split[0];
+                var credentials = split[0];
                 input = split[1];
-                split = creds.Split(":", StringSplitOptions.RemoveEmptyEntries);
+                split = credentials.Split(":", StringSplitOptions.RemoveEmptyEntries);
                 Username = split[0];
                 if (split.Length > 0)
                 {
@@ -350,7 +350,7 @@ public class RabbitOptions
             if (portIndex == -1)
             {
                 Host = input;
-                Port = DEFAULT_PORT;
+                Port = DefaultPort;
             }
             else
             {
@@ -359,9 +359,4 @@ public class RabbitOptions
             }
         }
     }
-}
-
-public enum ContainerType
-{
-    DIRECT
 }

@@ -78,8 +78,8 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
     {
         var properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
 
-        _queues.Add($"{properties.Prefix}{name}.default");
-        _exchanges.Add(properties.Prefix + name);
+        queues.Add($"{properties.Prefix}{name}.default");
+        exchanges.Add(properties.Prefix + name);
 
         if (producerOptions.RequiredGroups != null)
         {
@@ -87,11 +87,11 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
             {
                 if (properties.QueueNameGroupOnly == true)
                 {
-                    _queues.Add(properties.Prefix + group);
+                    queues.Add(properties.Prefix + group);
                 }
                 else
                 {
-                    _queues.Add($"{properties.Prefix}{name}.{group}");
+                    queues.Add($"{properties.Prefix}{name}.{group}");
                 }
             }
         }
@@ -113,7 +113,7 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
     public override void Cleanup()
     {
-        foreach (var q in _queues)
+        foreach (var q in queues)
         {
             _logger.LogInformation("Deleting queue " + q);
             _rabbitAdmin.DeleteQueue(q);
@@ -127,7 +127,7 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
             }
         }
 
-        foreach (var exchange in _exchanges)
+        foreach (var exchange in exchanges)
         {
             _logger.LogInformation("Deleting exch " + exchange);
             _rabbitAdmin.DeleteExchange(exchange);
@@ -149,35 +149,35 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
         {
             if (consumerOptions.QueueNameGroupOnly.GetValueOrDefault())
             {
-                _queues.Add(consumerOptions.Prefix + group);
+                queues.Add(consumerOptions.Prefix + group);
             }
             else
             {
                 if (options.Multiplex)
                 {
                     names = name.Split(',');
-                    foreach (var nayme in names)
+                    foreach (var nextName in names)
                     {
-                        _queues.Add($"{consumerOptions.Prefix}{nayme.Trim()}.{group}");
+                        queues.Add($"{consumerOptions.Prefix}{nextName.Trim()}.{group}");
                     }
                 }
                 else
                 {
-                    _queues.Add($"{consumerOptions.Prefix}{name}.{group}");
+                    queues.Add($"{consumerOptions.Prefix}{name}.{group}");
                 }
             }
         }
 
         if (names != null)
         {
-            foreach (var nayme in names)
+            foreach (var nextName in names)
             {
-                _exchanges.Add(consumerOptions.Prefix + nayme.Trim());
+                exchanges.Add(consumerOptions.Prefix + nextName.Trim());
             }
         }
         else
         {
-            _exchanges.Add(consumerOptions.Prefix + name.Trim());
+            exchanges.Add(consumerOptions.Prefix + name.Trim());
         }
 
         _prefixes.Add(consumerOptions.Prefix);
@@ -188,12 +188,12 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
     {
         if (properties.DeadLetterExchange != null)
         {
-            _exchanges.Add(properties.DeadLetterExchange);
+            exchanges.Add(properties.DeadLetterExchange);
         }
 
         if (properties.DeadLetterQueueName != null)
         {
-            _queues.Add(properties.DeadLetterQueueName);
+            queues.Add(properties.DeadLetterQueueName);
         }
     }
 }

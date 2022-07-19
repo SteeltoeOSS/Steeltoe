@@ -15,7 +15,7 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
 public class MethodMessageHandlerTest
 {
-    private const string _destinationHeader = "destination";
+    private const string DestinationHeader = "destination";
 
     private readonly TestMethodMessageHandler _messageHandler;
 
@@ -96,7 +96,7 @@ public class MethodMessageHandlerTest
 
     private IMessage ToDestination(string destination)
     {
-        return MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(_destinationHeader, destination).Build();
+        return MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationHeader, destination).Build();
     }
 
     internal sealed class TestController
@@ -204,7 +204,7 @@ public class MethodMessageHandlerTest
 
         protected override string GetDestination(IMessage message)
         {
-            return (string)message.Headers[_destinationHeader];
+            return (string)message.Headers[DestinationHeader];
         }
 
         protected override string GetMatchingMapping(string mapping, IMessage message)

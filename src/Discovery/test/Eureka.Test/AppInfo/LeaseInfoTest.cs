@@ -16,14 +16,14 @@ public class LeaseInfoTest : AbstractBaseTest
     public void Constructor_Defaults()
     {
         var info = new LeaseInfo();
-        Assert.Equal(LeaseInfo.Default_DurationInSecs, info.DurationInSecs);
-        Assert.Equal(LeaseInfo.Default_RenewalIntervalInSecs, info.RenewalIntervalInSecs);
+        Assert.Equal(LeaseInfo.DefaultDurationInSecs, info.DurationInSecs);
+        Assert.Equal(LeaseInfo.DefaultRenewalIntervalInSecs, info.RenewalIntervalInSecs);
     }
 
     [Fact]
     public void FromJson_Correct()
     {
-        var jinfo = new JsonLeaseInfo
+        var leaseInfo = new JsonLeaseInfo
         {
             RenewalIntervalInSecs = 100,
             DurationInSecs = 200,
@@ -34,7 +34,7 @@ public class LeaseInfoTest : AbstractBaseTest
             ServiceUpTimestamp = 1_457_973_741_708
         };
 
-        var result = LeaseInfo.FromJson(jinfo);
+        var result = LeaseInfo.FromJson(leaseInfo);
         Assert.Equal(100, result.RenewalIntervalInSecs);
         Assert.Equal(200, result.DurationInSecs);
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));

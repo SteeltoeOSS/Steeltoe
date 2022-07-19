@@ -23,44 +23,44 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownListener
 {
-    public const string DEFAULT_SERVICE_NAME = "ccFactory";
+    public const string DefaultServiceName = "ccFactory";
 
     public enum CachingMode
     {
-        CHANNEL,
-        CONNECTION
+        Channel,
+        Connection
     }
 
     public enum ConfirmType
     {
-        SIMPLE,
-        CORRELATED,
-        NONE
+        Simple,
+        Correlated,
+        None
     }
 
     // Internal for unit tests
-    internal readonly Dictionary<IConnection, SemaphoreSlim> _checkoutPermits = new ();
-    internal readonly LinkedList<IChannelProxy> _cachedChannelsNonTransactional = new ();
-    internal readonly LinkedList<IChannelProxy> _cachedChannelsTransactional = new ();
-    internal readonly HashSet<ChannelCachingConnectionProxy> _allocatedConnections = new ();
-    internal readonly LinkedList<ChannelCachingConnectionProxy> _idleConnections = new ();
-    internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionNonTransactionalChannels = new ();
-    internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> _allocatedConnectionTransactionalChannels = new ();
-    internal readonly ChannelCachingConnectionProxy _connection;
-    internal bool _stopped;
+    internal readonly Dictionary<IConnection, SemaphoreSlim> CheckoutPermits = new ();
+    internal readonly LinkedList<IChannelProxy> CachedChannelsNonTransactional = new ();
+    internal readonly LinkedList<IChannelProxy> CachedChannelsTransactional = new ();
+    internal readonly HashSet<ChannelCachingConnectionProxy> AllocatedConnections = new ();
+    internal readonly LinkedList<ChannelCachingConnectionProxy> IdleConnections = new ();
+    internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> AllocatedConnectionNonTransactionalChannels = new ();
+    internal readonly Dictionary<ChannelCachingConnectionProxy, LinkedList<IChannelProxy>> AllocatedConnectionTransactionalChannels = new ();
+    internal readonly ChannelCachingConnectionProxy Connection;
+    internal bool Stopped;
 
-    private const int DEFAULT_CHANNEL_CACHE_SIZE = 25;
+    private const int DefaultChannelCacheSize = 25;
 
     private readonly object _connectionMonitor = new ();
     private readonly Dictionary<int, AtomicInteger> _channelHighWaterMarks = new ();
     private readonly AtomicInteger _connectionHighWaterMark = new ();
     private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
-    private int _channelCacheSize = DEFAULT_CHANNEL_CACHE_SIZE;
+    private int _channelCacheSize = DefaultChannelCacheSize;
     private int _connectionCacheSize = 1;
     private int _connectionLimit = int.MaxValue;
     private bool _publisherReturns;
-    private ConfirmType _confirmType = ConfirmType.NONE;
+    private ConfirmType _confirmType = ConfirmType.None;
     private int _channelCheckoutTimeout;
     private IConditionalExceptionLogger _closeExceptionLogger = new DefaultChannelCloseLogger();
     private bool _active = true;
@@ -75,13 +75,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         : base(NewRabbitConnectionFactory(), loggerFactory)
     {
         _optionsMonitor = optionsMonitor;
-        _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+        Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
         ConfigureRabbitConnectionFactory(Options);
-        PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+        PublisherConnectionFactory = new CachingConnectionFactory(InnerRabbitConnectionFactory, true, CachingMode.Channel, loggerFactory);
         PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
         Configure(Options);
         InitCacheWaterMarks();
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public CachingConnectionFactory(string hostname, ILoggerFactory loggerFactory = null)
@@ -103,13 +103,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             hostname = GetDefaultHostName();
         }
 
-        _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+        Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
         Host = hostname;
         Port = port;
-        PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+        PublisherConnectionFactory = new CachingConnectionFactory(InnerRabbitConnectionFactory, true, CachingMode.Channel, loggerFactory);
         PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
         InitCacheWaterMarks();
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public CachingConnectionFactory(string hostNameArg, int port, RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
@@ -121,42 +121,42 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             hostname = GetDefaultHostName();
         }
 
-        _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+        Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
         Host = hostname;
         Port = port;
-        PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, CachingMode.CHANNEL, loggerFactory);
+        PublisherConnectionFactory = new CachingConnectionFactory(InnerRabbitConnectionFactory, true, CachingMode.Channel, loggerFactory);
         PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
         InitCacheWaterMarks();
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     public CachingConnectionFactory(Uri uri, ILoggerFactory loggerFactory = null)
-        : this(uri, CachingMode.CHANNEL, loggerFactory)
+        : this(uri, CachingMode.Channel, loggerFactory)
     {
     }
 
-    public CachingConnectionFactory(Uri uri, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
+    public CachingConnectionFactory(Uri uri, CachingMode cachingMode = CachingMode.Channel, ILoggerFactory loggerFactory = null)
         : base(NewRabbitConnectionFactory(), loggerFactory)
     {
-        _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+        Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
         CacheMode = cachingMode;
         Uri = uri;
-        PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, cachingMode, loggerFactory);
+        PublisherConnectionFactory = new CachingConnectionFactory(InnerRabbitConnectionFactory, true, cachingMode, loggerFactory);
         PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
         InitCacheWaterMarks();
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
-        : this(rabbitConnectionFactory, false, CachingMode.CHANNEL, loggerFactory)
+        : this(rabbitConnectionFactory, false, CachingMode.Channel, loggerFactory)
     {
     }
 
-    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.CHANNEL, ILoggerFactory loggerFactory = null)
+    protected internal CachingConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, bool isPublisherFactory, CachingMode cachingMode = CachingMode.Channel, ILoggerFactory loggerFactory = null)
         : base(rabbitConnectionFactory, loggerFactory)
     {
         CacheMode = cachingMode;
-        _connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
+        Connection = new ChannelCachingConnectionProxy(this, null, loggerFactory?.CreateLogger<ChannelCachingConnectionProxy>());
         PublisherCallbackChannelFactory = new DefaultPublisherCallbackFactory(loggerFactory);
         if (!isPublisherFactory)
         {
@@ -164,14 +164,14 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             {
                 RabbitConnectionFactory.AutomaticRecoveryEnabled = false;
                 RabbitConnectionFactory.TopologyRecoveryEnabled = false;
-                _logger?.LogWarning("***\nAutomatic Recovery was Enabled in the provided connection factory;\n"
+                Logger?.LogWarning("***\nAutomatic Recovery was Enabled in the provided connection factory;\n"
                                     + "while Steeltoe is generally compatible with this feature, there\n"
                                     + "are some corner cases where problems arise. Steeltoe\n"
                                     + "prefers to use its own recovery mechanisms; when this option is true, you may receive\n"
                                     + "odd Exception's until the connection is recovered.\n");
             }
 
-            PublisherConnectionFactory = new CachingConnectionFactory(_rabbitConnectionFactory, true, cachingMode, loggerFactory);
+            PublisherConnectionFactory = new CachingConnectionFactory(InnerRabbitConnectionFactory, true, cachingMode, loggerFactory);
         }
         else
         {
@@ -179,7 +179,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         }
 
         InitCacheWaterMarks();
-        ServiceName = DEFAULT_SERVICE_NAME;
+        ServiceName = DefaultServiceName;
     }
 
     private static RC.ConnectionFactory NewRabbitConnectionFactory()
@@ -226,7 +226,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         }
     }
 
-    public CachingMode CacheMode { get; set; } = CachingMode.CHANNEL;
+    public CachingMode CacheMode { get; set; } = CachingMode.Channel;
 
     public int ConnectionCacheSize
     {
@@ -308,12 +308,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     public override bool IsPublisherConfirms
     {
-        get { return _confirmType == ConfirmType.CORRELATED; }
+        get { return _confirmType == ConfirmType.Correlated; }
     }
 
     public override bool IsSimplePublisherConfirms
     {
-        get { return _confirmType == ConfirmType.SIMPLE; }
+        get { return _confirmType == ConfirmType.Simple; }
     }
 
     public int ChannelCheckoutTimeout
@@ -368,55 +368,55 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     public override void SetConnectionListeners(List<IConnectionListener> listeners)
     {
         base.SetConnectionListeners(listeners);
-        if (_connection.Target != null)
+        if (Connection.Target != null)
         {
-            ConnectionListener.OnCreate(_connection);
+            ConnectionListener.OnCreate(Connection);
         }
     }
 
     public override void AddConnectionListener(IConnectionListener connectionListener)
     {
         base.AddConnectionListener(connectionListener);
-        if (_connection.Target != null)
+        if (Connection.Target != null)
         {
-            connectionListener.OnCreate(_connection);
+            connectionListener.OnCreate(Connection);
         }
     }
 
     public void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args)
     {
-        _closeExceptionLogger.Log(_logger, "Channel shutdown", args);
+        _closeExceptionLogger.Log(Logger, "Channel shutdown", args);
         ChannelListener.OnShutDown(args);
     }
 
     public override IConnection CreateConnection()
     {
-        if (_stopped)
+        if (Stopped)
         {
             throw new RabbitApplicationContextClosedException("The ConnectionFactory is disposed and can no longer create connections.");
         }
 
         lock (_connectionMonitor)
         {
-            if (CacheMode == CachingMode.CHANNEL)
+            if (CacheMode == CachingMode.Channel)
             {
-                if (_connection.Target == null)
+                if (Connection.Target == null)
                 {
-                    _connection.Target = CreateBareConnection();
+                    Connection.Target = CreateBareConnection();
 
                     // invoke the listener *after* this.connection is assigned
-                    if (!_checkoutPermits.ContainsKey(_connection))
+                    if (!CheckoutPermits.ContainsKey(Connection))
                     {
-                        _checkoutPermits.Add(_connection, new SemaphoreSlim(ChannelCacheSize));
+                        CheckoutPermits.Add(Connection, new SemaphoreSlim(ChannelCacheSize));
                     }
 
-                    _connection._closeNotified = 0;
-                    ConnectionListener.OnCreate(_connection);
+                    Connection.CloseNotified = 0;
+                    ConnectionListener.OnCreate(Connection);
                 }
 
-                return _connection;
+                return Connection;
             }
-            else if (CacheMode == CachingMode.CONNECTION)
+            else if (CacheMode == CachingMode.Connection)
             {
                 return GetConnectionFromCache();
             }
@@ -436,7 +436,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         if (disposing)
         {
             Destroy();
-            _stopped = true;
+            Stopped = true;
         }
 
         base.Dispose(disposing);
@@ -451,18 +451,18 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         lock (_connectionMonitor)
         {
             props.Add("channelCacheSize", _channelCacheSize);
-            if (CacheMode == CachingMode.CONNECTION)
+            if (CacheMode == CachingMode.Connection)
             {
                 props.Add("connectionCacheSize", _connectionCacheSize);
                 props.Add("openConnections", CountOpenConnections());
-                props.Add("idleConnections", _idleConnections.Count);
+                props.Add("idleConnections", IdleConnections.Count);
                 props.Add("idleConnectionsHighWater", _connectionHighWaterMark.Value);
-                foreach (var proxy in _allocatedConnections)
+                foreach (var proxy in AllocatedConnections)
                 {
                     PutConnectionName(props, proxy, $":{proxy.LocalPort}");
                 }
 
-                foreach (var entry in _allocatedConnectionTransactionalChannels)
+                foreach (var entry in AllocatedConnectionTransactionalChannels)
                 {
                     var port = entry.Key.LocalPort;
                     if (port > 0 && entry.Key.IsOpen)
@@ -473,7 +473,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     }
                 }
 
-                foreach (var entry in _allocatedConnectionNonTransactionalChannels)
+                foreach (var entry in AllocatedConnectionNonTransactionalChannels)
                 {
                     var port = entry.Key.LocalPort;
                     if (port > 0 && entry.Key.IsOpen)
@@ -486,12 +486,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             else
             {
-                props.Add("localPort", _connection.Target == null ? 0 : _connection.LocalPort);
-                props.Add("idleChannelsTx", _cachedChannelsTransactional.Count);
-                props.Add("idleChannelsNotTx", _cachedChannelsNonTransactional.Count);
-                props.Add("idleChannelsTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsTransactional)].Value);
-                props.Add("idleChannelsNotTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsNonTransactional)].Value);
-                PutConnectionName(props, _connection, string.Empty);
+                props.Add("localPort", Connection.Target == null ? 0 : Connection.LocalPort);
+                props.Add("idleChannelsTx", CachedChannelsTransactional.Count);
+                props.Add("idleChannelsNotTx", CachedChannelsNonTransactional.Count);
+                props.Add("idleChannelsTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(CachedChannelsTransactional)].Value);
+                props.Add("idleChannelsNotTxHighWater", _channelHighWaterMarks[RuntimeHelpers.GetHashCode(CachedChannelsNonTransactional)].Value);
+                PutConnectionName(props, Connection, string.Empty);
             }
         }
 
@@ -502,12 +502,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     {
         lock (_connectionMonitor)
         {
-            if (_connection.Target != null)
+            if (Connection.Target != null)
             {
-                _connection.Dispose();
+                Connection.Dispose();
             }
 
-            foreach (var c in _allocatedConnections)
+            foreach (var c in AllocatedConnections)
             {
                 c.Dispose();
             }
@@ -527,9 +527,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     }
 
     // Used in unit test
-    internal int CountOpenConnections() => _allocatedConnections.Count(conn => conn.IsOpen);
-
-    #region Protected
+    internal int CountOpenConnections() => AllocatedConnections.Count(conn => conn.IsOpen);
 
     protected void Reset(LinkedList<IChannelProxy> channels, LinkedList<IChannelProxy> txChannels, Dictionary<RC.IModel, IChannelProxy> channelsAwaitingAcks)
     {
@@ -560,13 +558,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             catch (Exception ex)
             {
-                _logger?.LogTrace(ex, "Could not close cached Rabbit Channel");
+                Logger?.LogTrace(ex, "Could not close cached Rabbit Channel");
             }
         }
     }
-    #endregion Protected
 
-    #region Private
     private void Configure(RabbitOptions options)
     {
         SetAddresses(options.DetermineAddresses());
@@ -580,8 +576,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         if (cacheChannel.CheckoutTimeout.HasValue)
         {
-            var asMilli = (int)cacheChannel.CheckoutTimeout.Value.TotalMilliseconds;
-            ChannelCheckoutTimeout = asMilli;
+            var asMilliseconds = (int)cacheChannel.CheckoutTimeout.Value.TotalMilliseconds;
+            ChannelCheckoutTimeout = asMilliseconds;
         }
 
         var cacheConnection = options.Cache.Connection;
@@ -611,7 +607,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     private void ConfigureRabbitConnectionFactory(RabbitOptions options)
     {
-        var factory = _rabbitConnectionFactory as RC.ConnectionFactory;
+        var factory = InnerRabbitConnectionFactory as RC.ConnectionFactory;
         var host = options.DetermineHost();
         if (host != null)
         {
@@ -667,9 +663,9 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 factory.Ssl.CertPath = options.Ssl.CertPath;
             }
 
-            if (!string.IsNullOrEmpty(options.Ssl.CertPassphrase))
+            if (!string.IsNullOrEmpty(options.Ssl.CertPassPhrase))
             {
-                factory.Ssl.CertPassphrase = options.Ssl.CertPassphrase;
+                factory.Ssl.CertPassphrase = options.Ssl.CertPassPhrase;
             }
 
             factory.Ssl.Version = options.Ssl.Algorithm;
@@ -697,7 +693,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             channel = FindOpenChannel(channelList, channel);
             if (channel != null)
             {
-                _logger?.LogTrace("Found cached Rabbit Channel:{channel}", channel);
+                Logger?.LogTrace("Found cached Rabbit Channel:{channel}", channel);
             }
         }
 
@@ -712,7 +708,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 if (permits != null)
                 {
                     permits.Release();
-                    _logger?.LogDebug("Could not get channel; released permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
+                    Logger?.LogDebug("Could not get channel; released permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
                 }
 
                 throw;
@@ -724,7 +720,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
     private SemaphoreSlim ObtainPermits(ChannelCachingConnectionProxy connection)
     {
-        if (_checkoutPermits.TryGetValue(connection, out var permits))
+        if (CheckoutPermits.TryGetValue(connection, out var permits))
         {
             try
             {
@@ -733,7 +729,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                     throw new RabbitTimeoutException("No available channels");
                 }
 
-                _logger?.LogDebug("Acquired permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
+                Logger?.LogDebug("Acquired permit for {connection}, remaining {permits}", connection, permits.CurrentCount);
             }
             catch (ObjectDisposedException e)
             {
@@ -757,7 +753,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             {
                 channel = channelList.First.Value;
                 channelList.RemoveFirst();
-                _logger?.LogTrace("{channel} retrieved from cache", channel);
+                Logger?.LogTrace("{channel} retrieved from cache", channel);
                 if (channel.IsOpen)
                 {
                     break;
@@ -789,34 +785,34 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         }
         catch (AlreadyClosedException)
         {
-            _logger?.LogTrace("{channel} is already closed", channel);
+            Logger?.LogTrace("{channel} is already closed", channel);
         }
         catch (TimeoutException e)
         {
-            _logger?.LogWarning(e, "TimeoutException closing channel {channel}", channel);
+            Logger?.LogWarning(e, "TimeoutException closing channel {channel}", channel);
         }
         catch (Exception e)
         {
-            _logger?.LogDebug(e, "Unexpected Exception closing channel {channel}", channel);
+            Logger?.LogDebug(e, "Unexpected Exception closing channel {channel}", channel);
         }
     }
 
     private LinkedList<IChannelProxy> DetermineChannelList(ChannelCachingConnectionProxy connection, bool transactional)
     {
         LinkedList<IChannelProxy> channelList;
-        if (CacheMode == CachingMode.CHANNEL)
+        if (CacheMode == CachingMode.Channel)
         {
-            channelList = transactional ? _cachedChannelsTransactional : _cachedChannelsNonTransactional;
+            channelList = transactional ? CachedChannelsTransactional : CachedChannelsNonTransactional;
         }
         else
         {
             if (transactional)
             {
-                _allocatedConnectionTransactionalChannels.TryGetValue(connection, out channelList);
+                AllocatedConnectionTransactionalChannels.TryGetValue(connection, out channelList);
             }
             else
             {
-                _allocatedConnectionNonTransactionalChannels.TryGetValue(connection, out channelList);
+                AllocatedConnectionNonTransactionalChannels.TryGetValue(connection, out channelList);
             }
         }
 
@@ -831,48 +827,48 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     private IChannelProxy GetCachedChannelProxy(ChannelCachingConnectionProxy connection, LinkedList<IChannelProxy> channelList, bool transactional)
     {
         var targetChannel = CreateBareChannel(connection, transactional);
-        _logger?.LogDebug("Creating cached Rabbit Channel from {targetChannel}", targetChannel);
+        Logger?.LogDebug("Creating cached Rabbit Channel from {targetChannel}", targetChannel);
         ChannelListener.OnCreate(targetChannel, transactional);
-        if (_confirmType == ConfirmType.CORRELATED || IsPublisherReturns)
+        if (_confirmType == ConfirmType.Correlated || IsPublisherReturns)
         {
-            return new CachedPublisherCallbackChannelProxy(this, connection, targetChannel, channelList, transactional, _loggerFactory?.CreateLogger<CachedPublisherCallbackChannelProxy>());
+            return new CachedPublisherCallbackChannelProxy(this, connection, targetChannel, channelList, transactional, LoggerFactory?.CreateLogger<CachedPublisherCallbackChannelProxy>());
         }
         else
         {
-            return new CachedChannelProxy(this, connection, targetChannel, channelList, transactional, _loggerFactory?.CreateLogger<CachedChannelProxy>());
+            return new CachedChannelProxy(this, connection, targetChannel, channelList, transactional, LoggerFactory?.CreateLogger<CachedChannelProxy>());
         }
     }
 
     private RC.IModel CreateBareChannel(ChannelCachingConnectionProxy connection, bool transactional)
     {
-        if (CacheMode == CachingMode.CHANNEL)
+        if (CacheMode == CachingMode.Channel)
         {
-            if (!_connection.IsOpen)
+            if (!Connection.IsOpen)
             {
                 lock (_connectionMonitor)
                 {
-                    if (!_connection.IsOpen)
+                    if (!Connection.IsOpen)
                     {
-                        _connection.NotifyCloseIfNecessary();
+                        Connection.NotifyCloseIfNecessary();
                     }
 
-                    if (!_connection.IsOpen)
+                    if (!Connection.IsOpen)
                     {
-                        _connection.Target = null;
+                        Connection.Target = null;
                         CreateConnection();
                     }
                 }
             }
 
-            return DoCreateBareChannel(_connection, transactional);
+            return DoCreateBareChannel(Connection, transactional);
         }
-        else if (CacheMode == CachingMode.CONNECTION)
+        else if (CacheMode == CachingMode.Connection)
         {
             if (!connection.IsOpen)
             {
                 lock (_connectionMonitor)
                 {
-                    _allocatedConnectionNonTransactionalChannels.TryGetValue(connection, out var proxies);
+                    AllocatedConnectionNonTransactionalChannels.TryGetValue(connection, out var proxies);
                     proxies?.Clear();
                     connection.NotifyCloseIfNecessary();
                     RefreshProxyConnection(connection);
@@ -888,7 +884,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     private RC.IModel DoCreateBareChannel(ChannelCachingConnectionProxy conn, bool transactional)
     {
         var channel = conn.CreateBareChannel(transactional);
-        if (!ConfirmType.NONE.Equals(_confirmType))
+        if (!ConfirmType.None.Equals(_confirmType))
         {
             try
             {
@@ -896,7 +892,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Could not configure the channel to receive publisher confirms");
+                Logger?.LogError(e, "Could not configure the channel to receive publisher confirms");
             }
         }
 
@@ -935,20 +931,20 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 throw new RabbitTimeoutException("Timed out attempting to get a connection");
             }
 
-            cachedConnection = new ChannelCachingConnectionProxy(this, CreateBareConnection(), _logger);
-            _logger?.LogDebug("Adding new connection '{connection}'", cachedConnection);
+            cachedConnection = new ChannelCachingConnectionProxy(this, CreateBareConnection(), Logger);
+            Logger?.LogDebug("Adding new connection '{connection}'", cachedConnection);
 
-            _allocatedConnections.Add(cachedConnection);
+            AllocatedConnections.Add(cachedConnection);
 
             var nonTrans = new LinkedList<IChannelProxy>();
             var trans = new LinkedList<IChannelProxy>();
-            _allocatedConnectionNonTransactionalChannels[cachedConnection] = nonTrans;
-            _allocatedConnectionTransactionalChannels[cachedConnection] = trans;
+            AllocatedConnectionNonTransactionalChannels[cachedConnection] = nonTrans;
+            AllocatedConnectionTransactionalChannels[cachedConnection] = trans;
 
             _channelHighWaterMarks[RuntimeHelpers.GetHashCode(nonTrans)] = new AtomicInteger();
             _channelHighWaterMarks[RuntimeHelpers.GetHashCode(trans)] = new AtomicInteger();
 
-            _checkoutPermits[cachedConnection] = new SemaphoreSlim(ChannelCacheSize);
+            CheckoutPermits[cachedConnection] = new SemaphoreSlim(ChannelCacheSize);
 
             ConnectionListener.OnCreate(cachedConnection);
         }
@@ -960,12 +956,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             catch (Exception)
             {
-                _idleConnections.AddLast(cachedConnection);
+                IdleConnections.AddLast(cachedConnection);
             }
         }
         else
         {
-            _logger?.LogDebug("Obtained connection '{connection}' from cache", cachedConnection);
+            Logger?.LogDebug("Obtained connection '{connection}' from cache", cachedConnection);
         }
 
         return cachedConnection;
@@ -987,7 +983,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogError(e, "Exception while waiting for a connection");
+                    Logger?.LogError(e, "Exception while waiting for a connection");
                     throw new RabbitException("Interrupted while waiting for a connection", e);
                 }
             }
@@ -999,26 +995,26 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
     private ChannelCachingConnectionProxy FindIdleConnection()
     {
         ChannelCachingConnectionProxy cachedConnection = null;
-        var lastIdle = _idleConnections.Last?.Value;
+        var lastIdle = IdleConnections.Last?.Value;
         while (cachedConnection == null)
         {
-            cachedConnection = _idleConnections.First?.Value;
+            cachedConnection = IdleConnections.First?.Value;
             if (cachedConnection != null)
             {
-                _idleConnections.RemoveFirst();
+                IdleConnections.RemoveFirst();
                 if (!cachedConnection.IsOpen)
                 {
-                    _logger?.LogDebug("Skipping closed connection '{connection}'", cachedConnection);
+                    Logger?.LogDebug("Skipping closed connection '{connection}'", cachedConnection);
                     cachedConnection.NotifyCloseIfNecessary();
-                    _idleConnections.AddLast(cachedConnection);
+                    IdleConnections.AddLast(cachedConnection);
 
                     if (cachedConnection == lastIdle)
                     {
                         // all of the idle connections are closed.
-                        cachedConnection = _idleConnections.First?.Value;
+                        cachedConnection = IdleConnections.First?.Value;
                         if (cachedConnection != null)
                         {
-                            _idleConnections.RemoveFirst();
+                            IdleConnections.RemoveFirst();
                         }
 
                         break;
@@ -1041,19 +1037,16 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         connection.Dispose();
         connection.NotifyCloseIfNecessary();
         connection.Target = CreateBareConnection();
-        connection._closeNotified = 0;
+        connection.CloseNotified = 0;
         ConnectionListener.OnCreate(connection);
-        _logger?.LogDebug("Refreshed existing connection '{connection}'", connection);
+        Logger?.LogDebug("Refreshed existing connection '{connection}'", connection);
     }
 
     private void InitCacheWaterMarks()
     {
-        _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsNonTransactional)] = new AtomicInteger();
-        _channelHighWaterMarks[RuntimeHelpers.GetHashCode(_cachedChannelsTransactional)] = new AtomicInteger();
+        _channelHighWaterMarks[RuntimeHelpers.GetHashCode(CachedChannelsNonTransactional)] = new AtomicInteger();
+        _channelHighWaterMarks[RuntimeHelpers.GetHashCode(CachedChannelsTransactional)] = new AtomicInteger();
     }
-    #endregion
-
-    #region Nested Types
 
     internal sealed class CachedPublisherCallbackChannelProxy : CachedChannelProxy, IPublisherCallbackChannel
     {
@@ -1068,13 +1061,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
         }
 
-        #region IPublisherCallbackChannel
-
         public RC.IModel Channel
         {
             get
             {
-                return _target;
+                return target;
             }
         }
 
@@ -1108,25 +1099,22 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             PublisherCallbackChannel.SetAfterAckCallback(callback);
         }
 
-        private IPublisherCallbackChannel PublisherCallbackChannel => (IPublisherCallbackChannel)_target;
-
-        #endregion
+        private IPublisherCallbackChannel PublisherCallbackChannel => (IPublisherCallbackChannel)target;
 
         public override string ToString()
         {
-            return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
+            return $"Cached Rabbit Channel: {target}, conn: {TheConnection}";
         }
 
-        #region Protected
         protected override void ReturnToCache()
         {
-            if (_factory._active && _publisherConfirms)
+            if (Factory._active && PublisherConfirms)
             {
-                _theConnection._channelsAwaitingAcks[_target] = this;
-                ((IPublisherCallbackChannel)_target)
+                TheConnection.ChannelsAwaitingAcks[target] = this;
+                ((IPublisherCallbackChannel)target)
                     .SetAfterAckCallback(c =>
                     {
-                        _theConnection._channelsAwaitingAcks.Remove(c);
+                        TheConnection.ChannelsAwaitingAcks.Remove(c);
                         DoReturnToCache();
                     });
             }
@@ -1135,23 +1123,22 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 DoReturnToCache();
             }
         }
-        #endregion
     }
 
     internal class CachedChannelProxy : IChannelProxy
     {
-        protected const int ASYNC_CLOSE_TIMEOUT = 5_000;
-        protected readonly CachingConnectionFactory _factory;
-        protected readonly ChannelCachingConnectionProxy _theConnection;
-        protected readonly LinkedList<IChannelProxy> _channelList;
-        protected readonly int _channelListIdentity;
-        protected readonly object _targetMonitor = new ();
-        protected readonly bool _transactional;
-        protected readonly bool _confirmSelected;
-        protected readonly bool _publisherConfirms;
-        protected readonly ILogger _logger;
-        protected RC.IModel _target;
-        protected bool _txStarted;
+        protected const int AsyncCloseTimeout = 5_000;
+        protected readonly CachingConnectionFactory Factory;
+        protected readonly ChannelCachingConnectionProxy TheConnection;
+        protected readonly LinkedList<IChannelProxy> ChannelList;
+        protected readonly int ChannelListIdentity;
+        protected readonly object TargetMonitor = new ();
+        protected readonly bool Transactional;
+        protected readonly bool ConfirmSelected;
+        protected readonly bool PublisherConfirms;
+        protected readonly ILogger Logger;
+        protected RC.IModel target;
+        protected bool txStarted;
 
         public CachedChannelProxy(
             CachingConnectionFactory factory,
@@ -1161,28 +1148,23 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             bool transactional,
             ILogger logger)
         {
-            _factory = factory;
-            _theConnection = connection;
-            _target = target;
-            _channelList = channelList;
-            _channelListIdentity = RuntimeHelpers.GetHashCode(channelList);
-            _transactional = transactional;
-            _confirmSelected = _factory.IsSimplePublisherConfirms;
-            _publisherConfirms = _factory.IsPublisherConfirms;
-            _logger = logger;
+            Factory = factory;
+            TheConnection = connection;
+            this.target = target;
+            ChannelList = channelList;
+            ChannelListIdentity = RuntimeHelpers.GetHashCode(channelList);
+            Transactional = transactional;
+            ConfirmSelected = Factory.IsSimplePublisherConfirms;
+            PublisherConfirms = Factory.IsPublisherConfirms;
+            Logger = logger;
         }
 
-        #region IChannelProxy
+        public RC.IModel TargetChannel => target;
 
-        public RC.IModel TargetChannel => _target;
+        public bool IsTransactional => Transactional;
 
-        public bool IsTransactional => _transactional;
+        public bool IsConfirmSelected => ConfirmSelected;
 
-        public bool IsConfirmSelected => _confirmSelected;
-
-        #endregion
-
-        #region IModel
         public int ChannelNumber
         {
             get
@@ -1190,7 +1172,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    return _target.ChannelNumber;
+                    return target.ChannelNumber;
                 }
                 catch (Exception e)
                 {
@@ -1207,7 +1189,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    return _target.CloseReason;
+                    return target.CloseReason;
                 }
                 catch (Exception e)
                 {
@@ -1224,7 +1206,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    return _target.DefaultConsumer;
+                    return target.DefaultConsumer;
                 }
                 catch (Exception e)
                 {
@@ -1238,7 +1220,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.DefaultConsumer = value;
+                    target.DefaultConsumer = value;
                 }
                 catch (Exception e)
                 {
@@ -1252,7 +1234,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             get
             {
-                return _target == null || _target.IsClosed;
+                return target == null || target.IsClosed;
             }
         }
 
@@ -1260,7 +1242,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             get
             {
-                return _target != null && _target.IsOpen;
+                return target != null && target.IsOpen;
             }
         }
 
@@ -1271,7 +1253,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    return _target.NextPublishSeqNo;
+                    return target.NextPublishSeqNo;
                 }
                 catch (Exception e)
                 {
@@ -1288,7 +1270,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    return _target.ContinuationTimeout;
+                    return target.ContinuationTimeout;
                 }
                 catch (Exception e)
                 {
@@ -1302,7 +1284,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.ContinuationTimeout = value;
+                    target.ContinuationTimeout = value;
                 }
                 catch (Exception e)
                 {
@@ -1319,7 +1301,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicAcks += value;
+                    target.BasicAcks += value;
                 }
                 catch (Exception e)
                 {
@@ -1333,7 +1315,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicAcks -= value;
+                    target.BasicAcks -= value;
                 }
                 catch (Exception e)
                 {
@@ -1350,7 +1332,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicNacks += value;
+                    target.BasicNacks += value;
                 }
                 catch (Exception e)
                 {
@@ -1364,7 +1346,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicNacks -= value;
+                    target.BasicNacks -= value;
                 }
                 catch (Exception e)
                 {
@@ -1381,7 +1363,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicRecoverOk += value;
+                    target.BasicRecoverOk += value;
                 }
                 catch (Exception e)
                 {
@@ -1395,7 +1377,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicRecoverOk -= value;
+                    target.BasicRecoverOk -= value;
                 }
                 catch (Exception e)
                 {
@@ -1412,7 +1394,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicReturn += value;
+                    target.BasicReturn += value;
                 }
                 catch (Exception e)
                 {
@@ -1426,7 +1408,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.BasicReturn -= value;
+                    target.BasicReturn -= value;
                 }
                 catch (Exception e)
                 {
@@ -1443,7 +1425,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.CallbackException += value;
+                    target.CallbackException += value;
                 }
                 catch (Exception e)
                 {
@@ -1457,7 +1439,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.CallbackException -= value;
+                    target.CallbackException -= value;
                 }
                 catch (Exception e)
                 {
@@ -1474,7 +1456,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.FlowControl += value;
+                    target.FlowControl += value;
                 }
                 catch (Exception e)
                 {
@@ -1488,7 +1470,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.FlowControl -= value;
+                    target.FlowControl -= value;
                 }
                 catch (Exception e)
                 {
@@ -1505,7 +1487,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.ModelShutdown += value;
+                    target.ModelShutdown += value;
                 }
                 catch (Exception e)
                 {
@@ -1519,7 +1501,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 try
                 {
                     PreInvoke();
-                    _target.ModelShutdown -= value;
+                    target.ModelShutdown -= value;
                 }
                 catch (Exception e)
                 {
@@ -1534,7 +1516,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.Abort();
+                target.Abort();
             }
             catch (Exception e)
             {
@@ -1548,7 +1530,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.Abort(replyCode, replyText);
+                target.Abort(replyCode, replyText);
             }
             catch (Exception e)
             {
@@ -1561,16 +1543,16 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             try
             {
-                if (_target == null || !_target.IsOpen)
+                if (target == null || !target.IsOpen)
                 {
                     throw new InvalidOperationException("Channel closed; cannot ack/nack");
                 }
 
                 PreInvoke();
-                _target.BasicAck(deliveryTag, multiple);
-                if (_transactional)
+                target.BasicAck(deliveryTag, multiple);
+                if (Transactional)
                 {
-                    _txStarted = true;
+                    txStarted = true;
                 }
             }
             catch (Exception e)
@@ -1585,7 +1567,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.BasicCancel(consumerTag);
+                target.BasicCancel(consumerTag);
             }
             catch (Exception e)
             {
@@ -1599,7 +1581,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, consumer);
+                return target.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, consumer);
             }
             catch (Exception e)
             {
@@ -1613,7 +1595,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.BasicGet(queue, autoAck);
+                return target.BasicGet(queue, autoAck);
             }
             catch (Exception e)
             {
@@ -1626,16 +1608,16 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             try
             {
-                if (_target == null || !_target.IsOpen)
+                if (target == null || !target.IsOpen)
                 {
                     throw new InvalidOperationException("Channel closed; cannot ack/nack");
                 }
 
                 PreInvoke();
-                _target.BasicNack(deliveryTag, multiple, requeue);
-                if (_transactional)
+                target.BasicNack(deliveryTag, multiple, requeue);
+                if (Transactional)
                 {
-                    _txStarted = true;
+                    txStarted = true;
                 }
             }
             catch (Exception e)
@@ -1650,10 +1632,10 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.BasicPublish(exchange, routingKey, mandatory, basicProperties, body);
-                if (_transactional)
+                target.BasicPublish(exchange, routingKey, mandatory, basicProperties, body);
+                if (Transactional)
                 {
-                    _txStarted = true;
+                    txStarted = true;
                 }
             }
             catch (Exception e)
@@ -1668,7 +1650,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.BasicQos(prefetchSize, prefetchCount, global);
+                target.BasicQos(prefetchSize, prefetchCount, global);
             }
             catch (Exception e)
             {
@@ -1682,7 +1664,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.BasicRecover(requeue);
+                target.BasicRecover(requeue);
             }
             catch (Exception e)
             {
@@ -1696,7 +1678,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.BasicRecoverAsync(requeue);
+                target.BasicRecoverAsync(requeue);
             }
             catch (Exception e)
             {
@@ -1709,16 +1691,16 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             try
             {
-                if (_target == null || !_target.IsOpen)
+                if (target == null || !target.IsOpen)
                 {
                     throw new InvalidOperationException("Channel closed; cannot ack/nack");
                 }
 
                 PreInvoke();
-                _target.BasicReject(deliveryTag, requeue);
-                if (_transactional)
+                target.BasicReject(deliveryTag, requeue);
+                if (Transactional)
                 {
-                    _txStarted = true;
+                    txStarted = true;
                 }
             }
             catch (Exception e)
@@ -1743,7 +1725,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ConfirmSelect();
+                target.ConfirmSelect();
             }
             catch (Exception e)
             {
@@ -1757,7 +1739,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.ConsumerCount(queue);
+                return target.ConsumerCount(queue);
             }
             catch (Exception e)
             {
@@ -1771,7 +1753,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.CreateBasicProperties();
+                return target.CreateBasicProperties();
             }
             catch (Exception e)
             {
@@ -1785,7 +1767,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.CreateBasicPublishBatch();
+                return target.CreateBasicPublishBatch();
             }
             catch (Exception e)
             {
@@ -1799,7 +1781,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeBind(destination, source, routingKey, arguments);
+                target.ExchangeBind(destination, source, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1813,7 +1795,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeBindNoWait(destination, source, routingKey, arguments);
+                target.ExchangeBindNoWait(destination, source, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1827,7 +1809,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
+                target.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
             }
             catch (Exception e)
             {
@@ -1841,7 +1823,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeDeclareNoWait(exchange, type, durable, autoDelete, arguments);
+                target.ExchangeDeclareNoWait(exchange, type, durable, autoDelete, arguments);
             }
             catch (Exception e)
             {
@@ -1855,7 +1837,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeDeclarePassive(exchange);
+                target.ExchangeDeclarePassive(exchange);
             }
             catch (Exception e)
             {
@@ -1869,7 +1851,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeDelete(exchange, ifUnused);
+                target.ExchangeDelete(exchange, ifUnused);
             }
             catch (Exception e)
             {
@@ -1883,7 +1865,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeDeleteNoWait(exchange, ifUnused);
+                target.ExchangeDeleteNoWait(exchange, ifUnused);
             }
             catch (Exception e)
             {
@@ -1897,7 +1879,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeUnbind(destination, source, routingKey, arguments);
+                target.ExchangeUnbind(destination, source, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1911,7 +1893,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.ExchangeUnbindNoWait(destination, source, routingKey, arguments);
+                target.ExchangeUnbindNoWait(destination, source, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1925,7 +1907,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.MessageCount(queue);
+                return target.MessageCount(queue);
             }
             catch (Exception e)
             {
@@ -1939,7 +1921,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.QueueBind(queue, exchange, routingKey, arguments);
+                target.QueueBind(queue, exchange, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1953,7 +1935,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.QueueBindNoWait(queue, exchange, routingKey, arguments);
+                target.QueueBindNoWait(queue, exchange, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -1967,7 +1949,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
+                return target.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
             }
             catch (Exception e)
             {
@@ -1981,7 +1963,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.QueueDeclareNoWait(queue, durable, exclusive, autoDelete, arguments);
+                target.QueueDeclareNoWait(queue, durable, exclusive, autoDelete, arguments);
             }
             catch (Exception e)
             {
@@ -1995,7 +1977,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.QueueDeclarePassive(queue);
+                return target.QueueDeclarePassive(queue);
             }
             catch (Exception e)
             {
@@ -2009,7 +1991,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.QueueDelete(queue, ifUnused, ifEmpty);
+                return target.QueueDelete(queue, ifUnused, ifEmpty);
             }
             catch (Exception e)
             {
@@ -2023,7 +2005,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.QueueDeleteNoWait(queue, ifUnused, ifEmpty);
+                target.QueueDeleteNoWait(queue, ifUnused, ifEmpty);
             }
             catch (Exception e)
             {
@@ -2037,7 +2019,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.QueuePurge(queue);
+                return target.QueuePurge(queue);
             }
             catch (Exception e)
             {
@@ -2051,7 +2033,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.QueueUnbind(queue, exchange, routingKey, arguments);
+                target.QueueUnbind(queue, exchange, routingKey, arguments);
             }
             catch (Exception e)
             {
@@ -2065,10 +2047,10 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.TxCommit();
-                if (_transactional)
+                target.TxCommit();
+                if (Transactional)
                 {
-                    _txStarted = false;
+                    txStarted = false;
                 }
             }
             catch (Exception e)
@@ -2083,10 +2065,10 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.TxRollback();
-                if (_transactional)
+                target.TxRollback();
+                if (Transactional)
                 {
-                    _txStarted = false;
+                    txStarted = false;
                 }
             }
             catch (Exception e)
@@ -2101,12 +2083,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                if (!_transactional)
+                if (!Transactional)
                 {
                     throw new InvalidOperationException("Cannot start transaction on non-transactional channel");
                 }
 
-                _target.TxSelect();
+                target.TxSelect();
             }
             catch (Exception e)
             {
@@ -2120,7 +2102,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.WaitForConfirms();
+                return target.WaitForConfirms();
             }
             catch (Exception e)
             {
@@ -2134,7 +2116,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.WaitForConfirms(timeout);
+                return target.WaitForConfirms(timeout);
             }
             catch (Exception e)
             {
@@ -2148,7 +2130,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                return _target.WaitForConfirms(timeout, out timedOut);
+                return target.WaitForConfirms(timeout, out timedOut);
             }
             catch (Exception e)
             {
@@ -2162,7 +2144,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.WaitForConfirmsOrDie();
+                target.WaitForConfirmsOrDie();
             }
             catch (Exception e)
             {
@@ -2176,7 +2158,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             try
             {
                 PreInvoke();
-                _target.WaitForConfirmsOrDie(timeout);
+                target.WaitForConfirmsOrDie(timeout);
             }
             catch (Exception e)
             {
@@ -2184,9 +2166,6 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                 throw;
             }
         }
-        #endregion
-
-        #region IDisposable
 
         public void Dispose()
         {
@@ -2198,79 +2177,75 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
         }
 
-        #endregion
-
         public override string ToString()
         {
-            return $"Cached Rabbit Channel: {_target}, conn: {_theConnection}";
+            return $"Cached Rabbit Channel: {target}, conn: {TheConnection}";
         }
-
-        #region protected
 
         protected virtual void PostException(Exception e)
         {
-            if (_target == null || !_target.IsOpen)
+            if (target == null || !target.IsOpen)
             {
                 // Basic re-connection logic...
-                _logger?.LogDebug(e, "Detected closed channel on exception.  Re-initializing: {target} ", _target);
-                _target = null;
+                Logger?.LogDebug(e, "Detected closed channel on exception.  Re-initializing: {target} ", target);
+                target = null;
 
-                lock (_targetMonitor)
+                lock (TargetMonitor)
                 {
-                    _target ??= _factory.CreateBareChannel(_theConnection, _transactional);
+                    target ??= Factory.CreateBareChannel(TheConnection, Transactional);
                 }
             }
         }
 
         protected virtual void PreInvoke()
         {
-            if (_target == null || !_target.IsOpen)
+            if (target == null || !target.IsOpen)
             {
-                if (_target is IPublisherCallbackChannel)
+                if (target is IPublisherCallbackChannel)
                 {
-                    _target.Close();
+                    target.Close();
                     throw new RabbitException("PublisherCallbackChannel is closed");
                 }
-                else if (_txStarted)
+                else if (txStarted)
                 {
-                    _txStarted = false;
+                    txStarted = false;
                     throw new InvalidOperationException("Channel closed during transaction");
                 }
 
-                _target = null;
+                target = null;
             }
 
-            lock (_targetMonitor)
+            lock (TargetMonitor)
             {
-                _target ??= _factory.CreateBareChannel(_theConnection, _transactional);
+                target ??= Factory.CreateBareChannel(TheConnection, Transactional);
             }
         }
 
         protected virtual void ReleasePermitIfNecessary()
         {
-            if (_factory.ChannelCheckoutTimeout > 0)
+            if (Factory.ChannelCheckoutTimeout > 0)
             {
                 /*
                  *  Only release a permit if this is a normal close; if the channel is
                  *  in the list, it means we're closing a cached channel (for which a permit
                  *  has already been released).
                  */
-                lock (_channelList)
+                lock (ChannelList)
                 {
-                    if (_channelList.Contains(this))
+                    if (ChannelList.Contains(this))
                     {
                         return;
                     }
                 }
 
-                if (_factory._checkoutPermits.TryGetValue(_theConnection, out var permits))
+                if (Factory.CheckoutPermits.TryGetValue(TheConnection, out var permits))
                 {
                     permits.Release();
-                    _logger?.LogDebug("Released permit for '{connection}', remaining: {permits}", _theConnection, permits.CurrentCount);
+                    Logger?.LogDebug("Released permit for '{connection}', remaining: {permits}", TheConnection, permits.CurrentCount);
                 }
                 else
                 {
-                    _logger?.LogError("LEAKAGE: No permits map entry for {connection} ", _theConnection);
+                    Logger?.LogError("LEAKAGE: No permits map entry for {connection} ", TheConnection);
                 }
             }
         }
@@ -2294,16 +2269,16 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         {
             // if (proxy != null)
             // {
-            lock (_channelList)
+            lock (ChannelList)
             {
                 // Allow for multiple close calls...
-                if (_factory._active)
+                if (Factory._active)
                 {
-                    if (!_channelList.Contains(this))
+                    if (!ChannelList.Contains(this))
                     {
-                        _logger?.LogTrace("Returning cached channel: {channel}", _target);
+                        Logger?.LogTrace("Returning cached channel: {channel}", target);
                         ReleasePermitIfNecessary();
-                        _channelList.AddLast(this);
+                        ChannelList.AddLast(this);
                         SetHighWaterMark();
                     }
                 }
@@ -2317,7 +2292,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError(e, "Exception while doing PhysicalClose()");
+                            Logger?.LogError(e, "Exception while doing PhysicalClose()");
                         }
                     }
                 }
@@ -2329,32 +2304,32 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void LogicalClose()
         {
-            if (_target == null)
+            if (target == null)
             {
                 return;
             }
 
-            if (!_target.IsOpen)
+            if (!target.IsOpen)
             {
-                lock (_targetMonitor)
+                lock (TargetMonitor)
                 {
-                    if (!_target.IsOpen)
+                    if (!target.IsOpen)
                     {
-                        if (_target is IPublisherCallbackChannel)
+                        if (target is IPublisherCallbackChannel)
                         {
-                            _target.Close(); // emit nacks if necessary
+                            target.Close(); // emit nacks if necessary
                         }
 
-                        if (_channelList.Contains(this))
+                        if (ChannelList.Contains(this))
                         {
-                            _channelList.Remove(this);
+                            ChannelList.Remove(this);
                         }
                         else
                         {
                             ReleasePermitIfNecessary();
                         }
 
-                        _target = null;
+                        target = null;
                         return;
                     }
                 }
@@ -2365,11 +2340,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected void SetHighWaterMark()
         {
-            if (_factory._channelHighWaterMarks.TryGetValue(_channelListIdentity, out var hwm))
+            if (Factory._channelHighWaterMarks.TryGetValue(ChannelListIdentity, out var hwm))
             {
-                // No need for atomicity since we're sync'd on the channel list
+                // No need for atomicity since we're synced on the channel list
                 var prev = hwm.Value;
-                var size = _channelList.Count;
+                var size = ChannelList.Count;
                 if (size > prev)
                 {
                     hwm.Value = size;
@@ -2379,8 +2354,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void PhysicalClose()
         {
-            _logger?.LogDebug("Closing cached channel: {channel} ", _target);
-            if (_target == null)
+            Logger?.LogDebug("Closing cached channel: {channel} ", target);
+            if (target == null)
             {
                 return;
             }
@@ -2388,14 +2363,14 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             var asyncClose = false;
             try
             {
-                if (_factory._active && (_factory.IsPublisherConfirms || _factory.IsPublisherReturns))
+                if (Factory._active && (Factory.IsPublisherConfirms || Factory.IsPublisherReturns))
                 {
                     asyncClose = true;
                     AsyncClose();
                 }
                 else
                 {
-                    _target.Close();
+                    target.Close();
 
                     // if (this.target instanceof AutorecoveringChannel) {
                     //    ClosingRecoveryListener.removeChannel((AutorecoveringChannel)this.target);
@@ -2404,11 +2379,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             catch (AlreadyClosedException e)
             {
-                _logger?.LogTrace(e, "{channel} is already closed", _target);
+                Logger?.LogTrace(e, "{channel} is already closed", target);
             }
             finally
             {
-                _target = null;
+                target = null;
                 if (!asyncClose)
                 {
                     ReleasePermitIfNecessary();
@@ -2419,28 +2394,28 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
         protected void AsyncClose()
         {
             // ExecutorService executorService = getChannelsExecutor();
-            var channel = _target;
+            var channel = target;
 
             // _factory._inFlightAsyncCloses.Add(channel);
             try
             {
                 Task.Run(() =>
                 {
-                    _logger?.LogDebug("Starting AsyncClose processing");
+                    Logger?.LogDebug("Starting AsyncClose processing");
                     try
                     {
-                        if (_factory.IsPublisherConfirms)
+                        if (Factory.IsPublisherConfirms)
                         {
-                            channel.WaitForConfirmsOrDie(TimeSpan.FromMilliseconds(ASYNC_CLOSE_TIMEOUT));
+                            channel.WaitForConfirmsOrDie(TimeSpan.FromMilliseconds(AsyncCloseTimeout));
                         }
                         else
                         {
-                            Thread.Sleep(ASYNC_CLOSE_TIMEOUT);
+                            Thread.Sleep(AsyncCloseTimeout);
                         }
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, "Exception in AsyncClose processing");
+                        Logger?.LogError(e, "Exception in AsyncClose processing");
                     }
                     finally
                     {
@@ -2450,7 +2425,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError(e, "Exception in AsyncClose issued channel close");
+                            Logger?.LogError(e, "Exception in AsyncClose issued channel close");
                         }
                         finally
                         {
@@ -2462,7 +2437,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Exception while running AsyncClose processing");
+                Logger?.LogError(e, "Exception while running AsyncClose processing");
 
                 // _factory._inFlightAsyncCloses.release(channel);
             }
@@ -2470,13 +2445,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         protected virtual void DoClose()
         {
-            if (_factory._active)
+            if (Factory._active)
             {
-                lock (_channelList)
+                lock (ChannelList)
                 {
-                    if (_factory._active &&
+                    if (Factory._active &&
                         !RabbitUtils.IsPhysicalCloseRequired() &&
-                        (_channelList.Count < _factory.ChannelCacheSize || _channelList.Contains(this)))
+                        (ChannelList.Count < Factory.ChannelCacheSize || ChannelList.Contains(this)))
                     {
                         LogicalClose();
                         return;
@@ -2486,13 +2461,12 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
             PhysicalClose();
         }
-        #endregion
     }
 
     internal sealed class ChannelCachingConnectionProxy : IConnectionProxy
     {
-        internal readonly Dictionary<RC.IModel, IChannelProxy> _channelsAwaitingAcks = new ();
-        internal int _closeNotified;
+        internal readonly Dictionary<RC.IModel, IChannelProxy> ChannelsAwaitingAcks = new ();
+        internal int CloseNotified;
         private readonly CachingConnectionFactory _factory;
         private readonly ILogger _logger;
 
@@ -2542,11 +2516,11 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         public void Close()
         {
-            if (_factory.CacheMode == CachingMode.CONNECTION)
+            if (_factory.CacheMode == CachingMode.Connection)
             {
                 lock (_factory._connectionMonitor)
                 {
-                    if (!_factory._idleConnections.Contains(this))
+                    if (!_factory.IdleConnections.Contains(this))
                     {
                         if (!IsOpen || CountOpenIdleConnections() >= _factory.ConnectionCacheSize)
                         {
@@ -2556,8 +2530,8 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
                         _logger?.LogDebug("Returning connection '{connection}' to cache", this);
 
-                        _factory._idleConnections.AddLast(this);
-                        var idleConnectionsSize = _factory._idleConnections.Count;
+                        _factory.IdleConnections.AddLast(this);
+                        var idleConnectionsSize = _factory.IdleConnections.Count;
                         if (_factory._connectionHighWaterMark.Value < idleConnectionsSize)
                         {
                             _factory._connectionHighWaterMark.Value = idleConnectionsSize;
@@ -2571,15 +2545,15 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         public void Dispose()
         {
-            if (_factory.CacheMode == CachingMode.CHANNEL)
+            if (_factory.CacheMode == CachingMode.Channel)
             {
-                _factory.Reset(_factory._cachedChannelsNonTransactional, _factory._cachedChannelsTransactional, _channelsAwaitingAcks);
+                _factory.Reset(_factory.CachedChannelsNonTransactional, _factory.CachedChannelsTransactional, ChannelsAwaitingAcks);
             }
             else
             {
-                _factory._allocatedConnectionNonTransactionalChannels.TryGetValue(this, out var nonTrans);
-                _factory._allocatedConnectionTransactionalChannels.TryGetValue(this, out var trans);
-                _factory.Reset(nonTrans, trans, _channelsAwaitingAcks);
+                _factory.AllocatedConnectionNonTransactionalChannels.TryGetValue(this, out var nonTrans);
+                _factory.AllocatedConnectionTransactionalChannels.TryGetValue(this, out var trans);
+                _factory.Reset(nonTrans, trans, ChannelsAwaitingAcks);
             }
 
             if (Target != null)
@@ -2593,7 +2567,7 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         public void NotifyCloseIfNecessary()
         {
-            if (Interlocked.CompareExchange(ref _closeNotified, 1, 0) == 0)
+            if (Interlocked.CompareExchange(ref CloseNotified, 1, 0) == 0)
             {
                 _factory.ConnectionListener.OnClose(this);
             }
@@ -2627,13 +2601,13 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
 
         public override string ToString()
         {
-            return $"Proxy@{RuntimeHelpers.GetHashCode(this)} {(_factory.CacheMode == CachingMode.CHANNEL ? "Shared " : "Dedicated ")}Rabbit Connection: {Target}";
+            return $"Proxy@{RuntimeHelpers.GetHashCode(this)} {(_factory.CacheMode == CachingMode.Channel ? "Shared " : "Dedicated ")}Rabbit Connection: {Target}";
         }
 
         private int CountOpenIdleConnections()
         {
             var n = 0;
-            foreach (var proxy in _factory._idleConnections)
+            foreach (var proxy in _factory.IdleConnections)
             {
                 if (proxy.IsOpen)
                 {
@@ -2652,5 +2626,4 @@ public class CachingConnectionFactory : AbstractConnectionFactory, IShutdownList
             logger?.LogError("Unexpected invocation of {type}, with {message}:{cause} ", GetType(), message, cause);
         }
     }
-    #endregion
 }

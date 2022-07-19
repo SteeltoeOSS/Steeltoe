@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Services;
 
 public class OracleServiceInfo : UriServiceInfo
 {
-    public const string ORACLE_SCHEME = "oracle";
+    public const string OracleScheme = "oracle";
 
     public OracleServiceInfo(string id, string url)
         : base(id, url)

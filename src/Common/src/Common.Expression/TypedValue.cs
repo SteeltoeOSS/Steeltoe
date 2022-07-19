@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public class TypedValue : ITypedValue
 {
-    public static readonly TypedValue NULL = new (null);
+    public static readonly TypedValue Null = new (null);
 
     public TypedValue(object value)
     {

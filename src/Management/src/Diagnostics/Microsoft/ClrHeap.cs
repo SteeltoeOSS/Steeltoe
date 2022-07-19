@@ -49,7 +49,7 @@ internal abstract class ClrHeap
     /// Attempts to retrieve the MethodTable from the given object.
     /// Note that this some ClrTypes cannot be uniquely determined by MethodTable alone.  In
     /// Desktop CLR, arrays of reference types all use the same MethodTable.  To uniquely
-    /// determine an array of referneces you must also have its component type.
+    /// determine an array of references you must also have its component type.
     /// Note this function has undefined behavior if you do not pass a valid object reference
     /// to it.
     /// </summary>
@@ -194,7 +194,7 @@ internal abstract class ClrHeap
     public virtual IEnumerable<ulong> EnumerateFinalizableObjectAddresses() { throw new NotImplementedException(); }
 
     /// <summary>
-    /// Enumerates all managed locks in the process.  That is anything using System.Monitor either explictly
+    /// Enumerates all managed locks in the process.  That is anything using System.Monitor either explicitly
     /// or implicitly through "lock (obj)".  This is roughly equivalent to combining SOS's !syncblk command
     /// with !dumpheap -thinlock.
     /// </summary>
@@ -304,7 +304,7 @@ internal abstract class ClrHeap
 
     /// <summary>
     /// This might be useful to be public, but we actually don't know the total number objects without walking the entire
-    /// heap.  This property is only valid if we have cached the heap...which leads to a weird programatic interface (that
+    /// heap.  This property is only valid if we have cached the heap...which leads to a weird programmatic interface (that
     /// this simply property would throw InvalidOperationException unless the heap is cached).  I'm leaving this internal
     /// until I am convinced there's a good way to surface this.
     /// </summary>
@@ -313,7 +313,7 @@ internal abstract class ClrHeap
 
 /// <summary>
 /// This sets the policy for how ClrHeap walks the stack when enumerating roots.  There is a choice here because the 'Exact' stack walking
-/// gives the correct answer (without overreporting), but unfortunately is poorly implemented in CLR's debugging layer.
+/// gives the correct answer (without over-reporting), but unfortunately is poorly implemented in CLR's debugging layer.
 /// This means it could take 10-30 minutes (!) to enumerate roots on crash dumps with 4000+ threads.
 /// </summary>
 internal enum ClrRootStackwalkPolicy
@@ -331,7 +331,7 @@ internal enum ClrRootStackwalkPolicy
     Exact,
 
     /// <summary>
-    /// Walks each pointer alighed address on all stacks and if it points to an object it treats that location
+    /// Walks each pointer aligned address on all stacks and if it points to an object it treats that location
     /// as a real root.  This can over-report roots when a value is left on the stack, but the GC does not
     /// consider it a real root.
     /// </summary>
@@ -392,7 +392,7 @@ internal abstract class BlockingObject
 }
 
 /// <summary>
-/// The type of GCRoot that a ClrRoot represnts.
+/// The type of GCRoot that a ClrRoot represents.
 /// </summary>
 internal enum GCRootKind
 {
@@ -603,7 +603,7 @@ internal abstract class ClrSegment
     public virtual bool IsEphemeral { get { return false; } }
 
     /// <summary>
-    /// Ephemeral heap sements have geneation 0 and 1 in them.  Gen 1 is always above Gen 2 and
+    /// Ephemeral heap segments have generation 0 and 1 in them.  Gen 1 is always above Gen 2 and
     /// Gen 0 is above Gen 1.  This property tell where Gen 0 start in memory.   Note that
     /// if this is not an Ephemeral segment, then this will return End (which makes Gen 0 empty
     /// for this segment)

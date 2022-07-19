@@ -8,16 +8,16 @@ using System;
 namespace Steeltoe.Connector;
 
 /// <summary>
-/// Identify assemblies containing ServiceInfoCreators
+/// Identify assemblies containing ServiceInfoCreators.
 /// </summary>
 [AttributeUsage(AttributeTargets.Assembly)]
 public sealed class ServiceInfoCreatorAssemblyAttribute : AssemblyContainsTypeAttribute
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ServiceInfoCreatorAssemblyAttribute"/> class.
-    /// Used to override the default ServiceInfoCreator
+    /// Used to override the default ServiceInfoCreator.
     /// </summary>
-    /// <param name="creatorType">The type of your info creator that inherits from Steeltoe.Connector.ServiceInfoCreator</param>
+    /// <param name="creatorType">The type of your info creator that inherits from Steeltoe.Connector.ServiceInfoCreator.</param>
     public ServiceInfoCreatorAssemblyAttribute(Type creatorType)
         : base(creatorType)
     {

@@ -12,9 +12,9 @@ namespace Steeltoe.Connector.PostgreSql;
 
 public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Host = "localhost";
-    public const int Default_Port = 5432;
-    private const string POSTGRES_CLIENT_SECTION_PREFIX = "postgres:client";
+    public const string DefaultHost = "localhost";
+    public const int DefaultPort = 5432;
+    private const string PostgresClientSectionPrefix = "postgres:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public PostgresProviderConnectorOptions()
@@ -28,7 +28,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(POSTGRES_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(PostgresClientSectionPrefix);
         section.Bind(this);
 
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
@@ -36,9 +36,9 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Host { get; set; } = Default_Host;
+    public string Host { get; set; } = DefaultHost;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 

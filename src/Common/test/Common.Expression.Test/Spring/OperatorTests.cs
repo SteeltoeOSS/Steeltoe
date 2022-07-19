@@ -391,17 +391,17 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("null + 'ab'", "nullab", typeof(string));
 
         // AST:
-        var expr = (SpelExpression)_parser.ParseExpression("+3");
-        Assert.Equal("+3", expr.ToStringAST());
-        expr = (SpelExpression)_parser.ParseExpression("2+3");
-        Assert.Equal("(2 + 3)", expr.ToStringAST());
+        var expr = (SpelExpression)Parser.ParseExpression("+3");
+        Assert.Equal("+3", expr.ToStringAst());
+        expr = (SpelExpression)Parser.ParseExpression("2+3");
+        Assert.Equal("(2 + 3)", expr.ToStringAst());
 
         // use as a unary operator
         Evaluate("+5d", 5d, typeof(double));
         Evaluate("+5L", 5L, typeof(long));
         Evaluate("+5", 5, typeof(int));
         Evaluate("+new Decimal('5')", 5M, typeof(decimal));
-        EvaluateAndCheckError("+'abc'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("+'abc'", SpelMessage.OperatorNotSupportedBetweenTypes);
 
         // string concatenation
         Evaluate("'abc'+'def'", "abcdef", typeof(string));
@@ -414,18 +414,18 @@ public class OperatorTests : AbstractExpressionTests
     {
         Evaluate("'c' - 2", "a", typeof(string));
         Evaluate("3.0f - 5.0f", -2.0f, typeof(float));
-        EvaluateAndCheckError("'ab' - 2", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
-        EvaluateAndCheckError("2-'ab'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
-        var expr = (SpelExpression)_parser.ParseExpression("-3");
-        Assert.Equal("-3", expr.ToStringAST());
-        expr = (SpelExpression)_parser.ParseExpression("2-3");
-        Assert.Equal("(2 - 3)", expr.ToStringAST());
+        EvaluateAndCheckError("'ab' - 2", SpelMessage.OperatorNotSupportedBetweenTypes);
+        EvaluateAndCheckError("2-'ab'", SpelMessage.OperatorNotSupportedBetweenTypes);
+        var expr = (SpelExpression)Parser.ParseExpression("-3");
+        Assert.Equal("-3", expr.ToStringAst());
+        expr = (SpelExpression)Parser.ParseExpression("2-3");
+        Assert.Equal("(2 - 3)", expr.ToStringAst());
 
         Evaluate("-5d", -5d, typeof(double));
         Evaluate("-5L", -5L, typeof(long));
         Evaluate("-5", -5, typeof(int));
         Evaluate("-new Decimal('5')", -5M, typeof(decimal));
-        EvaluateAndCheckError("-'abc'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("-'abc'", SpelMessage.OperatorNotSupportedBetweenTypes);
     }
 
     [Fact]
@@ -437,7 +437,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("5.0d % 3.1d", 1.9d, typeof(double));
         Evaluate("new Decimal('5') % new Decimal('3')", 2M, typeof(decimal));
         Evaluate("new Decimal('5') % 3", 2M, typeof(decimal));
-        EvaluateAndCheckError("'abc'%'def'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("'abc'%'def'", SpelMessage.OperatorNotSupportedBetweenTypes);
     }
 
     [Fact]
@@ -451,7 +451,7 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("new Decimal('3.0') / 5", 0.6M, typeof(decimal));
         Evaluate("new Decimal('3.00') / 5", 0.60M, typeof(decimal));
         Evaluate("new Decimal('3.00') / new Decimal('5.0000')", 0.6000M, typeof(decimal));
-        EvaluateAndCheckError("'abc'/'def'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("'abc'/'def'", SpelMessage.OperatorNotSupportedBetweenTypes);
     }
 
     [Fact]
@@ -495,48 +495,48 @@ public class OperatorTests : AbstractExpressionTests
     [Fact]
     public void TestOperatorNames()
     {
-        var node = GetOperatorNode((SpelExpression)_parser.ParseExpression("1==3"));
+        var node = GetOperatorNode((SpelExpression)Parser.ParseExpression("1==3"));
         Assert.Equal("==", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("1!=3"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("1!=3"));
         Assert.Equal("!=", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3/3"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3/3"));
         Assert.Equal("/", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3+3"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3+3"));
         Assert.Equal("+", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3-3"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3-3"));
         Assert.Equal("-", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3<4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3<4"));
         Assert.Equal("<", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3<=4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3<=4"));
         Assert.Equal("<=", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3*4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3*4"));
         Assert.Equal("*", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3%4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3%4"));
         Assert.Equal("%", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3>=4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3>=4"));
         Assert.Equal(">=", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3 between 4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3 between 4"));
         Assert.Equal("between", node.OperatorName);
 
-        node = GetOperatorNode((SpelExpression)_parser.ParseExpression("3 ^ 4"));
+        node = GetOperatorNode((SpelExpression)Parser.ParseExpression("3 ^ 4"));
         Assert.Equal("^", node.OperatorName);
     }
 
     [Fact]
     public void TestOperatorOverloading()
     {
-        EvaluateAndCheckError("'a' * '2'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
-        EvaluateAndCheckError("'a' ^ '2'", SpelMessage.OPERATOR_NOT_SUPPORTED_BETWEEN_TYPES);
+        EvaluateAndCheckError("'a' * '2'", SpelMessage.OperatorNotSupportedBetweenTypes);
+        EvaluateAndCheckError("'a' ^ '2'", SpelMessage.OperatorNotSupportedBetweenTypes);
     }
 
     [Fact]
@@ -560,7 +560,7 @@ public class OperatorTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestMixedOperands_DoublesAndInts()
+    public void TestMixedOperands_DoublesAndIntegers()
     {
         Evaluate("3.0d + 5", 8.0d, typeof(double));
         Evaluate("3.0D - 5", -2.0d, typeof(double));
@@ -594,7 +594,7 @@ public class OperatorTests : AbstractExpressionTests
 
     private Operator GetOperatorNode(SpelExpression expr)
     {
-        var node = expr.AST;
+        var node = expr.Ast;
         return FindOperator(node);
     }
 

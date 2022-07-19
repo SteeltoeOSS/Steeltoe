@@ -36,7 +36,7 @@ public class LoadBalancerDelegatingHandlerTest
     }
 
     [Fact]
-    public async Task DoesntTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
+    public async Task DoesNotTrackStats_WhenResolutionFails_WithProvidedLoadBalancer()
     {
         var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://replaceme/api");
         var loadBalancer = new BrokenLoadBalancer();

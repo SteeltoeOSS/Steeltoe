@@ -23,13 +23,13 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     {
         Assert.Null(ApplicationInfoManager.Instance.InstanceConfig);
         Assert.Null(ApplicationInfoManager.Instance.InstanceInfo);
-        Assert.Equal(InstanceStatus.UNKNOWN, ApplicationInfoManager.Instance.InstanceStatus);
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
-        Assert.Equal(InstanceStatus.UNKNOWN, ApplicationInfoManager.Instance.InstanceStatus);
+        Assert.Equal(InstanceStatus.Unknown, ApplicationInfoManager.Instance.InstanceStatus);
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Down;
+        Assert.Equal(InstanceStatus.Unknown, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check no events sent
         ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
         Assert.Null(_eventArgs);
         ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
     }
@@ -58,8 +58,8 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         var config = new EurekaInstanceConfig();
         ApplicationInfoManager.Instance.Initialize(config);
 
-        Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
+        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
     }
 
     [Fact]
@@ -67,14 +67,14 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     {
         var config = new EurekaInstanceConfig();
         ApplicationInfoManager.Instance.Initialize(config);
-        Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
+        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
         ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
         Assert.NotNull(_eventArgs);
-        Assert.Equal(InstanceStatus.STARTING, _eventArgs.Previous);
-        Assert.Equal(InstanceStatus.UP, _eventArgs.Current);
+        Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
+        Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
         Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
         ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
     }
@@ -84,18 +84,18 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
     {
         var config = new EurekaInstanceConfig();
         ApplicationInfoManager.Instance.Initialize(config);
-        Assert.Equal(InstanceStatus.STARTING, ApplicationInfoManager.Instance.InstanceStatus);
+        Assert.Equal(InstanceStatus.Starting, ApplicationInfoManager.Instance.InstanceStatus);
 
         // Check event sent
         ApplicationInfoManager.Instance.StatusChanged += HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.UP;
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Up;
         Assert.NotNull(_eventArgs);
-        Assert.Equal(InstanceStatus.STARTING, _eventArgs.Previous);
-        Assert.Equal(InstanceStatus.UP, _eventArgs.Current);
+        Assert.Equal(InstanceStatus.Starting, _eventArgs.Previous);
+        Assert.Equal(InstanceStatus.Up, _eventArgs.Current);
         Assert.Equal(ApplicationInfoManager.Instance.InstanceInfo.InstanceId, _eventArgs.InstanceId);
         _eventArgs = null;
         ApplicationInfoManager.Instance.StatusChanged -= HandleInstanceStatusChanged;
-        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.DOWN;
+        ApplicationInfoManager.Instance.InstanceStatus = InstanceStatus.Down;
         Assert.Null(_eventArgs);
     }
 

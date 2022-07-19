@@ -35,14 +35,14 @@ public class OpDivide : Operator
             {
                 var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
-                _exitTypeDescriptor = TypeDescriptor.D;
+                exitTypeDescriptor = TypeDescriptor.D;
                 return new TypedValue(leftVal / rightVal);
             }
             else if (leftOperand is float || rightOperand is float)
             {
                 var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
-                _exitTypeDescriptor = TypeDescriptor.F;
+                exitTypeDescriptor = TypeDescriptor.F;
                 return new TypedValue(leftVal / rightVal);
             }
 
@@ -51,14 +51,14 @@ public class OpDivide : Operator
             {
                 var leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
-                _exitTypeDescriptor = TypeDescriptor.J;
+                exitTypeDescriptor = TypeDescriptor.J;
                 return new TypedValue(leftVal / rightVal);
             }
             else if (CodeFlow.IsIntegerForNumericOp(leftOperand) || CodeFlow.IsIntegerForNumericOp(rightOperand))
             {
                 var leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
                 var rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
-                _exitTypeDescriptor = TypeDescriptor.I;
+                exitTypeDescriptor = TypeDescriptor.I;
                 return new TypedValue(leftVal / rightVal);
             }
             else
@@ -72,7 +72,7 @@ public class OpDivide : Operator
             }
         }
 
-        return state.Operate(Operation.DIVIDE, leftOperand, rightOperand);
+        return state.Operate(Operation.Divide, leftOperand, rightOperand);
     }
 
     public override bool IsCompilable()
@@ -82,26 +82,26 @@ public class OpDivide : Operator
             return false;
         }
 
-        if (_children.Length > 1 && !RightOperand.IsCompilable())
+        if (children.Length > 1 && !RightOperand.IsCompilable())
         {
             return false;
         }
 
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         LeftOperand.GenerateCode(gen, cf);
         var leftDesc = LeftOperand.ExitDescriptor;
-        var exitDesc = _exitTypeDescriptor;
+        var exitDesc = exitTypeDescriptor;
         if (exitDesc == null)
         {
             throw new InvalidOperationException("No exit type descriptor");
         }
 
         CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
-        if (_children.Length > 1)
+        if (children.Length > 1)
         {
             cf.EnterCompilationScope();
             RightOperand.GenerateCode(gen, cf);
@@ -110,12 +110,12 @@ public class OpDivide : Operator
             CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
             if (exitDesc != TypeDescriptor.I && exitDesc != TypeDescriptor.J && exitDesc != TypeDescriptor.F && exitDesc != TypeDescriptor.D)
             {
-                throw new InvalidOperationException($"Unrecognized exit type descriptor: '{_exitTypeDescriptor}'");
+                throw new InvalidOperationException($"Unrecognized exit type descriptor: '{exitTypeDescriptor}'");
             }
 
             gen.Emit(OpCodes.Div);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

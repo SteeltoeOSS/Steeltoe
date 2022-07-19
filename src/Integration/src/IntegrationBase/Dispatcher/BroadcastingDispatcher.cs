@@ -60,13 +60,13 @@ public class BroadcastingDispatcher : AbstractDispatcher
         }
     }
 
-    internal ILogger Logger => _logger;
+    internal ILogger Logger => InnerLogger;
 
     protected override bool DoDispatch(IMessage message, CancellationToken cancellationToken)
     {
         var dispatched = 0;
         var sequenceNumber = 1;
-        var handlers = _handlers;
+        var handlers = base.handlers;
 
         if (_requireSubscribers && handlers.Count == 0)
         {
@@ -96,10 +96,10 @@ public class BroadcastingDispatcher : AbstractDispatcher
                 }
             }
 
-            if (_executor != null)
+            if (Executor != null)
             {
                 var task = CreateMessageHandlingTask(handler, messageToSend);
-                _factory.StartNew(() => task.Run(), cancellationToken);
+                Factory.StartNew(() => task.Run(), cancellationToken);
                 dispatched++;
             }
             else
@@ -129,7 +129,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
         {
             if (!IgnoreFailures)
             {
-                if (_factory != null && ErrorHandler != null)
+                if (Factory != null && ErrorHandler != null)
                 {
                     ErrorHandler.HandleError(e);
                     return;
@@ -143,7 +143,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
                 throw;
             }
 
-            _logger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
+            InnerLogger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
         }
     }
 

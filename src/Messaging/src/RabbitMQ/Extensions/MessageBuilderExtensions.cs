@@ -11,241 +11,241 @@ public static class MessageBuilderExtensions
 {
     public static AbstractMessageBuilder SetTimestamp(this AbstractMessageBuilder builder, long timestamp)
     {
-        builder.SetHeader(MessageHeaders.TIMESTAMP, timestamp);
+        builder.SetHeader(MessageHeaders.TimestampName, timestamp);
         return builder;
     }
 
     public static AbstractMessageBuilder SetMessageId(this AbstractMessageBuilder builder, string messageId)
     {
-        builder.SetHeader(MessageHeaders.ID, messageId);
+        builder.SetHeader(MessageHeaders.IdName, messageId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetUserId(this AbstractMessageBuilder builder, string userId)
     {
-        builder.SetHeader(RabbitMessageHeaders.USER_ID, userId);
+        builder.SetHeader(RabbitMessageHeaders.UserId, userId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetAppId(this AbstractMessageBuilder builder, string appId)
     {
-        builder.SetHeader(RabbitMessageHeaders.APP_ID, appId);
+        builder.SetHeader(RabbitMessageHeaders.AppId, appId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetClusterId(this AbstractMessageBuilder builder, string clusterId)
     {
-        builder.SetHeader(RabbitMessageHeaders.CLUSTER_ID, clusterId);
+        builder.SetHeader(RabbitMessageHeaders.ClusterId, clusterId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetType(this AbstractMessageBuilder builder, string type)
     {
-        builder.SetHeader(RabbitMessageHeaders.TYPE, type);
+        builder.SetHeader(RabbitMessageHeaders.Type, type);
         return builder;
     }
 
     public static AbstractMessageBuilder SetCorrelationId(this AbstractMessageBuilder builder, string correlationId)
     {
-        builder.SetHeader(RabbitMessageHeaders.CORRELATION_ID, correlationId);
+        builder.SetHeader(RabbitMessageHeaders.CorrelationId, correlationId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReplyTo(this AbstractMessageBuilder builder, string replyTo)
     {
-        builder.SetHeader(RabbitMessageHeaders.REPLY_TO, replyTo);
+        builder.SetHeader(RabbitMessageHeaders.ReplyTo, replyTo);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReplyToAddress(this AbstractMessageBuilder builder, Address replyTo)
     {
-        builder.SetHeader(RabbitMessageHeaders.REPLY_TO, replyTo.ToString());
+        builder.SetHeader(RabbitMessageHeaders.ReplyTo, replyTo.ToString());
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentType(this AbstractMessageBuilder builder, string contentType)
     {
-        builder.SetHeader(RabbitMessageHeaders.CONTENT_TYPE, contentType);
+        builder.SetHeader(RabbitMessageHeaders.ContentType, contentType);
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentEncoding(this AbstractMessageBuilder builder, string contentEncoding)
     {
-        builder.SetHeader(RabbitMessageHeaders.CONTENT_ENCODING, contentEncoding);
+        builder.SetHeader(RabbitMessageHeaders.ContentEncoding, contentEncoding);
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentLength(this AbstractMessageBuilder builder, long contentLength)
     {
-        builder.SetHeader(RabbitMessageHeaders.CONTENT_LENGTH, contentLength);
+        builder.SetHeader(RabbitMessageHeaders.ContentLength, contentLength);
         return builder;
     }
 
     public static AbstractMessageBuilder SetDeliveryMode(this AbstractMessageBuilder builder, MessageDeliveryMode deliveryMode)
     {
-        builder.SetHeader(RabbitMessageHeaders.DELIVERY_MODE, deliveryMode);
+        builder.SetHeader(RabbitMessageHeaders.DeliveryMode, deliveryMode);
         return builder;
     }
 
     public static AbstractMessageBuilder SetExpiration(this AbstractMessageBuilder builder, string expiration)
     {
-        builder.SetHeader(RabbitMessageHeaders.EXPIRATION, expiration);
+        builder.SetHeader(RabbitMessageHeaders.Expiration, expiration);
         return builder;
     }
 
     public static AbstractMessageBuilder SetPriority(this AbstractMessageBuilder builder, int priority)
     {
-        builder.SetHeader(RabbitMessageHeaders.PRIORITY, priority);
+        builder.SetHeader(RabbitMessageHeaders.Priority, priority);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReceivedExchange(this AbstractMessageBuilder builder, string receivedExchange)
     {
-        builder.SetHeader(RabbitMessageHeaders.RECEIVED_EXCHANGE, receivedExchange);
+        builder.SetHeader(RabbitMessageHeaders.ReceivedExchange, receivedExchange);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReceivedRoutingKey(this AbstractMessageBuilder builder, string receivedRoutingKey)
     {
-        builder.SetHeader(RabbitMessageHeaders.RECEIVED_ROUTING_KEY, receivedRoutingKey);
+        builder.SetHeader(RabbitMessageHeaders.ReceivedRoutingKey, receivedRoutingKey);
         return builder;
     }
 
     public static AbstractMessageBuilder SetRedelivered(this AbstractMessageBuilder builder, bool redelivered)
     {
-        builder.SetHeader(RabbitMessageHeaders.REDELIVERED, redelivered);
+        builder.SetHeader(RabbitMessageHeaders.Redelivered, redelivered);
         return builder;
     }
 
     public static AbstractMessageBuilder SetDeliveryTag(this AbstractMessageBuilder builder, ulong deliveryTag)
     {
-        builder.SetHeader(RabbitMessageHeaders.DELIVERY_TAG, deliveryTag);
+        builder.SetHeader(RabbitMessageHeaders.DeliveryTag, deliveryTag);
         return builder;
     }
 
     public static AbstractMessageBuilder SetMessageCount(this AbstractMessageBuilder builder, uint messageCount)
     {
-        builder.SetHeader(RabbitMessageHeaders.MESSAGE_COUNT, messageCount);
+        builder.SetHeader(RabbitMessageHeaders.MessageCount, messageCount);
         return builder;
     }
 
     public static AbstractMessageBuilder SetTimestampIfAbsent(this AbstractMessageBuilder builder, long timestamp)
     {
-        builder.SetHeaderIfAbsent(MessageHeaders.TIMESTAMP, timestamp);
+        builder.SetHeaderIfAbsent(MessageHeaders.TimestampName, timestamp);
         return builder;
     }
 
     public static AbstractMessageBuilder SetMessageIdIfAbsent(this AbstractMessageBuilder builder, string messageId)
     {
-        builder.SetHeaderIfAbsent(MessageHeaders.ID, messageId);
+        builder.SetHeaderIfAbsent(MessageHeaders.IdName, messageId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetUserIdIfAbsent(this AbstractMessageBuilder builder, string userId)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.USER_ID, userId);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.UserId, userId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetAppIdIfAbsent(this AbstractMessageBuilder builder, string appId)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.APP_ID, appId);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.AppId, appId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetClusterIdIfAbsent(this AbstractMessageBuilder builder, string clusterId)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CLUSTER_ID, clusterId);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ClusterId, clusterId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetTypeIfAbsent(this AbstractMessageBuilder builder, string type)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.TYPE, type);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.Type, type);
         return builder;
     }
 
     public static AbstractMessageBuilder SetCorrelationIdIfAbsent(this AbstractMessageBuilder builder, string correlationId)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CORRELATION_ID, correlationId);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CorrelationId, correlationId);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReplyToIfAbsent(this AbstractMessageBuilder builder, string replyTo)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.REPLY_TO, replyTo);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ReplyTo, replyTo);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReplyToAddressIfAbsent(this AbstractMessageBuilder builder, Address replyTo)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.REPLY_TO, replyTo.ToString());
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ReplyTo, replyTo.ToString());
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentTypeIfAbsent(this AbstractMessageBuilder builder, string contentType)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CONTENT_TYPE, contentType);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ContentType, contentType);
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentEncodingIfAbsent(this AbstractMessageBuilder builder, string contentEncoding)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CONTENT_ENCODING, contentEncoding);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ContentEncoding, contentEncoding);
         return builder;
     }
 
     public static AbstractMessageBuilder SetContentLengthIfAbsent(this AbstractMessageBuilder builder, long contentLength)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.CONTENT_LENGTH, contentLength);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ContentLength, contentLength);
         return builder;
     }
 
     public static AbstractMessageBuilder SetDeliveryModeIfAbsent(this AbstractMessageBuilder builder, MessageDeliveryMode deliveryMode)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.DELIVERY_MODE, deliveryMode);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.DeliveryMode, deliveryMode);
         return builder;
     }
 
     public static AbstractMessageBuilder SetExpirationIfAbsent(this AbstractMessageBuilder builder, string expiration)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.EXPIRATION, expiration);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.Expiration, expiration);
         return builder;
     }
 
     public static AbstractMessageBuilder SetPriorityIfAbsent(this AbstractMessageBuilder builder, int priority)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.PRIORITY, priority);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.Priority, priority);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReceivedExchangeIfAbsent(this AbstractMessageBuilder builder, string receivedExchange)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.RECEIVED_EXCHANGE, receivedExchange);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ReceivedExchange, receivedExchange);
         return builder;
     }
 
     public static AbstractMessageBuilder SetReceivedRoutingKeyIfAbsent(this AbstractMessageBuilder builder, string receivedRoutingKey)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.RECEIVED_ROUTING_KEY, receivedRoutingKey);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.ReceivedRoutingKey, receivedRoutingKey);
         return builder;
     }
 
     public static AbstractMessageBuilder SetRedeliveredIfAbsent(this AbstractMessageBuilder builder, bool redelivered)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.REDELIVERED, redelivered);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.Redelivered, redelivered);
         return builder;
     }
 
     public static AbstractMessageBuilder SetDeliveryTagIfAbsent(this AbstractMessageBuilder builder, ulong deliveryTag)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.DELIVERY_TAG, deliveryTag);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.DeliveryTag, deliveryTag);
         return builder;
     }
 
     public static AbstractMessageBuilder SetMessageCountIfAbsent(this AbstractMessageBuilder builder, uint messageCount)
     {
-        builder.SetHeaderIfAbsent(RabbitMessageHeaders.MESSAGE_COUNT, messageCount);
+        builder.SetHeaderIfAbsent(RabbitMessageHeaders.MessageCount, messageCount);
         return builder;
     }
 }

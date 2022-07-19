@@ -86,12 +86,12 @@ internal sealed class HystrixCircuitBreakerImpl : ICircuitBreaker
         {
             if (_circuitOpen.Value)
             {
-                // if we're open we immediately return true and don't bother attempting to 'close' ourself as that is left to allowSingleTest and a subsequent successful test to close
+                // if we're open we immediately return true and don't bother attempting to 'close' ourselves as that is left to allowSingleTest and a subsequent successful test to close
                 return true;
             }
 
             // we're closed, so let's see if errors have made us so we should trip the circuit open
-            var health = _metrics.Healthcounts;
+            var health = _metrics.HealthCounts;
 
             // check if we are past the statisticalWindowVolumeThreshold
             if (health.TotalRequests < _options.CircuitBreakerRequestVolumeThreshold)

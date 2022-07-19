@@ -28,7 +28,7 @@ public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxy
             return boundTarget;
         }
 
-        var bindable = _bindables.Values.SingleOrDefault(c => c.FactoryMethod == info);
+        var bindable = bindables.Values.SingleOrDefault(c => c.FactoryMethod == info);
 
         // Doesn't exist, return null
         if (bindable.Name == null)
@@ -39,25 +39,25 @@ public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxy
         // Otherwise, its valid and must be an Input or Output
         if (bindable.IsInput)
         {
-            return _targetCache.GetOrAdd(info, _boundInputTargets[bindable.Name].Value);
+            return _targetCache.GetOrAdd(info, boundInputTargets[bindable.Name].Value);
         }
         else
         {
-            return _targetCache.GetOrAdd(info, _boundOutputTargets[bindable.Name].Value);
+            return _targetCache.GetOrAdd(info, boundOutputTargets[bindable.Name].Value);
         }
     }
 
     public virtual void ReplaceInputChannel(string originalChannelName, string newChannelName, ISubscribableChannel messageChannel)
     {
-        _boundInputTargets.Remove(originalChannelName);
+        boundInputTargets.Remove(originalChannelName);
         var creator = new Lazy<object>(messageChannel);
-        _boundInputTargets.Add(newChannelName, creator);
+        boundInputTargets.Add(newChannelName, creator);
     }
 
     public virtual void ReplaceOutputChannel(string originalChannelName, string newChannelName, IMessageChannel messageChannel)
     {
-        _boundOutputTargets.Remove(originalChannelName);
+        boundOutputTargets.Remove(originalChannelName);
         var creator = new Lazy<object>(messageChannel);
-        _boundOutputTargets.Add(newChannelName, creator);
+        boundOutputTargets.Add(newChannelName, creator);
     }
 }

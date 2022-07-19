@@ -16,7 +16,7 @@ public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusSc
     private readonly SteeltoePrometheusExporter _exporter;
     private readonly ILogger<PrometheusScraperEndpoint> _logger;
 
-    public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<IMetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
+    public PrometheusScraperEndpoint(IPrometheusEndpointOptions options, IEnumerable<MetricsExporter> exporters, ILogger<PrometheusScraperEndpoint> logger = null)
         : base(options)
     {
         _exporter = exporters?.OfType<SteeltoePrometheusExporter>().FirstOrDefault() ?? throw new ArgumentNullException(nameof(exporters));

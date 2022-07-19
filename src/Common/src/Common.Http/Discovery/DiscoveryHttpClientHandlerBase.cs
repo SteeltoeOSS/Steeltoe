@@ -12,36 +12,36 @@ namespace Steeltoe.Common.Discovery;
 
 public class DiscoveryHttpClientHandlerBase
 {
-    protected IDiscoveryClient _client;
-    protected ILoadBalancer _loadBalancer;
-    protected ILogger _logger;
+    protected IDiscoveryClient client;
+    protected ILoadBalancer loadBalancer;
+    protected ILogger logger;
 
     public DiscoveryHttpClientHandlerBase(IDiscoveryClient client, ILogger logger = null, ILoadBalancer loadBalancer = null)
     {
-        _client = client ?? throw new ArgumentNullException(nameof(client));
-        _loadBalancer = loadBalancer ?? new RandomLoadBalancer(client);
-        _logger = logger;
+        this.client = client ?? throw new ArgumentNullException(nameof(client));
+        this.loadBalancer = loadBalancer ?? new RandomLoadBalancer(client);
+        this.logger = logger;
     }
 
     public virtual Uri LookupService(Uri current)
     {
-        _logger?.LogDebug("LookupService({0})", current.ToString());
+        logger?.LogDebug("LookupService({0})", current.ToString());
         if (!current.IsDefaultPort)
         {
             return current;
         }
 
-        return _loadBalancer.ResolveServiceInstanceAsync(current).GetAwaiter().GetResult();
+        return loadBalancer.ResolveServiceInstanceAsync(current).GetAwaiter().GetResult();
     }
 
     public virtual async Task<Uri> LookupServiceAsync(Uri current)
     {
-        _logger?.LogDebug("LookupService({0})", current.ToString());
+        logger?.LogDebug("LookupService({0})", current.ToString());
         if (!current.IsDefaultPort)
         {
             return current;
         }
 
-        return await _loadBalancer.ResolveServiceInstanceAsync(current).ConfigureAwait(false);
+        return await loadBalancer.ResolveServiceInstanceAsync(current).ConfigureAwait(false);
     }
 }

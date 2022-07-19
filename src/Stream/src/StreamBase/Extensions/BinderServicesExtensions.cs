@@ -43,13 +43,13 @@ public static class BinderServicesExtensions
             var type = FindConfigureType(binderConfiguration.Value);
             if (type != null)
             {
-                var constr = FindConstructor(type);
+                var constructor = FindConstructor(type);
                 var method = FindConfigureServicesMethod(type);
-                if (constr != null && method != null)
+                if (constructor != null && method != null)
                 {
                     try
                     {
-                        var instance = constr.Invoke(new object[] { configuration });
+                        var instance = constructor.Invoke(new object[] { configuration });
                         if (instance != null)
                         {
                             method.Invoke(instance, new object[] { services });
@@ -96,12 +96,12 @@ public static class BinderServicesExtensions
 
     internal static ConstructorInfo FindConstructor(Type type)
     {
-        var constr = type.GetConstructor(new[] { typeof(IConfiguration) });
-        if (constr == null)
+        var constructor = type.GetConstructor(new[] { typeof(IConfiguration) });
+        if (constructor == null)
         {
-            constr = type.GetConstructor(Array.Empty<Type>());
+            constructor = type.GetConstructor(Array.Empty<Type>());
         }
 
-        return constr;
+        return constructor;
     }
 }

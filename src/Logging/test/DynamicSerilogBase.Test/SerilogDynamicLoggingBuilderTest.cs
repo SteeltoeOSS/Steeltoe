@@ -108,10 +108,10 @@ public class SerilogDynamicLoggingBuilderTest
                 builder.AddDynamicSerilog();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         var logProviders = services.GetServices<ILoggerProvider>();
 
-        Assert.NotNull(dlogProvider);
+        Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
         Assert.Single(logProviders);
         Assert.IsType<SerilogDynamicProvider>(logProviders.SingleOrDefault());
@@ -131,10 +131,10 @@ public class SerilogDynamicLoggingBuilderTest
                 builder.AddDynamicSerilog();
             }).BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
 
         services.Dispose();
-        dlogProvider.Dispose();
+        dynamicLoggerProvider.Dispose();
     }
 
     [Fact]
@@ -146,10 +146,10 @@ public class SerilogDynamicLoggingBuilderTest
             .AddLogging(builder => builder.AddDynamicSerilog())
             .BuildServiceProvider();
 
-        var dlogProvider = services.GetService<IDynamicLoggerProvider>();
+        var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
         var logProviders = services.GetServices<ILoggerProvider>();
 
-        Assert.NotNull(dlogProvider);
+        Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
         Assert.Single(logProviders);
         Assert.IsType<SerilogDynamicProvider>(logProviders.SingleOrDefault());

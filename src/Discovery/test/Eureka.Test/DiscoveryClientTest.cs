@@ -103,10 +103,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task FetchFullRegistryAsync_InvokesServer_ReturnsValidResponse()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = FooAddedJson;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -134,10 +134,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public void FetchFullRegistryAsync_ReturnsNull_IfFetchCounterMismatch()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -160,10 +160,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task FetchRegistryDeltaAsync_InvokesServer_ReturnsValidResponse()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = FooModifiedJson;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -184,8 +184,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         app.InstanceMap[inst.InstanceId] = inst;
         apps.Add(app);
@@ -206,10 +206,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public void FetchRegistryDeltaAsync_ReturnsNull_IfFetchCounterMismatch()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -232,10 +232,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RegisterAsync_ReturnsFalse_WhenNotOKStatusReturned()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 404;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -251,8 +251,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -271,10 +271,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 204;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -291,8 +291,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -311,10 +311,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RenewAsync_Registers_When404StatusReturned()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 404;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -330,8 +330,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -352,10 +352,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task RenewAsync_ReturnsTrue_WhenOKStatusReturned()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -372,8 +372,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -386,10 +386,10 @@ public class DiscoveryClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task UnRegisterAsync_InvokesServerReturnsTrue_WhenOKStatusReturned()
     {
-        var envir = HostingHelpers.GetHostingEnvironment();
+        var environment = HostingHelpers.GetHostingEnvironment();
         TestConfigServerStartup.Response = string.Empty;
         TestConfigServerStartup.ReturnStatus = 200;
-        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(envir.EnvironmentName);
+        var builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
         var uri = "http://localhost:8888/";
@@ -406,8 +406,8 @@ public class DiscoveryClientTest : AbstractBaseTest
             InstanceId = "localhost:foo",
             HostName = "localhost",
             AppName = "FOO",
-            IpAddr = "192.168.56.1",
-            Status = InstanceStatus.STARTING
+            IpAddress = "192.168.56.1",
+            Status = InstanceStatus.Starting
         };
         ApplicationInfoManager.Instance.InstanceInfo = inst;
 
@@ -452,12 +452,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetInstancesByVipAddress_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -493,12 +493,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetNextServerFromEureka_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id21", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id22", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -557,12 +557,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetInstanceById_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -607,12 +607,12 @@ public class DiscoveryClientTest : AbstractBaseTest
     public void GetApplication_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.DOWN });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.UP });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OUT_OF_SERVICE });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
+        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -637,7 +637,7 @@ public class DiscoveryClientTest : AbstractBaseTest
     }
 
     [Fact]
-    public void GetInstancesByVipAddressAndAppName_Throws_WhenAddressAndAppnameNull()
+    public void GetInstancesByVipAddressAndAppName_Throws_WhenAddressAndAppNameNull()
     {
         var config = new EurekaClientConfig
         {
@@ -657,17 +657,17 @@ public class DiscoveryClientTest : AbstractBaseTest
             ShouldFetchRegistry = false,
             ShouldRegisterWithEureka = false
         };
-        var iconfig = new EurekaInstanceConfig();
-        ApplicationInfoManager.Instance.Initialize(iconfig);
+        var instanceConfig = new EurekaInstanceConfig();
+        ApplicationInfoManager.Instance.Initialize(instanceConfig);
 
         var client = new DiscoveryClient(config);
-        var myHandler = new MyHealthCheckHandler(InstanceStatus.DOWN);
+        var myHandler = new MyHealthCheckHandler(InstanceStatus.Down);
         client.HealthCheckHandler = myHandler;
 
         client.RefreshInstanceInfo();
 
         Assert.True(myHandler.Called);
-        Assert.Equal(InstanceStatus.DOWN, ApplicationInfoManager.Instance.InstanceInfo.Status);
+        Assert.Equal(InstanceStatus.Down, ApplicationInfoManager.Instance.InstanceInfo.Status);
     }
 
     [Fact]

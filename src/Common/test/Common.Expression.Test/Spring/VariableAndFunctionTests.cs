@@ -13,8 +13,8 @@ public class VariableAndFunctionTests : AbstractExpressionTests
     [Fact]
     public void TestVariableAccess01()
     {
-        Evaluate("#answer", "42", typeof(int), SHOULD_BE_WRITABLE);
-        Evaluate("#answer / 2", 21, typeof(int), SHOULD_NOT_BE_WRITABLE);
+        Evaluate("#answer", "42", typeof(int), ShouldBeWritable);
+        Evaluate("#answer / 2", 21, typeof(int), ShouldNotBeWritable);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class VariableAndFunctionTests : AbstractExpressionTests
     {
         Evaluate("#ReverseInt(1,2,3)", "System.Int32[3]{(0)=3,(1)=2,(2)=1,}", typeof(int[]));
         Evaluate("#ReverseInt('1',2,3)", "System.Int32[3]{(0)=3,(1)=2,(2)=1,}", typeof(int[])); // requires type conversion of '1' to 1
-        EvaluateAndCheckError("#ReverseInt(1)", SpelMessage.INCORRECT_NUMBER_OF_ARGUMENTS_TO_FUNCTION, 0, 1, 3);
+        EvaluateAndCheckError("#ReverseInt(1)", SpelMessage.IncorrectNumberOfArgumentsToFunction, 0, 1, 3);
     }
 
     [Fact]
@@ -61,7 +61,7 @@ public class VariableAndFunctionTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
         ctx.SetVariable("notStatic", GetType().GetMethod(nameof(NonStatic)));
         var ex = Assert.Throws<SpelEvaluationException>(() => parser.ParseRaw("#notStatic()").GetValue(ctx));
-        Assert.Equal(SpelMessage.FUNCTION_MUST_BE_STATIC, ex.MessageCode);
+        Assert.Equal(SpelMessage.FunctionMustBeStatic, ex.MessageCode);
     }
 
     // this method is used by the Test above

@@ -81,7 +81,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestScenario_UsingADifferentRootContextobject()
+    public void TestScenario_UsingADifferentRootContextObject()
     {
         // Create a parser
         var parser = new SpelExpressionParser();
@@ -163,12 +163,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // Use the standard evaluation context
         var ctx = new StandardEvaluationContext();
 
-        ctx.AddPropertyAccessor(new FruitColourAccessor());
+        ctx.AddPropertyAccessor(new FruitColorAccessor());
         var expr = parser.ParseRaw("Orange");
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Orange, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
     [Fact]
@@ -180,23 +180,23 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // Use the standard evaluation context
         var ctx = new StandardEvaluationContext();
 
-        ctx.AddPropertyAccessor(new VegetableColourAccessor());
+        ctx.AddPropertyAccessor(new VegetableColorAccessor());
         var expr = parser.ParseRaw("Pea");
         var value = expr.GetValue(ctx);
         Assert.Equal(Color.Green, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
-    public class FruitColourAccessor : IPropertyAccessor
+    public class FruitColorAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> _propertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new ();
 
-        static FruitColourAccessor()
+        static FruitColorAccessor()
         {
-            _propertyMap.Add("Banana", Color.Yellow);
-            _propertyMap.Add("Apple", Color.Red);
-            _propertyMap.Add("Orange", Color.Orange);
+            PropertyMap.Add("Banana", Color.Yellow);
+            PropertyMap.Add("Apple", Color.Red);
+            PropertyMap.Add("Orange", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -206,12 +206,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return _propertyMap.ContainsKey(name);
+            return PropertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            _propertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 
@@ -225,14 +225,14 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         }
     }
 
-    public class VegetableColourAccessor : IPropertyAccessor
+    public class VegetableColorAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> _propertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new ();
 
-        static VegetableColourAccessor()
+        static VegetableColorAccessor()
         {
-            _propertyMap.Add("Pea", Color.Green);
-            _propertyMap.Add("Carrot", Color.Orange);
+            PropertyMap.Add("Pea", Color.Green);
+            PropertyMap.Add("Carrot", Color.Orange);
         }
 
         public IList<Type> GetSpecificTargetClasses()
@@ -242,12 +242,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
-            return _propertyMap.ContainsKey(name);
+            return PropertyMap.ContainsKey(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            _propertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out var value);
             return new TypedValue(value);
         }
 

@@ -65,7 +65,7 @@ public class MapTests : AbstractExpressionTests
     [Fact]
     public void TestInlineMapError()
     {
-        ParseAndCheckError("{key:'abc'", SpelMessage.OOD);
+        ParseAndCheckError("{key:'abc'", SpelMessage.Ood);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class MapTests : AbstractExpressionTests
     }
 
     [Fact]
-    public void TestMapKeysThatAreAlsoSpELKeywords()
+    public void TestMapKeysThatAreAlsoSpelKeywords()
     {
         var parser = new SpelExpressionParser();
         SpelExpression expression = null;
@@ -163,7 +163,7 @@ public class MapTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var expression = (SpelExpression)parser.ParseExpression(expressionText);
-        var node = expression.AST;
+        var node = expression.Ast;
         var condition = node is InlineMap;
         Assert.True(condition);
         var inlineMap = (InlineMap)node;

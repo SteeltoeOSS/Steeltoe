@@ -6,9 +6,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public static class ExchangeType
 {
-    public const string DIRECT = "direct";
-    public const string TOPIC = "topic";
-    public const string FANOUT = "fanout";
-    public const string HEADERS = "headers";
-    public const string SYSTEM = "system";
+    public const string Direct = "direct";
+    public const string Topic = "topic";
+    public const string FanOut = "fanout";
+    public const string Headers = "headers";
+    public const string System = "system";
 }

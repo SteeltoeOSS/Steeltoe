@@ -49,13 +49,13 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             Bar = "bar"
         };
         var ctx = _provider.GetService<IApplicationContext>();
-        var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DEFAULT_SERVICE_NAME) as JsonMessageConverter;
+        var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DefaultServiceName) as JsonMessageConverter;
         converter.TypeMapper.DefaultType = typeof(Dictionary<string, object>);
-        converter.Precedence = TypePrecedence.TYPE_ID;
+        converter.Precedence = TypePrecedence.TypeId;
         var returned = template.ConvertSendAndReceive<Foo2>("test.converted", foo1);
         Assert.IsType<Foo2>(returned);
         Assert.Equal("bar", returned.Bar);
-        converter.Precedence = TypePrecedence.INFERRED;
+        converter.Precedence = TypePrecedence.Inferred;
 
         template.MessageConverter = new Support.Converter.SimpleMessageConverter();
         var messagePostProcessor = new MessagePostProcessor();
@@ -284,29 +284,29 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         }
 
         [RabbitListener("test.converted.list")]
-        public Foo2 Foo2(List<Foo2> foo2s)
+        public Foo2 Foo2(List<Foo2> foo2S)
         {
-            var foo2 = foo2s[0];
+            var foo2 = foo2S[0];
             foo2.Bar = "BAZZZZ";
             return foo2;
         }
 
         [RabbitListener("test.converted.array")]
-        public Foo2 Foo2(Foo2[] foo2s)
+        public Foo2 Foo2(Foo2[] foo2S)
         {
-            var foo2 = foo2s[0];
+            var foo2 = foo2S[0];
             foo2.Bar = "BAZZxx";
             return foo2;
         }
 
         [RabbitListener("test.converted.args1")]
-        public string Foo2(Foo2 foo2, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue)
+        public string Foo2(Foo2 foo2, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
         {
             return foo2 + queue;
         }
 
         [RabbitListener("test.converted.args2")]
-        public string Foo2a([Payload] Foo2 foo2, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue)
+        public string Foo2A([Payload] Foo2 foo2, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
         {
             return foo2 + queue;
         }
@@ -349,7 +349,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         public string MessagingMessage(
             IMessage<Foo2> message,
             [Header("", Required = false)] string h,
-            [Header(RabbitMessageHeaders.RECEIVED_USER_ID)] string userId)
+            [Header(RabbitMessageHeaders.ReceivedUserId)] string userId)
         {
             return message.GetType().Name + message.Payload.GetType().Name + userId;
         }

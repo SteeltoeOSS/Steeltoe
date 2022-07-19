@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 internal static class ConfigUtils
 {
-    private static readonly Regex _regex = new (@"\s+");
+    private static readonly Regex Regex = new (@"\s+");
 
     public static bool IsExpression(string expression)
     {
@@ -43,6 +43,6 @@ internal static class ConfigUtils
 
     public static string ReplaceWhitespace(string input, string replacement)
     {
-        return _regex.Replace(input, replacement);
+        return Regex.Replace(input, replacement);
     }
 }

@@ -29,23 +29,23 @@ public class HystrixTimer
         var timer = GetInstance();
         lock (timer._lock)
         {
-            foreach (var refr in timer._timerList)
+            foreach (var reference in timer._timerList)
             {
-                refr.Dispose();
+                reference.Dispose();
             }
         }
     }
 
     public TimerReference AddTimerListener(ITimerListener listener)
     {
-        var refr = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
-        refr.Start();
+        var reference = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
+        reference.Start();
 
         lock (_lock)
         {
-            _timerList.Add(refr);
+            _timerList.Add(reference);
         }
 
-        return refr;
+        return reference;
     }
 }

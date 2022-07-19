@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
-public class PlaceholderResolverProviderTest
+public partial class PlaceholderResolverProviderTest
 {
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
@@ -37,7 +37,7 @@ public class PlaceholderResolverProviderTest
     {
         var holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build());
         Assert.NotNull(holder.Configuration);
-        Assert.Empty(holder._providers);
+        Assert.Empty(holder.InnerProviders);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class PlaceholderResolverProviderTest
         var providers = new List<IConfigurationProvider>();
         var holder = new PlaceholderResolverProvider(providers);
         Assert.Null(holder.Configuration);
-        Assert.Same(providers, holder._providers);
+        Assert.Same(providers, holder.InnerProviders);
     }
 
     [Fact]
@@ -55,10 +55,10 @@ public class PlaceholderResolverProviderTest
         var loggerFactory = new LoggerFactory();
 
         var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(), loggerFactory);
-        Assert.NotNull(holder._logger);
+        Assert.NotNull(holder.Logger);
 
         holder = new PlaceholderResolverProvider(new ConfigurationBuilder().Build(), loggerFactory);
-        Assert.NotNull(holder._logger);
+        Assert.NotNull(holder.Logger);
     }
 
     [Fact]
@@ -264,30 +264,6 @@ public class PlaceholderResolverProviderTest
         Assert.True(holder.TryGet("spring:cloud:config:name", out val));
         Assert.Equal("newMyName", val);
     }
-
-#if NET6_0_OR_GREATER
-    [Fact]
-    public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
-    {
-        var manager = new ConfigurationManager();
-        var template = new Dictionary<string, string> { { "placeholder", "${value}" } };
-        var valueProviderA = new Dictionary<string, string> { { "value", "a" } };
-        var valueProviderB = new Dictionary<string, string> { { "value", "b" } };
-        manager.AddInMemoryCollection(template);
-        manager.AddInMemoryCollection(valueProviderA);
-        manager.AddInMemoryCollection(valueProviderB);
-        manager.AddPlaceholderResolver();
-        var result = manager.GetValue<string>("placeholder");
-        Assert.Equal("b", result);
-
-        // TODO: Investigate and fix caching issue with Iconfiguration
-        // var builder = (IConfigurationBuilder)manager;
-        // var firstSource = builder.Sources.OfType<MemoryConfigurationSource>().First(x => x.InitialData is not null && x.InitialData.SequenceEqual(valueProviderB));
-        // builder.Sources.Remove(firstSource);
-        // result = manager.GetValue<string>("placeholder");
-        // Assert.Equal("a", result);
-    }
-#endif
 
     [Fact]
     public void GetChildKeys_ReturnsResolvableSection()

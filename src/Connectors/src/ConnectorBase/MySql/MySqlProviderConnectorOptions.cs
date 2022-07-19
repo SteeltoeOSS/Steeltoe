@@ -11,13 +11,13 @@ namespace Steeltoe.Connector.MySql;
 /// <summary>
 /// Currently enabling properties supported by BOTH of these connectors:
 /// https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
-/// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/
+/// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/.
 /// </summary>
 public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Server = "localhost";
-    public const int Default_Port = 3306;
-    private const string MYSQL_CLIENT_SECTION_PREFIX = "mysql:client";
+    public const string DefaultServer = "localhost";
+    public const int DefaultPort = 3306;
+    private const string MysqlClientSectionPrefix = "mysql:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public MySqlProviderConnectorOptions()
@@ -31,7 +31,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MYSQL_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(MysqlClientSectionPrefix);
         section.Bind(this);
 
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
@@ -39,9 +39,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 
@@ -61,7 +61,7 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public int? DefaultCommandTimeout { get; set; }
 
-    public int? Keepalive { get; set; }
+    public int? KeepAlive { get; set; }
 
     public bool? OldGuids { get; set; }
 
@@ -77,9 +77,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public bool? ConnectionReset { get; set; }
 
-    public int? MaximumPoolsize { get; set; }
+    public int? MaximumPoolSize { get; set; }
 
-    public int? MinimumPoolsize { get; set; }
+    public int? MinimumPoolSize { get; set; }
 
     public bool? Pooling { get; set; }
 
@@ -104,9 +104,9 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
         AddKeyValue(sb, nameof(ConnectionTimeout), ConnectionTimeout);
         AddKeyValue(sb, nameof(ConvertZeroDateTime), ConvertZeroDateTime);
         AddKeyValue(sb, nameof(DefaultCommandTimeout), DefaultCommandTimeout);
-        AddKeyValue(sb, nameof(Keepalive), Keepalive);
-        AddKeyValue(sb, nameof(MaximumPoolsize), MaximumPoolsize);
-        AddKeyValue(sb, nameof(MinimumPoolsize), MinimumPoolsize);
+        AddKeyValue(sb, nameof(KeepAlive), KeepAlive);
+        AddKeyValue(sb, nameof(MaximumPoolSize), MaximumPoolSize);
+        AddKeyValue(sb, nameof(MinimumPoolSize), MinimumPoolSize);
         AddKeyValue(sb, nameof(OldGuids), OldGuids);
         AddKeyValue(sb, nameof(PersistSecurityInfo), PersistSecurityInfo);
         AddKeyValue(sb, nameof(Pooling), Pooling);

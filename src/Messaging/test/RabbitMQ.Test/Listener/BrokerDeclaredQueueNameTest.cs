@@ -25,7 +25,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 public class BrokerDeclaredQueueNameTest : AbstractTest
 {
     [Fact]
-    public async Task TestBrokerNamedQueueDMLC()
+    public async Task TestBrokerNamedQueueDmlc()
     {
         var latch3 = new CountdownEvent(1);
         var latch4 = new CountdownEvent(2);
@@ -37,7 +37,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
         services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
         services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
-        services.AddSingleton(p => CreateDMLCContainer(p, latch3, latch4, message));
+        services.AddSingleton(p => CreateDmlcContainer(p, latch3, latch4, message));
         services.AddRabbitAdmin();
         services.AddRabbitTemplate();
         var provider = services.BuildServiceProvider();
@@ -48,7 +48,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         var cf = provider.GetRequiredService<IConnectionFactory>() as CachingConnectionFactory;
 
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
 
         var queue = provider.GetRequiredService<IQueue>();
         var template = provider.GetRabbitTemplate();
@@ -74,7 +74,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         await container.Stop();
     }
 
-    private DirectMessageListenerContainer CreateDMLCContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4, AtomicReference<IMessage> message)
+    private DirectMessageListenerContainer CreateDmlcContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4, AtomicReference<IMessage> message)
     {
         var cf = services.GetRequiredService<IConnectionFactory>();
         var ctx = services.GetRequiredService<IApplicationContext>();

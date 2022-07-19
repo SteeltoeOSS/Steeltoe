@@ -14,17 +14,17 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 
 public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {
-    public const string CONFIG_PREFIX = "discovery:services";
+    public const string ConfigPrefix = "discovery:services";
 
     /// <inheritdoc/>
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddOptions<List<ConfigurationServiceInstance>>().Configure<IConfiguration>((options, configuration) => configuration.GetSection(CONFIG_PREFIX).Bind(options));
+        services.AddOptions<List<ConfigurationServiceInstance>>().Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigPrefix).Bind(options));
         services.AddSingleton<IDiscoveryClient>(serviceProvider => new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)
     {
-        return configuration.GetSection(CONFIG_PREFIX).GetChildren().Any();
+        return configuration.GetSection(ConfigPrefix).GetChildren().Any();
     }
 }

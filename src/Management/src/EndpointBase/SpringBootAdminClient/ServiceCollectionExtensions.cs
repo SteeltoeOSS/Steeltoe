@@ -11,13 +11,17 @@ using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
+// TODO: [BREAKING] Move out of Microsoft namespace. Placing anything into the System namespace is a recipe for disaster and confusion later.
+// https://stackoverflow.com/questions/1226189/best-practices-c-sharp-extension-methods-namespace-and-promoting-extension-meth
+#pragma warning disable SA1601 // Partial elements should be documented
 public static partial class ServiceCollectionExtensions
+#pragma warning restore SA1601 // Partial elements should be documented
 {
     /// <summary>
-    /// Register startup/shutdown interactions with Spring Boot Admin server
+    /// Register startup/shutdown interactions with Spring Boot Admin server.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
     {
         if (services == null)

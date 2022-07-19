@@ -19,10 +19,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class AspNetCoreHostingObserver : MetricsObserver
 {
-    internal const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-    private const string OBSERVER_NAME = "AspNetCoreHostingObserver";
-    private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
+    private const string DefaultObserverName = "AspNetCoreHostingObserver";
+    private const string DiagnosticName = "Microsoft.AspNetCore";
 
     private readonly string _statusTagKey = "status";
     private readonly string _exceptionTagKey = "exception";
@@ -33,7 +33,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private readonly IViewRegistry _viewRegistry;
 
     public AspNetCoreHostingObserver(IMetricsObserverOptions options, IViewRegistry viewRegistry, ILogger<AspNetCoreHostingObserver> logger)
-        : base(OBSERVER_NAME, DIAGNOSTIC_NAME, options, logger)
+        : base(DefaultObserverName, DiagnosticName, options, logger)
     {
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
         var meter = OpenTelemetryMetrics.Meter;
@@ -63,7 +63,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         */
     }
 
-    public override void ProcessEvent(string evnt, object arg)
+    public override void ProcessEvent(string eventName, object arg)
     {
         if (arg == null)
         {
@@ -76,7 +76,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
             return;
         }
 
-        if (evnt == STOP_EVENT)
+        if (eventName == StopEvent)
         {
             Logger?.LogTrace("HandleStopEvent start{thread}", Thread.CurrentThread.ManagedThreadId);
 

@@ -12,9 +12,9 @@ public class EurekaClientConfigTest : AbstractBaseTest
     public void DefaultConstructor_InitializedWithDefaults()
     {
         var config = new EurekaClientConfig();
-        Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
+        Assert.Equal(EurekaClientConfig.DefaultRegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
         Assert.True(config.ShouldGZipContent);
-        Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
+        Assert.Equal(EurekaClientConfig.DefaultEurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
         Assert.True(config.ShouldRegisterWithEureka);
         Assert.False(config.ShouldDisableDelta);
         Assert.True(config.ShouldFilterOnlyUpInstances);

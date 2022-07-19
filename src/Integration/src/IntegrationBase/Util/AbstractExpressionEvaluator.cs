@@ -91,7 +91,7 @@ public abstract class AbstractExpressionEvaluator
 
             if (ApplicationContext != null)
             {
-                var conversionService = ApplicationContext.GetService<IConversionService>(IntegrationUtils.INTEGRATION_CONVERSION_SERVICE_BEAN_NAME);
+                var conversionService = ApplicationContext.GetService<IConversionService>(IntegrationUtils.IntegrationConversionServiceBeanName);
                 if (conversionService != null)
                 {
                     TypeConverter.ConversionService = conversionService;

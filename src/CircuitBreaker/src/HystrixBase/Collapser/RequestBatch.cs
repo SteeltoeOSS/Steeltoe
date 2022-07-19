@@ -12,26 +12,26 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentType>
+public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
 {
-    private readonly HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> _commandCollapser;
+    private readonly HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> _commandCollapser;
     private readonly int _maxBatchSize;
     private readonly AtomicBoolean _batchStarted = new ();
 
-    private readonly ConcurrentDictionary<RequestArgumentType, CollapsedRequest<RequestResponseType, RequestArgumentType>> _argumentMap = new ();
+    private readonly ConcurrentDictionary<TRequestArgument, CollapsedRequest<TRequestResponse, TRequestArgument>> _argumentMap = new ();
     private readonly IHystrixCollapserOptions _properties;
 
     private readonly ReaderWriterLockSlim _batchLock = new (LockRecursionPolicy.SupportsRecursion);
-    private readonly AtomicReference<CollapsedRequest<RequestResponseType, RequestArgumentType>> _nullArg = new ();
+    private readonly AtomicReference<CollapsedRequest<TRequestResponse, TRequestArgument>> _nullArg = new ();
 
-    public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<BatchReturnType, RequestResponseType, RequestArgumentType> commandCollapser, int maxBatchSize)
+    public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser, int maxBatchSize)
     {
         _properties = properties;
         _commandCollapser = commandCollapser;
         _maxBatchSize = maxBatchSize;
     }
 
-    public CollapsedRequest<RequestResponseType, RequestArgumentType> Offer(RequestArgumentType arg, CancellationToken token)
+    public CollapsedRequest<TRequestResponse, TRequestArgument> Offer(TRequestArgument arg, CancellationToken token)
     {
         /* short-cut - if the batch is started we reject the offer */
         if (_batchStarted.Value)
@@ -58,8 +58,8 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
                 }
                 else
                 {
-                    var collapsedRequest = new CollapsedRequest<RequestResponseType, RequestArgumentType>(arg, token);
-                    var tcs = new TaskCompletionSource<RequestResponseType>(collapsedRequest);
+                    var collapsedRequest = new CollapsedRequest<TRequestResponse, TRequestArgument>(arg, token);
+                    var tcs = new TaskCompletionSource<TRequestResponse>(collapsedRequest);
                     collapsedRequest.CompletionSource = tcs;
 
                     var existing = arg == null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
@@ -117,7 +117,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
             /* wait for 'offer'/'remove' threads to finish before executing the batch so 'requests' is complete */
             _batchLock.EnterWriteLock();
 
-            var args = new List<CollapsedRequest<RequestResponseType, RequestArgumentType>>();
+            var args = new List<CollapsedRequest<TRequestResponse, TRequestArgument>>();
             try
             {
                 // Check for cancel
@@ -178,7 +178,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
 
                             // check that all requests had setResponse or setException invoked in case 'mapResponseToRequests' was implemented poorly
                             Exception e = null;
-                            foreach (var request in shardRequests.OfType<CollapsedRequest<RequestResponseType, RequestArgumentType>>())
+                            foreach (var request in shardRequests.OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
                             {
                                 try
                                 {
@@ -194,7 +194,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
                         {
                             // logger.error("Exception while creating and queueing command with batch.", e);
                             // if a failure occurs we want to pass that exception to all of the Futures that we've returned
-                            foreach (var request in shardRequests.OfType<CollapsedRequest<RequestResponseType, RequestArgumentType>>())
+                            foreach (var request in shardRequests.OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
                             {
                                 try
                                 {
@@ -213,7 +213,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
             {
                 // logger.error("Exception while sharding requests.", e);
                 // same error handling as we do around the shards, but this is a wider net in case the shardRequest method fails
-                foreach (ICollapsedRequest<RequestResponseType, RequestArgumentType> request in args)
+                foreach (ICollapsedRequest<TRequestResponse, TRequestArgument> request in args)
                 {
                     try
                     {
@@ -289,7 +289,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
         }
     }
 
-    internal CollapsedRequest<RequestResponseType, RequestArgumentType> GetOrAddNullArg(CollapsedRequest<RequestResponseType, RequestArgumentType> collapsedRequest)
+    internal CollapsedRequest<TRequestResponse, TRequestArgument> GetOrAddNullArg(CollapsedRequest<TRequestResponse, TRequestArgument> collapsedRequest)
     {
         if (_nullArg.CompareAndSet(null, collapsedRequest))
         {
@@ -301,7 +301,7 @@ public class RequestBatch<BatchReturnType, RequestResponseType, RequestArgumentT
 
     // Best-effort attempt to remove an argument from a batch.  This may get invoked when a cancellation occurs somewhere downstream.
     // This method finds the argument in the batch, and removes it.
-    internal void Remove(RequestArgumentType arg)
+    internal void Remove(TRequestArgument arg)
     {
         if (_batchStarted.Value)
         {

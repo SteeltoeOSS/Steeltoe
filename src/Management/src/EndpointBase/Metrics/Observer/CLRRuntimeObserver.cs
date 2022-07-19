@@ -13,19 +13,16 @@ using System.Diagnostics.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public class CLRRuntimeObserver : IRuntimeDiagnosticSource
-#pragma warning restore S101 // Types should be named in PascalCase
+public class ClrRuntimeObserver : IRuntimeDiagnosticSource
 {
-    internal const string OBSERVER_NAME = "CLRRuntimeObserver";
-    internal const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
+    internal const string ObserverName = "CLRRuntimeObserver";
+    internal const string DiagnosticName = "Steeltoe.ClrMetrics";
 
-    internal const string HEAP_EVENT = "Steeltoe.ClrMetrics.Heap";
-    internal const string THREADS_EVENT = "Steeltoe.ClrMetrics.Threads";
+    internal const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
+    internal const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
-    private const string GENERATION_TAGVALUE_NAME = "gen";
-    private const string GENERATION_KEY = "generation";
+    private const string GenerationTagValueName = "gen";
+    private const string GenerationKey = "generation";
 
     private readonly Dictionary<string, object> _heapTags = new () { { "area", "heap" } };
     private readonly Dictionary<string, object> _workerTags = new () { { "kind", "worker" } };
@@ -35,11 +32,11 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
     private readonly ObservableGauge<long> _collectionCountMeasure;
     private readonly ObservableGauge<long> _activeThreadsMeasure;
     private readonly ObservableGauge<long> _availThreadsMeasure;
-    private readonly ObservableGauge<double> _processUptimeMeasure;
+    private readonly ObservableGauge<double> _processUpTimeMeasure;
 
-    private CLRRuntimeSource.HeapMetrics _previous = default;
+    private ClrRuntimeSource.HeapMetrics _previous = default;
 
-    public CLRRuntimeObserver(IViewRegistry viewRegistry, ILogger<CLRRuntimeObserver> logger)
+    public ClrRuntimeObserver(IViewRegistry viewRegistry, ILogger<ClrRuntimeObserver> logger)
     {
         var meter = OpenTelemetryMetrics.Meter;
         _memoryUsedMeasure = meter.CreateObservableGauge("clr.memory.used", GetMemoryUsed, "Current CLR memory usage", "bytes");
@@ -48,7 +45,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
         _activeThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.active", GetActiveThreadPoolWorkers, "Active thread count", "count");
         _availThreadsMeasure = meter.CreateObservableGauge("clr.threadpool.avail", GetAvailableThreadPoolWorkers, "Available thread count", "count");
 
-        _processUptimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUptime, "Process uptime in seconds", "count");
+        _processUpTimeMeasure = meter.CreateObservableGauge("clr.process.uptime", GetUpTime, "Process uptime in seconds", "count");
         RegisterViews(viewRegistry);
     }
 
@@ -91,7 +88,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetCollectionCount()
     {
-        var metrics = CLRRuntimeSource.GetHeapMetrics();
+        var metrics = ClrRuntimeSource.GetHeapMetrics();
 
         for (int i = 0; i < metrics.CollectionCounts.Count; i++)
         {
@@ -101,7 +98,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
                 count = count - _previous.CollectionCounts[i];
             }
 
-            var tags = new Dictionary<string, object> { { GENERATION_KEY, GENERATION_TAGVALUE_NAME + i } };
+            var tags = new Dictionary<string, object> { { GenerationKey, GenerationTagValueName + i } };
 
             yield return new Measurement<long>(count, tags.AsReadonlySpan());
         }
@@ -109,11 +106,11 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private Measurement<double> GetMemoryUsed()
     {
-        var metrics = CLRRuntimeSource.GetHeapMetrics();
+        var metrics = ClrRuntimeSource.GetHeapMetrics();
         return new Measurement<double>(metrics.TotalMemory, _heapTags.AsReadonlySpan());
     }
 
-    private double GetUptime()
+    private double GetUpTime()
     {
         var diff = DateTime.UtcNow - Process.GetCurrentProcess().StartTime.ToUniversalTime();
         return diff.TotalSeconds;
@@ -121,7 +118,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetActiveThreadPoolWorkers()
     {
-        var metrics = CLRRuntimeSource.GetThreadMetrics();
+        var metrics = ClrRuntimeSource.GetThreadMetrics();
         var active = metrics.MaxThreadPoolWorkers - metrics.AvailableThreadPoolWorkers;
         var activeCompPort = metrics.MaxThreadCompletionPort - metrics.AvailableThreadCompletionPort;
 
@@ -131,7 +128,7 @@ public class CLRRuntimeObserver : IRuntimeDiagnosticSource
 
     private IEnumerable<Measurement<long>> GetAvailableThreadPoolWorkers()
     {
-        var metrics = CLRRuntimeSource.GetThreadMetrics();
+        var metrics = ClrRuntimeSource.GetThreadMetrics();
         yield return new Measurement<long>(metrics.AvailableThreadPoolWorkers, _workerTags.AsReadonlySpan());
         yield return new Measurement<long>(metrics.AvailableThreadCompletionPort, _comPortTags.AsReadonlySpan());
     }

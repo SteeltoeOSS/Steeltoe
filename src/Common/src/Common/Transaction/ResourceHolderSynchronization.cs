@@ -4,16 +4,16 @@
 
 namespace Steeltoe.Common.Transaction;
 
-public class ResourceHolderSynchronization<H, K> : ITransactionSynchronization
-    where H : IResourceHolder
+public class ResourceHolderSynchronization<THolder, TKey> : ITransactionSynchronization
+    where THolder : IResourceHolder
 {
-    private readonly H _resourceHolder;
+    private readonly THolder _resourceHolder;
 
-    private readonly K _resourceKey;
+    private readonly TKey _resourceKey;
 
     private volatile bool _holderActive;
 
-    public ResourceHolderSynchronization(H resourceHolder, K resourceKey)
+    public ResourceHolderSynchronization(THolder resourceHolder, TKey resourceKey)
     {
         _resourceHolder = resourceHolder;
         _resourceKey = resourceKey;
@@ -94,7 +94,7 @@ public class ResourceHolderSynchronization<H, K> : ITransactionSynchronization
         else
         {
             // Probably a pre-bound resource...
-            CleanupResource(_resourceHolder, _resourceKey, status == AbstractTransactionSynchronization.STATUS_COMMITTED);
+            CleanupResource(_resourceHolder, _resourceKey, status == AbstractTransactionSynchronization.StatusCommitted);
         }
 
         _resourceHolder.Reset();
@@ -110,24 +110,24 @@ public class ResourceHolderSynchronization<H, K> : ITransactionSynchronization
         return true;
     }
 
-    protected virtual bool ShouldReleaseAfterCompletion(H resourceHolder)
+    protected virtual bool ShouldReleaseAfterCompletion(THolder resourceHolder)
     {
         return !ShouldReleaseBeforeCompletion();
     }
 
-    protected virtual void FlushResource(H resourceHolder)
+    protected virtual void FlushResource(THolder resourceHolder)
     {
     }
 
-    protected virtual void ProcessResourceAfterCommit(H resourceHolder)
+    protected virtual void ProcessResourceAfterCommit(THolder resourceHolder)
     {
     }
 
-    protected virtual void ReleaseResource(H resourceHolder, K resourceKey)
+    protected virtual void ReleaseResource(THolder resourceHolder, TKey resourceKey)
     {
     }
 
-    protected virtual void CleanupResource(H resourceHolder, K resourceKey, bool committed)
+    protected virtual void CleanupResource(THolder resourceHolder, TKey resourceKey, bool committed)
     {
     }
 }

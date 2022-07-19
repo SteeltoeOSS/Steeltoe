@@ -78,13 +78,13 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Success, 20);
 
         await cmd.Observe();
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
+        expected[(int)HystrixEventType.Success] = 1;
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(expected, _stream.Latest);
     }
@@ -101,15 +101,15 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 20);
 
         await cmd.Observe();
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackSuccess] = 1;
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(expected, _stream.Latest);
     }
@@ -122,14 +122,14 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.TIMEOUT] = 1;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
+        expected[(int)HystrixEventType.Timeout] = 1;
+        expected[(int)HystrixEventType.FallbackSuccess] = 1;
 
         _stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.TIMEOUT);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Timeout);
         await cmd.Observe();
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
@@ -149,7 +149,7 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.BadRequest);
 
         await Assert.ThrowsAsync<HystrixBadRequestException>(async () => await cmd.Observe());
 
@@ -157,8 +157,8 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.BAD_REQUEST] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.BadRequest] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -174,9 +174,9 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 20);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
 
         await cmd1.Observe();
         await cmd2.Observe();
@@ -186,8 +186,8 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
-        expected[(int)HystrixEventType.RESPONSE_FROM_CACHE] = 2;
+        expected[(int)HystrixEventType.Success] = 1;
+        expected[(int)HystrixEventType.ResponseFromCache] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -204,12 +204,12 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         // 3 failures in a row will trip circuit.  let bucket roll once then submit 2 requests.
         // should see 3 FAILUREs and 2 SHORT_CIRCUITs and then 5 FALLBACK_SUCCESSes
-        var failure1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
+        var failure1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure3 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
 
-        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
-        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.Success);
+        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.Success);
 
         await failure1.Observe();
         await failure2.Observe();
@@ -229,9 +229,9 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
 
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 3;
-        expected[(int)HystrixEventType.SHORT_CIRCUITED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
+        expected[(int)HystrixEventType.Failure] = 3;
+        expected[(int)HystrixEventType.ShortCircuited] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 5;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -254,11 +254,11 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
 
         var tasks = new List<Task>();
         foreach (var saturator in saturators)
@@ -280,9 +280,9 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
 
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 10;
-        expected[(int)HystrixEventType.SEMAPHORE_REJECTED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
+        expected[(int)HystrixEventType.Success] = 10;
+        expected[(int)HystrixEventType.SemaphoreRejected] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -305,11 +305,11 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
 
         var tasks = new List<Task>();
         foreach (var saturator in saturators)
@@ -329,9 +329,9 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
 
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 10;
-        expected[(int)HystrixEventType.THREAD_POOL_REJECTED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
+        expected[(int)HystrixEventType.Success] = 10;
+        expected[(int)HystrixEventType.ThreadPoolRejected] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -347,7 +347,7 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackFailure);
 
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
 
@@ -355,9 +355,9 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_FAILURE] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackFailure] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -373,16 +373,16 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 20, HystrixEventType.FALLBACK_MISSING);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 20, HystrixEventType.FallbackMissing);
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () => await cmd.Observe());
 
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_MISSING] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackMissing] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -403,11 +403,11 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         var fallbackSaturators = new List<Command>();
         for (var i = 0; i < 5; i++)
         {
-            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 500));
         }
 
-        var rejection1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-        var rejection2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+        var rejection1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
+        var rejection2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
 
         var tasks = new List<Task>();
         foreach (var saturator in fallbackSaturators)
@@ -427,10 +427,10 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 7;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
-        expected[(int)HystrixEventType.FALLBACK_REJECTION] = 2;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 2;
+        expected[(int)HystrixEventType.Failure] = 7;
+        expected[(int)HystrixEventType.FallbackSuccess] = 5;
+        expected[(int)HystrixEventType.FallbackRejection] = 2;
+        expected[(int)HystrixEventType.ExceptionThrown] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -458,8 +458,8 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
-        expected[(int)HystrixEventType.COLLAPSED] = 3;
+        expected[(int)HystrixEventType.Success] = 1;
+        expected[(int)HystrixEventType.Collapsed] = 3;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -472,11 +472,11 @@ public class RollingCommandEventCounterStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = RollingCommandEventCounterStream.GetInstance(key, 10, 100);
-        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 20);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Failure, 10);
 
         await cmd1.Observe();
         await cmd2.Observe();

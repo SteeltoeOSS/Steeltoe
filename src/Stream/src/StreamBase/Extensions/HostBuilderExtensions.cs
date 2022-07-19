@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,7 +10,7 @@ using Steeltoe.Stream.StreamHost;
 
 namespace Steeltoe.Stream.Extensions;
 
-public static class HostBuilderExtensions
+public static partial class HostBuilderExtensions
 {
     public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
     {
@@ -32,14 +31,4 @@ public static class HostBuilderExtensions
                 services.AddHostedService<StreamLifeCycleService>();
             });
     }
-
-#if NET6_0_OR_GREATER
-    public static WebApplicationBuilder AddStreamServices<T>(this WebApplicationBuilder builder)
-    {
-        builder.AddSpringBootConfiguration();
-        builder.Services.AddStreamServices<T>(builder.Configuration);
-        builder.Services.AddHostedService<StreamLifeCycleService>();
-        return builder;
-    }
-#endif
 }

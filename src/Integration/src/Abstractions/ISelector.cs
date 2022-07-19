@@ -5,9 +5,9 @@
 namespace Steeltoe.Integration;
 
 /// <summary>
-/// TODO: See if this can be internal
+/// TODO: See if this can be internal.
 /// </summary>
-/// <typeparam name="T">input tye</typeparam>
+/// <typeparam name="T">input tye.</typeparam>
 public interface ISelector<in T>
 {
     bool Accept(T source);

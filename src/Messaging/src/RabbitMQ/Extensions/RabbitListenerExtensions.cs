@@ -26,7 +26,7 @@ public static class RabbitListenerExtensions
                 services.AddSingleton(metadata);
             }
 
-            RabbitListenerDeclareAtrributeProcessor.ProcessDeclareAttributes(services, config, t);
+            RabbitListenerDeclareAttributeProcessor.ProcessDeclareAttributes(services, config, t);
         }
 
         return services;

@@ -9,22 +9,19 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResult>
-#pragma warning restore S101 // Types should be named in PascalCase
+public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResult>
 {
     private readonly RequestDelegate _next;
 
-    public ThreadDumpEndpointMiddleware_v2(RequestDelegate next, ThreadDumpEndpoint_v2 endpoint, IManagementOptions mgmtOptions, ILogger<ThreadDumpEndpointMiddleware_v2> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions, ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleThreadDumpRequestAsync(context);
         }
@@ -35,7 +32,7 @@ public class ThreadDumpEndpointMiddleware_v2 : EndpointMiddleware<ThreadDumpResu
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);
     }
