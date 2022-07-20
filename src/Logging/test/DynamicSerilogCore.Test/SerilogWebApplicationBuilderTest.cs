@@ -2,9 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -15,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
@@ -108,4 +104,4 @@ public class SerilogWebApplicationBuilderTest
         Assert.DoesNotContain("info", logs);
     }
 }
-#endif
+

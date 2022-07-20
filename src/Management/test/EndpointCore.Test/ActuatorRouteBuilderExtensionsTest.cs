@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +26,7 @@ using Xunit;
 
 namespace Steeltoe.Management.Endpoint;
 
-public partial class ActuatorRouteBuilderExtensionsTest
+public class ActuatorRouteBuilderExtensionsTest
 {
     public static IEnumerable<object[]> EndpointImplementations
     {
@@ -123,5 +124,11 @@ public partial class ActuatorRouteBuilderExtensionsTest
         var response = await server.CreateClient().GetAsync(path);
 
         Assert.True(expectedSuccess == response.IsSuccessStatusCode, $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");
+    }
+
+    private static void MapEndpoints(Type type, IEndpointRouteBuilder endpoints)
+    {
+        endpoints.MapBlazorHub(); // https://github.com/SteeltoeOSS/Steeltoe/issues/729
+        endpoints.MapActuatorEndpoint(type, convention => convention.RequireAuthorization("TestAuth"));
     }
 }

@@ -4,10 +4,11 @@
 
 using Microsoft.Extensions.Hosting;
 using System;
+using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Extensions.Logging;
 
-public static partial class DynamicLoggerHostBuilderExtensions
+public static class DynamicLoggerHostBuilderExtensions
 {
     /// <summary>
     /// Adds Dynamic Console Logging to your application. Removes ConsoleLoggerProvider if found (to prevent duplicate console log entries).<para />
@@ -22,5 +23,21 @@ public static partial class DynamicLoggerHostBuilderExtensions
         }
 
         return hostBuilder.ConfigureLogging((_, configureLogging) => configureLogging.AddDynamicConsole());
+    }
+
+    /// <summary>
+    /// Adds Dynamic Console Logging to your application. Removes ConsoleLoggerProvider if found (to prevent duplicate console log entries).<para />
+    /// Also calls ILoggingBuilder.AddConfiguration() if not previously called.
+    /// </summary>
+    /// <param name="hostBuilder">Your HostBuilder.</param>
+    public static WebApplicationBuilder AddDynamicLogging(this WebApplicationBuilder hostBuilder)
+    {
+        if (hostBuilder is null)
+        {
+            throw new ArgumentNullException(nameof(hostBuilder));
+        }
+
+        hostBuilder.Logging.AddDynamicConsole();
+        return hostBuilder;
     }
 }

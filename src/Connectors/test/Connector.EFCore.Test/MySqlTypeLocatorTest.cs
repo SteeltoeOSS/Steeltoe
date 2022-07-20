@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.MySql.Test;
 /// Don't remove it unless you've got a better idea for making sure we work with multiple assemblies
 /// with conflicting names/types.
 /// </summary>
-public partial class MySqlTypeLocatorTest
+public class MySqlTypeLocatorTest
 {
     [Fact]
     public void Property_Can_Locate_ConnectionType()
@@ -21,5 +21,18 @@ public partial class MySqlTypeLocatorTest
         var type = MySqlTypeLocator.MySqlConnection;
 
         Assert.NotNull(type);
+    }
+
+    [Fact]
+    public void Driver_Found_In_MySqlConnector_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = MySqlTypeLocator.Assemblies;
+        MySqlTypeLocator.Assemblies = new[] { "MySqlConnector" };
+
+        var type = MySqlTypeLocator.MySqlConnection;
+
+        Assert.NotNull(type);
+        MySqlTypeLocator.Assemblies = types;
     }
 }

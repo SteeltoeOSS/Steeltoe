@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Steeltoe.Connector.EFCore.Test;
 
-public partial class EntityFrameworkCoreTypeLocatorTest
+public class EntityFrameworkCoreTypeLocatorTest
 {
     [Fact]
     public void Property_Can_Locate_MySqlDbContextOptionsType()
@@ -59,5 +59,31 @@ public partial class EntityFrameworkCoreTypeLocatorTest
 
         Assert.NotNull(type);
         EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
+    }
+
+    [Fact]
+    public void Options_Found_In_Pomelo_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
+
+        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+
+        Assert.NotNull(type);
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
+    }
+
+    [Fact(Skip = "Change NuGet reference to see this test pass")]
+    public void Options_Found_In_MySql_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
+
+        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+
+        Assert.NotNull(type);
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
     }
 }

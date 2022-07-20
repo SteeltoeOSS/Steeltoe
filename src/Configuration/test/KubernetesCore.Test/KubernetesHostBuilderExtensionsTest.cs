@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
-public partial class KubernetesHostBuilderExtensionsTest
+public class KubernetesHostBuilderExtensionsTest
 {
     [Fact]
     public void AddKubernetesConfiguration_DefaultWebHost_AddsConfig()
@@ -75,6 +75,22 @@ public partial class KubernetesHostBuilderExtensionsTest
         var serviceProvider = hostBuilder.Build().Services;
         var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
         var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+
+        Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
+        Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
+        Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
+    }
+
+    [Fact]
+    public void AddKubernetesConfiguration_WebApplicationBuilder_AddsConfig()
+    {
+        using var server = new MockKubeApiServer();
+        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
+
+        var host = hostBuilder.Build();
+        var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
+        var appInfo = host.Services.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);

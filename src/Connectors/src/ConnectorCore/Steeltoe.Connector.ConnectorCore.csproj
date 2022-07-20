@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Connector</RootNamespace>
     <Description>Package for using service connectors in your .NET Core application</Description>
     <PackageTags>connectors;aspnetcore;services</PackageTags>

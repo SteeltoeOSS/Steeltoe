@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.DataProtection.CredHub</RootNamespace>
     <Description>.NET Client for CredHub - Base Package</Description>
     <PackageTags>CloudFoundry;NET Core;Security;DataProtection;CredHub</PackageTags>

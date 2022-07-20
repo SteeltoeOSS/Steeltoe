@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <Description>Steeltoe library for enabling dynamic management of Serilog in ASP.NET Core applications. Includes Console sink.</Description>
     <PackageTags>logging;dynamic logging;serilog;aspnetcore;management;monitoring;Spring Cloud;</PackageTags>
     <RootNamespace>Steeltoe.Extensions.Logging.DynamicSerilog</RootNamespace>
