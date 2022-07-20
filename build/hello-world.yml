@@ -8,7 +8,8 @@ jobs:
   steps:
   - pwsh: |
       Write-Host "Hello world"
-      if (-not $isPR) {
+      Write-Host "isPR = $(isPR)"
+      if (!$isPR) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
