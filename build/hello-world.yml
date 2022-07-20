@@ -1,5 +1,5 @@
 variables:
-  isPR: $[ne(variables['system.pullRequest.sourceBranch'], null)]
+  isPR: $[ne(variables['system.pullRequest.sourceBranch'], '')]
 
 jobs:
 - job: Hello_World
