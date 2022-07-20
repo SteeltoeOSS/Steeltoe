@@ -6,9 +6,9 @@ jobs:
   - pwsh: |
       Write-Host "Hello world"
 
-      if ($system) {
+      if ($system -ne $null) {
         Write-Host "Found system"
-        if ($system.pullRequest) {
+        if ($system.pullRequest -ne $null) {
           Write-Host "Found system.pullRequest"
           Write-Host "system.pullRequest.sourceBranch = $(system.pullRequest.sourceBranch)"
           Write-Host "system.pullRequest.targetBranch = $(system.pullRequest.targetBranch)"
