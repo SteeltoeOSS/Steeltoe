@@ -182,6 +182,7 @@ public class HostBuilderExtensionsTest
         using var host = hostBuilder.Build();
         host.Start();
     }
+
     [Fact]
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
     public async Task UseCloudHosting_WebApplication_UsesLocalPortSettings()
