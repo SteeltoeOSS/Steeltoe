@@ -1,3 +1,9 @@
+parameters:
+  - name: Some
+    displayName: Example parameter
+    type: boolean
+    default: false
+
 jobs:
 - job: Hello_World
   pool:
@@ -5,6 +11,7 @@ jobs:
   steps:
   - pwsh: |
       Write-Host "Hello world"
+      Write-Host "Some=${{ parameter.Some }}"
     displayName: Write message
 
 
