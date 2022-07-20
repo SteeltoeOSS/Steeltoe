@@ -12,6 +12,6 @@ jobs:
           Write-Host "system.pullRequest.sourceBranch = $(system.pullRequest.sourceBranch)"
           Write-Host "system.pullRequest.targetBranch = $(system.pullRequest.targetBranch)"
           Write-Host "system.pullRequest.sourceCommitId = $(system.pullRequest.sourceCommitId)"
+        }
       }
-    }
     displayName: Write message
