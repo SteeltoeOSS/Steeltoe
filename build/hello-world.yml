@@ -10,7 +10,8 @@ jobs:
       Write-Host "Hello world"
       Write-Host "isPR = $isPR"
       Write-Host "(isPR) = $(isPR)"
-      if ($(isPR) -ne 'True') {
+      #if ($(isPR) -ne 'True') {
+      if (-not $(isPR)) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
