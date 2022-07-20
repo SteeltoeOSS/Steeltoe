@@ -9,7 +9,7 @@ jobs:
   - pwsh: |
       Write-Host "Hello world"
       Write-Host "isPR = $(isPR)"
-      if (!$isPR) {
+      if (-ne $isPR 'True') {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
