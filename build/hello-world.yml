@@ -9,13 +9,14 @@ jobs:
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-      if ($system -ne $null) {
-        Write-Host "Found system"
-        if ($system.pullRequest -ne $null) {
-          Write-Host "Found system.pullRequest"
-          Write-Host "system.pullRequest.sourceBranch = $(system.pullRequest.sourceBranch)"
-          Write-Host "system.pullRequest.targetBranch = $(system.pullRequest.targetBranch)"
-          Write-Host "system.pullRequest.sourceCommitId = $(system.pullRequest.sourceCommitId)"
+        if ($system -ne $null) {
+          Write-Host "Found system"
+          if ($system.pullRequest -ne $null) {
+            Write-Host "Found system.pullRequest"
+            Write-Host "system.pullRequest.sourceBranch = $(system.pullRequest.sourceBranch)"
+            Write-Host "system.pullRequest.targetBranch = $(system.pullRequest.targetBranch)"
+            Write-Host "system.pullRequest.sourceCommitId = $(system.pullRequest.sourceCommitId)"
+          }
         }
       }
     displayName: Write message
