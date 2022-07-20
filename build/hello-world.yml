@@ -10,7 +10,8 @@ jobs:
       Write-Host "Hello world"
       Write-Host "isPR = $isPR"
       Write-Host "(isPR) = $(isPR)"
-      Write-Host "Type of isPR = $(isPR.GetType())"
+      $type = $isPR.GetType()
+      Write-Host "Type = $type"
       if ($(isPR) -ne 'True') {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
