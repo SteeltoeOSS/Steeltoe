@@ -1,3 +1,6 @@
+variables:
+  isPR: $[ne(variables['system.pullRequest.sourceBranch'], null)]
+
 jobs:
 - job: Hello_World
   pool:
@@ -5,6 +8,7 @@ jobs:
   steps:
   - pwsh: |
       Write-Host "Hello world"
+      Write-Host "isPR = $(isPR)"
       if ($system?.pullRequest?.targetBranch -eq $null) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
