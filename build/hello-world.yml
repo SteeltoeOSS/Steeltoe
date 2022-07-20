@@ -9,6 +9,7 @@ jobs:
   - pwsh: |
       Write-Host "Hello world"
       $sourceBranch = $env:system.pullRequest.sourceBranch
+      Write-Host "sourceBranch = $sourceBranch"
       if (-not $sourceBranch) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
