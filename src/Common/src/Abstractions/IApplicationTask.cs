@@ -19,5 +19,3 @@ public interface IApplicationTask
     /// </summary>
     void Run();
 }
-
-// comment

@@ -39,8 +39,6 @@ public class ApplicationInstanceInfo : AbstractOptions, IApplicationInstanceInfo
 
     public string PlatformNameKey => BuildConfigString(PlatformRoot, $"{ApplicationRoot}:name");
 
-    public string DemoKey => string.Empty;
-
     protected virtual string PlatformRoot => string.Empty;
 
     protected void SecondChanceSetIdProperties(IConfiguration config = null)
