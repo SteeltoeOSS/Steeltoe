@@ -37,5 +37,10 @@ jobs:
         if ($LastExitCode -ne 0) {
           throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
         }
+
+        git add -A .
+        git diff-index --quiet HEAD --
+        $hasChangesToCommit = $LastExitCode -ne 0
+        Write-Host "hasChangesToCommit = $hasChangesToCommit"
       }
     displayName: Write message

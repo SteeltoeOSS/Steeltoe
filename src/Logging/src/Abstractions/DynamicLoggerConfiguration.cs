@@ -21,6 +21,10 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
         EffectiveLevel = effective;
     }
 
+
+
+
+
     /// <summary>
     /// Gets namespace this configuration is applied to.
     /// </summary>
