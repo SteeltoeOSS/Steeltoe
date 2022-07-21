@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using System;
-using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Extensions.Logging;
 

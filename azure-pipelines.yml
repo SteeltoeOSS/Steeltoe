@@ -34,10 +34,6 @@ jobs:
       PackageVersion: $(PackageVersion)
       PackageVersionOverride: $(PackageVersionOverride)
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
-  - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:
       version: 6.0.x
@@ -100,10 +96,6 @@ jobs:
   pool:
     vmImage: $(imageName)
   steps:
-  - task: UseDotNet@2
-    displayName: Install .NET Core 3.1
-    inputs:
-      version: 3.1.x
   - task: UseDotNet@2
     displayName: Install .NET 6
     inputs:

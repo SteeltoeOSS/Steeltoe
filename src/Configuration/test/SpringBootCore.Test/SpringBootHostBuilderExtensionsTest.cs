@@ -98,7 +98,7 @@ public class SpringBootHostBuilderExtensionsTest
     }
 
     [Fact]
-    public void ConfigureSpringBoot_ThrowsIfNulls_Net60()
+    public void ConfigureSpringBoot_WebApplicationBuilder_ThrowsIfNulls()
     {
         const WebApplicationBuilder webAppBuilder = null;
 
