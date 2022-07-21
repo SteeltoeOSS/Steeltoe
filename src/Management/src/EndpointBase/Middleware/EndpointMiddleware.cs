@@ -8,6 +8,7 @@ using Steeltoe.Management.Endpoint.Metrics;
 using System;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
 
@@ -73,9 +74,9 @@ public class EndpointMiddleware<TResult>
     internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
         serializerOptions ??= new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-#pragma warning disable SYSLIB0020 // Type or member is obsolete
-        serializerOptions.IgnoreNullValues = true;
-#pragma warning restore SYSLIB0020 // Type or member is obsolete
+
+        serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+
         if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
         {
             serializerOptions.Converters.Add(new HealthConverter());
