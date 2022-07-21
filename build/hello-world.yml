@@ -5,6 +5,7 @@ jobs:
   steps:
   - pwsh: |
       Write-Host "Hello world"
+
       $sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
       if (-not $sourceBranch) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
@@ -13,5 +14,28 @@ jobs:
         Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"
         Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"
+
+        $mergeCommitHash = git rev-parse "HEAD"
+        Write-Host "mergeCommitHash = $mergeCommitHash"
+        $targetCommitHash = git rev-parse "$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
+        Write-Host "targetCommitHash = $targetCommitHash"
+
+        dotnet tool restore
+
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
+        }
+
+        dotnet restore src
+
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
+        }
+
+        dotnet regitlint -s src/Steeltoe.All.sln --print-command --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --fail-on-diff --print-diff
+
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
+        }
       }
     displayName: Write message
