@@ -6,18 +6,18 @@ jobs:
   - pwsh: |
       Write-Host "Hello world"
 
-      $sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
-      if (-not $sourceBranch) {
+      $targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+      if (-not $targetBranch) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-        Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"            # cibuild-tryout
-        Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"            # main
-        Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"        # tip of PR
+        #Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"            # cibuild-tryout
+        #Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"            # main
+        #Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"        # tip of PR
 
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
-        $targetCommitHash = git rev-parse "origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH"
+        $targetCommitHash = git rev-parse "origin/$targetBranch"
         Write-Host "targetCommitHash = $targetCommitHash"
 
         dotnet tool restore
@@ -32,7 +32,7 @@ jobs:
           throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
         }
 
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
+        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
 
         if ($LastExitCode -ne 0) {
           throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
@@ -42,5 +42,14 @@ jobs:
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
         Write-Host "hasChangesToCommit = $hasChangesToCommit"
+
+        if ($hasChangesToCommit) {
+          git commit -m "Automated code Cleanup"
+          git push
+
+          if ($LastExitCode -ne 0) {
+            throw "Command 'git push' failed with exit code $LastExitCode."
+          }
+        }
       }
     displayName: Write message
