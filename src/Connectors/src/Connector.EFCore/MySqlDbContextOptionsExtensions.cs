@@ -8,6 +8,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
 using System;
+using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Connector.MySql.EFCore;
@@ -187,10 +188,20 @@ public static class MySqlDbContextOptionsExtensions
         }
         else
         {
-            // If the server version wasn't passed in, use the EF Core lib to autodetect it (this is the part that creates an extra connection)
-            serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
+            // In 6.0, Pomelo requires server version but MySql.Data does not support it as a param. Look for a method that requires it first
             useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
-            parameters = new[] { builder, connection, serverVersion, mySqlOptionsAction };
+
+            if (useMethod is null)
+            {
+                useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), typeof(Action<DbContextOptionsBuilder>) });
+                parameters = new[] { builder, connection, mySqlOptionsAction };
+            }
+            else
+            {
+                // If the server version wasn't passed in, see if we need to use the EF Core lib to autodetect it (this is the part that creates an extra connection)
+                serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
+                parameters = new[] { builder, connection, serverVersion, mySqlOptionsAction };
+            }
         }
 
         if (extensionType == null)
@@ -216,13 +227,12 @@ public static class MySqlDbContextOptionsExtensions
         var typeInfo = type.GetTypeInfo();
         var declaredMethods = typeInfo.DeclaredMethods;
 
-        foreach (var ci in declaredMethods)
+        foreach (var ci in declaredMethods.Where(method => method.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase)))
         {
             var parameters = ci.GetParameters();
-            if ((parameters.Length == 3 || parameters.Length == parameterTypes.Length) &&
-                ci.Name.Equals("UseMySQL", StringComparison.InvariantCultureIgnoreCase) &&
-                parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                parameters[1].ParameterType.Equals(parameterTypes[1]) &&
+            if (parameters.Length == parameterTypes.Length &&
+                parameters[0].ParameterType == parameterTypes[0] &&
+                parameters[1].ParameterType == parameterTypes[1] &&
                 ci.IsPublic && ci.IsStatic)
             {
                 return ci;
