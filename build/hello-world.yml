@@ -1,6 +1,3 @@
-variables:
-  isPR: $[ne(variables['system.pullRequest.sourceBranch'], '')]
-
 jobs:
 - job: Hello_World
   pool:
@@ -9,13 +6,13 @@ jobs:
   - pwsh: |
       Write-Host "Hello world"
       $sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
-      Write-Host "sourceBranch = $sourceBranch"
       if (-not $sourceBranch) {
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-        Write-Host "system.pullRequest.sourceBranch = $(system.pullRequest.sourceBranch)"
-        Write-Host "system.pullRequest.targetBranch = $(system.pullRequest.targetBranch)"
-        Write-Host "system.pullRequest.sourceCommitId = $(system.pullRequest.sourceCommitId)"
+        Write-Host "sourceBranch = $sourceBranch"
+        Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"
+        Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"
       }
     displayName: Write message
