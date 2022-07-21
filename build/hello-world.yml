@@ -10,7 +10,6 @@ jobs:
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-        Write-Host "sourceBranch = $sourceBranch"
         Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"
         Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"
