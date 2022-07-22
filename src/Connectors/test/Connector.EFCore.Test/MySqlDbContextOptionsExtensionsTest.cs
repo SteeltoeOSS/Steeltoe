@@ -84,8 +84,7 @@ public class MySqlDbContextOptionsExtensionsTest
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection(string[] efAssemblies, Type mySqlConnection)
     {
-        SetTypeLocators(efAssemblies, mySqlConnection);
-
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
@@ -96,7 +95,6 @@ public class MySqlDbContextOptionsExtensionsTest
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.True(con.GetType() == mySqlConnection);
-        ResetTypeLocators();
     }
 
     [Fact]
@@ -134,8 +132,7 @@ public class MySqlDbContextOptionsExtensionsTest
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_MultipleMySqlServices_AddWithName_Adds(string[] efAssemblies, Type mySqlConnection)
     {
-        SetTypeLocators(efAssemblies, mySqlConnection);
-
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
         IServiceCollection services = new ServiceCollection();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
@@ -162,7 +159,6 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd0407903550", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP0", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.InvariantCultureIgnoreCase);
-        ResetTypeLocators();
     }
 
     [Theory]
@@ -170,7 +166,7 @@ public class MySqlDbContextOptionsExtensionsTest
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContexts_WithVCAPs_AddsDbContexts(string[] efAssemblies, Type mySqlConnection)
     {
-        SetTypeLocators(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
         IServiceCollection services = new ServiceCollection();
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
@@ -196,7 +192,6 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
-        ResetTypeLocators();
     }
 
     // Run a MySQL server with Docker to match credentials below with this command
@@ -206,7 +201,7 @@ public class MySqlDbContextOptionsExtensionsTest
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0(string[] efAssemblies, Type mySqlConnection)
     {
-        SetTypeLocators(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
 
@@ -217,25 +212,6 @@ public class MySqlDbContextOptionsExtensionsTest
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.True(con.GetType() == mySqlConnection);
-        ResetTypeLocators();
-    }
-
-    private static string[] _efAssembliesReset;
-    private static string[] _mySqlAssembliesReset;
-
-    private static void SetTypeLocators(string[] limitedEntityAssemblies, Type mySqlConnection)
-    {
-        _efAssembliesReset = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = limitedEntityAssemblies;
-
-        _mySqlAssembliesReset = MySqlTypeLocator.Assemblies;
-        MySqlTypeLocator.Assemblies = new[] { mySqlConnection.Assembly.FullName?.Split(',')[0] };
-    }
-
-    private static void ResetTypeLocators()
-    {
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = _efAssembliesReset;
-        MySqlTypeLocator.Assemblies = _mySqlAssembliesReset;
     }
 
     private static void AddMySqlDbContext(IServiceCollection services, IConfigurationRoot config, string serviceName = null)
@@ -247,6 +223,27 @@ public class MySqlDbContextOptionsExtensionsTest
         else
         {
             services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serviceName, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        }
+    }
+
+    private sealed class AlternateTypeLocatorScope : IDisposable
+    {
+        private readonly string[] _mySqlEntityAssembliesBackup;
+        private readonly string[] _mySqlAssembliesBackup;
+
+        public AlternateTypeLocatorScope(string[] mySqlEntityAssemblies, Type mySqlConnectionType)
+        {
+            _mySqlEntityAssembliesBackup = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlEntityAssemblies;
+
+            _mySqlAssembliesBackup = MySqlTypeLocator.Assemblies;
+            MySqlTypeLocator.Assemblies = new[] { mySqlConnectionType.Assembly.FullName?.Split(',')[0] };
+        }
+
+        public void Dispose()
+        {
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = _mySqlEntityAssembliesBackup;
+            MySqlTypeLocator.Assemblies = _mySqlAssembliesBackup;
         }
     }
 }
