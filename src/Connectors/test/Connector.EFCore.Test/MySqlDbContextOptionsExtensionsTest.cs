@@ -82,9 +82,9 @@ public class MySqlDbContextOptionsExtensionsTest
     [Theory]
     [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
-    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection(string[] efAssemblies, Type mySqlConnection)
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection(string[] efAssemblies, Type mySqlConnectionType)
     {
-        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
@@ -94,7 +94,7 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con.GetType() == mySqlConnection);
+        Assert.True(con.GetType() == mySqlConnectionType);
     }
 
     [Fact]
@@ -130,9 +130,9 @@ public class MySqlDbContextOptionsExtensionsTest
     [Theory]
     [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
-    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds(string[] efAssemblies, Type mySqlConnection)
+    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds(string[] efAssemblies, Type mySqlConnectionType)
     {
-        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
@@ -150,7 +150,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con.GetType() == mySqlConnection);
+        Assert.True(con.GetType() == mySqlConnectionType);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -164,9 +164,9 @@ public class MySqlDbContextOptionsExtensionsTest
     [Theory]
     [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
-    public void AddDbContexts_WithVCAPs_AddsDbContexts(string[] efAssemblies, Type mySqlConnection)
+    public void AddDbContexts_WithVCAPs_AddsDbContexts(string[] efAssemblies, Type mySqlConnectionType)
     {
-        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
@@ -183,7 +183,7 @@ public class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con.GetType() == mySqlConnection);
+        Assert.True(con.GetType() == mySqlConnectionType);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -199,9 +199,9 @@ public class MySqlDbContextOptionsExtensionsTest
     [Theory(Skip = "Requires a running MySQL server to support AutoDetect")]
     [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
     [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
-    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0(string[] efAssemblies, Type mySqlConnection)
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0(string[] efAssemblies, Type mySqlConnectionType)
     {
-        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnection);
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
 
@@ -211,7 +211,7 @@ public class MySqlDbContextOptionsExtensionsTest
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con.GetType() == mySqlConnection);
+        Assert.True(con.GetType() == mySqlConnectionType);
     }
 
     private static void AddMySqlDbContext(IServiceCollection services, IConfigurationRoot config, string serviceName = null)
