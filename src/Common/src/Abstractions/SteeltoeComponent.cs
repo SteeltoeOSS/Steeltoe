@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public enum SteeltoeComponent
 {
-    public enum SteeltoeComponent
-    {
-        Discovery,
-        CircuitBreaker,
-        Configuration,
-        Connectors,
-        Kubernetes,
-        Management,
-        Security
-    }
+    Discovery,
+    CircuitBreaker,
+    Configuration,
+    Connectors,
+    Kubernetes,
+    Management,
+    Security
 }

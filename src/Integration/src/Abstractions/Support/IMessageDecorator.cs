@@ -4,18 +4,17 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+/// <summary>
+/// A contract for message decorators
+/// </summary>
+public interface IMessageDecorator
 {
     /// <summary>
-    /// A contract for message decorators
+    /// Process the incoming message and return the decorated result
     /// </summary>
-    public interface IMessageDecorator
-    {
-        /// <summary>
-        /// Process the incoming message and return the decorated result
-        /// </summary>
-        /// <param name="message">the message to process</param>
-        /// <returns>the resulting message</returns>
-        IMessage DecorateMessage(IMessage message);
-    }
+    /// <param name="message">the message to process</param>
+    /// <returns>the resulting message</returns>
+    IMessage DecorateMessage(IMessage message);
 }

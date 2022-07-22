@@ -7,43 +7,42 @@ using Steeltoe.Discovery.Consul.Util;
 using System;
 using System.Net;
 
-namespace Steeltoe.Discovery.Consul
+namespace Steeltoe.Discovery.Consul;
+
+/// <summary>
+/// A factory to use in configuring and creating a Consul client
+/// </summary>
+public static class ConsulClientFactory
 {
     /// <summary>
-    /// A factory to use in configuring and creating a Consul client
+    /// Create a Consul client using the provided configuration options
     /// </summary>
-    public static class ConsulClientFactory
+    /// <param name="options">the configuration options</param>
+    /// <returns>a Consul client</returns>
+    public static IConsulClient CreateClient(ConsulOptions options)
     {
-        /// <summary>
-        /// Create a Consul client using the provided configuration options
-        /// </summary>
-        /// <param name="options">the configuration options</param>
-        /// <returns>a Consul client</returns>
-        public static IConsulClient CreateClient(ConsulOptions options)
+        if (options == null)
         {
-            if (options == null)
+            throw new ArgumentNullException(nameof(options));
+        }
+
+        var client = new ConsulClient(s =>
+        {
+            s.Address = new Uri($"{options.Scheme}://{options.Host}:{options.Port}");
+            s.Token = options.Token;
+            s.Datacenter = options.Datacenter;
+            if (!string.IsNullOrEmpty(options.WaitTime))
             {
-                throw new ArgumentNullException(nameof(options));
+                s.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
             }
 
-            var client = new ConsulClient(s =>
+            if (!string.IsNullOrEmpty(options.Password) || !string.IsNullOrEmpty(options.Username))
             {
-                s.Address = new Uri($"{options.Scheme}://{options.Host}:{options.Port}");
-                s.Token = options.Token;
-                s.Datacenter = options.Datacenter;
-                if (!string.IsNullOrEmpty(options.WaitTime))
-                {
-                    s.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
-                }
-
-                if (!string.IsNullOrEmpty(options.Password) || !string.IsNullOrEmpty(options.Username))
-                {
 #pragma warning disable CS0618 // Type or member is obsolete
-                    s.HttpAuth = new NetworkCredential(options.Username, options.Password);
+                s.HttpAuth = new NetworkCredential(options.Username, options.Password);
 #pragma warning restore CS0618 // Type or member is obsolete
-                }
-            });
-            return client;
-        }
+            }
+        });
+        return client;
     }
 }

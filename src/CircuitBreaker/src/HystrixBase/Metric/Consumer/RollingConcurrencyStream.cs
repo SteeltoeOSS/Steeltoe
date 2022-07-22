@@ -11,88 +11,87 @@ using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Subjects;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+
+public abstract class RollingConcurrencyStream
 {
-    public abstract class RollingConcurrencyStream
+    private readonly BehaviorSubject<int> _rollingMax = new (0);
+    private readonly IObservable<int> _rollingMaxStream;
+    private readonly AtomicReference<IDisposable> _rollingMaxSubscription = new (null);
+
+    private static Func<int, int, int> ReduceToMax { get; } = (a, b) =>
     {
-        private readonly BehaviorSubject<int> _rollingMax = new (0);
-        private readonly IObservable<int> _rollingMaxStream;
-        private readonly AtomicReference<IDisposable> _rollingMaxSubscription = new (null);
+        return Math.Max(a, b);
+    };
 
-        private static Func<int, int, int> ReduceToMax { get; } = (a, b) =>
-       {
-           return Math.Max(a, b);
-       };
+    private static Func<IObservable<int>, IObservable<int>> ReduceStreamToMax { get; } = (observedConcurrency) =>
+    {
+        return observedConcurrency.Aggregate(0, (arg1, arg2) => ReduceToMax(arg1, arg2)).Select(n => n);
+    };
 
-        private static Func<IObservable<int>, IObservable<int>> ReduceStreamToMax { get; } = (observedConcurrency) =>
+    private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = (@event) =>
+    {
+        return @event.CurrentConcurrency;
+    };
+
+    protected RollingConcurrencyStream(IHystrixEventStream<HystrixCommandExecutionStarted> inputEventStream, int numBuckets, int bucketSizeInMs)
+    {
+        var emptyRollingMaxBuckets = new List<int>();
+        for (var i = 0; i < numBuckets; i++)
         {
-            return observedConcurrency.Aggregate(0, (arg1, arg2) => ReduceToMax(arg1, arg2)).Select(n => n);
-        };
-
-        private static Func<HystrixCommandExecutionStarted, int> GetConcurrencyCountFromEvent { get; } = (@event) =>
-        {
-            return @event.CurrentConcurrency;
-        };
-
-        protected RollingConcurrencyStream(IHystrixEventStream<HystrixCommandExecutionStarted> inputEventStream, int numBuckets, int bucketSizeInMs)
-        {
-            var emptyRollingMaxBuckets = new List<int>();
-            for (var i = 0; i < numBuckets; i++)
-            {
-                emptyRollingMaxBuckets.Add(0);
-            }
-
-            _rollingMaxStream = inputEventStream
-                    .Observe()
-                    .Map((arg) => GetConcurrencyCountFromEvent(arg))
-                    .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default)
-                    .SelectMany((arg) => ReduceStreamToMax(arg))
-                    .StartWith(emptyRollingMaxBuckets)
-                    .Window(numBuckets, 1)
-                    .SelectMany((arg) => ReduceStreamToMax(arg))
-                    .Publish().RefCount();
+            emptyRollingMaxBuckets.Add(0);
         }
 
-        public void StartCachingStreamValuesIfUnstarted()
+        _rollingMaxStream = inputEventStream
+            .Observe()
+            .Map((arg) => GetConcurrencyCountFromEvent(arg))
+            .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default)
+            .SelectMany((arg) => ReduceStreamToMax(arg))
+            .StartWith(emptyRollingMaxBuckets)
+            .Window(numBuckets, 1)
+            .SelectMany((arg) => ReduceStreamToMax(arg))
+            .Publish().RefCount();
+    }
+
+    public void StartCachingStreamValuesIfUnstarted()
+    {
+        if (_rollingMaxSubscription.Value == null)
         {
-            if (_rollingMaxSubscription.Value == null)
+            // the stream is not yet started
+            var candidateSubscription = Observe().Subscribe(_rollingMax);
+            if (_rollingMaxSubscription.CompareAndSet(null, candidateSubscription))
             {
-                // the stream is not yet started
-                var candidateSubscription = Observe().Subscribe(_rollingMax);
-                if (_rollingMaxSubscription.CompareAndSet(null, candidateSubscription))
-                {
-                    // won the race to set the subscription
-                }
-                else
-                {
-                    // lost the race to set the subscription, so we need to cancel this one
-                    candidateSubscription.Dispose();
-                }
+                // won the race to set the subscription
+            }
+            else
+            {
+                // lost the race to set the subscription, so we need to cancel this one
+                candidateSubscription.Dispose();
             }
         }
+    }
 
-        public long LatestRollingMax
+    public long LatestRollingMax
+    {
+        get
         {
-            get
-            {
-                _rollingMax.TryGetValue(out var value);
-                return value;
-            }
+            _rollingMax.TryGetValue(out var value);
+            return value;
         }
+    }
 
-        public IObservable<int> Observe()
-        {
-            return _rollingMaxStream;
-        }
+    public IObservable<int> Observe()
+    {
+        return _rollingMaxStream;
+    }
 
-        public void Unsubscribe()
+    public void Unsubscribe()
+    {
+        var s = _rollingMaxSubscription.Value;
+        if (s != null)
         {
-            var s = _rollingMaxSubscription.Value;
-            if (s != null)
-            {
-                s.Dispose();
-                _rollingMaxSubscription.CompareAndSet(s, null);
-            }
+            s.Dispose();
+            _rollingMaxSubscription.CompareAndSet(s, null);
         }
     }
 }

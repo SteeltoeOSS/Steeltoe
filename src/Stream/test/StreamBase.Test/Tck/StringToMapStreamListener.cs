@@ -7,16 +7,15 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class StringToMapStreamListener
 {
-    public class StringToMapStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public string Echo([Payload] Dictionary<object, object> value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public string Echo([Payload] Dictionary<object, object> value)
-        {
-            value.TryGetValue("name", out var result);
-            return (string)result;
-        }
+        value.TryGetValue("name", out var result);
+        return (string)result;
     }
 }

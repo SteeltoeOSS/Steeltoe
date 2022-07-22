@@ -4,17 +4,16 @@
 
 using System;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public interface IStreamListenerResultAdapter
 {
-    public interface IStreamListenerResultAdapter
-    {
-        bool Supports(Type resultType, Type bindingTarget);
+    bool Supports(Type resultType, Type bindingTarget);
 
-        IDisposable Adapt(object streamListenerResult, object bindingTarget);
-    }
+    IDisposable Adapt(object streamListenerResult, object bindingTarget);
+}
 
-    public interface IStreamListenerResultAdapter<in R, in B> : IStreamListenerResultAdapter
-    {
-        IDisposable Adapt(R streamListenerResult, B bindingTarget);
-    }
+public interface IStreamListenerResultAdapter<in R, in B> : IStreamListenerResultAdapter
+{
+    IDisposable Adapt(R streamListenerResult, B bindingTarget);
 }

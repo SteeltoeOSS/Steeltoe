@@ -6,34 +6,33 @@ using Steeltoe.Common.Services;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface IRabbitAdmin : IServiceNameAware
 {
-    public interface IRabbitAdmin : IServiceNameAware
-    {
-        void DeclareExchange(IExchange exchange);
+    void DeclareExchange(IExchange exchange);
 
-        bool DeleteExchange(string exchangeName);
+    bool DeleteExchange(string exchangeName);
 
-        IQueue DeclareQueue();
+    IQueue DeclareQueue();
 
-        string DeclareQueue(IQueue queue);
+    string DeclareQueue(IQueue queue);
 
-        bool DeleteQueue(string queueName);
+    bool DeleteQueue(string queueName);
 
-        void DeleteQueue(string queueName, bool unused, bool empty);
+    void DeleteQueue(string queueName, bool unused, bool empty);
 
-        void PurgeQueue(string queueName, bool noWait);
+    void PurgeQueue(string queueName, bool noWait);
 
-        uint PurgeQueue(string queueName);
+    uint PurgeQueue(string queueName);
 
-        void DeclareBinding(IBinding binding);
+    void DeclareBinding(IBinding binding);
 
-        void RemoveBinding(IBinding binding);
+    void RemoveBinding(IBinding binding);
 
-        Dictionary<string, object> GetQueueProperties(string queueName);
+    Dictionary<string, object> GetQueueProperties(string queueName);
 
-        QueueInformation GetQueueInfo(string queueName);
+    QueueInformation GetQueueInfo(string queueName);
 
-        void Initialize();
-    }
+    void Initialize();
 }

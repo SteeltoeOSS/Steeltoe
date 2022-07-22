@@ -5,22 +5,21 @@
 using Microsoft.AspNetCore.Builder;
 using System;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
-{
-    public static class EndpointApplicationBuilderExtensions
-    {
-        /// <summary>
-        /// Add CloudFoundry Security Middleware
-        /// </summary>
-        /// <param name="builder">Your application builder</param>
-        public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-            builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
+public static class EndpointApplicationBuilderExtensions
+{
+    /// <summary>
+    /// Add CloudFoundry Security Middleware
+    /// </summary>
+    /// <param name="builder">Your application builder</param>
+    public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
         }
+
+        builder.UseMiddleware<CloudFoundrySecurityMiddleware>();
     }
 }

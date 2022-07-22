@@ -4,11 +4,10 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
+public class DeclareQueueAttribute : DeclareQueueBase
 {
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-    public class DeclareQueueAttribute : DeclareQueueBase
-    {
-        public string Name { get; set; } = string.Empty;
-    }
+    public string Name { get; set; } = string.Empty;
 }

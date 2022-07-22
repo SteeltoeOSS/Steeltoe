@@ -6,18 +6,17 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class TestMessageHandler : HttpMessageHandler
 {
-    public class TestMessageHandler : HttpMessageHandler
+    public HttpRequestMessage LastRequest { get; set; }
+
+    public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
+
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        public HttpRequestMessage LastRequest { get; set; }
-
-        public HttpResponseMessage Response { get; set; } = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            LastRequest = request;
-            return Task.FromResult<HttpResponseMessage>(Response);
-        }
+        LastRequest = request;
+        return Task.FromResult<HttpResponseMessage>(Response);
     }
 }

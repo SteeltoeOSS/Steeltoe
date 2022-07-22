@@ -4,10 +4,9 @@
 
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
+
+public interface IShutdownListener
 {
-    public interface IShutdownListener
-    {
-        void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args);
-    }
+    void ChannelShutdownCompleted(object sender, RC.ShutdownEventArgs args);
 }

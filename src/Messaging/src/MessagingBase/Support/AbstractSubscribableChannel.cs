@@ -5,75 +5,74 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
 {
-    public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
+    internal HashSet<IMessageHandler> _handlers = new ();
+    private object _lock = new ();
+
+    public AbstractSubscribableChannel(ILogger logger = null)
+        : base(logger)
     {
-        internal HashSet<IMessageHandler> _handlers = new ();
-        private object _lock = new ();
+    }
 
-        public AbstractSubscribableChannel(ILogger logger = null)
-            : base(logger)
+    public virtual int SubscriberCount
+    {
+        get
         {
+            return _handlers.Count;
         }
+    }
 
-        public virtual int SubscriberCount
-        {
-            get
-            {
-                return _handlers.Count;
-            }
-        }
-
-        public virtual ISet<IMessageHandler> Subscribers
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    return new HashSet<IMessageHandler>(_handlers);
-                }
-            }
-        }
-
-        public virtual bool HasSubscription(IMessageHandler handler)
+    public virtual ISet<IMessageHandler> Subscribers
+    {
+        get
         {
             lock (_lock)
             {
-                return _handlers.Contains(handler);
+                return new HashSet<IMessageHandler>(_handlers);
             }
         }
+    }
 
-        public virtual bool Subscribe(IMessageHandler handler)
+    public virtual bool HasSubscription(IMessageHandler handler)
+    {
+        lock (_lock)
         {
-            lock (_lock)
-            {
-                var handlers = new HashSet<IMessageHandler>(_handlers);
-                var result = handlers.Add(handler);
-                if (result)
-                {
-                    Logger?.LogDebug("{serviceName} added to {handler} ", ServiceName, handler);
-                    _handlers = handlers;
-                }
-
-                return result;
-            }
+            return _handlers.Contains(handler);
         }
+    }
 
-        public virtual bool Unsubscribe(IMessageHandler handler)
+    public virtual bool Subscribe(IMessageHandler handler)
+    {
+        lock (_lock)
         {
-            lock (_lock)
+            var handlers = new HashSet<IMessageHandler>(_handlers);
+            var result = handlers.Add(handler);
+            if (result)
             {
-                var handlers = new HashSet<IMessageHandler>(_handlers);
-                var result = handlers.Remove(handler);
-                if (result)
-                {
-                    Logger?.LogDebug("{serviceName} removed from {handler} ", ServiceName, handler);
-                    _handlers = handlers;
-                }
-
-                return result;
+                Logger?.LogDebug("{serviceName} added to {handler} ", ServiceName, handler);
+                _handlers = handlers;
             }
+
+            return result;
+        }
+    }
+
+    public virtual bool Unsubscribe(IMessageHandler handler)
+    {
+        lock (_lock)
+        {
+            var handlers = new HashSet<IMessageHandler>(_handlers);
+            var result = handlers.Remove(handler);
+            if (result)
+            {
+                Logger?.LogDebug("{serviceName} removed from {handler} ", ServiceName, handler);
+                _handlers = handlers;
+            }
+
+            return result;
         }
     }
 }

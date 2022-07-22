@@ -4,52 +4,51 @@
 
 using System.Threading;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public class AtomicInteger
 {
-    public class AtomicInteger
+    protected volatile int _value;
+
+    public AtomicInteger()
+        : this(0)
     {
-        protected volatile int _value;
+    }
 
-        public AtomicInteger()
-            : this(0)
-        {
-        }
+    public AtomicInteger(int value)
+    {
+        _value = value;
+    }
 
-        public AtomicInteger(int value)
-        {
-            _value = value;
-        }
+    public int Value
+    {
+        get => _value;
 
-        public int Value
-        {
-            get => _value;
+        set => _value = value;
+    }
 
-            set => _value = value;
-        }
+    public bool CompareAndSet(int expected, int update)
+    {
+        return Interlocked.CompareExchange(ref _value, update, expected) == expected;
+    }
 
-        public bool CompareAndSet(int expected, int update)
-        {
-            return Interlocked.CompareExchange(ref _value, update, expected) == expected;
-        }
+    public int IncrementAndGet()
+    {
+        return Interlocked.Increment(ref _value);
+    }
 
-        public int IncrementAndGet()
-        {
-            return Interlocked.Increment(ref _value);
-        }
+    public int DecrementAndGet()
+    {
+        return Interlocked.Decrement(ref _value);
+    }
 
-        public int DecrementAndGet()
-        {
-            return Interlocked.Decrement(ref _value);
-        }
+    public int GetAndIncrement()
+    {
+        return Interlocked.Increment(ref _value) - 1;
+    }
 
-        public int GetAndIncrement()
-        {
-            return Interlocked.Increment(ref _value) - 1;
-        }
-
-        public int AddAndGet(int value)
-        {
-            return Interlocked.Add(ref _value, value);
-        }
+    public int AddAndGet(int value)
+    {
+        return Interlocked.Add(ref _value, value);
     }
 }

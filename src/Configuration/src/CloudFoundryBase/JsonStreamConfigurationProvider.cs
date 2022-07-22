@@ -5,26 +5,25 @@
 using Microsoft.Extensions.Configuration.Json;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+
+internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
 {
-    internal class JsonStreamConfigurationProvider : JsonConfigurationProvider
+    private readonly JsonStreamConfigurationSource _source;
+
+    internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
+        : base(source)
     {
-        private readonly JsonStreamConfigurationSource _source;
-
-        internal JsonStreamConfigurationProvider(JsonStreamConfigurationSource source)
-            : base(source)
+        if (source == null)
         {
-            if (source == null)
-            {
-                throw new ArgumentNullException(nameof(source));
-            }
-
-            _source = source;
+            throw new ArgumentNullException(nameof(source));
         }
 
-        public override void Load()
-        {
-            Load(_source.Stream);
-        }
+        _source = source;
+    }
+
+    public override void Load()
+    {
+        Load(_source.Stream);
     }
 }

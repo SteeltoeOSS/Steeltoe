@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Stream.Binder
-{
-    public class BinderException : Exception
-    {
-        public BinderException(string message)
-        : base(message)
-        {
-        }
+namespace Steeltoe.Stream.Binder;
 
-        public BinderException(string message, Exception cause)
+public class BinderException : Exception
+{
+    public BinderException(string message)
+        : base(message)
+    {
+    }
+
+    public BinderException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

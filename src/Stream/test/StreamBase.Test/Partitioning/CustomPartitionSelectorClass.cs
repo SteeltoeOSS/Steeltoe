@@ -4,50 +4,49 @@
 
 using Steeltoe.Stream.Binder;
 
-namespace Steeltoe.Stream.Partitioning
+namespace Steeltoe.Stream.Partitioning;
+
+public class CustomPartitionSelectorClass : IPartitionSelectorStrategy
 {
-    public class CustomPartitionSelectorClass : IPartitionSelectorStrategy
+    public CustomPartitionSelectorClass()
     {
-        public CustomPartitionSelectorClass()
-        {
-            ServiceName = GetType().Name;
-        }
-
-        public string ServiceName { get; set; }
-
-        public int SelectPartition(object key, int partitionCount)
-        {
-            return int.Parse((string)key);
-        }
+        ServiceName = GetType().Name;
     }
 
-    public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
+    public string ServiceName { get; set; }
+
+    public int SelectPartition(object key, int partitionCount)
     {
-        public CustomPartitionSelectorClassOne()
-        {
-            ServiceName = GetType().Name;
-        }
+        return int.Parse((string)key);
+    }
+}
 
-        public string ServiceName { get; set; }
-
-        public int SelectPartition(object key, int partitionCount)
-        {
-            return int.Parse((string)key);
-        }
+public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
+{
+    public CustomPartitionSelectorClassOne()
+    {
+        ServiceName = GetType().Name;
     }
 
-    public class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
+    public string ServiceName { get; set; }
+
+    public int SelectPartition(object key, int partitionCount)
     {
-        public CustomPartitionSelectorClassTwo()
-        {
-            ServiceName = GetType().Name;
-        }
+        return int.Parse((string)key);
+    }
+}
 
-        public string ServiceName { get; set; }
+public class CustomPartitionSelectorClassTwo : IPartitionSelectorStrategy
+{
+    public CustomPartitionSelectorClassTwo()
+    {
+        ServiceName = GetType().Name;
+    }
 
-        public int SelectPartition(object key, int partitionCount)
-        {
-            return int.Parse((string)key);
-        }
+    public string ServiceName { get; set; }
+
+    public int SelectPartition(object key, int partitionCount)
+    {
+        return int.Parse((string)key);
     }
 }

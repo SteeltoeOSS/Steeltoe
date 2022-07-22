@@ -7,10 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp
+namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Comp;
+
+public class B<T>
+    where T : IC
 {
-    public class B<T>
-        where T : IC
-    {
-    }
 }

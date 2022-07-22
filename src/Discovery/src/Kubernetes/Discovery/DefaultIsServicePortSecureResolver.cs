@@ -4,45 +4,44 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Kubernetes.Discovery
+namespace Steeltoe.Discovery.Kubernetes.Discovery;
+
+public class DefaultIsServicePortSecureResolver
 {
-    public class DefaultIsServicePortSecureResolver
+    private readonly List<string> _truthyStrings = new ()
     {
-        private readonly List<string> _truthyStrings = new ()
-        {
-            "true",
-            "on",
-            "yes",
-            "1"
-        };
+        "true",
+        "on",
+        "yes",
+        "1"
+    };
 
-        private readonly KubernetesDiscoveryOptions _kubernetesDiscoveryOptions;
+    private readonly KubernetesDiscoveryOptions _kubernetesDiscoveryOptions;
 
-        public DefaultIsServicePortSecureResolver(KubernetesDiscoveryOptions kubernetesDiscoveryOptions)
+    public DefaultIsServicePortSecureResolver(KubernetesDiscoveryOptions kubernetesDiscoveryOptions)
+    {
+        _kubernetesDiscoveryOptions = kubernetesDiscoveryOptions;
+    }
+
+    public bool Resolve(Input input)
+    {
+        var securedLabelValue = input.GetServiceLabels().ContainsKey("secured") ? input.GetServiceLabels()["secured"] : "false";
+        if (_truthyStrings.Contains(securedLabelValue))
         {
-            _kubernetesDiscoveryOptions = kubernetesDiscoveryOptions;
+            return true;
         }
 
-        public bool Resolve(Input input)
+        var securedAnnotationValue = input.GetServiceAnnotations().ContainsKey("secured") ? input.GetServiceAnnotations()["secured"] : "false";
+        if (_truthyStrings.Contains(securedAnnotationValue))
         {
-            var securedLabelValue = input.GetServiceLabels().ContainsKey("secured") ? input.GetServiceLabels()["secured"] : "false";
-            if (_truthyStrings.Contains(securedLabelValue))
-            {
-                return true;
-            }
-
-            var securedAnnotationValue = input.GetServiceAnnotations().ContainsKey("secured") ? input.GetServiceAnnotations()["secured"] : "false";
-            if (_truthyStrings.Contains(securedAnnotationValue))
-            {
-                return true;
-            }
-
-            if (input.GetPort() != null && _kubernetesDiscoveryOptions.KnownSecurePorts.Contains(item: input.GetPort().Value))
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
+
+        if (input.GetPort() != null && _kubernetesDiscoveryOptions.KnownSecurePorts.Contains(item: input.GetPort().Value))
+        {
+            return true;
+        }
+
+        return false;
     }
 }

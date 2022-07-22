@@ -4,20 +4,19 @@
 
 using Microsoft.DiaSymReader;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public class MetaDataImportProvider : IMetadataImportProvider
 {
-    public class MetaDataImportProvider : IMetadataImportProvider
+    private readonly object _import;
+
+    public MetaDataImportProvider(object import)
     {
-        private readonly object _import;
+        _import = import;
+    }
 
-        public MetaDataImportProvider(object import)
-        {
-            _import = import;
-        }
-
-        public object GetMetadataImport()
-        {
-            return _import;
-        }
+    public object GetMetadataImport()
+    {
+        return _import;
     }
 }

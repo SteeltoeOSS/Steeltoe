@@ -4,21 +4,20 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+[JsonConverter(typeof(StringCredentialJsonConverter<StringCredential>))]
+public class StringCredential : ICredentialValue
 {
-    [JsonConverter(typeof(StringCredentialJsonConverter<StringCredential>))]
-    public class StringCredential : ICredentialValue
+    private readonly string _value;
+
+    public StringCredential(string value)
     {
-        private readonly string _value;
+        _value = value;
+    }
 
-        public StringCredential(string value)
-        {
-            _value = value;
-        }
-
-        public override string ToString()
-        {
-            return _value;
-        }
+    public override string ToString()
+    {
+        return _value;
     }
 }

@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public class MessageRejectedWhileStoppingException : Exception
 {
-    public class MessageRejectedWhileStoppingException : Exception
+    public MessageRejectedWhileStoppingException()
+        : base("Message listener container was stopping when a message was received")
     {
-        public MessageRejectedWhileStoppingException()
-            : base("Message listener container was stopping when a message was received")
-        {
-        }
     }
 }

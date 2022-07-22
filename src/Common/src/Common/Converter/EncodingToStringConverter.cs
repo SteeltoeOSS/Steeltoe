@@ -4,13 +4,12 @@
 
 using System.Text;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public class EncodingToStringConverter : AbstractConverter<Encoding, string>
 {
-    public class EncodingToStringConverter : AbstractConverter<Encoding, string>
+    public override string Convert(Encoding source)
     {
-        public override string Convert(Encoding source)
-        {
-            return source.BodyName;
-        }
+        return source.BodyName;
     }
 }

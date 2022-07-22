@@ -5,15 +5,14 @@
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Mappings
-{
-    public class RouteMappings : IRouteMappings
-    {
-        public RouteMappings()
-        {
-            Routers = new List<IRouter>();
-        }
+namespace Steeltoe.Management.Endpoint.Mappings;
 
-        public IList<IRouter> Routers { get; }
+public class RouteMappings : IRouteMappings
+{
+    public RouteMappings()
+    {
+        Routers = new List<IRouter>();
     }
+
+    public IList<IRouter> Routers { get; }
 }

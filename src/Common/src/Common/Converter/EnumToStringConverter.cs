@@ -4,9 +4,8 @@
 
 using System;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public class EnumToStringConverter : ObjectToStringConverter<Enum>
 {
-    public class EnumToStringConverter : ObjectToStringConverter<Enum>
-    {
-    }
 }

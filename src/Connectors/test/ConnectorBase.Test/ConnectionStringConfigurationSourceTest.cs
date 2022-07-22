@@ -8,39 +8,38 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Connector.Test
+namespace Steeltoe.Connector.Test;
+
+public class ConnectionStringConfigurationSourceTest
 {
-    public class ConnectionStringConfigurationSourceTest
+    [Fact]
+    public void Constructor_ThrowsOnNullSources()
     {
-        [Fact]
-        public void Constructor_ThrowsOnNullSources()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConnectionStringConfigurationSource(null));
-            Assert.Equal("sources", ex.ParamName);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new ConnectionStringConfigurationSource(null));
+        Assert.Equal("sources", ex.ParamName);
+    }
 
-        [Fact]
-        public void Constructor_InitializesProperties()
-        {
-            var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+    [Fact]
+    public void Constructor_InitializesProperties()
+    {
+        var memSource = new MemoryConfigurationSource();
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
 
-            var source = new ConnectionStringConfigurationSource(sources);
-            Assert.NotNull(source._sources);
-            Assert.Single(source._sources);
-            Assert.NotSame(sources, source._sources);
-            Assert.Contains(memSource, source._sources);
-        }
+        var source = new ConnectionStringConfigurationSource(sources);
+        Assert.NotNull(source._sources);
+        Assert.Single(source._sources);
+        Assert.NotSame(sources, source._sources);
+        Assert.Contains(memSource, source._sources);
+    }
 
-        [Fact]
-        public void Build_ReturnsProvider()
-        {
-            var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+    [Fact]
+    public void Build_ReturnsProvider()
+    {
+        var memSource = new MemoryConfigurationSource();
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
 
-            var source = new ConnectionStringConfigurationSource(sources);
-            var provider = source.Build(new ConfigurationBuilder());
-            Assert.IsType<ConnectionStringConfigurationProvider>(provider);
-        }
+        var source = new ConnectionStringConfigurationSource(sources);
+        var provider = source.Build(new ConfigurationBuilder());
+        Assert.IsType<ConnectionStringConfigurationProvider>(provider);
     }
 }

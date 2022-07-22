@@ -4,18 +4,17 @@
 
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
-{
-    public static class SemaphoreSlimExtensions
-    {
-        public static bool TryAcquire(this SemaphoreSlim sema)
-        {
-            if (sema == null)
-            {
-                return true;
-            }
+namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
-            return sema.Wait(0);
+public static class SemaphoreSlimExtensions
+{
+    public static bool TryAcquire(this SemaphoreSlim sema)
+    {
+        if (sema == null)
+        {
+            return true;
         }
+
+        return sema.Wait(0);
     }
 }

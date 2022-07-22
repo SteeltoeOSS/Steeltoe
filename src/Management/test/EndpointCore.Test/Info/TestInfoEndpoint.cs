@@ -6,18 +6,17 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Info;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
-{
-    internal class TestInfoEndpoint : InfoEndpoint
-    {
-        public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
-            : base(options, contributors, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Info.Test;
 
-        public override Dictionary<string, object> Invoke()
-        {
-            return new Dictionary<string, object>();
-        }
+internal class TestInfoEndpoint : InfoEndpoint
+{
+    public TestInfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
+        : base(options, contributors, logger)
+    {
+    }
+
+    public override Dictionary<string, object> Invoke()
+    {
+        return new Dictionary<string, object>();
     }
 }

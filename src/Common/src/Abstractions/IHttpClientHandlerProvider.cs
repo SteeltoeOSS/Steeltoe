@@ -4,10 +4,9 @@
 
 using System.Net.Http;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public interface IHttpClientHandlerProvider
 {
-    public interface IHttpClientHandlerProvider
-    {
-        HttpClientHandler GetHttpClientHandler();
-    }
+    HttpClientHandler GetHttpClientHandler();
 }

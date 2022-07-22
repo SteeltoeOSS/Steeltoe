@@ -6,27 +6,26 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 
-namespace Steeltoe.Common.Http.Discovery
+namespace Steeltoe.Common.Http.Discovery;
+
+/// <summary>
+/// Extension method for configuring <see cref="DiscoveryHttpMessageHandler"/> in <see cref="HttpClient"/> message handler pipelines
+/// </summary>
+public static class DiscoveryHttpClientBuilderExtensions
 {
     /// <summary>
-    /// Extension method for configuring <see cref="DiscoveryHttpMessageHandler"/> in <see cref="HttpClient"/> message handler pipelines
+    /// Adds a <see cref="DiscoveryHttpMessageHandler"/> for performing service discovery
     /// </summary>
-    public static class DiscoveryHttpClientBuilderExtensions
+    /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
+    /// <returns>An <see cref="IHttpClientBuilder"/> that can be used to configure the client.</returns>
+    public static IHttpClientBuilder AddServiceDiscovery(this IHttpClientBuilder builder)
     {
-        /// <summary>
-        /// Adds a <see cref="DiscoveryHttpMessageHandler"/> for performing service discovery
-        /// </summary>
-        /// <param name="builder">The <see cref="IHttpClientBuilder"/>.</param>
-        /// <returns>An <see cref="IHttpClientBuilder"/> that can be used to configure the client.</returns>
-        public static IHttpClientBuilder AddServiceDiscovery(this IHttpClientBuilder builder)
+        if (builder == null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
-            return builder;
+            throw new ArgumentNullException(nameof(builder));
         }
+
+        builder.AddHttpMessageHandler<DiscoveryHttpMessageHandler>();
+        return builder;
     }
 }

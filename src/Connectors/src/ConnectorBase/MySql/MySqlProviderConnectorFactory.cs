@@ -6,52 +6,51 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.MySql
+namespace Steeltoe.Connector.MySql;
+
+public class MySqlProviderConnectorFactory
 {
-    public class MySqlProviderConnectorFactory
+    private readonly MySqlServiceInfo _info;
+    private readonly MySqlProviderConnectorOptions _config;
+    private readonly MySqlProviderConfigurer _configurer = new ();
+
+    public MySqlProviderConnectorFactory()
     {
-        private readonly MySqlServiceInfo _info;
-        private readonly MySqlProviderConnectorOptions _config;
-        private readonly MySqlProviderConfigurer _configurer = new ();
+    }
 
-        public MySqlProviderConnectorFactory()
+    public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config, Type type)
+    {
+        _info = sinfo;
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+        ConnectorType = type;
+    }
+
+    protected Type ConnectorType { get; set; }
+
+    public virtual object Create(IServiceProvider provider)
+    {
+        var connectionString = CreateConnectionString();
+        object result = null;
+        if (connectionString != null)
         {
+            result = CreateConnection(connectionString);
         }
 
-        public MySqlProviderConnectorFactory(MySqlServiceInfo sinfo, MySqlProviderConnectorOptions config, Type type)
+        if (result == null)
         {
-            _info = sinfo;
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            ConnectorType = type;
+            throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
         }
 
-        protected Type ConnectorType { get; set; }
+        return result;
+    }
 
-        public virtual object Create(IServiceProvider provider)
-        {
-            var connectionString = CreateConnectionString();
-            object result = null;
-            if (connectionString != null)
-            {
-                result = CreateConnection(connectionString);
-            }
+    public virtual string CreateConnectionString()
+    {
+        return _configurer.Configure(_info, _config);
+    }
 
-            if (result == null)
-            {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
-            }
-
-            return result;
-        }
-
-        public virtual string CreateConnectionString()
-        {
-            return _configurer.Configure(_info, _config);
-        }
-
-        public virtual object CreateConnection(string connectionString)
-        {
-            return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
-        }
+    public virtual object CreateConnection(string connectionString)
+    {
+        return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
     }
 }

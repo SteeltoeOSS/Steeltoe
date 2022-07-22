@@ -4,19 +4,18 @@
 
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixExecutable : IHystrixObservable
 {
-    public interface IHystrixExecutable : IHystrixObservable
-    {
-        void Execute();
+    void Execute();
 
-        Task ExecuteAsync();
-    }
+    Task ExecuteAsync();
+}
 
-    public interface IHystrixExecutable<TResult> : IHystrixObservable<TResult>
-    {
-        TResult Execute();
+public interface IHystrixExecutable<TResult> : IHystrixObservable<TResult>
+{
+    TResult Execute();
 
-        Task<TResult> ExecuteAsync();
-    }
+    Task<TResult> ExecuteAsync();
 }

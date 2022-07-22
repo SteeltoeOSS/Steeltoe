@@ -5,18 +5,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog
+namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+
+public interface ISerilogOptions
 {
-    public interface ISerilogOptions
-    {
-        string ConfigPath { get; }
+    string ConfigPath { get; }
 
-        MinimumLevel MinimumLevel { get; set; }
+    MinimumLevel MinimumLevel { get; set; }
 
-        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-        IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+    IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
 
-        [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-        IEnumerable<string> FullnameExclusions { get; }
-    }
+    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+    IEnumerable<string> FullnameExclusions { get; }
 }

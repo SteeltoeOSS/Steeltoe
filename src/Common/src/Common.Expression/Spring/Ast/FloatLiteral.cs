@@ -4,30 +4,29 @@
 
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class FloatLiteral : Literal
 {
-    public class FloatLiteral : Literal
+    private readonly ITypedValue _value;
+
+    public FloatLiteral(string payload, int startPos, int endPos, float value)
+        : base(payload, startPos, endPos)
     {
-        private readonly ITypedValue _value;
+        _value = new TypedValue(value);
+        _exitTypeDescriptor = TypeDescriptor.F;
+    }
 
-        public FloatLiteral(string payload, int startPos, int endPos, float value)
-            : base(payload, startPos, endPos)
-        {
-            _value = new TypedValue(value);
-            _exitTypeDescriptor = TypeDescriptor.F;
-        }
+    public override ITypedValue GetLiteralValue()
+    {
+        return _value;
+    }
 
-        public override ITypedValue GetLiteralValue()
-        {
-            return _value;
-        }
+    public override bool IsCompilable() => true;
 
-        public override bool IsCompilable() => true;
-
-        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
-        {
-            gen.Emit(OpCodes.Ldc_R4, (float)_value.Value);
-            cf.PushDescriptor(_exitTypeDescriptor);
-        }
+    public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+    {
+        gen.Emit(OpCodes.Ldc_R4, (float)_value.Value);
+        cf.PushDescriptor(_exitTypeDescriptor);
     }
 }

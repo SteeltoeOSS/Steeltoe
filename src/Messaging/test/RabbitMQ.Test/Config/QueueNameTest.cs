@@ -5,19 +5,18 @@
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public class QueueNameTest
 {
-    public class QueueNameTest
+    [Fact]
+    public void TestAnonymous()
     {
-        [Fact]
-        public void TestAnonymous()
-        {
-            var q = new AnonymousQueue();
-            Assert.StartsWith("spring.gen-", q.QueueName);
-            q = new AnonymousQueue(new Base64UrlNamingStrategy("foo-"));
-            Assert.StartsWith("foo-", q.QueueName);
-            q = new AnonymousQueue(GuidNamingStrategy.DEFAULT);
-            Assert.Matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", q.QueueName);
-        }
+        var q = new AnonymousQueue();
+        Assert.StartsWith("spring.gen-", q.QueueName);
+        q = new AnonymousQueue(new Base64UrlNamingStrategy("foo-"));
+        Assert.StartsWith("foo-", q.QueueName);
+        q = new AnonymousQueue(GuidNamingStrategy.DEFAULT);
+        Assert.Matches("[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}", q.QueueName);
     }
 }

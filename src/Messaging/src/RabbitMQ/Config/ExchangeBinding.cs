@@ -4,18 +4,17 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
-{
-    public class ExchangeBinding : Binding, IExchangeBinding
-    {
-        public ExchangeBinding(string bindingName)
-            : base(bindingName)
-        {
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-        public ExchangeBinding(string name, string exchangeDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
-            : base(name, exchangeDestination, DestinationType.EXCHANGE, exchange, routingKey, arguments)
-        {
-        }
+public class ExchangeBinding : Binding, IExchangeBinding
+{
+    public ExchangeBinding(string bindingName)
+        : base(bindingName)
+    {
+    }
+
+    public ExchangeBinding(string name, string exchangeDestination, string exchange, string routingKey, Dictionary<string, object> arguments)
+        : base(name, exchangeDestination, DestinationType.EXCHANGE, exchange, routingKey, arguments)
+    {
     }
 }

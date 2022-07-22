@@ -7,37 +7,36 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+internal class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstanceInfo>>
 {
-    internal class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstanceInfo>>
+    public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        var result = new List<JsonInstanceInfo>();
+        if (reader.TokenType.Equals(JsonTokenType.StartArray))
         {
-            var result = new List<JsonInstanceInfo>();
-            if (reader.TokenType.Equals(JsonTokenType.StartArray))
+            result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
+        }
+        else
+        {
+            var singleInst = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
+            if (singleInst != null)
             {
-                result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
+                result.Add(singleInst);
             }
-            else
-            {
-                var singleInst = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
-                if (singleInst != null)
-                {
-                    result.Add(singleInst);
-                }
-            }
-
-            return result;
         }
 
-        public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo> value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
-        }
+        return result;
+    }
 
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(IList<JsonInstanceInfo>);
-        }
+    public override void Write(Utf8JsonWriter writer, IList<JsonInstanceInfo> value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString());
+    }
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeToConvert == typeof(IList<JsonInstanceInfo>);
     }
 }

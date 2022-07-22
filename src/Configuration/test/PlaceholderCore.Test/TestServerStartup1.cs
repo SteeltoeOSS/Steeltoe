@@ -7,23 +7,22 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.Placeholder.Test
+namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
+
+public class TestServerStartup1
 {
-    public class TestServerStartup1
+    public static IServiceProvider ServiceProvider { get; set; }
+
+    public TestServerStartup1(IConfiguration config)
     {
-        public static IServiceProvider ServiceProvider { get; set; }
+    }
 
-        public TestServerStartup1(IConfiguration config)
-        {
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+    }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            ServiceProvider = app.ApplicationServices;
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        ServiceProvider = app.ApplicationServices;
     }
 }

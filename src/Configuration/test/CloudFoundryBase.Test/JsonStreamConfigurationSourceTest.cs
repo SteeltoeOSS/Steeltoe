@@ -7,23 +7,23 @@ using System;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+
+public class JsonStreamConfigurationSourceTest
 {
-    public class JsonStreamConfigurationSourceTest
+    [Fact]
+    public void Constructor_Throws_StreamNull()
     {
-        [Fact]
-        public void Constructor_Throws_StreamNull()
-        {
-            MemoryStream stream = null;
+        MemoryStream stream = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationSource(stream));
-            Assert.Contains(nameof(stream), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new JsonStreamConfigurationSource(stream));
+        Assert.Contains(nameof(stream), ex.Message);
+    }
 
-        [Fact]
-        public void Build_WithStreamSource_ReturnsExpected()
-        {
-            var environment = @"
+    [Fact]
+    public void Build_WithStreamSource_ReturnsExpected()
+    {
+        var environment = @"
                 {
                   ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                   ""application_name"": ""my-app"",
@@ -44,17 +44,16 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                   ""users"": null,
                   ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                   }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-            var source = new JsonStreamConfigurationSource(memStream);
-            var provider = new JsonStreamConfigurationProvider(source);
-            var builder = new ConfigurationBuilder();
-            builder.Add(source);
-            var root = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+        var source = new JsonStreamConfigurationSource(memStream);
+        var provider = new JsonStreamConfigurationProvider(source);
+        var builder = new ConfigurationBuilder();
+        builder.Add(source);
+        var root = builder.Build();
 
-            Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", root["application_id"]);
-            Assert.Equal("1024", root["limits:disk"]);
-            Assert.Equal("my-app.10.244.0.34.xip.io", root["uris:0"]);
-            Assert.Equal("my-app2.10.244.0.34.xip.io", root["uris:1"]);
-        }
+        Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", root["application_id"]);
+        Assert.Equal("1024", root["limits:disk"]);
+        Assert.Equal("my-app.10.244.0.34.xip.io", root["uris:0"]);
+        Assert.Equal("my-app2.10.244.0.34.xip.io", root["uris:1"]);
     }
 }

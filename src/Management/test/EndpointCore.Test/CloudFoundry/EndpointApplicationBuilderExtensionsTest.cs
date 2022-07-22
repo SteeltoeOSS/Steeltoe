@@ -7,16 +7,15 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
-{
-    public class EndpointApplicationBuilderExtensionsTest : BaseTest
-    {
-        [Fact]
-        public void UseCloudFoundrySecurity_ThrowsIfNulls()
-        {
-            IApplicationBuilder builder = null;
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
-            Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurity());
-        }
+public class EndpointApplicationBuilderExtensionsTest : BaseTest
+{
+    [Fact]
+    public void UseCloudFoundrySecurity_ThrowsIfNulls()
+    {
+        IApplicationBuilder builder = null;
+
+        Assert.Throws<ArgumentNullException>(() => builder.UseCloudFoundrySecurity());
     }
 }

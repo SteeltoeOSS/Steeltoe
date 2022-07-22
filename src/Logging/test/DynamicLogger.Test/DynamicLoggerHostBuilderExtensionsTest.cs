@@ -12,49 +12,49 @@ using Microsoft.Extensions.Logging.Console;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
+namespace Steeltoe.Extensions.Logging.DynamicLogger.Test;
+
+public class DynamicLoggerHostBuilderExtensionsTest
 {
-    public class DynamicLoggerHostBuilderExtensionsTest
+    [Fact]
+    public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
     {
-        [Fact]
-        public void AddDynamicLogging_IHostBuilder_AddsDynamicLogging()
-        {
-            var hostBuilder = new HostBuilder().AddDynamicLogging();
+        var hostBuilder = new HostBuilder().AddDynamicLogging();
 
-            var host = hostBuilder.Build();
-            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        var host = hostBuilder.Build();
+        var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            Assert.Single(loggerProviders);
-            Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
-        }
+        Assert.Single(loggerProviders);
+        Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
+    }
 
-        [Fact]
-        public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
-        {
-            var hostBuilder = new HostBuilder()
-                .ConfigureLogging(ilb => ilb.AddConsole())
-                .AddDynamicLogging();
+    [Fact]
+    public void AddDynamicLogging_IHostBuilder_RemovesConsoleLogging()
+    {
+        var hostBuilder = new HostBuilder()
+            .ConfigureLogging(ilb => ilb.AddConsole())
+            .AddDynamicLogging();
 
-            var host = hostBuilder.Build();
-            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        var host = hostBuilder.Build();
+        var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            Assert.Single(loggerProviders);
-            Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
-        }
+        Assert.Single(loggerProviders);
+        Assert.IsType<DynamicConsoleLoggerProvider>(loggerProviders.First());
+    }
 
-        [Fact]
-        public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
-        {
-            var hostBuilder = Host.CreateDefaultBuilder()
-                .ConfigureLogging(ilb => ilb.AddConsole())
-                .AddDynamicLogging();
+    [Fact]
+    public void AddDynamicLogging_IHostBuilder_RemovesConsoleLoggingDefaultBuilder()
+    {
+        var hostBuilder = Host.CreateDefaultBuilder()
+            .ConfigureLogging(ilb => ilb.AddConsole())
+            .AddDynamicLogging();
 
-            var host = hostBuilder.Build();
-            var loggerProviders = host.Services.GetServices<ILoggerProvider>();
+        var host = hostBuilder.Build();
+        var loggerProviders = host.Services.GetServices<ILoggerProvider>();
 
-            Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
-            Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
-        }
+        Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
+        Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
+    }
 
 #if NET6_0_OR_GREATER
         [Fact]
@@ -96,5 +96,4 @@ namespace Steeltoe.Extensions.Logging.DynamicLogger.Test
             Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
         }
 #endif
-    }
 }

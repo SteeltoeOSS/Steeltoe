@@ -7,49 +7,48 @@ using StackExchange.Redis;
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test;
+
+[Collection("Redis")]
+public class RedisServiceConnectorFactoryTest
 {
-    [Collection("Redis")]
-    public class RedisServiceConnectorFactoryTest
+    [Fact]
+    public void Create_CanReturnRedisCache()
     {
-        [Fact]
-        public void Create_CanReturnRedisCache()
+        var config = new RedisCacheConnectorOptions()
         {
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password",
-                InstanceName = "instanceId"
-            };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
+            Host = "localhost",
+            Port = 1234,
+            Password = "password",
+            InstanceName = "instanceId"
+        };
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "foobar", 4321, "sipassword");
 
-            var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
-            var cache = factory.Create(null);
+        var factory = new RedisServiceConnectorFactory(si, config, typeof(RedisCache), typeof(RedisCacheOptions), null);
+        var cache = factory.Create(null);
 
-            Assert.NotNull(cache);
-            Assert.IsType<RedisCache>(cache);
-        }
+        Assert.NotNull(cache);
+        Assert.IsType<RedisCache>(cache);
+    }
 
-        [Fact]
-        public void Create_CanReturnConnectionMultiplexer()
+    [Fact]
+    public void Create_CanReturnConnectionMultiplexer()
+    {
+        var config = new RedisCacheConnectorOptions()
         {
-            var config = new RedisCacheConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Password = "password",
-                InstanceName = "instanceId",
-                AbortOnConnectFail = false,
-                ConnectTimeout = 1
-            };
-            var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword");
+            Host = "localhost",
+            Port = 1234,
+            Password = "password",
+            InstanceName = "instanceId",
+            AbortOnConnectFail = false,
+            ConnectTimeout = 1
+        };
+        var si = new RedisServiceInfo("myId", RedisServiceInfo.REDIS_SCHEME, "127.0.0.1", 4321, "sipassword");
 
-            var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), RedisTypeLocator.StackExchangeInitializer);
-            var multi = factory.Create(null);
+        var factory = new RedisServiceConnectorFactory(si, config, typeof(ConnectionMultiplexer), typeof(ConfigurationOptions), RedisTypeLocator.StackExchangeInitializer);
+        var multi = factory.Create(null);
 
-            Assert.NotNull(multi);
-            Assert.IsType<ConnectionMultiplexer>(multi);
-        }
+        Assert.NotNull(multi);
+        Assert.IsType<ConnectionMultiplexer>(multi);
     }
 }

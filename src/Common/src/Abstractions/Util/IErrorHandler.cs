@@ -5,10 +5,9 @@
 using Steeltoe.Common.Services;
 using System;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public interface IErrorHandler : IServiceNameAware
 {
-    public interface IErrorHandler : IServiceNameAware
-    {
-        bool HandleError(Exception exception);
-    }
+    bool HandleError(Exception exception);
 }

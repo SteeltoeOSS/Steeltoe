@@ -4,14 +4,13 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+[JsonConverter(typeof(StringCredentialJsonConverter<ValueCredential>))]
+public class ValueCredential : StringCredential
 {
-    [JsonConverter(typeof(StringCredentialJsonConverter<ValueCredential>))]
-    public class ValueCredential : StringCredential
+    public ValueCredential(string value)
+        : base(value)
     {
-        public ValueCredential(string value)
-            : base(value)
-        {
-        }
     }
 }

@@ -8,14 +8,14 @@ using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Discovery.Test
+namespace Steeltoe.Common.Discovery.Test;
+
+public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
 {
-    public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
+    [Fact]
+    public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        [Fact]
-        public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
-        {
-            var appsettings = @"
+        var appsettings = @"
 {
     ""discovery"": {
         ""services"": [
@@ -26,26 +26,25 @@ namespace Steeltoe.Common.Discovery.Test
         ]
     }
 }";
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var cbuilder = new ConfigurationBuilder();
-            cbuilder.SetBasePath(directory);
-            cbuilder.AddJsonFile(fileName);
-            var services = new ServiceCollection();
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var cbuilder = new ConfigurationBuilder();
+        cbuilder.SetBasePath(directory);
+        cbuilder.AddJsonFile(fileName);
+        var services = new ServiceCollection();
 
-            services.AddConfigurationDiscoveryClient(cbuilder.Build());
-            var serviceProvider = services.BuildServiceProvider();
+        services.AddConfigurationDiscoveryClient(cbuilder.Build());
+        var serviceProvider = services.BuildServiceProvider();
 
-            // by getting the provider, we're confirming that the options are also available in the container
-            var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;
+        // by getting the provider, we're confirming that the options are also available in the container
+        var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;
 
-            Assert.NotNull(serviceInstanceProvider);
-            Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
-            Assert.Equal(2, serviceInstanceProvider.Services.Count);
-            Assert.Equal(2, serviceInstanceProvider.GetInstances("fruitService").Count);
-            Assert.Equal(2, serviceInstanceProvider.GetInstances("vegetableService").Count);
-        }
+        Assert.NotNull(serviceInstanceProvider);
+        Assert.IsType<ConfigurationServiceInstanceProvider>(serviceInstanceProvider);
+        Assert.Equal(2, serviceInstanceProvider.Services.Count);
+        Assert.Equal(2, serviceInstanceProvider.GetInstances("fruitService").Count);
+        Assert.Equal(2, serviceInstanceProvider.GetInstances("vegetableService").Count);
     }
 }

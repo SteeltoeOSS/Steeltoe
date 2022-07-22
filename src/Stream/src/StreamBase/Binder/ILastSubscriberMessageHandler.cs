@@ -4,9 +4,8 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public interface ILastSubscriberMessageHandler : IMessageHandler
 {
-    public interface ILastSubscriberMessageHandler : IMessageHandler
-    {
-    }
 }

@@ -4,74 +4,73 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
+
+public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
 {
-    public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
+    private readonly IConfiguration _configSource;
+
+    public HystrixDynamicOptionsDefault(IConfiguration configSource)
     {
-        private readonly IConfiguration _configSource;
+        _configSource = configSource;
+    }
 
-        public HystrixDynamicOptionsDefault(IConfiguration configSource)
+    public bool GetBoolean(string name, bool fallback)
+    {
+        var val = _configSource[name];
+        if (val == null)
         {
-            _configSource = configSource;
-        }
-
-        public bool GetBoolean(string name, bool fallback)
-        {
-            var val = _configSource[name];
-            if (val == null)
-            {
-                return fallback;
-            }
-
-            if (bool.TryParse(val, out var result))
-            {
-                return result;
-            }
-
             return fallback;
         }
 
-        public int GetInteger(string name, int fallback)
+        if (bool.TryParse(val, out var result))
         {
-            var val = _configSource[name];
-            if (val == null)
-            {
-                return fallback;
-            }
+            return result;
+        }
 
-            if (int.TryParse(val, out var result))
-            {
-                return result;
-            }
+        return fallback;
+    }
 
+    public int GetInteger(string name, int fallback)
+    {
+        var val = _configSource[name];
+        if (val == null)
+        {
             return fallback;
         }
 
-        public long GetLong(string name, long fallback)
+        if (int.TryParse(val, out var result))
         {
-            var val = _configSource[name];
-            if (val == null)
-            {
-                return fallback;
-            }
+            return result;
+        }
 
-            if (long.TryParse(val, out var result))
-            {
-                return result;
-            }
+        return fallback;
+    }
 
+    public long GetLong(string name, long fallback)
+    {
+        var val = _configSource[name];
+        if (val == null)
+        {
             return fallback;
         }
 
-        public string GetString(string name, string fallback)
+        if (long.TryParse(val, out var result))
         {
-            var val = _configSource[name];
-            if (val == null)
-            {
-                return fallback;
-            }
-
-            return val;
+            return result;
         }
+
+        return fallback;
+    }
+
+    public string GetString(string name, string fallback)
+    {
+        var val = _configSource[name];
+        if (val == null)
+        {
+            return fallback;
+        }
+
+        return val;
     }
 }

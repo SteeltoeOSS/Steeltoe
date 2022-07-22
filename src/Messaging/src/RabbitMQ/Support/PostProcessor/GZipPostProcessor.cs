@@ -8,27 +8,26 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+
+public class GZipPostProcessor : AbstractDeflaterPostProcessor
 {
-    public class GZipPostProcessor : AbstractDeflaterPostProcessor
+    public GZipPostProcessor()
     {
-        public GZipPostProcessor()
-        {
-        }
+    }
 
-        public GZipPostProcessor(bool autoDecompress)
+    public GZipPostProcessor(bool autoDecompress)
         : base(autoDecompress)
-        {
-        }
+    {
+    }
 
-        protected override Stream GetCompressorStream(Stream zipped)
-        {
-            return new GZipStream(zipped, Level);
-        }
+    protected override Stream GetCompressorStream(Stream zipped)
+    {
+        return new GZipStream(zipped, Level);
+    }
 
-        protected override string GetEncoding()
-        {
-            return "gzip";
-        }
+    protected override string GetEncoding()
+    {
+        return "gzip";
     }
 }

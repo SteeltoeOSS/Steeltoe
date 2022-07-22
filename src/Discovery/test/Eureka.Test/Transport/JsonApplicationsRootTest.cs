@@ -6,14 +6,14 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test;
+
+public class JsonApplicationsRootTest : AbstractBaseTest
 {
-    public class JsonApplicationsRootTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_GoodJson()
     {
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            var json = @"
+        var json = @"
             { 
                 ""applications"": { 
                     ""versions__delta"":""1"",
@@ -46,11 +46,10 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
                     }]
                 }
             }";
-            var result = JsonSerializer.Deserialize<JsonApplicationsRoot>(json);
-            Assert.NotNull(result);
-            Assert.NotNull(result.Applications);
+        var result = JsonSerializer.Deserialize<JsonApplicationsRoot>(json);
+        Assert.NotNull(result);
+        Assert.NotNull(result.Applications);
 
-            // Rest is validated by JsonApplicationsTest
-        }
+        // Rest is validated by JsonApplicationsTest
     }
 }

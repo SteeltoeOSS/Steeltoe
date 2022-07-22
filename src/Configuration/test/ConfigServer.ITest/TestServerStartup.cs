@@ -6,33 +6,32 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
+
+internal class TestServerStartup
 {
-    internal class TestServerStartup
+    public TestServerStartup(IConfiguration configuration)
     {
-        public TestServerStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddOptions();
-            services.Configure<ConfigServerDataAsOptions>(Configuration);
-            services.AddConfigServerHealthContributor();
-            services.AddMvc();
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddOptions();
+        services.Configure<ConfigServerDataAsOptions>(Configuration);
+        services.AddConfigServerHealthContributor();
+        services.AddMvc();
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        var config = app.ApplicationServices.GetServices<IConfiguration>();
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            var config = app.ApplicationServices.GetServices<IConfiguration>();
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-            });
-        }
+            endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+        });
     }
 }

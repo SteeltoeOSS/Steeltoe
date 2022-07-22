@@ -4,18 +4,17 @@
 
 using Steeltoe.Common.HealthChecks;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
-{
-    public class DownContributor : IHealthContributor
-    {
-        public string Id { get; } = "Down";
+namespace Steeltoe.Management.Endpoint.Health.Test;
 
-        public HealthCheckResult Health()
+public class DownContributor : IHealthContributor
+{
+    public string Id { get; } = "Down";
+
+    public HealthCheckResult Health()
+    {
+        return new HealthCheckResult()
         {
-            return new HealthCheckResult()
-            {
-                Status = HealthStatus.DOWN
-            };
-        }
+            Status = HealthStatus.DOWN
+        };
     }
 }

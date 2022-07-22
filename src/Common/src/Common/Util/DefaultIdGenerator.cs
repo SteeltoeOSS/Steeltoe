@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public class DefaultIdGenerator : IIDGenerator
 {
-    public class DefaultIdGenerator : IIDGenerator
+    public string GenerateId()
     {
-        public string GenerateId()
-        {
-            return Guid.NewGuid().ToString();
-        }
+        return Guid.NewGuid().ToString();
     }
 }

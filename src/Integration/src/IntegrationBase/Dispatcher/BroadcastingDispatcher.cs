@@ -11,183 +11,182 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Dispatcher
+namespace Steeltoe.Integration.Dispatcher;
+
+public class BroadcastingDispatcher : AbstractDispatcher
 {
-    public class BroadcastingDispatcher : AbstractDispatcher
+    private readonly bool _requireSubscribers;
+
+    private IMessageBuilderFactory _messageBuilderFactory;
+
+    public BroadcastingDispatcher(IApplicationContext context, ILogger logger = null)
+        : this(context, null, false, logger)
     {
-        private readonly bool _requireSubscribers;
+    }
 
-        private IMessageBuilderFactory _messageBuilderFactory;
+    public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+        : this(context, executor, false, logger)
+    {
+    }
 
-        public BroadcastingDispatcher(IApplicationContext context, ILogger logger = null)
-            : this(context, null, false, logger)
+    public BroadcastingDispatcher(IApplicationContext context, bool requireSubscribers, ILogger logger = null)
+        : this(context, null, requireSubscribers, logger)
+    {
+    }
+
+    public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, bool requireSubscribers, ILogger logger = null)
+        : base(context, executor, logger)
+    {
+        _requireSubscribers = requireSubscribers;
+    }
+
+    public virtual bool IgnoreFailures { get; set; }
+
+    public virtual bool ApplySequence { get; set; }
+
+    public virtual int MinSubscribers { get; set; }
+
+    internal IMessageBuilderFactory MessageBuilderFactory
+    {
+        get
         {
-        }
-
-        public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
-            : this(context, executor, false, logger)
-        {
-        }
-
-        public BroadcastingDispatcher(IApplicationContext context, bool requireSubscribers, ILogger logger = null)
-            : this(context, null, requireSubscribers, logger)
-        {
-        }
-
-        public BroadcastingDispatcher(IApplicationContext context, TaskScheduler executor, bool requireSubscribers, ILogger logger = null)
-            : base(context, executor, logger)
-        {
-            _requireSubscribers = requireSubscribers;
-        }
-
-        public virtual bool IgnoreFailures { get; set; }
-
-        public virtual bool ApplySequence { get; set; }
-
-        public virtual int MinSubscribers { get; set; }
-
-        internal IMessageBuilderFactory MessageBuilderFactory
-        {
-            get
+            if (_messageBuilderFactory == null)
             {
-                if (_messageBuilderFactory == null)
-                {
-                    _messageBuilderFactory = IntegrationServices.MessageBuilderFactory;
-                }
-
-                return _messageBuilderFactory;
+                _messageBuilderFactory = IntegrationServices.MessageBuilderFactory;
             }
 
-            set
-            {
-                _messageBuilderFactory = value;
-            }
+            return _messageBuilderFactory;
         }
 
-        internal ILogger Logger => _logger;
-
-        protected override bool DoDispatch(IMessage message, CancellationToken cancellationToken)
+        set
         {
-            var dispatched = 0;
-            var sequenceNumber = 1;
-            var handlers = _handlers;
+            _messageBuilderFactory = value;
+        }
+    }
 
-            if (_requireSubscribers && handlers.Count == 0)
-            {
-                throw new MessageDispatchingException(message, "Dispatcher has no subscribers");
-            }
+    internal ILogger Logger => _logger;
 
-            var sequenceSize = handlers.Count;
-            var messageToSend = message;
-            string sequenceId = null;
+    protected override bool DoDispatch(IMessage message, CancellationToken cancellationToken)
+    {
+        var dispatched = 0;
+        var sequenceNumber = 1;
+        var handlers = _handlers;
 
+        if (_requireSubscribers && handlers.Count == 0)
+        {
+            throw new MessageDispatchingException(message, "Dispatcher has no subscribers");
+        }
+
+        var sequenceSize = handlers.Count;
+        var messageToSend = message;
+        string sequenceId = null;
+
+        if (ApplySequence)
+        {
+            sequenceId = message.Headers.Id;
+        }
+
+        foreach (var handler in handlers)
+        {
             if (ApplySequence)
             {
-                sequenceId = message.Headers.Id;
+                messageToSend = MessageBuilderFactory
+                    .FromMessage(message)
+                    .PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize)
+                    .Build();
+                if (message is IMessageDecorator decorator)
+                {
+                    messageToSend = decorator.DecorateMessage(messageToSend);
+                }
             }
 
-            foreach (var handler in handlers)
+            if (_executor != null)
             {
-                if (ApplySequence)
-                {
-                    messageToSend = MessageBuilderFactory
-                            .FromMessage(message)
-                            .PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize)
-                            .Build();
-                    if (message is IMessageDecorator decorator)
-                    {
-                        messageToSend = decorator.DecorateMessage(messageToSend);
-                    }
-                }
-
-                if (_executor != null)
-                {
-                    var task = CreateMessageHandlingTask(handler, messageToSend);
-                    _factory.StartNew(() => task.Run(), cancellationToken);
-                    dispatched++;
-                }
-                else
-                {
-                    InvokeHandler(handler, messageToSend);
-                    dispatched++;
-                }
+                var task = CreateMessageHandlingTask(handler, messageToSend);
+                _factory.StartNew(() => task.Run(), cancellationToken);
+                dispatched++;
             }
-
-            if (dispatched == 0 && MinSubscribers == 0)
+            else
             {
-                if (sequenceSize > 0)
-                {
-                    Logger?.LogDebug("No subscribers received message, default behavior is ignore");
-                }
-                else
-                {
-                    Logger?.LogDebug("No subscribers, default behavior is ignore");
-                }
+                InvokeHandler(handler, messageToSend);
+                dispatched++;
             }
-
-            return dispatched >= MinSubscribers;
         }
 
-        protected void InvokeHandler(IMessageHandler handler, IMessage message)
+        if (dispatched == 0 && MinSubscribers == 0)
         {
-            try
+            if (sequenceSize > 0)
             {
-                handler.HandleMessage(message);
+                Logger?.LogDebug("No subscribers received message, default behavior is ignore");
             }
-            catch (Exception e)
+            else
             {
-                if (!IgnoreFailures)
+                Logger?.LogDebug("No subscribers, default behavior is ignore");
+            }
+        }
+
+        return dispatched >= MinSubscribers;
+    }
+
+    protected void InvokeHandler(IMessageHandler handler, IMessage message)
+    {
+        try
+        {
+            handler.HandleMessage(message);
+        }
+        catch (Exception e)
+        {
+            if (!IgnoreFailures)
+            {
+                if (_factory != null && ErrorHandler != null)
                 {
-                    if (_factory != null && ErrorHandler != null)
-                    {
-                        ErrorHandler.HandleError(e);
-                        return;
-                    }
-
-                    if (e is MessagingException exception && exception.FailedMessage == null)
-                    {
-                        throw new MessagingException(message, "Failed to handle Message", e);
-                    }
-
-                    throw;
+                    ErrorHandler.HandleError(e);
+                    return;
                 }
 
-                _logger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
-            }
-        }
+                if (e is MessagingException exception && exception.FailedMessage == null)
+                {
+                    throw new MessagingException(message, "Failed to handle Message", e);
+                }
 
-        private IMessageHandlingRunnable CreateMessageHandlingTask(IMessageHandler handler, IMessage message)
+                throw;
+            }
+
+            _logger?.LogWarning("Suppressing Exception since 'ignoreFailures' is set to TRUE.", e);
+        }
+    }
+
+    private IMessageHandlingRunnable CreateMessageHandlingTask(IMessageHandler handler, IMessage message)
+    {
+        var messageHandlingRunnable = new MessageHandlingRunnable(this, handler, message);
+
+        if (MessageHandlingDecorator != null)
         {
-            var messageHandlingRunnable = new MessageHandlingRunnable(this, handler, message);
-
-            if (MessageHandlingDecorator != null)
-            {
-                return MessageHandlingDecorator.Decorate(messageHandlingRunnable);
-            }
-
-            return messageHandlingRunnable;
+            return MessageHandlingDecorator.Decorate(messageHandlingRunnable);
         }
 
-        private class MessageHandlingRunnable : IMessageHandlingRunnable
+        return messageHandlingRunnable;
+    }
+
+    private class MessageHandlingRunnable : IMessageHandlingRunnable
+    {
+        private readonly BroadcastingDispatcher _dispatcher;
+
+        public MessageHandlingRunnable(BroadcastingDispatcher dispatcher, IMessageHandler handler, IMessage message)
         {
-            private readonly BroadcastingDispatcher _dispatcher;
-
-            public MessageHandlingRunnable(BroadcastingDispatcher dispatcher, IMessageHandler handler, IMessage message)
-            {
-                _dispatcher = dispatcher;
-                Message = message;
-                MessageHandler = handler;
-            }
-
-            public bool Run()
-            {
-                _dispatcher.InvokeHandler(MessageHandler, Message);
-                return true;
-            }
-
-            public IMessage Message { get; }
-
-            public IMessageHandler MessageHandler { get; }
+            _dispatcher = dispatcher;
+            Message = message;
+            MessageHandler = handler;
         }
+
+        public bool Run()
+        {
+            _dispatcher.InvokeHandler(MessageHandler, Message);
+            return true;
+        }
+
+        public IMessage Message { get; }
+
+        public IMessageHandler MessageHandler { get; }
     }
 }

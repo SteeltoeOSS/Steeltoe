@@ -4,12 +4,11 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.SqlServer.EF6.Test
+namespace Steeltoe.Connector.SqlServer.EF6.Test;
+
+public class GoodSqlServerDbContext : DbContext
 {
-    public class GoodSqlServerDbContext : DbContext
+    public GoodSqlServerDbContext(string str)
     {
-        public GoodSqlServerDbContext(string str)
-        {
-        }
     }
 }

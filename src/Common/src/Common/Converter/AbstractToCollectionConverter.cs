@@ -5,22 +5,21 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public abstract class AbstractToCollectionConverter : AbstractGenericConditionalConverter
 {
-    public abstract class AbstractToCollectionConverter : AbstractGenericConditionalConverter
+    protected readonly IConversionService _conversionService;
+
+    protected AbstractToCollectionConverter(IConversionService conversionService)
+        : base(null)
     {
-        protected readonly IConversionService _conversionService;
+        _conversionService = conversionService;
+    }
 
-        protected AbstractToCollectionConverter(IConversionService conversionService)
-            : base(null)
-        {
-            _conversionService = conversionService;
-        }
-
-        protected AbstractToCollectionConverter(ISet<(Type Source, Type Target)> convertableTypes, IConversionService conversionService)
-            : base(convertableTypes)
-        {
-            _conversionService = conversionService;
-        }
+    protected AbstractToCollectionConverter(ISet<(Type Source, Type Target)> convertableTypes, IConversionService conversionService)
+        : base(convertableTypes)
+    {
+        _conversionService = conversionService;
     }
 }

@@ -5,47 +5,46 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class CertificateGenerationRequest : CredHubGenerateRequest
 {
-    public class CertificateGenerationRequest : CredHubGenerateRequest
+    /// <summary>
+    /// Initializes a new instance of the <see cref="CertificateGenerationRequest"/> class.
+    /// Use to request a new Certificate
+    /// </summary>
+    /// <param name="credentialName">Name of the credential</param>
+    /// <param name="parameters">Variables for certificate generation</param>
+    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
+    public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificateGenerationRequest"/> class.
-        /// Use to request a new Certificate
-        /// </summary>
-        /// <param name="credentialName">Name of the credential</param>
-        /// <param name="parameters">Variables for certificate generation</param>
-        /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite)</param>
-        public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwiteMode overwriteMode = OverwiteMode.converge)
+        var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
+        if (!AtLeastOneProvided(subjects))
         {
-            var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
-            if (!AtLeastOneProvided(subjects))
-            {
-                throw new ArgumentException("At least one subject value, such as common name or organization must be defined to generate the certificate");
-            }
-
-            if (string.IsNullOrEmpty(parameters.CertificateAuthority) && !parameters.IsCertificateAuthority && !parameters.SelfSign)
-            {
-                throw new ArgumentException("At least one signing parameter must be specified");
-            }
-
-            Name = credentialName;
-            Type = CredentialType.Certificate;
-            Parameters = parameters;
-            Mode = overwriteMode;
+            throw new ArgumentException("At least one subject value, such as common name or organization must be defined to generate the certificate");
         }
 
-        private bool AtLeastOneProvided(List<string> parms)
+        if (string.IsNullOrEmpty(parameters.CertificateAuthority) && !parameters.IsCertificateAuthority && !parameters.SelfSign)
         {
-            foreach (var s in parms)
-            {
-                if (!string.IsNullOrEmpty(s))
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            throw new ArgumentException("At least one signing parameter must be specified");
         }
+
+        Name = credentialName;
+        Type = CredentialType.Certificate;
+        Parameters = parameters;
+        Mode = overwriteMode;
+    }
+
+    private bool AtLeastOneProvided(List<string> parms)
+    {
+        foreach (var s in parms)
+        {
+            if (!string.IsNullOrEmpty(s))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

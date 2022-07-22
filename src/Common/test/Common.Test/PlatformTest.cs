@@ -5,18 +5,17 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Common.Test
+namespace Steeltoe.Common.Test;
+
+public class PlatformTest
 {
-    public class PlatformTest
+    [Fact]
+    public void IsCloudFoundry_ReturnsExpected()
     {
-        [Fact]
-        public void IsCloudFoundry_ReturnsExpected()
-        {
-            Assert.False(Platform.IsCloudFoundry);
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");
-            Assert.True(Platform.IsCloudFoundry);
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Assert.False(Platform.IsCloudFoundry);
-        }
+        Assert.False(Platform.IsCloudFoundry);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somevalue");
+        Assert.True(Platform.IsCloudFoundry);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Assert.False(Platform.IsCloudFoundry);
     }
 }

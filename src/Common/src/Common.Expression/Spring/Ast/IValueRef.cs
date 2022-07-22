@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public interface IValueRef
 {
-    public interface IValueRef
-    {
-        ITypedValue GetValue();
+    ITypedValue GetValue();
 
-        void SetValue(object newValue);
+    void SetValue(object newValue);
 
-        bool IsWritable { get; }
-    }
+    bool IsWritable { get; }
 }

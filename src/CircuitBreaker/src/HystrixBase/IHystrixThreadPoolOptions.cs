@@ -2,26 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixThreadPoolOptions
 {
-    public interface IHystrixThreadPoolOptions
-    {
-        IHystrixThreadPoolKey ThreadPoolKey { get; }
+    IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        int CoreSize { get; set; }
+    int CoreSize { get; set; }
 
-        int MaximumSize { get; set; }
+    int MaximumSize { get; set; }
 
-        int KeepAliveTimeMinutes { get; set; }
+    int KeepAliveTimeMinutes { get; set; }
 
-        int MaxQueueSize { get; set; }
+    int MaxQueueSize { get; set; }
 
-        int QueueSizeRejectionThreshold { get; set; }
+    int QueueSizeRejectionThreshold { get; set; }
 
-        bool AllowMaximumSizeToDivergeFromCoreSize { get; set; }
+    bool AllowMaximumSizeToDivergeFromCoreSize { get; set; }
 
-        int MetricsRollingStatisticalWindowInMilliseconds { get; set; }
+    int MetricsRollingStatisticalWindowInMilliseconds { get; set; }
 
-        int MetricsRollingStatisticalWindowBuckets { get; set; }
-    }
+    int MetricsRollingStatisticalWindowBuckets { get; set; }
 }

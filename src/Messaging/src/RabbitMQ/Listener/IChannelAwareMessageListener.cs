@@ -5,12 +5,11 @@
 using System.Collections.Generic;
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
-{
-    public interface IChannelAwareMessageListener : IMessageListener
-    {
-        void OnMessage(IMessage message, RC.IModel channel);
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
-        void OnMessageBatch(List<IMessage> messages, RC.IModel channel);
-    }
+public interface IChannelAwareMessageListener : IMessageListener
+{
+    void OnMessage(IMessage message, RC.IModel channel);
+
+    void OnMessageBatch(List<IMessage> messages, RC.IModel channel);
 }

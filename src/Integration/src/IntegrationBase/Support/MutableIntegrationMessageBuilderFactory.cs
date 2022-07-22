@@ -4,28 +4,27 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+public class MutableIntegrationMessageBuilderFactory : IMessageBuilderFactory
 {
-    public class MutableIntegrationMessageBuilderFactory : IMessageBuilderFactory
+    public IMessageBuilder<T> FromMessage<T>(IMessage<T> message)
     {
-        public IMessageBuilder<T> FromMessage<T>(IMessage<T> message)
-        {
-            return MutableIntegrationMessageBuilder<T>.FromMessage(message);
-        }
+        return MutableIntegrationMessageBuilder<T>.FromMessage(message);
+    }
 
-        public IMessageBuilder FromMessage(IMessage message)
-        {
-            return MutableIntegrationMessageBuilder.FromMessage(message);
-        }
+    public IMessageBuilder FromMessage(IMessage message)
+    {
+        return MutableIntegrationMessageBuilder.FromMessage(message);
+    }
 
-        public IMessageBuilder<T> WithPayload<T>(T payload)
-        {
-            return MutableIntegrationMessageBuilder<T>.WithPayload(payload);
-        }
+    public IMessageBuilder<T> WithPayload<T>(T payload)
+    {
+        return MutableIntegrationMessageBuilder<T>.WithPayload(payload);
+    }
 
-        public IMessageBuilder WithPayload(object payload)
-        {
-            return MutableIntegrationMessageBuilder.WithPayload(payload);
-        }
+    public IMessageBuilder WithPayload(object payload)
+    {
+        return MutableIntegrationMessageBuilder.WithPayload(payload);
     }
 }

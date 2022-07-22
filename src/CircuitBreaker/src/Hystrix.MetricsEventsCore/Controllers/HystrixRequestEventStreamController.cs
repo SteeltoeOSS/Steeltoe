@@ -9,30 +9,29 @@ using System;
 using System.Reactive.Observable.Aliases;
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
+
+[Route("hystrix/request.stream")]
+public class HystrixRequestEventStreamController : HystrixStreamBaseController
 {
-    [Route("hystrix/request.stream")]
-    public class HystrixRequestEventStreamController : HystrixStreamBaseController
+    public HystrixRequestEventStreamController(HystrixRequestEventsStream stream)
+        : this(stream.Observe())
     {
-        public HystrixRequestEventStreamController(HystrixRequestEventsStream stream)
-            : this(stream.Observe())
-        {
-        }
+    }
 
-        private HystrixRequestEventStreamController(IObservable<HystrixRequestEvents> observable)
-            : base(observable.Map((requestEvents) =>
-            {
-                return SerialHystrixRequestEvents.ToJsonString(requestEvents);
-            }))
+    private HystrixRequestEventStreamController(IObservable<HystrixRequestEvents> observable)
+        : base(observable.Map((requestEvents) =>
         {
-        }
+            return SerialHystrixRequestEvents.ToJsonString(requestEvents);
+        }))
+    {
+    }
 
-        [HttpGet]
-        public async Task StartRequestEventStream()
-        {
-            HandleRequest();
-            await Request.HttpContext.RequestAborted;
-            SampleSubscription.Dispose();
-        }
+    [HttpGet]
+    public async Task StartRequestEventStream()
+    {
+        HandleRequest();
+        await Request.HttpContext.RequestAborted;
+        SampleSubscription.Dispose();
     }
 }

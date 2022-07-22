@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.DataProtection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Security.DataProtection.Redis.Test
-{
-    public class RedisDataProtectionBuilderExtensionsTest
-    {
-        [Fact]
-        public void PersistKeysToRedis_ThowsForNulls()
-        {
-            IDataProtectionBuilder builder = null;
+namespace Steeltoe.Security.DataProtection.Redis.Test;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => RedisDataProtectionBuilderExtensions.PersistKeysToRedis(builder));
-            Assert.Contains(nameof(builder), ex.Message);
-        }
+public class RedisDataProtectionBuilderExtensionsTest
+{
+    [Fact]
+    public void PersistKeysToRedis_ThowsForNulls()
+    {
+        IDataProtectionBuilder builder = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => RedisDataProtectionBuilderExtensions.PersistKeysToRedis(builder));
+        Assert.Contains(nameof(builder), ex.Message);
     }
 }

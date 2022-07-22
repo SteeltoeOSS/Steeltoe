@@ -8,32 +8,31 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace Steeltoe.Management.Endpoint.Hyoermedia.Test
+namespace Steeltoe.Management.Endpoint.Hyoermedia.Test;
+
+public class StartupWithSecurity
 {
-    public class StartupWithSecurity
+    public StartupWithSecurity(IConfiguration configuration)
     {
-        public StartupWithSecurity(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddInfoActuator(Configuration);
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddInfoActuator(Configuration);
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<InfoEndpoint>();
-            });
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<InfoEndpoint>();
+        });
     }
 }

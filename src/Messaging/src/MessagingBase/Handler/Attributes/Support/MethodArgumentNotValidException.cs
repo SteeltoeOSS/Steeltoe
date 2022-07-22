@@ -5,18 +5,17 @@
 using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
-{
-    public class MethodArgumentNotValidException : MethodArgumentResolutionException
-    {
-        public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter)
-         : base(message, parameter)
-        {
-        }
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
-        public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter, string description)
+public class MethodArgumentNotValidException : MethodArgumentResolutionException
+{
+    public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter)
+        : base(message, parameter)
+    {
+    }
+
+    public MethodArgumentNotValidException(IMessage message, ParameterInfo parameter, string description)
         : base(message, parameter, description)
-        {
-        }
+    {
     }
 }

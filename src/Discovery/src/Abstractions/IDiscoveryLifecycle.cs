@@ -4,10 +4,9 @@
 
 using System.Threading;
 
-namespace Steeltoe.Discovery
+namespace Steeltoe.Discovery;
+
+public interface IDiscoveryLifecycle
 {
-    public interface IDiscoveryLifecycle
-    {
-        CancellationToken ApplicationStopping { get; }
-    }
+    CancellationToken ApplicationStopping { get; }
 }

@@ -4,23 +4,22 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia
+namespace Steeltoe.Management.Endpoint.Hypermedia;
+
+/// <summary>
+/// A typed collection of links
+/// </summary>
+public class Links
 {
     /// <summary>
-    /// A typed collection of links
+    /// Gets or sets the type of links contained in this collection
     /// </summary>
-    public class Links
-    {
-        /// <summary>
-        /// Gets or sets the type of links contained in this collection
-        /// </summary>
-        public string Type { get; set; } = "steeltoe";
+    public string Type { get; set; } = "steeltoe";
 
-        /// <summary>
-        /// Gets or sets the list of links contained in this collection
-        /// </summary>
+    /// <summary>
+    /// Gets or sets the list of links contained in this collection
+    /// </summary>
 #pragma warning disable SA1300 // Element should begin with upper-case letter
-        public Dictionary<string, Link> _links { get; set; } = new Dictionary<string, Link>();
+    public Dictionary<string, Link> _links { get; set; } = new Dictionary<string, Link>();
 #pragma warning restore SA1300 // Element should begin with upper-case letter
-    }
 }

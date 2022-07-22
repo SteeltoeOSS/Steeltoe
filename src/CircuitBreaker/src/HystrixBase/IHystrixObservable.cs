@@ -5,19 +5,18 @@
 using System;
 using System.Reactive;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixObservable : IHystrixInvokable
 {
-    public interface IHystrixObservable : IHystrixInvokable
-    {
-        IObservable<Unit> Observe();
+    IObservable<Unit> Observe();
 
-        IObservable<Unit> ToObservable();
-    }
+    IObservable<Unit> ToObservable();
+}
 
-    public interface IHystrixObservable<out TResult> : IHystrixInvokable
-    {
-        IObservable<TResult> Observe();
+public interface IHystrixObservable<out TResult> : IHystrixInvokable
+{
+    IObservable<TResult> Observe();
 
-        IObservable<TResult> ToObservable();
-    }
+    IObservable<TResult> ToObservable();
 }

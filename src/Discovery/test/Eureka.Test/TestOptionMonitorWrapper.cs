@@ -5,25 +5,24 @@
 using Microsoft.Extensions.Options;
 using System;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
 {
-    public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
+    public TestOptionMonitorWrapper(T opt)
     {
-        public TestOptionMonitorWrapper(T opt)
-        {
-            CurrentValue = opt;
-        }
+        CurrentValue = opt;
+    }
 
-        public T CurrentValue { get; private set; }
+    public T CurrentValue { get; private set; }
 
-        public T Get(string name)
-        {
-            return CurrentValue;
-        }
+    public T Get(string name)
+    {
+        return CurrentValue;
+    }
 
-        public IDisposable OnChange(Action<T, string> listener)
-        {
-            throw new NotImplementedException();
-        }
+    public IDisposable OnChange(Action<T, string> listener)
+    {
+        throw new NotImplementedException();
     }
 }

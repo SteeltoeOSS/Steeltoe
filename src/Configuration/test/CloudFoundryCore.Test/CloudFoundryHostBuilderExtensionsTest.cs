@@ -9,51 +9,51 @@ using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test;
+
+public class CloudFoundryHostBuilderExtensionsTest
 {
-    public class CloudFoundryHostBuilderExtensionsTest
+    [Fact]
+    public void WebHostAddCloudConfigurationFoundry_Adds()
     {
-        [Fact]
-        public void WebHostAddCloudConfigurationFoundry_Adds()
-        {
-            var hostbuilder = new WebHostBuilder();
-            hostbuilder.Configure(builder => { });
+        var hostbuilder = new WebHostBuilder();
+        hostbuilder.Configure(builder => { });
 
-            hostbuilder.AddCloudFoundryConfiguration();
-            var host = hostbuilder.Build();
+        hostbuilder.AddCloudFoundryConfiguration();
+        var host = hostbuilder.Build();
 
-            var instanceInfo = host.Services.GetApplicationInstanceInfo();
-            Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
-            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
-        }
+        var instanceInfo = host.Services.GetApplicationInstanceInfo();
+        Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
+        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+    }
 
-        [Fact]
-        public void HostAddCloudFoundryConfiguration_Adds()
-        {
-            var hostbuilder = new HostBuilder();
+    [Fact]
+    public void HostAddCloudFoundryConfiguration_Adds()
+    {
+        var hostbuilder = new HostBuilder();
 
-            hostbuilder.AddCloudFoundryConfiguration();
-            var host = hostbuilder.Build();
+        hostbuilder.AddCloudFoundryConfiguration();
+        var host = hostbuilder.Build();
 
-            var instanceInfo = host.Services.GetApplicationInstanceInfo();
-            Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
-            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
-        }
+        var instanceInfo = host.Services.GetApplicationInstanceInfo();
+        Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
+        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+    }
 
-        [Fact]
-        public void WebHostAddCloudFoundryConfiguration_Adds()
-        {
-            var hostbuilder = new WebHostBuilder();
-            hostbuilder.Configure(builder => { });
+    [Fact]
+    public void WebHostAddCloudFoundryConfiguration_Adds()
+    {
+        var hostbuilder = new WebHostBuilder();
+        hostbuilder.Configure(builder => { });
 
-            hostbuilder.AddCloudFoundryConfiguration();
-            var host = hostbuilder.Build();
+        hostbuilder.AddCloudFoundryConfiguration();
+        var host = hostbuilder.Build();
 
-            var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-            Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
-        }
+        var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+    }
 
 #if NET6_0_OR_GREATER
         [Fact]
@@ -67,5 +67,4 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test
             Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
         }
 #endif
-    }
 }

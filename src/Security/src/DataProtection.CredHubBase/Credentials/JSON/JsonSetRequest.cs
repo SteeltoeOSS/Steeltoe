@@ -4,32 +4,31 @@
 
 using System.Text.Json;
 
-namespace Steeltoe.Security.DataProtection.CredHub
-{
-    public class JsonSetRequest : CredentialSetRequest
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
-        /// </summary>
-        /// <param name="credentialName">Name of credential</param>
-        /// <param name="value">Value of the credential to set</param>
-        public JsonSetRequest(string credentialName, JsonElement value)
-        {
-            Name = credentialName;
-            Type = CredentialType.JSON;
-            Value = new JsonCredential(value);
-        }
+namespace Steeltoe.Security.DataProtection.CredHub;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
-        /// </summary>
-        /// <param name="credentialName">Name of credential</param>
-        /// <param name="value">Value of the credential to set</param>
-        public JsonSetRequest(string credentialName, string value)
-        {
-            Name = credentialName;
-            Type = CredentialType.JSON;
-            Value = new JsonCredential(value);
-        }
+public class JsonSetRequest : CredentialSetRequest
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
+    /// </summary>
+    /// <param name="credentialName">Name of credential</param>
+    /// <param name="value">Value of the credential to set</param>
+    public JsonSetRequest(string credentialName, JsonElement value)
+    {
+        Name = credentialName;
+        Type = CredentialType.JSON;
+        Value = new JsonCredential(value);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
+    /// </summary>
+    /// <param name="credentialName">Name of credential</param>
+    /// <param name="value">Value of the credential to set</param>
+    public JsonSetRequest(string credentialName, string value)
+    {
+        Name = credentialName;
+        Type = CredentialType.JSON;
+        Value = new JsonCredential(value);
     }
 }

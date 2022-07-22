@@ -13,60 +13,59 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
+
+public class ConfigServerHostBuilderExtensionsTest
 {
-    public class ConfigServerHostBuilderExtensionsTest
+    private readonly Dictionary<string, string> quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+
+    [Fact]
+    public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
-        private readonly Dictionary<string, string> quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+        var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
-        [Fact]
-        public void AddConfigServer_DefaultWebHost_AddsConfigServer()
-        {
-            var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
+        hostBuilder.AddConfigServer();
+        var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            hostBuilder.AddConfigServer();
-            var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
+        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+    }
 
-            Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
-            Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
-        }
+    [Fact]
+    public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
+    {
+        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
 
-        [Fact]
-        public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
-        {
-            var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).UseStartup<TestConfigServerStartup>();
+        hostBuilder.AddConfigServer();
+        var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            hostBuilder.AddConfigServer();
-            var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
+        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+    }
 
-            Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
-            Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
-        }
+    [Fact]
+    public void AddConfigServer_IHostBuilder_AddsConfigServer()
+    {
+        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).AddConfigServer();
 
-        [Fact]
-        public void AddConfigServer_IHostBuilder_AddsConfigServer()
-        {
-            var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(quickTests)).AddConfigServer();
+        var host = hostBuilder.Build();
+        var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
-            var host = hostBuilder.Build();
-            var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
-
-            Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
-            Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
-        }
+        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+    }
 
 #if NET6_0_OR_GREATER
-        [Fact]
-        public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
-        {
-            var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
-            hostBuilder.AddConfigServer();
-            var host = hostBuilder.Build();
+    [Fact]
+    public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
+    {
+        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddConfigServer();
+        var host = hostBuilder.Build();
 
-            var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
-            Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
-            Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
-        }
-#endif
+        var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
+        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
     }
+#endif
 }

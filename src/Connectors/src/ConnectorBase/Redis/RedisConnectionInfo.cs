@@ -6,32 +6,31 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.Redis
+namespace Steeltoe.Connector.Redis;
+
+public class RedisConnectionInfo : IConnectionInfo
 {
-    public class RedisConnectionInfo : IConnectionInfo
+    public Connection Get(IConfiguration configuration, string serviceName)
     {
-        public Connection Get(IConfiguration configuration, string serviceName)
-        {
-            var info = string.IsNullOrEmpty(serviceName)
-                ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
-                : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
-            return GetConnection(info, configuration);
-        }
+        var info = string.IsNullOrEmpty(serviceName)
+            ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
+            : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+        return GetConnection(info, configuration);
+    }
 
-        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-            => GetConnection((RedisServiceInfo)serviceInfo, configuration);
+    public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        => GetConnection((RedisServiceInfo)serviceInfo, configuration);
 
-        public bool IsSameType(string serviceType)
-            => serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+        => serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
 
-        public bool IsSameType(IServiceInfo serviceInfo)
-            => serviceInfo is RedisServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+        => serviceInfo is RedisServiceInfo;
 
-        private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
-        {
-            var redisConfig = new RedisCacheConnectorOptions(configuration);
-            var configurer = new RedisCacheConfigurer();
-            return new Connection(configurer.Configure(serviceInfo, redisConfig).ToString(), "Redis", serviceInfo);
-        }
+    private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
+    {
+        var redisConfig = new RedisCacheConnectorOptions(configuration);
+        var configurer = new RedisCacheConfigurer();
+        return new Connection(configurer.Configure(serviceInfo, redisConfig).ToString(), "Redis", serviceInfo);
     }
 }

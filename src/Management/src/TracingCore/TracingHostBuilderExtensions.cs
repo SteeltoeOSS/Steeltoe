@@ -8,25 +8,25 @@ using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Trace;
 using System;
 
-namespace Steeltoe.Management.Tracing
-{
-    public static class TracingHostBuilderExtensions
-    {
-        /// <summary>
-        /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
-        /// </summary>
-        /// <param name="hostBuilder">Your HostBuilder</param>
-        /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
-        public static IHostBuilder AddDistributedTracingAspNetCore(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
-            => hostBuilder.ConfigureServices(services => services.AddDistributedTracingAspNetCore(action));
+namespace Steeltoe.Management.Tracing;
 
-        /// <summary>
-        /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
-        /// </summary>
-        /// <param name="hostBuilder">Your HostBuilder</param>
-        /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
-        public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
-            => hostBuilder.ConfigureServices((context, services) => services.AddDistributedTracingAspNetCore(action));
+public static class TracingHostBuilderExtensions
+{
+    /// <summary>
+    /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
+    /// </summary>
+    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
+    public static IHostBuilder AddDistributedTracingAspNetCore(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
+        => hostBuilder.ConfigureServices(services => services.AddDistributedTracingAspNetCore(action));
+
+    /// <summary>
+    /// Configure distributed tracing via OpenTelemetry with HttpClient and ASP.NET Core Instrumentation along with (optionally) Zipkin and Wavefront exporting
+    /// </summary>
+    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
+    public static IWebHostBuilder AddDistributedTracingAspNetCore(this IWebHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
+        => hostBuilder.ConfigureServices((context, services) => services.AddDistributedTracingAspNetCore(action));
 
 #if NET6_0_OR_GREATER
         /// <summary>
@@ -40,5 +40,4 @@ namespace Steeltoe.Management.Tracing
             return hostBuilder;
         }
 #endif
-    }
 }

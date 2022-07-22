@@ -2,19 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
+
+public class HystrixMetricsPublisherDefault : HystrixMetricsPublisher
 {
-    public class HystrixMetricsPublisherDefault : HystrixMetricsPublisher
+    private static readonly HystrixMetricsPublisherDefault Instance = new ();
+
+    public static HystrixMetricsPublisher GetInstance()
     {
-        private static readonly HystrixMetricsPublisherDefault Instance = new ();
+        return Instance;
+    }
 
-        public static HystrixMetricsPublisher GetInstance()
-        {
-            return Instance;
-        }
-
-        private HystrixMetricsPublisherDefault()
-        {
-        }
+    private HystrixMetricsPublisherDefault()
+    {
     }
 }

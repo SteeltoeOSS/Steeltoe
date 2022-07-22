@@ -4,62 +4,61 @@
 
 using System;
 
-namespace Steeltoe.Management
+namespace Steeltoe.Management;
+
+public abstract class AbstractEndpoint : IEndpoint
 {
-    public abstract class AbstractEndpoint : IEndpoint
+    protected IEndpointOptions options;
+
+    public AbstractEndpoint(IEndpointOptions options)
     {
-        protected IEndpointOptions options;
-
-        public AbstractEndpoint(IEndpointOptions options)
-        {
-            this.options = options ?? throw new ArgumentNullException(nameof(options));
-        }
-
-        public virtual string Id => options.Id;
-
-        public virtual bool Enabled => options.Enabled.Value;
-
-        public virtual IEndpointOptions Options => options;
-
-        public string Path => options.Path;
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 
-    /// <summary>
-    /// Base class for management endpoints
-    /// </summary>
-    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
-    public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
-    {
-        public AbstractEndpoint(IEndpointOptions options)
-            : base(options)
-        {
-        }
+    public virtual string Id => options.Id;
 
-        public virtual TResult Invoke()
-        {
-            return default;
-        }
+    public virtual bool Enabled => options.Enabled.Value;
+
+    public virtual IEndpointOptions Options => options;
+
+    public string Path => options.Path;
+}
+
+/// <summary>
+/// Base class for management endpoints
+/// </summary>
+/// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
+{
+    public AbstractEndpoint(IEndpointOptions options)
+        : base(options)
+    {
     }
 
-    /// <summary>
-    /// Base class for endpoints that allow POST requests
-    /// </summary>
-    /// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
-    /// <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
-    public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
+    public virtual TResult Invoke()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
-        /// </summary>
-        /// <param name="options">Endpoint configuration options</param>
-        public AbstractEndpoint(IEndpointOptions options)
-            : base(options)
-        {
-        }
+        return default;
+    }
+}
 
-        public virtual TResult Invoke(TRequest arg)
-        {
-            return default;
-        }
+/// <summary>
+/// Base class for endpoints that allow POST requests
+/// </summary>
+/// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+/// <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
+public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
+{
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
+    /// </summary>
+    /// <param name="options">Endpoint configuration options</param>
+    public AbstractEndpoint(IEndpointOptions options)
+        : base(options)
+    {
+    }
+
+    public virtual TResult Invoke(TRequest arg)
+    {
+        return default;
     }
 }

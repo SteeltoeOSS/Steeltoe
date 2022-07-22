@@ -8,40 +8,39 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class TestServerCertificateStartup
 {
-    public class TestServerCertificateStartup
+    public static CloudFoundryJwtBearerOptions CloudFoundryOptions { get; set; }
+
+    public IConfiguration Configuration { get; }
+
+    public TestServerCertificateStartup(IConfiguration configuration)
     {
-        public static CloudFoundryJwtBearerOptions CloudFoundryOptions { get; set; }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddCloudFoundryCertificateAuth();
+    }
 
-        public TestServerCertificateStartup(IConfiguration configuration)
+    public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)
+    {
+        app.UseCloudFoundryCertificateAuth();
+
+        app.Run(async (context) =>
         {
-            Configuration = configuration;
-        }
+            var authorizationResult = await authorizationService.AuthorizeAsync(context.User, null, context.Request.Path.Value.Replace("/", string.Empty));
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddCloudFoundryCertificateAuth();
-        }
-
-        public void Configure(IApplicationBuilder app, IAuthorizationService authorizationService)
-        {
-            app.UseCloudFoundryCertificateAuth();
-
-            app.Run(async (context) =>
+            if (!authorizationResult.Succeeded)
             {
-                var authorizationResult = await authorizationService.AuthorizeAsync(context.User, null, context.Request.Path.Value.Replace("/", string.Empty));
+                await context.ChallengeAsync();
+                return;
+            }
 
-                if (!authorizationResult.Succeeded)
-                {
-                    await context.ChallengeAsync();
-                    return;
-                }
-
-                context.Response.StatusCode = 200;
-            });
-        }
+            context.Response.StatusCode = 200;
+        });
     }
 }

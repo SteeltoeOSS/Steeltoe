@@ -5,18 +5,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Batch
+namespace Steeltoe.Messaging.RabbitMQ.Batch;
+
+public interface IBatchingStrategy
 {
-    public interface IBatchingStrategy
-    {
-        MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message);
+    MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message);
 
-        DateTime? NextRelease();
+    DateTime? NextRelease();
 
-        ICollection<MessageBatch> ReleaseBatches();
+    ICollection<MessageBatch> ReleaseBatches();
 
-        bool CanDebatch(IMessageHeaders properties);
+    bool CanDebatch(IMessageHeaders properties);
 
-        void DeBatch(IMessage message, Action<IMessage> fragmentConsumer);
-    }
+    void DeBatch(IMessage message, Action<IMessage> fragmentConsumer);
 }

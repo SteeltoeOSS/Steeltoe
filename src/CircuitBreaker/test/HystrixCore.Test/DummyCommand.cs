@@ -2,28 +2,27 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+internal class DummyCommand : HystrixCommand, IDummyCommand
 {
-    internal class DummyCommand : HystrixCommand, IDummyCommand
+    private readonly IHystrixCommandOptions _opts;
+
+    public DummyCommand(IHystrixCommandOptions opts)
+        : base(opts)
     {
-        private readonly IHystrixCommandOptions _opts;
-
-        public DummyCommand(IHystrixCommandOptions opts)
-            : base(opts)
-        {
-            _opts = opts;
-        }
-
-        public HystrixCommandOptions Options
-        {
-            get
-            {
-                return _opts as HystrixCommandOptions;
-            }
-        }
+        _opts = opts;
     }
 
-    internal interface IDummyCommand
+    public HystrixCommandOptions Options
     {
+        get
+        {
+            return _opts as HystrixCommandOptions;
+        }
     }
+}
+
+internal interface IDummyCommand
+{
 }

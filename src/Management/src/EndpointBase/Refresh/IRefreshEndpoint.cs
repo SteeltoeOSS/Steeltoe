@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Refresh
+namespace Steeltoe.Management.Endpoint.Refresh;
+
+public interface IRefreshEndpoint
 {
-    public interface IRefreshEndpoint
-    {
-        IList<string> Invoke();
-    }
+    IList<string> Invoke();
 }

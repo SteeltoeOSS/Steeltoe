@@ -6,26 +6,25 @@ using Steeltoe.Stream.Attributes;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+public class StreamListenerMethod : IStreamListenerMethod
 {
-    public class StreamListenerMethod : IStreamListenerMethod
+    public StreamListenerMethod(MethodInfo method, StreamListenerAttribute attribute)
     {
-        public StreamListenerMethod(MethodInfo method, StreamListenerAttribute attribute)
+        Method = method;
+        Attribute = attribute;
+    }
+
+    public MethodInfo Method { get; }
+
+    public StreamListenerAttribute Attribute { get; }
+
+    public Type ImplementationType
+    {
+        get
         {
-            Method = method;
-            Attribute = attribute;
-        }
-
-        public MethodInfo Method { get; }
-
-        public StreamListenerAttribute Attribute { get; }
-
-        public Type ImplementationType
-        {
-            get
-            {
-                return Method.DeclaringType;
-            }
+            return Method.DeclaringType;
         }
     }
 }

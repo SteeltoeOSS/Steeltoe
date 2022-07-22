@@ -6,34 +6,33 @@ using Steeltoe.Management.Endpoint.Test;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test
-{
-    public class MetricsListNamesResponseTest : BaseTest
-    {
-        [Fact]
-        public void Constructor_SetsValues()
-        {
-            var names = new HashSet<string>()
-            {
-                "foo.bar",
-                "bar.foo"
-            };
-            var resp = new MetricsListNamesResponse(names);
-            Assert.NotNull(resp.Names);
-            Assert.Same(names, resp.Names);
-        }
+namespace Steeltoe.Management.Endpoint.Metrics.Test;
 
-        [Fact]
-        public void JsonSerialization_ReturnsExpected()
+public class MetricsListNamesResponseTest : BaseTest
+{
+    [Fact]
+    public void Constructor_SetsValues()
+    {
+        var names = new HashSet<string>()
         {
-            var names = new HashSet<string>()
-            {
-                "foo.bar",
-                "bar.foo"
-            };
-            var resp = new MetricsListNamesResponse(names);
-            var result = Serialize(resp);
-            Assert.Equal("{\"names\":[\"foo.bar\",\"bar.foo\"]}", result);
-        }
+            "foo.bar",
+            "bar.foo"
+        };
+        var resp = new MetricsListNamesResponse(names);
+        Assert.NotNull(resp.Names);
+        Assert.Same(names, resp.Names);
+    }
+
+    [Fact]
+    public void JsonSerialization_ReturnsExpected()
+    {
+        var names = new HashSet<string>()
+        {
+            "foo.bar",
+            "bar.foo"
+        };
+        var resp = new MetricsListNamesResponse(names);
+        var result = Serialize(resp);
+        Assert.Equal("{\"names\":[\"foo.bar\",\"bar.foo\"]}", result);
     }
 }

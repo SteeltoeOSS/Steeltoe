@@ -7,10 +7,9 @@ using Steeltoe.Common.HealthChecks;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Management.Endpoint.Health;
+
+public interface IHealthRegistrationsAggregator : IHealthAggregator
 {
-    public interface IHealthRegistrationsAggregator : IHealthAggregator
-    {
-        Common.HealthChecks.HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider);
-    }
+    Common.HealthChecks.HealthCheckResult Aggregate(IList<IHealthContributor> contributors, ICollection<HealthCheckRegistration> healthCheckRegistrations, IServiceProvider serviceProvider);
 }

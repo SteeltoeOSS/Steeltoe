@@ -7,46 +7,45 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration.Util
+namespace Steeltoe.Integration.Util;
+
+public class ServiceFactoryTypeConverter : ITypeConverter
 {
-    public class ServiceFactoryTypeConverter : ITypeConverter
+    public ServiceFactoryTypeConverter()
     {
-        public ServiceFactoryTypeConverter()
+        ConversionService = DefaultConversionService.Singleton;
+    }
+
+    public ServiceFactoryTypeConverter(IConversionService conversionService)
+    {
+        ConversionService = conversionService;
+    }
+
+    public IConversionService ConversionService { get; set; }
+
+    public bool CanConvert(Type sourceType, Type targetType)
+    {
+        if (ConversionService.CanConvert(sourceType, targetType))
         {
-            ConversionService = DefaultConversionService.Singleton;
+            return true;
         }
 
-        public ServiceFactoryTypeConverter(IConversionService conversionService)
+        return false;
+    }
+
+    public object ConvertValue(object value, Type sourceType, Type targetType)
+    {
+        if (targetType == typeof(void) && value == null)
         {
-            ConversionService = conversionService;
+            return null;
         }
 
-        public IConversionService ConversionService { get; set; }
-
-        public bool CanConvert(Type sourceType, Type targetType)
+        if (sourceType != null && ((sourceType == typeof(IMessageHeaders) && targetType == typeof(IMessageHeaders)) ||
+                                   (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive)))
         {
-            if (ConversionService.CanConvert(sourceType, targetType))
-            {
-                return true;
-            }
-
-            return false;
+            return value;
         }
 
-        public object ConvertValue(object value, Type sourceType, Type targetType)
-        {
-            if (targetType == typeof(void) && value == null)
-            {
-                return null;
-            }
-
-            if (sourceType != null && ((sourceType == typeof(IMessageHeaders) && targetType == typeof(IMessageHeaders)) ||
-                (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive)))
-            {
-                return value;
-            }
-
-            return ConversionService.Convert(value, sourceType, targetType);
-        }
+        return ConversionService.Convert(value, sourceType, targetType);
     }
 }

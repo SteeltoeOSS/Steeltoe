@@ -5,28 +5,27 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+public static class ErrorMessageUtils
 {
-    public static class ErrorMessageUtils
+    public const string FAILED_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "message";
+
+    public const string INPUT_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "inputMessage";
+
+    public static IAttributeAccessor GetAttributeAccessor(IMessage inputMessage, IMessage failedMessage)
     {
-        public const string FAILED_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "message";
-
-        public const string INPUT_MESSAGE_CONTEXT_KEY = MessageHeaders.INTERNAL + "inputMessage";
-
-        public static IAttributeAccessor GetAttributeAccessor(IMessage inputMessage, IMessage failedMessage)
+        AbstractAttributeAccessor attributes = new ErrorMessageAttributes();
+        if (inputMessage != null)
         {
-            AbstractAttributeAccessor attributes = new ErrorMessageAttributes();
-            if (inputMessage != null)
-            {
-                attributes.SetAttribute(INPUT_MESSAGE_CONTEXT_KEY, inputMessage);
-            }
-
-            if (failedMessage != null)
-            {
-                attributes.SetAttribute(FAILED_MESSAGE_CONTEXT_KEY, failedMessage);
-            }
-
-            return attributes;
+            attributes.SetAttribute(INPUT_MESSAGE_CONTEXT_KEY, inputMessage);
         }
+
+        if (failedMessage != null)
+        {
+            attributes.SetAttribute(FAILED_MESSAGE_CONTEXT_KEY, failedMessage);
+        }
+
+        return attributes;
     }
 }

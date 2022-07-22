@@ -12,80 +12,79 @@ using Steeltoe.Messaging.Support;
 using System;
 using System.Text;
 
-namespace Steeltoe.Integration.Transformer
+namespace Steeltoe.Integration.Transformer;
+
+public class ObjectToJsonTransformer : AbstractTransformer
 {
-    public class ObjectToJsonTransformer : AbstractTransformer
+    private DefaultTypeMapper _defaultTypeMapper = new ();
+
+    public Type ResultType { get; set; }
+
+    public JsonSerializerSettings Settings { get; set; }
+
+    public string ContentType { get; set; }
+
+    public Encoding DefaultCharset { get; set; }
+
+    public ObjectToJsonTransformer(IApplicationContext context, Type resultType = null)
+        : base(context)
     {
-        private DefaultTypeMapper _defaultTypeMapper = new ();
-
-        public Type ResultType { get; set; }
-
-        public JsonSerializerSettings Settings { get; set; }
-
-        public string ContentType { get; set; }
-
-        public Encoding DefaultCharset { get; set; }
-
-        public ObjectToJsonTransformer(IApplicationContext context, Type resultType = null)
-            : base(context)
+        var contractResolver = new DefaultContractResolver
         {
-            var contractResolver = new DefaultContractResolver
+            NamingStrategy = new CamelCaseNamingStrategy
             {
-                NamingStrategy = new CamelCaseNamingStrategy
-                {
-                    ProcessDictionaryKeys = false
-                }
-            };
-            Settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                ContractResolver = contractResolver
-            };
+                ProcessDictionaryKeys = false
+            }
+        };
+        Settings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            ContractResolver = contractResolver
+        };
 
-            ResultType = resultType ?? typeof(string);
-            DefaultCharset = EncodingUtils.Utf8;
-            ContentType = MessageHeaders.CONTENT_TYPE_JSON;
+        ResultType = resultType ?? typeof(string);
+        DefaultCharset = EncodingUtils.Utf8;
+        ContentType = MessageHeaders.CONTENT_TYPE_JSON;
+    }
+
+    protected override object DoTransform(IMessage message)
+    {
+        var payload = BuildJsonPayload(message.Payload);
+        var accessor = MessageHeaderAccessor.GetMutableAccessor(message);
+        var contentType = accessor.ContentType;
+        if (string.IsNullOrEmpty(contentType))
+        {
+            accessor.ContentType = ContentType;
         }
 
-        protected override object DoTransform(IMessage message)
+        var headers = accessor.MessageHeaders;
+        _defaultTypeMapper.FromType(message.Payload.GetType(), headers);
+        if (ResultType == typeof(string))
         {
-            var payload = BuildJsonPayload(message.Payload);
-            var accessor = MessageHeaderAccessor.GetMutableAccessor(message);
-            var contentType = accessor.ContentType;
-            if (string.IsNullOrEmpty(contentType))
-            {
-                accessor.ContentType = ContentType;
-            }
-
-            var headers = accessor.MessageHeaders;
-            _defaultTypeMapper.FromType(message.Payload.GetType(), headers);
-            if (ResultType == typeof(string))
-            {
-                return MessageBuilderFactory.WithPayload<string>((string)payload).CopyHeaders(headers).Build();
-            }
-            else
-            {
-                return MessageBuilderFactory.WithPayload<byte[]>((byte[])payload).CopyHeaders(headers).Build();
-            }
+            return MessageBuilderFactory.WithPayload<string>((string)payload).CopyHeaders(headers).Build();
         }
-
-        private object BuildJsonPayload(object payload)
+        else
         {
-            var jsonString = JsonConvert.SerializeObject(payload, Settings);
+            return MessageBuilderFactory.WithPayload<byte[]>((byte[])payload).CopyHeaders(headers).Build();
+        }
+    }
 
-            if (ResultType == typeof(string))
-            {
-                return jsonString;
-            }
-            else if (ResultType == typeof(byte[]))
-            {
-                return DefaultCharset.GetBytes(jsonString);
-            }
-            else
-            {
-                throw new InvalidOperationException("Unsupported result type: " + ResultType);
-            }
+    private object BuildJsonPayload(object payload)
+    {
+        var jsonString = JsonConvert.SerializeObject(payload, Settings);
+
+        if (ResultType == typeof(string))
+        {
+            return jsonString;
+        }
+        else if (ResultType == typeof(byte[]))
+        {
+            return DefaultCharset.GetBytes(jsonString);
+        }
+        else
+        {
+            throw new InvalidOperationException("Unsupported result type: " + ResultType);
         }
     }
 }

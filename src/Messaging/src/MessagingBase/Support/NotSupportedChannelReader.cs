@@ -8,30 +8,29 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+public class NotSupportedChannelReader : ChannelReader<IMessage>
 {
-    public class NotSupportedChannelReader : ChannelReader<IMessage>
+    public override Task Completion => throw new NotSupportedException("This channel does not implement ChannelReaders");
+
+    public override IAsyncEnumerable<IMessage> ReadAllAsync(CancellationToken cancellationToken = default)
     {
-        public override Task Completion => throw new NotSupportedException("This channel does not implement ChannelReaders");
+        throw new NotSupportedException("This channel does not implement ChannelReaders");
+    }
 
-        public override IAsyncEnumerable<IMessage> ReadAllAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException("This channel does not implement ChannelReaders");
-        }
+    public override ValueTask<IMessage> ReadAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotSupportedException("This channel does not implement ChannelReaders");
+    }
 
-        public override ValueTask<IMessage> ReadAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException("This channel does not implement ChannelReaders");
-        }
+    public override bool TryRead(out IMessage item)
+    {
+        throw new NotSupportedException("This channel does not implement ChannelReaders");
+    }
 
-        public override bool TryRead(out IMessage item)
-        {
-            throw new NotSupportedException("This channel does not implement ChannelReaders");
-        }
-
-        public override ValueTask<bool> WaitToReadAsync(CancellationToken cancellationToken = default)
-        {
-            throw new NotSupportedException("This channel does not implement ChannelReaders");
-        }
+    public override ValueTask<bool> WaitToReadAsync(CancellationToken cancellationToken = default)
+    {
+        throw new NotSupportedException("This channel does not implement ChannelReaders");
     }
 }

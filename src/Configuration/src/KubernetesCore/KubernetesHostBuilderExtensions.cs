@@ -11,31 +11,31 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Kubernetes;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes
-{
-    public static class KubernetesHostBuilderExtensions
-    {
-        /// <summary>
-        /// Add Kubernetes Configuration Providers for configmaps and secrets
-        /// </summary>
-        /// <param name="hostBuilder">Your HostBuilder</param>
-        /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
-        /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-        public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
-                => hostBuilder
-                    .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
-                    .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
+namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
-        /// <summary>
-        /// Add Kubernetes Configuration Providers for configmaps and secrets
-        /// </summary>
-        /// <param name="hostBuilder">Your WebHostBuilder</param>
-        /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
-        /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-        public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
-            => hostBuilder
-                .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
-                .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
+public static class KubernetesHostBuilderExtensions
+{
+    /// <summary>
+    /// Add Kubernetes Configuration Providers for configmaps and secrets
+    /// </summary>
+    /// <param name="hostBuilder">Your HostBuilder</param>
+    /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+    public static IWebHostBuilder AddKubernetesConfiguration(this IWebHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
+        => hostBuilder
+            .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
+            .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
+
+    /// <summary>
+    /// Add Kubernetes Configuration Providers for configmaps and secrets
+    /// </summary>
+    /// <param name="hostBuilder">Your WebHostBuilder</param>
+    /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+    public static IHostBuilder AddKubernetesConfiguration(this IHostBuilder hostBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
+        => hostBuilder
+            .ConfigureAppConfiguration(cfg => cfg.AddKubernetes(kubernetesClientConfiguration, loggerFactory))
+            .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
 
 #if NET6_0_OR_GREATER
         /// <summary>
@@ -51,5 +51,4 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes
             return applicationBuilder;
         }
 #endif
-    }
 }

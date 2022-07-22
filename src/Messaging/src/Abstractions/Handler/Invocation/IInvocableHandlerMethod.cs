@@ -4,33 +4,32 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+/// <summary>
+/// Invokes the underlying method with argument values resolved from the current message.
+/// </summary>
+public interface IInvocableHandlerMethod
 {
+    object Handler { get; }
+
+    MethodInfo Method { get; }
+
     /// <summary>
-    /// Invokes the underlying method with argument values resolved from the current message.
+    /// Gets a value indicating whether the return type of the method is void
     /// </summary>
-    public interface IInvocableHandlerMethod
-    {
-        object Handler { get; }
+    bool IsVoid { get; }
 
-        MethodInfo Method { get; }
+    /// <summary>
+    /// Gets a value for message logging (TODO: Look to remove)
+    /// </summary>
+    string ShortLogMessage { get; }
 
-        /// <summary>
-        /// Gets a value indicating whether the return type of the method is void
-        /// </summary>
-        bool IsVoid { get; }
-
-        /// <summary>
-        /// Gets a value for message logging (TODO: Look to remove)
-        /// </summary>
-        string ShortLogMessage { get; }
-
-        /// <summary>
-        /// Invoke the underlying method after resolving its argument values in the context of the given message.
-        /// </summary>
-        /// <param name="requestMessage">the message being processed</param>
-        /// <param name="args">given arguments matched by type, not resolved</param>
-        /// <returns>the raw value returned from the invoked method</returns>
-        object Invoke(IMessage requestMessage, params object[] args);
-    }
+    /// <summary>
+    /// Invoke the underlying method after resolving its argument values in the context of the given message.
+    /// </summary>
+    /// <param name="requestMessage">the message being processed</param>
+    /// <param name="args">given arguments matched by type, not resolved</param>
+    /// <returns>the raw value returned from the invoked method</returns>
+    object Invoke(IMessage requestMessage, params object[] args);
 }

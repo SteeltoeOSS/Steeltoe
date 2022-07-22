@@ -5,16 +5,15 @@
 using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Management.Endpoint.Health;
+
+public interface IHealthOptions : IEndpointOptions
 {
-    public interface IHealthOptions : IEndpointOptions
-    {
-        ShowDetails ShowDetails { get; set; }
+    ShowDetails ShowDetails { get; set; }
 
-        EndpointClaim Claim { get; set; }
+    EndpointClaim Claim { get; set; }
 
-        string Role { get; set; }
+    string Role { get; set; }
 
-        public Dictionary<string, HealthGroupOptions> Groups { get; set; }
-    }
+    public Dictionary<string, HealthGroupOptions> Groups { get; set; }
 }

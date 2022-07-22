@@ -4,12 +4,11 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Binding
-{
-    public interface IMessageChannelConfigurer
-    {
-        void ConfigureInputChannel(IMessageChannel messageChannel, string channelName);
+namespace Steeltoe.Stream.Binding;
 
-        void ConfigureOutputChannel(IMessageChannel messageChannel, string channelName);
-    }
+public interface IMessageChannelConfigurer
+{
+    void ConfigureInputChannel(IMessageChannel messageChannel, string channelName);
+
+    void ConfigureOutputChannel(IMessageChannel messageChannel, string channelName);
 }

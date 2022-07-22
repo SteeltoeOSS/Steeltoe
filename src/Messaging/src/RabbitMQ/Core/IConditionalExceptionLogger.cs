@@ -4,10 +4,9 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface IConditionalExceptionLogger
 {
-    public interface IConditionalExceptionLogger
-    {
-        void Log(ILogger logger, string message, object cause);
-    }
+    void Log(ILogger logger, string message, object cause);
 }

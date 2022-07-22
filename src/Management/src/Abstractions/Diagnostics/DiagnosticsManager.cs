@@ -10,126 +10,125 @@ using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Threading;
 
-namespace Steeltoe.Common.Diagnostics
+namespace Steeltoe.Common.Diagnostics;
+
+public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
-    public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
+    internal IDisposable _listenersSubscription;
+    internal ILogger<DiagnosticsManager> _logger;
+    internal IList<IDiagnosticObserver> _observers;
+    internal IList<IRuntimeDiagnosticSource> _sources;
+    internal IList<EventListener> _eventListeners;
+
+    internal bool _workerThreadShutdown = false;
+    internal int _started = 0;
+    private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
+
+    public static DiagnosticsManager Instance => AsSingleton.Value;
+
+    public DiagnosticsManager(
+        IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
+        IEnumerable<IDiagnosticObserver> observers,
+        IEnumerable<EventListener> eventListeners,
+        ILogger<DiagnosticsManager> logger = null)
     {
-        internal IDisposable _listenersSubscription;
-        internal ILogger<DiagnosticsManager> _logger;
-        internal IList<IDiagnosticObserver> _observers;
-        internal IList<IRuntimeDiagnosticSource> _sources;
-        internal IList<EventListener> _eventListeners;
-
-        internal bool _workerThreadShutdown = false;
-        internal int _started = 0;
-        private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
-
-        public static DiagnosticsManager Instance => AsSingleton.Value;
-
-        public DiagnosticsManager(
-            IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
-            IEnumerable<IDiagnosticObserver> observers,
-            IEnumerable<EventListener> eventListeners,
-            ILogger<DiagnosticsManager> logger = null)
+        if (observers == null)
         {
-            if (observers == null)
-            {
-                throw new ArgumentNullException(nameof(observers));
-            }
-
-            _logger = logger;
-            _observers = observers.ToList();
-            _sources = runtimeSources.ToList();
-            _eventListeners = eventListeners.ToList();
+            throw new ArgumentNullException(nameof(observers));
         }
 
-        internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
+        _logger = logger;
+        _observers = observers.ToList();
+        _sources = runtimeSources.ToList();
+        _eventListeners = eventListeners.ToList();
+    }
+
+    internal DiagnosticsManager(ILogger<DiagnosticsManager> logger = null)
+    {
+        _logger = logger;
+        _observers = new List<IDiagnosticObserver>();
+        _sources = new List<IRuntimeDiagnosticSource>();
+    }
+
+    public IList<IDiagnosticObserver> Observers => _observers;
+
+    public IList<IRuntimeDiagnosticSource> Sources => _sources;
+
+    public void OnCompleted()
+    {
+        // for future use
+    }
+
+    public void OnError(Exception error)
+    {
+        // for future use
+    }
+
+    public void OnNext(DiagnosticListener value)
+    {
+        foreach (var listener in _observers)
         {
-            _logger = logger;
-            _observers = new List<IDiagnosticObserver>();
-            _sources = new List<IRuntimeDiagnosticSource>();
+            listener.Subscribe(value);
         }
+    }
 
-        public IList<IDiagnosticObserver> Observers => _observers;
-
-        public IList<IRuntimeDiagnosticSource> Sources => _sources;
-
-        public void OnCompleted()
+    public void Start()
+    {
+        if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
         {
-            // for future use
+            _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
         }
+    }
 
-        public void OnError(Exception error)
+    public void Stop()
+    {
+        if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
         {
-            // for future use
-        }
+            _workerThreadShutdown = true;
 
-        public void OnNext(DiagnosticListener value)
-        {
             foreach (var listener in _observers)
             {
-                listener.Subscribe(value);
+                listener.Dispose();
             }
         }
+    }
 
-        public void Start()
+    private bool _disposed = false;
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        // Cleanup
+        if (!_disposed)
         {
-            if (Interlocked.CompareExchange(ref _started, 1, 0) == 0)
+            if (disposing)
             {
-                _listenersSubscription = DiagnosticListener.AllListeners.Subscribe(this);
-            }
-        }
+                Stop();
 
-        public void Stop()
-        {
-            if (Interlocked.CompareExchange(ref _started, 0, 1) == 1)
-            {
-                _workerThreadShutdown = true;
-
-                foreach (var listener in _observers)
+                if (_observers != null)
                 {
-                    listener.Dispose();
-                }
-            }
-        }
-
-        private bool _disposed = false;
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            // Cleanup
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    Stop();
-
-                    if (_observers != null)
-                    {
-                        _observers.Clear();
-                    }
-
-                    if (_sources != null)
-                    {
-                        _sources.Clear();
-                    }
-
-                    _logger = null;
+                    _observers.Clear();
                 }
 
-                _disposed = true;
-            }
-        }
+                if (_sources != null)
+                {
+                    _sources.Clear();
+                }
 
-        ~DiagnosticsManager()
-        {
-            Dispose(false);
+                _logger = null;
+            }
+
+            _disposed = true;
         }
+    }
+
+    ~DiagnosticsManager()
+    {
+        Dispose(false);
     }
 }

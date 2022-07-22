@@ -11,40 +11,39 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 
-namespace Steeltoe.Management.Endpoint
+namespace Steeltoe.Management.Endpoint;
+
+public class AllActuatorsStartupFilter : IStartupFilter
 {
-    public class AllActuatorsStartupFilter : IStartupFilter
+    public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
     {
-        public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
-        {
-            _configureConventions = configureConventions;
-        }
+        _configureConventions = configureConventions;
+    }
 
-        private readonly Action<IEndpointConventionBuilder> _configureConventions;
+    private readonly Action<IEndpointConventionBuilder> _configureConventions;
 
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
         {
-            return app =>
+            if (app.ApplicationServices.GetService<ICorsService>() != null)
             {
-                if (app.ApplicationServices.GetService<ICorsService>() != null)
-                {
-                    app.UseCors("SteeltoeManagement");
-                }
+                app.UseCors("SteeltoeManagement");
+            }
 
-                if (Platform.IsCloudFoundry)
-                {
-                    app.UseCloudFoundrySecurity();
-                }
+            if (Platform.IsCloudFoundry)
+            {
+                app.UseCloudFoundrySecurity();
+            }
 
-                next(app);
+            next(app);
 
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.MapAllActuators(_configureConventions);
-                });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapAllActuators(_configureConventions);
+            });
 
-                app.ApplicationServices.InitializeAvailability();
-            };
-        }
+            app.ApplicationServices.InitializeAvailability();
+        };
     }
 }

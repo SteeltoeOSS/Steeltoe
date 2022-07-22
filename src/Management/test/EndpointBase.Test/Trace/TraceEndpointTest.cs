@@ -9,41 +9,40 @@ using System;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.Trace.Test;
+
+public class TraceEndpointTest : BaseTest
 {
-    public class TraceEndpointTest : BaseTest
+    private readonly ITestOutputHelper _output;
+
+    public TraceEndpointTest(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output;
+    }
 
-        public TraceEndpointTest(ITestOutputHelper output)
-        {
-            _output = output;
-        }
+    [Fact]
+    public void Constructor_ThrowsIfNullRepo()
+    {
+        Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(new TraceEndpointOptions(), null));
+    }
 
-        [Fact]
-        public void Constructor_ThrowsIfNullRepo()
+    [Fact]
+    public void DoInvoke_CallsTraceRepo()
+    {
+        using (var tc = new TestContext(_output))
         {
-            Assert.Throws<ArgumentNullException>(() => new TraceEndpoint(new TraceEndpointOptions(), null));
-        }
+            var repo = new TestTraceRepo();
 
-        [Fact]
-        public void DoInvoke_CallsTraceRepo()
-        {
-            using (var tc = new TestContext(_output))
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var repo = new TestTraceRepo();
+                services.AddSingleton<ITraceRepository>(repo);
+                services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddSingleton<ITraceRepository>(repo);
-                    services.AddTraceActuatorServices(configuration, MediaTypeVersion.V1);
-                };
-
-                var ep = tc.GetService<ITraceEndpoint>();
-                var result = ep.Invoke();
-                Assert.NotNull(result);
-                Assert.True(repo.GetTracesCalled);
-            }
+            var ep = tc.GetService<ITraceEndpoint>();
+            var result = ep.Invoke();
+            Assert.NotNull(result);
+            Assert.True(repo.GetTracesCalled);
         }
     }
 }

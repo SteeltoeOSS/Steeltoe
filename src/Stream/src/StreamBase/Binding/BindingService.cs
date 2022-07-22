@@ -10,221 +10,220 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class BindingService : IBindingService
 {
-    public class BindingService : IBindingService
+    internal IDictionary<string, IBinding> _producerBindings = new Dictionary<string, IBinding>();
+    internal IDictionary<string, List<IBinding>> _consumerBindings = new Dictionary<string, List<IBinding>>();
+    private readonly IBinderFactory _binderFactory;
+    private readonly BindingServiceOptions _bindingServiceOptions;
+    private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
+    private readonly ILogger<BindingService> _logger;
+
+    public BindingServiceOptions Options
     {
-        internal IDictionary<string, IBinding> _producerBindings = new Dictionary<string, IBinding>();
-        internal IDictionary<string, List<IBinding>> _consumerBindings = new Dictionary<string, List<IBinding>>();
-        private readonly IBinderFactory _binderFactory;
-        private readonly BindingServiceOptions _bindingServiceOptions;
-        private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
-        private readonly ILogger<BindingService> _logger;
-
-        public BindingServiceOptions Options
+        get
         {
-            get
+            if (_optionsMonitor != null)
             {
-                if (_optionsMonitor != null)
-                {
-                    return _optionsMonitor.CurrentValue;
-                }
+                return _optionsMonitor.CurrentValue;
+            }
 
-                return _bindingServiceOptions;
+            return _bindingServiceOptions;
+        }
+    }
+
+    public BindingService(IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
+    {
+        _optionsMonitor = optionsMonitor;
+        _binderFactory = binderFactory;
+        _logger = logger;
+    }
+
+    internal BindingService(BindingServiceOptions bindingServiceOptions, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
+    {
+        _bindingServiceOptions = bindingServiceOptions;
+        _binderFactory = binderFactory;
+        _logger = logger;
+    }
+
+    public ICollection<IBinding> BindConsumer<T>(T inputChannel, string name)
+    {
+        var bindings = new List<IBinding>();
+        var binder = GetBinder<T>(name);
+        IConsumerOptions consumerOptions = Options.GetConsumerOptions(name);
+
+        ValidateOptions(consumerOptions);
+
+        var bindingTarget = Options.GetBindingDestination(name);
+        if (consumerOptions.Multiplex)
+        {
+            bindings.Add(DoBindConsumer(inputChannel, name, binder, consumerOptions, bindingTarget));
+        }
+        else
+        {
+            var bindingTargets = bindingTarget == null ? Array.Empty<string>() : bindingTarget.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var target in bindingTargets)
+            {
+                var binding = DoBindConsumer(inputChannel, name, binder, consumerOptions, target);
+                bindings.Add(binding);
             }
         }
 
-        public BindingService(IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
+        _consumerBindings[name] = new List<IBinding>(bindings);
+        return bindings;
+    }
+
+    public IBinding BindProducer<T>(T outputChannel, string name)
+    {
+        var bindingTarget = Options.GetBindingDestination(name);
+        var binder = GetBinder<T>(name);
+        var producerOptions = Options.GetProducerOptions(name);
+        ValidateOptions(producerOptions);
+        var binding = DoBindProducer(outputChannel, bindingTarget, binder, producerOptions);
+        _producerBindings[name] = binding;
+        return binding;
+    }
+
+    public IBinding DoBindConsumer<T>(T inputTarget, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
+    {
+        if (Options.BindingRetryInterval <= 0)
         {
-            _optionsMonitor = optionsMonitor;
-            _binderFactory = binderFactory;
-            _logger = logger;
+            return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputTarget, consumerOptions);
         }
-
-        internal BindingService(BindingServiceOptions bindingServiceOptions, IBinderFactory binderFactory, ILogger<BindingService> logger = null)
+        else
         {
-            _bindingServiceOptions = bindingServiceOptions;
-            _binderFactory = binderFactory;
-            _logger = logger;
+            return DoBindConsumerWithRetry(inputTarget, name, binder, consumerOptions, bindingTarget);
         }
+    }
 
-        public ICollection<IBinding> BindConsumer<T>(T inputChannel, string name)
+    public IBinding DoBindConsumerWithRetry<T>(T inputChan, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
+    {
+        // TODO: Java code never stops retrying the bind
+        do
         {
-            var bindings = new List<IBinding>();
-            var binder = GetBinder<T>(name);
-            IConsumerOptions consumerOptions = Options.GetConsumerOptions(name);
-
-            ValidateOptions(consumerOptions);
-
-            var bindingTarget = Options.GetBindingDestination(name);
-            if (consumerOptions.Multiplex)
+            try
             {
-                bindings.Add(DoBindConsumer(inputChannel, name, binder, consumerOptions, bindingTarget));
+                return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputChan, consumerOptions);
             }
-            else
+            catch (Exception ex)
             {
-                var bindingTargets = bindingTarget == null ? Array.Empty<string>() : bindingTarget.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var target in bindingTargets)
-                {
-                    var binding = DoBindConsumer(inputChannel, name, binder, consumerOptions, target);
-                    bindings.Add(binding);
-                }
-            }
-
-            _consumerBindings[name] = new List<IBinding>(bindings);
-            return bindings;
-        }
-
-        public IBinding BindProducer<T>(T outputChannel, string name)
-        {
-            var bindingTarget = Options.GetBindingDestination(name);
-            var binder = GetBinder<T>(name);
-            var producerOptions = Options.GetProducerOptions(name);
-            ValidateOptions(producerOptions);
-            var binding = DoBindProducer(outputChannel, bindingTarget, binder, producerOptions);
-            _producerBindings[name] = binding;
-            return binding;
-        }
-
-        public IBinding DoBindConsumer<T>(T inputTarget, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
-        {
-            if (Options.BindingRetryInterval <= 0)
-            {
-                return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputTarget, consumerOptions);
-            }
-            else
-            {
-                return DoBindConsumerWithRetry(inputTarget, name, binder, consumerOptions, bindingTarget);
+                _logger?.LogDebug(ex, ex.Message);
+                Thread.Sleep(Options.BindingRetryInterval * 1000);
             }
         }
+        while (true);
+    }
 
-        public IBinding DoBindConsumerWithRetry<T>(T inputChan, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
+    public IBinding DoBindProducer<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
+    {
+        if (Options.BindingRetryInterval <= 0)
         {
-            // TODO: Java code never stops retrying the bind
-            do
-            {
-                try
-                {
-                    return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputChan, consumerOptions);
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogDebug(ex, ex.Message);
-                    Thread.Sleep(Options.BindingRetryInterval * 1000);
-                }
-            }
-            while (true);
+            return binder.BindProducer(bindingTarget, outputChan, producerOptions);
         }
-
-        public IBinding DoBindProducer<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
+        else
         {
-            if (Options.BindingRetryInterval <= 0)
+            return DoBindProducerWithRetry(outputChan, bindingTarget, binder, producerOptions);
+        }
+    }
+
+    public IBinding DoBindProducerWithRetry<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
+    {
+        // TODO: Java code never stops retrying the bind
+        do
+        {
+            try
             {
                 return binder.BindProducer(bindingTarget, outputChan, producerOptions);
             }
-            else
+            catch (Exception)
             {
-                return DoBindProducerWithRetry(outputChan, bindingTarget, binder, producerOptions);
+                // log
+                Thread.Sleep(Options.BindingRetryInterval * 1000);
             }
         }
+        while (true);
+    }
 
-        public IBinding DoBindProducerWithRetry<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
+    public void UnbindProducers(string outputName)
+    {
+        if (_producerBindings.TryGetValue(outputName, out var binding))
         {
-            // TODO: Java code never stops retrying the bind
-            do
-            {
-                try
-                {
-                    return binder.BindProducer(bindingTarget, outputChan, producerOptions);
-                }
-                catch (Exception)
-                {
-                    // log
-                    Thread.Sleep(Options.BindingRetryInterval * 1000);
-                }
-            }
-            while (true);
+            _producerBindings.Remove(outputName);
+            binding.Unbind();
         }
-
-        public void UnbindProducers(string outputName)
+        else
         {
-            if (_producerBindings.TryGetValue(outputName, out var binding))
+            // Log failure
+        }
+    }
+
+    public void UnbindConsumers(string inputName)
+    {
+        if (_consumerBindings.TryGetValue(inputName, out var bindings))
+        {
+            _consumerBindings.Remove(inputName);
+            foreach (var binding in bindings)
             {
-                _producerBindings.Remove(outputName);
                 binding.Unbind();
             }
-            else
-            {
-                // Log failure
-            }
+        }
+        else
+        {
+            // Log
+        }
+    }
+
+    protected IBinder GetBinder<T>(string channelName)
+    {
+        var configName = Options.GetBinder(channelName);
+        return _binderFactory.GetBinder(configName, typeof(T));
+    }
+
+    private static void ValidateOptions(IProducerOptions producerOptions)
+    {
+        if (producerOptions.PartitionCount <= 0)
+        {
+            throw new InvalidOperationException("Partition count should be greater than zero.");
+        }
+    }
+
+    private static void ValidateOptions(IConsumerOptions consumerOptions)
+    {
+        if (consumerOptions.Concurrency <= 0)
+        {
+            throw new InvalidOperationException("Concurrency should be greater than zero.");
         }
 
-        public void UnbindConsumers(string inputName)
+        if (consumerOptions.InstanceCount <= -1)
         {
-            if (_consumerBindings.TryGetValue(inputName, out var bindings))
-            {
-                _consumerBindings.Remove(inputName);
-                foreach (var binding in bindings)
-                {
-                    binding.Unbind();
-                }
-            }
-            else
-            {
-                // Log
-            }
+            throw new InvalidOperationException("Instance count should be greater than or equal to -1.");
         }
 
-        protected IBinder GetBinder<T>(string channelName)
+        if (consumerOptions.InstanceIndex <= -1)
         {
-            var configName = Options.GetBinder(channelName);
-            return _binderFactory.GetBinder(configName, typeof(T));
+            throw new InvalidOperationException("Instance index should be greater than or equal to -1.");
         }
 
-        private static void ValidateOptions(IProducerOptions producerOptions)
+        if (consumerOptions.MaxAttempts <= 0)
         {
-            if (producerOptions.PartitionCount <= 0)
-            {
-                throw new InvalidOperationException("Partition count should be greater than zero.");
-            }
+            throw new InvalidOperationException("Max attempts should be greater than zero.");
         }
 
-        private static void ValidateOptions(IConsumerOptions consumerOptions)
+        if (consumerOptions.BackOffInitialInterval <= 0)
         {
-            if (consumerOptions.Concurrency <= 0)
-            {
-                throw new InvalidOperationException("Concurrency should be greater than zero.");
-            }
+            throw new InvalidOperationException("Backoff initial interval should be greater than zero.");
+        }
 
-            if (consumerOptions.InstanceCount <= -1)
-            {
-                throw new InvalidOperationException("Instance count should be greater than or equal to -1.");
-            }
+        if (consumerOptions.BackOffMaxInterval <= 0)
+        {
+            throw new InvalidOperationException("Backoff max interval should be greater than zero.");
+        }
 
-            if (consumerOptions.InstanceIndex <= -1)
-            {
-                throw new InvalidOperationException("Instance index should be greater than or equal to -1.");
-            }
-
-            if (consumerOptions.MaxAttempts <= 0)
-            {
-                throw new InvalidOperationException("Max attempts should be greater than zero.");
-            }
-
-            if (consumerOptions.BackOffInitialInterval <= 0)
-            {
-                throw new InvalidOperationException("Backoff initial interval should be greater than zero.");
-            }
-
-            if (consumerOptions.BackOffMaxInterval <= 0)
-            {
-                throw new InvalidOperationException("Backoff max interval should be greater than zero.");
-            }
-
-            if (consumerOptions.BackOffMultiplier <= 0)
-            {
-                throw new InvalidOperationException("Backoff multiplier should be greater than zero.");
-            }
+        if (consumerOptions.BackOffMultiplier <= 0)
+        {
+            throw new InvalidOperationException("Backoff multiplier should be greater than zero.");
         }
     }
 }

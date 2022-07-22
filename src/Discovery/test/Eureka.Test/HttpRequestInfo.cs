@@ -5,28 +5,27 @@
 using Microsoft.AspNetCore.Http;
 using System.IO;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class HttpRequestInfo
 {
-    public class HttpRequestInfo
+    public HttpRequestInfo(HttpRequest request)
     {
-        public HttpRequestInfo(HttpRequest request)
-        {
-            Method = request.Method;
-            Host = request.Host;
-            Path = request.Path;
-            QueryString = request.QueryString;
-            request.Body.CopyToAsync(Body).GetAwaiter().GetResult();
-            Body.Seek(0, SeekOrigin.Begin);
-        }
-
-        public string Method { get; set; }
-
-        public HostString Host { get; set; }
-
-        public PathString Path { get; set; }
-
-        public QueryString QueryString { get; set; }
-
-        public Stream Body { get; set; } = new MemoryStream();
+        Method = request.Method;
+        Host = request.Host;
+        Path = request.Path;
+        QueryString = request.QueryString;
+        request.Body.CopyToAsync(Body).GetAwaiter().GetResult();
+        Body.Seek(0, SeekOrigin.Begin);
     }
+
+    public string Method { get; set; }
+
+    public HostString Host { get; set; }
+
+    public PathString Path { get; set; }
+
+    public QueryString QueryString { get; set; }
+
+    public Stream Body { get; set; } = new MemoryStream();
 }

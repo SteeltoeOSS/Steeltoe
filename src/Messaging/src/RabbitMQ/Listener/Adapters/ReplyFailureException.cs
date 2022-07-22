@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+
+public class ReplyFailureException : Exception
 {
-    public class ReplyFailureException : Exception
-    {
-        public ReplyFailureException(string message, Exception cause)
+    public ReplyFailureException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

@@ -9,50 +9,49 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test
+namespace Steeltoe.Management.Endpoint.Loggers.Test;
+
+public class LoggersEndpointOptionsTest : BaseTest
 {
-    public class LoggersEndpointOptionsTest : BaseTest
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
     {
-        [Fact]
-        public void Constructor_InitializesWithDefaults()
+        var opts = new LoggersEndpointOptions();
+        Assert.Null(opts.Enabled);
+        Assert.Equal("loggers", opts.Id);
+    }
+
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
+    {
+        IConfiguration config = null;
+        Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions(config));
+    }
+
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>()
         {
-            var opts = new LoggersEndpointOptions();
-            Assert.Null(opts.Enabled);
-            Assert.Equal("loggers", opts.Id);
-        }
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:loggers:enabled"] = "false",
+            ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
+            ["management:endpoints:cloudfoundry:enabled"] = "true"
+        };
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
 
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new LoggersEndpointOptions(config));
-        }
+        var opts = new LoggersEndpointOptions(config);
+        var cloudOpts = new CloudFoundryEndpointOptions(config);
 
-        [Fact]
-        public void Constructor_BindsConfigurationCorrectly()
-        {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:loggers:enabled"] = "false",
-                ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
-                ["management:endpoints:cloudfoundry:enabled"] = "true"
-            };
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
+        Assert.True(cloudOpts.Enabled);
+        Assert.Equal(string.Empty, cloudOpts.Id);
+        Assert.Equal(string.Empty, cloudOpts.Path);
+        Assert.True(cloudOpts.ValidateCertificates);
 
-            var opts = new LoggersEndpointOptions(config);
-            var cloudOpts = new CloudFoundryEndpointOptions(config);
-
-            Assert.True(cloudOpts.Enabled);
-            Assert.Equal(string.Empty, cloudOpts.Id);
-            Assert.Equal(string.Empty, cloudOpts.Path);
-            Assert.True(cloudOpts.ValidateCertificates);
-
-            Assert.False(opts.Enabled);
-            Assert.Equal("loggers", opts.Id);
-            Assert.Equal("loggers", opts.Path);
-        }
+        Assert.False(opts.Enabled);
+        Assert.Equal("loggers", opts.Id);
+        Assert.Equal("loggers", opts.Path);
     }
 }

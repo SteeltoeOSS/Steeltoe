@@ -4,76 +4,75 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+public class BindingOptions : IBindingOptions
 {
-    public class BindingOptions : IBindingOptions
+    public BindingOptions()
     {
-        public BindingOptions()
+    }
+
+    public static readonly MimeType DEFAULT_CONTENT_TYPE = MimeTypeUtils.APPLICATION_JSON;
+
+    public string Destination { get; set; }
+
+    public string Group { get; set; }
+
+    public string ContentType { get; set; }
+
+    public string Binder { get; set; }
+
+    public ConsumerOptions Consumer { get; set; }
+
+    public ProducerOptions Producer { get; set; }
+
+    IConsumerOptions IBindingOptions.Consumer { get => Consumer; }
+
+    IProducerOptions IBindingOptions.Producer { get => Producer; }
+
+    internal void PostProcess(string name, BindingOptions @default)
+    {
+        if (Destination == null)
         {
+            Destination = @default?.Destination;
         }
 
-        public static readonly MimeType DEFAULT_CONTENT_TYPE = MimeTypeUtils.APPLICATION_JSON;
-
-        public string Destination { get; set; }
-
-        public string Group { get; set; }
-
-        public string ContentType { get; set; }
-
-        public string Binder { get; set; }
-
-        public ConsumerOptions Consumer { get; set; }
-
-        public ProducerOptions Producer { get; set; }
-
-        IConsumerOptions IBindingOptions.Consumer { get => Consumer; }
-
-        IProducerOptions IBindingOptions.Producer { get => Producer; }
-
-        internal void PostProcess(string name, BindingOptions @default)
+        if (Group == null)
         {
-            if (Destination == null)
-            {
-                Destination = @default?.Destination;
-            }
-
-            if (Group == null)
-            {
-                Group = @default?.Group;
-            }
-
-            if (ContentType == null)
-            {
-                ContentType = (@default != null) ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
-            }
-
-            if (Binder == null)
-            {
-                Binder = @default?.Binder;
-            }
-
-            Consumer?.PostProcess(name, @default?.Consumer);
-            Producer?.PostProcess(name, @default?.Producer);
+            Group = @default?.Group;
         }
 
-        internal BindingOptions Clone(bool deep = false)
+        if (ContentType == null)
         {
-            var clone = (BindingOptions)MemberwiseClone();
+            ContentType = (@default != null) ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
+        }
 
-            if (deep)
+        if (Binder == null)
+        {
+            Binder = @default?.Binder;
+        }
+
+        Consumer?.PostProcess(name, @default?.Consumer);
+        Producer?.PostProcess(name, @default?.Producer);
+    }
+
+    internal BindingOptions Clone(bool deep = false)
+    {
+        var clone = (BindingOptions)MemberwiseClone();
+
+        if (deep)
+        {
+            if (Producer != null)
             {
-                if (Producer != null)
-                {
-                    Producer = (ProducerOptions)Producer.Clone();
-                }
-
-                if (Consumer != null)
-                {
-                    Consumer = (ConsumerOptions)Consumer.Clone();
-                }
+                Producer = (ProducerOptions)Producer.Clone();
             }
 
-            return clone;
+            if (Consumer != null)
+            {
+                Consumer = (ConsumerOptions)Consumer.Clone();
+            }
         }
+
+        return clone;
     }
 }

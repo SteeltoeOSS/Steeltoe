@@ -8,68 +8,67 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public class MessagingTemplate : MessageChannelTemplate
 {
-    public class MessagingTemplate : MessageChannelTemplate
+    public MessagingTemplate(IApplicationContext context, ILogger logger = null)
+        : base(context, logger)
     {
-        public MessagingTemplate(IApplicationContext context, ILogger logger = null)
-            : base(context, logger)
+    }
+
+    public MessagingTemplate(IApplicationContext context, IMessageChannel defaultChannel, ILogger logger = null)
+        : base(context, logger)
+    {
+        DefaultSendDestination = DefaultReceiveDestination = defaultChannel;
+    }
+
+    public IMessageChannel DefaultDestination
+    {
+        get
         {
+            // Default Receive and Send are kept the same
+            return DefaultReceiveDestination;
         }
 
-        public MessagingTemplate(IApplicationContext context, IMessageChannel defaultChannel, ILogger logger = null)
-            : base(context, logger)
+        set
         {
-            DefaultSendDestination = DefaultReceiveDestination = defaultChannel;
+            DefaultSendDestination = DefaultReceiveDestination = value;
         }
+    }
 
-        public IMessageChannel DefaultDestination
+    public override IMessageChannel DefaultReceiveDestination
+    {
+        get => base.DefaultReceiveDestination;
+        set => base.DefaultReceiveDestination = base.DefaultSendDestination = value;
+    }
+
+    public override IMessageChannel DefaultSendDestination
+    {
+        get => base.DefaultSendDestination;
+        set => base.DefaultSendDestination = DefaultReceiveDestination = value;
+    }
+
+    public override IMessage SendAndReceive(IMessageChannel destination, IMessage requestMessage)
+    {
+        return base.SendAndReceive(destination, requestMessage);
+    }
+
+    public object ReceiveAndConvert(IMessageChannel destination, int timeout)
+    {
+        var message = DoReceive(destination, timeout);
+        if (message != null)
         {
-            get
-            {
-                // Default Receive and Send are kept the same
-                return DefaultReceiveDestination;
-            }
-
-            set
-            {
-                DefaultSendDestination = DefaultReceiveDestination = value;
-            }
+            return DoConvert<object>(message);
         }
-
-        public override IMessageChannel DefaultReceiveDestination
+        else
         {
-            get => base.DefaultReceiveDestination;
-            set => base.DefaultReceiveDestination = base.DefaultSendDestination = value;
+            return Task.FromResult<object>(null);
         }
+    }
 
-        public override IMessageChannel DefaultSendDestination
-        {
-            get => base.DefaultSendDestination;
-            set => base.DefaultSendDestination = DefaultReceiveDestination = value;
-        }
-
-        public override IMessage SendAndReceive(IMessageChannel destination, IMessage requestMessage)
-        {
-            return base.SendAndReceive(destination, requestMessage);
-        }
-
-        public object ReceiveAndConvert(IMessageChannel destination, int timeout)
-        {
-            var message = DoReceive(destination, timeout);
-            if (message != null)
-            {
-                return DoConvert<object>(message);
-            }
-            else
-            {
-                return Task.FromResult<object>(null);
-            }
-        }
-
-        public IMessage Receive(IMessageChannel destination, int timeout)
-        {
-            return DoReceive(destination, timeout);
-        }
+    public IMessage Receive(IMessageChannel destination, int timeout)
+    {
+        return DoReceive(destination, timeout);
     }
 }

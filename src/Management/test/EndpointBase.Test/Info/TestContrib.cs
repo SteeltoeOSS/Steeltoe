@@ -5,31 +5,30 @@
 using Steeltoe.Management.Info;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
+namespace Steeltoe.Management.Endpoint.Info.Test;
+
+internal class TestContrib : IInfoContributor
 {
-    internal class TestContrib : IInfoContributor
+    public bool Called = false;
+    public bool Throws = false;
+
+    public TestContrib()
     {
-        public bool Called = false;
-        public bool Throws = false;
+        Throws = false;
+    }
 
-        public TestContrib()
+    public TestContrib(bool throws)
+    {
+        Throws = throws;
+    }
+
+    public void Contribute(IInfoBuilder builder)
+    {
+        if (Throws)
         {
-            Throws = false;
+            throw new Exception();
         }
 
-        public TestContrib(bool throws)
-        {
-            Throws = throws;
-        }
-
-        public void Contribute(IInfoBuilder builder)
-        {
-            if (Throws)
-            {
-                throw new Exception();
-            }
-
-            Called = true;
-        }
+        Called = true;
     }
 }

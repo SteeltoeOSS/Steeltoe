@@ -5,12 +5,11 @@
 using RabbitMQ.Client.Events;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
-{
-    public interface IRecoveryListener
-    {
-        void HandleConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs args);
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
-        void HandleRecoverySucceeded(object sender, EventArgs args);
-    }
+public interface IRecoveryListener
+{
+    void HandleConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs args);
+
+    void HandleRecoverySucceeded(object sender, EventArgs args);
 }

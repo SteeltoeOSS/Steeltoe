@@ -5,40 +5,39 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public class EurekaDiscoveryManager : DiscoveryManager
 {
-    public class EurekaDiscoveryManager : DiscoveryManager
+    private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+
+    // Constructor used via Dependency Injection
+    public EurekaDiscoveryManager(
+        IOptionsMonitor<EurekaClientOptions> clientConfig,
+        IOptionsMonitor<EurekaInstanceOptions> instConfig,
+        EurekaDiscoveryClient client,
+        ILoggerFactory logFactory = null)
     {
-        private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
-        private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+        _logger = logFactory?.CreateLogger<DiscoveryManager>();
+        _clientConfig = clientConfig;
+        _instConfig = instConfig;
+        Client = client;
+    }
 
-        // Constructor used via Dependency Injection
-        public EurekaDiscoveryManager(
-            IOptionsMonitor<EurekaClientOptions> clientConfig,
-            IOptionsMonitor<EurekaInstanceOptions> instConfig,
-            EurekaDiscoveryClient client,
-            ILoggerFactory logFactory = null)
+    public override IEurekaClientConfig ClientConfig
+    {
+        get
         {
-            _logger = logFactory?.CreateLogger<DiscoveryManager>();
-            _clientConfig = clientConfig;
-            _instConfig = instConfig;
-            Client = client;
+            return _clientConfig.CurrentValue;
         }
+    }
 
-        public override IEurekaClientConfig ClientConfig
+    public override IEurekaInstanceConfig InstanceConfig
+    {
+        get
         {
-            get
-            {
-                return _clientConfig.CurrentValue;
-            }
-        }
-
-        public override IEurekaInstanceConfig InstanceConfig
-        {
-            get
-            {
-                return _instConfig.CurrentValue;
-            }
+            return _instConfig.CurrentValue;
         }
     }
 }

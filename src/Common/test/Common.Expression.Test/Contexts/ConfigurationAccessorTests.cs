@@ -13,40 +13,39 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts
+namespace Steeltoe.Common.Expression.Internal.Contexts;
+
+public class ConfigurationAccessorTests
 {
-    public class ConfigurationAccessorTests
+    private IServiceProvider serviceProvider;
+
+    public ConfigurationAccessorTests()
     {
-        private IServiceProvider serviceProvider;
-
-        public ConfigurationAccessorTests()
-        {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(
+        var config = new ConfigurationBuilder()
+            .AddInMemoryCollection(
                 new Dictionary<string, string>() { { "my.name", "myservice" } })
-                .Build();
-            var collection = new ServiceCollection();
-            collection.AddSingleton<IConfiguration>(config);
-            collection.AddSingleton<IApplicationContext>((p) =>
-            {
-                return new GenericApplicationContext(p, config);
-            });
-
-            serviceProvider = collection.BuildServiceProvider();
-        }
-
-        [Fact]
-        public void TestBraceAccess()
+            .Build();
+        var collection = new ServiceCollection();
+        collection.AddSingleton<IConfiguration>(config);
+        collection.AddSingleton<IApplicationContext>((p) =>
         {
-            var rootObject = new ServiceExpressionContext(serviceProvider.GetService<IApplicationContext>());
-            var context = new StandardEvaluationContext(rootObject);
-            context.AddPropertyAccessor(new ServiceExpressionContextAccessor());
-            context.AddPropertyAccessor(new ConfigurationAccessor());
-            var sep = new SpelExpressionParser();
+            return new GenericApplicationContext(p, config);
+        });
 
-            // basic
-            var ex = sep.ParseExpression("configuration['my.name']");
-            Assert.Equal("myservice", ex.GetValue<string>(context));
-        }
+        serviceProvider = collection.BuildServiceProvider();
+    }
+
+    [Fact]
+    public void TestBraceAccess()
+    {
+        var rootObject = new ServiceExpressionContext(serviceProvider.GetService<IApplicationContext>());
+        var context = new StandardEvaluationContext(rootObject);
+        context.AddPropertyAccessor(new ServiceExpressionContextAccessor());
+        context.AddPropertyAccessor(new ConfigurationAccessor());
+        var sep = new SpelExpressionParser();
+
+        // basic
+        var ex = sep.ParseExpression("configuration['my.name']");
+        Assert.Equal("myservice", ex.GetValue<string>(context));
     }
 }

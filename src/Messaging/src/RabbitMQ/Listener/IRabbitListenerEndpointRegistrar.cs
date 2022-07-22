@@ -6,26 +6,25 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Services;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IRabbitListenerEndpointRegistrar : IServiceNameAware
 {
-    public interface IRabbitListenerEndpointRegistrar : IServiceNameAware
-    {
-        IRabbitListenerEndpointRegistry EndpointRegistry { get; set; }
+    IRabbitListenerEndpointRegistry EndpointRegistry { get; set; }
 
-        IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
+    IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
 
-        IRabbitListenerContainerFactory ContainerFactory { get; set; }
+    IRabbitListenerContainerFactory ContainerFactory { get; set; }
 
-        IApplicationContext ApplicationContext { get; set; }
+    IApplicationContext ApplicationContext { get; set; }
 
-        string ContainerFactoryServiceName { get; set; }
+    string ContainerFactoryServiceName { get; set; }
 
-        bool StartImmediately { get; set; }
+    bool StartImmediately { get; set; }
 
-        void Initialize();
+    void Initialize();
 
-        void RegisterEndpoint(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
+    void RegisterEndpoint(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
 
-        void RegisterEndpoint(IRabbitListenerEndpoint endpoint);
-    }
+    void RegisterEndpoint(IRabbitListenerEndpoint endpoint);
 }

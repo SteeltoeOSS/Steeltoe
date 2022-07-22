@@ -12,86 +12,85 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public static class HystrixServiceCollectionExtensions
 {
-    public static class HystrixServiceCollectionExtensions
+    // this config param is still here to share the signature used in MetricsStreamCore
+    public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
     {
-        // this config param is still here to share the signature used in MetricsStreamCore
-        public static void AddHystrixMetricsStream(this IServiceCollection services, IConfiguration config)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.TryAddSingleton(HystrixDashboardStream.GetInstance());
+            throw new ArgumentNullException(nameof(services));
         }
 
-        public static void AddHystrixMetricsEventSource(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+        services.TryAddSingleton(HystrixDashboardStream.GetInstance());
+    }
 
-            services.AddHystrixMetricsStream(null);
-            services.AddHostedService<HystrixEventSourceService>();
+    public static void AddHystrixMetricsEventSource(this IServiceCollection services)
+    {
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
         }
 
-        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-        public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
-            => AddHystrixRequestEventStream(services);
+        services.AddHystrixMetricsStream(null);
+        services.AddHostedService<HystrixEventSourceService>();
+    }
 
-        public static void AddHystrixRequestEventStream(this IServiceCollection services)
+    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
+    public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
+        => AddHystrixRequestEventStream(services);
+
+    public static void AddHystrixRequestEventStream(this IServiceCollection services)
+    {
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.AddSingleton(HystrixRequestEventsStream.GetInstance());
+            throw new ArgumentNullException(nameof(services));
         }
 
-        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-        public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
-            => AddHystrixUtilizationStream(services);
+        services.AddSingleton(HystrixRequestEventsStream.GetInstance());
+    }
 
-        public static void AddHystrixUtilizationStream(this IServiceCollection services)
+    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
+    public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
+        => AddHystrixUtilizationStream(services);
+
+    public static void AddHystrixUtilizationStream(this IServiceCollection services)
+    {
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.AddSingleton(HystrixUtilizationStream.GetInstance());
+            throw new ArgumentNullException(nameof(services));
         }
 
-        [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
-        public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
-            => AddHystrixConfigStream(services);
+        services.AddSingleton(HystrixUtilizationStream.GetInstance());
+    }
 
-        public static void AddHystrixConfigStream(this IServiceCollection services)
+    [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
+    public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
+        => AddHystrixConfigStream(services);
+
+    public static void AddHystrixConfigStream(this IServiceCollection services)
+    {
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            services.AddSingleton(HystrixConfigurationStream.GetInstance());
+            throw new ArgumentNullException(nameof(services));
         }
 
-        // this config param is still here to share the signature used in MetricsStreamCore
-        public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+        services.AddSingleton(HystrixConfigurationStream.GetInstance());
+    }
 
-            services.AddHystrixMetricsStream(config);
-            services.AddHystrixConfigStream();
-            services.AddHystrixRequestEventStream();
-            services.AddHystrixUtilizationStream();
+    // this config param is still here to share the signature used in MetricsStreamCore
+    public static void AddHystrixMonitoringStreams(this IServiceCollection services, IConfiguration config)
+    {
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
         }
+
+        services.AddHystrixMetricsStream(config);
+        services.AddHystrixConfigStream();
+        services.AddHystrixRequestEventStream();
+        services.AddHystrixUtilizationStream();
     }
 }

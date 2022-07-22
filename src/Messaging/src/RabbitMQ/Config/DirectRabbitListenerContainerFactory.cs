@@ -9,113 +9,112 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContainerFactory<DirectMessageListenerContainer>
 {
-    public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContainerFactory<DirectMessageListenerContainer>
-    {
-        public const string DEFAULT_SERVICE_NAME = "rabbitListenerContainerFactory";
+    public const string DEFAULT_SERVICE_NAME = "rabbitListenerContainerFactory";
 
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
         : base(applicationContext, loggerFactory)
+    {
+    }
+
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, connectionFactory, loggerFactory)
+    {
+    }
+
+    [ActivatorUtilitiesConstructor]
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
+    {
+        Configure(Options);
+    }
+
+    public int? MonitorInterval { get; set; }
+
+    public int? ConsumersPerQueue { get; set; } = 1;
+
+    public int? MessagesPerAck { get; set; }
+
+    public int? AckTimeout { get; set; }
+
+    protected override DirectMessageListenerContainer CreateContainerInstance()
+    {
+        return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _loggerFactory);
+    }
+
+    protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
+    {
+        base.InitializeContainer(instance, endpoint);
+        if (MonitorInterval.HasValue)
         {
+            instance.MonitorInterval = MonitorInterval.Value;
         }
 
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-            : base(applicationContext, connectionFactory, loggerFactory)
+        if (MessagesPerAck.HasValue)
         {
+            instance.MessagesPerAck = MessagesPerAck.Value;
         }
 
-        [ActivatorUtilitiesConstructor]
-        public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-            : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
+        if (AckTimeout.HasValue)
         {
-            Configure(Options);
+            instance.AckTimeout = AckTimeout.Value;
         }
 
-        public int? MonitorInterval { get; set; }
-
-        public int? ConsumersPerQueue { get; set; } = 1;
-
-        public int? MessagesPerAck { get; set; }
-
-        public int? AckTimeout { get; set; }
-
-        protected override DirectMessageListenerContainer CreateContainerInstance()
+        if (endpoint != null && endpoint.Concurrency.HasValue)
         {
-            return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _loggerFactory);
+            instance.ConsumersPerQueue = endpoint.Concurrency.Value;
+        }
+        else if (ConsumersPerQueue.HasValue)
+        {
+            instance.ConsumersPerQueue = ConsumersPerQueue.Value;
+        }
+    }
+
+    private void Configure(RabbitOptions options)
+    {
+        var containerOptions = options.Listener.Direct;
+        AutoStartup = containerOptions.AutoStartup;
+        PossibleAuthenticationFailureFatal = containerOptions.PossibleAuthenticationFailureFatal;
+        if (containerOptions.AcknowledgeMode.HasValue)
+        {
+            AcknowledgeMode = containerOptions.AcknowledgeMode.Value;
         }
 
-        protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
+        if (containerOptions.Prefetch.HasValue)
         {
-            base.InitializeContainer(instance, endpoint);
-            if (MonitorInterval.HasValue)
-            {
-                instance.MonitorInterval = MonitorInterval.Value;
-            }
-
-            if (MessagesPerAck.HasValue)
-            {
-                instance.MessagesPerAck = MessagesPerAck.Value;
-            }
-
-            if (AckTimeout.HasValue)
-            {
-                instance.AckTimeout = AckTimeout.Value;
-            }
-
-            if (endpoint != null && endpoint.Concurrency.HasValue)
-            {
-                instance.ConsumersPerQueue = endpoint.Concurrency.Value;
-            }
-            else if (ConsumersPerQueue.HasValue)
-            {
-                instance.ConsumersPerQueue = ConsumersPerQueue.Value;
-            }
+            PrefetchCount = containerOptions.Prefetch.Value;
         }
 
-        private void Configure(RabbitOptions options)
+        DefaultRequeueRejected = containerOptions.DefaultRequeueRejected;
+        if (containerOptions.IdleEventInterval.HasValue)
         {
-            var containerOptions = options.Listener.Direct;
-            AutoStartup = containerOptions.AutoStartup;
-            PossibleAuthenticationFailureFatal = containerOptions.PossibleAuthenticationFailureFatal;
-            if (containerOptions.AcknowledgeMode.HasValue)
-            {
-                AcknowledgeMode = containerOptions.AcknowledgeMode.Value;
-            }
+            var asMilli = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
+            IdleEventInterval = asMilli;
+        }
 
-            if (containerOptions.Prefetch.HasValue)
-            {
-                PrefetchCount = containerOptions.Prefetch.Value;
-            }
+        MissingQueuesFatal = containerOptions.MissingQueuesFatal;
+        var retry = containerOptions.Retry;
+        if (retry.Enabled)
+        {
+            // RetryInterceptorBuilder <?, ?> builder = (retryConfig.isStateless())
+            //         ? RetryInterceptorBuilder.stateless()
+            //         : RetryInterceptorBuilder.stateful();
+            // RetryTemplate retryTemplate = new RetryTemplateFactory(
+            //        this.retryTemplateCustomizers).createRetryTemplate(retryConfig,
+            //                RabbitRetryTemplateCustomizer.Target.LISTENER);
+            // builder.retryOperations(retryTemplate);
+            // MessageRecoverer recoverer = (this.messageRecoverer != null)
+            //        ? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
+            // builder.recoverer(recoverer);
+            // factory.setAdviceChain(builder.build());
+        }
 
-            DefaultRequeueRejected = containerOptions.DefaultRequeueRejected;
-            if (containerOptions.IdleEventInterval.HasValue)
-            {
-                var asMilli = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
-                IdleEventInterval = asMilli;
-            }
-
-            MissingQueuesFatal = containerOptions.MissingQueuesFatal;
-            var retry = containerOptions.Retry;
-            if (retry.Enabled)
-            {
-                // RetryInterceptorBuilder <?, ?> builder = (retryConfig.isStateless())
-                //         ? RetryInterceptorBuilder.stateless()
-                //         : RetryInterceptorBuilder.stateful();
-                // RetryTemplate retryTemplate = new RetryTemplateFactory(
-                //        this.retryTemplateCustomizers).createRetryTemplate(retryConfig,
-                //                RabbitRetryTemplateCustomizer.Target.LISTENER);
-                // builder.retryOperations(retryTemplate);
-                // MessageRecoverer recoverer = (this.messageRecoverer != null)
-                //        ? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
-                // builder.recoverer(recoverer);
-                // factory.setAdviceChain(builder.build());
-            }
-
-            if (containerOptions.ConsumersPerQueue.HasValue)
-            {
-                ConsumersPerQueue = containerOptions.ConsumersPerQueue.Value;
-            }
+        if (containerOptions.ConsumersPerQueue.HasValue)
+        {
+            ConsumersPerQueue = containerOptions.ConsumersPerQueue.Value;
         }
     }
 }

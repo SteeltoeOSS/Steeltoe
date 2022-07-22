@@ -8,15 +8,14 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class MessageHeadersInputConfiguration
 {
-    public class MessageHeadersInputConfiguration
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public IDictionary<string, object> Echo(MessageHeaders value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public IDictionary<string, object> Echo(MessageHeaders value)
-        {
-            return value;
-        }
+        return value;
     }
 }

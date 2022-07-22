@@ -4,23 +4,22 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources
+namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+
+public class TestAddress
 {
-    public class TestAddress
+    private string street;
+    private List<string> crossStreets;
+
+    public string Street
     {
-        private string street;
-        private List<string> crossStreets;
+        get => street;
+        set => street = value;
+    }
 
-        public string Street
-        {
-            get => street;
-            set => street = value;
-        }
-
-        public List<string> CrossStreets
-        {
-            get => crossStreets;
-            set => crossStreets = value;
-        }
+    public List<string> CrossStreets
+    {
+        get => crossStreets;
+        set => crossStreets = value;
     }
 }

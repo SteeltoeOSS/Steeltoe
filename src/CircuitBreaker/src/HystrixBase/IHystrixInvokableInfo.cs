@@ -5,62 +5,61 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixInvokableInfo
 {
-    public interface IHystrixInvokableInfo
-    {
-        IHystrixCommandGroupKey CommandGroup { get; }
+    IHystrixCommandGroupKey CommandGroup { get; }
 
-        IHystrixCommandKey CommandKey { get; }
+    IHystrixCommandKey CommandKey { get; }
 
-        IHystrixThreadPoolKey ThreadPoolKey { get; }
+    IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        string PublicCacheKey { get; }
+    string PublicCacheKey { get; }
 
-        IHystrixCollapserKey OriginatingCollapserKey { get; }
+    IHystrixCollapserKey OriginatingCollapserKey { get; }
 
-        HystrixCommandMetrics Metrics { get; }
+    HystrixCommandMetrics Metrics { get; }
 
-        IHystrixCommandOptions CommandOptions { get; }
+    IHystrixCommandOptions CommandOptions { get; }
 
-        bool IsCircuitBreakerOpen { get; }
+    bool IsCircuitBreakerOpen { get; }
 
-        bool IsExecutionComplete { get; }
+    bool IsExecutionComplete { get; }
 
-        bool IsExecutedInThread { get; }
+    bool IsExecutedInThread { get; }
 
-        bool IsSuccessfulExecution { get; }
+    bool IsSuccessfulExecution { get; }
 
-        bool IsFailedExecution { get; }
+    bool IsFailedExecution { get; }
 
-        Exception FailedExecutionException { get; }
+    Exception FailedExecutionException { get; }
 
-        bool IsResponseFromFallback { get; }
+    bool IsResponseFromFallback { get; }
 
-        bool IsResponseTimedOut { get; }
+    bool IsResponseTimedOut { get; }
 
-        bool IsResponseShortCircuited { get; }
+    bool IsResponseShortCircuited { get; }
 
-        bool IsResponseFromCache { get; }
+    bool IsResponseFromCache { get; }
 
-        bool IsResponseRejected { get; }
+    bool IsResponseRejected { get; }
 
-        bool IsResponseSemaphoreRejected { get; }
+    bool IsResponseSemaphoreRejected { get; }
 
-        bool IsResponseThreadPoolRejected { get; }
+    bool IsResponseThreadPoolRejected { get; }
 
-        List<HystrixEventType> ExecutionEvents { get; }
+    List<HystrixEventType> ExecutionEvents { get; }
 
-        int NumberEmissions { get; }
+    int NumberEmissions { get; }
 
-        int NumberFallbackEmissions { get; }
+    int NumberFallbackEmissions { get; }
 
-        int NumberCollapsed { get; }
+    int NumberCollapsed { get; }
 
-        int ExecutionTimeInMilliseconds { get; }
+    int ExecutionTimeInMilliseconds { get; }
 
-        long CommandRunStartTimeInNanos { get; }
+    long CommandRunStartTimeInNanos { get; }
 
-        ExecutionResult.EventCounts EventCounts { get; }
-    }
+    ExecutionResult.EventCounts EventCounts { get; }
 }

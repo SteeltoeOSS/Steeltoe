@@ -7,49 +7,48 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public class Declarables : IServiceNameAware
 {
-    public class Declarables : IServiceNameAware
+    public Declarables(string name, params IDeclarable[] declarables)
     {
-        public Declarables(string name, params IDeclarable[] declarables)
+        if (name == null)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (declarables == null)
-            {
-                throw new ArgumentNullException(nameof(declarables));
-            }
-
-            DeclarableList = new List<IDeclarable>(declarables);
-            ServiceName = name;
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public Declarables(string name, List<IDeclarable> declarables)
+        if (declarables == null)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (declarables == null)
-            {
-                throw new ArgumentNullException(nameof(declarables));
-            }
-
-            DeclarableList = new List<IDeclarable>(declarables);
-            ServiceName = name;
+            throw new ArgumentNullException(nameof(declarables));
         }
 
-        public List<IDeclarable> DeclarableList { get; }
+        DeclarableList = new List<IDeclarable>(declarables);
+        ServiceName = name;
+    }
 
-        public string ServiceName { get; set; }
-
-        public IEnumerable<T> GetDeclarablesByType<T>()
+    public Declarables(string name, List<IDeclarable> declarables)
+    {
+        if (name == null)
         {
-            return DeclarableList.OfType<T>();
+            throw new ArgumentNullException(nameof(name));
         }
+
+        if (declarables == null)
+        {
+            throw new ArgumentNullException(nameof(declarables));
+        }
+
+        DeclarableList = new List<IDeclarable>(declarables);
+        ServiceName = name;
+    }
+
+    public List<IDeclarable> DeclarableList { get; }
+
+    public string ServiceName { get; set; }
+
+    public IEnumerable<T> GetDeclarablesByType<T>()
+    {
+        return DeclarableList.OfType<T>();
     }
 }

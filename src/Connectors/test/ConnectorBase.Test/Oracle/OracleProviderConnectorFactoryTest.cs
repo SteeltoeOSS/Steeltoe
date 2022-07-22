@@ -7,35 +7,34 @@ using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test;
+
+public class OracleProviderConnectorFactoryTest
 {
-    public class OracleProviderConnectorFactoryTest
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
     {
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            OracleProviderConnectorOptions config = null;
-            OracleServiceInfo si = null;
+        OracleProviderConnectorOptions config = null;
+        OracleServiceInfo si = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, config, typeof(OracleConnection)));
-            Assert.Contains(nameof(config), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new OracleProviderConnectorFactory(si, config, typeof(OracleConnection)));
+        Assert.Contains(nameof(config), ex.Message);
+    }
 
-        [Fact]
-        public void Create_ReturnsMySqlConnection()
+    [Fact]
+    public void Create_ReturnsMySqlConnection()
+    {
+        var config = new OracleProviderConnectorOptions()
         {
-            var config = new OracleProviderConnectorOptions()
-            {
-                Server = "localhost",
-                Port = 3306,
-                Password = "password",
-                Username = "username",
-                ServiceName = "database"
-            };
-            var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
-            var factory = new OracleProviderConnectorFactory(si, config, typeof(OracleConnection));
-            var connection = factory.Create(null);
-            Assert.NotNull(connection);
-        }
+            Server = "localhost",
+            Port = 3306,
+            Password = "password",
+            Username = "username",
+            ServiceName = "database"
+        };
+        var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
+        var factory = new OracleProviderConnectorFactory(si, config, typeof(OracleConnection));
+        var connection = factory.Create(null);
+        Assert.NotNull(connection);
     }
 }

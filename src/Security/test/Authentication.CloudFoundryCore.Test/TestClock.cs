@@ -5,20 +5,19 @@
 using Microsoft.AspNetCore.Authentication;
 using System;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class TestClock : ISystemClock
 {
-    public class TestClock : ISystemClock
+    public TestClock()
     {
-        public TestClock()
-        {
-            UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
-        }
+        UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
+    }
 
-        public DateTimeOffset UtcNow { get; set; }
+    public DateTimeOffset UtcNow { get; set; }
 
-        public void Add(TimeSpan timeSpan)
-        {
-            UtcNow += timeSpan;
-        }
+    public void Add(TimeSpan timeSpan)
+    {
+        UtcNow += timeSpan;
     }
 }

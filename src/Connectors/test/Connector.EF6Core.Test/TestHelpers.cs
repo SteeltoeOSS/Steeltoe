@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.Test
+namespace Steeltoe.Connector.Test;
+
+public static class TestHelpers
 {
-    public static class TestHelpers
-    {
-        public static string VCAP_APPLICATION = @"
+    public static string VCAP_APPLICATION = @"
             {
                 ""limits"": {
                     ""fds"": 16384,
@@ -28,5 +28,4 @@ namespace Steeltoe.Connector.Test
                 ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
-    }
 }

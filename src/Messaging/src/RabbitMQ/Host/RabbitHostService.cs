@@ -12,59 +12,58 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.RabbitMQ.Host
+namespace Steeltoe.Messaging.RabbitMQ.Host;
+
+public class RabbitHostService : IHostedService
 {
-    public class RabbitHostService : IHostedService
+    private readonly IApplicationContext _applicationContext;
+    private readonly ILogger _logger;
+
+    public RabbitHostService(IApplicationContext applicationContext, ILogger<RabbitHostService> logger = null)
     {
-        private readonly IApplicationContext _applicationContext;
-        private readonly ILogger _logger;
+        _applicationContext = applicationContext;
+        _logger = logger;
+    }
 
-        public RabbitHostService(IApplicationContext applicationContext, ILogger<RabbitHostService> logger = null)
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        _logger?.LogInformation("Starting RabbitHostService ...");
+
+        // Ensure any admins in the container get initialized
+        var admins = _applicationContext.GetServices<IRabbitAdmin>();
+        if (admins == null || admins.Count() == 0)
         {
-            _applicationContext = applicationContext;
-            _logger = logger;
+            _logger?.LogInformation("Found no IRabbitAdmin services to initialize");
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        // Allow for processing of RabbitListenerAttributes
+        var listenerProcessor = _applicationContext.GetService<IRabbitListenerAttributeProcessor>();
+        if (listenerProcessor == null)
         {
-            _logger?.LogInformation("Starting RabbitHostService ...");
-
-            // Ensure any admins in the container get initialized
-            var admins = _applicationContext.GetServices<IRabbitAdmin>();
-            if (admins == null || admins.Count() == 0)
-            {
-                _logger?.LogInformation("Found no IRabbitAdmin services to initialize");
-            }
-
-            // Allow for processing of RabbitListenerAttributes
-            var listenerProcessor = _applicationContext.GetService<IRabbitListenerAttributeProcessor>();
-            if (listenerProcessor == null)
-            {
-                _logger?.LogInformation("Found no IRabbitListenerAttributeProcessor services to initialize");
-            }
-            else
-            {
-                listenerProcessor.Initialize();
-            }
-
-            // Ensure any RabbitContainers get started
-            var processor = _applicationContext.GetService<ILifecycleProcessor>();
-            if (processor != null)
-            {
-                await processor.OnRefresh();
-            }
-            else
-            {
-                _logger?.LogInformation("Found no ILifecycleProcessor service to initialize");
-            }
-
-            return;
+            _logger?.LogInformation("Found no IRabbitListenerAttributeProcessor services to initialize");
+        }
+        else
+        {
+            listenerProcessor.Initialize();
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        // Ensure any RabbitContainers get started
+        var processor = _applicationContext.GetService<ILifecycleProcessor>();
+        if (processor != null)
         {
-            _logger?.LogInformation("Stopping RabbitHostService ...");
-            return Task.CompletedTask;
+            await processor.OnRefresh();
         }
+        else
+        {
+            _logger?.LogInformation("Found no ILifecycleProcessor service to initialize");
+        }
+
+        return;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger?.LogInformation("Stopping RabbitHostService ...");
+        return Task.CompletedTask;
     }
 }

@@ -5,18 +5,17 @@
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 
-namespace Steeltoe.Discovery.Consul
+namespace Steeltoe.Discovery.Consul;
+
+public static class ConsulDiscoveryClientBuilderExtensions
 {
-    public static class ConsulDiscoveryClientBuilderExtensions
+    /// <summary>
+    /// Configures <see cref="ConsulDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
+    /// </summary>
+    /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
+    public static DiscoveryClientBuilder UseConsul(this DiscoveryClientBuilder clientBuilder)
     {
-        /// <summary>
-        /// Configures <see cref="ConsulDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
-        /// </summary>
-        /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
-        public static DiscoveryClientBuilder UseConsul(this DiscoveryClientBuilder clientBuilder)
-        {
-            clientBuilder.Extensions.Add(new ConsulDiscoveryClientExtension());
-            return clientBuilder;
-        }
+        clientBuilder.Extensions.Add(new ConsulDiscoveryClientExtension());
+        return clientBuilder;
     }
 }

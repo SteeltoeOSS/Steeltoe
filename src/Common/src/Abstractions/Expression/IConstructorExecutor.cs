@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IConstructorExecutor
 {
-    public interface IConstructorExecutor
-    {
-        ITypedValue Execute(IEvaluationContext context, params object[] arguments);
-    }
+    ITypedValue Execute(IEvaluationContext context, params object[] arguments);
 }

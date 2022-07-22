@@ -4,11 +4,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+internal class JsonApplicationsRoot
 {
-    internal class JsonApplicationsRoot
-    {
-        [JsonPropertyName("applications")]
-        public JsonApplications Applications { get; set; }
-    }
+    [JsonPropertyName("applications")]
+    public JsonApplications Applications { get; set; }
 }

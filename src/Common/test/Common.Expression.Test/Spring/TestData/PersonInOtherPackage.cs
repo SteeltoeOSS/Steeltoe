@@ -6,15 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Spring.TestData
-{
-    public class PersonInOtherPackage
-    {
-        public int Age { get; set; }
+namespace Steeltoe.Common.Expression.Spring.TestData;
 
-        public PersonInOtherPackage(int age)
-        {
-            Age = age;
-        }
+public class PersonInOtherPackage
+{
+    public int Age { get; set; }
+
+    public PersonInOtherPackage(int age)
+    {
+        Age = age;
     }
 }

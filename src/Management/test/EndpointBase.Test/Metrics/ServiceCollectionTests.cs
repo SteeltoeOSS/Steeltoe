@@ -7,36 +7,35 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Metrics
+namespace Steeltoe.Management.Endpoint.Test.Metrics;
+
+public class ServiceCollectionTests
 {
-    public class ServiceCollectionTests
+    [Fact]
+    public void AddMetricsActuatorServices_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddMetricsActuatorServices_ThrowsOnNulls()
-        {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services, config));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services, config));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddMetricsActuatorServices(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
+    }
 
-        [Fact]
-        public void AddPrometheusActuatorServices_ThrowsOnNulls()
-        {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+    [Fact]
+    public void AddPrometheusActuatorServices_ThrowsOnNulls()
+    {
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services, config));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services, config));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddPrometheusActuatorServices(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
     }
 }

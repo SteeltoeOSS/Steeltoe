@@ -6,22 +6,21 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
-namespace Steeltoe.Messaging.RabbitMQ
-{
-    public abstract class AbstractTest
-    {
-        protected virtual ServiceCollection CreateContainer(ConfigurationBuilder configurationBuilder = null)
-        {
-            var services = new ServiceCollection();
-            if (configurationBuilder == null)
-            {
-                configurationBuilder = new ConfigurationBuilder();
-            }
+namespace Steeltoe.Messaging.RabbitMQ;
 
-            var configuration = configurationBuilder.Build();
-            services.AddSingleton<IConfiguration>(configuration);
-            services.AddRabbitHostingServices();
-            return services;
+public abstract class AbstractTest
+{
+    protected virtual ServiceCollection CreateContainer(ConfigurationBuilder configurationBuilder = null)
+    {
+        var services = new ServiceCollection();
+        if (configurationBuilder == null)
+        {
+            configurationBuilder = new ConfigurationBuilder();
         }
+
+        var configuration = configurationBuilder.Build();
+        services.AddSingleton<IConfiguration>(configuration);
+        services.AddRabbitHostingServices();
+        return services;
     }
 }

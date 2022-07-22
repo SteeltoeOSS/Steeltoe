@@ -4,15 +4,14 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Connector.Test
-{
-    internal class TestServiceConfiguration : AbstractServiceConnectorOptions
-    {
-        public TestServiceConfiguration(IConfiguration config)
-            : base(config)
-        {
-        }
+namespace Steeltoe.Connector.Test;
 
-        public string Test { get; set; }
+internal class TestServiceConfiguration : AbstractServiceConnectorOptions
+{
+    public TestServiceConfiguration(IConfiguration config)
+        : base(config)
+    {
     }
+
+    public string Test { get; set; }
 }

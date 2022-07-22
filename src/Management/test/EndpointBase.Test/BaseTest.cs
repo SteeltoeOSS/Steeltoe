@@ -16,57 +16,56 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Test;
+
+public class BaseTest : IDisposable
 {
-    public class BaseTest : IDisposable
+    public virtual void Dispose()
     {
-        public virtual void Dispose()
+        DiagnosticsManager.Instance.Dispose();
+        GC.SuppressFinalize(this);
+    }
+
+    public ILogger<T> GetLogger<T>()
+    {
+        var lf = new LoggerFactory();
+        return lf.CreateLogger<T>();
+    }
+
+    public string Serialize<T>(T value)
+    {
+        return JsonSerializer.Serialize(
+            value,
+            GetSerializerOptions());
+    }
+
+    public JsonSerializerOptions GetSerializerOptions()
+    {
+        var options = new JsonSerializerOptions()
         {
-            DiagnosticsManager.Instance.Dispose();
-            GC.SuppressFinalize(this);
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+        };
+        options.Converters.Add(new HealthConverter());
+        options.Converters.Add(new MetricsResponseConverter());
+        return options;
+    }
+
+    public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter, string name = null, string version = null)
+    {
+        var builder = Sdk.CreateMeterProviderBuilder()
+            .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+            .AddRegisteredViews(viewRegistry);
+        if (steeltoeExporter != null)
+        {
+            builder.AddSteeltoeExporter(steeltoeExporter);
         }
 
-        public ILogger<T> GetLogger<T>()
+        if (prometheusExporter != null)
         {
-            var lf = new LoggerFactory();
-            return lf.CreateLogger<T>();
+            builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
         }
 
-        public string Serialize<T>(T value)
-        {
-            return JsonSerializer.Serialize(
-                value,
-                GetSerializerOptions());
-        }
-
-        public JsonSerializerOptions GetSerializerOptions()
-        {
-            var options = new JsonSerializerOptions()
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-            };
-            options.Converters.Add(new HealthConverter());
-            options.Converters.Add(new MetricsResponseConverter());
-            return options;
-        }
-
-        public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter, string name = null, string version = null)
-        {
-            var builder = Sdk.CreateMeterProviderBuilder()
-                .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-                .AddRegisteredViews(viewRegistry);
-            if (steeltoeExporter != null)
-            {
-                builder.AddSteeltoeExporter(steeltoeExporter);
-            }
-
-            if (prometheusExporter != null)
-            {
-                builder.AddReader(new BaseExportingMetricReader(prometheusExporter));
-            }
-
-            return builder.Build();
-        }
+        return builder.Build();
     }
 }

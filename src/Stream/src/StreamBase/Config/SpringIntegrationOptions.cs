@@ -4,17 +4,16 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+public class SpringIntegrationOptions
 {
-    public class SpringIntegrationOptions
+    public const string PREFIX = "spring:cloud:stream:integration";
+    private static readonly string[] _messageHandlerNotPropagatedHeaders = new string[] { MessageHeaders.CONTENT_TYPE };
+
+    public SpringIntegrationOptions()
     {
-        public const string PREFIX = "spring:cloud:stream:integration";
-        private static readonly string[] _messageHandlerNotPropagatedHeaders = new string[] { MessageHeaders.CONTENT_TYPE };
-
-        public SpringIntegrationOptions()
-        {
-        }
-
-        public string[] MessageHandlerNotPropagatedHeaders { get; set; } = _messageHandlerNotPropagatedHeaders;
     }
+
+    public string[] MessageHandlerNotPropagatedHeaders { get; set; } = _messageHandlerNotPropagatedHeaders;
 }

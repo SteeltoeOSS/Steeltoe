@@ -4,45 +4,44 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+/// <summary>
+/// Common consumer configuration options
+/// </summary>
+public interface IConsumerOptions
 {
-    /// <summary>
-    /// Common consumer configuration options
-    /// </summary>
-    public interface IConsumerOptions
-    {
-        string BindingName { get; }
+    string BindingName { get; }
 
-        bool AutoStartup { get; }
+    bool AutoStartup { get; }
 
-        int Concurrency { get; }
+    int Concurrency { get; }
 
-        bool IsPartitioned { get; }
+    bool IsPartitioned { get; }
 
-        int InstanceCount { get; }
+    int InstanceCount { get; }
 
-        int InstanceIndex { get; }
+    int InstanceIndex { get; }
 
-        List<int> InstanceIndexList { get; }
+    List<int> InstanceIndexList { get; }
 
-        int MaxAttempts { get; }
+    int MaxAttempts { get; }
 
-        int BackOffInitialInterval { get; }
+    int BackOffInitialInterval { get; }
 
-        int BackOffMaxInterval { get; }
+    int BackOffMaxInterval { get; }
 
-        double BackOffMultiplier { get; }
+    double BackOffMultiplier { get; }
 
-        bool DefaultRetryable { get; }
+    bool DefaultRetryable { get; }
 
-        List<string> RetryableExceptions { get; }
+    List<string> RetryableExceptions { get; }
 
-        HeaderMode HeaderMode { get; }
+    HeaderMode HeaderMode { get; }
 
-        bool UseNativeDecoding { get; }
+    bool UseNativeDecoding { get; }
 
-        bool Multiplex { get; }
+    bool Multiplex { get; }
 
-        IConsumerOptions Clone();
-    }
+    IConsumerOptions Clone();
 }

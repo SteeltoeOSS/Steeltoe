@@ -12,16 +12,15 @@ using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Management.OpenTelemetry
+namespace Steeltoe.Management.OpenTelemetry;
+
+public static class OpenTelemetryMetrics
 {
-    public static class OpenTelemetryMetrics
-    {
-        public static readonly AssemblyName AssemblyName = typeof(OpenTelemetryMetrics).Assembly.GetName();
+    public static readonly AssemblyName AssemblyName = typeof(OpenTelemetryMetrics).Assembly.GetName();
 
-        public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
+    public static readonly string InstrumentationVersion = AssemblyName.Version.ToString();
 
-        public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
+    public static Meter Meter => new Meter(InstrumentationName, InstrumentationVersion);
 
-        public static string InstrumentationName { get; set; } = AssemblyName.Name;
-    }
+    public static string InstrumentationName { get; set; } = AssemblyName.Name;
 }

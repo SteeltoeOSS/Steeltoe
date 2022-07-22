@@ -5,27 +5,26 @@
 using Steeltoe.Common.Reflection;
 using System;
 
-namespace Steeltoe.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer;
+
+/// <summary>
+/// Assemblies and types used for interacting with Microsoft SQL Server
+/// </summary>
+public static class SqlServerTypeLocator
 {
     /// <summary>
-    /// Assemblies and types used for interacting with Microsoft SQL Server
+    /// Gets SqlConnection from a SQL Server Library
     /// </summary>
-    public static class SqlServerTypeLocator
-    {
-        /// <summary>
-        /// Gets SqlConnection from a SQL Server Library
-        /// </summary>
-        /// <exception cref="ConnectorException">When type is not found</exception>
-        public static Type SqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
+    /// <exception cref="ConnectorException">When type is not found</exception>
+    public static Type SqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
 
-        /// <summary>
-        /// Gets the list of supported SQL Server Client assemblies
-        /// </summary>
-        public static string[] Assemblies { get; internal set; } = new string[] { "System.Data.SqlClient" };
+    /// <summary>
+    /// Gets the list of supported SQL Server Client assemblies
+    /// </summary>
+    public static string[] Assemblies { get; internal set; } = new string[] { "System.Data.SqlClient" };
 
-        /// <summary>
-        /// Gets the list of SQL Server types that implement IDbConnection
-        /// </summary>
-        public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "System.Data.SqlClient.SqlConnection" };
-    }
+    /// <summary>
+    /// Gets the list of SQL Server types that implement IDbConnection
+    /// </summary>
+    public static string[] ConnectionTypeNames { get; internal set; } = new string[] { "System.Data.SqlClient.SqlConnection" };
 }

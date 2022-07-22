@@ -6,39 +6,38 @@ using Steeltoe.CircuitBreaker.Hystrix.Util;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public static class ThreadPoolEventTypeHelper
 {
-    public static class ThreadPoolEventTypeHelper
+    public static IList<ThreadPoolEventType> Values { get; } = new List<ThreadPoolEventType>();
+
+    static ThreadPoolEventTypeHelper()
     {
-        public static IList<ThreadPoolEventType> Values { get; } = new List<ThreadPoolEventType>();
+        Values.Add(ThreadPoolEventType.EXECUTED);
+        Values.Add(ThreadPoolEventType.REJECTED);
+    }
 
-        static ThreadPoolEventTypeHelper()
+    public static ThreadPoolEventType From(this HystrixRollingNumberEvent @event)
+    {
+        return @event switch
         {
-            Values.Add(ThreadPoolEventType.EXECUTED);
-            Values.Add(ThreadPoolEventType.REJECTED);
-        }
+            HystrixRollingNumberEvent.THREAD_EXECUTION => ThreadPoolEventType.EXECUTED,
+            HystrixRollingNumberEvent.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
+            _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.ThreadPool : " + @event),
+        };
+    }
 
-        public static ThreadPoolEventType From(this HystrixRollingNumberEvent @event)
+    public static ThreadPoolEventType From(this HystrixEventType eventType)
+    {
+        return eventType switch
         {
-            return @event switch
-            {
-                HystrixRollingNumberEvent.THREAD_EXECUTION => ThreadPoolEventType.EXECUTED,
-                HystrixRollingNumberEvent.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
-                _ => throw new ArgumentOutOfRangeException("Not an event that can be converted to HystrixEventType.ThreadPool : " + @event),
-            };
-        }
-
-        public static ThreadPoolEventType From(this HystrixEventType eventType)
-        {
-            return eventType switch
-            {
-                HystrixEventType.SUCCESS => ThreadPoolEventType.EXECUTED,
-                HystrixEventType.FAILURE => ThreadPoolEventType.EXECUTED,
-                HystrixEventType.TIMEOUT => ThreadPoolEventType.EXECUTED,
-                HystrixEventType.BAD_REQUEST => ThreadPoolEventType.EXECUTED,
-                HystrixEventType.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
-                _ => ThreadPoolEventType.UNKNOWN,
-            };
-        }
+            HystrixEventType.SUCCESS => ThreadPoolEventType.EXECUTED,
+            HystrixEventType.FAILURE => ThreadPoolEventType.EXECUTED,
+            HystrixEventType.TIMEOUT => ThreadPoolEventType.EXECUTED,
+            HystrixEventType.BAD_REQUEST => ThreadPoolEventType.EXECUTED,
+            HystrixEventType.THREAD_POOL_REJECTED => ThreadPoolEventType.REJECTED,
+            _ => ThreadPoolEventType.UNKNOWN,
+        };
     }
 }

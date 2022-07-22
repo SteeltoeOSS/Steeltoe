@@ -5,41 +5,40 @@
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class BooleanLiteral : Literal
 {
-    public class BooleanLiteral : Literal
+    private readonly BooleanTypedValue _value;
+
+    public BooleanLiteral(string payload, int startPos, int endPos, bool value)
+        : base(payload, startPos, endPos)
     {
-        private readonly BooleanTypedValue _value;
+        _value = BooleanTypedValue.ForValue(value);
+        _exitTypeDescriptor = TypeDescriptor.Z;
+    }
 
-        public BooleanLiteral(string payload, int startPos, int endPos, bool value)
-            : base(payload, startPos, endPos)
+    public override ITypedValue GetLiteralValue()
+    {
+        return _value;
+    }
+
+    public override bool IsCompilable() => true;
+
+    public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+    {
+        var result = gen.DeclareLocal(typeof(bool));
+        if (_value.Equals(BooleanTypedValue.TRUE))
         {
-            _value = BooleanTypedValue.ForValue(value);
-            _exitTypeDescriptor = TypeDescriptor.Z;
+            gen.Emit(OpCodes.Ldc_I4_1);
+        }
+        else
+        {
+            gen.Emit(OpCodes.Ldc_I4_0);
         }
 
-        public override ITypedValue GetLiteralValue()
-        {
-            return _value;
-        }
-
-        public override bool IsCompilable() => true;
-
-        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
-        {
-            var result = gen.DeclareLocal(typeof(bool));
-            if (_value.Equals(BooleanTypedValue.TRUE))
-            {
-                gen.Emit(OpCodes.Ldc_I4_1);
-            }
-            else
-            {
-                gen.Emit(OpCodes.Ldc_I4_0);
-            }
-
-            gen.Emit(OpCodes.Stloc, result);
-            gen.Emit(OpCodes.Ldloc, result);
-            cf.PushDescriptor(_exitTypeDescriptor);
-        }
+        gen.Emit(OpCodes.Stloc, result);
+        gen.Emit(OpCodes.Ldloc, result);
+        cf.PushDescriptor(_exitTypeDescriptor);
     }
 }

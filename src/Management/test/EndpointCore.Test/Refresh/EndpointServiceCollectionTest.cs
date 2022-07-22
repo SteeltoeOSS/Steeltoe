@@ -9,44 +9,43 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test
+namespace Steeltoe.Management.Endpoint.Refresh.Test;
+
+public class EndpointServiceCollectionTest : BaseTest
 {
-    public class EndpointServiceCollectionTest : BaseTest
+    [Fact]
+    public void AddRefreshActuator_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddRefreshActuator_ThrowsOnNulls()
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services, config));
+        Assert.Contains(nameof(services), ex.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
+    }
+
+    [Fact]
+    public void AddRefreshActuator_AddsCorrectServices()
+    {
+        var services = new ServiceCollection();
+        var appSettings = new Dictionary<string, string>()
         {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/cloudfoundryapplication"
+        };
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        var config = configurationBuilder.Build();
+        services.AddSingleton<IConfiguration>(config);
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddRefreshActuator(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        services.AddRefreshActuator(config);
 
-        [Fact]
-        public void AddRefreshActuator_AddsCorrectServices()
-        {
-            var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/cloudfoundryapplication"
-            };
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
-            var config = configurationBuilder.Build();
-            services.AddSingleton<IConfiguration>(config);
-
-            services.AddRefreshActuator(config);
-
-            var serviceProvider = services.BuildServiceProvider();
-            var options = serviceProvider.GetService<IRefreshOptions>();
-            Assert.NotNull(options);
-            var ep = serviceProvider.GetService<RefreshEndpoint>();
-            Assert.NotNull(ep);
-        }
+        var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetService<IRefreshOptions>();
+        Assert.NotNull(options);
+        var ep = serviceProvider.GetService<RefreshEndpoint>();
+        Assert.NotNull(ep);
     }
 }

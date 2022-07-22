@@ -7,26 +7,25 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.Extensions.Configuration
+namespace Steeltoe.Extensions.Configuration;
+
+[Serializable]
+[TypeConverter(typeof(CredentialConverter))]
+public class Credential : Dictionary<string, Credential>
 {
-    [Serializable]
-    [TypeConverter(typeof(CredentialConverter))]
-    public class Credential : Dictionary<string, Credential>
+    public Credential()
     {
-        public Credential()
-        {
-        }
+    }
 
-        public Credential(string value)
-        {
-            Value = value;
-        }
+    public Credential(string value)
+    {
+        Value = value;
+    }
 
-        public string Value { get; }
+    public string Value { get; }
 
-        protected Credential(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected Credential(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

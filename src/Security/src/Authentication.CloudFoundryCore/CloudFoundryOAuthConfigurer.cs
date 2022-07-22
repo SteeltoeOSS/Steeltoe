@@ -4,28 +4,27 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry;
+
+public static class CloudFoundryOAuthConfigurer
 {
-    public static class CloudFoundryOAuthConfigurer
+    internal static void Configure(SsoServiceInfo si, CloudFoundryOAuthOptions options)
     {
-        internal static void Configure(SsoServiceInfo si, CloudFoundryOAuthOptions options)
+        if (options == null)
         {
-            if (options == null)
-            {
-                return;
-            }
-
-            if (si != null)
-            {
-                options.ClientId = si.ClientId;
-                options.ClientSecret = si.ClientSecret;
-                options.AuthorizationEndpoint = si.AuthDomain + CloudFoundryDefaults.AuthorizationUri;
-                options.TokenEndpoint = si.AuthDomain + CloudFoundryDefaults.AccessTokenUri;
-                options.UserInformationEndpoint = si.AuthDomain + CloudFoundryDefaults.UserInfoUri;
-                options.TokenInfoUrl = si.AuthDomain + CloudFoundryDefaults.CheckTokenUri;
-            }
-
-            options.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
+            return;
         }
+
+        if (si != null)
+        {
+            options.ClientId = si.ClientId;
+            options.ClientSecret = si.ClientSecret;
+            options.AuthorizationEndpoint = si.AuthDomain + CloudFoundryDefaults.AuthorizationUri;
+            options.TokenEndpoint = si.AuthDomain + CloudFoundryDefaults.AccessTokenUri;
+            options.UserInformationEndpoint = si.AuthDomain + CloudFoundryDefaults.UserInfoUri;
+            options.TokenInfoUrl = si.AuthDomain + CloudFoundryDefaults.CheckTokenUri;
+        }
+
+        options.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
     }
 }

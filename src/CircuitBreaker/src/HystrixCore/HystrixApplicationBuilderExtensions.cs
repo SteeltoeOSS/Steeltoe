@@ -5,18 +5,17 @@
 using Microsoft.AspNetCore.Builder;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
-{
-    public static class HystrixApplicationBuilderExtensions
-    {
-        public static IApplicationBuilder UseHystrixRequestContext(this IApplicationBuilder builder)
-        {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
+namespace Steeltoe.CircuitBreaker.Hystrix;
 
-            return builder.UseMiddleware<HystrixRequestContextMiddleware>();
+public static class HystrixApplicationBuilderExtensions
+{
+    public static IApplicationBuilder UseHystrixRequestContext(this IApplicationBuilder builder)
+    {
+        if (builder == null)
+        {
+            throw new ArgumentNullException(nameof(builder));
         }
+
+        return builder.UseMiddleware<HystrixRequestContextMiddleware>();
     }
 }

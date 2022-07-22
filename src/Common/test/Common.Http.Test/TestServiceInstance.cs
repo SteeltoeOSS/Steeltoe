@@ -6,55 +6,54 @@ using Steeltoe.Common.Discovery;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Http.Test
+namespace Steeltoe.Common.Http.Test;
+
+internal class TestServiceInstance : IServiceInstance
 {
-    internal class TestServiceInstance : IServiceInstance
+    public TestServiceInstance(Uri uri)
     {
-        public TestServiceInstance(Uri uri)
-        {
-            Uri = uri;
-        }
-
-        public string Host
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public bool IsSecure
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IDictionary<string, string> Metadata
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public int Port
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public string ServiceId
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Uri Uri { get; private set; }
+        Uri = uri;
     }
+
+    public string Host
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public bool IsSecure
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public IDictionary<string, string> Metadata
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public int Port
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public string ServiceId
+    {
+        get
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public Uri Uri { get; private set; }
 }

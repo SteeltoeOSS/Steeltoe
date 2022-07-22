@@ -9,15 +9,14 @@ using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class TypelessToMessageStreamListener
 {
-    public class TypelessToMessageStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public IMessage Echo(object value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public IMessage Echo(object value)
-        {
-            return (IMessage<string>)MessageBuilder.WithPayload<string>(value.ToString()).SetHeader("contentType", new MimeType("text", "plain")).Build();
-        }
+        return (IMessage<string>)MessageBuilder.WithPayload<string>(value.ToString()).SetHeader("contentType", new MimeType("text", "plain")).Build();
     }
 }

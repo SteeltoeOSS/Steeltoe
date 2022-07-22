@@ -5,32 +5,31 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.OAuth.Test
+namespace Steeltoe.Connector.OAuth.Test;
+
+public class OAuthConnectorFactoryTest
 {
-    public class OAuthConnectorFactoryTest
+    [Fact]
+    public void Create_ReturnsOAuthOptions()
     {
-        [Fact]
-        public void Create_ReturnsOAuthOptions()
-        {
-            var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
-            var config = new OAuthConnectorOptions();
+        var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
+        var config = new OAuthConnectorOptions();
 
-            var factory = new OAuthConnectorFactory(si, config);
-            var result = factory.Create(null);
+        var factory = new OAuthConnectorFactory(si, config);
+        var result = factory.Create(null);
 
-            Assert.NotNull(result);
-            var opts = result.Value;
-            Assert.NotNull(opts);
+        Assert.NotNull(result);
+        var opts = result.Value;
+        Assert.NotNull(opts);
 
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
-            Assert.Equal("myClientId", opts.ClientId);
-            Assert.Equal("myClientSecret", opts.ClientSecret);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
-            Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
-            Assert.NotNull(opts.Scope);
-            Assert.Equal(0, opts.Scope.Count);
-        }
+        Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AccessTokenUri, opts.AccessTokenUrl);
+        Assert.Equal("myClientId", opts.ClientId);
+        Assert.Equal("myClientSecret", opts.ClientSecret);
+        Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_JwtTokenKey, opts.JwtKeyUrl);
+        Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_CheckTokenUri, opts.TokenInfoUrl);
+        Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_AuthorizationUri, opts.UserAuthorizationUrl);
+        Assert.Equal("https://foo.bar" + OAuthConnectorDefaults.Default_UserInfoUri, opts.UserInfoUrl);
+        Assert.NotNull(opts.Scope);
+        Assert.Equal(0, opts.Scope.Count);
     }
 }

@@ -4,44 +4,43 @@
 
 using System.Threading;
 
-namespace Steeltoe.Common.Util
-{
-    public class AtomicReference<T>
-        where T : class
-    {
-        private volatile T _value;
+namespace Steeltoe.Common.Util;
 
-        public AtomicReference()
-            : this(default(T))
+public class AtomicReference<T>
+    where T : class
+{
+    private volatile T _value;
+
+    public AtomicReference()
+        : this(default(T))
+    {
+    }
+
+    public AtomicReference(T value)
+    {
+        _value = value;
+    }
+
+    public T Value
+    {
+        get
         {
+            return _value;
         }
 
-        public AtomicReference(T value)
+        set
         {
             _value = value;
         }
+    }
 
-        public T Value
-        {
-            get
-            {
-                return _value;
-            }
+    public bool CompareAndSet(T expected, T update)
+    {
+        return Interlocked.CompareExchange(ref _value, update, expected) == expected;
+    }
 
-            set
-            {
-                _value = value;
-            }
-        }
-
-        public bool CompareAndSet(T expected, T update)
-        {
-            return Interlocked.CompareExchange(ref _value, update, expected) == expected;
-        }
-
-        public T GetAndSet(T value)
-        {
-            return Interlocked.Exchange(ref _value, value);
-        }
+    public T GetAndSet(T value)
+    {
+        return Interlocked.Exchange(ref _value, value);
     }
 }

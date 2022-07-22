@@ -7,14 +7,14 @@ using Steeltoe.Discovery.Eureka.Transport;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
+namespace Steeltoe.Discovery.Eureka.Client.Test.Transport;
+
+public class JsonApplicationRootTest : AbstractBaseTest
 {
-    public class JsonApplicationRootTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_GoodJson()
     {
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            var json = @"
+        var json = @"
                 {
                     ""application"":
                     {
@@ -44,13 +44,12 @@ namespace Steeltoe.Discovery.Eureka.Client.Test.Transport
                         }]
                     }
                 }";
-            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json, options);
-            Assert.NotNull(result);
-            Assert.NotNull(result.Application);
-            Assert.Equal("FOO", result.Application.Name);
-            Assert.NotNull(result.Application.Instances);
-            Assert.Equal(1, result.Application.Instances.Count);
-        }
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        var result = JsonSerializer.Deserialize<JsonApplicationRoot>(json, options);
+        Assert.NotNull(result);
+        Assert.NotNull(result.Application);
+        Assert.Equal("FOO", result.Application.Name);
+        Assert.NotNull(result.Application.Instances);
+        Assert.Equal(1, result.Application.Instances.Count);
     }
 }

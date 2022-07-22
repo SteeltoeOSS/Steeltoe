@@ -5,10 +5,9 @@
 using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.MySql.EF6.Test
+namespace Steeltoe.Connector.MySql.EF6.Test;
+
+[DbConfigurationType(typeof(MySqlEFConfiguration))]
+public class BadMySqlDbContext : DbContext
 {
-    [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    public class BadMySqlDbContext : DbContext
-    {
-    }
 }

@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IServiceResolver
 {
-    public interface IServiceResolver
-    {
-        object Resolve(IEvaluationContext context, string serviceName);
-    }
+    object Resolve(IEvaluationContext context, string serviceName);
 }

@@ -5,17 +5,16 @@
 using Microsoft.Extensions.Logging;
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
+
+public class DefaultPublisherCallbackFactory : IPublisherCallbackChannelFactory
 {
-    public class DefaultPublisherCallbackFactory : IPublisherCallbackChannelFactory
+    private readonly ILoggerFactory _loggerFactory;
+
+    public DefaultPublisherCallbackFactory(ILoggerFactory loggerFactory)
     {
-        private readonly ILoggerFactory _loggerFactory;
-
-        public DefaultPublisherCallbackFactory(ILoggerFactory loggerFactory)
-        {
-            _loggerFactory = loggerFactory;
-        }
-
-        public IPublisherCallbackChannel CreateChannel(RC.IModel channel) => new PublisherCallbackChannel(channel, _loggerFactory?.CreateLogger<PublisherCallbackChannel>());
+        _loggerFactory = loggerFactory;
     }
+
+    public IPublisherCallbackChannel CreateChannel(RC.IModel channel) => new PublisherCallbackChannel(channel, _loggerFactory?.CreateLogger<PublisherCallbackChannel>());
 }

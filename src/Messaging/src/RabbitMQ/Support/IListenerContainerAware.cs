@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support;
+
+public interface IListenerContainerAware
 {
-    public interface IListenerContainerAware
-    {
-        List<string> GetExpectedQueueNames();
-    }
+    List<string> GetExpectedQueueNames();
 }

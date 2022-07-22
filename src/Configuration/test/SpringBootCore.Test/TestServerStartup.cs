@@ -7,26 +7,25 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot.Test
+namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
+
+public class TestServerStartup
 {
-    public class TestServerStartup
+    public static IServiceProvider ServiceProvider { get; set; }
+
+    private readonly IConfiguration _configuration;
+
+    public TestServerStartup(IConfiguration config)
     {
-        public static IServiceProvider ServiceProvider { get; set; }
+        _configuration = config;
+    }
 
-        private readonly IConfiguration _configuration;
+    public void ConfigureServices(IServiceCollection services)
+    {
+    }
 
-        public TestServerStartup(IConfiguration config)
-        {
-            _configuration = config;
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            ServiceProvider = app.ApplicationServices;
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        ServiceProvider = app.ApplicationServices;
     }
 }

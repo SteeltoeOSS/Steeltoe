@@ -4,22 +4,21 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management
+namespace Steeltoe.Management;
+
+public interface IEndpointOptions
 {
-    public interface IEndpointOptions
-    {
-        bool? Enabled { get; }
+    bool? Enabled { get; }
 
-        string Id { get; }
+    string Id { get; }
 
-        string Path { get; }
+    string Path { get; }
 
-        Permissions RequiredPermissions { get; }
+    Permissions RequiredPermissions { get; }
 
-        bool IsAccessAllowed(Permissions permissions);
+    bool IsAccessAllowed(Permissions permissions);
 
-        IEnumerable<string> AllowedVerbs { get;  }
+    IEnumerable<string> AllowedVerbs { get;  }
 
-        bool ExactMatch { get; }
-    }
+    bool ExactMatch { get; }
 }

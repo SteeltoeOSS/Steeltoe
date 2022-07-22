@@ -4,28 +4,27 @@
 
 using System;
 
-namespace Steeltoe.Messaging
+namespace Steeltoe.Messaging;
+
+public class MessageHandlingException : MessagingException
 {
-    public class MessageHandlingException : MessagingException
+    public MessageHandlingException(IMessage failedMessage)
+        : base(failedMessage)
     {
-        public MessageHandlingException(IMessage failedMessage)
-            : base(failedMessage)
-        {
-        }
+    }
 
-        public MessageHandlingException(IMessage message, string description)
+    public MessageHandlingException(IMessage message, string description)
         : base(message, description)
-        {
-        }
+    {
+    }
 
-        public MessageHandlingException(IMessage failedMessage, Exception cause)
+    public MessageHandlingException(IMessage failedMessage, Exception cause)
         : base(failedMessage, cause)
-        {
-        }
+    {
+    }
 
-        public MessageHandlingException(IMessage message, string description, Exception cause)
+    public MessageHandlingException(IMessage message, string description, Exception cause)
         : base(message, description, cause)
-        {
-        }
+    {
     }
 }

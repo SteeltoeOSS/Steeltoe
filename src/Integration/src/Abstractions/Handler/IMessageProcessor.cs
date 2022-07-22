@@ -4,36 +4,35 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+/// <summary>
+/// This defines the lowest-level strategy of processing a Message and returning
+/// some Object(or null). Implementations will be focused on generic concerns,
+/// such as invoking a method, running a script, or evaluating an expression.
+/// </summary>
+public interface IMessageProcessor
 {
     /// <summary>
-    /// This defines the lowest-level strategy of processing a Message and returning
-    /// some Object(or null). Implementations will be focused on generic concerns,
-    /// such as invoking a method, running a script, or evaluating an expression.
+    /// Process a message and return a value or null
     /// </summary>
-    public interface IMessageProcessor
-    {
-        /// <summary>
-        /// Process a message and return a value or null
-        /// </summary>
-        /// <param name="message">message to process</param>
-        /// <returns>resulting object</returns>
-        object ProcessMessage(IMessage message);
-    }
+    /// <param name="message">message to process</param>
+    /// <returns>resulting object</returns>
+    object ProcessMessage(IMessage message);
+}
 
+/// <summary>
+/// This defines the lowest-level strategy of processing a Message and returning
+/// some Object(or null). Implementations will be focused on generic concerns,
+/// such as invoking a method, running a script, or evaluating an expression.
+/// </summary>
+/// <typeparam name="T">the type of the processing result</typeparam>
+public interface IMessageProcessor<out T> : IMessageProcessor
+{
     /// <summary>
-    /// This defines the lowest-level strategy of processing a Message and returning
-    /// some Object(or null). Implementations will be focused on generic concerns,
-    /// such as invoking a method, running a script, or evaluating an expression.
+    /// Process a message and return a value or null
     /// </summary>
-    /// <typeparam name="T">the type of the processing result</typeparam>
-    public interface IMessageProcessor<out T> : IMessageProcessor
-    {
-        /// <summary>
-        /// Process a message and return a value or null
-        /// </summary>
-        /// <param name="message">message to process</param>
-        /// <returns>result after processing</returns>
-        new T ProcessMessage(IMessage message);
-    }
+    /// <param name="message">message to process</param>
+    /// <returns>result after processing</returns>
+    new T ProcessMessage(IMessage message);
 }

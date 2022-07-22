@@ -5,24 +5,23 @@
 using Steeltoe.Messaging.RabbitMQ.Core;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes
-{
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
-    public class DeclareAnonymousQueueAttribute : DeclareQueueBase
-    {
-        public DeclareAnonymousQueueAttribute(string id)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentException(nameof(id));
-            }
+namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
-            Id = id;
-            Name = Base64UrlNamingStrategy.DEFAULT.GenerateName();
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
+public class DeclareAnonymousQueueAttribute : DeclareQueueBase
+{
+    public DeclareAnonymousQueueAttribute(string id)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentException(nameof(id));
         }
 
-        public string Id { get; set; }
-
-        internal string Name { get; }
+        Id = id;
+        Name = Base64UrlNamingStrategy.DEFAULT.GenerateName();
     }
+
+    public string Id { get; set; }
+
+    internal string Name { get; }
 }

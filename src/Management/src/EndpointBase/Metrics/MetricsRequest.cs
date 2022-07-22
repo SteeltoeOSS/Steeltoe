@@ -4,18 +4,17 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Endpoint.Metrics;
+
+public class MetricsRequest
 {
-    public class MetricsRequest
+    public string MetricName { get; }
+
+    public List<KeyValuePair<string, string>> Tags { get; }
+
+    public MetricsRequest(string metricName, List<KeyValuePair<string, string>> tags)
     {
-        public string MetricName { get; }
-
-        public List<KeyValuePair<string, string>> Tags { get; }
-
-        public MetricsRequest(string metricName, List<KeyValuePair<string, string>> tags)
-        {
-            MetricName = metricName;
-            Tags = tags;
-        }
+        MetricName = metricName;
+        Tags = tags;
     }
 }

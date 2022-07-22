@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Services
+namespace Steeltoe.Common.Services;
+
+public interface IServiceNameAware
 {
-    public interface IServiceNameAware
-    {
-        string ServiceName { get; set; }
-    }
+    string ServiceName { get; set; }
 }

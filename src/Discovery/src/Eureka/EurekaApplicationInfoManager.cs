@@ -5,18 +5,17 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public class EurekaApplicationInfoManager : ApplicationInfoManager
 {
-    public class EurekaApplicationInfoManager : ApplicationInfoManager
+    private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
+
+    public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory logFactory = null)
     {
-        private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
-
-        public EurekaApplicationInfoManager(IOptionsMonitor<EurekaInstanceOptions> instConfig, ILoggerFactory logFactory = null)
-        {
-            _instConfig = instConfig;
-            Initialize(InstanceConfig, logFactory);
-        }
-
-        public override IEurekaInstanceConfig InstanceConfig => _instConfig.CurrentValue;
+        _instConfig = instConfig;
+        Initialize(InstanceConfig, logFactory);
     }
+
+    public override IEurekaInstanceConfig InstanceConfig => _instConfig.CurrentValue;
 }

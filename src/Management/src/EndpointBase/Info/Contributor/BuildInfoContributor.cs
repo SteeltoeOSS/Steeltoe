@@ -7,36 +7,35 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Management.Endpoint.Info.Contributor
+namespace Steeltoe.Management.Endpoint.Info.Contributor;
+
+public class BuildInfoContributor : IInfoContributor
 {
-    public class BuildInfoContributor : IInfoContributor
+    private readonly Assembly _application;
+    private readonly Assembly _steeltoe;
+
+    public BuildInfoContributor()
     {
-        private readonly Assembly _application;
-        private readonly Assembly _steeltoe;
+        _application = Assembly.GetEntryAssembly();
+        _steeltoe = typeof(BuildInfoContributor).Assembly;
+    }
 
-        public BuildInfoContributor()
+    public void Contribute(IInfoBuilder builder)
+    {
+        builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
+        builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
+
+        // this is for Spring Boot Admin
+        builder.WithInfo("build", new Dictionary<string, string> { { "version", _application.GetName().Version.ToString() } });
+    }
+
+    private Dictionary<string, string> GetImportantDetails(Assembly assembly)
+    {
+        return new Dictionary<string, string>
         {
-            _application = Assembly.GetEntryAssembly();
-            _steeltoe = typeof(BuildInfoContributor).Assembly;
-        }
-
-        public void Contribute(IInfoBuilder builder)
-        {
-            builder.WithInfo("applicationVersionInfo", GetImportantDetails(_application));
-            builder.WithInfo("steeltoeVersionInfo", GetImportantDetails(_steeltoe));
-
-            // this is for Spring Boot Admin
-            builder.WithInfo("build", new Dictionary<string, string> { { "version", _application.GetName().Version.ToString() } });
-        }
-
-        private Dictionary<string, string> GetImportantDetails(Assembly assembly)
-        {
-            return new Dictionary<string, string>
-            {
-                { "ProductName", assembly.GetName().Name },
-                { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
-                { "ProductVersion", ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false)).InformationalVersion }
-            };
-        }
+            { "ProductName", assembly.GetName().Name },
+            { "FileVersion", ((AssemblyFileVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute), false)).Version },
+            { "ProductVersion", ((AssemblyInformationalVersionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyInformationalVersionAttribute), false)).InformationalVersion }
+        };
     }
 }

@@ -6,20 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Attributes
+namespace Steeltoe.Integration.Attributes;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class EndpointIdAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class EndpointIdAttribute : Attribute
+    public EndpointIdAttribute()
     {
-        public EndpointIdAttribute()
-        {
-        }
-
-        public EndpointIdAttribute(string id)
-        {
-            Id = id;
-        }
-
-        public string Id { get; }
     }
+
+    public EndpointIdAttribute(string id)
+    {
+        Id = id;
+    }
+
+    public string Id { get; }
 }

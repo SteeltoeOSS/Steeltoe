@@ -5,28 +5,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
+namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+
+[Serializable]
+public class HystrixTimeoutException : Exception
 {
-    [Serializable]
-    public class HystrixTimeoutException : Exception
+    public HystrixTimeoutException(string message)
+        : base(message)
     {
-        public HystrixTimeoutException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        public HystrixTimeoutException(string message, Exception inner)
-            : base(message, inner)
-        {
-        }
+    public HystrixTimeoutException(string message, Exception inner)
+        : base(message, inner)
+    {
+    }
 
-        public HystrixTimeoutException()
-        {
-        }
+    public HystrixTimeoutException()
+    {
+    }
 
-        protected HystrixTimeoutException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected HystrixTimeoutException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

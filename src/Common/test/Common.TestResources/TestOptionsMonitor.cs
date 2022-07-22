@@ -5,25 +5,24 @@
 using Microsoft.Extensions.Options;
 using System;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public class TestOptionsMonitor<T> : IOptionsMonitor<T>
 {
-    public class TestOptionsMonitor<T> : IOptionsMonitor<T>
+    public TestOptionsMonitor(T currentValue)
     {
-        public TestOptionsMonitor(T currentValue)
-        {
-            CurrentValue = currentValue;
-        }
-
-        public T Get(string name)
-        {
-            return CurrentValue;
-        }
-
-        public IDisposable OnChange(Action<T, string> listener)
-        {
-            throw new NotImplementedException();
-        }
-
-        public T CurrentValue { get; }
+        CurrentValue = currentValue;
     }
+
+    public T Get(string name)
+    {
+        return CurrentValue;
+    }
+
+    public IDisposable OnChange(Action<T, string> listener)
+    {
+        throw new NotImplementedException();
+    }
+
+    public T CurrentValue { get; }
 }

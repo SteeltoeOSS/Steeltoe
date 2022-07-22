@@ -14,177 +14,176 @@ using System.Reflection;
 using System.Text;
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+
+public class MessageListenerAdapter : AbstractMessageListenerAdapter
 {
-    public class MessageListenerAdapter : AbstractMessageListenerAdapter
+    public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
+    private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
+
+    public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
+
+    public object Instance { get; set; }
+
+    public MessageListenerAdapter(IApplicationContext context, ILogger logger = null)
+        : base(context, logger)
     {
-        public const string ORIGINAL_DEFAULT_LISTENER_METHOD = "HandleMessage";
-        private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
+        Instance = this;
+    }
 
-        public string DefaultListenerMethod { get; set; } = ORIGINAL_DEFAULT_LISTENER_METHOD;
+    public MessageListenerAdapter(IApplicationContext context, object delgate, ILogger logger = null)
+        : base(context, logger)
+    {
+        Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
+    }
 
-        public object Instance { get; set; }
+    public MessageListenerAdapter(IApplicationContext context, object delgate, ISmartMessageConverter messageConverter, ILogger logger = null)
+        : base(context, logger)
+    {
+        Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
+        MessageConverter = messageConverter;
+    }
 
-        public MessageListenerAdapter(IApplicationContext context, ILogger logger = null)
-            : base(context, logger)
+    public MessageListenerAdapter(IApplicationContext context, object delgate, string defaultListenerMethod, ILogger logger = null)
+        : this(context, delgate, logger)
+    {
+        DefaultListenerMethod = defaultListenerMethod;
+    }
+
+    public void SetQueueOrTagToMethodName(Dictionary<string, string> queueOrTagToMethodName)
+    {
+        foreach (var entry in queueOrTagToMethodName)
         {
-            Instance = this;
+            _queueOrTagToMethodName[entry.Key] = entry.Value;
         }
+    }
 
-        public MessageListenerAdapter(IApplicationContext context, object delgate, ILogger logger = null)
-            : base(context, logger)
-        {
-            Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
-        }
+    public void AddQueueOrTagToMethodName(string queueOrTag, string methodName)
+    {
+        _queueOrTagToMethodName[queueOrTag] = methodName;
+    }
 
-        public MessageListenerAdapter(IApplicationContext context, object delgate, ISmartMessageConverter messageConverter, ILogger logger = null)
-            : base(context, logger)
-        {
-            Instance = delgate ?? throw new ArgumentNullException(nameof(delgate));
-            MessageConverter = messageConverter;
-        }
+    public string RemoveQueueOrTagToMethodName(string queueOrTag)
+    {
+        _queueOrTagToMethodName.Remove(queueOrTag, out var previous);
+        return previous;
+    }
 
-        public MessageListenerAdapter(IApplicationContext context, object delgate, string defaultListenerMethod, ILogger logger = null)
-           : this(context, delgate, logger)
+    public override void OnMessage(IMessage message, RC.IModel channel)
+    {
+        // Check whether the delegate is a IMessageListener impl itself.
+        // In that case, the adapter will simply act as a pass-through.
+        var delegateListener = Instance;
+        if (delegateListener != this)
         {
-            DefaultListenerMethod = defaultListenerMethod;
-        }
-
-        public void SetQueueOrTagToMethodName(Dictionary<string, string> queueOrTagToMethodName)
-        {
-            foreach (var entry in queueOrTagToMethodName)
+            switch (delegateListener)
             {
-                _queueOrTagToMethodName[entry.Key] = entry.Value;
+                case IChannelAwareMessageListener listener:
+                    listener.OnMessage(message, channel);
+                    return;
+                case IMessageListener:
+                    ((IMessageListener)delegateListener).OnMessage(message);
+                    return;
             }
         }
 
-        public void AddQueueOrTagToMethodName(string queueOrTag, string methodName)
+        // Regular case: find a handler method reflectively.
+        var convertedMessage = ExtractMessage(message);
+        var methodName = GetListenerMethodName(message, convertedMessage);
+        if (methodName == null)
         {
-            _queueOrTagToMethodName[queueOrTag] = methodName;
+            throw new InvalidOperationException("No default listener method specified: "
+                                                + "Either specify a non-null value for the 'DefaultListenerMethod' property or "
+                                                + "override the 'GetListenerMethodName' method.");
         }
 
-        public string RemoveQueueOrTagToMethodName(string queueOrTag)
+        // Invoke the handler method with appropriate arguments.
+        var listenerArguments = BuildListenerArguments(convertedMessage, channel, message);
+        var result = InvokeListenerMethod(methodName, listenerArguments, message);
+        if (result != null)
         {
-            _queueOrTagToMethodName.Remove(queueOrTag, out var previous);
-            return previous;
+            HandleResult(new InvocationResult(result, null, null, null, null), message, channel);
         }
-
-        public override void OnMessage(IMessage message, RC.IModel channel)
+        else
         {
-            // Check whether the delegate is a IMessageListener impl itself.
-            // In that case, the adapter will simply act as a pass-through.
-            var delegateListener = Instance;
-            if (delegateListener != this)
+            _logger?.LogTrace("No result object given - no result to handle");
+        }
+    }
+
+    protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
+        => BuildListenerArguments(extractedMessage);
+
+    protected virtual object[] BuildListenerArguments(object extractedMessage)
+        => new object[] { extractedMessage };
+
+    protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
+    {
+        if (_queueOrTagToMethodName.Count > 0)
+        {
+            var props = originalMessage.Headers;
+            if (!_queueOrTagToMethodName.TryGetValue(props.ConsumerQueue(), out var methodName))
             {
-                switch (delegateListener)
+                _queueOrTagToMethodName.TryGetValue(props.ConsumerTag(), out methodName);
+            }
+
+            if (methodName != null)
+            {
+                return methodName;
+            }
+        }
+
+        return DefaultListenerMethod;
+    }
+
+    protected virtual object InvokeListenerMethod(string methodName, object[] arguments, IMessage originalMessage)
+    {
+        try
+        {
+            var methodInvoker = new MethodInvoker();
+            methodInvoker.SetTargetObject(Instance);
+            methodInvoker.TargetMethod = methodName;
+            methodInvoker.SetArguments(arguments);
+            methodInvoker.Prepare();
+            return methodInvoker.Invoke();
+        }
+        catch (TargetInvocationException ex)
+        {
+            var targetEx = ex.InnerException;
+
+            throw new ListenerExecutionFailedException(
+                "Listener method '" + methodName + "' threw exception", targetEx, originalMessage);
+        }
+        catch (Exception ex)
+        {
+            var arrayClass = new List<string>();
+            if (arguments != null)
+            {
+                foreach (var argument in arguments)
                 {
-                    case IChannelAwareMessageListener listener:
-                        listener.OnMessage(message, channel);
-                        return;
-                    case IMessageListener:
-                        ((IMessageListener)delegateListener).OnMessage(message);
-                        return;
-                }
-            }
-
-            // Regular case: find a handler method reflectively.
-            var convertedMessage = ExtractMessage(message);
-            var methodName = GetListenerMethodName(message, convertedMessage);
-            if (methodName == null)
-            {
-                throw new InvalidOperationException("No default listener method specified: "
-                        + "Either specify a non-null value for the 'DefaultListenerMethod' property or "
-                        + "override the 'GetListenerMethodName' method.");
-            }
-
-            // Invoke the handler method with appropriate arguments.
-            var listenerArguments = BuildListenerArguments(convertedMessage, channel, message);
-            var result = InvokeListenerMethod(methodName, listenerArguments, message);
-            if (result != null)
-            {
-                HandleResult(new InvocationResult(result, null, null, null, null), message, channel);
-            }
-            else
-            {
-                _logger?.LogTrace("No result object given - no result to handle");
-            }
-        }
-
-        protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
-            => BuildListenerArguments(extractedMessage);
-
-        protected virtual object[] BuildListenerArguments(object extractedMessage)
-            => new object[] { extractedMessage };
-
-        protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
-        {
-            if (_queueOrTagToMethodName.Count > 0)
-            {
-                var props = originalMessage.Headers;
-                if (!_queueOrTagToMethodName.TryGetValue(props.ConsumerQueue(), out var methodName))
-                {
-                    _queueOrTagToMethodName.TryGetValue(props.ConsumerTag(), out methodName);
-                }
-
-                if (methodName != null)
-                {
-                    return methodName;
-                }
-            }
-
-            return DefaultListenerMethod;
-        }
-
-        protected virtual object InvokeListenerMethod(string methodName, object[] arguments, IMessage originalMessage)
-        {
-            try
-            {
-                var methodInvoker = new MethodInvoker();
-                methodInvoker.SetTargetObject(Instance);
-                methodInvoker.TargetMethod = methodName;
-                methodInvoker.SetArguments(arguments);
-                methodInvoker.Prepare();
-                return methodInvoker.Invoke();
-            }
-            catch (TargetInvocationException ex)
-            {
-                var targetEx = ex.InnerException;
-
-                throw new ListenerExecutionFailedException(
-                    "Listener method '" + methodName + "' threw exception", targetEx, originalMessage);
-            }
-            catch (Exception ex)
-            {
-                var arrayClass = new List<string>();
-                if (arguments != null)
-                {
-                    foreach (var argument in arguments)
+                    if (argument != null)
                     {
-                        if (argument != null)
-                        {
-                            arrayClass.Add(argument.GetType().ToString());
-                        }
+                        arrayClass.Add(argument.GetType().ToString());
                     }
                 }
-
-                throw new ListenerExecutionFailedException(
-                    "Failed to invoke target method '" + methodName
-                        + "' with argument type = [" + string.Join(",", arrayClass)
-                        + "], value = [" + NullSafeToString(arguments) + "]", ex,
-                    originalMessage);
             }
-        }
 
-        private string NullSafeToString(object[] values)
+            throw new ListenerExecutionFailedException(
+                "Failed to invoke target method '" + methodName
+                                                   + "' with argument type = [" + string.Join(",", arrayClass)
+                                                   + "], value = [" + NullSafeToString(arguments) + "]", ex,
+                originalMessage);
+        }
+    }
+
+    private string NullSafeToString(object[] values)
+    {
+        var sb = new StringBuilder();
+        foreach (var v in values)
         {
-            var sb = new StringBuilder();
-            foreach (var v in values)
-            {
-                sb.Append(v);
-                sb.Append(',');
-            }
-
-            return sb.ToString(0, sb.Length - 1);
+            sb.Append(v);
+            sb.Append(',');
         }
+
+        return sb.ToString(0, sb.Length - 1);
     }
 }

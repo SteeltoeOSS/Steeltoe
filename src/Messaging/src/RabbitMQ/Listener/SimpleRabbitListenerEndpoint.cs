@@ -6,27 +6,26 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public class SimpleRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
 {
-    public class SimpleRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
+    public IMessageListener MessageListener { get; set; }
+
+    public SimpleRabbitListenerEndpoint(IApplicationContext context, IMessageListener listener = null, ILoggerFactory loggerFactory = null)
+        : base(context, loggerFactory)
     {
-        public IMessageListener MessageListener { get; set; }
+        MessageListener = listener;
+    }
 
-        public SimpleRabbitListenerEndpoint(IApplicationContext context, IMessageListener listener = null, ILoggerFactory loggerFactory = null)
-            : base(context, loggerFactory)
-        {
-            MessageListener = listener;
-        }
+    protected override IMessageListener CreateMessageListener(IMessageListenerContainer container)
+    {
+        return MessageListener;
+    }
 
-        protected override IMessageListener CreateMessageListener(IMessageListenerContainer container)
-        {
-            return MessageListener;
-        }
-
-        protected override StringBuilder GetEndpointDescription()
-        {
-            return base.GetEndpointDescription()
-                    .Append(" | messageListener='").Append(MessageListener).Append('\'');
-        }
+    protected override StringBuilder GetEndpointDescription()
+    {
+        return base.GetEndpointDescription()
+            .Append(" | messageListener='").Append(MessageListener).Append('\'');
     }
 }

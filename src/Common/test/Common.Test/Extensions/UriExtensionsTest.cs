@@ -6,52 +6,51 @@ using Steeltoe.Common.Extensions;
 using System;
 using Xunit;
 
-namespace Steeltoe.Common.Test.Extensions
+namespace Steeltoe.Common.Test.Extensions;
+
+public class UriExtensionsTest
 {
-    public class UriExtensionsTest
+    [Fact]
+    public void MaskExistingBasicAuthenticationToString()
     {
-        [Fact]
-        public void MaskExistingBasicAuthenticationToString()
-        {
-            var uri = new Uri("http://username:password@www.example.com/");
-            var expected = "http://****:****@www.example.com/";
+        var uri = new Uri("http://username:password@www.example.com/");
+        var expected = "http://****:****@www.example.com/";
 
-            var masked = uri.ToMaskedString();
+        var masked = uri.ToMaskedString();
 
-            Assert.Equal(expected, masked);
-        }
+        Assert.Equal(expected, masked);
+    }
 
-        [Fact]
-        public void MaskExistingBasicAuthentication()
-        {
-            var uri = new Uri("http://username:password@www.example.com/");
-            var expected = new Uri("http://****:****@www.example.com/");
+    [Fact]
+    public void MaskExistingBasicAuthentication()
+    {
+        var uri = new Uri("http://username:password@www.example.com/");
+        var expected = new Uri("http://****:****@www.example.com/");
 
-            var masked = uri.ToMaskedUri();
+        var masked = uri.ToMaskedUri();
 
-            Assert.Equal(expected, masked);
-        }
+        Assert.Equal(expected, masked);
+    }
 
-        [Fact]
-        public void DontMaskStringIfNotBasicAuthenticationExists()
-        {
-            var uri = new Uri("http://www.example.com/");
-            var expected = uri.ToString();
+    [Fact]
+    public void DontMaskStringIfNotBasicAuthenticationExists()
+    {
+        var uri = new Uri("http://www.example.com/");
+        var expected = uri.ToString();
 
-            var masked = uri.ToMaskedString();
+        var masked = uri.ToMaskedString();
 
-            Assert.Equal(expected, masked);
-        }
+        Assert.Equal(expected, masked);
+    }
 
-        [Fact]
-        public void DontMaskUriIfNotBasicAuthenticationExists()
-        {
-            var uri = new Uri("http://www.example.com/");
-            var expected = new Uri(uri.ToString());
+    [Fact]
+    public void DontMaskUriIfNotBasicAuthenticationExists()
+    {
+        var uri = new Uri("http://www.example.com/");
+        var expected = new Uri(uri.ToString());
 
-            var masked = uri.ToMaskedUri();
+        var masked = uri.ToMaskedUri();
 
-            Assert.Equal(expected, masked);
-        }
+        Assert.Equal(expected, masked);
     }
 }

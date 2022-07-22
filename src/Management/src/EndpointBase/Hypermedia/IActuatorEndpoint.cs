@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Hypermedia
+namespace Steeltoe.Management.Endpoint.Hypermedia;
+
+public interface IActuatorEndpoint
 {
-    public interface IActuatorEndpoint
-    {
-        Links Invoke(string baseUrl);
-    }
+    Links Invoke(string baseUrl);
 }

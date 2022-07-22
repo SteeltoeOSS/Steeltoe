@@ -10,74 +10,73 @@ using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+public class TestObserverBase<T> : ObserverBase<T>
 {
-    public class TestObserverBase<T> : ObserverBase<T>
+    public const int STABLE_TICK_COUNT = 2;
+
+    public volatile int TickCount = 0;
+
+    public volatile bool StreamRunning = false;
+
+    private readonly CountdownEvent latch;
+    private readonly ITestOutputHelper output;
+
+    public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
     {
-        public const int STABLE_TICK_COUNT = 2;
+        this.latch = latch;
+        this.output = output;
+    }
 
-        public volatile int TickCount = 0;
+    protected override void OnCompletedCore()
+    {
+        output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
+        StreamRunning = false;
+        latch.SignalEx();
+    }
 
-        public volatile bool StreamRunning = false;
+    protected override void OnErrorCore(Exception error)
+    {
+        Assert.False(true, error.Message);
+    }
 
-        private readonly CountdownEvent latch;
-        private readonly ITestOutputHelper output;
-
-        public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
+    protected override void OnNextCore(T value)
+    {
+        TickCount++;
+        if (TickCount >= STABLE_TICK_COUNT)
         {
-            this.latch = latch;
-            this.output = output;
+            StreamRunning = true;
         }
 
-        protected override void OnCompletedCore()
+        if (output != null)
         {
-            output?.WriteLine("OnComplete @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId);
-            StreamRunning = false;
-            latch.SignalEx();
-        }
-
-        protected override void OnErrorCore(Exception error)
-        {
-            Assert.False(true, error.Message);
-        }
-
-        protected override void OnNextCore(T value)
-        {
-            TickCount++;
-            if (TickCount >= STABLE_TICK_COUNT)
+            try
             {
-                StreamRunning = true;
-            }
-
-            if (output != null)
-            {
-                try
+                var tostring = value.ToString();
+                if (value is Array array)
                 {
-                    var tostring = value.ToString();
-                    if (value is Array array)
-                    {
-                        tostring = Join(",", array);
-                    }
+                    tostring = Join(",", array);
+                }
 
-                    output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
-                    output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                }
-                catch (Exception)
-                {
-                }
+                output.WriteLine("OnNext @ " + Time.CurrentTimeMillis + " :" + Thread.CurrentThread.ManagedThreadId + " : Value= " + tostring);
+                output.WriteLine("ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             }
-        }
-
-        private string Join(string v, Array array)
-        {
-            var sb = new StringBuilder("[");
-            foreach (var val in array)
+            catch (Exception)
             {
-                sb.Append(val.ToString());
-                sb.Append(v);
             }
-
-            return sb.ToString(0, sb.Length - 1) + "]";
         }
+    }
+
+    private string Join(string v, Array array)
+    {
+        var sb = new StringBuilder("[");
+        foreach (var val in array)
+        {
+            sb.Append(val.ToString());
+            sb.Append(v);
+        }
+
+        return sb.ToString(0, sb.Length - 1) + "]";
     }
 }

@@ -12,80 +12,79 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+
+public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor, IOrdered
 {
-    public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor, IOrdered
+    protected AbstractDecompressingPostProcessor()
+        : this(false)
     {
-        protected AbstractDecompressingPostProcessor()
-            : this(false)
-        {
-        }
-
-        protected AbstractDecompressingPostProcessor(bool alwaysDecompress)
-        {
-            AlwaysDecompress = alwaysDecompress;
-        }
-
-        public int Order { get; set; }
-
-        public bool AlwaysDecompress { get; }
-
-        public virtual IMessage PostProcessMessage(IMessage message)
-        {
-            var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
-            if (AlwaysDecompress || (autoDecompress != null && autoDecompress.Value))
-            {
-                try
-                {
-                    var compressed = new MemoryStream((byte[])message.Payload);
-                    var decompressor = GetDeCompressorStream(compressed);
-                    var outStream = new MemoryStream();
-                    decompressor.CopyTo(outStream);
-                    decompressor.Close();
-
-                    var headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
-                    var encoding = headers.ContentEncoding;
-                    var colonAt = encoding.IndexOf(':');
-                    if (colonAt > 0)
-                    {
-                        encoding = encoding.Substring(0, colonAt);
-                    }
-
-                    if (!GetEncoding().Equals(encoding))
-                    {
-                        throw new InvalidOperationException("Content encoding must be:" + GetEncoding() + ", was:" + encoding);
-                    }
-
-                    if (colonAt < 0)
-                    {
-                        headers.ContentEncoding = null;
-                    }
-                    else
-                    {
-                        headers.ContentEncoding = headers.ContentEncoding.Substring(colonAt + 1);
-                    }
-
-                    headers.RemoveHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
-                    return Message.Create(outStream.ToArray(), headers.ToMessageHeaders());
-                }
-                catch (IOException e)
-                {
-                    throw new RabbitIOException(e);
-                }
-            }
-            else
-            {
-                return message;
-            }
-        }
-
-        public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
-        {
-            return PostProcessMessage(message);
-        }
-
-        protected abstract string GetEncoding();
-
-        protected abstract Stream GetDeCompressorStream(Stream stream);
     }
+
+    protected AbstractDecompressingPostProcessor(bool alwaysDecompress)
+    {
+        AlwaysDecompress = alwaysDecompress;
+    }
+
+    public int Order { get; set; }
+
+    public bool AlwaysDecompress { get; }
+
+    public virtual IMessage PostProcessMessage(IMessage message)
+    {
+        var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
+        if (AlwaysDecompress || (autoDecompress != null && autoDecompress.Value))
+        {
+            try
+            {
+                var compressed = new MemoryStream((byte[])message.Payload);
+                var decompressor = GetDeCompressorStream(compressed);
+                var outStream = new MemoryStream();
+                decompressor.CopyTo(outStream);
+                decompressor.Close();
+
+                var headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
+                var encoding = headers.ContentEncoding;
+                var colonAt = encoding.IndexOf(':');
+                if (colonAt > 0)
+                {
+                    encoding = encoding.Substring(0, colonAt);
+                }
+
+                if (!GetEncoding().Equals(encoding))
+                {
+                    throw new InvalidOperationException("Content encoding must be:" + GetEncoding() + ", was:" + encoding);
+                }
+
+                if (colonAt < 0)
+                {
+                    headers.ContentEncoding = null;
+                }
+                else
+                {
+                    headers.ContentEncoding = headers.ContentEncoding.Substring(colonAt + 1);
+                }
+
+                headers.RemoveHeader(RabbitMessageHeaders.SPRING_AUTO_DECOMPRESS);
+                return Message.Create(outStream.ToArray(), headers.ToMessageHeaders());
+            }
+            catch (IOException e)
+            {
+                throw new RabbitIOException(e);
+            }
+        }
+        else
+        {
+            return message;
+        }
+    }
+
+    public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
+    {
+        return PostProcessMessage(message);
+    }
+
+    protected abstract string GetEncoding();
+
+    protected abstract Stream GetDeCompressorStream(Stream stream);
 }

@@ -5,12 +5,11 @@
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 
-namespace Steeltoe.Management.Endpoint.Health
-{
-    public interface IHealthEndpoint
-    {
-        HealthEndpointResponse Invoke(ISecurityContext securityContext);
+namespace Steeltoe.Management.Endpoint.Health;
 
-        int GetStatusCode(HealthCheckResult health);
-    }
+public interface IHealthEndpoint
+{
+    HealthEndpointResponse Invoke(ISecurityContext securityContext);
+
+    int GetStatusCode(HealthCheckResult health);
 }

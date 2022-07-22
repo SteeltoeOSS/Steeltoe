@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.Redis.Test
+namespace Steeltoe.Connector.Redis.Test;
+
+public static class RedisCacheTestHelpers
 {
-    public static class RedisCacheTestHelpers
-    {
-        public static string SingleServerVCAP = @"
+    public static string SingleServerVCAP = @"
             {
                 ""p-redis"": [{
                         ""credentials"": {
@@ -26,7 +26,7 @@ namespace Steeltoe.Connector.Redis.Test
                 }]
             }";
 
-        public static string SingleServerEnterpriseVCAP = @"
+    public static string SingleServerEnterpriseVCAP = @"
             {
                 ""redislabs"": [{
                     ""label"": ""redislabs"",
@@ -53,7 +53,7 @@ namespace Steeltoe.Connector.Redis.Test
                 }]
             }";
 
-        public static string SingleServerVCAP_AzureBroker = @"
+    public static string SingleServerVCAP_AzureBroker = @"
             {
                 ""azure-rediscache"": [{
                     ""name"": ""azure-redis"",
@@ -79,7 +79,7 @@ namespace Steeltoe.Connector.Redis.Test
                 }]
             }";
 
-        public static string SingleServerVCAP_AzureBrokerSecure = @"
+    public static string SingleServerVCAP_AzureBrokerSecure = @"
             {
                 ""azure-rediscache"": [{
                     ""name"": ""redis"",
@@ -105,7 +105,7 @@ namespace Steeltoe.Connector.Redis.Test
                 }]
             }";
 
-        public static string TwoServerVCAP = @"
+    public static string TwoServerVCAP = @"
             {
                 ""p-redis"": [{
                     ""credentials"": {
@@ -140,5 +140,4 @@ namespace Steeltoe.Connector.Redis.Test
                     ]
                 }]
             }";
-    }
 }

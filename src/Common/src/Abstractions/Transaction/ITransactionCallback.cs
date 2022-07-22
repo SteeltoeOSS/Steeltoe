@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+public interface ITransactionCallback<out T>
 {
-    public interface ITransactionCallback<out T>
-    {
-        T DoInTransaction(ITransactionStatus status);
-    }
+    T DoInTransaction(ITransactionStatus status);
 }

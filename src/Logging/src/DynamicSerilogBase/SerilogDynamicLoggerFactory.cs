@@ -5,44 +5,43 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog
+namespace Steeltoe.Extensions.Logging.DynamicSerilog;
+
+public class SerilogDynamicLoggerFactory : ILoggerFactory
 {
-    public class SerilogDynamicLoggerFactory : ILoggerFactory
+    private readonly IDynamicLoggerProvider _provider;
+
+    public SerilogDynamicLoggerFactory(IDynamicLoggerProvider provider)
     {
-        private readonly IDynamicLoggerProvider _provider;
+        _provider = provider;
+    }
 
-        public SerilogDynamicLoggerFactory(IDynamicLoggerProvider provider)
-        {
-            _provider = provider;
-        }
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+    public ILogger CreateLogger(string categoryName)
+    {
+        return _provider.CreateLogger(categoryName);
+    }
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            return _provider.CreateLogger(categoryName);
-        }
+    public void AddProvider(ILoggerProvider provider)
+    {
+        // noop
+    }
 
-        public void AddProvider(ILoggerProvider provider)
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            // noop
+            _provider.Dispose();
         }
+    }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _provider.Dispose();
-            }
-        }
-
-        ~SerilogDynamicLoggerFactory()
-        {
-            Dispose(false);
-        }
+    ~SerilogDynamicLoggerFactory()
+    {
+        Dispose(false);
     }
 }

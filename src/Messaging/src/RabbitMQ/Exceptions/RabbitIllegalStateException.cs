@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
-{
-    public class RabbitIllegalStateException : RabbitException
-    {
-        public RabbitIllegalStateException(string message)
-        : base(message)
-        {
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
-        public RabbitIllegalStateException(string message, Exception cause)
+public class RabbitIllegalStateException : RabbitException
+{
+    public RabbitIllegalStateException(string message)
+        : base(message)
+    {
+    }
+
+    public RabbitIllegalStateException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

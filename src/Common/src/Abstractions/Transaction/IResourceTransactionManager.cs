@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+public interface IResourceTransactionManager : IPlatformTransactionManager
 {
-    public interface IResourceTransactionManager : IPlatformTransactionManager
-    {
-        object ResourceFactory { get; }
-    }
+    object ResourceFactory { get; }
 }

@@ -4,15 +4,14 @@
 
 using System;
 
-namespace Steeltoe.Connector.Hystrix
-{
-    public class HystrixConnectionFactory
-    {
-        public HystrixConnectionFactory(object realFactory)
-        {
-            ConnectionFactory = realFactory ?? throw new ArgumentNullException(nameof(realFactory));
-        }
+namespace Steeltoe.Connector.Hystrix;
 
-        public object ConnectionFactory { get; private set; }
+public class HystrixConnectionFactory
+{
+    public HystrixConnectionFactory(object realFactory)
+    {
+        ConnectionFactory = realFactory ?? throw new ArgumentNullException(nameof(realFactory));
     }
+
+    public object ConnectionFactory { get; private set; }
 }

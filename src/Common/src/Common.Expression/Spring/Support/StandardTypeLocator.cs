@@ -5,71 +5,70 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+
+public class StandardTypeLocator : ITypeLocator
 {
-    public class StandardTypeLocator : ITypeLocator
+    private readonly List<string> _knownNamespacePrefixes = new (1);
+
+    public StandardTypeLocator()
     {
-        private readonly List<string> _knownNamespacePrefixes = new (1);
+        _knownNamespacePrefixes.Add("System");
+    }
 
-        public StandardTypeLocator()
+    public virtual void RegisterImport(string prefix)
+    {
+        _knownNamespacePrefixes.Add(prefix);
+    }
+
+    public virtual void RemoveImport(string prefix)
+    {
+        _knownNamespacePrefixes.Remove(prefix);
+    }
+
+    public virtual List<string> ImportPrefixes => new (_knownNamespacePrefixes);
+
+    public virtual Type FindType(string typeName)
+    {
+        var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Type result = null;
+        typeName = typeName.Replace("$", "+"); // Handle nested type synatax  a.b.C$Nested
+        foreach (var assembly in loadedAssemblies)
         {
-            _knownNamespacePrefixes.Add("System");
-        }
-
-        public virtual void RegisterImport(string prefix)
-        {
-            _knownNamespacePrefixes.Add(prefix);
-        }
-
-        public virtual void RemoveImport(string prefix)
-        {
-            _knownNamespacePrefixes.Remove(prefix);
-        }
-
-        public virtual List<string> ImportPrefixes => new (_knownNamespacePrefixes);
-
-        public virtual Type FindType(string typeName)
-        {
-            var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
-            Type result = null;
-            typeName = typeName.Replace("$", "+"); // Handle nested type synatax  a.b.C$Nested
-            foreach (var assembly in loadedAssemblies)
+            try
             {
-                try
+                result = assembly.GetType(typeName, false);
+                if (result == null)
                 {
-                    result = assembly.GetType(typeName, false);
-                    if (result == null)
+                    foreach (var prefix in _knownNamespacePrefixes)
                     {
-                        foreach (var prefix in _knownNamespacePrefixes)
+                        try
                         {
-                            try
+                            var nameToLookup = prefix + '.' + typeName;
+                            result = assembly.GetType(nameToLookup, false);
+                            if (result != null)
                             {
-                                var nameToLookup = prefix + '.' + typeName;
-                                result = assembly.GetType(nameToLookup, false);
-                                if (result != null)
-                                {
-                                    break;
-                                }
+                                break;
                             }
-                            catch (Exception)
-                            {
-                                // might be a different prefix
-                            }
+                        }
+                        catch (Exception)
+                        {
+                            // might be a different prefix
                         }
                     }
                 }
-                catch (Exception)
-                {
-                    // Eat exceptions
-                }
-
-                if (result != null)
-                {
-                    return result;
-                }
+            }
+            catch (Exception)
+            {
+                // Eat exceptions
             }
 
-            throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
+            if (result != null)
+            {
+                return result;
+            }
         }
+
+        throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
     }
 }

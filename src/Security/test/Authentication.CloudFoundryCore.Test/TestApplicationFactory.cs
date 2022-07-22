@@ -11,38 +11,37 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
+    where TStartup : class
 {
-    public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
-        where TStartup : class
+    private readonly IReadOnlyDictionary<string, string> configuration;
+
+    public TestApplicationFactory(IReadOnlyDictionary<string, string> configuration = null)
     {
-        private readonly IReadOnlyDictionary<string, string> configuration;
+        this.configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
+    }
 
-        public TestApplicationFactory(IReadOnlyDictionary<string, string> configuration = null)
-        {
-            this.configuration = configuration ?? ImmutableDictionary<string, string>.Empty;
-        }
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        builder.UseContentRoot(Directory.GetCurrentDirectory());
 
-        protected override IHost CreateHost(IHostBuilder builder)
-        {
-            builder.UseContentRoot(Directory.GetCurrentDirectory());
+        return base.CreateHost(builder);
+    }
 
-            return base.CreateHost(builder);
-        }
+    protected override IHostBuilder CreateHostBuilder()
+    {
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(webHostBuilder =>
+            {
+                webHostBuilder.UseStartup<TStartup>().UseTestServer();
+            })
+            .ConfigureAppConfiguration((hostingContext, config) =>
+            {
+                config.AddInMemoryCollection(configuration);
+            });
 
-        protected override IHostBuilder CreateHostBuilder()
-        {
-            var builder = Host.CreateDefaultBuilder()
-                .ConfigureWebHostDefaults(webHostBuilder =>
-                {
-                    webHostBuilder.UseStartup<TStartup>().UseTestServer();
-                })
-                .ConfigureAppConfiguration((hostingContext, config) =>
-                {
-                    config.AddInMemoryCollection(configuration);
-                });
-
-            return builder;
-        }
+        return builder;
     }
 }

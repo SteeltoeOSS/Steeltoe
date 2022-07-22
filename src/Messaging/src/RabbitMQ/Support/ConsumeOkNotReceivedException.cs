@@ -4,13 +4,12 @@
 
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support;
+
+public class ConsumeOkNotReceivedException : RabbitException
 {
-    public class ConsumeOkNotReceivedException : RabbitException
-    {
-        public ConsumeOkNotReceivedException(string message)
+    public ConsumeOkNotReceivedException(string message)
         : base(message)
-        {
-        }
+    {
     }
 }

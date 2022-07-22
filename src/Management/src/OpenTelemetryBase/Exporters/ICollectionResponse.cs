@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters
+namespace Steeltoe.Management.OpenTelemetry.Exporters;
+
+public interface ICollectionResponse
 {
-    public interface ICollectionResponse
-    {
-        DateTime GeneratedAtUtc { get; }
-    }
+    DateTime GeneratedAtUtc { get; }
 }

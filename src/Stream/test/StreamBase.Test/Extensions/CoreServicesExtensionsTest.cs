@@ -12,23 +12,22 @@ using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.Core;
 using Xunit;
 
-namespace Steeltoe.Stream.Extensions
+namespace Steeltoe.Stream.Extensions;
+
+public class CoreServicesExtensionsTest
 {
-    public class CoreServicesExtensionsTest
+    [Fact]
+    public void AddCoreServices_AddsServices()
     {
-        [Fact]
-        public void AddCoreServices_AddsServices()
-        {
-            var container = new ServiceCollection();
-            container.AddOptions();
-            container.AddLogging((b) => b.AddConsole());
-            var config = new ConfigurationBuilder().Build();
-            container.AddSingleton<IConfiguration>(config);
-            container.AddCoreServices();
-            var serviceProvider = container.BuildServiceProvider();
-            Assert.NotNull(serviceProvider.GetService<IApplicationContext>());
-            Assert.NotNull(serviceProvider.GetService<IConversionService>());
-            Assert.NotNull(serviceProvider.GetService<ILifecycleProcessor>());
-        }
+        var container = new ServiceCollection();
+        container.AddOptions();
+        container.AddLogging((b) => b.AddConsole());
+        var config = new ConfigurationBuilder().Build();
+        container.AddSingleton<IConfiguration>(config);
+        container.AddCoreServices();
+        var serviceProvider = container.BuildServiceProvider();
+        Assert.NotNull(serviceProvider.GetService<IApplicationContext>());
+        Assert.NotNull(serviceProvider.GetService<IConversionService>());
+        Assert.NotNull(serviceProvider.GetService<ILifecycleProcessor>());
     }
 }

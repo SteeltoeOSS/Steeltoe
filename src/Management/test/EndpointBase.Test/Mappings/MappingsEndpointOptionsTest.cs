@@ -7,24 +7,23 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test
-{
-    public class MappingsEndpointOptionsTest : BaseTest
-    {
-        [Fact]
-        public void Constructor_InitializesWithDefaults()
-        {
-            var opts = new MappingsEndpointOptions();
-            Assert.Null(opts.Enabled);
-            Assert.Equal("mappings", opts.Id);
-            Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
-        }
+namespace Steeltoe.Management.Endpoint.Mappings.Test;
 
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(config));
-        }
+public class MappingsEndpointOptionsTest : BaseTest
+{
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
+    {
+        var opts = new MappingsEndpointOptions();
+        Assert.Null(opts.Enabled);
+        Assert.Equal("mappings", opts.Id);
+        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+    }
+
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
+    {
+        IConfiguration config = null;
+        Assert.Throws<ArgumentNullException>(() => new MappingsEndpointOptions(config));
     }
 }

@@ -8,34 +8,33 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
+
+public class StartupWithSecurity
 {
-    public class StartupWithSecurity
+    public StartupWithSecurity(IConfiguration configuration)
     {
-        public StartupWithSecurity(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddHypermediaActuator(Configuration);
-            services.AddInfoActuator(Configuration);
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddCloudFoundryActuator(Configuration);
+        services.AddHypermediaActuator(Configuration);
+        services.AddInfoActuator(Configuration);
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseCloudFoundrySecurity();
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseCloudFoundrySecurity();
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<CloudFoundryEndpoint>();
-                endpoints.Map<InfoEndpoint>();
-            });
-        }
+            endpoints.Map<CloudFoundryEndpoint>();
+            endpoints.Map<InfoEndpoint>();
+        });
     }
 }

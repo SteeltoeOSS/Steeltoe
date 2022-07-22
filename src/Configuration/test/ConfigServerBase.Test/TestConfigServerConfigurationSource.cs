@@ -2,19 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-﻿using Microsoft.Extensions.Configuration;
+ using Microsoft.Extensions.Configuration;
 
-﻿namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+
+public class TestConfigServerConfigurationSource : IConfigurationSource
 {
-    public class TestConfigServerConfigurationSource : IConfigurationSource
+    private readonly IConfigurationProvider _provider;
+
+    public TestConfigServerConfigurationSource(IConfigurationProvider provider)
     {
-        private readonly IConfigurationProvider _provider;
-
-        public TestConfigServerConfigurationSource(IConfigurationProvider provider)
-        {
-            _provider = provider;
-        }
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder) => _provider;
+        _provider = provider;
     }
+
+    public IConfigurationProvider Build(IConfigurationBuilder builder) => _provider;
 }

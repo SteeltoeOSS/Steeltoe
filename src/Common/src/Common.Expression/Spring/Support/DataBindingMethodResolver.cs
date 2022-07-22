@@ -6,39 +6,38 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+
+public class DataBindingMethodResolver : ReflectiveMethodResolver
 {
-    public class DataBindingMethodResolver : ReflectiveMethodResolver
-    {
-        private DataBindingMethodResolver()
+    private DataBindingMethodResolver()
         : base()
+    {
+    }
+
+    public static DataBindingMethodResolver ForInstanceMethodInvocation()
+    {
+        return new DataBindingMethodResolver();
+    }
+
+    public override IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+    {
+        if (targetObject is Type)
         {
+            throw new ArgumentException("DataBindingMethodResolver does not support Class targets");
         }
 
-        public static DataBindingMethodResolver ForInstanceMethodInvocation()
+        return base.Resolve(context, targetObject, name, argumentTypes);
+    }
+
+    protected override bool IsCandidateForInvocation(MethodInfo method, Type targetClass)
+    {
+        if (method.IsStatic)
         {
-            return new DataBindingMethodResolver();
+            return false;
         }
 
-        public override IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
-        {
-            if (targetObject is Type)
-            {
-                throw new ArgumentException("DataBindingMethodResolver does not support Class targets");
-            }
-
-            return base.Resolve(context, targetObject, name, argumentTypes);
-        }
-
-        protected override bool IsCandidateForInvocation(MethodInfo method, Type targetClass)
-        {
-            if (method.IsStatic)
-            {
-                return false;
-            }
-
-            var clazz = method.DeclaringType;
-            return clazz != typeof(object) && clazz != typeof(Type);
-        }
+        var clazz = method.DeclaringType;
+        return clazz != typeof(object) && clazz != typeof(Type);
     }
 }

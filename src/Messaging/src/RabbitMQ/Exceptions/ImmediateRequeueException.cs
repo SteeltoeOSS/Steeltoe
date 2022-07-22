@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class ImmediateRequeueException : RabbitException
 {
-    public class ImmediateRequeueException : RabbitException
-    {
-        public ImmediateRequeueException(string message)
+    public ImmediateRequeueException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public ImmediateRequeueException(Exception cause)
+    public ImmediateRequeueException(Exception cause)
         : base(cause)
-        {
-        }
+    {
+    }
 
-        public ImmediateRequeueException(string message, Exception cause)
+    public ImmediateRequeueException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

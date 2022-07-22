@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Management.Endpoint.Health;
+
+public enum ShowDetails
 {
-    public enum ShowDetails
-    {
-        Always,
-        Never,
-        WhenAuthorized
-    }
+    Always,
+    Never,
+    WhenAuthorized
 }

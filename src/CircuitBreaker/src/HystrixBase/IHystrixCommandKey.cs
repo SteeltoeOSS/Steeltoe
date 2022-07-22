@@ -5,29 +5,28 @@
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixCommandKey : IHystrixKey
 {
-    public interface IHystrixCommandKey : IHystrixKey
+}
+
+public class HystrixCommandKeyDefault : HystrixKeyDefault, IHystrixCommandKey
+{
+    private static readonly ConcurrentDictionary<string, HystrixCommandKeyDefault> Intern = new ();
+
+    internal HystrixCommandKeyDefault(string name)
+        : base(name)
     {
     }
 
-    public class HystrixCommandKeyDefault : HystrixKeyDefault, IHystrixCommandKey
+    public static IHystrixCommandKey AsKey(string name)
     {
-        private static readonly ConcurrentDictionary<string, HystrixCommandKeyDefault> Intern = new ();
+        return Intern.GetOrAddEx(name, k => new HystrixCommandKeyDefault(k));
+    }
 
-        internal HystrixCommandKeyDefault(string name)
-            : base(name)
-        {
-        }
-
-        public static IHystrixCommandKey AsKey(string name)
-        {
-            return Intern.GetOrAddEx(name, k => new HystrixCommandKeyDefault(k));
-        }
-
-        public static int CommandCount
-        {
-            get { return Intern.Count; }
-        }
+    public static int CommandCount
+    {
+        get { return Intern.Count; }
     }
 }

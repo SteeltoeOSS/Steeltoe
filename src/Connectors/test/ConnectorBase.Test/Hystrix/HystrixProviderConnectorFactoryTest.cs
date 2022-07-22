@@ -7,35 +7,34 @@ using Steeltoe.Connector.Services;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.Hystrix.Test
+namespace Steeltoe.Connector.Hystrix.Test;
+
+public class HystrixProviderConnectorFactoryTest
 {
-    public class HystrixProviderConnectorFactoryTest
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
     {
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            HystrixProviderConnectorOptions config = null;
-            HystrixRabbitMQServiceInfo si = null;
+        HystrixProviderConnectorOptions config = null;
+        HystrixRabbitMQServiceInfo si = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
-            Assert.Contains(nameof(config), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory)));
+        Assert.Contains(nameof(config), ex.Message);
+    }
 
-        [Fact]
-        public void Create_ReturnsRabbitMQConnection()
+    [Fact]
+    public void Create_ReturnsRabbitMQConnection()
+    {
+        var config = new HystrixProviderConnectorOptions()
         {
-            var config = new HystrixProviderConnectorOptions()
-            {
-                Server = "localhost",
-                Port = 5672,
-                Password = "password",
-                Username = "username",
-                VirtualHost = "vhost"
-            };
-            var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
-            var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));
-            var connection = factory.Create(null);
-            Assert.NotNull(connection);
-        }
+            Server = "localhost",
+            Port = 5672,
+            Password = "password",
+            Username = "username",
+            VirtualHost = "vhost"
+        };
+        var si = new HystrixRabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost", false);
+        var factory = new HystrixProviderConnectorFactory(si, config, typeof(ConnectionFactory));
+        var connection = factory.Create(null);
+        Assert.NotNull(connection);
     }
 }

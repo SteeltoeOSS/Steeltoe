@@ -4,14 +4,13 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Info
+namespace Steeltoe.Management.Info;
+
+public interface IInfoBuilder
 {
-    public interface IInfoBuilder
-    {
-        IInfoBuilder WithInfo(string key, object value);
+    IInfoBuilder WithInfo(string key, object value);
 
-        IInfoBuilder WithInfo(Dictionary<string, object> details);
+    IInfoBuilder WithInfo(Dictionary<string, object> details);
 
-        Dictionary<string, object> Build();
-    }
+    Dictionary<string, object> Build();
 }

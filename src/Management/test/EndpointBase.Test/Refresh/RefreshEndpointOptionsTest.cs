@@ -7,25 +7,24 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Refresh.Test
-{
-    public class RefreshEndpointOptionsTest : BaseTest
-    {
-        [Fact]
-        public void Constructor_InitializesWithDefaults()
-        {
-            var opts = new RefreshEndpointOptions();
-            Assert.Null(opts.Enabled);
-            Assert.Equal("refresh", opts.Id);
-            Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
-            Assert.True(opts.ReturnConfiguration);
-        }
+namespace Steeltoe.Management.Endpoint.Refresh.Test;
 
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new RefreshEndpointOptions(config));
-        }
+public class RefreshEndpointOptionsTest : BaseTest
+{
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
+    {
+        var opts = new RefreshEndpointOptions();
+        Assert.Null(opts.Enabled);
+        Assert.Equal("refresh", opts.Id);
+        Assert.Equal(Permissions.RESTRICTED, opts.RequiredPermissions);
+        Assert.True(opts.ReturnConfiguration);
+    }
+
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
+    {
+        IConfiguration config = null;
+        Assert.Throws<ArgumentNullException>(() => new RefreshEndpointOptions(config));
     }
 }

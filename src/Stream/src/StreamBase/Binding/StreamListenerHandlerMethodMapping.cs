@@ -5,27 +5,26 @@
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+internal class StreamListenerHandlerMethodMapping
 {
-    internal class StreamListenerHandlerMethodMapping
+    public StreamListenerHandlerMethodMapping(Type implementation, MethodInfo method, string condition, string defaultOutputChannel, bool copyHeaders)
     {
-        public StreamListenerHandlerMethodMapping(Type implementation, MethodInfo method, string condition, string defaultOutputChannel, bool copyHeaders)
-        {
-            Implementation = implementation;
-            Method = method;
-            Condition = condition;
-            DefaultOutputChannel = defaultOutputChannel;
-            CopyHeaders = copyHeaders;
-        }
-
-        public Type Implementation { get; }
-
-        public MethodInfo Method { get; }
-
-        public string Condition { get; }
-
-        public string DefaultOutputChannel { get; }
-
-        public bool CopyHeaders { get; }
+        Implementation = implementation;
+        Method = method;
+        Condition = condition;
+        DefaultOutputChannel = defaultOutputChannel;
+        CopyHeaders = copyHeaders;
     }
+
+    public Type Implementation { get; }
+
+    public MethodInfo Method { get; }
+
+    public string Condition { get; }
+
+    public string DefaultOutputChannel { get; }
+
+    public bool CopyHeaders { get; }
 }

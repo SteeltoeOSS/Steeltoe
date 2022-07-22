@@ -7,19 +7,18 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using System;
 
-namespace Steeltoe.Integration.Rabbit.Support
+namespace Steeltoe.Integration.Rabbit.Support;
+
+public class ManualAckListenerExecutionFailedException : ListenerExecutionFailedException
 {
-    public class ManualAckListenerExecutionFailedException : ListenerExecutionFailedException
+    public ManualAckListenerExecutionFailedException(string message, Exception cause, IMessage failedMessage, IModel channel, ulong deliveryTag)
+        : base(message, cause, failedMessage)
     {
-        public ManualAckListenerExecutionFailedException(string message, Exception cause, IMessage failedMessage, IModel channel, ulong deliveryTag)
-            : base(message, cause, failedMessage)
-        {
-            Channel = channel;
-            DeliveryTag = deliveryTag;
-        }
-
-        public IModel Channel { get; }
-
-        public ulong DeliveryTag { get; }
+        Channel = channel;
+        DeliveryTag = deliveryTag;
     }
+
+    public IModel Channel { get; }
+
+    public ulong DeliveryTag { get; }
 }

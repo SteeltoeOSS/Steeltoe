@@ -10,104 +10,104 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
+
+public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
 {
-    public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
+    protected BlockingCollection<Task> workQueue;
+
+    [ThreadStatic]
+    private static bool isHystrixThreadPoolThread;
+
+    private readonly object _lock = new ();
+
+    public HystrixQueuedTaskScheduler(IHystrixThreadPoolOptions options)
+        : base(options)
     {
-        protected BlockingCollection<Task> workQueue;
-
-        [ThreadStatic]
-        private static bool isHystrixThreadPoolThread;
-
-        private readonly object _lock = new ();
-
-        public HystrixQueuedTaskScheduler(IHystrixThreadPoolOptions options)
-            : base(options)
+        if (options.MaxQueueSize < 0)
         {
-            if (options.MaxQueueSize < 0)
-            {
-                throw new ArgumentOutOfRangeException("MaxQueueSize");
-            }
-
-            if (options.QueueSizeRejectionThreshold < 0)
-            {
-                throw new ArgumentOutOfRangeException("queueSizeRejectionThreshold");
-            }
-
-            workQueue = new BlockingCollection<Task>(queueSize);
-
-            StartThreadPoolWorker();
-            runningThreads = 1;
+            throw new ArgumentOutOfRangeException("MaxQueueSize");
         }
 
-        #region IHystrixTaskScheduler
-        public override int CurrentQueueSize
+        if (options.QueueSizeRejectionThreshold < 0)
         {
-            get
-            {
-                return workQueue.Count;
-            }
+            throw new ArgumentOutOfRangeException("queueSizeRejectionThreshold");
         }
 
-        public override bool IsQueueSpaceAvailable
+        workQueue = new BlockingCollection<Task>(queueSize);
+
+        StartThreadPoolWorker();
+        runningThreads = 1;
+    }
+
+    #region IHystrixTaskScheduler
+    public override int CurrentQueueSize
+    {
+        get
         {
-            get { return workQueue.Count < queueSizeRejectionThreshold; }
+            return workQueue.Count;
+        }
+    }
+
+    public override bool IsQueueSpaceAvailable
+    {
+        get { return workQueue.Count < queueSizeRejectionThreshold; }
+    }
+
+    #endregion IHystrixTaskScheduler
+
+    protected override IEnumerable<Task> GetScheduledTasks()
+    {
+        return workQueue.ToList();
+    }
+
+    protected override void QueueTask(Task task)
+    {
+        var isCommand = task.AsyncState is IHystrixInvokable;
+        if (!isCommand)
+        {
+            RunContinuation(task);
+            return;
         }
 
-        #endregion IHystrixTaskScheduler
-
-        protected override IEnumerable<Task> GetScheduledTasks()
+        if (runningThreads < corePoolSize)
         {
-            return workQueue.ToList();
-        }
-
-        protected override void QueueTask(Task task)
-        {
-            var isCommand = task.AsyncState is IHystrixInvokable;
-            if (!isCommand)
+            lock (_lock)
             {
-                RunContinuation(task);
-                return;
-            }
-
-            if (runningThreads < corePoolSize)
-            {
-                lock (_lock)
+                if (runningThreads < corePoolSize)
                 {
-                    if (runningThreads < corePoolSize)
-                    {
-                        Interlocked.Increment(ref runningThreads);
-                        StartThreadPoolWorker();
-                    }
+                    Interlocked.Increment(ref runningThreads);
+                    StartThreadPoolWorker();
                 }
             }
-            else if (allowMaxToDivergeFromCore && runningThreads < maximumPoolSize)
+        }
+        else if (allowMaxToDivergeFromCore && runningThreads < maximumPoolSize)
+        {
+            lock (_lock)
             {
-                lock (_lock)
+                if (runningThreads < maximumPoolSize)
                 {
-                    if (runningThreads < maximumPoolSize)
-                    {
-                        Interlocked.Increment(ref runningThreads);
-                        StartThreadPoolWorker();
-                    }
+                    Interlocked.Increment(ref runningThreads);
+                    StartThreadPoolWorker();
                 }
-            }
-
-            if (!IsQueueSpaceAvailable)
-            {
-                throw new RejectedExecutionException("Rejected command because task queue queueSize is at rejection threshold.");
-            }
-
-            if (!workQueue.TryAdd(task))
-            {
-                throw new RejectedExecutionException("Rejected command because task work queue rejected add.");
             }
         }
 
-        protected void StartThreadPoolWorker()
+        if (!IsQueueSpaceAvailable)
         {
-            System.Threading.ThreadPool.QueueUserWorkItem(
-                _ =>
+            throw new RejectedExecutionException("Rejected command because task queue queueSize is at rejection threshold.");
+        }
+
+        if (!workQueue.TryAdd(task))
+        {
+            throw new RejectedExecutionException("Rejected command because task work queue rejected add.");
+        }
+    }
+
+    protected void StartThreadPoolWorker()
+    {
+        System.Threading.ThreadPool.QueueUserWorkItem(
+            _ =>
             {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
                 isHystrixThreadPoolThread = true;
@@ -143,36 +143,35 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
                     isHystrixThreadPoolThread = false;
                 }
             }, null);
-        }
+    }
 
-        protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
+    protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
+    {
+        if (!isHystrixThreadPoolThread)
         {
-            if (!isHystrixThreadPoolThread)
-            {
-                return false;
-            }
-
-            if (prevQueued)
-            {
-                return false;
-            }
-
-            try
-            {
-                Interlocked.Increment(ref runningTasks);
-                return TryExecuteTask(task);
-            }
-            catch (Exception)
-            {
-                // Log
-            }
-            finally
-            {
-                Interlocked.Decrement(ref runningTasks);
-                Interlocked.Increment(ref completedTasks);
-            }
-
-            return true;
+            return false;
         }
+
+        if (prevQueued)
+        {
+            return false;
+        }
+
+        try
+        {
+            Interlocked.Increment(ref runningTasks);
+            return TryExecuteTask(task);
+        }
+        catch (Exception)
+        {
+            // Log
+        }
+        finally
+        {
+            Interlocked.Decrement(ref runningTasks);
+            Interlocked.Increment(ref completedTasks);
+        }
+
+        return true;
     }
 }

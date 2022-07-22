@@ -6,120 +6,119 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public abstract class AbstractAttributeAccessor : IAttributeAccessor
 {
-    public abstract class AbstractAttributeAccessor : IAttributeAccessor
+    private readonly Dictionary<string, object> _attributes = new ();
+
+    public virtual void SetAttribute(string name, object value)
     {
-        private readonly Dictionary<string, object> _attributes = new ();
-
-        public virtual void SetAttribute(string name, object value)
+        if (name == null)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-
-            if (value != null)
-            {
-                _attributes[name] = value;
-            }
-            else
-            {
-                RemoveAttribute(name);
-            }
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public virtual object GetAttribute(string name)
+        if (value != null)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+            _attributes[name] = value;
+        }
+        else
+        {
+            RemoveAttribute(name);
+        }
+    }
 
-            _attributes.TryGetValue(name, out var result);
-            return result;
+    public virtual object GetAttribute(string name)
+    {
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public virtual object RemoveAttribute(string name)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+        _attributes.TryGetValue(name, out var result);
+        return result;
+    }
 
-            _attributes.TryGetValue(name, out var original);
-            _attributes.Remove(name);
-            return original;
+    public virtual object RemoveAttribute(string name)
+    {
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public virtual bool HasAttribute(string name)
-        {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
+        _attributes.TryGetValue(name, out var original);
+        _attributes.Remove(name);
+        return original;
+    }
 
-            return _attributes.ContainsKey(name);
+    public virtual bool HasAttribute(string name)
+    {
+        if (name == null)
+        {
+            throw new ArgumentNullException(nameof(name));
         }
 
-        public virtual string[] AttributeNames
-        {
+        return _attributes.ContainsKey(name);
+    }
+
+    public virtual string[] AttributeNames
+    {
 #pragma warning disable S2365 // Properties should not make collection or array copies
-            get { return _attributes.Keys.ToArray(); }
+        get { return _attributes.Keys.ToArray(); }
 #pragma warning restore S2365 // Properties should not make collection or array copies
-        }
+    }
 
-        public override bool Equals(object other)
+    public override bool Equals(object other)
+    {
+        if (this == other)
         {
-            if (this == other)
-            {
-                return true;
-            }
-
-            if (other is not AbstractAttributeAccessor)
-            {
-                return false;
-            }
-
-            var accessor = (AbstractAttributeAccessor)other;
-            if (accessor._attributes.Count != _attributes.Count)
-            {
-                return false;
-            }
-
-            foreach (var kvp in _attributes)
-            {
-                if (!accessor._attributes.TryGetValue(kvp.Key, out var value2))
-                {
-                    return false;
-                }
-
-                if (!kvp.Value.Equals(value2))
-                {
-                    return false;
-                }
-            }
-
             return true;
         }
 
-        public override int GetHashCode()
+        if (other is not AbstractAttributeAccessor)
         {
-            return _attributes.GetHashCode();
+            return false;
         }
 
-        protected virtual void CopyAttributesFrom(IAttributeAccessor source)
+        var accessor = (AbstractAttributeAccessor)other;
+        if (accessor._attributes.Count != _attributes.Count)
         {
-            if (source == null)
+            return false;
+        }
+
+        foreach (var kvp in _attributes)
+        {
+            if (!accessor._attributes.TryGetValue(kvp.Key, out var value2))
             {
-                throw new ArgumentNullException(nameof(source));
+                return false;
             }
 
-            var attributeNames = source.AttributeNames;
-            foreach (var attributeName in attributeNames)
+            if (!kvp.Value.Equals(value2))
             {
-                SetAttribute(attributeName, source.GetAttribute(attributeName));
+                return false;
             }
+        }
+
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        return _attributes.GetHashCode();
+    }
+
+    protected virtual void CopyAttributesFrom(IAttributeAccessor source)
+    {
+        if (source == null)
+        {
+            throw new ArgumentNullException(nameof(source));
+        }
+
+        var attributeNames = source.AttributeNames;
+        foreach (var attributeName in attributeNames)
+        {
+            SetAttribute(attributeName, source.GetAttribute(attributeName));
         }
     }
 }

@@ -6,26 +6,25 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Health
+namespace Steeltoe.Management.Endpoint.Health;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class HealthStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class HealthStartupFilter : IStartupFilter
+    public static void InitializeAvailability(IServiceProvider serviceProvider)
+        => serviceProvider.InitializeAvailability();
+
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        public static void InitializeAvailability(IServiceProvider serviceProvider)
-            => serviceProvider.InitializeAvailability();
-
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        return app =>
         {
-            return app =>
+            next(app);
+            app.UseEndpoints(endpoints =>
             {
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<HealthEndpointCore>();
-                });
+                endpoints.Map<HealthEndpointCore>();
+            });
 
-                InitializeAvailability(app.ApplicationServices);
-            };
-        }
+            InitializeAvailability(app.ApplicationServices);
+        };
     }
 }

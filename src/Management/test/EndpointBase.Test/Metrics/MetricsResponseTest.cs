@@ -7,45 +7,44 @@ using Steeltoe.Management.OpenTelemetry.Metrics;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Test
+namespace Steeltoe.Management.Endpoint.Metrics.Test;
+
+public class MetricsResponseTest : BaseTest
 {
-    public class MetricsResponseTest : BaseTest
+    [Fact]
+    public void Constructor_SetsValues()
     {
-        [Fact]
-        public void Constructor_SetsValues()
+        var samples = new List<MetricSample>()
         {
-            var samples = new List<MetricSample>()
-            {
-                new MetricSample(MetricStatistic.TOTAL_TIME, 100.00)
-            };
+            new MetricSample(MetricStatistic.TOTAL_TIME, 100.00)
+        };
 
-            var tags = new List<MetricTag>()
-            {
-                new MetricTag("tag", new HashSet<string>() { "tagValue" })
-            };
-
-            var resp = new MetricsResponse("foo.bar", samples, tags);
-            Assert.Equal("foo.bar", resp.Name);
-            Assert.Same(samples, resp.Measurements);
-            Assert.Same(tags, resp.AvailableTags);
-        }
-
-        [Fact]
-        public void JsonSerialization_ReturnsExpected()
+        var tags = new List<MetricTag>()
         {
-            var samples = new List<MetricSample>()
-            {
-                new MetricSample(MetricStatistic.TOTAL_TIME, 100.1)
-            };
+            new MetricTag("tag", new HashSet<string>() { "tagValue" })
+        };
 
-            var tags = new List<MetricTag>()
-            {
-                new MetricTag("tag", new HashSet<string>() { "tagValue" })
-            };
+        var resp = new MetricsResponse("foo.bar", samples, tags);
+        Assert.Equal("foo.bar", resp.Name);
+        Assert.Same(samples, resp.Measurements);
+        Assert.Same(tags, resp.AvailableTags);
+    }
 
-            var resp = new MetricsResponse("foo.bar", samples, tags);
-            var result = Serialize(resp);
-            Assert.Equal("{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}", result);
-        }
+    [Fact]
+    public void JsonSerialization_ReturnsExpected()
+    {
+        var samples = new List<MetricSample>()
+        {
+            new MetricSample(MetricStatistic.TOTAL_TIME, 100.1)
+        };
+
+        var tags = new List<MetricTag>()
+        {
+            new MetricTag("tag", new HashSet<string>() { "tagValue" })
+        };
+
+        var resp = new MetricsResponse("foo.bar", samples, tags);
+        var result = Serialize(resp);
+        Assert.Equal("{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}", result);
     }
 }

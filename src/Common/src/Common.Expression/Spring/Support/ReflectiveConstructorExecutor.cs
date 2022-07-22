@@ -6,45 +6,44 @@ using Steeltoe.Common.Util;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+
+public class ReflectiveConstructorExecutor : IConstructorExecutor
 {
-    public class ReflectiveConstructorExecutor : IConstructorExecutor
+    private readonly ConstructorInfo _ctor;
+
+    private readonly int? _varargsPosition;
+
+    public ConstructorInfo Constructor => _ctor;
+
+    public ReflectiveConstructorExecutor(ConstructorInfo ctor)
     {
-        private readonly ConstructorInfo _ctor;
-
-        private readonly int? _varargsPosition;
-
-        public ConstructorInfo Constructor => _ctor;
-
-        public ReflectiveConstructorExecutor(ConstructorInfo ctor)
+        _ctor = ctor;
+        if (ctor.IsVarArgs())
         {
-            _ctor = ctor;
-            if (ctor.IsVarArgs())
-            {
-                _varargsPosition = ctor.GetParameters().Length - 1;
-            }
-            else
-            {
-                _varargsPosition = null;
-            }
+            _varargsPosition = ctor.GetParameters().Length - 1;
         }
-
-        public ITypedValue Execute(IEvaluationContext context, params object[] arguments)
+        else
         {
-            try
-            {
-                ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, _ctor, _varargsPosition);
-                if (_ctor.IsVarArgs())
-                {
-                    arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_ctor), arguments);
-                }
+            _varargsPosition = null;
+        }
+    }
 
-                return new TypedValue(_ctor.Invoke(arguments));
-            }
-            catch (Exception ex)
+    public ITypedValue Execute(IEvaluationContext context, params object[] arguments)
+    {
+        try
+        {
+            ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, _ctor, _varargsPosition);
+            if (_ctor.IsVarArgs())
             {
-                throw new AccessException("Problem invoking constructor: " + _ctor, ex);
+                arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(_ctor), arguments);
             }
+
+            return new TypedValue(_ctor.Invoke(arguments));
+        }
+        catch (Exception ex)
+        {
+            throw new AccessException("Problem invoking constructor: " + _ctor, ex);
         }
     }
 }

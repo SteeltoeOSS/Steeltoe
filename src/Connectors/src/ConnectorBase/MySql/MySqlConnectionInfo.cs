@@ -6,30 +6,29 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.MySql
+namespace Steeltoe.Connector.MySql;
+
+public class MySqlConnectionInfo : IConnectionInfo
 {
-    public class MySqlConnectionInfo : IConnectionInfo
+    public Connection Get(IConfiguration configuration, string serviceName)
     {
-        public Connection Get(IConfiguration configuration, string serviceName)
-        {
-            var info = string.IsNullOrEmpty(serviceName)
-                ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
-                : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
-            return GetConnection(info, configuration);
-        }
+        var info = string.IsNullOrEmpty(serviceName)
+            ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
+            : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+        return GetConnection(info, configuration);
+    }
 
-        public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-            => GetConnection((MySqlServiceInfo)serviceInfo, configuration);
+    public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
+        => GetConnection((MySqlServiceInfo)serviceInfo, configuration);
 
-        public bool IsSameType(string serviceType) => serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType) => serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
 
-        public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MySqlServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MySqlServiceInfo;
 
-        private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
-        {
-            var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
-            var configurer = new MySqlProviderConfigurer();
-            return new Connection(configurer.Configure(info, mySqlConfig), "MySql", info);
-        }
+    private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
+    {
+        var mySqlConfig = new MySqlProviderConnectorOptions(configuration);
+        var configurer = new MySqlProviderConfigurer();
+        return new Connection(configurer.Configure(info, mySqlConfig), "MySql", info);
     }
 }

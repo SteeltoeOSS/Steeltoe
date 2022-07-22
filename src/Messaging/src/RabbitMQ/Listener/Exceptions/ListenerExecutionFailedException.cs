@@ -5,29 +5,28 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+
+public class ListenerExecutionFailedException : Exception
 {
-    public class ListenerExecutionFailedException : Exception
+    public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
+        : base(message, cause)
     {
-        public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
-            : base(message, cause)
-        {
-            FailedMessages.AddRange(failedMessages);
-        }
-
-        public IMessage FailedMessage
-        {
-            get
-            {
-                if (FailedMessages.Count > 0)
-                {
-                    return FailedMessages[0];
-                }
-
-                return null;
-            }
-        }
-
-        public List<IMessage> FailedMessages { get; } = new List<IMessage>();
+        FailedMessages.AddRange(failedMessages);
     }
+
+    public IMessage FailedMessage
+    {
+        get
+        {
+            if (FailedMessages.Count > 0)
+            {
+                return FailedMessages[0];
+            }
+
+            return null;
+        }
+    }
+
+    public List<IMessage> FailedMessages { get; } = new List<IMessage>();
 }

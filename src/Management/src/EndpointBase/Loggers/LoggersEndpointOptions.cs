@@ -5,30 +5,29 @@
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Loggers
-{
-    public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
-    {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
+namespace Steeltoe.Management.Endpoint.Loggers;
 
-        public LoggersEndpointOptions()
-            : base()
+public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
+{
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
+
+    public LoggersEndpointOptions()
+        : base()
+    {
+        Id = "loggers";
+        AllowedVerbs = new List<string> { "Get", "Post" };
+        ExactMatch = false;
+    }
+
+    public LoggersEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "loggers";
-            AllowedVerbs = new List<string> { "Get", "Post" };
-            ExactMatch = false;
         }
 
-        public LoggersEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "loggers";
-            }
-
-            AllowedVerbs = new List<string> { "Get", "Post" };
-            ExactMatch = false;
-        }
+        AllowedVerbs = new List<string> { "Get", "Post" };
+        ExactMatch = false;
     }
 }

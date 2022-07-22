@@ -6,43 +6,42 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Messaging.Test
+namespace Steeltoe.Messaging.Test;
+
+internal class StubMessageChannel : ISubscribableChannel
 {
-    internal class StubMessageChannel : ISubscribableChannel
+    private readonly List<IMessage<byte[]>> messages = new ();
+
+    private readonly List<IMessageHandler> handlers = new ();
+
+    public string ServiceName { get; set; } = "StubMessageChannel";
+
+    public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken)
     {
-        private readonly List<IMessage<byte[]>> messages = new ();
+        messages.Add((IMessage<byte[]>)message);
+        return new ValueTask<bool>(true);
+    }
 
-        private readonly List<IMessageHandler> handlers = new ();
+    public bool Send(IMessage message, int timeout)
+    {
+        messages.Add((IMessage<byte[]>)message);
+        return true;
+    }
 
-        public string ServiceName { get; set; } = "StubMessageChannel";
+    public bool Subscribe(IMessageHandler handler)
+    {
+        handlers.Add(handler);
+        return true;
+    }
 
-        public ValueTask<bool> SendAsync(IMessage message, CancellationToken cancellationToken)
-        {
-            messages.Add((IMessage<byte[]>)message);
-            return new ValueTask<bool>(true);
-        }
+    public bool Unsubscribe(IMessageHandler handler)
+    {
+        handlers.Remove(handler);
+        return true;
+    }
 
-        public bool Send(IMessage message, int timeout)
-        {
-            messages.Add((IMessage<byte[]>)message);
-            return true;
-        }
-
-        public bool Subscribe(IMessageHandler handler)
-        {
-            handlers.Add(handler);
-            return true;
-        }
-
-        public bool Unsubscribe(IMessageHandler handler)
-        {
-            handlers.Remove(handler);
-            return true;
-        }
-
-        public bool Send(IMessage message)
-        {
-            return Send(message, -1);
-        }
+    public bool Send(IMessage message)
+    {
+        return Send(message, -1);
     }
 }

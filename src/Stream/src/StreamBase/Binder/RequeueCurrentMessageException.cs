@@ -4,28 +4,27 @@
 
 using System;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class RequeueCurrentMessageException : Exception
 {
-    public class RequeueCurrentMessageException : Exception
+    public RequeueCurrentMessageException()
+        : base()
     {
-        public RequeueCurrentMessageException()
-         : base()
-        {
-        }
+    }
 
-        public RequeueCurrentMessageException(string message, Exception cause)
-            : base(message, cause)
-        {
-        }
+    public RequeueCurrentMessageException(string message, Exception cause)
+        : base(message, cause)
+    {
+    }
 
-        public RequeueCurrentMessageException(string message)
+    public RequeueCurrentMessageException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public RequeueCurrentMessageException(Exception cause)
+    public RequeueCurrentMessageException(Exception cause)
         : base(string.Empty, cause)
-        {
-        }
+    {
     }
 }

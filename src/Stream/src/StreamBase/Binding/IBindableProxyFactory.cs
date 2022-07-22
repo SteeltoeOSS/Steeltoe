@@ -5,12 +5,11 @@
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Binding
-{
-    public interface IBindableProxyFactory
-    {
-        Type BindingType { get; }
+namespace Steeltoe.Stream.Binding;
 
-        object Invoke(MethodInfo info);
-    }
+public interface IBindableProxyFactory
+{
+    Type BindingType { get; }
+
+    object Invoke(MethodInfo info);
 }

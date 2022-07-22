@@ -9,32 +9,31 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
 using System;
 
-namespace Steeltoe.Management.CloudFoundry
+namespace Steeltoe.Management.CloudFoundry;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class CloudFoundryActuatorsStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class CloudFoundryActuatorsStartupFilter : IStartupFilter
+    public CloudFoundryActuatorsStartupFilter()
     {
-        public CloudFoundryActuatorsStartupFilter()
+    }
+
+    [Obsolete("MediaTypeVersion parameter is not used")]
+    public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
+    {
+    }
+
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
         {
-        }
+            app.UseCors("SteeltoeManagement");
+            app.UseCloudFoundrySecurity();
 
-        [Obsolete("MediaTypeVersion parameter is not used")]
-        public CloudFoundryActuatorsStartupFilter(MediaTypeVersion mediaTypeVersion)
-        {
-        }
+            next(app);
 
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                app.UseCors("SteeltoeManagement");
-                app.UseCloudFoundrySecurity();
-
-                next(app);
-
-                app.UseEndpoints(endpoints => endpoints.MapAllActuators(null));
-                app.ApplicationServices.InitializeAvailability();
-            };
-        }
+            app.UseEndpoints(endpoints => endpoints.MapAllActuators(null));
+            app.ApplicationServices.InitializeAvailability();
+        };
     }
 }

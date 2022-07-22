@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management
+namespace Steeltoe.Management;
+
+public interface IManagementOptions
 {
-    public interface IManagementOptions
-    {
-        bool? Enabled { get; }
+    bool? Enabled { get; }
 
-        string Path { get; }
+    string Path { get; }
 
-        List<IEndpointOptions> EndpointOptions { get; }
+    List<IEndpointOptions> EndpointOptions { get; }
 
-        public bool UseStatusCodeFromResponse { get; set; }
-    }
+    public bool UseStatusCodeFromResponse { get; set; }
 }

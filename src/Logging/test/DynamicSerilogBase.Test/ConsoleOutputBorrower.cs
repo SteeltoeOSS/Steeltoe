@@ -5,29 +5,28 @@
 using System;
 using System.IO;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+
+internal class ConsoleOutputBorrower : IDisposable
 {
-    internal class ConsoleOutputBorrower : IDisposable
+    private readonly StringWriter _borrowedOutput;
+    private readonly TextWriter _originalOutput;
+
+    public ConsoleOutputBorrower()
     {
-        private readonly StringWriter _borrowedOutput;
-        private readonly TextWriter _originalOutput;
+        _borrowedOutput = new StringWriter();
+        _originalOutput = Console.Out;
+        Console.SetOut(_borrowedOutput);
+    }
 
-        public ConsoleOutputBorrower()
-        {
-            _borrowedOutput = new StringWriter();
-            _originalOutput = Console.Out;
-            Console.SetOut(_borrowedOutput);
-        }
+    public override string ToString()
+    {
+        return _borrowedOutput.ToString();
+    }
 
-        public override string ToString()
-        {
-            return _borrowedOutput.ToString();
-        }
-
-        public void Dispose()
-        {
-            Console.SetOut(_originalOutput);
-            _borrowedOutput.Dispose();
-        }
+    public void Dispose()
+    {
+        Console.SetOut(_originalOutput);
+        _borrowedOutput.Dispose();
     }
 }

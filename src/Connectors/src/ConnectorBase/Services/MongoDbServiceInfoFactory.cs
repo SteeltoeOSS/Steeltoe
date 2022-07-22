@@ -4,21 +4,20 @@
 
 using Steeltoe.Extensions.Configuration;
 
-namespace Steeltoe.Connector.Services
-{
-    public class MongoDbServiceInfoFactory : ServiceInfoFactory
-    {
-        public MongoDbServiceInfoFactory()
-            : base(new Tags("mongodb"), MongoDbServiceInfo.MONGODB_SCHEME)
-        {
-            // add the uri property used by the Microsoft Azure Service Broker with CosmosDb
-            UriKeys.Add("cosmosdb_connection_string");
-        }
+namespace Steeltoe.Connector.Services;
 
-        public override IServiceInfo Create(Service binding)
-        {
-            var uri = GetUriFromCredentials(binding.Credentials);
-            return new MongoDbServiceInfo(binding.Name, uri);
-        }
+public class MongoDbServiceInfoFactory : ServiceInfoFactory
+{
+    public MongoDbServiceInfoFactory()
+        : base(new Tags("mongodb"), MongoDbServiceInfo.MONGODB_SCHEME)
+    {
+        // add the uri property used by the Microsoft Azure Service Broker with CosmosDb
+        UriKeys.Add("cosmosdb_connection_string");
+    }
+
+    public override IServiceInfo Create(Service binding)
+    {
+        var uri = GetUriFromCredentials(binding.Credentials);
+        return new MongoDbServiceInfo(binding.Name, uri);
     }
 }

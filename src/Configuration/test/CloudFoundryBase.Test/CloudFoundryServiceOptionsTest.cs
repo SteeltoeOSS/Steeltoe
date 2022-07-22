@@ -6,28 +6,28 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+
+public class CloudFoundryServiceOptionsTest
 {
-    public class CloudFoundryServiceOptionsTest
+    [Fact]
+    public void Constructor_WithNoVcapServicesConfiguration()
     {
-        [Fact]
-        public void Constructor_WithNoVcapServicesConfiguration()
-        {
-            var builder = new ConfigurationBuilder();
-            var config = builder.Build();
+        var builder = new ConfigurationBuilder();
+        var config = builder.Build();
 
-            var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options);
-            Assert.NotNull(options.Services);
-            Assert.Empty(options.Services);
-            Assert.Empty(options.GetServicesList());
-        }
+        Assert.NotNull(options);
+        Assert.NotNull(options.Services);
+        Assert.Empty(options.Services);
+        Assert.Empty(options.GetServicesList());
+    }
 
-        [Fact]
-        public void Constructor_WithSingleServiceConfiguration()
-        {
-            var configJson = @"
+    [Fact]
+    public void Constructor_WithSingleServiceConfiguration()
+    {
+        var configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -46,41 +46,41 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options.Services);
-            Assert.Single(options.Services);
+        Assert.NotNull(options.Services);
+        Assert.Single(options.Services);
 
-            Assert.NotNull(options.Services["p-config-server"]);
-            Assert.Single(options.Services["p-config-server"]);
+        Assert.NotNull(options.Services["p-config-server"]);
+        Assert.Single(options.Services["p-config-server"]);
 
-            var service = options.GetInstancesOfType("p-config-server").First();
-            Assert.Equal("p-config-server", service.Label);
-            Assert.Equal("My Config Server", service.Name);
-            Assert.Equal("standard", service.Plan);
+        var service = options.GetInstancesOfType("p-config-server").First();
+        Assert.Equal("p-config-server", service.Label);
+        Assert.Equal("My Config Server", service.Name);
+        Assert.Equal("standard", service.Plan);
 
-            Assert.NotNull(service.Tags);
-            Assert.Equal(2, service.Tags.Count());
-            Assert.Contains("configuration", service.Tags);
-            Assert.Contains("spring-cloud", service.Tags);
+        Assert.NotNull(service.Tags);
+        Assert.Equal(2, service.Tags.Count());
+        Assert.Contains("configuration", service.Tags);
+        Assert.Contains("spring-cloud", service.Tags);
 
-            Assert.NotNull(service.Credentials);
-            Assert.Equal(4, service.Credentials.Count);
-            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", service.Credentials["access_token_uri"].Value);
-            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", service.Credentials["client_id"].Value);
-            Assert.Equal("e8KF1hXvAnGd", service.Credentials["client_secret"].Value);
-            Assert.Equal("http://localhost:8888", service.Credentials["uri"].Value);
-        }
+        Assert.NotNull(service.Credentials);
+        Assert.Equal(4, service.Credentials.Count);
+        Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", service.Credentials["access_token_uri"].Value);
+        Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", service.Credentials["client_id"].Value);
+        Assert.Equal("e8KF1hXvAnGd", service.Credentials["client_secret"].Value);
+        Assert.Equal("http://localhost:8888", service.Credentials["uri"].Value);
+    }
 
-        [Fact]
-        public void Constructor_WithComplexSingleServiceConfiguration()
-        {
-            var configJson = @"
+    [Fact]
+    public void Constructor_WithComplexSingleServiceConfiguration()
+    {
+        var configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -144,41 +144,41 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options.Services);
-            Assert.Single(options.Services);
-            var service = options.GetInstancesOfType("p-rabbitmq").First();
-            Assert.Equal("p-rabbitmq", service.Label);
-            Assert.Equal("rabbitmq", service.Name);
-            Assert.Equal("standard", service.Plan);
+        Assert.NotNull(options.Services);
+        Assert.Single(options.Services);
+        var service = options.GetInstancesOfType("p-rabbitmq").First();
+        Assert.Equal("p-rabbitmq", service.Label);
+        Assert.Equal("rabbitmq", service.Name);
+        Assert.Equal("standard", service.Plan);
 
-            Assert.NotNull(service.Tags);
-            Assert.Equal(7, service.Tags.Count());
-            Assert.Contains("rabbitmq", service.Tags);
-            Assert.Contains("pivotal", service.Tags);
+        Assert.NotNull(service.Tags);
+        Assert.Equal(7, service.Tags.Count());
+        Assert.Contains("rabbitmq", service.Tags);
+        Assert.Contains("pivotal", service.Tags);
 
-            Assert.NotNull(service.Credentials);
-            Assert.Equal(12, service.Credentials.Count);
-            Assert.Equal("https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["dashboard_url"].Value);
-            Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["username"].Value);
-            Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["password"].Value);
-            Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["protocols"]["amqp"]["username"].Value);
-            Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["protocols"]["amqp"]["password"].Value);
-            Assert.Equal(
-                "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
-                service.Credentials["protocols"]["amqp"]["uris"]["0"].Value);
-        }
+        Assert.NotNull(service.Credentials);
+        Assert.Equal(12, service.Credentials.Count);
+        Assert.Equal("https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["dashboard_url"].Value);
+        Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["username"].Value);
+        Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["password"].Value);
+        Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["protocols"]["amqp"]["username"].Value);
+        Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["protocols"]["amqp"]["password"].Value);
+        Assert.Equal(
+            "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
+            service.Credentials["protocols"]["amqp"]["uris"]["0"].Value);
+    }
 
-        [Fact]
-        public void Constructor_WithMultipleSameServicesConfiguration()
-        {
-            var configJson = @"
+    [Fact]
+    public void Constructor_WithMultipleSameServicesConfiguration()
+    {
+        var configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -216,37 +216,37 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options.Services);
-            Assert.Single(options.Services);
-            Assert.NotNull(options.Services["p-mysql"]);
+        Assert.NotNull(options.Services);
+        Assert.Single(options.Services);
+        Assert.NotNull(options.Services["p-mysql"]);
 
-            Assert.Equal(2, options.GetServicesList().Count());
+        Assert.Equal(2, options.GetServicesList().Count());
 
-            var service1 = options.GetServicesList().First(n => n.Name == "mySql1");
-            var service2 = options.GetServicesList().First(n => n.Name == "mySql2");
-            Assert.NotNull(service1);
-            Assert.NotNull(service2);
-            Assert.Equal("p-mysql", service1.Label);
-            Assert.Equal("192.168.0.97", service1.Credentials["hostname"].Value);
-            Assert.Equal("3306", service1.Credentials["port"].Value);
-            Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", service1.Credentials["name"].Value);
-            Assert.Equal("p-mysql", service2.Label);
-            Assert.Equal("192.168.0.97", service2.Credentials["hostname"].Value);
-            Assert.Equal("3306", service2.Credentials["port"].Value);
-            Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", service2.Credentials["name"].Value);
-        }
+        var service1 = options.GetServicesList().First(n => n.Name == "mySql1");
+        var service2 = options.GetServicesList().First(n => n.Name == "mySql2");
+        Assert.NotNull(service1);
+        Assert.NotNull(service2);
+        Assert.Equal("p-mysql", service1.Label);
+        Assert.Equal("192.168.0.97", service1.Credentials["hostname"].Value);
+        Assert.Equal("3306", service1.Credentials["port"].Value);
+        Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", service1.Credentials["name"].Value);
+        Assert.Equal("p-mysql", service2.Label);
+        Assert.Equal("192.168.0.97", service2.Credentials["hostname"].Value);
+        Assert.Equal("3306", service2.Credentials["port"].Value);
+        Assert.Equal("cf_0f5dda44_e678_4727_993f_30e6d455cc31", service2.Credentials["name"].Value);
+    }
 
-        [Fact]
-        public void Constructor_WithIConfigurationRootBinds()
-        {
-            var configJson = @"
+    [Fact]
+    public void Constructor_WithIConfigurationRootBinds()
+    {
+        var configJson = @"
 {
     ""vcap"": {
         ""services"" : {
@@ -268,41 +268,41 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
         }
     }
 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var options = new CloudFoundryServicesOptions(config);
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options.Services);
-            Assert.Single(options.Services);
+        Assert.NotNull(options.Services);
+        Assert.Single(options.Services);
 
-            Assert.NotNull(options.Services["p-config-server"]);
-            Assert.Single(options.Services["p-config-server"]);
+        Assert.NotNull(options.Services["p-config-server"]);
+        Assert.Single(options.Services["p-config-server"]);
 
-            var firstService = options.GetServicesList().First();
-            Assert.Equal("p-config-server", firstService.Label);
-            Assert.Equal("My Config Server", firstService.Name);
-            Assert.Equal("standard", firstService.Plan);
+        var firstService = options.GetServicesList().First();
+        Assert.Equal("p-config-server", firstService.Label);
+        Assert.Equal("My Config Server", firstService.Name);
+        Assert.Equal("standard", firstService.Plan);
 
-            Assert.NotNull(firstService.Tags);
-            Assert.Equal(2, firstService.Tags.Count());
-            Assert.Contains("configuration", firstService.Tags);
-            Assert.Contains("spring-cloud", firstService.Tags);
+        Assert.NotNull(firstService.Tags);
+        Assert.Equal(2, firstService.Tags.Count());
+        Assert.Contains("configuration", firstService.Tags);
+        Assert.Contains("spring-cloud", firstService.Tags);
 
-            Assert.NotNull(firstService.Credentials);
-            Assert.Equal(4, firstService.Credentials.Count);
-            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", firstService.Credentials["access_token_uri"].Value);
-            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", firstService.Credentials["client_id"].Value);
-            Assert.Equal("e8KF1hXvAnGd", firstService.Credentials["client_secret"].Value);
-            Assert.Equal("http://localhost:8888", firstService.Credentials["uri"].Value);
-        }
+        Assert.NotNull(firstService.Credentials);
+        Assert.Equal(4, firstService.Credentials.Count);
+        Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", firstService.Credentials["access_token_uri"].Value);
+        Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", firstService.Credentials["client_id"].Value);
+        Assert.Equal("e8KF1hXvAnGd", firstService.Credentials["client_secret"].Value);
+        Assert.Equal("http://localhost:8888", firstService.Credentials["uri"].Value);
+    }
 
-        [Fact]
-        public void Constructor_WithIConfigurationBinds()
-        {
-            var configJson = @"
+    [Fact]
+    public void Constructor_WithIConfigurationBinds()
+    {
+        var configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -324,34 +324,33 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                         }
                     }
                 }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
-            var options = new CloudFoundryServicesOptions(config);
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
+        var options = new CloudFoundryServicesOptions(config);
 
-            Assert.NotNull(options.Services);
-            Assert.Single(options.Services);
+        Assert.NotNull(options.Services);
+        Assert.Single(options.Services);
 
-            Assert.NotNull(options.Services["p-config-server"]);
-            Assert.Single(options.Services["p-config-server"]);
+        Assert.NotNull(options.Services["p-config-server"]);
+        Assert.Single(options.Services["p-config-server"]);
 
-            var service = options.GetServicesList().First();
-            Assert.Equal("p-config-server", service.Label);
-            Assert.Equal("My Config Server", service.Name);
-            Assert.Equal("standard", service.Plan);
+        var service = options.GetServicesList().First();
+        Assert.Equal("p-config-server", service.Label);
+        Assert.Equal("My Config Server", service.Name);
+        Assert.Equal("standard", service.Plan);
 
-            Assert.NotNull(service.Tags);
-            Assert.Equal(2, service.Tags.Count());
-            Assert.Contains("configuration", service.Tags);
-            Assert.Contains("spring-cloud", service.Tags);
+        Assert.NotNull(service.Tags);
+        Assert.Equal(2, service.Tags.Count());
+        Assert.Contains("configuration", service.Tags);
+        Assert.Contains("spring-cloud", service.Tags);
 
-            Assert.NotNull(service.Credentials);
-            Assert.Equal(4, service.Credentials.Count);
-            Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", service.Credentials["access_token_uri"].Value);
-            Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", service.Credentials["client_id"].Value);
-            Assert.Equal("e8KF1hXvAnGd", service.Credentials["client_secret"].Value);
-            Assert.Equal("http://localhost:8888", service.Credentials["uri"].Value);
-        }
+        Assert.NotNull(service.Credentials);
+        Assert.Equal(4, service.Credentials.Count);
+        Assert.Equal("https://p-spring-cloud-services.uaa.wise.com/oauth/token", service.Credentials["access_token_uri"].Value);
+        Assert.Equal("p-config-server-a74fc0a3-a7c3-43b6-81f9-9eb6586dd3ef", service.Credentials["client_id"].Value);
+        Assert.Equal("e8KF1hXvAnGd", service.Credentials["client_secret"].Value);
+        Assert.Equal("http://localhost:8888", service.Credentials["uri"].Value);
     }
 }

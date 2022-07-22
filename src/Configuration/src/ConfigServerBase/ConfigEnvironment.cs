@@ -4,20 +4,19 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer;
+
+public class ConfigEnvironment
 {
-    public class ConfigEnvironment
-    {
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        public string Label { get; set; }
+    public string Label { get; set; }
 
-        public IList<string> Profiles { get; set; }
+    public IList<string> Profiles { get; set; }
 
-        public IList<PropertySource> PropertySources { get; set; }
+    public IList<PropertySource> PropertySources { get; set; }
 
-        public string Version { get; set; }
+    public string Version { get; set; }
 
-        public string State { get; set; }
-    }
+    public string State { get; set; }
 }

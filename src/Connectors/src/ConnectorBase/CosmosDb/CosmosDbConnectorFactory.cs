@@ -6,53 +6,52 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.CosmosDb
+namespace Steeltoe.Connector.CosmosDb;
+
+public class CosmosDbConnectorFactory
 {
-    public class CosmosDbConnectorFactory
+    private readonly CosmosDbServiceInfo _info;
+    private readonly CosmosDbConnectorOptions _config;
+    private readonly CosmosDbProviderConfigurer _configurer = new ();
+
+    public CosmosDbConnectorFactory()
     {
-        private readonly CosmosDbServiceInfo _info;
-        private readonly CosmosDbConnectorOptions _config;
-        private readonly CosmosDbProviderConfigurer _configurer = new ();
+    }
 
-        public CosmosDbConnectorFactory()
+    public CosmosDbConnectorFactory(CosmosDbServiceInfo sinfo, CosmosDbConnectorOptions config, Type type)
+    {
+        _info = sinfo;
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+        ConnectorType = type;
+    }
+
+    protected Type ConnectorType { get; set; }
+
+    public virtual object Create(IServiceProvider provider)
+    {
+        var connectionString = CreateConnectionString();
+        object result = null;
+        if (connectionString != null)
         {
+            result = CreateConnection(connectionString);
         }
 
-        public CosmosDbConnectorFactory(CosmosDbServiceInfo sinfo, CosmosDbConnectorOptions config, Type type)
+        if (result == null)
         {
-            _info = sinfo;
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            ConnectorType = type;
+            throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
         }
 
-        protected Type ConnectorType { get; set; }
+        return result;
+    }
 
-        public virtual object Create(IServiceProvider provider)
-        {
-            var connectionString = CreateConnectionString();
-            object result = null;
-            if (connectionString != null)
-            {
-                result = CreateConnection(connectionString);
-            }
+    public virtual string CreateConnectionString()
+    {
+        return _configurer.Configure(_info, _config);
+    }
 
-            if (result == null)
-            {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", ConnectorType));
-            }
-
-            return result;
-        }
-
-        public virtual string CreateConnectionString()
-        {
-            return _configurer.Configure(_info, _config);
-        }
-
-        public virtual object CreateConnection(string connectionString, object clientOptions = null)
-        {
-            clientOptions ??= Activator.CreateInstance(CosmosDbTypeLocator.CosmosClientOptions);
-            return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString, clientOptions });
-        }
+    public virtual object CreateConnection(string connectionString, object clientOptions = null)
+    {
+        clientOptions ??= Activator.CreateInstance(CosmosDbTypeLocator.CosmosClientOptions);
+        return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString, clientOptions });
     }
 }

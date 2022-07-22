@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Stream.Converter
-{
-    public class ConversionException : Exception
-    {
-        public ConversionException(string message)
-        : base(message)
-        {
-        }
+namespace Steeltoe.Stream.Converter;
 
-        public ConversionException(string message, Exception t)
+public class ConversionException : Exception
+{
+    public ConversionException(string message)
+        : base(message)
+    {
+    }
+
+    public ConversionException(string message, Exception t)
         : base(message, t)
-        {
-        }
+    {
     }
 }

@@ -6,13 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
+
+public class QueuesNotAvailableException : FatalListenerStartupException
 {
-    public class QueuesNotAvailableException : FatalListenerStartupException
+    public QueuesNotAvailableException(string message, Exception cause)
+        : base(message, cause)
     {
-        public QueuesNotAvailableException(string message, Exception cause)
-            : base(message, cause)
-        {
-        }
     }
 }

@@ -4,38 +4,37 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Info
+namespace Steeltoe.Management.Info;
+
+public class InfoBuilder : IInfoBuilder
 {
-    public class InfoBuilder : IInfoBuilder
+    private readonly Dictionary<string, object> _info = new ();
+
+    public Dictionary<string, object> Build()
     {
-        private readonly Dictionary<string, object> _info = new ();
+        return _info;
+    }
 
-        public Dictionary<string, object> Build()
+    public IInfoBuilder WithInfo(string key, object value)
+    {
+        if (!string.IsNullOrEmpty(key))
         {
-            return _info;
+            _info[key] = value;
         }
 
-        public IInfoBuilder WithInfo(string key, object value)
+        return this;
+    }
+
+    public IInfoBuilder WithInfo(Dictionary<string, object> items)
+    {
+        if (items != null)
         {
-            if (!string.IsNullOrEmpty(key))
+            foreach (var pair in items)
             {
-                _info[key] = value;
+                _info[pair.Key] = pair.Value;
             }
-
-            return this;
         }
 
-        public IInfoBuilder WithInfo(Dictionary<string, object> items)
-        {
-            if (items != null)
-            {
-                foreach (var pair in items)
-                {
-                    _info[pair.Key] = pair.Value;
-                }
-            }
-
-            return this;
-        }
+        return this;
     }
 }

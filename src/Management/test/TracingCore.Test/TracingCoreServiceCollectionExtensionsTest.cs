@@ -14,69 +14,68 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Tracing.Test
+namespace Steeltoe.Management.Tracing.Test;
+
+public class TracingCoreServiceCollectionExtensionsTest : TestBase
 {
-    public class TracingCoreServiceCollectionExtensionsTest : TestBase
+    [Fact]
+    public void AddDistributedTracingAspNetCore_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddDistributedTracingAspNetCore_ThrowsOnNulls()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(null));
-            Assert.Equal("services", ex.ParamName);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => TracingCoreServiceCollectionExtensions.AddDistributedTracingAspNetCore(null));
+        Assert.Equal("services", ex.ParamName);
+    }
 
-        [Fact]
-        public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
-        {
+    [Fact]
+    public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
+    {
 #if !NET6_0
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
-            var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-            var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
+        var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 
-            ValidateServiceCollectionCommon(serviceProvider);
-            ValidateServiceContainerCore(serviceProvider);
-        }
+        ValidateServiceCollectionCommon(serviceProvider);
+        ValidateServiceContainerCore(serviceProvider);
+    }
 
-        // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
-        [Fact]
-        public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
-        {
+    // this test should find OTLP exporter is configured, see TracingBase.Test for Zipkin & Jaeger
+    [Fact]
+    public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
+    {
 #if !NET6_0
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
-            var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
-            var hst = serviceProvider.GetService<IHostedService>();
-            Assert.NotNull(hst);
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            Assert.NotNull(tracerProvider);
+        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        var hst = serviceProvider.GetService<IHostedService>();
+        Assert.NotNull(hst);
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
 
-            Assert.NotNull(serviceProvider.GetService<IOptions<OtlpExporterOptions>>());
-        }
+        Assert.NotNull(serviceProvider.GetService<IOptions<OtlpExporterOptions>>());
+    }
 
-        [Fact]
-        public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
-        {
+    [Fact]
+    public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
+    {
 #if !NET6_0
             AppContext.SetSwitch(
                 "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
 #endif
-            var services = new ServiceCollection()
-                .AddSingleton(GetConfiguration(new Dictionary<string, string>()
-                {
-                    { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
-                    { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
-                }));
+        var services = new ServiceCollection()
+            .AddSingleton(GetConfiguration(new Dictionary<string, string>()
+            {
+                { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
+                { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
+            }));
 
-            var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
 
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            Assert.NotNull(tracerProvider);
-        }
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
     }
 }

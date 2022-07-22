@@ -5,22 +5,21 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream.Messaging
+namespace Steeltoe.Stream.Messaging;
+
+/// <summary>
+/// Bindable interface with one output channel.
+/// </summary>
+public interface ISource
 {
     /// <summary>
-    /// Bindable interface with one output channel.
+    /// Default name of the output channel
     /// </summary>
-    public interface ISource
-    {
-        /// <summary>
-        /// Default name of the output channel
-        /// </summary>
-        const string OUTPUT = "output";
+    const string OUTPUT = "output";
 
-        /// <summary>
-        /// Gets the output channel
-        /// </summary>
-        [Output(OUTPUT)]
-        IMessageChannel Output { get; }
-    }
+    /// <summary>
+    /// Gets the output channel
+    /// </summary>
+    [Output(OUTPUT)]
+    IMessageChannel Output { get; }
 }

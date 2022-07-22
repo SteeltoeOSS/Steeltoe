@@ -7,31 +7,30 @@ using Steeltoe.Management.Endpoint.Test;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Middleware.Test
+namespace Steeltoe.Management.Endpoint.Middleware.Test;
+
+public class EndpointMiddlewareTest : BaseTest
 {
-    public class EndpointMiddlewareTest : BaseTest
+    [Fact]
+    public void Constructor_ThrowsIfEndpointNull()
     {
-        [Fact]
-        public void Constructor_ThrowsIfEndpointNull()
-        {
-            Assert.Throws<ArgumentNullException>(() => new TestMiddleware1(null, null, null));
-            Assert.Throws<ArgumentNullException>(() => new TestMiddleware2(null, null, null));
-        }
+        Assert.Throws<ArgumentNullException>(() => new TestMiddleware1(null, null, null));
+        Assert.Throws<ArgumentNullException>(() => new TestMiddleware2(null, null, null));
     }
+}
 
-    internal class TestMiddleware1 : EndpointMiddleware<string>
+internal class TestMiddleware1 : EndpointMiddleware<string>
+{
+    public TestMiddleware1(IEndpoint<string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        public TestMiddleware1(IEndpoint<string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
-            : base(endpoint, mgmtOptions, logger: logger)
-        {
-        }
     }
+}
 
-    internal class TestMiddleware2 : EndpointMiddleware<string, string>
+internal class TestMiddleware2 : EndpointMiddleware<string, string>
+{
+    public TestMiddleware2(IEndpoint<string, string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        public TestMiddleware2(IEndpoint<string, string> endpoint, IManagementOptions mgmtOptions, ILogger logger)
-            : base(endpoint, mgmtOptions, logger: logger)
-        {
-        }
     }
 }

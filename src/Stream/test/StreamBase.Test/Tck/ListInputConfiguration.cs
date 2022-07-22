@@ -7,15 +7,14 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class ListInputConfiguration
 {
-    public class ListInputConfiguration
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public List<object> Echo(List<object> value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public List<object> Echo(List<object> value)
-        {
-            return value;
-        }
+        return value;
     }
 }

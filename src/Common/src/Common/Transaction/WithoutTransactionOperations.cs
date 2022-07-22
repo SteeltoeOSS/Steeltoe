@@ -4,24 +4,23 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+internal class WithoutTransactionOperations : ITransactionOperations
 {
-    internal class WithoutTransactionOperations : ITransactionOperations
+    public static readonly WithoutTransactionOperations INSTANCE = new ();
+
+    private WithoutTransactionOperations()
     {
-        public static readonly WithoutTransactionOperations INSTANCE = new ();
+    }
 
-        private WithoutTransactionOperations()
-        {
-        }
+    public T Execute<T>(Func<ITransactionStatus, T> action)
+    {
+        return action(new SimpleTransactionStatus(false));
+    }
 
-        public T Execute<T>(Func<ITransactionStatus, T> action)
-        {
-            return action(new SimpleTransactionStatus(false));
-        }
-
-        public void ExecuteWithoutResult(Action<ITransactionStatus> action)
-        {
-            action(new SimpleTransactionStatus(false));
-        }
+    public void ExecuteWithoutResult(Action<ITransactionStatus> action)
+    {
+        action(new SimpleTransactionStatus(false));
     }
 }

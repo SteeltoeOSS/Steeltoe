@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Retry
-{
-    public class TerminatedRetryException : RetryException
-    {
-        public TerminatedRetryException(string msg, Exception cause)
-            : base(msg, cause)
-        {
-        }
+namespace Steeltoe.Common.Retry;
 
-        public TerminatedRetryException(string msg)
-            : base(msg)
-        {
-        }
+public class TerminatedRetryException : RetryException
+{
+    public TerminatedRetryException(string msg, Exception cause)
+        : base(msg, cause)
+    {
+    }
+
+    public TerminatedRetryException(string msg)
+        : base(msg)
+    {
     }
 }

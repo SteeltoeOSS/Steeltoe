@@ -6,86 +6,85 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using RC = RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
+
+public class CompositeConnectionListener : IConnectionListener
 {
-    public class CompositeConnectionListener : IConnectionListener
+    private readonly object _lock = new ();
+    private readonly ILogger _logger;
+
+    private List<IConnectionListener> _connectionListeners = new ();
+
+    public CompositeConnectionListener(ILogger logger = null)
     {
-        private readonly object _lock = new ();
-        private readonly ILogger _logger;
+        _logger = logger;
+    }
 
-        private List<IConnectionListener> _connectionListeners = new ();
-
-        public CompositeConnectionListener(ILogger logger = null)
+    public void OnClose(IConnection connection)
+    {
+        _logger?.LogDebug("OnClose");
+        var listeners = _connectionListeners;
+        foreach (var listener in listeners)
         {
-            _logger = logger;
+            listener.OnClose(connection);
         }
+    }
 
-        public void OnClose(IConnection connection)
+    public void OnCreate(IConnection connection)
+    {
+        _logger?.LogDebug("OnCreate");
+        var listeners = _connectionListeners;
+        foreach (var listener in listeners)
         {
-            _logger?.LogDebug("OnClose");
-            var listeners = _connectionListeners;
-            foreach (var listener in listeners)
+            listener.OnCreate(connection);
+        }
+    }
+
+    public void OnShutDown(RC.ShutdownEventArgs args)
+    {
+        _logger?.LogDebug("OnShutDown");
+        var listeners = _connectionListeners;
+        foreach (var listener in listeners)
+        {
+            listener.OnShutDown(args);
+        }
+    }
+
+    public void SetListeners(List<IConnectionListener> connectionListeners)
+    {
+        _connectionListeners = connectionListeners;
+    }
+
+    public void AddListener(IConnectionListener connectionListener)
+    {
+        lock (_lock)
+        {
+            var listeners = new List<IConnectionListener>(_connectionListeners)
             {
-                listener.OnClose(connection);
-            }
+                connectionListener
+            };
+            _connectionListeners = listeners;
         }
+    }
 
-        public void OnCreate(IConnection connection)
+    public bool RemoveListener(IConnectionListener connectionListener)
+    {
+        lock (_lock)
         {
-            _logger?.LogDebug("OnCreate");
-            var listeners = _connectionListeners;
-            foreach (var listener in listeners)
+            if (_connectionListeners.Contains(connectionListener))
             {
-                listener.OnCreate(connection);
-            }
-        }
-
-        public void OnShutDown(RC.ShutdownEventArgs args)
-        {
-            _logger?.LogDebug("OnShutDown");
-            var listeners = _connectionListeners;
-            foreach (var listener in listeners)
-            {
-                listener.OnShutDown(args);
-            }
-        }
-
-        public void SetListeners(List<IConnectionListener> connectionListeners)
-        {
-            _connectionListeners = connectionListeners;
-        }
-
-        public void AddListener(IConnectionListener connectionListener)
-        {
-            lock (_lock)
-            {
-                var listeners = new List<IConnectionListener>(_connectionListeners)
-                {
-                    connectionListener
-                };
+                var listeners = new List<IConnectionListener>(_connectionListeners);
+                listeners.Remove(connectionListener);
                 _connectionListeners = listeners;
+                return true;
             }
-        }
 
-        public bool RemoveListener(IConnectionListener connectionListener)
-        {
-            lock (_lock)
-            {
-                if (_connectionListeners.Contains(connectionListener))
-                {
-                    var listeners = new List<IConnectionListener>(_connectionListeners);
-                    listeners.Remove(connectionListener);
-                    _connectionListeners = listeners;
-                    return true;
-                }
-
-                return false;
-            }
+            return false;
         }
+    }
 
-        public void ClearListeners()
-        {
-            _connectionListeners = new List<IConnectionListener>();
-        }
+    public void ClearListeners()
+    {
+        _connectionListeners = new List<IConnectionListener>();
     }
 }

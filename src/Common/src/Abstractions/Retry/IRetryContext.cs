@@ -5,27 +5,26 @@
 using Steeltoe.Common.Util;
 using System;
 
-namespace Steeltoe.Common.Retry
+namespace Steeltoe.Common.Retry;
+
+/// <summary>
+/// Low-level access to ongoing retry operation. Normally not needed by clients, but can be
+/// used to alter the course of the retry, e.g.force an early termination.
+/// </summary>
+public interface IRetryContext : IAttributeAccessor
 {
     /// <summary>
-    /// Low-level access to ongoing retry operation. Normally not needed by clients, but can be
-    /// used to alter the course of the retry, e.g.force an early termination.
+    /// Gets the last exception that caused the retry
     /// </summary>
-    public interface IRetryContext : IAttributeAccessor
-    {
-        /// <summary>
-        /// Gets the last exception that caused the retry
-        /// </summary>
-        Exception LastException { get; }
+    Exception LastException { get; }
 
-        /// <summary>
-        /// Gets the number of retry attempts
-        /// </summary>
-        int RetryCount { get; }
+    /// <summary>
+    /// Gets the number of retry attempts
+    /// </summary>
+    int RetryCount { get; }
 
-        /// <summary>
-        /// Gets the parent context if present
-        /// </summary>
-        IRetryContext Parent { get; }
-    }
+    /// <summary>
+    /// Gets the parent context if present
+    /// </summary>
+    IRetryContext Parent { get; }
 }

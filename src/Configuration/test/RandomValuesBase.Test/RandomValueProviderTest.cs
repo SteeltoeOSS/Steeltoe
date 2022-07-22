@@ -5,94 +5,93 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue.Test
+namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
+
+public class RandomValueProviderTest
 {
-    public class RandomValueProviderTest
+    [Fact]
+    public void Constructor__ThrowsIfPrefixNull()
     {
-        [Fact]
-        public void Constructor__ThrowsIfPrefixNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null, null));
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new RandomValueProvider(null, null));
+    }
 
-        [Fact]
-        public void TryGet_Ignores()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("foo:bar", out var value);
-            Assert.Null(value);
-        }
+    [Fact]
+    public void TryGet_Ignores()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("foo:bar", out var value);
+        Assert.Null(value);
+    }
 
-        [Fact]
-        public void TryGet_String()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:string", out var value);
-            Assert.NotNull(value);
-        }
+    [Fact]
+    public void TryGet_String()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:string", out var value);
+        Assert.NotNull(value);
+    }
 
-        [Fact]
-        public void TryGet_Uuid()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:uuid", out var value);
-            Assert.NotNull(value);
-        }
+    [Fact]
+    public void TryGet_Uuid()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:uuid", out var value);
+        Assert.NotNull(value);
+    }
 
-        [Fact]
-        public void TryGet_RandomInt()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int", out var value);
-            Assert.NotNull(value);
-        }
+    [Fact]
+    public void TryGet_RandomInt()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:int", out var value);
+        Assert.NotNull(value);
+    }
 
-        [Fact]
-        public void TryGet_RandomIntRange()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int[4,10]", out var value);
-            Assert.NotNull(value);
-            var val = int.Parse(value);
-            Assert.InRange(val, 4, 10);
-        }
+    [Fact]
+    public void TryGet_RandomIntRange()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:int[4,10]", out var value);
+        Assert.NotNull(value);
+        var val = int.Parse(value);
+        Assert.InRange(val, 4, 10);
+    }
 
-        [Fact]
-        public void TryGet_RandomIntMax()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:int(10)", out var value);
-            Assert.NotNull(value);
-            var val = int.Parse(value);
-            Assert.InRange(val, 0, 10);
-        }
+    [Fact]
+    public void TryGet_RandomIntMax()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:int(10)", out var value);
+        Assert.NotNull(value);
+        var val = int.Parse(value);
+        Assert.InRange(val, 0, 10);
+    }
 
-        [Fact]
-        public void TryGet_RandomLong()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long", out var value);
-            Assert.NotNull(value);
-        }
+    [Fact]
+    public void TryGet_RandomLong()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:long", out var value);
+        Assert.NotNull(value);
+    }
 
-        [Fact]
-        public void TryGet_RandomLongRange()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long[4,10]", out var value);
-            Assert.NotNull(value);
-            var val = int.Parse(value);
-            Assert.InRange(val, 4, 10);
-        }
+    [Fact]
+    public void TryGet_RandomLongRange()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:long[4,10]", out var value);
+        Assert.NotNull(value);
+        var val = int.Parse(value);
+        Assert.InRange(val, 4, 10);
+    }
 
-        [Fact]
-        public void TryGet_RandomLongMax()
-        {
-            var prov = new RandomValueProvider("random:");
-            prov.TryGet("random:long(10)", out var value);
-            Assert.NotNull(value);
-            var val = int.Parse(value);
-            Assert.InRange(val, 0, 10);
-        }
+    [Fact]
+    public void TryGet_RandomLongMax()
+    {
+        var prov = new RandomValueProvider("random:");
+        prov.TryGet("random:long(10)", out var value);
+        Assert.NotNull(value);
+        var val = int.Parse(value);
+        Assert.InRange(val, 0, 10);
     }
 }

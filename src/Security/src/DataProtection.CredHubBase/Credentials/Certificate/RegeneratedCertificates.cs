@@ -5,17 +5,16 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+/// <summary>
+/// Return object from bulk certificate regeneration request
+/// </summary>
+public class RegeneratedCertificates
 {
     /// <summary>
-    /// Return object from bulk certificate regeneration request
+    /// Gets or sets names of certificates that were regenerated
     /// </summary>
-    public class RegeneratedCertificates
-    {
-        /// <summary>
-        /// Gets or sets names of certificates that were regenerated
-        /// </summary>
-        [JsonPropertyName("regenerated_credentials")]
-        public List<string> RegeneratedCredentials { get; set; }
-    }
+    [JsonPropertyName("regenerated_credentials")]
+    public List<string> RegeneratedCredentials { get; set; }
 }

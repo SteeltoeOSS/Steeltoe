@@ -4,10 +4,9 @@
 
 using Steeltoe.Management.Endpoint.Hypermedia;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
+public interface ICloudFoundryEndpoint
 {
-    public interface ICloudFoundryEndpoint
-    {
-        Links Invoke(string baseUrl);
-    }
+    Links Invoke(string baseUrl);
 }

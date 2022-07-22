@@ -4,9 +4,8 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+public class ErrorMessageAttributes : AbstractAttributeAccessor
 {
-    public class ErrorMessageAttributes : AbstractAttributeAccessor
-    {
-    }
 }

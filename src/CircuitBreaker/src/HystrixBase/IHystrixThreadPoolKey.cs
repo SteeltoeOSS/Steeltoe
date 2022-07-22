@@ -5,40 +5,39 @@
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+/// <summary>
+/// A key to represent a <seealso cref="IHystrixThreadPool"/> for monitoring, metrics publishing, caching and other such uses.
+/// </summary>
+public interface IHystrixThreadPoolKey : IHystrixKey
 {
-    /// <summary>
-    /// A key to represent a <seealso cref="IHystrixThreadPool"/> for monitoring, metrics publishing, caching and other such uses.
-    /// </summary>
-    public interface IHystrixThreadPoolKey : IHystrixKey
+}
+
+/// <summary>
+/// Default implementation of the interface
+/// </summary>
+public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
+{
+    private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ();
+
+    internal HystrixThreadPoolKeyDefault(string name)
+        : base(name)
     {
     }
 
     /// <summary>
-    /// Default implementation of the interface
+    /// Retrieve (or create) an interned IHystrixThreadPoolKey instance for a given name.
     /// </summary>
-    public class HystrixThreadPoolKeyDefault : HystrixKeyDefault, IHystrixThreadPoolKey
+    /// <param name="name"> thread pool name </param>
+    /// <returns> IHystrixThreadPoolKey instance that is interned (cached) so a given name will always retrieve the same instance. </returns>
+    public static IHystrixThreadPoolKey AsKey(string name)
     {
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolKeyDefault> Intern = new ();
+        return Intern.GetOrAddEx(name, k => new HystrixThreadPoolKeyDefault(k));
+    }
 
-        internal HystrixThreadPoolKeyDefault(string name)
-            : base(name)
-        {
-        }
-
-        /// <summary>
-        /// Retrieve (or create) an interned IHystrixThreadPoolKey instance for a given name.
-        /// </summary>
-        /// <param name="name"> thread pool name </param>
-        /// <returns> IHystrixThreadPoolKey instance that is interned (cached) so a given name will always retrieve the same instance. </returns>
-        public static IHystrixThreadPoolKey AsKey(string name)
-        {
-            return Intern.GetOrAddEx(name, k => new HystrixThreadPoolKeyDefault(k));
-        }
-
-        public static int ThreadPoolCount
-        {
-            get { return Intern.Count; }
-        }
+    public static int ThreadPoolCount
+    {
+        get { return Intern.Count; }
     }
 }

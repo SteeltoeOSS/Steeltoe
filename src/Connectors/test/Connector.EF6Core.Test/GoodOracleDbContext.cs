@@ -4,12 +4,11 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.Oracle.EF6.Test
+namespace Steeltoe.Connector.Oracle.EF6.Test;
+
+public class GoodOracleDbContext : DbContext
 {
-    public class GoodOracleDbContext : DbContext
+    public GoodOracleDbContext(string str)
     {
-        public GoodOracleDbContext(string str)
-        {
-        }
     }
 }

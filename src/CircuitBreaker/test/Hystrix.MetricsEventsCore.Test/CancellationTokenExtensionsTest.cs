@@ -5,18 +5,17 @@
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+
+public class CancellationTokenExtensionsTest
 {
-    public class CancellationTokenExtensionsTest
+    [Fact]
+    public void GetAwaiter_WithCancel_IsCompleted()
     {
-        [Fact]
-        public void GetAwaiter_WithCancel_IsCompleted()
-        {
-            var tokenSource = new CancellationTokenSource();
-            var awaiter = CancellationTokenExtensions.GetAwaiter(tokenSource.Token);
-            Assert.False(awaiter.IsCompleted);
-            tokenSource.Cancel();
-            Assert.True(awaiter.IsCompleted);
-        }
+        var tokenSource = new CancellationTokenSource();
+        var awaiter = CancellationTokenExtensions.GetAwaiter(tokenSource.Token);
+        Assert.False(awaiter.IsCompleted);
+        tokenSource.Cancel();
+        Assert.True(awaiter.IsCompleted);
     }
 }

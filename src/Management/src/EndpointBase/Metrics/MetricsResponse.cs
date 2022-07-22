@@ -6,24 +6,23 @@ using Steeltoe.Management.OpenTelemetry.Metrics;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Endpoint.Metrics;
+
+public class MetricsResponse : IMetricsResponse
 {
-    public class MetricsResponse : IMetricsResponse
+    [JsonPropertyName("name")]
+    public string Name { get; }
+
+    [JsonPropertyName("measurements")]
+    public List<MetricSample> Measurements { get; }
+
+    [JsonPropertyName("availableTags")]
+    public List<MetricTag> AvailableTags { get; }
+
+    public MetricsResponse(string name, List<MetricSample> measurements, List<MetricTag> availableTags)
     {
-        [JsonPropertyName("name")]
-        public string Name { get; }
-
-        [JsonPropertyName("measurements")]
-        public List<MetricSample> Measurements { get; }
-
-        [JsonPropertyName("availableTags")]
-        public List<MetricTag> AvailableTags { get; }
-
-        public MetricsResponse(string name, List<MetricSample> measurements, List<MetricTag> availableTags)
-        {
-            Name = name;
-            Measurements = measurements;
-            AvailableTags = availableTags;
-        }
+        Name = name;
+        Measurements = measurements;
+        AvailableTags = availableTags;
     }
 }

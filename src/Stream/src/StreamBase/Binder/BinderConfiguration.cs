@@ -6,47 +6,46 @@ using Steeltoe.Stream.Config;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class BinderConfiguration
 {
-    public class BinderConfiguration
+    private readonly IBinderOptions _options;
+
+    public BinderConfiguration(string binderType, string binderAssemblyPath, IBinderOptions options)
     {
-        private readonly IBinderOptions _options;
+        ConfigureClass = binderType ?? throw new ArgumentNullException(nameof(binderType));
+        ConfigureAssembly = binderAssemblyPath;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
+    }
 
-        public BinderConfiguration(string binderType, string binderAssemblyPath, IBinderOptions options)
+    public string ConfigureClass { get; }
+
+    public string ConfigureAssembly { get; }
+
+    public string ResolvedAssembly { get; set; }
+
+    public IDictionary<string, object> Properties
+    {
+        get
         {
-            ConfigureClass = binderType ?? throw new ArgumentNullException(nameof(binderType));
-            ConfigureAssembly = binderAssemblyPath;
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            return _options.Environment;
         }
+    }
 
-        public string ConfigureClass { get; }
-
-        public string ConfigureAssembly { get; }
-
-        public string ResolvedAssembly { get; set; }
-
-        public IDictionary<string, object> Properties
+    public bool IsInheritEnvironment
+    {
+        get
         {
-            get
-            {
-                return _options.Environment;
-            }
+            return _options.InheritEnvironment;
         }
+    }
 
-        public bool IsInheritEnvironment
+    public bool IsDefaultCandidate
+    {
+        get
         {
-            get
-            {
-                return _options.InheritEnvironment;
-            }
-        }
-
-        public bool IsDefaultCandidate
-        {
-            get
-            {
-                return _options.DefaultCandidate;
-            }
+            return _options.DefaultCandidate;
         }
     }
 }

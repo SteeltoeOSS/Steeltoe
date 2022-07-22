@@ -4,24 +4,23 @@
 
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test
-{
-    public class EurekaDiscoveryManagerTest : AbstractBaseTest
-    {
-        [Fact]
-        public void Constructor_Initializes_Correctly()
-        {
-            var instOptions = new EurekaInstanceOptions();
-            var clientOptions = new EurekaClientOptions() { EurekaServerRetryCount = 0 };
-            var wrapInst = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
-            var wrapClient = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
-            var appMgr = new EurekaApplicationInfoManager(wrapInst);
-            var client = new EurekaDiscoveryClient(wrapClient, wrapInst, appMgr);
+namespace Steeltoe.Discovery.Eureka.Test;
 
-            var mgr = new EurekaDiscoveryManager(wrapClient, wrapInst, client);
-            Assert.Equal(instOptions, mgr.InstanceConfig);
-            Assert.Equal(clientOptions, mgr.ClientConfig);
-            Assert.Equal(client, mgr.Client);
-        }
+public class EurekaDiscoveryManagerTest : AbstractBaseTest
+{
+    [Fact]
+    public void Constructor_Initializes_Correctly()
+    {
+        var instOptions = new EurekaInstanceOptions();
+        var clientOptions = new EurekaClientOptions() { EurekaServerRetryCount = 0 };
+        var wrapInst = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
+        var wrapClient = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
+        var appMgr = new EurekaApplicationInfoManager(wrapInst);
+        var client = new EurekaDiscoveryClient(wrapClient, wrapInst, appMgr);
+
+        var mgr = new EurekaDiscoveryManager(wrapClient, wrapInst, client);
+        Assert.Equal(instOptions, mgr.InstanceConfig);
+        Assert.Equal(clientOptions, mgr.ClientConfig);
+        Assert.Equal(client, mgr.Client);
     }
 }

@@ -5,48 +5,47 @@
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+internal class TestOptionsFactory : HystrixOptionsStrategy
 {
-    internal class TestOptionsFactory : HystrixOptionsStrategy
+    public override IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
     {
-        public override IHystrixCommandOptions GetCommandOptions(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
+        if (builder == null)
         {
-            if (builder == null)
-            {
-                builder = HystrixCommandOptionsTest.GetUnitTestOptions();
-            }
-
-            return builder;
+            builder = HystrixCommandOptionsTest.GetUnitTestOptions();
         }
 
-        public override IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions builder)
-        {
-            if (builder == null)
-            {
-                builder = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
-            }
+        return builder;
+    }
 
-            return builder;
+    public override IHystrixThreadPoolOptions GetThreadPoolOptions(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions builder)
+    {
+        if (builder == null)
+        {
+            builder = HystrixThreadPoolOptionsTest.GetUnitTestPropertiesBuilder();
         }
 
-        public override IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions builder)
-        {
-            throw new InvalidOperationException("not expecting collapser properties");
-        }
+        return builder;
+    }
 
-        public override string GetCommandOptionsCacheKey(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
-        {
-            return null;
-        }
+    public override IHystrixCollapserOptions GetCollapserOptions(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions builder)
+    {
+        throw new InvalidOperationException("not expecting collapser properties");
+    }
 
-        public override string GetThreadPoolOptionsCacheKey(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions builder)
-        {
-            return null;
-        }
+    public override string GetCommandOptionsCacheKey(IHystrixCommandKey commandKey, IHystrixCommandOptions builder)
+    {
+        return null;
+    }
 
-        public override string GetCollapserOptionsCacheKey(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions builder)
-        {
-            return null;
-        }
+    public override string GetThreadPoolOptionsCacheKey(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions builder)
+    {
+        return null;
+    }
+
+    public override string GetCollapserOptionsCacheKey(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions builder)
+    {
+        return null;
     }
 }

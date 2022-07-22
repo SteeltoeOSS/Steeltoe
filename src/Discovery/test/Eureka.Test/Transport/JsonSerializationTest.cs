@@ -6,14 +6,14 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test;
+
+public class JsonSerializationTest : AbstractBaseTest
 {
-    public class JsonSerializationTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_BadJson_Throws()
     {
-        [Fact]
-        public void Deserialize_BadJson_Throws()
-        {
-            var json = @"
+        var json = @"
 { 
     'instanceId':'localhost:foo',
     'hostName':'localhost',
@@ -21,7 +21,6 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
     'ipAddr':'192.168.56.1',
     
 ";
-            var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
-        }
+        var ex = Assert.Throws<JsonException>(() => JsonSerializer.Deserialize<JsonInstanceInfo>(json));
     }
 }

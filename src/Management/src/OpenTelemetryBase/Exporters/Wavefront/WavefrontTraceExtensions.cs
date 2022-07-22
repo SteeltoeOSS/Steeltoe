@@ -9,16 +9,15 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront
-{
-    public static class WavefrontTraceExtensions
-    {
-        public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions, ILogger<WavefrontTraceExporter> logger = null)
-        {
-            var options = exporterOptions as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(exporterOptions));
-            var exporter = new WavefrontTraceExporter(exporterOptions, logger);
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
-            return builder.AddProcessor(new BatchActivityExportProcessor(exporter, options.MaxQueueSize, options.Step));
-        }
+public static class WavefrontTraceExtensions
+{
+    public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions, ILogger<WavefrontTraceExporter> logger = null)
+    {
+        var options = exporterOptions as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(exporterOptions));
+        var exporter = new WavefrontTraceExporter(exporterOptions, logger);
+
+        return builder.AddProcessor(new BatchActivityExportProcessor(exporter, options.MaxQueueSize, options.Step));
     }
 }

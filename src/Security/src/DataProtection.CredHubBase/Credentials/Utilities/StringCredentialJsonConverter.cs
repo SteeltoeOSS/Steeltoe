@@ -6,28 +6,27 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class StringCredentialJsonConverter<T> : JsonConverter<T>
 {
-    public class StringCredentialJsonConverter<T> : JsonConverter<T>
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
-        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        writer.WriteStringValue(value.ToString());
+    }
+
+    public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return (T)Activator.CreateInstance(typeToConvert, JsonSerializer.Deserialize<string>(ref reader, options));
+    }
+
+    public override bool CanConvert(Type typeToConvert)
+    {
+        if (typeToConvert.IsAssignableFrom(typeof(T)) && !typeToConvert.IsInterface)
         {
-            writer.WriteStringValue(value.ToString());
+            return true;
         }
 
-        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return (T)Activator.CreateInstance(typeToConvert, JsonSerializer.Deserialize<string>(ref reader, options));
-        }
-
-        public override bool CanConvert(Type typeToConvert)
-        {
-            if (typeToConvert.IsAssignableFrom(typeof(T)) && !typeToConvert.IsInterface)
-            {
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 }

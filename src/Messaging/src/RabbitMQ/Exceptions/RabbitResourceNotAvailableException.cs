@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class RabbitResourceNotAvailableException : RabbitException
 {
-    public class RabbitResourceNotAvailableException : RabbitException
-    {
-        public RabbitResourceNotAvailableException(string message)
+    public RabbitResourceNotAvailableException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public RabbitResourceNotAvailableException(Exception cause)
+    public RabbitResourceNotAvailableException(Exception cause)
         : base(cause)
-        {
-        }
+    {
+    }
 
-        public RabbitResourceNotAvailableException(string message, Exception cause)
-         : base(message, cause)
-        {
-        }
+    public RabbitResourceNotAvailableException(string message, Exception cause)
+        : base(message, cause)
+    {
     }
 }

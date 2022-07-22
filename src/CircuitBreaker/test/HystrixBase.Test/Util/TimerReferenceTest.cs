@@ -7,38 +7,37 @@ using System;
 using System.Diagnostics;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
+
+public class TimerReferenceTest
 {
-    public class TimerReferenceTest
+    [Fact]
+    [Trait("Category", "FlakyOnHostedAgents")]
+    public void TimerReference_CallsListenerOnTime()
     {
-        [Fact]
-        [Trait("Category", "FlakyOnHostedAgents")]
-        public void TimerReference_CallsListenerOnTime()
+        var stopWatch = new Stopwatch();
+        var listener = new TestListener(stopWatch);
+        var timerReference = new TimerReference(listener, TimeSpan.FromMilliseconds(1000));
+        stopWatch.Start();
+        timerReference.Start();
+        Time.WaitUntil(() => { return !stopWatch.IsRunning; }, 2000);
+        Assert.InRange(stopWatch.ElapsedMilliseconds, 950, 1000 + 200);
+    }
+
+    private class TestListener : ITimerListener
+    {
+        private readonly Stopwatch stopwatch;
+
+        public TestListener(Stopwatch stopwatch)
         {
-            var stopWatch = new Stopwatch();
-            var listener = new TestListener(stopWatch);
-            var timerReference = new TimerReference(listener, TimeSpan.FromMilliseconds(1000));
-            stopWatch.Start();
-            timerReference.Start();
-            Time.WaitUntil(() => { return !stopWatch.IsRunning; }, 2000);
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 950, 1000 + 200);
+            this.stopwatch = stopwatch;
         }
 
-        private class TestListener : ITimerListener
+        public int IntervalTimeInMilliseconds => throw new NotImplementedException();
+
+        public void Tick()
         {
-            private readonly Stopwatch stopwatch;
-
-            public TestListener(Stopwatch stopwatch)
-            {
-                this.stopwatch = stopwatch;
-            }
-
-            public int IntervalTimeInMilliseconds => throw new NotImplementedException();
-
-            public void Tick()
-            {
-                stopwatch.Stop();
-            }
+            stopwatch.Stop();
         }
     }
 }

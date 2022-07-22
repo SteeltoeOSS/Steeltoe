@@ -6,19 +6,18 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.Threading;
 
-namespace Steeltoe.Discovery.Client.Test
+namespace Steeltoe.Discovery.Client.Test;
+
+public class TestApplicationLifetime : IHostApplicationLifetime
 {
-    public class TestApplicationLifetime : IHostApplicationLifetime
+    public CancellationToken ApplicationStarted => throw new NotImplementedException();
+
+    public CancellationToken ApplicationStopping => new CancellationTokenSource().Token;
+
+    public CancellationToken ApplicationStopped => throw new NotImplementedException();
+
+    public void StopApplication()
     {
-        public CancellationToken ApplicationStarted => throw new NotImplementedException();
-
-        public CancellationToken ApplicationStopping => new CancellationTokenSource().Token;
-
-        public CancellationToken ApplicationStopped => throw new NotImplementedException();
-
-        public void StopApplication()
-        {
-            throw new NotImplementedException();
-        }
+        throw new NotImplementedException();
     }
 }

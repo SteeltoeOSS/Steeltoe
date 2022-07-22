@@ -2,64 +2,63 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Metrics
+namespace Steeltoe.Management.Endpoint.Metrics;
+
+internal static class MetricsHelpers
 {
-    internal static class MetricsHelpers
+    // TODO: Pending Views API
+    /* internal static IAggregationData SumWithTags(IViewData viewData, IList<ITagValue> tagValues = null)
+     {
+         var withTags = viewData.AggregationMap.WithTags(tagValues);
+         return StatsExtensions.Sum(withTags, viewData.View);
+     }
+
+    private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
     {
-        // TODO: Pending Views API
-        /* internal static IAggregationData SumWithTags(IViewData viewData, IList<ITagValue> tagValues = null)
+        var results = new Dictionary<TagValues, IAggregationData>();
+
+         foreach (var kvp in aggMap)
          {
-             var withTags = viewData.AggregationMap.WithTags(tagValues);
-             return StatsExtensions.Sum(withTags, viewData.View);
+             if (TagValuesMatch(kvp.Key.Values, values))
+             {
+                 results.Add(kvp.Key, kvp.Value);
+             }
          }
 
-        private static IDictionary<TagValues, IAggregationData> WithTags(this IDictionary<TagValues, IAggregationData> aggMap, IList<ITagValue> values)
-        {
-            var results = new Dictionary<TagValues, IAggregationData>();
+         return results;
+     }
 
-             foreach (var kvp in aggMap)
-             {
-                 if (TagValuesMatch(kvp.Key.Values, values))
-                 {
-                     results.Add(kvp.Key, kvp.Value);
-                 }
-             }
-
-             return results;
+     private static bool TagValuesMatch(IEnumerable<ITagValue> aggValues, IEnumerable<ITagValue> values)
+     {
+         if (values == null)
+         {
+             return true;
          }
 
-         private static bool TagValuesMatch(IEnumerable<ITagValue> aggValues, IEnumerable<ITagValue> values)
+         if (aggValues.Count() != values.Count())
          {
-             if (values == null)
+             return false;
+         }
+
+         var first = aggValues.GetEnumerator();
+         var second = values.GetEnumerator();
+
+         while (first.MoveNext())
+         {
+             second.MoveNext();
+
+             // Null matches any aggValue
+             if (second.Current == null)
              {
-                 return true;
+                 continue;
              }
 
-             if (aggValues.Count() != values.Count())
+             if (!second.Current.Equals(first.Current))
              {
                  return false;
              }
+         }
 
-             var first = aggValues.GetEnumerator();
-             var second = values.GetEnumerator();
-
-             while (first.MoveNext())
-             {
-                 second.MoveNext();
-
-                 // Null matches any aggValue
-                 if (second.Current == null)
-                 {
-                     continue;
-                 }
-
-                 if (!second.Current.Equals(first.Current))
-                 {
-                     return false;
-                 }
-             }
-
-             return true;
-         }*/
-    }
+         return true;
+     }*/
 }

@@ -4,11 +4,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+internal class JsonInstanceInfoRoot
 {
-    internal class JsonInstanceInfoRoot
-    {
-        [JsonPropertyName("instance")]
-        public JsonInstanceInfo Instance { get; set; }
-    }
+    [JsonPropertyName("instance")]
+    public JsonInstanceInfo Instance { get; set; }
 }

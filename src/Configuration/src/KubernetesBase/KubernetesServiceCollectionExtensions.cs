@@ -5,15 +5,14 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Kubernetes;
 
-namespace Steeltoe.Extensions.Configuration.Kubernetes
+namespace Steeltoe.Extensions.Configuration.Kubernetes;
+
+public static class KubernetesServiceCollectionExtensions
 {
-    public static class KubernetesServiceCollectionExtensions
-    {
-        /// <summary>
-        /// Adds KubernetesApplicationInstanceInfo and ensures startup loggers are replaced by runtime loggers
-        /// </summary>
-        /// <param name="services">Your <see cref="IServiceCollection"/></param>
-        public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services) =>
-            services.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>();
-    }
+    /// <summary>
+    /// Adds KubernetesApplicationInstanceInfo and ensures startup loggers are replaced by runtime loggers
+    /// </summary>
+    /// <param name="services">Your <see cref="IServiceCollection"/></param>
+    public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services) =>
+        services.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>();
 }

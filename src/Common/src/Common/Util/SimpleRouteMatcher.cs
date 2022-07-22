@@ -5,65 +5,64 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public class SimpleRouteMatcher : IRouteMatcher
 {
-    public class SimpleRouteMatcher : IRouteMatcher
+    public SimpleRouteMatcher(IPathMatcher pathMatcher)
     {
-        public SimpleRouteMatcher(IPathMatcher pathMatcher)
+        if (pathMatcher == null)
         {
-            if (pathMatcher == null)
-            {
-                throw new ArgumentNullException(nameof(pathMatcher));
-            }
-
-            PathMatcher = pathMatcher;
+            throw new ArgumentNullException(nameof(pathMatcher));
         }
 
-        public IPathMatcher PathMatcher { get; }
+        PathMatcher = pathMatcher;
+    }
 
-        public IRoute ParseRoute(string route)
+    public IPathMatcher PathMatcher { get; }
+
+    public IRoute ParseRoute(string route)
+    {
+        return new DefaultRoute(route);
+    }
+
+    public bool IsPattern(string route)
+    {
+        return PathMatcher.IsPattern(route);
+    }
+
+    public string Combine(string pattern1, string pattern2)
+    {
+        return PathMatcher.Combine(pattern1, pattern2);
+    }
+
+    public bool Match(string pattern, IRoute route)
+    {
+        return PathMatcher.Match(pattern, route.Value);
+    }
+
+    public IDictionary<string, string> MatchAndExtract(string pattern, IRoute route)
+    {
+        if (!Match(pattern, route))
         {
-            return new DefaultRoute(route);
+            return null;
         }
 
-        public bool IsPattern(string route)
+        return PathMatcher.ExtractUriTemplateVariables(pattern, route.Value);
+    }
+
+    public IComparer<string> GetPatternComparer(IRoute route)
+    {
+        return PathMatcher.GetPatternComparer(route.Value);
+    }
+
+    private class DefaultRoute : IRoute
+    {
+        public DefaultRoute(string path)
         {
-            return PathMatcher.IsPattern(route);
+            Value = path;
         }
 
-        public string Combine(string pattern1, string pattern2)
-        {
-            return PathMatcher.Combine(pattern1, pattern2);
-        }
-
-        public bool Match(string pattern, IRoute route)
-        {
-            return PathMatcher.Match(pattern, route.Value);
-        }
-
-        public IDictionary<string, string> MatchAndExtract(string pattern, IRoute route)
-        {
-            if (!Match(pattern, route))
-            {
-                return null;
-            }
-
-            return PathMatcher.ExtractUriTemplateVariables(pattern, route.Value);
-        }
-
-        public IComparer<string> GetPatternComparer(IRoute route)
-        {
-            return PathMatcher.GetPatternComparer(route.Value);
-        }
-
-        private class DefaultRoute : IRoute
-        {
-            public DefaultRoute(string path)
-            {
-                Value = path;
-            }
-
-            public string Value { get; }
-        }
+        public string Value { get; }
     }
 }

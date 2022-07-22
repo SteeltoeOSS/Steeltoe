@@ -4,15 +4,14 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
-{
-    public class InternalParseException : Exception
-    {
-        public SpelParseException Cause => (SpelParseException)InnerException;
+namespace Steeltoe.Common.Expression.Internal.Spring;
 
-        public InternalParseException(SpelParseException cause)
-            : base("Internal Parse Error", cause)
-        {
-        }
+public class InternalParseException : Exception
+{
+    public SpelParseException Cause => (SpelParseException)InnerException;
+
+    public InternalParseException(SpelParseException cause)
+        : base("Internal Parse Error", cause)
+    {
     }
 }

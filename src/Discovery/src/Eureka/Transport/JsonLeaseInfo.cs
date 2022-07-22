@@ -5,34 +5,33 @@
 using Steeltoe.Common.Http.Serialization;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+internal class JsonLeaseInfo
 {
-    internal class JsonLeaseInfo
-    {
-        [JsonPropertyName("renewalIntervalInSecs")]
-        public int RenewalIntervalInSecs { get; set; }
+    [JsonPropertyName("renewalIntervalInSecs")]
+    public int RenewalIntervalInSecs { get; set; }
 
-        [JsonPropertyName("durationInSecs")]
-        public int DurationInSecs { get; set; }
+    [JsonPropertyName("durationInSecs")]
+    public int DurationInSecs { get; set; }
 
-        [JsonPropertyName("registrationTimestamp")]
-        [JsonConverter(typeof(LongStringJsonConverter))]
-        public long RegistrationTimestamp { get; set; }
+    [JsonPropertyName("registrationTimestamp")]
+    [JsonConverter(typeof(LongStringJsonConverter))]
+    public long RegistrationTimestamp { get; set; }
 
-        [JsonPropertyName("lastRenewalTimestamp")]
-        [JsonConverter(typeof(LongStringJsonConverter))]
-        public long LastRenewalTimestamp { get; set; }
+    [JsonPropertyName("lastRenewalTimestamp")]
+    [JsonConverter(typeof(LongStringJsonConverter))]
+    public long LastRenewalTimestamp { get; set; }
 
-        [JsonPropertyName("renewalTimestamp")]
-        [JsonConverter(typeof(LongStringJsonConverter))]
-        public long LastRenewalTimestampLegacy { get; set; }
+    [JsonPropertyName("renewalTimestamp")]
+    [JsonConverter(typeof(LongStringJsonConverter))]
+    public long LastRenewalTimestampLegacy { get; set; }
 
-        [JsonPropertyName("evictionTimestamp")]
-        [JsonConverter(typeof(LongStringJsonConverter))]
-        public long EvictionTimestamp { get; set; }
+    [JsonPropertyName("evictionTimestamp")]
+    [JsonConverter(typeof(LongStringJsonConverter))]
+    public long EvictionTimestamp { get; set; }
 
-        [JsonPropertyName("serviceUpTimestamp")]
-        [JsonConverter(typeof(LongStringJsonConverter))]
-        public long ServiceUpTimestamp { get; set; }
-    }
+    [JsonPropertyName("serviceUpTimestamp")]
+    [JsonConverter(typeof(LongStringJsonConverter))]
+    public long ServiceUpTimestamp { get; set; }
 }

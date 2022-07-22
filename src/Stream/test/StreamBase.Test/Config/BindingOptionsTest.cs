@@ -4,18 +4,17 @@
 
 using Xunit;
 
-namespace Steeltoe.Stream.Config
-{
-    public class BindingOptionsTest
-    {
-        [Fact]
-        public void Defaults_ConfiguresOptionsCorrectly()
-        {
-        }
+namespace Steeltoe.Stream.Config;
 
-        [Fact]
-        public void GlobalDefaults_ConfiguresOptionsCorrectly()
-        {
-        }
+public class BindingOptionsTest
+{
+    [Fact]
+    public void Defaults_ConfiguresOptionsCorrectly()
+    {
+    }
+
+    [Fact]
+    public void GlobalDefaults_ConfiguresOptionsCorrectly()
+    {
     }
 }

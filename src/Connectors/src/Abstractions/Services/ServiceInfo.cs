@@ -5,28 +5,27 @@
 using Steeltoe.Common;
 using System;
 
-namespace Steeltoe.Connector.Services
+namespace Steeltoe.Connector.Services;
+
+public abstract class ServiceInfo : IServiceInfo
 {
-    public abstract class ServiceInfo : IServiceInfo
+    public ServiceInfo(string id)
+        : this(id, null)
     {
-        public ServiceInfo(string id)
-            : this(id, null)
-        {
-        }
-
-        public ServiceInfo(string id, IApplicationInstanceInfo info)
-        {
-            if (string.IsNullOrEmpty(id))
-            {
-                throw new ArgumentNullException(nameof(id));
-            }
-
-            Id = id;
-            ApplicationInfo = info;
-        }
-
-        public string Id { get; protected set; }
-
-        public IApplicationInstanceInfo ApplicationInfo { get; set; }
     }
+
+    public ServiceInfo(string id, IApplicationInstanceInfo info)
+    {
+        if (string.IsNullOrEmpty(id))
+        {
+            throw new ArgumentNullException(nameof(id));
+        }
+
+        Id = id;
+        ApplicationInfo = info;
+    }
+
+    public string Id { get; protected set; }
+
+    public IApplicationInstanceInfo ApplicationInfo { get; set; }
 }

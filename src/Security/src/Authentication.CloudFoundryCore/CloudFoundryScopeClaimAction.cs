@@ -6,24 +6,23 @@ using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
-{
-    public class CloudFoundryScopeClaimAction : ClaimAction
-    {
-        public CloudFoundryScopeClaimAction(string claimType, string valueType)
-            : base(claimType, valueType)
-        {
-        }
+namespace Steeltoe.Security.Authentication.CloudFoundry;
 
-        public override void Run(JsonElement userData, ClaimsIdentity identity, string issuer)
+public class CloudFoundryScopeClaimAction : ClaimAction
+{
+    public CloudFoundryScopeClaimAction(string claimType, string valueType)
+        : base(claimType, valueType)
+    {
+    }
+
+    public override void Run(JsonElement userData, ClaimsIdentity identity, string issuer)
+    {
+        var scopes = CloudFoundryHelper.GetScopes(userData);
+        if (scopes != null)
         {
-            var scopes = CloudFoundryHelper.GetScopes(userData);
-            if (scopes != null)
+            foreach (var s in scopes)
             {
-                foreach (var s in scopes)
-                {
-                    identity.AddClaim(new Claim(ClaimType, s, ValueType, issuer));
-                }
+                identity.AddClaim(new Claim(ClaimType, s, ValueType, issuer));
             }
         }
     }

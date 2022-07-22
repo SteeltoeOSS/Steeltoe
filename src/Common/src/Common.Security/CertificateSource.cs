@@ -6,37 +6,36 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Security;
+
+public class CertificateSource : ICertificateSource
 {
-    public class CertificateSource : ICertificateSource
+    private readonly string _certFilePath;
+
+    public CertificateSource(string certFilePath)
     {
-        private readonly string _certFilePath;
+        _certFilePath = Path.GetFullPath(certFilePath);
+    }
 
-        public CertificateSource(string certFilePath)
+    public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
+
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        if (!File.Exists(_certFilePath))
         {
-            _certFilePath = Path.GetFullPath(certFilePath);
+            throw new InvalidOperationException("Required certificate file not found:" + _certFilePath);
         }
 
-        public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
+        var certSource = new FileSource("certificate")
         {
-            if (!File.Exists(_certFilePath))
-            {
-                throw new InvalidOperationException("Required certificate file not found:" + _certFilePath);
-            }
+            FileProvider = null,
+            Path = Path.GetFileName(_certFilePath),
+            Optional = false,
+            ReloadOnChange = true,
+            ReloadDelay = 1000,
+            BasePath = Path.GetDirectoryName(_certFilePath)
+        };
 
-            var certSource = new FileSource("certificate")
-            {
-                FileProvider = null,
-                Path = Path.GetFileName(_certFilePath),
-                Optional = false,
-                ReloadOnChange = true,
-                ReloadDelay = 1000,
-                BasePath = Path.GetDirectoryName(_certFilePath)
-            };
-
-            return new CertificateProvider(certSource);
-        }
+        return new CertificateProvider(certSource);
     }
 }

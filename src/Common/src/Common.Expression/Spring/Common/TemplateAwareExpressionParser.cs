@@ -4,246 +4,245 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Common
+namespace Steeltoe.Common.Expression.Internal.Spring.Common;
+
+public abstract class TemplateAwareExpressionParser : IExpressionParser
 {
-    public abstract class TemplateAwareExpressionParser : IExpressionParser
+    public IExpression ParseExpression(string expressionString)
     {
-        public IExpression ParseExpression(string expressionString)
+        return ParseExpression(expressionString, null);
+    }
+
+    public IExpression ParseExpression(string expressionString, IParserContext context)
+    {
+        if (context != null && context.IsTemplate)
         {
-            return ParseExpression(expressionString, null);
+            return ParseTemplate(expressionString, context);
+        }
+        else
+        {
+            return DoParseExpression(expressionString, context);
+        }
+    }
+
+    protected internal abstract IExpression DoParseExpression(string expressionString, IParserContext context);
+
+    private IExpression ParseTemplate(string expressionString, IParserContext context)
+    {
+        if (expressionString.Length == 0)
+        {
+            return new LiteralExpression(string.Empty);
         }
 
-        public IExpression ParseExpression(string expressionString, IParserContext context)
+        var expressions = ParseExpressions(expressionString, context);
+        if (expressions.Count == 1)
         {
-            if (context != null && context.IsTemplate)
+            return expressions[0];
+        }
+        else
+        {
+            return new CompositeStringExpression(expressionString, expressions);
+        }
+    }
+
+    private List<IExpression> ParseExpressions(string expressionString, IParserContext context)
+    {
+        var expressions = new List<IExpression>();
+        var prefix = context.ExpressionPrefix;
+        var suffix = context.ExpressionSuffix;
+        var startIdx = 0;
+
+        while (startIdx < expressionString.Length)
+        {
+            var prefixIndex = expressionString.IndexOf(prefix, startIdx);
+            if (prefixIndex >= startIdx)
             {
-                return ParseTemplate(expressionString, context);
+                // an inner expression was found - this is a composite
+                if (prefixIndex > startIdx)
+                {
+                    expressions.Add(new LiteralExpression(expressionString.Substring(startIdx, prefixIndex - startIdx)));
+                }
+
+                var afterPrefixIndex = prefixIndex + prefix.Length;
+                var suffixIndex = SkipToCorrectEndSuffix(suffix, expressionString, afterPrefixIndex);
+                if (suffixIndex == -1)
+                {
+                    throw new ParseException(expressionString, prefixIndex, "No ending suffix '" + suffix + "' for expression starting at character " + prefixIndex + ": " + expressionString.Substring(prefixIndex));
+                }
+
+                if (suffixIndex == afterPrefixIndex)
+                {
+                    throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
+                }
+
+                var startIndex = prefixIndex + prefix.Length;
+                var expr = expressionString.Substring(startIndex, suffixIndex - startIndex);
+                expr = expr.Trim();
+                if (expr.Length == 0)
+                {
+                    throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
+                }
+
+                expressions.Add(DoParseExpression(expr, context));
+                startIdx = suffixIndex + suffix.Length;
             }
             else
             {
-                return DoParseExpression(expressionString, context);
+                // no more ${expressions} found in string, add rest as static text
+                expressions.Add(new LiteralExpression(expressionString.Substring(startIdx)));
+                startIdx = expressionString.Length;
             }
         }
 
-        protected internal abstract IExpression DoParseExpression(string expressionString, IParserContext context);
+        return expressions;
+    }
 
-        private IExpression ParseTemplate(string expressionString, IParserContext context)
+    private bool IsSuffixHere(string expressionString, int pos, string suffix)
+    {
+        var suffixPosition = 0;
+        for (var i = 0; i < suffix.Length && pos < expressionString.Length; i++)
         {
-            if (expressionString.Length == 0)
+            if (expressionString[pos++] != suffix[suffixPosition++])
             {
-                return new LiteralExpression(string.Empty);
-            }
-
-            var expressions = ParseExpressions(expressionString, context);
-            if (expressions.Count == 1)
-            {
-                return expressions[0];
-            }
-            else
-            {
-                return new CompositeStringExpression(expressionString, expressions);
-            }
-        }
-
-        private List<IExpression> ParseExpressions(string expressionString, IParserContext context)
-        {
-            var expressions = new List<IExpression>();
-            var prefix = context.ExpressionPrefix;
-            var suffix = context.ExpressionSuffix;
-            var startIdx = 0;
-
-            while (startIdx < expressionString.Length)
-            {
-                var prefixIndex = expressionString.IndexOf(prefix, startIdx);
-                if (prefixIndex >= startIdx)
-                {
-                    // an inner expression was found - this is a composite
-                    if (prefixIndex > startIdx)
-                    {
-                        expressions.Add(new LiteralExpression(expressionString.Substring(startIdx, prefixIndex - startIdx)));
-                    }
-
-                    var afterPrefixIndex = prefixIndex + prefix.Length;
-                    var suffixIndex = SkipToCorrectEndSuffix(suffix, expressionString, afterPrefixIndex);
-                    if (suffixIndex == -1)
-                    {
-                        throw new ParseException(expressionString, prefixIndex, "No ending suffix '" + suffix + "' for expression starting at character " + prefixIndex + ": " + expressionString.Substring(prefixIndex));
-                    }
-
-                    if (suffixIndex == afterPrefixIndex)
-                    {
-                        throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
-                    }
-
-                    var startIndex = prefixIndex + prefix.Length;
-                    var expr = expressionString.Substring(startIndex, suffixIndex - startIndex);
-                    expr = expr.Trim();
-                    if (expr.Length == 0)
-                    {
-                        throw new ParseException(expressionString, prefixIndex, "No expression defined within delimiter '" + prefix + suffix + "' at character " + prefixIndex);
-                    }
-
-                    expressions.Add(DoParseExpression(expr, context));
-                    startIdx = suffixIndex + suffix.Length;
-                }
-                else
-                {
-                    // no more ${expressions} found in string, add rest as static text
-                    expressions.Add(new LiteralExpression(expressionString.Substring(startIdx)));
-                    startIdx = expressionString.Length;
-                }
-            }
-
-            return expressions;
-        }
-
-        private bool IsSuffixHere(string expressionString, int pos, string suffix)
-        {
-            var suffixPosition = 0;
-            for (var i = 0; i < suffix.Length && pos < expressionString.Length; i++)
-            {
-                if (expressionString[pos++] != suffix[suffixPosition++])
-                {
-                    return false;
-                }
-            }
-
-            if (suffixPosition != suffix.Length)
-            {
-                // the expressionString ran out before the suffix could entirely be found
                 return false;
             }
-
-            return true;
         }
 
-        private int SkipToCorrectEndSuffix(string suffix, string expressionString, int afterPrefixIndex)
+        if (suffixPosition != suffix.Length)
         {
-            // Chew on the expression text - relying on the rules:
-            // brackets must be in pairs: () [] {}
-            // string literals are "..." or '...' and these may contain unmatched brackets
-            var pos = afterPrefixIndex;
-            var maxlen = expressionString.Length;
-            var nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
-            if (nextSuffix == -1)
+            // the expressionString ran out before the suffix could entirely be found
+            return false;
+        }
+
+        return true;
+    }
+
+    private int SkipToCorrectEndSuffix(string suffix, string expressionString, int afterPrefixIndex)
+    {
+        // Chew on the expression text - relying on the rules:
+        // brackets must be in pairs: () [] {}
+        // string literals are "..." or '...' and these may contain unmatched brackets
+        var pos = afterPrefixIndex;
+        var maxlen = expressionString.Length;
+        var nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
+        if (nextSuffix == -1)
+        {
+            return -1; // the suffix is missing
+        }
+
+        var stack = new Stack<Bracket>();
+        while (pos < maxlen)
+        {
+            if (IsSuffixHere(expressionString, pos, suffix) && stack.Count == 0)
             {
-                return -1; // the suffix is missing
+                break;
             }
 
-            var stack = new Stack<Bracket>();
-            while (pos < maxlen)
+            var ch = expressionString[pos];
+            switch (ch)
             {
-                if (IsSuffixHere(expressionString, pos, suffix) && stack.Count == 0)
-                {
+                case '{':
+                case '[':
+                case '(':
+                    stack.Push(new Bracket(ch, pos));
                     break;
-                }
+                case '}':
+                case ']':
+                case ')':
+                    if (stack.Count == 0)
+                    {
+                        throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " without an opening '" + Bracket.TheOpenBracketFor(ch) + "'");
+                    }
 
-                var ch = expressionString[pos];
-                switch (ch)
-                {
-                    case '{':
-                    case '[':
-                    case '(':
-                        stack.Push(new Bracket(ch, pos));
-                        break;
-                    case '}':
-                    case ']':
-                    case ')':
-                        if (stack.Count == 0)
-                        {
-                            throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " without an opening '" + Bracket.TheOpenBracketFor(ch) + "'");
-                        }
+                    var p = stack.Pop();
+                    if (!p.CompatibleWithCloseBracket(ch))
+                    {
+                        throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " but most recent opening is '" + p.BracketChar + "' at position " + p.Pos);
+                    }
 
-                        var p = stack.Pop();
-                        if (!p.CompatibleWithCloseBracket(ch))
-                        {
-                            throw new ParseException(expressionString, pos, "Found closing '" + ch + "' at position " + pos + " but most recent opening is '" + p.BracketChar + "' at position " + p.Pos);
-                        }
+                    break;
+                case '\'':
+                case '"':
+                    // jump to the end of the literal
+                    var endLiteral = expressionString.IndexOf(ch, pos + 1);
+                    if (endLiteral == -1)
+                    {
+                        throw new ParseException(expressionString, pos, "Found non terminating string literal starting at position " + pos);
+                    }
 
-                        break;
-                    case '\'':
-                    case '"':
-                        // jump to the end of the literal
-                        var endLiteral = expressionString.IndexOf(ch, pos + 1);
-                        if (endLiteral == -1)
-                        {
-                            throw new ParseException(expressionString, pos, "Found non terminating string literal starting at position " + pos);
-                        }
-
-                        pos = endLiteral;
-                        break;
-                }
-
-                pos++;
+                    pos = endLiteral;
+                    break;
             }
 
-            if (stack.Count > 0)
-            {
-                var p = stack.Pop();
-                throw new ParseException(expressionString, p.Pos, "Missing closing '" + Bracket.TheCloseBracketFor(p.BracketChar) + "' for '" + p.BracketChar + "' at position " + p.Pos);
-            }
-
-            if (!IsSuffixHere(expressionString, pos, suffix))
-            {
-                return -1;
-            }
-
-            return pos;
+            pos++;
         }
 
-        private class Bracket
+        if (stack.Count > 0)
         {
-            public char BracketChar { get; }
+            var p = stack.Pop();
+            throw new ParseException(expressionString, p.Pos, "Missing closing '" + Bracket.TheCloseBracketFor(p.BracketChar) + "' for '" + p.BracketChar + "' at position " + p.Pos);
+        }
 
-            public int Pos { get; }
+        if (!IsSuffixHere(expressionString, pos, suffix))
+        {
+            return -1;
+        }
 
-            public Bracket(char bracket, int pos)
+        return pos;
+    }
+
+    private class Bracket
+    {
+        public char BracketChar { get; }
+
+        public int Pos { get; }
+
+        public Bracket(char bracket, int pos)
+        {
+            BracketChar = bracket;
+            Pos = pos;
+        }
+
+        public static char TheOpenBracketFor(char closeBracket)
+        {
+            if (closeBracket == '}')
             {
-                BracketChar = bracket;
-                Pos = pos;
+                return '{';
+            }
+            else if (closeBracket == ']')
+            {
+                return '[';
             }
 
-            public static char TheOpenBracketFor(char closeBracket)
-            {
-                if (closeBracket == '}')
-                {
-                    return '{';
-                }
-                else if (closeBracket == ']')
-                {
-                    return '[';
-                }
+            return '(';
+        }
 
-                return '(';
+        public static char TheCloseBracketFor(char openBracket)
+        {
+            if (openBracket == '{')
+            {
+                return '}';
+            }
+            else if (openBracket == '[')
+            {
+                return ']';
             }
 
-            public static char TheCloseBracketFor(char openBracket)
-            {
-                if (openBracket == '{')
-                {
-                    return '}';
-                }
-                else if (openBracket == '[')
-                {
-                    return ']';
-                }
+            return ')';
+        }
 
-                return ')';
+        public bool CompatibleWithCloseBracket(char closeBracket)
+        {
+            if (BracketChar == '{')
+            {
+                return closeBracket == '}';
+            }
+            else if (BracketChar == '[')
+            {
+                return closeBracket == ']';
             }
 
-            public bool CompatibleWithCloseBracket(char closeBracket)
-            {
-                if (BracketChar == '{')
-                {
-                    return closeBracket == '}';
-                }
-                else if (BracketChar == '[')
-                {
-                    return closeBracket == ']';
-                }
-
-                return closeBracket == ')';
-            }
+            return closeBracket == ')';
         }
     }
 }

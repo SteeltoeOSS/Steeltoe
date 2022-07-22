@@ -13,56 +13,55 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class ErrorHandlingTest : AbstractTest
 {
-    public class ErrorHandlingTest : AbstractTest
+    private readonly IServiceCollection container;
+
+    public ErrorHandlingTest()
     {
-        private readonly IServiceCollection container;
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
+    }
 
-        public ErrorHandlingTest()
-        {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
-        }
+    [Fact]
+    public async Task TestGlobalErrorWithMessage()
+    {
+        container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
+        var provider = container.BuildServiceProvider();
 
-        [Fact]
-        public async Task TestGlobalErrorWithMessage()
-        {
-            container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
-            var provider = container.BuildServiceProvider();
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
+        streamProcessor.Initialize();
+        var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
+        DoSend(provider, message);
 
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.Initialize();
-            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
-            DoSend(provider, message);
+        var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
+        Assert.True(config.GlobalErroInvoked);
+    }
 
-            var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
-            Assert.True(config.GlobalErroInvoked);
-        }
+    [Fact]
+    public async Task TestGlobalErrorWithThrowable()
+    {
+        container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
+        var provider = container.BuildServiceProvider();
 
-        [Fact]
-        public async Task TestGlobalErrorWithThrowable()
-        {
-            container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
-            var provider = container.BuildServiceProvider();
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
+        streamProcessor.Initialize();
+        var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
+        DoSend(provider, message);
 
-            var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
-            streamProcessor.Initialize();
-            var message = Message.Create<byte[]>(Encoding.UTF8.GetBytes("foo"));
-            DoSend(provider, message);
+        var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();
+        Assert.True(config.GlobalErroInvoked);
+    }
 
-            var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();
-            Assert.True(config.GlobalErroInvoked);
-        }
-
-        private void DoSend(ServiceProvider provider, IMessage<byte[]> message)
-        {
-            var source = provider.GetService<InputDestination>();
-            source.Send(message);
-        }
+    private void DoSend(ServiceProvider provider, IMessage<byte[]> message)
+    {
+        var source = provider.GetService<InputDestination>();
+        source.Send(message);
     }
 }

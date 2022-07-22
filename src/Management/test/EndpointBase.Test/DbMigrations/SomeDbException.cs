@@ -4,13 +4,12 @@
 
 using System.Data.Common;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations.Test
+namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
+
+public class SomeDbException : DbException
 {
-    public class SomeDbException : DbException
+    public SomeDbException(string message)
+        : base(message)
     {
-        public SomeDbException(string message)
-            : base(message)
-        {
-        }
     }
 }

@@ -5,10 +5,9 @@
 using Microsoft.AspNetCore.Routing;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Mappings
+namespace Steeltoe.Management.Endpoint.Mappings;
+
+public interface IRouteMappings
 {
-    public interface IRouteMappings
-    {
-        IList<IRouter> Routers { get; }
-    }
+    IList<IRouter> Routers { get; }
 }
