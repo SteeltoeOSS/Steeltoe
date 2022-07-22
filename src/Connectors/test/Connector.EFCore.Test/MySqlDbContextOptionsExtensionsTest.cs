@@ -6,7 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.EFCore;
-using MySqlDataConnectionAlias = MySql.Data.MySqlClient.MySqlConnection;
+using OfficialMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
+using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
@@ -79,8 +80,8 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Theory]
-    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(MySqlConnector.MySqlConnection))]
-    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(MySqlDataConnectionAlias))]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection(string[] efAssemblies, Type mySqlConnection)
     {
         SetTypeLocators(efAssemblies, mySqlConnection);
@@ -129,8 +130,8 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Theory]
-    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(MySqlConnector.MySqlConnection))]
-    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(MySqlDataConnectionAlias))]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_MultipleMySqlServices_AddWithName_Adds(string[] efAssemblies, Type mySqlConnection)
     {
         SetTypeLocators(efAssemblies, mySqlConnection);
@@ -165,8 +166,8 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
     [Theory]
-    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(MySqlConnector.MySqlConnection))]
-    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(MySqlDataConnectionAlias))]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContexts_WithVCAPs_AddsDbContexts(string[] efAssemblies, Type mySqlConnection)
     {
         SetTypeLocators(efAssemblies, mySqlConnection);
@@ -201,8 +202,8 @@ public class MySqlDbContextOptionsExtensionsTest
     // Run a MySQL server with Docker to match credentials below with this command
     // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
     [Theory(Skip = "Requires a running MySQL server to support AutoDetect")]
-    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(MySqlConnector.MySqlConnection))]
-    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(MySqlDataConnectionAlias))]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
     public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0(string[] efAssemblies, Type mySqlConnection)
     {
         SetTypeLocators(efAssemblies, mySqlConnection);
