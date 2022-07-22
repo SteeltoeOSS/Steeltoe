@@ -177,31 +177,23 @@ public static class MySqlDbContextOptionsExtensions
     {
         var extensionType = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
-        MethodInfo useMethod;
-        object[] parameters;
+        MethodInfo useMethod = null;
+        object[] parameters = {};
 
-        // the signature changed in 5.0 to require a param of type ServerVersion - use the presence of this new type to select the signature
-        if (EntityFrameworkCoreTypeLocator.MySqlVersionType == null)
+        // In Pomelo requires server version but MySql.Data does not. If the type is defined, make sure we have a value and use a compatible method
+        if (EntityFrameworkCoreTypeLocator.MySqlVersionType != null)
         {
-            useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
-            parameters = new[] { builder, connection, mySqlOptionsAction };
-        }
-        else
-        {
-            // In 6.0, Pomelo requires server version but MySql.Data does not support it as a param. Look for a method that requires it first
             useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), EntityFrameworkCoreTypeLocator.MySqlVersionType, typeof(Action<DbContextOptionsBuilder>) });
 
-            if (useMethod is null)
-            {
-                useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), typeof(Action<DbContextOptionsBuilder>) });
-                parameters = new[] { builder, connection, mySqlOptionsAction };
-            }
-            else
-            {
-                // If the server version wasn't passed in, see if we need to use the EF Core lib to autodetect it (this is the part that creates an extra connection)
-                serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
-                parameters = new[] { builder, connection, serverVersion, mySqlOptionsAction };
-            }
+            // If the server version wasn't passed in, see if we need to use the EF Core lib to autodetect it (this is the part that creates an extra connection)
+            serverVersion ??= ReflectionHelpers.FindMethod(EntityFrameworkCoreTypeLocator.MySqlVersionType, "AutoDetect", new[] { typeof(string) }).Invoke(null, new object[] { connection });
+            parameters = new[] { builder, connection, serverVersion, mySqlOptionsAction };
+        }
+
+        if (useMethod == null)
+        {
+            useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string), typeof(Action<DbContextOptionsBuilder>) });
+            parameters = new[] { builder, connection, mySqlOptionsAction };
         }
 
         if (extensionType == null)
