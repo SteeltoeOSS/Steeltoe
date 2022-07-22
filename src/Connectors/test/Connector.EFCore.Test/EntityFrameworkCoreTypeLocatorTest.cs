@@ -6,15 +6,30 @@ using Xunit;
 
 namespace Steeltoe.Connector.EFCore.Test;
 
-public partial class EntityFrameworkCoreTypeLocatorTest
+public class EntityFrameworkCoreTypeLocatorTest
 {
     [Fact]
-    public void Property_Can_Locate_MySqlDbContextOptionsType()
+    public void Property_Can_Locate_MySqlDbContextOptionsType_MySql()
     {
-        // arrange -- handled by including a compatible EF Core NuGet package
+        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "MySql.EntityFrameworkCore" };
+
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
+    }
+
+    [Fact]
+    public void Property_Can_Locate_MySqlDbContextOptionsType_Pomelo()
+    {
+        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "Pomelo.EntityFrameworkCore.MySql" };
+
+        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+
+        Assert.NotNull(type);
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
     }
 
     [Fact]

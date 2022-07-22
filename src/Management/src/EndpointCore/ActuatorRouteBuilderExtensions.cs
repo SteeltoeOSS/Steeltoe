@@ -26,7 +26,7 @@ using System.Linq;
 
 namespace Steeltoe.Management.Endpoint;
 
-public static partial class ActuatorRouteBuilderExtensions
+public static class ActuatorRouteBuilderExtensions
 {
     public static (Type Middleware, Type Options) LookupMiddleware(Type endpointType)
     {

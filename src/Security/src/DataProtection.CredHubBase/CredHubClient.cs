@@ -13,6 +13,7 @@ using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
@@ -21,9 +22,7 @@ public class CredHubClient : ICredHubClient
 {
     internal JsonSerializerOptions SerializerOptions { get; set; } = new ()
     {
-#pragma warning disable SYSLIB0020 // Type or member is obsolete
-        IgnoreNullValues = true,
-#pragma warning restore SYSLIB0020 // Type or member is obsolete
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };

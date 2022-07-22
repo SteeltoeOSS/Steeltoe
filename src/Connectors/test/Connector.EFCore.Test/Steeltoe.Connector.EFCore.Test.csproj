@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
   
   <Import Project="..\..\..\..\versions.props" />
@@ -16,12 +16,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EFCoreTestVersion)" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="$(EFCoreTestVersion)" />
     <PackageReference Include="Oracle.EntityFrameworkCore" Version="$(EFCoreOracleTestVersion)" />
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'netcoreapp3.1'">
     <PackageReference Include="MySql.EntityFrameworkCore" Version="$(EFCoreTestVersion)" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="$(EFCoreTestVersion)" />
   </ItemGroup>
 

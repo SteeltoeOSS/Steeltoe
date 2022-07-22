@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.CloudFoundry</RootNamespace>
     <Description>Configuration Provider for reading Cloud Foundry Environment Variables</Description>
     <PackageTags>configuration;CloudFoundry;vcap</PackageTags>

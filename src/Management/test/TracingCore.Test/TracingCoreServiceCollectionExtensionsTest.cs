@@ -9,7 +9,6 @@ using OpenTelemetry.Exporter;
 using OpenTelemetry.Trace;
 using System;
 using System.Collections.Generic;
-using Steeltoe.Management.TracingCore.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -26,8 +25,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        AppCompat.SetSwitches();
-
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
         var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
@@ -40,8 +37,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-        AppCompat.SetSwitches();
-
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
         var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
@@ -56,8 +51,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-        AppCompat.SetSwitches();
-
         var services = new ServiceCollection()
             .AddSingleton(GetConfiguration(new Dictionary<string, string>
             {

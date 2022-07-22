@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
-using Steeltoe.Management.TracingCore.Test;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -13,8 +12,6 @@ public class TracingCoreHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        AppCompat.SetSwitches();
-
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
         var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();

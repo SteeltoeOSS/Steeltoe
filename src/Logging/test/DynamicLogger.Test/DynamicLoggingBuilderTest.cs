@@ -5,13 +5,16 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.Test;
 
-public partial class DynamicLoggingBuilderTest
+public class DynamicLoggingBuilderTest
 {
     private static readonly Dictionary<string, string> Appsettings = new ()
     {
@@ -199,5 +202,57 @@ public partial class DynamicLoggingBuilderTest
 
         services.Dispose();
         dynamicLoggerProvider.Dispose();
+    }
+
+    [Fact]
+    public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        var services = new ServiceCollection()
+            .AddLogging(builder =>
+            {
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+                builder.AddDynamicConsole();
+            })
+            .BuildServiceProvider();
+
+        var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
+
+        Assert.NotNull(options);
+        Assert.NotNull(options.CurrentValue);
+    }
+
+    [Fact]
+    public void AddDynamicConsole_DoesNotSetColorLocal()
+    {
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        var services = new ServiceCollection()
+            .AddLogging(builder =>
+            {
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+                builder.AddDynamicConsole();
+            }).BuildServiceProvider();
+
+        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+
+        Assert.NotNull(options);
+    }
+
+    [Fact]
+    public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
+        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+        var services = new ServiceCollection()
+            .AddLogging(builder =>
+            {
+                builder.AddConfiguration(configuration.GetSection("Logging"));
+                builder.AddDynamicConsole();
+            }).BuildServiceProvider();
+
+        var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
+
+        Assert.NotNull(options);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
     }
 }

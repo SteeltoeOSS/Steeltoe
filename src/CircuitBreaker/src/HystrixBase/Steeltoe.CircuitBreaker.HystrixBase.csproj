@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.CircuitBreaker.Hystrix</RootNamespace>
     <Description>Steeltoe's implementation of Netflix's Hystrix, for .NET</Description>
     <PackageTags>Spring Cloud;Netflix;Hystrix Client;Circuit Breaker</PackageTags>
