@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
@@ -886,6 +887,57 @@ public class EurekaPostConfigurerTest
         Assert.Equal("ac923014-93a5-4aee-b934-a043b241868b", map[EurekaPostConfigurer.CFAppGuid]);
         Assert.Equal("1", map[EurekaPostConfigurer.CFInstanceIndex]);
         Assert.Equal(EurekaPostConfigurer.UnknownZone, map[EurekaPostConfigurer.Zone]);
+    }
+
+    [Fact]
+    public void UpdateConfiguration_WithVCAPEnvVariables_ButNoUri_DoesNotThrow()
+    {
+        var vcap_application = @"
+                {
+                    ""application_name"": ""foo"",
+                    ""application_uris"": [ ],
+                    ""name"": ""foo"",
+                    ""uris"": [ ],
+                    ""application_id"": ""ac923014"",
+                    ""instance_id"": ""instance_id""
+                }";
+        var vcap_services = @"
+                {
+                    ""p-service-registry"": [{
+                        ""credentials"": {
+                            ""uri"": ""https://eureka.apps.testcloud.com"",
+                        },
+                        ""label"": ""p-service-registry"",
+                        ""name"": ""myDiscoveryService"",
+                        ""tags"": [
+                            ""eureka""
+                        ]
+                    }]
+                }";
+
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
+        Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
+        using var sandbox = new Sandbox();
+        var config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        var si = config.GetServiceInfos<EurekaServiceInfo>().First();
+
+        var clientOpts = new EurekaClientOptions();
+        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
+
+        var instOpts = new EurekaInstanceOptions();
+        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instSection.Bind(instOpts);
+
+        void ConfigureAction()
+        {
+            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
+        }
+
+        var configureAction = ConfigureAction;
+
+        configureAction.Should().NotThrow("UpdateConfiguration should not throw for no Uri");
     }
 
     [Fact]
