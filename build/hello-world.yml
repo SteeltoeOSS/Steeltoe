@@ -19,7 +19,7 @@ jobs:
 
         # simulate conflict on push
         git reset --hard 2bee1eb6a
-
+        git pull
 
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
