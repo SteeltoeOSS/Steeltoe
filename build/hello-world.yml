@@ -14,12 +14,13 @@ jobs:
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-        Write-Host "SYSTEM_PULLREQUEST_SOURCEBRANCH = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        Write-Host "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
 
         # simulate conflict on push
-        git reset --hard 2bee1eb6a
-        git pull
+        #git reset --hard 2bee1eb6a
+        # and auto-fix it
+        #git pull
 
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
