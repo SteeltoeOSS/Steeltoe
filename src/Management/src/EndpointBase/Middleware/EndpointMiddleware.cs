@@ -81,7 +81,6 @@ public class EndpointMiddleware<TResult>
         }
 
         if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
-
         {
             serializerOptions.Converters.Add(new HealthConverter());
         }
