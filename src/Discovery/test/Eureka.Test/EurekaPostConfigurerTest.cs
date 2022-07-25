@@ -892,7 +892,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_ButNoUri_DoesNotThrow()
     {
-        var vcap_application = @"
+        const string vcapApplication = @"
                 {
                     ""application_name"": ""foo"",
                     ""application_uris"": [ ],
@@ -901,7 +901,7 @@ public class EurekaPostConfigurerTest
                     ""application_id"": ""ac923014"",
                     ""instance_id"": ""instance_id""
                 }";
-        var vcap_services = @"
+        const string vcapServices = @"
                 {
                     ""p-service-registry"": [{
                         ""credentials"": {
@@ -915,8 +915,8 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();
@@ -926,13 +926,13 @@ public class EurekaPostConfigurerTest
         var clientOpts = new EurekaClientOptions();
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
 
-        var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
-        instSection.Bind(instOpts);
+        var instanceOptions = new EurekaInstanceOptions();
+        var instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        instanceConfigSection.Bind(instanceOptions);
 
         void ConfigureAction()
         {
-            EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
+            EurekaPostConfigurer.UpdateConfiguration(config, si, instanceOptions, si.ApplicationInfo);
         }
 
         var configureAction = ConfigureAction;
