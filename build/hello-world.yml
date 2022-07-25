@@ -17,6 +17,10 @@ jobs:
         Write-Host "SYSTEM_PULLREQUEST_SOURCEBRANCH = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
 
+        # simulate conflict on push
+        git reset --hard 2bee1eb6a
+
+
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
         $targetCommitHash = git rev-parse "origin/$targetBranch"
