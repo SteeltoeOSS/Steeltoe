@@ -14,6 +14,9 @@ jobs:
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
+        Write-Host "SYSTEM_PULLREQUEST_SOURCEBRANCH = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
+
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
         $targetCommitHash = git rev-parse "origin/$targetBranch"
@@ -45,11 +48,10 @@ jobs:
         Write-Host "hasChangesToCommit = $hasChangesToCommit"
 
         if ($hasChangesToCommit) {
-          git commit -m "Automated code Cleanup"
-
           git config --global user.email "cibuild@steeltoe.com"
           git config --global user.name "cibuild"
 
+          git commit -m "Automated code Cleanup"
           git push origin
 
           if ($LastExitCode -ne 0) {
