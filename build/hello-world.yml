@@ -3,9 +3,9 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-    - checkout: self
-      persistCredentials: true
-      clean: true
+  - checkout: self
+    persistCredentials: true
+    clean: true
   - pwsh: |
       Write-Host "Hello world"
 
