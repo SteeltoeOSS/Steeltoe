@@ -10,10 +10,12 @@
     <WinHttpHandlerVersion>4.7.0</WinHttpHandlerVersion>
     <HttpClientVersion>4.3.4</HttpClientVersion>
     <JwtTokensVersion>5.2.2</JwtTokensVersion>
+    <JwtBearerVersion>3.1.18</JwtBearerVersion>
     <SymReaderVersion>1.2.0</SymReaderVersion>
     <SymReaderPortableVersion>1.4.0</SymReaderPortableVersion>
     <SystemDiagnosticsVersion>5.0.1</SystemDiagnosticsVersion>
     <SystemJsonVersion>5.0.2</SystemJsonVersion>
+    <SystemNetHttpVersion>4.3.4</SystemNetHttpVersion>
     <SystemNetHttpJsonVersion>3.2.1</SystemNetHttpJsonVersion>
     <SystemReflectionVersion>4.6.0</SystemReflectionVersion>
     <TelemetryCorrelationVersion>1.0.0</TelemetryCorrelationVersion>
@@ -36,7 +38,8 @@
     <HttpExtensionsVersion>3.1.0</HttpExtensionsVersion>
     <DiagnosticsExtensionsVersion>2.2.5</DiagnosticsExtensionsVersion>
     <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
-    <JsonNetVersion>11.0.2</JsonNetVersion>
+    <JsonNetVersion>13.0.1</JsonNetVersion>
+    <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     
@@ -44,7 +47,7 @@
     <OpenTelemetryInstrumentationVersion>1.0.0-rc9.2</OpenTelemetryInstrumentationVersion>
     <WavefrontSdkVersion>1.8.0-beta</WavefrontSdkVersion>
     
-    <RabbitClientVersion>5.0.1</RabbitClientVersion>
+    <RabbitClientVersion>5.1.2</RabbitClientVersion>
     <ReactiveVersion>4.1.5</ReactiveVersion>
     <TestSdkVersion>17.0.0</TestSdkVersion>
     <XunitAnalyzersVersion>0.9.0</XunitAnalyzersVersion>
