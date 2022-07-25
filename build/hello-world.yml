@@ -3,6 +3,9 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
+    - checkout: self
+      persistCredentials: true
+      clean: true
   - pwsh: |
       Write-Host "Hello world"
 
@@ -43,7 +46,11 @@ jobs:
 
         if ($hasChangesToCommit) {
           git commit -m "Automated code Cleanup"
-          git push
+
+          git config --global user.email "cibuild@steeltoe.com"
+          git config --global user.name "cibuild"
+
+          git push origin
 
           if ($LastExitCode -ne 0) {
             throw "Command 'git push' failed with exit code $LastExitCode."
