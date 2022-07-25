@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundryCore.Test;
 
-public partial class CloudFoundryHostBuilderExtensionsTest
+public class CloudFoundryHostBuilderExtensionsTest
 {
     [Fact]
     public void WebHostAddCloudConfigurationFoundry_Adds()
@@ -53,5 +53,16 @@ public partial class CloudFoundryHostBuilderExtensionsTest
 
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
+    }
+
+    [Fact]
+    public void WebApplicationAddCloudFoundryConfiguration_Adds()
+    {
+        var hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostbuilder.AddCloudFoundryConfiguration();
+        var host = hostbuilder.Build();
+
+        var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(config.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 }

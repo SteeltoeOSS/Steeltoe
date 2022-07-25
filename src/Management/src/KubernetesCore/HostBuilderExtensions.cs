@@ -59,7 +59,6 @@ public static class HostBuilderExtensions
                 collection.ActivateActuatorEndpoints(configureEndpoints);
             });
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Adds all standard and Kubernetes-specific actuators to the application.
     /// </summary>
@@ -82,5 +81,4 @@ public static class HostBuilderExtensions
             .ActivateActuatorEndpoints(configureEndpoints);
         return webApplicationBuilder;
     }
-#endif
 }

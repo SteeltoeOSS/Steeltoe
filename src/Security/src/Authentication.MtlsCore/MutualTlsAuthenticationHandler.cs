@@ -177,11 +177,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
     private static IEnumerable<X509ChainElement> ToGenericEnumerable(X509ChainElementCollection collection)
     {
-#if NETCOREAPP3_1
-        return collection.Cast<X509ChainElement>();
-#else
         return collection;
-#endif
     }
 
     private X509ChainPolicy BuildChainPolicy(X509Certificate2 certificate)

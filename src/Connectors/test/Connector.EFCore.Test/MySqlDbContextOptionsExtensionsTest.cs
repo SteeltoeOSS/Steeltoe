@@ -2,22 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Connector.EFCore;
+using OfficialMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
+using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
+using System;
+using System.Collections.Generic;
 using Xunit;
-#if NET6_0_OR_GREATER
-using MySqlConnectionAlias = MySqlConnector.MySqlConnection;
-#else
-using MySqlConnectionAlias = MySql.Data.MySqlClient.MySqlConnection;
-#endif
 
 namespace Steeltoe.Connector.MySql.EFCore.Test;
 
-public partial class MySqlDbContextOptionsExtensionsTest
+public class MySqlDbContextOptionsExtensionsTest
 {
     public MySqlDbContextOptionsExtensionsTest()
     {
@@ -80,9 +79,12 @@ public partial class MySqlDbContextOptionsExtensionsTest
         Assert.Contains(nameof(serviceName), ex4.Message);
     }
 
-    [Fact]
-    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection()
+    [Theory]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection(string[] efAssemblies, Type mySqlConnectionType)
     {
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
 
@@ -92,7 +94,7 @@ public partial class MySqlDbContextOptionsExtensionsTest
         Assert.NotNull(service);
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.True(con is MySqlConnectionAlias);
+        Assert.True(con.GetType() == mySqlConnectionType);
     }
 
     [Fact]
@@ -125,9 +127,12 @@ public partial class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Multiple", ex.Message);
     }
 
-    [Fact]
-    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds()
+    [Theory]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
+    public void AddDbContext_MultipleMySqlServices_AddWithName_Adds(string[] efAssemblies, Type mySqlConnectionType)
     {
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
@@ -145,7 +150,7 @@ public partial class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnectionAlias>(con);
+        Assert.True(con.GetType() == mySqlConnectionType);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -156,9 +161,12 @@ public partial class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Password=7E1LxXnlH2hhlPVt0", connString, StringComparison.InvariantCultureIgnoreCase);
     }
 
-    [Fact]
-    public void AddDbContexts_WithVCAPs_AddsDbContexts()
+    [Theory]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
+    public void AddDbContexts_WithVCAPs_AddsDbContexts(string[] efAssemblies, Type mySqlConnectionType)
     {
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
         IServiceCollection services = new ServiceCollection();
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
@@ -175,7 +183,7 @@ public partial class MySqlDbContextOptionsExtensionsTest
 
         var con = service.Database.GetDbConnection();
         Assert.NotNull(con);
-        Assert.IsType<MySqlConnectionAlias>(con);
+        Assert.True(con.GetType() == mySqlConnectionType);
 
         var connString = con.ConnectionString;
         Assert.NotNull(connString);
@@ -184,5 +192,58 @@ public partial class MySqlDbContextOptionsExtensionsTest
         Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("User Id=Dd6O1BPXUHdrmzbP", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
+    }
+
+    // Run a MySQL server with Docker to match credentials below with this command
+    // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
+    [Theory(Skip = "Requires a running MySQL server to support AutoDetect")]
+    [InlineData(new[]{"Pomelo.EntityFrameworkCore.MySql"}, typeof(PomeloMySqlConnection))]
+    [InlineData(new[]{"MySql.EntityFrameworkCore", "MySql.Data.EntityFrameworkCore"}, typeof(OfficialMySqlConnection))]
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0(string[] efAssemblies, Type mySqlConnectionType)
+    {
+        using var scope = new AlternateTypeLocatorScope(efAssemblies, mySqlConnectionType);
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
+
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+
+        var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+        Assert.NotNull(service);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.True(con.GetType() == mySqlConnectionType);
+    }
+
+    private static void AddMySqlDbContext(IServiceCollection services, IConfigurationRoot config, string serviceName = null)
+    {
+        if (serviceName == null)
+        {
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        }
+        else
+        {
+            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serviceName, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        }
+    }
+
+    private sealed class AlternateTypeLocatorScope : IDisposable
+    {
+        private readonly string[] _mySqlEntityAssembliesBackup;
+        private readonly string[] _mySqlAssembliesBackup;
+
+        public AlternateTypeLocatorScope(string[] mySqlEntityAssemblies, Type mySqlConnectionType)
+        {
+            _mySqlEntityAssembliesBackup = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = mySqlEntityAssemblies;
+
+            _mySqlAssembliesBackup = MySqlTypeLocator.Assemblies;
+            MySqlTypeLocator.Assemblies = new[] { mySqlConnectionType.Assembly.FullName?.Split(',')[0] };
+        }
+
+        public void Dispose()
+        {
+            EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = _mySqlEntityAssembliesBackup;
+            MySqlTypeLocator.Assemblies = _mySqlAssembliesBackup;
+        }
     }
 }

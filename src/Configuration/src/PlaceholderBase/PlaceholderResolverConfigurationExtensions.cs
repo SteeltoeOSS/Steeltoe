@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 
-public static partial class PlaceholderResolverConfigurationExtensions
+public static class PlaceholderResolverConfigurationExtensions
 {
     /// <summary>
     /// Add a placeholder resolver configuration source to the <see cref="ConfigurationBuilder"/>. The placeholder resolver source will capture and wrap all
@@ -57,5 +57,21 @@ public static partial class PlaceholderResolverConfigurationExtensions
 
         var root = configuration as IConfigurationRoot;
         return new ConfigurationRoot(new List<IConfigurationProvider> { new PlaceholderResolverProvider(new List<IConfigurationProvider>(root.Providers), loggerFactory) });
+    }
+
+    /// <summary>
+    /// Add a placeholder resolver configuration source to the <see cref="ConfigurationBuilder"/>. The placeholder resolver source will capture and wrap all
+    /// the existing sources <see cref="IConfigurationSource"/> contained in the builder.  The newly created source will then replace the existing sources
+    /// and provide placeholder resolution for the configuration. Typically you will want to add this configuration source as the last one so that you wrap all
+    /// of the applications configuration sources with place holder resolution.
+    /// </summary>
+    /// <param name="configuration">the ConfigurationManager.</param>
+    /// <param name="loggerFactory">the logger factory to use.</param>
+    /// <returns>builder.</returns>
+    public static ConfigurationManager AddPlaceholderResolver(this ConfigurationManager configuration, ILoggerFactory loggerFactory = null)
+    {
+        (configuration as IConfigurationBuilder).AddPlaceholderResolver(loggerFactory);
+
+        return configuration;
     }
 }

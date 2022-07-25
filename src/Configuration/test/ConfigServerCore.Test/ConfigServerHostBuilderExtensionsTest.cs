@@ -15,7 +15,7 @@ using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
-public partial class ConfigServerHostBuilderExtensionsTest
+public class ConfigServerHostBuilderExtensionsTest
 {
     private readonly Dictionary<string, string> _quickTests = new () { { "spring:cloud:config:timeout", "10" } };
 
@@ -51,6 +51,18 @@ public partial class ConfigServerHostBuilderExtensionsTest
         var host = hostBuilder.Build();
         var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
+        Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
+        Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
+    }
+
+    [Fact]
+    public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
+    {
+        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostBuilder.AddConfigServer();
+        var host = hostBuilder.Build();
+
+        var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
         Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
         Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
     }

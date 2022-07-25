@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Security.Authentication.CloudFoundry</RootNamespace>
     <Description>ASP.NET Core External Security Provider for CloudFoundry</Description>
     <PackageTags>CloudFoundry;ASPNET Core;Security;OAuth2;SSO;OpenIDConnect</PackageTags>
