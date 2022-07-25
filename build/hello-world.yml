@@ -11,39 +11,32 @@ jobs:
         Write-Host "Sorry, this pipeline can only be run from PRs."
       }
       else {
-        #Write-Host "sourceBranch = $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"            # cibuild-tryout
-        #Write-Host "targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH"            # main
-        #Write-Host "sourceCommitId = $env:SYSTEM_PULLREQUEST_SOURCECOMMITID"        # tip of PR
-
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
         $targetCommitHash = git rev-parse "origin/$targetBranch"
         Write-Host "targetCommitHash = $targetCommitHash"
 
-        dotnet tool restore
+        #dotnet tool restore
 
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
-        }
+        #if ($LastExitCode -ne 0) {
+        #  throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
+        #}
 
-        dotnet restore src
+        #dotnet restore src
 
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
-        }
+        #if ($LastExitCode -ne 0) {
+        #  throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
+        #}
 
-        # bug workaround
-        cd src
+        #dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
 
-        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
+        #if ($LastExitCode -ne 0) {
+        #  throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
+        #}
 
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
-        }
+        echo "example" >> new-file.txt
 
-        cd ..
-
-        git add -A .
+        git add -A
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
         Write-Host "hasChangesToCommit = $hasChangesToCommit"
