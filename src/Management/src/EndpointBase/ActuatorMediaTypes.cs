@@ -13,6 +13,8 @@ public static class ActuatorMediaTypes
 
     public static readonly string V2Json = "application/vnd.spring-boot.actuator.v2+json";
 
+    public static readonly string V3Json = "application/vnd.spring-boot.actuator.v3+json";
+
     public static readonly string AppJson = "application/json";
 
     public static readonly string Any = "*/*";
@@ -32,6 +34,12 @@ public static class ActuatorMediaTypes
 
     private static string GetContentTypeHeaderForVersion(MediaTypeVersion version = MediaTypeVersion.V2)
     {
-        return version == MediaTypeVersion.V2 ? V2Json : V1Json;
+        return version switch
+        {
+            MediaTypeVersion.V1 => V1Json,
+            MediaTypeVersion.V2 => V2Json,
+            MediaTypeVersion.V3 => V3Json,
+            _ => V2Json
+        };
     }
 }

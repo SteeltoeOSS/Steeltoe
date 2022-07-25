@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -11,7 +11,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
-
 public class EndpointMiddleware<TResult>
 {
     protected IEndpoint<TResult> endpoint;
@@ -63,7 +62,7 @@ public class EndpointMiddleware<TResult>
 
             return JsonSerializer.Serialize(result, options);
         }
-        catch (Exception e)
+        catch (Exception e) when (e is ArgumentException or ArgumentNullException or NotSupportedException)
         {
             logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
         }
@@ -73,11 +72,15 @@ public class EndpointMiddleware<TResult>
 
     internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
-        serializerOptions ??= new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-
+        serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
         serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
-        if (serializerOptions.Converters?.Any(c => c is HealthConverter) != true)
+        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
+        {
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
+        }
+
+        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
         {
             serializerOptions.Converters.Add(new HealthConverter());
         }
