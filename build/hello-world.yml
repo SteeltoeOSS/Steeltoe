@@ -44,7 +44,7 @@ jobs:
         #  throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
         #}
 
-        echo "example" >> new-file.txt
+        echo "_example_" >> new-file.txt
 
         git add -A
         git diff-index --quiet HEAD --
