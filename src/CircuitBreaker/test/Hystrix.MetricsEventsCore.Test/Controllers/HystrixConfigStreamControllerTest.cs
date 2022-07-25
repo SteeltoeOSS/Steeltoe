@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;

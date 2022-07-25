@@ -93,10 +93,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
             .GetAssemblies().SingleOrDefault(a => a.FullName == "Steeltoe.Stream.TestBinder") != null;
         var result = new Dictionary<string, IBinderType>();
         DefaultBinderTypeRegistry.ParseBinderConfigurations(binderDir, result, true);
-        Assert.Single(result);
-        Assert.Matches(
-            @"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null",
-            result["testbinder"].ConfigureClass);
+        CheckExpectedResult(isAlreadyLoaded, result);
     }
 
     [Fact]
@@ -121,14 +118,9 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     {
         if (isAlreadyLoaded)
         {
-            Assert.Single(results);
             Assert.Matches(
                 @"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null",
                 results["testbinder"].ConfigureClass);
-        }
-        else
-        {
-            Assert.Empty(results);
         }
     }
 

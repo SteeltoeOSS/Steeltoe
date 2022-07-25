@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
 using System.IO;
