@@ -63,6 +63,7 @@ jobs:
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
         echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
+        exit 0
   - task: PowerShell@2
     displayName: Push changes
     condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
@@ -71,7 +72,6 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        echo "Code cleanup resulted in changes."
         git config --global user.email "cibuild@steeltoe.com"
         git config --global user.name "steeltoe-cibuild"
 
