@@ -20,7 +20,7 @@ EnsureSucceeded
 
 $headCommitHash = git rev-parse "HEAD"
 EnsureSucceeded
-Write-Host "Using commit range for cleanup: $baseCommitHash - $headCommitHash"
+Write-Host "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
 
 dotnet tool restore
 EnsureSucceeded
