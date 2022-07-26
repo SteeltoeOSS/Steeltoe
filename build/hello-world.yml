@@ -61,8 +61,7 @@ jobs:
       script: |
         git add -A
         git diff-index --quiet HEAD --
-        ###$hasChangesToCommit = $LastExitCode -ne 0
-        $hasChangesToCommit = $LastExitCode -eq 0
+        $hasChangesToCommit = $LastExitCode -ne 0
         echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
         exit 0
   - task: PowerShell@2
