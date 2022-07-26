@@ -73,8 +73,8 @@ jobs:
           Write-Host "Committing changes."
           git commit -m "Automated code cleanup from cibuild"
 
-          #Write-Host "Pushing changes."
-          #git push origin
+          Write-Host "Pushing changes."
+          git push origin
         }
         else {
           Write-Host "Code cleanup did not change any files."
