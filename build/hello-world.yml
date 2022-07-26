@@ -1,3 +1,8 @@
+pr:
+  branches:
+    include:
+    - a_branch_name_that_does_not_exist
+
 jobs:
 - job: Automated_Code_Cleanup
   variables:
