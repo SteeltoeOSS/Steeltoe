@@ -1,7 +1,7 @@
 trigger: none
 
 jobs:
-- job: Automated_Code_Cleanup
+- job: PR_Code_Cleanup
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -35,6 +35,42 @@ jobs:
       script: |
         dotnet tool restore
         dotnet restore src
+  - task: PowerShell@2
+    displayName: Code cleanup
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because this PR may be outdated.
+        $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
+
+        $headCommitHash = git rev-parse "HEAD"
+        Write-Host "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+        dotnet regitlint -s Steeltoe.All.sln2 --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+  - task: PowerShell@2
+    displayName: Push changes
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
+    inputs:
+      targetType: 'inline'
+      script: |
+        git add -A
+        git diff-index --quiet HEAD --
+        $hasChangesToCommit = $LastExitCode -ne 0
+
+        if ($hasChangesToCommit) {
+          Write-Host "Code cleanup resulted in changes."
+          git config --global user.email "cibuild@steeltoe.com"
+          git config --global user.name "steeltoe-cibuild"
+
+          Write-Host "Committing changes."
+          git commit -m "Automated code cleanup from cibuild"
+
+          #Write-Host "Pushing changes."
+          #git push origin
+        }
+        else {
+          Write-Host "Code cleanup did not change any files."
+        }
   - task: PowerShell@2
     displayName: Automated code cleanup
     env:
