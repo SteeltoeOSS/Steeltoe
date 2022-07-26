@@ -927,7 +927,7 @@ public class EurekaPostConfigurerTest
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
-        var instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        var instanceConfigSection = config.GetSection(EurekaInstanceOptions.EUREKA_INSTANCE_CONFIGURATION_PREFIX);
         instanceConfigSection.Bind(instanceOptions);
 
         void ConfigureAction()
