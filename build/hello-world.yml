@@ -59,6 +59,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
+        git add -A
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
         echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
