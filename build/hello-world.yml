@@ -2,6 +2,7 @@ trigger: none
 
 jobs:
 - job: Automated_Code_Cleanup
+  condition: eq(variables['Build.Reason'], 'PullRequest')
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
