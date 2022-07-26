@@ -1,12 +1,13 @@
 jobs:
 - job: Automated_Code_Cleanup
+  variables:
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
   pool:
     vmImage: windows-latest
   steps:
   - checkout: self
     persistCredentials: true
-    #clean: true
-    clean: false
   - task: PowerShell@2
     displayName: Automated code cleanup
     env:

@@ -40,9 +40,9 @@ if ($hasChangesToCommit) {
   git config --global user.email "cibuild@steeltoe.com"
   git config --global user.name "steeltoe-cibuild"
 
-  Write-Host "Committing changes"
-  git commit -m "Automated code cleanup"
-  EnsureSucceeded
+  #Write-Host "Committing changes"
+  #git commit -m "Automated code cleanup from cibuild"
+  #EnsureSucceeded
 
   Write-Host "Pushing changes"
   git push origin
@@ -62,18 +62,21 @@ if ($hasChangesToCommit) {
 "@
 
   try {
-    $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/pullRequests/$($env:SYSTEM_PULLREQUEST_PULLREQUESTID)/threads?api-version=5.1"
-    Write-Host "Posting PR comment to $url"
+    Write_Host "SYSTEM_ACCESSTOKEN = $env:SYSTEM_ACCESSTOKEN"
+
+    $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/pullRequests/$($env:SYSTEM_PULLREQUEST_PULLREQUESTID)/threads?api-version=6.0"
+    Write-Host "Posting PR comment to $url with body $jsonBody"
     $response = Invoke-RestMethod -Uri $url -Method POST -Headers @{Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"} -Body $jsonBody -ContentType application/json
     if ($response -eq $Null) {
       Write-Host "Failed to post PR comment."
     }
   }
   catch {
+    Write-Host "Comment post failed."
     Write-Error $_
     Write-Error $_.Exception.Message
   }
 }
 else {
-  Write-Host "Code cleanup did not change anything."
+  Write-Host "Code cleanup did not change any files."
 }
