@@ -2,15 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.HealthChecks;
 using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
-public class HealthConverter : JsonConverter<HealthEndpointResponse>
+public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
 {
     public override HealthEndpointResponse Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -21,9 +19,9 @@ public class HealthConverter : JsonConverter<HealthEndpointResponse>
     {
         writer.WriteStartObject();
 
-        if (value is HealthEndpointResponse health)
+        if (value is { } health)
         {
-            writer.WriteString("status", health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
+            writer.WriteString("status", health.Status.ToString());
 
             if (!string.IsNullOrEmpty(health.Description))
             {
@@ -32,21 +30,13 @@ public class HealthConverter : JsonConverter<HealthEndpointResponse>
 
             if (health.Details != null && health.Details.Count > 0)
             {
-                writer.WritePropertyName("details");
+                writer.WritePropertyName("components");
                 writer.WriteStartObject();
 
                 foreach (var detail in health.Details)
                 {
                     writer.WritePropertyName(detail.Key);
-
-                    if (detail.Value is HealthCheckResult detailValue)
-                    {
-                        JsonSerializer.Serialize(writer, detailValue.Details, options);
-                    }
-                    else
-                    {
-                        JsonSerializer.Serialize(writer, detail.Value, options);
-                    }
+                    JsonSerializer.Serialize(writer, detail.Value, options);
                 }
 
                 writer.WriteEndObject();
