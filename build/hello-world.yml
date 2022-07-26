@@ -13,4 +13,4 @@ jobs:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
     inputs:
         targetType: filePath
-        filePath: cleanup-code-in-pull-request.ps1
+        filePath: build/cleanup-code-in-pull-request.ps1
