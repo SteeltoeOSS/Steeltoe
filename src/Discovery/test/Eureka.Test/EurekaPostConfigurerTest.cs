@@ -923,8 +923,8 @@ public class EurekaPostConfigurerTest
         var config = new ConfigurationBuilder().AddCloudFoundry().Build();
         var si = config.GetServiceInfos<EurekaServiceInfo>().First();
 
-        var clientOpts = new EurekaClientOptions();
-        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
+        var clientOptions = new EurekaClientOptions();
+        EurekaPostConfigurer.UpdateConfiguration(config, si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
         var instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
