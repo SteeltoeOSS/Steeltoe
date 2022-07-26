@@ -55,27 +55,27 @@ jobs:
         Write-Host "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
         dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
   - task: PowerShell@2
+    displayName: Detect changes
+    inputs:
+      targetType: 'inline'
+      script: |
+        git diff-index --quiet HEAD --
+        $hasChangesToCommit = $LastExitCode -ne 0
+        Write-Host "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
+  - task: PowerShell@2
     displayName: Push changes
+    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
     env:
       SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
     inputs:
       targetType: 'inline'
       script: |
-        git add -A
-        git diff-index --quiet HEAD --
-        $hasChangesToCommit = $LastExitCode -ne 0
+        Write-Host "Code cleanup resulted in changes."
+        git config --global user.email "cibuild@steeltoe.com"
+        git config --global user.name "steeltoe-cibuild"
 
-        if ($hasChangesToCommit) {
-          Write-Host "Code cleanup resulted in changes."
-          git config --global user.email "cibuild@steeltoe.com"
-          git config --global user.name "steeltoe-cibuild"
+        Write-Host "Committing changes."
+        git commit -m "Automated code cleanup from cibuild"
 
-          Write-Host "Committing changes."
-          git commit -m "Automated code cleanup from cibuild"
-
-          Write-Host "Pushing changes."
-          git push origin
-        }
-        else {
-          Write-Host "Code cleanup did not change any files."
-        }
+        #Write-Host "Pushing changes."
+        #git push origin
