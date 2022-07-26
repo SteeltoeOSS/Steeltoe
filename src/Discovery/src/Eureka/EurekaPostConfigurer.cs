@@ -199,7 +199,7 @@ public static class EurekaPostConfigurer
         instOptions.NonSecurePort = EurekaInstanceOptions.DEFAULT_NONSECUREPORT;
         instOptions.SecurePort = EurekaInstanceOptions.DEFAULT_SECUREPORT;
 
-        if (si.ApplicationInfo.Uris.Any())
+        if (si.ApplicationInfo.Uris?.Any() == true)
         {
             instOptions.InstanceId = si.ApplicationInfo.Uris.First() + ":" + si.ApplicationInfo.InstanceId;
         }
