@@ -40,6 +40,7 @@
     <FluentAssertionsVersion>5.10.*</FluentAssertionsVersion>
     <JsonNetVersion>13.0.1</JsonNetVersion>
     <SystemTextEncodingsWebVersion>4.7.2</SystemTextEncodingsWebVersion>
+    <SystemTextRegexVersion>4.3.1</SystemTextRegexVersion>
     <MockHttpVersion>6.0.0</MockHttpVersion>
     <MoqVersion>4.13.1</MoqVersion>
     
