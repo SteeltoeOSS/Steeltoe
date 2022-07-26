@@ -54,20 +54,20 @@ public static class SpringBootHostBuilderExtensions
     }
 
 #if NET6_0_OR_GREATER
-        /// <summary>
-        ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
-        /// </summary>
-        /// <param name="builder"><see cref="WebApplicationBuilder"/></param>
-        public static WebApplicationBuilder AddSpringBootConfiguration(this WebApplicationBuilder builder)
+    /// <summary>
+    ///  Sets up the configuration provider in spring boot style '.' separated values in CommandLine or as SPRING_APPLICATION_JSON Environment variable
+    /// </summary>
+    /// <param name="builder"><see cref="WebApplicationBuilder"/></param>
+    public static WebApplicationBuilder AddSpringBootConfiguration(this WebApplicationBuilder builder)
+    {
+        if (builder == null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            builder.Configuration.AddSpringBootEnv();
-            builder.Configuration.AddSpringBootCmd(builder.Configuration);
-            return builder;
+            throw new ArgumentNullException(nameof(builder));
         }
+
+        builder.Configuration.AddSpringBootEnv();
+        builder.Configuration.AddSpringBootCmd(builder.Configuration);
+        return builder;
+    }
 #endif
 }

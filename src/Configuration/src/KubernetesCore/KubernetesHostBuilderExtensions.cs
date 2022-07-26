@@ -38,17 +38,17 @@ public static class KubernetesHostBuilderExtensions
             .ConfigureServices(svc => svc.AddKubernetesConfigurationServices());
 
 #if NET6_0_OR_GREATER
-        /// <summary>
-        /// Add Kubernetes Configuration Providers for configmaps and secrets
-        /// </summary>
-        /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
-        /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
-        /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-        public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
-        {
-            applicationBuilder.Configuration.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
-            applicationBuilder.Services.AddKubernetesConfigurationServices();
-            return applicationBuilder;
-        }
+    /// <summary>
+    /// Add Kubernetes Configuration Providers for configmaps and secrets
+    /// </summary>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
+    /// <param name="kubernetesClientConfiguration">Customize the <see cref="KubernetesClientConfiguration"/></param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+    public static WebApplicationBuilder AddKubernetesConfiguration(this WebApplicationBuilder applicationBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
+    {
+        applicationBuilder.Configuration.AddKubernetes(kubernetesClientConfiguration, loggerFactory);
+        applicationBuilder.Services.AddKubernetesConfigurationServices();
+        return applicationBuilder;
+    }
 #endif
 }

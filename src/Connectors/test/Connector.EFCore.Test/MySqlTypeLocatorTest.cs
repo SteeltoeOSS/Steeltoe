@@ -24,17 +24,17 @@ public class MySqlTypeLocatorTest
     }
 
 #if !NETCOREAPP3_1
-        [Fact]
-        public void Driver_Found_In_MySqlConnector_Assembly()
-        {
-            // arrange ~ narrow the assembly list to one specific nuget package
-            var types = MySqlTypeLocator.Assemblies;
-            MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
+    [Fact]
+    public void Driver_Found_In_MySqlConnector_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = MySqlTypeLocator.Assemblies;
+        MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
 
-            var type = MySqlTypeLocator.MySqlConnection;
+        var type = MySqlTypeLocator.MySqlConnection;
 
-            Assert.NotNull(type);
-            MySqlTypeLocator.Assemblies = types;
-        }
+        Assert.NotNull(type);
+        MySqlTypeLocator.Assemblies = types;
+    }
 #endif
 }

@@ -56,15 +56,15 @@ public class CloudFoundryHostBuilderExtensionsTest
     }
 
 #if NET6_0_OR_GREATER
-        [Fact]
-        public void WebApplicationAddCloudFoundryConfiguration_Adds()
-        {
-            var hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
-            hostbuilder.AddCloudFoundryConfiguration();
-            var host = hostbuilder.Build();
+    [Fact]
+    public void WebApplicationAddCloudFoundryConfiguration_Adds()
+    {
+        var hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
+        hostbuilder.AddCloudFoundryConfiguration();
+        var host = hostbuilder.Build();
 
-            var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-            Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
-        }
+        var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
+        Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+    }
 #endif
 }

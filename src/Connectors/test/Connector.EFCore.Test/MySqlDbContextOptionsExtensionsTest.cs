@@ -91,7 +91,7 @@ public class MySqlDbContextOptionsExtensionsTest
 #if NETCOREAPP3_1
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
@@ -102,22 +102,22 @@ public class MySqlDbContextOptionsExtensionsTest
     }
 
 #if NET6_0
-        // Run a MySQL server with Docker to match creds below with this command
-        // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
-        [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
-        public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
-        {
-            IServiceCollection services = new ServiceCollection();
-            var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
+    // Run a MySQL server with Docker to match creds below with this command
+    // docker run --name steeltoe-mysql -p 3306:3306 -e MYSQL_DATABASE=steeltoe -e MYSQL_ROOT_PASSWORD=steeltoe mysql
+    [Fact(Skip = "Requires a running MySQL server to support AutoDetect")]
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithMySqlConnection_AutodetectOn5_0()
+    {
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "mysql:client:database", "steeltoe2" }, { "mysql:client:username", "root" }, { "mysql:client:password", "steeltoe" } }).Build();
 
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 
-            var service = services.BuildServiceProvider().GetService<GoodDbContext>();
-            Assert.NotNull(service);
-            var con = service.Database.GetDbConnection();
-            Assert.NotNull(con);
-            Assert.NotNull(con as MySqlConnection);
-        }
+        var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+        Assert.NotNull(service);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.NotNull(con as MySqlConnection);
+    }
 #endif
 
     [Fact]
@@ -165,7 +165,7 @@ public class MySqlDbContextOptionsExtensionsTest
 #if NETCOREAPP3_1
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2"));
 #else
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, "spring-cloud-broker-db2", serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
         var built = services.BuildServiceProvider();
@@ -199,7 +199,7 @@ public class MySqlDbContextOptionsExtensionsTest
 #if NETCOREAPP3_1
         services.AddDbContext<GoodDbContext>(options => options.UseMySql(config));
 #else
-            services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+        services.AddDbContext<GoodDbContext>(options => options.UseMySql(config, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 #endif
 
         var built = services.BuildServiceProvider();

@@ -630,7 +630,27 @@ public class EurekaHttpClient : IEurekaHttpClient
     public virtual void Shutdown()
     {
     }
+
 #pragma warning restore SA1202 // Elements must be ordered by access
+    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfig config, HttpClientHandler handler)
+    {
+        handler ??= new HttpClientHandler();
+        if (!string.IsNullOrEmpty(config.ProxyHost))
+        {
+            handler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
+            if (!string.IsNullOrEmpty(config.ProxyPassword))
+            {
+                handler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
+            }
+        }
+
+        if (config.ShouldGZipContent)
+        {
+            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+        }
+
+        return handler;
+    }
 
     internal string FetchAccessToken()
         => Config is not EurekaClientOptions config || string.IsNullOrEmpty(config.AccessTokenUri)
@@ -945,26 +965,6 @@ public class EurekaHttpClient : IEurekaHttpClient
             config.ValidateCertificates,
             ConfigureEurekaHttpClientHandler(config, _handlerProvider?.GetHttpClientHandler()),
             config.EurekaServerConnectTimeoutSeconds * 1000);
-
-    internal static HttpClientHandler ConfigureEurekaHttpClientHandler(IEurekaClientConfig config, HttpClientHandler handler)
-    {
-        handler ??= new HttpClientHandler();
-        if (!string.IsNullOrEmpty(config.ProxyHost))
-        {
-            handler.Proxy = new WebProxy(config.ProxyHost, config.ProxyPort);
-            if (!string.IsNullOrEmpty(config.ProxyPassword))
-            {
-                handler.Proxy.Credentials = new NetworkCredential(config.ProxyUserName, config.ProxyPassword);
-            }
-        }
-
-        if (config.ShouldGZipContent)
-        {
-            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-        }
-
-        return handler;
-    }
 
     protected virtual HttpContent GetRequestContent(object toSerialize)
     {

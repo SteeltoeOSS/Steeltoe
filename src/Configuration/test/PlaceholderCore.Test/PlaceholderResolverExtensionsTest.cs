@@ -167,46 +167,46 @@ public class PlaceholderResolverExtensionsTest
     }
 
 #if NET6_0_OR_GREATER
-        [Fact]
-        public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
-        {
-            var appsettingsJson = @"
-                {
-                    ""spring"": {
-                        ""json"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""name"" : ""${spring:xml:name?noname}"",
-                        }
-                      }
+    [Fact]
+    public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
+    {
+        var appsettingsJson = @"
+            {
+                ""spring"": {
+                    ""json"": {
+                        ""name"": ""myName""
+                },
+                  ""cloud"": {
+                    ""config"": {
+                        ""name"" : ""${spring:xml:name?noname}"",
                     }
-                }";
-            var appsettingsXml = @"
-                <settings>
-                    <spring>
-                        <xml>
-                            <name>${spring:json:name?noName}</name>
-                        </xml>
-                    </spring>
-                </settings>";
-            using var sandbox = new Sandbox();
-            var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-            var jsonfileName = Path.GetFileName(jsonpath);
-            var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-            var xmlfileName = Path.GetFileName(xmlpath);
-            var directory = Path.GetDirectoryName(jsonpath);
+                  }
+                }
+            }";
+        var appsettingsXml = @"
+            <settings>
+                <spring>
+                    <xml>
+                        <name>${spring:json:name?noName}</name>
+                    </xml>
+                </spring>
+            </settings>";
+        using var sandbox = new Sandbox();
+        var jsonpath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        var jsonfileName = Path.GetFileName(jsonpath);
+        var xmlpath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        var xmlfileName = Path.GetFileName(xmlpath);
+        var directory = Path.GetDirectoryName(jsonpath);
 
-            var hostBuilder = WebApplication.CreateBuilder();
-            hostBuilder.Configuration.SetBasePath(directory);
-            hostBuilder.Configuration.AddJsonFile(jsonfileName);
-            hostBuilder.Configuration.AddXmlFile(xmlfileName);
-            hostBuilder.AddPlaceholderResolver();
+        var hostBuilder = WebApplication.CreateBuilder();
+        hostBuilder.Configuration.SetBasePath(directory);
+        hostBuilder.Configuration.AddJsonFile(jsonfileName);
+        hostBuilder.Configuration.AddXmlFile(xmlfileName);
+        hostBuilder.AddPlaceholderResolver();
 
-            using var server = hostBuilder.Build();
-            var config = server.Services.GetServices<IConfiguration>().First();
-            Assert.Equal("myName", config["spring:cloud:config:name"]);
-        }
+        using var server = hostBuilder.Build();
+        var config = server.Services.GetServices<IConfiguration>().First();
+        Assert.Equal("myName", config["spring:cloud:config:name"]);
+    }
 #endif
 }
