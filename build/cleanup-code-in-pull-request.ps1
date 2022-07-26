@@ -51,3 +51,4 @@ if ($hasChangesToCommit) {
 else {
   Write-Host "Code cleanup did not change any files."
 }
+
