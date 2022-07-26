@@ -27,41 +27,41 @@ jobs:
         $targetCommitHash = git rev-parse "origin/$targetBranch"
         Write-Host "targetCommitHash = $targetCommitHash"
 
-        #dotnet tool restore
+        dotnet tool restore
 
-        #if ($LastExitCode -ne 0) {
-        #  throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
-        #}
-
-        #dotnet restore src
-
-        #if ($LastExitCode -ne 0) {
-        #  throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
-        #}
-
-        #dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
-
-        #if ($LastExitCode -ne 0) {
-        #  throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
-        #}
-
-        echo "_example_" >> new-file.txt
-
-        git add -A
-        git diff-index --quiet HEAD --
-        $hasChangesToCommit = $LastExitCode -ne 0
-        Write-Host "hasChangesToCommit = $hasChangesToCommit"
-
-        if ($hasChangesToCommit) {
-          git config --global user.email "cibuild@steeltoe.com"
-          git config --global user.name "cibuild"
-
-          git commit -m "Automated code Cleanup"
-          git push origin
-
-          if ($LastExitCode -ne 0) {
-            throw "Command 'git push' failed with exit code $LastExitCode."
-          }
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
         }
+
+        dotnet restore src
+
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
+        }
+
+        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
+
+        if ($LastExitCode -ne 0) {
+          throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
+        }
+
+        #echo "_example_" >> new-file.txt
+
+        #git add -A
+        #git diff-index --quiet HEAD --
+        #$hasChangesToCommit = $LastExitCode -ne 0
+        #Write-Host "hasChangesToCommit = $hasChangesToCommit"
+
+        #if ($hasChangesToCommit) {
+        #  git config --global user.email "cibuild@steeltoe.com"
+        #  git config --global user.name "cibuild"
+
+        #  git commit -m "Automated code Cleanup"
+        #  git push origin
+
+        #  if ($LastExitCode -ne 0) {
+        #    throw "Command 'git push' failed with exit code $LastExitCode."
+        #  }
+        #}
       }
     displayName: Write message
