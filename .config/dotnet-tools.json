@@ -9,7 +9,7 @@
       ]
     },
     "regitlint": {
-      "version": "6.1.0",
+      "version": "9.0.0",
       "commands": [
         "regitlint"
       ]

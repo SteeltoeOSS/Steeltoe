@@ -15,7 +15,7 @@ jobs:
       targetType: 'inline'
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
-          throw "This pipeline can only be run from pull requests. Use "/azp cleanup" in a GitHub PR comment."
+          throw 'This pipeline can only be run from pull requests. Use "/azp cleanup" in a GitHub PR comment.'
         }
   - checkout: self
     persistCredentials: true
@@ -34,7 +34,7 @@ jobs:
       targetType: 'inline'
       script: |
         dotnet tool restore
-        dotnet restore src2
+        dotnet restore src
   - task: PowerShell@2
     displayName: Code cleanup
     inputs:
