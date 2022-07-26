@@ -1,7 +1,5 @@
-pr:
-  branches:
-    include:
-    - a_branch_name_that_does_not_exist
+trigger: none
+pr: none
 
 jobs:
 - job: Automated_Code_Cleanup
