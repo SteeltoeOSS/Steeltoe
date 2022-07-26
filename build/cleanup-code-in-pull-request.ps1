@@ -23,7 +23,7 @@ try {
   Write-Host "BUILD_REPOSITORY_NAME = $env:BUILD_REPOSITORY_NAME"
   Write-Host "SYSTEM_PULLREQUEST_PULLREQUESTID = $env:SYSTEM_PULLREQUEST_PULLREQUESTID"
 
-  $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/pullRequests/$($env:SYSTEM_PULLREQUEST_PULLREQUESTID)/threads?api-version=5.1"
+  $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/git/repositories/Steeltoe/pullRequests/$($env:SYSTEM_PULLREQUEST_PULLREQUESTID)/threads?api-version=5.1"
   Write-Host "Posting PR comment to $url with body $jsonBody"
   $response = Invoke-RestMethod -Uri $url -Method POST -Headers @{Authorization = "Bearer $env:SYSTEM_ACCESSTOKEN"} -Body $jsonBody
   if ($response -eq $Null) {
