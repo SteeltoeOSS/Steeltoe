@@ -2,7 +2,6 @@ trigger: none
 
 jobs:
 - job: Automated_Code_Cleanup
-  condition: eq(variables['Build.Reason'], 'PullRequest')
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -10,8 +9,20 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
+  - pwsh: |
+      if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+        throw "Sorry, this pipeline can only be run from pull requests."
+      }
   - checkout: self
     persistCredentials: true
+  - pwsh: |
+      # We're going to push changes, so we need to be on the PR branch instead of the detached head containing the merge result.
+      Write-Host "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+      git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
+  - pwsh: |
+      Write-Host "Restoring tools and packages"
+      dotnet tool restore
+      dotnet restore src
   - task: PowerShell@2
     displayName: Automated code cleanup
     env:
