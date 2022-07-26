@@ -34,6 +34,7 @@ jobs:
       targetType: 'inline'
       script: |
         dotnet tool restore
+        if ($LastExitCode -ne 0) throw "Tool restore failed with exit code $LastExitCode."
         dotnet restore src
   - task: PowerShell@2
     displayName: Code cleanup
