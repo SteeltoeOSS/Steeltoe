@@ -9,7 +9,7 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - checkout: none
+  - checkout: self
     persistCredentials: true
   - task: PowerShell@2
     displayName: Automated code cleanup
