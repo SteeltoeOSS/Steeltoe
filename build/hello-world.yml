@@ -22,6 +22,9 @@ jobs:
         # and auto-fix it
         #git pull
 
+        $baseCommitHash = git merge-base $env:SYSTEM_PULLREQUEST_SOURCEBRANCH $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+        Write-Host "baseCommitHash = $baseCommitHash"
+
         $mergeCommitHash = git rev-parse "HEAD"
         Write-Host "mergeCommitHash = $mergeCommitHash"
         $targetCommitHash = git rev-parse "origin/$targetBranch"
@@ -39,7 +42,7 @@ jobs:
           throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
         }
 
-        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $targetCommitHash --print-diff
+        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $baseCommitHash --fail-on-diff --print-diff
 
         if ($LastExitCode -ne 0) {
           throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
