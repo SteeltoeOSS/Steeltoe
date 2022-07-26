@@ -1,70 +1,16 @@
 jobs:
-- job: Hello_World
+- job: Automated_Code_Cleanup
   pool:
     vmImage: windows-latest
   steps:
   - checkout: self
     persistCredentials: true
-    clean: true
-  - pwsh: |
-      Write-Host "Hello world"
-
-      $targetBranch = $env:SYSTEM_PULLREQUEST_TARGETBRANCH
-      if (-not $targetBranch) {
-        Write-Host "Sorry, this pipeline can only be run from PRs."
-      }
-      else {
-        Write-Host "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
-        git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
-
-        # simulate conflict on push
-        #git reset --hard 2bee1eb6a
-        # and auto-fix it
-        #git pull
-
-        $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
-        Write-Host "baseCommitHash = $baseCommitHash"
-
-        $mergeCommitHash = git rev-parse "HEAD"
-        Write-Host "mergeCommitHash = $mergeCommitHash"
-        $targetCommitHash = git rev-parse "origin/$targetBranch"
-        Write-Host "targetCommitHash = $targetCommitHash"
-
-        dotnet tool restore
-
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet tool restore' failed with exit code $LastExitCode."
-        }
-
-        dotnet restore src
-
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet restore src' failed with exit code $LastExitCode."
-        }
-
-        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb --profile='\"Steeltoe Full Cleanup\"' --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $mergeCommitHash -b $baseCommitHash --fail-on-diff --print-diff
-
-        if ($LastExitCode -ne 0) {
-          throw "Command 'dotnet regitlint' failed with exit code $LastExitCode."
-        }
-
-        #echo "_example_" >> new-file.txt
-
-        #git add -A
-        #git diff-index --quiet HEAD --
-        #$hasChangesToCommit = $LastExitCode -ne 0
-        #Write-Host "hasChangesToCommit = $hasChangesToCommit"
-
-        #if ($hasChangesToCommit) {
-        #  git config --global user.email "cibuild@steeltoe.com"
-        #  git config --global user.name "cibuild"
-
-        #  git commit -m "Automated code Cleanup"
-        #  git push origin
-
-        #  if ($LastExitCode -ne 0) {
-        #    throw "Command 'git push' failed with exit code $LastExitCode."
-        #  }
-        #}
-      }
-    displayName: Write message
+    #clean: true
+    clean: false
+  - task: PowerShell@2
+    displayName: Automated code cleanup
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
+    inputs:
+        targetType: filePath
+        filePath: cleanup-code-in-pull-request.ps1
