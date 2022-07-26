@@ -22,7 +22,7 @@ jobs:
         # and auto-fix it
         #git pull
 
-        $baseCommitHash = git merge-base $env:SYSTEM_PULLREQUEST_SOURCEBRANCH $env:SYSTEM_PULLREQUEST_TARGETBRANCH
+        $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
         Write-Host "baseCommitHash = $baseCommitHash"
 
         $mergeCommitHash = git rev-parse "HEAD"
