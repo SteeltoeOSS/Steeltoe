@@ -58,7 +58,8 @@ if ($hasChangesToCommit) {
       }
     ],
     "status": 0
-  }"@
+  }
+  "@
 
   try {
     $url = "$($env:SYSTEM_TEAMFOUNDATIONCOLLECTIONURI)$env:SYSTEM_TEAMPROJECTID/_apis/git/repositories/$($env:BUILD_REPOSITORY_NAME)/pullRequests/$($env:SYSTEM_PULLREQUEST_PULLREQUESTID)/threads?api-version=5.1"
