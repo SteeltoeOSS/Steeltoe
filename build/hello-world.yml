@@ -26,7 +26,7 @@ jobs:
       script: |
         # We're going to push changes, so we need to be on the PR branch
         # instead of the detached head that contains the merge result.
-        Write-Host "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        echo "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
   - task: PowerShell@2
     displayName: Restore tools
@@ -45,14 +45,14 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because this PR may be outdated.
+        # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because the PR may be outdated.
         $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
         if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
 
-        $headCommitHash = git rev-parse "HEAD"
+        $headCommitHash = git rev-parse HEAD
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
 
-        Write-Host "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+        echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
         dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
   - task: PowerShell@2
     displayName: Detect changes
@@ -61,7 +61,7 @@ jobs:
       script: |
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
-        Write-Host "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
+        echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
   - task: PowerShell@2
     displayName: Push changes
     condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
@@ -70,12 +70,12 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        Write-Host "Code cleanup resulted in changes."
+        echo "Code cleanup resulted in changes."
         git config --global user.email "cibuild@steeltoe.com"
         git config --global user.name "steeltoe-cibuild"
 
-        Write-Host "Committing changes."
+        echo "Committing changes."
         git commit -m "Automated code cleanup from cibuild"
 
-        #Write-Host "Pushing changes."
+        #echo "Pushing changes."
         #git push origin
