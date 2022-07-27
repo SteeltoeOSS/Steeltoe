@@ -1,0 +1,82 @@
+trigger: none
+
+jobs:
+- job: PR_Code_Cleanup
+  variables:
+    DOTNET_NOLOGO: true
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+    DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  pool:
+    vmImage: windows-latest
+  steps:
+  - task: PowerShell@2
+    displayName: Validate preconditions
+    inputs:
+      targetType: 'inline'
+      script: |
+        if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+          throw 'This pipeline can only be run from pull requests. Use "/azp cleanup" in a GitHub PR comment.'
+        }
+  - checkout: self
+    persistCredentials: true
+  - task: PowerShell@2
+    displayName: Checkout PR branch
+    inputs:
+      targetType: 'inline'
+      script: |
+        # We're going to push changes, so we need to be on the PR branch
+        # instead of the detached head that contains the merge result.
+        echo "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
+  - task: PowerShell@2
+    displayName: Restore tools
+    inputs:
+      targetType: 'inline'
+      script: |
+        dotnet tool restore
+  - task: PowerShell@2
+    displayName: Restore packages
+    inputs:
+      targetType: 'inline'
+      script: |
+        dotnet restore src
+  - task: PowerShell@2
+    displayName: Code cleanup
+    inputs:
+      targetType: 'inline'
+      script: |
+        # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because the PR may be outdated.
+        $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
+        if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
+
+        $headCommitHash = git rev-parse HEAD
+        if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
+
+        echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+  - task: PowerShell@2
+    displayName: Detect changes
+    inputs:
+      targetType: 'inline'
+      script: |
+        git add -A
+        git diff-index --quiet HEAD --
+        $hasChangesToCommit = $LastExitCode -ne 0
+        echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
+        exit 0
+  - task: PowerShell@2
+    displayName: Push changes
+    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
+    env:
+      SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
+    inputs:
+      targetType: 'inline'
+      script: |
+        git config --global user.email "cibuild@steeltoe.com"
+        git config --global user.name "steeltoe-cibuild"
+
+        echo "Committing changes."
+        git commit -m "Automated code cleanup from cibuild"
+
+        ###echo "Pushing changes."
+        ###git push origin
