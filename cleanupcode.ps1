@@ -3,9 +3,8 @@
 # This script reformats the entire codebase to make it compliant with our coding guidelines.
 
 param(
-    # Branch name or commit hash
+    # Branch name or base commit hash to reformat only the subset of changed files. Leave empty for all files.
     [string] $diff
-    # TODO: With staged/unstaged
 )
 
 function VerifySuccessExitCode {
@@ -29,10 +28,10 @@ if ($diff) {
 
     echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
 
-    #dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
-    #VerifySuccessExitCode
+    dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified,commits -a $headCommitHash -b $baseCommitHash
+    VerifySuccessExitCode
 }
 else {
-    #dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN
-    #VerifySuccessExitCode
+    dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified
+    VerifySuccessExitCode
 }
