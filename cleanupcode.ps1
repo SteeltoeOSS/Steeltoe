@@ -26,12 +26,12 @@ if ($diff) {
     $baseCommitHash = git rev-parse $diff
     VerifySuccessExitCode
 
-    echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+    echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash, including staged/unstaged files"
 
     dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified,commits -a $headCommitHash -b $baseCommitHash
     VerifySuccessExitCode
 }
 else {
-    dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f staged,modified
+    dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN
     VerifySuccessExitCode
 }

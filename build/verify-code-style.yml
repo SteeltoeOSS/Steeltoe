@@ -30,12 +30,7 @@ jobs:
           dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
         }
         else {
-          # In case this PR is out-of-date (which means the target branch has newer commits), the check below may report on files
-          # that are not in this PR. There's not much we can do to avoid that. There's no point in using the common ancestor to 
-          # diff against, because we are in detached head (the merge result), so we're always going to see files unchanged by this
-          # PR if it is out-of-date.
-          # To resolve from this, update the outdated PR.
-
+          # We are in detached head (the merge result), so there's no need to account for an out-of-date PR.
           $baseCommitHash = git rev-parse origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
           if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (1)' failed with exit code $LastExitCode." }
   

@@ -46,7 +46,7 @@ jobs:
       targetType: 'inline'
       script: |
         # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because this PR may be
-        # out-of-date (which means the target branch has newer commits).
+        # out-of-date (which means the target branch has newer commits, and we should ignore those).
         $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
         if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
 
