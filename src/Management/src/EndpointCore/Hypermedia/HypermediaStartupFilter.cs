@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia
+namespace Steeltoe.Management.Endpoint.Hypermedia;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class HypermediaStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class HypermediaStartupFilter : IStartupFilter
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        return app =>
         {
-            return app =>
+            next(app);
+            app.UseEndpoints(endpoints =>
             {
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<ActuatorEndpoint>();
-                });
-            };
-        }
+                endpoints.Map<ActuatorEndpoint>();
+            });
+        };
     }
 }

@@ -13,52 +13,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Integration.Handler.Support
-{
-    public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
-    {
-        private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new ();
+namespace Steeltoe.Integration.Handler.Support;
 
-        public PayloadsArgumentResolver(IApplicationContext context)
-            : base(context)
+public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
+{
+    private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new ();
+
+    public PayloadsArgumentResolver(IApplicationContext context)
+        : base(context)
+    {
+    }
+
+    public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadsAttribute>() != null;
+
+    public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        var payload = message.Payload;
+        if (payload is not ICollection<IMessage>)
         {
+            throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
         }
 
-        public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadsAttribute>() != null;
+        var messages = (ICollection<IMessage>)payload;
 
-        public object ResolveArgument(ParameterInfo parameter, IMessage message)
+        if (!_expressionCache.ContainsKey(parameter))
         {
-            var payload = message.Payload;
-            if (payload is not ICollection<IMessage>)
+            var payloads = parameter.GetCustomAttribute<PayloadsAttribute>();
+            if (!string.IsNullOrEmpty(payloads.Expression))
             {
-                throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
-            }
-
-            var messages = (ICollection<IMessage>)payload;
-
-            if (!_expressionCache.ContainsKey(parameter))
-            {
-                var payloads = parameter.GetCustomAttribute<PayloadsAttribute>();
-                if (!string.IsNullOrEmpty(payloads.Expression))
-                {
-                    _expressionCache.Add(parameter, ExpressionParser.ParseExpression("![payload." + payloads.Expression + "]"));
-                }
-                else
-                {
-                    _expressionCache.Add(parameter, null);
-                }
-            }
-
-            _expressionCache.TryGetValue(parameter, out var expression);
-            if (expression != null)
-            {
-                return EvaluateExpression(expression, messages, parameter.ParameterType);
+                _expressionCache.Add(parameter, ExpressionParser.ParseExpression("![payload." + payloads.Expression + "]"));
             }
             else
             {
-                var payloads = messages.Select((m) => m.Payload).ToList();
-                return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
+                _expressionCache.Add(parameter, null);
             }
+        }
+
+        _expressionCache.TryGetValue(parameter, out var expression);
+        if (expression != null)
+        {
+            return EvaluateExpression(expression, messages, parameter.ParameterType);
+        }
+        else
+        {
+            var payloads = messages.Select((m) => m.Payload).ToList();
+            return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
         }
     }
 }

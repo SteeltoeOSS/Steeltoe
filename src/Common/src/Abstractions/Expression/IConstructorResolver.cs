@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IConstructorResolver
 {
-    public interface IConstructorResolver
-    {
-        IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes);
-    }
+    IConstructorExecutor Resolve(IEvaluationContext context, string typeName, List<Type> argumentTypes);
 }

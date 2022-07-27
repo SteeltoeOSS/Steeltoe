@@ -6,13 +6,12 @@ using Microsoft.AspNetCore.Authentication.Certificate;
 using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Security.Authentication.Mtls
+namespace Steeltoe.Security.Authentication.Mtls;
+
+public class MutualTlsAuthenticationOptions : CertificateAuthenticationOptions
 {
-    public class MutualTlsAuthenticationOptions : CertificateAuthenticationOptions
-    {
-        /// <summary>
-        /// Gets or sets partial or full certificate chain for validation
-        /// </summary>
-        public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
-    }
+    /// <summary>
+    /// Gets or sets partial or full certificate chain for validation
+    /// </summary>
+    public List<X509Certificate2> IssuerChain { get; set; } = new List<X509Certificate2>();
 }

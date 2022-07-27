@@ -5,18 +5,17 @@
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
-{
-    internal class TestTraceEndpoint : TraceEndpoint
-    {
-        public TestTraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
-            : base(options, traceRepository, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-        public override List<TraceResult> Invoke()
-        {
-            return new List<TraceResult>();
-        }
+internal class TestTraceEndpoint : TraceEndpoint
+{
+    public TestTraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
+        : base(options, traceRepository, logger)
+    {
+    }
+
+    public override List<TraceResult> Invoke()
+    {
+        return new List<TraceResult>();
     }
 }

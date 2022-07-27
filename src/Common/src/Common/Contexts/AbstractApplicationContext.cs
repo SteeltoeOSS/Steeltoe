@@ -12,282 +12,280 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Common.Contexts
-{
+namespace Steeltoe.Common.Contexts;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly
-    public abstract class AbstractApplicationContext : IApplicationContext
+public abstract class AbstractApplicationContext : IApplicationContext
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
-    {
-        private readonly ConcurrentDictionary<string, object> _instances = new ();
+{
+    private readonly ConcurrentDictionary<string, object> _instances = new ();
 
-        protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
+    protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
+    {
+        ServiceProvider = serviceProvider;
+        Configuration = configuration;
+        if (nameToTypeMappings != null)
         {
-            ServiceProvider = serviceProvider;
-            Configuration = configuration;
-            if (nameToTypeMappings != null)
+            foreach (var seed in nameToTypeMappings)
             {
-                foreach (var seed in nameToTypeMappings)
-                {
-                    Register(seed.Name, seed.Type);
-                }
+                Register(seed.Name, seed.Type);
             }
         }
+    }
 
-        public IConfiguration Configuration { get; private set; }
+    public IConfiguration Configuration { get; private set; }
 
-        public IServiceProvider ServiceProvider { get; private set; }
+    public IServiceProvider ServiceProvider { get; private set; }
 
-        public IServiceExpressionResolver ServiceExpressionResolver { get; set; }
+    public IServiceExpressionResolver ServiceExpressionResolver { get; set; }
 
-        public bool ContainsService(string name)
+    public bool ContainsService(string name)
+    {
+        _instances.TryGetValue(name, out var instance);
+        if (instance is Type type)
         {
-            _instances.TryGetValue(name, out var instance);
+            instance = ResolveNamedService(name, type);
+        }
+
+        return instance != null;
+    }
+
+    public bool ContainsService(string name, Type serviceType)
+    {
+        if (_instances.TryGetValue(name, out var instance))
+        {
             if (instance is Type type)
             {
                 instance = ResolveNamedService(name, type);
             }
 
-            return instance != null;
+            return serviceType.IsInstanceOfType(instance);
         }
 
-        public bool ContainsService(string name, Type serviceType)
+        if (!typeof(IServiceNameAware).IsAssignableFrom(serviceType))
         {
-            if (_instances.TryGetValue(name, out var instance))
-            {
-                if (instance is Type type)
-                {
-                    instance = ResolveNamedService(name, type);
-                }
-
-                return serviceType.IsInstanceOfType(instance);
-            }
-
-            if (!typeof(IServiceNameAware).IsAssignableFrom(serviceType))
-            {
-                return false;
-            }
-
-            var found = FindNamedService(name, serviceType);
-            if (found != null)
-            {
-                Register(((IServiceNameAware)found).ServiceName, found);
-                return true;
-            }
-
             return false;
         }
 
-        public bool ContainsService<T>(string name)
+        var found = FindNamedService(name, serviceType);
+        if (found != null)
         {
-            return ContainsService(name, typeof(T));
+            Register(((IServiceNameAware)found).ServiceName, found);
+            return true;
         }
 
-        public object GetService(string name)
+        return false;
+    }
+
+    public bool ContainsService<T>(string name)
+    {
+        return ContainsService(name, typeof(T));
+    }
+
+    public object GetService(string name)
+    {
+        _instances.TryGetValue(name, out var instance);
+        if (instance is Type type)
         {
-            _instances.TryGetValue(name, out var instance);
+            instance = ResolveNamedService(name, type);
+        }
+
+        return instance;
+    }
+
+    public object GetService(string name, Type serviceType)
+    {
+        if (_instances.TryGetValue(name, out var instance))
+        {
             if (instance is Type type)
             {
                 instance = ResolveNamedService(name, type);
             }
 
-            return instance;
+            if (serviceType.IsInstanceOfType(instance))
+            {
+                return instance;
+            }
+
+            return null;
         }
 
-        public object GetService(string name, Type serviceType)
+        if (!typeof(IServiceNameAware).IsAssignableFrom(serviceType))
         {
-            if (_instances.TryGetValue(name, out var instance))
-            {
-                if (instance is Type type)
-                {
-                    instance = ResolveNamedService(name, type);
-                }
-
-                if (serviceType.IsInstanceOfType(instance))
-                {
-                    return instance;
-                }
-
-                return null;
-            }
-
-            if (!typeof(IServiceNameAware).IsAssignableFrom(serviceType))
-            {
-                return null;
-            }
-
-            var found = FindNamedService(name, serviceType);
-
-            if (found != null)
-            {
-                Register(((IServiceNameAware)found).ServiceName, found);
-            }
-
-            if (found != null)
-            {
-                Register(((IServiceNameAware)found).ServiceName, found);
-            }
-
-            return found;
+            return null;
         }
 
-        public T GetService<T>(string name)
+        var found = FindNamedService(name, serviceType);
+
+        if (found != null)
         {
-            return (T)GetService(name, typeof(T));
+            Register(((IServiceNameAware)found).ServiceName, found);
         }
 
-        public T GetService<T>()
+        if (found != null)
         {
-            return (T)GetService(typeof(T));
+            Register(((IServiceNameAware)found).ServiceName, found);
         }
 
-        public object GetService(Type serviceType)
+        return found;
+    }
+
+    public T GetService<T>(string name)
+    {
+        return (T)GetService(name, typeof(T));
+    }
+
+    public T GetService<T>()
+    {
+        return (T)GetService(typeof(T));
+    }
+
+    public object GetService(Type serviceType)
+    {
+        var result = _instances.Values.LastOrDefault(instance => serviceType.IsInstanceOfType(instance));
+        if (result != null)
         {
-            var result = _instances.Values.LastOrDefault(instance => serviceType.IsInstanceOfType(instance));
-            if (result != null)
-            {
-                return result;
-            }
-
-            var found = ServiceProvider.GetService(serviceType);
-            if (found is IServiceNameAware aware)
-            {
-                Register(aware.ServiceName, found);
-            }
-
-            return found;
+            return result;
         }
 
-        public IEnumerable<object> GetServices(Type serviceType)
+        var found = ServiceProvider.GetService(serviceType);
+        if (found is IServiceNameAware aware)
         {
-            var services = new List<object>();
-            var found = ServiceProvider.GetServices(serviceType);
-            foreach (var service in found)
-            {
-                if (service is IServiceNameAware aware)
-                {
-                    Register(aware.ServiceName, service);
-                }
-                else
-                {
-                    services.Add(service);
-                }
-            }
-
-            var results = _instances.Values.Where(instance => serviceType.IsInstanceOfType(instance));
-            foreach (var result in results)
-            {
-                services.Add(result);
-            }
-
-            return services;
+            Register(aware.ServiceName, found);
         }
 
-        public IEnumerable<T> GetServices<T>()
+        return found;
+    }
+
+    public IEnumerable<object> GetServices(Type serviceType)
+    {
+        var services = new List<object>();
+        var found = ServiceProvider.GetServices(serviceType);
+        foreach (var service in found)
         {
-            var services = new List<T>();
-            var found = ServiceProvider.GetServices<T>();
-            foreach (var service in found)
+            if (service is IServiceNameAware aware)
             {
-                if (service is IServiceNameAware aware)
-                {
-                    Register(aware.ServiceName, service);
-                }
-                else
-                {
-                    services.Add(service);
-                }
+                Register(aware.ServiceName, service);
             }
-
-            var results = _instances.Values.Where(instance => (instance is T));
-            foreach (var result in results)
+            else
             {
-                services.Add((T)result);
+                services.Add(service);
             }
-
-            return services;
         }
 
-        public void Register(string name, object instance)
+        var results = _instances.Values.Where(instance => serviceType.IsInstanceOfType(instance));
+        foreach (var result in results)
         {
-            if (!string.IsNullOrEmpty(name))
+            services.Add(result);
+        }
+
+        return services;
+    }
+
+    public IEnumerable<T> GetServices<T>()
+    {
+        var services = new List<T>();
+        var found = ServiceProvider.GetServices<T>();
+        foreach (var service in found)
+        {
+            if (service is IServiceNameAware aware)
             {
-                _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+                Register(aware.ServiceName, service);
+            }
+            else
+            {
+                services.Add(service);
             }
         }
 
-        public object Deregister(string name)
+        var results = _instances.Values.Where(instance => (instance is T));
+        foreach (var result in results)
         {
-            if (string.IsNullOrEmpty(name))
+            services.Add((T)result);
+        }
+
+        return services;
+    }
+
+    public void Register(string name, object instance)
+    {
+        if (!string.IsNullOrEmpty(name))
+        {
+            _ = _instances.AddOrUpdate(name, instance, (k, v) => instance);
+        }
+    }
+
+    public object Deregister(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+        {
+            return null;
+        }
+
+        _instances.TryRemove(name, out var instance);
+
+        if (instance is IDisposable disposable)
+        {
+            disposable.Dispose();
+        }
+
+        return instance;
+    }
+
+    public string ResolveEmbeddedValue(string value)
+    {
+        if (value == null)
+        {
+            return null;
+        }
+
+        var resolved = PropertyPlaceholderHelper.ResolvePlaceholders(value, Configuration);
+        return resolved.Trim();
+    }
+
+    public void Dispose()
+    {
+        _instances.Clear();
+        Configuration = null;
+        ServiceProvider = null;
+        ServiceExpressionResolver = null;
+    }
+
+    private object ResolveNamedService(string name, Type serviceType)
+    {
+        var instance = FindNamedService(name, serviceType);
+        if (instance != null)
+        {
+            Register(name, instance);
+        }
+
+        return instance;
+    }
+
+    private object FindNamedService(string name, Type serviceType)
+    {
+        var found = ServiceProvider.GetServices(serviceType).SingleOrDefault<object>((service) =>
+        {
+            if (service is IServiceNameAware nameAware)
             {
-                return null;
+                return nameAware.ServiceName == name;
             }
 
-            _instances.TryRemove(name, out var instance);
+            return false;
+        });
 
-            if (instance is IDisposable disposable)
-            {
-                disposable.Dispose();
-            }
+        return found;
+    }
 
-            return instance;
-        }
-
-        public string ResolveEmbeddedValue(string value)
+    public class NameToTypeMapping
+    {
+        public NameToTypeMapping(string name, Type type)
         {
-            if (value == null)
-            {
-                return null;
-            }
-
-            var resolved = PropertyPlaceholderHelper.ResolvePlaceholders(value, Configuration);
-            return resolved.Trim();
+            Name = name;
+            Type = type;
         }
 
-        public void Dispose()
-        {
-            _instances.Clear();
-            Configuration = null;
-            ServiceProvider = null;
-            ServiceExpressionResolver = null;
-        }
+        public string Name { get; }
 
-        private object ResolveNamedService(string name, Type serviceType)
-        {
-            var instance = FindNamedService(name, serviceType);
-            if (instance != null)
-            {
-                Register(name, instance);
-            }
-
-            return instance;
-        }
-
-        private object FindNamedService(string name, Type serviceType)
-        {
-            var found = ServiceProvider.GetServices(serviceType).SingleOrDefault<object>((service) =>
-            {
-                if (service is IServiceNameAware nameAware)
-                {
-                    return nameAware.ServiceName == name;
-                }
-
-                return false;
-            });
-
-            return found;
-        }
-
-        public class NameToTypeMapping
-        {
-            public NameToTypeMapping(string name, Type type)
-            {
-                Name = name;
-                Type = type;
-            }
-
-            public string Name { get; }
-
-            public Type Type { get; }
-        }
+        public Type Type { get; }
     }
 }

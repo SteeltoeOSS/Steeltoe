@@ -6,34 +6,33 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.RandomValue.Test
+namespace Steeltoe.Extensions.Configuration.RandomValue.Test;
+
+public class RandomValueSourceTest
 {
-    public class RandomValueSourceTest
+    [Fact]
+    public void Constructors__InitializesDefaults()
     {
-        [Fact]
-        public void Constructors__InitializesDefaults()
-        {
-            ILoggerFactory factory = new LoggerFactory();
+        ILoggerFactory factory = new LoggerFactory();
 
-            var source = new RandomValueSource(factory);
-            Assert.Equal(factory, source._loggerFactory);
-            Assert.NotNull(source._prefix);
-            Assert.Equal(RandomValueSource.PREFIX, source._prefix);
+        var source = new RandomValueSource(factory);
+        Assert.Equal(factory, source._loggerFactory);
+        Assert.NotNull(source._prefix);
+        Assert.Equal(RandomValueSource.PREFIX, source._prefix);
 
-            source = new RandomValueSource("foobar:", factory);
-            Assert.Equal(factory, source._loggerFactory);
-            Assert.NotNull(source._prefix);
-            Assert.Equal("foobar:", source._prefix);
-        }
+        source = new RandomValueSource("foobar:", factory);
+        Assert.Equal(factory, source._loggerFactory);
+        Assert.NotNull(source._prefix);
+        Assert.Equal("foobar:", source._prefix);
+    }
 
-        [Fact]
-        public void Build__ReturnsProvider()
-        {
-            ILoggerFactory factory = new LoggerFactory();
+    [Fact]
+    public void Build__ReturnsProvider()
+    {
+        ILoggerFactory factory = new LoggerFactory();
 
-            var source = new RandomValueSource();
-            var provider = source.Build(new ConfigurationBuilder());
-            Assert.IsType<RandomValueProvider>(provider);
-        }
+        var source = new RandomValueSource();
+        var provider = source.Build(new ConfigurationBuilder());
+        Assert.IsType<RandomValueProvider>(provider);
     }
 }

@@ -12,177 +12,176 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public class HystrixThreadPoolMetrics : HystrixMetrics
 {
-    public class HystrixThreadPoolMetrics : HystrixMetrics
+    private static readonly IList<HystrixEventType> ALL_COMMAND_EVENT_TYPES = HystrixEventTypeHelper.Values;
+    private static readonly IList<ThreadPoolEventType> ALL_THREADPOOL_EVENT_TYPES = ThreadPoolEventTypeHelper.Values;
+    private static readonly int NUMBER_THREADPOOL_EVENT_TYPES = ALL_THREADPOOL_EVENT_TYPES.Count;
+
+    // String is HystrixThreadPoolKey.name() (we can't use HystrixThreadPoolKey directly as we can't guarantee it implements hashcode/equals correctly)
+    private static readonly ConcurrentDictionary<string, HystrixThreadPoolMetrics> Metrics = new ();
+
+    public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key, IHystrixTaskScheduler taskScheduler, IHystrixThreadPoolOptions properties)
     {
-        private static readonly IList<HystrixEventType> ALL_COMMAND_EVENT_TYPES = HystrixEventTypeHelper.Values;
-        private static readonly IList<ThreadPoolEventType> ALL_THREADPOOL_EVENT_TYPES = ThreadPoolEventTypeHelper.Values;
-        private static readonly int NUMBER_THREADPOOL_EVENT_TYPES = ALL_THREADPOOL_EVENT_TYPES.Count;
+        return Metrics.GetOrAddEx(key.Name, (k) => new HystrixThreadPoolMetrics(key, taskScheduler, properties));
+    }
 
-        // String is HystrixThreadPoolKey.name() (we can't use HystrixThreadPoolKey directly as we can't guarantee it implements hashcode/equals correctly)
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolMetrics> Metrics = new ();
+    public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key)
+    {
+        Metrics.TryGetValue(key.Name, out var result);
+        return result;
+    }
 
-        public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key, IHystrixTaskScheduler taskScheduler, IHystrixThreadPoolOptions properties)
+    public static ICollection<HystrixThreadPoolMetrics> GetInstances()
+    {
+        var threadPoolMetrics = new List<HystrixThreadPoolMetrics>();
+        foreach (var tpm in Metrics.Values)
         {
-            return Metrics.GetOrAddEx(key.Name, (k) => new HystrixThreadPoolMetrics(key, taskScheduler, properties));
-        }
-
-        public static HystrixThreadPoolMetrics GetInstance(IHystrixThreadPoolKey key)
-        {
-            Metrics.TryGetValue(key.Name, out var result);
-            return result;
-        }
-
-        public static ICollection<HystrixThreadPoolMetrics> GetInstances()
-        {
-            var threadPoolMetrics = new List<HystrixThreadPoolMetrics>();
-            foreach (var tpm in Metrics.Values)
+            if (HasExecutedCommandsOnThread(tpm))
             {
-                if (HasExecutedCommandsOnThread(tpm))
-                {
-                    threadPoolMetrics.Add(tpm);
-                }
+                threadPoolMetrics.Add(tpm);
             }
-
-            return threadPoolMetrics.AsReadOnly();
         }
 
-        private static bool HasExecutedCommandsOnThread(HystrixThreadPoolMetrics threadPoolMetrics)
-        {
-            return threadPoolMetrics.CurrentCompletedTaskCount > 0;
-        }
+        return threadPoolMetrics.AsReadOnly();
+    }
 
-        public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
+    private static bool HasExecutedCommandsOnThread(HystrixThreadPoolMetrics threadPoolMetrics)
+    {
+        return threadPoolMetrics.CurrentCompletedTaskCount > 0;
+    }
+
+    public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
+    {
+        var eventCounts = execution.Eventcounts;
+        foreach (var eventType in ALL_COMMAND_EVENT_TYPES)
         {
-            var eventCounts = execution.Eventcounts;
-            foreach (var eventType in ALL_COMMAND_EVENT_TYPES)
+            long eventCount = eventCounts.GetCount(eventType);
+            var threadPoolEventType = ThreadPoolEventTypeHelper.From(eventType);
+            if (threadPoolEventType != ThreadPoolEventType.UNKNOWN)
             {
-                long eventCount = eventCounts.GetCount(eventType);
-                var threadPoolEventType = ThreadPoolEventTypeHelper.From(eventType);
-                if (threadPoolEventType != ThreadPoolEventType.UNKNOWN)
-                {
-                    var ordinal = (long)threadPoolEventType;
-                    initialCountArray[ordinal] += eventCount;
-                }
+                var ordinal = (long)threadPoolEventType;
+                initialCountArray[ordinal] += eventCount;
             }
+        }
 
-            return initialCountArray;
+        return initialCountArray;
+    };
+
+    public static Func<long[], long[], long[]> CounterAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
+    {
+        for (var i = 0; i < NUMBER_THREADPOOL_EVENT_TYPES; i++)
+        {
+            cumulativeEvents[i] += bucketEventCounts[i];
+        }
+
+        return cumulativeEvents;
+    };
+
+    internal static void Reset()
+    {
+        RollingThreadPoolEventCounterStream.Reset();
+        CumulativeThreadPoolEventCounterStream.Reset();
+        RollingThreadPoolMaxConcurrencyStream.Reset();
+
+        Metrics.Clear();
+    }
+
+    private readonly AtomicInteger _concurrentExecutionCount = new ();
+
+    private readonly RollingThreadPoolEventCounterStream _rollingCounterStream;
+    private readonly CumulativeThreadPoolEventCounterStream _cumulativeCounterStream;
+    private readonly RollingThreadPoolMaxConcurrencyStream _rollingThreadPoolMaxConcurrencyStream;
+
+    private HystrixThreadPoolMetrics(IHystrixThreadPoolKey threadPoolKey, IHystrixTaskScheduler threadPool, IHystrixThreadPoolOptions properties)
+        : base(null)
+    {
+        ThreadPoolKey = threadPoolKey;
+        TaskScheduler = threadPool;
+        Properties = properties;
+
+        _rollingCounterStream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
+        _cumulativeCounterStream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
+        _rollingThreadPoolMaxConcurrencyStream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, properties);
+    }
+
+    public static Func<int> GetCurrentConcurrencyThunk(IHystrixThreadPoolKey threadPoolKey)
+    {
+        return () =>
+        {
+            return GetInstance(threadPoolKey)._concurrentExecutionCount.Value;
         };
+    }
 
-        public static Func<long[], long[], long[]> CounterAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
-        {
-            for (var i = 0; i < NUMBER_THREADPOOL_EVENT_TYPES; i++)
-            {
-                cumulativeEvents[i] += bucketEventCounts[i];
-            }
+    public IHystrixTaskScheduler TaskScheduler { get; }
 
-            return cumulativeEvents;
-        };
+    public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        internal static void Reset()
-        {
-            RollingThreadPoolEventCounterStream.Reset();
-            CumulativeThreadPoolEventCounterStream.Reset();
-            RollingThreadPoolMaxConcurrencyStream.Reset();
+    public IHystrixThreadPoolOptions Properties { get; }
 
-            Metrics.Clear();
-        }
+    public int CurrentActiveCount => TaskScheduler.CurrentActiveCount;
 
-        private readonly AtomicInteger _concurrentExecutionCount = new ();
+    public int CurrentCompletedTaskCount => TaskScheduler.CurrentCompletedTaskCount;
 
-        private readonly RollingThreadPoolEventCounterStream _rollingCounterStream;
-        private readonly CumulativeThreadPoolEventCounterStream _cumulativeCounterStream;
-        private readonly RollingThreadPoolMaxConcurrencyStream _rollingThreadPoolMaxConcurrencyStream;
+    public int CurrentCorePoolSize => TaskScheduler.CurrentCorePoolSize;
 
-        private HystrixThreadPoolMetrics(IHystrixThreadPoolKey threadPoolKey, IHystrixTaskScheduler threadPool, IHystrixThreadPoolOptions properties)
-            : base(null)
-        {
-            ThreadPoolKey = threadPoolKey;
-            TaskScheduler = threadPool;
-            Properties = properties;
+    public int CurrentLargestPoolSize => TaskScheduler.CurrentLargestPoolSize;
 
-            _rollingCounterStream = RollingThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
-            _cumulativeCounterStream = CumulativeThreadPoolEventCounterStream.GetInstance(threadPoolKey, properties);
-            _rollingThreadPoolMaxConcurrencyStream = RollingThreadPoolMaxConcurrencyStream.GetInstance(threadPoolKey, properties);
-        }
+    public int CurrentMaximumPoolSize => TaskScheduler.CurrentMaximumPoolSize;
 
-        public static Func<int> GetCurrentConcurrencyThunk(IHystrixThreadPoolKey threadPoolKey)
-        {
-            return () =>
-            {
-                return GetInstance(threadPoolKey)._concurrentExecutionCount.Value;
-            };
-        }
+    public int CurrentPoolSize => TaskScheduler.CurrentPoolSize;
 
-        public IHystrixTaskScheduler TaskScheduler { get; }
+    public int CurrentTaskCount => TaskScheduler.CurrentTaskCount;
 
-        public IHystrixThreadPoolKey ThreadPoolKey { get; }
+    public int CurrentQueueSize => TaskScheduler.CurrentQueueSize;
 
-        public IHystrixThreadPoolOptions Properties { get; }
+    public void MarkThreadExecution()
+    {
+        _concurrentExecutionCount.IncrementAndGet();
+    }
 
-        public int CurrentActiveCount => TaskScheduler.CurrentActiveCount;
+    public long RollingCountThreadsExecuted => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public int CurrentCompletedTaskCount => TaskScheduler.CurrentCompletedTaskCount;
+    public long CumulativeCountThreadsExecuted => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
 
-        public int CurrentCorePoolSize => TaskScheduler.CurrentCorePoolSize;
+    public long RollingCountThreadsRejected => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
-        public int CurrentLargestPoolSize => TaskScheduler.CurrentLargestPoolSize;
+    public long CumulativeCountThreadsRejected => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
 
-        public int CurrentMaximumPoolSize => TaskScheduler.CurrentMaximumPoolSize;
+    public long GetRollingCount(ThreadPoolEventType @event)
+    {
+        return _rollingCounterStream.GetLatestCount(@event);
+    }
 
-        public int CurrentPoolSize => TaskScheduler.CurrentPoolSize;
+    public override long GetRollingCount(HystrixRollingNumberEvent @event)
+    {
+        return _rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
+    }
 
-        public int CurrentTaskCount => TaskScheduler.CurrentTaskCount;
+    public long GetCumulativeCount(ThreadPoolEventType @event)
+    {
+        return _cumulativeCounterStream.GetLatestCount(@event);
+    }
 
-        public int CurrentQueueSize => TaskScheduler.CurrentQueueSize;
+    public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
+    {
+        return _cumulativeCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
+    }
 
-        public void MarkThreadExecution()
-        {
-            _concurrentExecutionCount.IncrementAndGet();
-        }
+    public void MarkThreadCompletion()
+    {
+        _concurrentExecutionCount.DecrementAndGet();
+    }
 
-        public long RollingCountThreadsExecuted => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
+    public long RollingMaxActiveThreads
+    {
+        get { return _rollingThreadPoolMaxConcurrencyStream.LatestRollingMax; }
+    }
 
-        public long CumulativeCountThreadsExecuted => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.EXECUTED);
-
-        public long RollingCountThreadsRejected => _rollingCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
-
-        public long CumulativeCountThreadsRejected => _cumulativeCounterStream.GetLatestCount(ThreadPoolEventType.REJECTED);
-
-        public long GetRollingCount(ThreadPoolEventType @event)
-        {
-            return _rollingCounterStream.GetLatestCount(@event);
-        }
-
-        public override long GetRollingCount(HystrixRollingNumberEvent @event)
-        {
-            return _rollingCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
-        }
-
-        public long GetCumulativeCount(ThreadPoolEventType @event)
-        {
-            return _cumulativeCounterStream.GetLatestCount(@event);
-        }
-
-        public override long GetCumulativeCount(HystrixRollingNumberEvent @event)
-        {
-            return _cumulativeCounterStream.GetLatestCount(ThreadPoolEventTypeHelper.From(@event));
-        }
-
-        public void MarkThreadCompletion()
-        {
-            _concurrentExecutionCount.DecrementAndGet();
-        }
-
-        public long RollingMaxActiveThreads
-        {
-            get { return _rollingThreadPoolMaxConcurrencyStream.LatestRollingMax; }
-        }
-
-        public void MarkThreadRejection()
-        {
-            _concurrentExecutionCount.DecrementAndGet();
-        }
+    public void MarkThreadRejection()
+    {
+        _concurrentExecutionCount.DecrementAndGet();
     }
 }

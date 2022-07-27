@@ -4,14 +4,14 @@
 
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+
+public class JsonStreamConfigurationProviderTest
 {
-    public class JsonStreamConfigurationProviderTest
+    [Fact]
+    public void Load_LoadsProvidedStream()
     {
-        [Fact]
-        public void Load_LoadsProvidedStream()
-        {
-            var environment = @"
+        var environment = @"
                 {
                     ""p-config-server"": [{
                         ""name"": ""myConfigServer"",
@@ -80,27 +80,26 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                     }]
                 }";
 
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
-            var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
-            provider.Load();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+        var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
+        provider.Load();
 
-            Assert.True(provider.TryGet("p-config-server:0:name", out var value));
-            Assert.Equal("myConfigServer", value);
+        Assert.True(provider.TryGet("p-config-server:0:name", out var value));
+        Assert.Equal("myConfigServer", value);
 
-            Assert.True(provider.TryGet("p-config-server:0:credentials:uri", out value));
-            Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com", value);
+        Assert.True(provider.TryGet("p-config-server:0:credentials:uri", out value));
+        Assert.Equal("https://config-eafc353b-77e2-4dcc-b52a-25777e996ed9.apps.testcloud.com", value);
 
-            Assert.True(provider.TryGet("p-service-registry:0:name", out value));
-            Assert.Equal("myServiceRegistry", value);
+        Assert.True(provider.TryGet("p-service-registry:0:name", out value));
+        Assert.Equal("myServiceRegistry", value);
 
-            Assert.True(provider.TryGet("p-service-registry:0:credentials:uri", out value));
-            Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com", value);
+        Assert.True(provider.TryGet("p-service-registry:0:credentials:uri", out value));
+        Assert.Equal("https://eureka-f4b98d1c-3166-4741-b691-79abba5b2d51.apps.testcloud.com", value);
 
-            Assert.True(provider.TryGet("p-mysql:1:name", out value));
-            Assert.Equal("mySql2", value);
+        Assert.True(provider.TryGet("p-mysql:1:name", out value));
+        Assert.Equal("mySql2", value);
 
-            Assert.True(provider.TryGet("p-mysql:1:credentials:uri", out value));
-            Assert.Equal("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true", value);
-        }
+        Assert.True(provider.TryGet("p-mysql:1:credentials:uri", out value));
+        Assert.Equal("mysql://gxXQb2pMbzFsZQW8:lvMkGf6oJQvKSOwn@192.168.0.97:3306/cf_b2d83697_5fa1_4a51_991b_975c9d7e5515?reconnect=true", value);
     }
 }

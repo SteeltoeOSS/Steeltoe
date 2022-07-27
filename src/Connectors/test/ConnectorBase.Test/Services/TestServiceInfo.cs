@@ -4,18 +4,17 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.Services.Test
-{
-    internal class TestServiceInfo : ServiceInfo
-    {
-        public TestServiceInfo(string id, IApplicationInstanceInfo info)
-            : base(id, info)
-        {
-        }
+namespace Steeltoe.Connector.Services.Test;
 
-        public TestServiceInfo(string id)
-            : base(id, null)
-        {
-        }
+internal class TestServiceInfo : ServiceInfo
+{
+    public TestServiceInfo(string id, IApplicationInstanceInfo info)
+        : base(id, info)
+    {
+    }
+
+    public TestServiceInfo(string id)
+        : base(id, null)
+    {
     }
 }

@@ -5,30 +5,29 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Support;
 
-namespace Steeltoe.Messaging.RabbitMQ.Test
+namespace Steeltoe.Messaging.RabbitMQ.Test;
+
+internal static class MessageTestUtils
 {
-    internal static class MessageTestUtils
+    public static IMessage<byte[]> CreateTextMessage(string body, MessageHeaders properties)
     {
-        public static IMessage<byte[]> CreateTextMessage(string body, MessageHeaders properties)
-        {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(properties);
-            accessor.ContentType = MimeTypeUtils.TEXT_PLAIN_VALUE;
-            return Message.Create(ToBytes(body), properties);
-        }
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(properties);
+        accessor.ContentType = MimeTypeUtils.TEXT_PLAIN_VALUE;
+        return Message.Create(ToBytes(body), properties);
+    }
 
-        public static IMessage<byte[]> CreateTextMessage(string body)
-        {
-            return CreateTextMessage(body, new MessageHeaders());
-        }
+    public static IMessage<byte[]> CreateTextMessage(string body)
+    {
+        return CreateTextMessage(body, new MessageHeaders());
+    }
 
-        public static string ExtractText(IMessage message)
-        {
-            return EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Payload);
-        }
+    public static string ExtractText(IMessage message)
+    {
+        return EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Payload);
+    }
 
-        public static byte[] ToBytes(string content)
-        {
-            return EncodingUtils.GetDefaultEncoding().GetBytes(content);
-        }
+    public static byte[] ToBytes(string content)
+    {
+        return EncodingUtils.GetDefaultEncoding().GetBytes(content);
     }
 }

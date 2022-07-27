@@ -8,51 +8,50 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Http.Test
+namespace Steeltoe.Common.Http.Test;
+
+internal class TestDiscoveryClient : IDiscoveryClient
 {
-    internal class TestDiscoveryClient : IDiscoveryClient
+    private readonly IServiceInstance _instance;
+
+    public TestDiscoveryClient(IServiceInstance instance = null)
     {
-        private readonly IServiceInstance _instance;
+        _instance = instance;
+    }
 
-        public TestDiscoveryClient(IServiceInstance instance = null)
-        {
-            _instance = instance;
-        }
-
-        public string Description
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IList<string> Services
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public IList<IServiceInstance> GetInstances(string serviceId)
-        {
-            if (_instance != null)
-            {
-                return new List<IServiceInstance>() { _instance };
-            }
-
-            return new List<IServiceInstance>();
-        }
-
-        public IServiceInstance GetLocalServiceInstance()
+    public string Description
+    {
+        get
         {
             throw new NotImplementedException();
         }
+    }
 
-        public Task ShutdownAsync()
+    public IList<string> Services
+    {
+        get
         {
             throw new NotImplementedException();
         }
+    }
+
+    public IList<IServiceInstance> GetInstances(string serviceId)
+    {
+        if (_instance != null)
+        {
+            return new List<IServiceInstance>() { _instance };
+        }
+
+        return new List<IServiceInstance>();
+    }
+
+    public IServiceInstance GetLocalServiceInstance()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task ShutdownAsync()
+    {
+        throw new NotImplementedException();
     }
 }

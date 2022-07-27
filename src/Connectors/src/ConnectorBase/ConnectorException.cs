@@ -5,28 +5,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector;
+
+[Serializable]
+public class ConnectorException : Exception
 {
-    [Serializable]
-    public class ConnectorException : Exception
+    public ConnectorException()
     {
-        public ConnectorException()
-        {
-        }
+    }
 
-        public ConnectorException(string message)
-            : base(message)
-        {
-        }
+    public ConnectorException(string message)
+        : base(message)
+    {
+    }
 
-        public ConnectorException(string message, Exception nested)
-            : base(message, nested)
-        {
-        }
+    public ConnectorException(string message, Exception nested)
+        : base(message, nested)
+    {
+    }
 
-        protected ConnectorException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected ConnectorException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

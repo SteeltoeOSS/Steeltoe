@@ -4,47 +4,46 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Config
-{
-    public class BinderOptions : IBinderOptions
-    {
-        private const bool InheritEnvironment_Default = true;
-        private const bool DefaultCandidate_Default = true;
+namespace Steeltoe.Stream.Config;
 
-        public BinderOptions()
+public class BinderOptions : IBinderOptions
+{
+    private const bool InheritEnvironment_Default = true;
+    private const bool DefaultCandidate_Default = true;
+
+    public BinderOptions()
+    {
+    }
+
+    public string ConfigureClass { get; set; }
+
+    public string ConfigureAssembly { get; set; }
+
+    public Dictionary<string, object> Environment { get; set; }
+
+    public bool? InheritEnvironment { get; set; }
+
+    public bool? DefaultCandidate { get; set; }
+
+    bool IBinderOptions.InheritEnvironment => InheritEnvironment.Value;
+
+    bool IBinderOptions.DefaultCandidate => DefaultCandidate.Value;
+
+    internal void PostProcess()
+    {
+        if (Environment == null)
         {
+            Environment = new Dictionary<string, object>();
         }
 
-        public string ConfigureClass { get; set; }
-
-        public string ConfigureAssembly { get; set; }
-
-        public Dictionary<string, object> Environment { get; set; }
-
-        public bool? InheritEnvironment { get; set; }
-
-        public bool? DefaultCandidate { get; set; }
-
-        bool IBinderOptions.InheritEnvironment => InheritEnvironment.Value;
-
-        bool IBinderOptions.DefaultCandidate => DefaultCandidate.Value;
-
-        internal void PostProcess()
+        if (!InheritEnvironment.HasValue)
         {
-            if (Environment == null)
-            {
-                Environment = new Dictionary<string, object>();
-            }
+            InheritEnvironment = InheritEnvironment_Default;
+        }
 
-            if (!InheritEnvironment.HasValue)
-            {
-                InheritEnvironment = InheritEnvironment_Default;
-            }
-
-            if (!DefaultCandidate.HasValue)
-            {
-                DefaultCandidate = DefaultCandidate_Default;
-            }
+        if (!DefaultCandidate.HasValue)
+        {
+            DefaultCandidate = DefaultCandidate_Default;
         }
     }
 }

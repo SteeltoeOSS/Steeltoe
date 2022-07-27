@@ -5,18 +5,17 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Hypermedia;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
-{
-    internal class TestCloudFoundryEndpoint : CloudFoundryEndpoint
-    {
-        public TestCloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOpts, ILogger<CloudFoundryEndpoint> logger = null)
-            : base(options, mgmtOpts, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
-        public override Links Invoke(string baseUrl)
-        {
-            return new Links();
-        }
+internal class TestCloudFoundryEndpoint : CloudFoundryEndpoint
+{
+    public TestCloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions mgmtOpts, ILogger<CloudFoundryEndpoint> logger = null)
+        : base(options, mgmtOpts, logger)
+    {
+    }
+
+    public override Links Invoke(string baseUrl)
+    {
+        return new Links();
     }
 }

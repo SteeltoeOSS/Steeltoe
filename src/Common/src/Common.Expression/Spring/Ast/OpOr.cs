@@ -5,74 +5,73 @@
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class OpOr : Operator
 {
-    public class OpOr : Operator
-    {
-        public OpOr(int startPos, int endPos, params SpelNode[] operands)
+    public OpOr(int startPos, int endPos, params SpelNode[] operands)
         : base("or", startPos, endPos, operands)
+    {
+        _exitTypeDescriptor = TypeDescriptor.Z;
+    }
+
+    public override ITypedValue GetValueInternal(ExpressionState state)
+    {
+        if (GetBooleanValue(state, LeftOperand))
         {
-            _exitTypeDescriptor = TypeDescriptor.Z;
+            // no need to evaluate right operand
+            return BooleanTypedValue.TRUE;
         }
 
-        public override ITypedValue GetValueInternal(ExpressionState state)
-        {
-            if (GetBooleanValue(state, LeftOperand))
-            {
-                // no need to evaluate right operand
-                return BooleanTypedValue.TRUE;
-            }
+        return BooleanTypedValue.ForValue(GetBooleanValue(state, RightOperand));
+    }
 
-            return BooleanTypedValue.ForValue(GetBooleanValue(state, RightOperand));
+    public override bool IsCompilable()
+    {
+        var left = LeftOperand;
+        var right = RightOperand;
+        return left.IsCompilable() && right.IsCompilable() &&
+               CodeFlow.IsBooleanCompatible(left.ExitDescriptor) &&
+               CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
+    }
+
+    public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+    {
+        // pseudo: if (leftOperandValue) { result=true; } else { result=rightOperandValue; }
+        var elseTarget = gen.DefineLabel();
+        var endIfTarget = gen.DefineLabel();
+        var result = gen.DeclareLocal(typeof(bool));
+
+        cf.EnterCompilationScope();
+        LeftOperand.GenerateCode(gen, cf);
+        cf.UnboxBooleanIfNecessary(gen);
+        cf.ExitCompilationScope();
+        gen.Emit(OpCodes.Brfalse, elseTarget);
+        gen.Emit(OpCodes.Ldc_I4_1);
+        gen.Emit(OpCodes.Stloc, result);
+        gen.Emit(OpCodes.Br, endIfTarget);
+        gen.MarkLabel(elseTarget);
+        cf.EnterCompilationScope();
+        RightOperand.GenerateCode(gen, cf);
+        cf.UnboxBooleanIfNecessary(gen);
+        cf.ExitCompilationScope();
+        gen.Emit(OpCodes.Stloc, result);
+        gen.MarkLabel(endIfTarget);
+        gen.Emit(OpCodes.Ldloc, result);
+        cf.PushDescriptor(_exitTypeDescriptor);
+    }
+
+    private bool GetBooleanValue(ExpressionState state, SpelNode operand)
+    {
+        try
+        {
+            var value = operand.GetValue<bool>(state);
+            return value;
         }
-
-        public override bool IsCompilable()
+        catch (SpelEvaluationException ee)
         {
-            var left = LeftOperand;
-            var right = RightOperand;
-            return left.IsCompilable() && right.IsCompilable() &&
-                    CodeFlow.IsBooleanCompatible(left.ExitDescriptor) &&
-                    CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
-        }
-
-        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
-        {
-            // pseudo: if (leftOperandValue) { result=true; } else { result=rightOperandValue; }
-            var elseTarget = gen.DefineLabel();
-            var endIfTarget = gen.DefineLabel();
-            var result = gen.DeclareLocal(typeof(bool));
-
-            cf.EnterCompilationScope();
-            LeftOperand.GenerateCode(gen, cf);
-            cf.UnboxBooleanIfNecessary(gen);
-            cf.ExitCompilationScope();
-            gen.Emit(OpCodes.Brfalse, elseTarget);
-            gen.Emit(OpCodes.Ldc_I4_1);
-            gen.Emit(OpCodes.Stloc, result);
-            gen.Emit(OpCodes.Br, endIfTarget);
-            gen.MarkLabel(elseTarget);
-            cf.EnterCompilationScope();
-            RightOperand.GenerateCode(gen, cf);
-            cf.UnboxBooleanIfNecessary(gen);
-            cf.ExitCompilationScope();
-            gen.Emit(OpCodes.Stloc, result);
-            gen.MarkLabel(endIfTarget);
-            gen.Emit(OpCodes.Ldloc, result);
-            cf.PushDescriptor(_exitTypeDescriptor);
-        }
-
-        private bool GetBooleanValue(ExpressionState state, SpelNode operand)
-        {
-            try
-            {
-                var value = operand.GetValue<bool>(state);
-                return value;
-            }
-            catch (SpelEvaluationException ee)
-            {
-                ee.Position = operand.StartPosition;
-                throw;
-            }
+            ee.Position = operand.StartPosition;
+            throw;
         }
     }
 }

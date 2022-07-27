@@ -7,34 +7,33 @@ using Steeltoe.Messaging.Support;
 using System.Globalization;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test
+namespace Steeltoe.Messaging.Converter.Test;
+
+public class GenericMessageConverterTest
 {
-    public class GenericMessageConverterTest
+    private readonly IConversionService conversionService = new DefaultConversionService();
+
+    [Fact]
+    public void FromMessageWithConversion()
     {
-        private readonly IConversionService conversionService = new DefaultConversionService();
+        var converter = new GenericMessageConverter(conversionService);
+        var content = MessageBuilder.WithPayload("33").Build();
+        Assert.Equal(33, converter.FromMessage<int>(content));
+    }
 
-        [Fact]
-        public void FromMessageWithConversion()
-        {
-            var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder.WithPayload("33").Build();
-            Assert.Equal(33, converter.FromMessage<int>(content));
-        }
+    [Fact]
+    public void FromMessageNoConverter()
+    {
+        var converter = new GenericMessageConverter(conversionService);
+        var content = MessageBuilder.WithPayload(1234L).Build();
+        Assert.Null(converter.FromMessage<CultureInfo>(content));
+    }
 
-        [Fact]
-        public void FromMessageNoConverter()
-        {
-            var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder.WithPayload(1234L).Build();
-            Assert.Null(converter.FromMessage<CultureInfo>(content));
-        }
-
-        [Fact]
-        public void FromMessageWithFailedConversion()
-        {
-            var converter = new GenericMessageConverter(conversionService);
-            var content = MessageBuilder.WithPayload("test not a number").Build();
-            Assert.Throws<MessageConversionException>(() => converter.FromMessage<int>(content));
-        }
+    [Fact]
+    public void FromMessageWithFailedConversion()
+    {
+        var converter = new GenericMessageConverter(conversionService);
+        var content = MessageBuilder.WithPayload("test not a number").Build();
+        Assert.Throws<MessageConversionException>(() => converter.FromMessage<int>(content));
     }
 }

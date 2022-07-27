@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public interface ITraceEndpoint
 {
-    public interface ITraceEndpoint
-    {
-        List<TraceResult> Invoke();
-    }
+    List<TraceResult> Invoke();
 }

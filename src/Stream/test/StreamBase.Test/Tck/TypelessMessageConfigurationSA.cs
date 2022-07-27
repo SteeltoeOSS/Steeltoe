@@ -7,15 +7,14 @@ using Steeltoe.Messaging;
 using Steeltoe.Stream.Messaging;
 using System;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class TypelessMessageConfigurationSA
 {
-    public class TypelessMessageConfigurationSA
+    [ServiceActivator(InputChannel = IProcessor.INPUT, OutputChannel = IProcessor.OUTPUT)]
+    public object Echo(IMessage value)
     {
-        [ServiceActivator(InputChannel = IProcessor.INPUT, OutputChannel = IProcessor.OUTPUT)]
-        public object Echo(IMessage value)
-        {
-            Console.WriteLine(value.Payload);
-            return value.Payload;
-        }
+        Console.WriteLine(value.Payload);
+        return value.Payload;
     }
 }

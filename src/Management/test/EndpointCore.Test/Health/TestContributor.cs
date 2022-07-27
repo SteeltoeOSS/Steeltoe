@@ -5,47 +5,46 @@
 using Steeltoe.Common.HealthChecks;
 using System;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
+namespace Steeltoe.Management.Endpoint.Health.Test;
+
+internal class TestContributor : IHealthContributor
 {
-    internal class TestContributor : IHealthContributor
-    {
 #pragma warning disable SA1401 // Fields must be private
-        public bool Called = false;
-        public bool Throws = false;
+    public bool Called = false;
+    public bool Throws = false;
 #pragma warning restore SA1401 // Fields must be private
 
-        public TestContributor()
+    public TestContributor()
+    {
+        Id = "TestHealth";
+        Throws = false;
+    }
+
+    public TestContributor(string id)
+    {
+        Id = id;
+        Throws = false;
+    }
+
+    public TestContributor(string id, bool throws)
+    {
+        Id = id;
+        Throws = throws;
+    }
+
+    public string Id { get; }
+
+    public HealthCheckResult Health()
+    {
+        if (Throws)
         {
-            Id = "TestHealth";
-            Throws = false;
+            throw new Exception();
         }
 
-        public TestContributor(string id)
+        Called = true;
+        return new HealthCheckResult()
         {
-            Id = id;
-            Throws = false;
-        }
-
-        public TestContributor(string id, bool throws)
-        {
-            Id = id;
-            Throws = throws;
-        }
-
-        public string Id { get; }
-
-        public HealthCheckResult Health()
-        {
-            if (Throws)
-            {
-                throw new Exception();
-            }
-
-            Called = true;
-            return new HealthCheckResult()
-            {
-                Status = HealthStatus.UP
-            };
-        }
+            Status = HealthStatus.UP
+        };
     }
 }

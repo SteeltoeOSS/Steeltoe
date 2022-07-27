@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+/// <summary>
+/// Used internally to process results of a Find request
+/// </summary>
+internal class CredentialFindResponse
 {
     /// <summary>
-    /// Used internally to process results of a Find request
+    /// Gets or sets credentials found by query
     /// </summary>
-    internal class CredentialFindResponse
-    {
-        /// <summary>
-        /// Gets or sets credentials found by query
-        /// </summary>
-        public List<FoundCredential> Credentials { get; set; }
-    }
+    public List<FoundCredential> Credentials { get; set; }
 }

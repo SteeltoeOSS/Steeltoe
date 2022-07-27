@@ -5,28 +5,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
+namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+
+[Serializable]
+public class RejectedExecutionException : Exception
 {
-    [Serializable]
-    public class RejectedExecutionException : Exception
+    public RejectedExecutionException(string message)
+        : base(message)
     {
-        public RejectedExecutionException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        public RejectedExecutionException()
-        {
-        }
+    public RejectedExecutionException()
+    {
+    }
 
-        public RejectedExecutionException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public RejectedExecutionException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
-        protected RejectedExecutionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected RejectedExecutionException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

@@ -4,17 +4,16 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
-{
-    public class ConsumerCancelledException : Exception
-    {
-        public ConsumerCancelledException()
-        {
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Support;
 
-        public ConsumerCancelledException(Exception cause)
+public class ConsumerCancelledException : Exception
+{
+    public ConsumerCancelledException()
+    {
+    }
+
+    public ConsumerCancelledException(Exception cause)
         : base(null, cause)
-        {
-        }
+    {
     }
 }

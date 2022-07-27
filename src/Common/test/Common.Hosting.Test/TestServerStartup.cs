@@ -8,26 +8,25 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Common.Hosting.Test
+namespace Steeltoe.Common.Hosting.Test;
+
+public class TestServerStartup
 {
-    public class TestServerStartup
+    public List<string> ExpectedAddresses { get; set; }
+
+    public TestServerStartup()
     {
-        public List<string> ExpectedAddresses { get; set; }
+        ExpectedAddresses = new List<string>();
+    }
 
-        public TestServerStartup()
-        {
-            ExpectedAddresses = new List<string>();
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+    }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            var addresses = ExpectedAddresses;
-            Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
-            ExpectedAddresses = null;
-        }
+    public void Configure(IApplicationBuilder app)
+    {
+        var addresses = ExpectedAddresses;
+        Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
+        ExpectedAddresses = null;
     }
 }

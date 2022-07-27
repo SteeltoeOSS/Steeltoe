@@ -7,49 +7,48 @@ using Steeltoe.Common.Lifecycle;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class LifecycleBinderTest : AbstractTest
 {
-    public class LifecycleBinderTest : AbstractTest
+    [Fact]
+    public async Task TestOnlySmartLifecyclesStarted()
     {
-        [Fact]
-        public async Task TestOnlySmartLifecyclesStarted()
+        var searchDirectories = GetSearchDirectories("MockBinder");
+        var container = CreateStreamsContainerWithBinding(
+            searchDirectories,
+            typeof(IFooChannels),
+            "spring:cloud:stream:defaultBinder=mock");
+
+        container.AddSingleton<ILifecycle, SimpleLifecycle>();
+
+        var provider = container.BuildServiceProvider();
+
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+
+        var lifecycle = provider.GetService<ILifecycle>();
+        Assert.False(lifecycle.IsRunning);
+    }
+
+    public class SimpleLifecycle : ILifecycle
+    {
+        private bool running;
+
+        public Task Start()
         {
-            var searchDirectories = GetSearchDirectories("MockBinder");
-            var container = CreateStreamsContainerWithBinding(
-                searchDirectories,
-                typeof(IFooChannels),
-                "spring:cloud:stream:defaultBinder=mock");
-
-            container.AddSingleton<ILifecycle, SimpleLifecycle>();
-
-            var provider = container.BuildServiceProvider();
-
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
-
-            var lifecycle = provider.GetService<ILifecycle>();
-            Assert.False(lifecycle.IsRunning);
+            running = true;
+            return Task.CompletedTask;
         }
 
-        public class SimpleLifecycle : ILifecycle
+        public Task Stop()
         {
-            private bool running;
+            running = false;
+            return Task.CompletedTask;
+        }
 
-            public Task Start()
-            {
-                running = true;
-                return Task.CompletedTask;
-            }
-
-            public Task Stop()
-            {
-                running = false;
-                return Task.CompletedTask;
-            }
-
-            public bool IsRunning
-            {
-                get { return running; }
-            }
+        public bool IsRunning
+        {
+            get { return running; }
         }
     }
 }

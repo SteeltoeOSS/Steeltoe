@@ -4,13 +4,12 @@
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Steeltoe.Connector.EFCore.Test
+namespace Steeltoe.Connector.EFCore.Test;
+
+internal class GoodDbContext : DbContext
 {
-    internal class GoodDbContext : DbContext
+    public GoodDbContext(DbContextOptions<GoodDbContext> options)
+        : base(options)
     {
-        public GoodDbContext(DbContextOptions<GoodDbContext> options)
-            : base(options)
-        {
-        }
     }
 }

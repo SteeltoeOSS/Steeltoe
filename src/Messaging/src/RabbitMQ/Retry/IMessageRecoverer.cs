@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Retry
+namespace Steeltoe.Messaging.RabbitMQ.Retry;
+
+public interface IMessageRecoverer
 {
-    public interface IMessageRecoverer
-    {
-        void Recover(IMessage message, Exception exception);
-    }
+    void Recover(IMessage message, Exception exception);
 }

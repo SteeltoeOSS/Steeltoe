@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class ImmediateAcknowledgeException : RabbitException
 {
-    public class ImmediateAcknowledgeException : RabbitException
-    {
-        public ImmediateAcknowledgeException(string message)
+    public ImmediateAcknowledgeException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public ImmediateAcknowledgeException(Exception cause)
+    public ImmediateAcknowledgeException(Exception cause)
         : base(cause)
-        {
-        }
+    {
+    }
 
-        public ImmediateAcknowledgeException(string message, Exception cause)
+    public ImmediateAcknowledgeException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

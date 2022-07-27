@@ -9,54 +9,53 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
+/// <summary>
+/// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
+/// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
+/// </summary>
+public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
-    /// <summary>
-    /// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
-    /// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
-    /// </summary>
-    public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
+    private readonly ICloudFoundryOptions _options;
+    private readonly RequestDelegate _next;
+
+    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly ICloudFoundryOptions _options;
-        private readonly RequestDelegate _next;
+        _next = next;
+        _options = endpoint.Options as ICloudFoundryOptions;
+    }
 
-        public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
+
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
-            _options = endpoint.Options as ICloudFoundryOptions;
+            return HandleCloudFoundryRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
+        return Task.CompletedTask;
+    }
+
+    protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest(GetRequestUri(context.Request));
+        _logger?.LogDebug("Returning: {0}", serialInfo);
+        context.HandleContentNegotiation(_logger);
+        return context.Response.WriteAsync(serialInfo);
+    }
+
+    protected internal string GetRequestUri(HttpRequest request)
+    {
+        var scheme = request.Scheme;
+
+        if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
         {
-            _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
-
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleCloudFoundryRequestAsync(context);
-            }
-
-            return Task.CompletedTask;
+            scheme = headerScheme.ToString();
         }
 
-        protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest(GetRequestUri(context.Request));
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-            context.HandleContentNegotiation(_logger);
-            return context.Response.WriteAsync(serialInfo);
-        }
-
-        protected internal string GetRequestUri(HttpRequest request)
-        {
-            var scheme = request.Scheme;
-
-            if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
-            {
-                scheme = headerScheme.ToString();
-            }
-
-            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
-        }
+        return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 }

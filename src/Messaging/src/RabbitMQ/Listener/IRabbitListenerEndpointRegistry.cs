@@ -7,20 +7,19 @@ using Steeltoe.Common.Services;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IRabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable, IServiceNameAware
 {
-    public interface IRabbitListenerEndpointRegistry : ISmartLifecycle, IDisposable, IServiceNameAware
-    {
-        public IMessageListenerContainer GetListenerContainer(string id);
+    public IMessageListenerContainer GetListenerContainer(string id);
 
-        public ISet<string> GetListenerContainerIds();
+    public ISet<string> GetListenerContainerIds();
 
-        public ICollection<IMessageListenerContainer> GetListenerContainers();
+    public ICollection<IMessageListenerContainer> GetListenerContainers();
 
-        public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory);
 
-        public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately);
+    public void RegisterListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory, bool startImmediately);
 
-        public IMessageListenerContainer UnregisterListenerContainer(string id);
-    }
+    public IMessageListenerContainer UnregisterListenerContainer(string id);
 }

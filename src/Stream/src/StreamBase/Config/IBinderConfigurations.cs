@@ -5,12 +5,11 @@
 using Steeltoe.Stream.Binder;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Config
-{
-    public interface IBinderConfigurations
-    {
-        Dictionary<string, BinderConfiguration> Configurations { get; }
+namespace Steeltoe.Stream.Config;
 
-        List<string> FindMatchingConfigurationsIfAny(IBinder binder);
-    }
+public interface IBinderConfigurations
+{
+    Dictionary<string, BinderConfiguration> Configurations { get; }
+
+    List<string> FindMatchingConfigurationsIfAny(IBinder binder);
 }

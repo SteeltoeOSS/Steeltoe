@@ -5,28 +5,27 @@
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public class MessageTimeoutException : MessageDeliveryException
 {
-    public class MessageTimeoutException : MessageDeliveryException
+    public MessageTimeoutException(string description)
+        : base(description)
     {
-        public MessageTimeoutException(string description)
-            : base(description)
-        {
-        }
+    }
 
-        public MessageTimeoutException(IMessage failedMessage, string description, Exception cause)
-            : base(failedMessage, description, cause)
-        {
-        }
+    public MessageTimeoutException(IMessage failedMessage, string description, Exception cause)
+        : base(failedMessage, description, cause)
+    {
+    }
 
-        public MessageTimeoutException(IMessage failedMessage, string description)
-            : base(failedMessage, description)
-        {
-        }
+    public MessageTimeoutException(IMessage failedMessage, string description)
+        : base(failedMessage, description)
+    {
+    }
 
-        public MessageTimeoutException(IMessage failedMessage)
-            : base(failedMessage)
-        {
-        }
+    public MessageTimeoutException(IMessage failedMessage)
+        : base(failedMessage)
+    {
     }
 }

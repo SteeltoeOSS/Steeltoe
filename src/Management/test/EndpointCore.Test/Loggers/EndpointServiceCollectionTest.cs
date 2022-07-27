@@ -11,50 +11,49 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test
+namespace Steeltoe.Management.Endpoint.Loggers.Test;
+
+public class EndpointServiceCollectionTest : BaseTest
 {
-    public class EndpointServiceCollectionTest : BaseTest
+    [Fact]
+    public void AddLoggersActuator_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddLoggersActuator_ThrowsOnNulls()
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services, config));
+        Assert.Contains(nameof(services), ex.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
+    }
+
+    [Fact]
+    public void AddLoggersActuator_AddsCorrectServices()
+    {
+        var services = new ServiceCollection();
+        var appsettings = new Dictionary<string, string>()
         {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+            ["management:endpoints:enabled"] = "true",
+            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:loggers:enabled"] = "true"
+        };
 
-            var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services, config));
-            Assert.Contains(nameof(services), ex.Message);
-            var ex2 = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddLoggersActuator(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
-
-        [Fact]
-        public void AddLoggersActuator_AddsCorrectServices()
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
+        services.AddLogging(builder =>
         {
-            var services = new ServiceCollection();
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "true",
-                ["management:endpoints:path"] = "/cloudfoundryapplication",
-                ["management:endpoints:loggers:enabled"] = "true"
-            };
+            builder.AddConfiguration(config);
+            builder.AddDynamicConsole();
+        });
+        services.AddLoggersActuator(config);
+        var serviceProvider = services.BuildServiceProvider();
 
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
-            services.AddLogging(builder =>
-            {
-                builder.AddConfiguration(config);
-                builder.AddDynamicConsole();
-            });
-            services.AddLoggersActuator(config);
-            var serviceProvider = services.BuildServiceProvider();
+        var options = serviceProvider.GetService<ILoggersOptions>();
+        var ep = serviceProvider.GetService<LoggersEndpoint>();
 
-            var options = serviceProvider.GetService<ILoggersOptions>();
-            var ep = serviceProvider.GetService<LoggersEndpoint>();
-
-            Assert.NotNull(options);
-            Assert.NotNull(ep);
-        }
+        Assert.NotNull(options);
+        Assert.NotNull(ep);
     }
 }

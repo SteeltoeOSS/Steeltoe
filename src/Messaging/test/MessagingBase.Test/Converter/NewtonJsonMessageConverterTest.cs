@@ -11,280 +11,279 @@ using System.Reflection;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Messaging.Converter.Test
+namespace Steeltoe.Messaging.Converter.Test;
+
+public class NewtonJsonMessageConverterTest
 {
-    public class NewtonJsonMessageConverterTest
+    [Fact]
+    public void DefaultConstructor()
     {
-        [Fact]
-        public void DefaultConstructor()
+        var converter = new NewtonJsonMessageConverter();
+        Assert.Contains(new MimeType("application", "json", Encoding.UTF8), converter.SupportedMimeTypes);
+        Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
+    }
+
+    [Fact]
+    public void MimetypeParametrizedConstructor()
+    {
+        var mimetype = new MimeType("application", "xml", Encoding.UTF8);
+        var converter = new NewtonJsonMessageConverter(mimetype);
+        Assert.Contains(mimetype, converter.SupportedMimeTypes);
+        Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
+    }
+
+    [Fact]
+    public void MimetypesParametrizedConstructor()
+    {
+        var jsonMimetype = new MimeType("application", "json", Encoding.UTF8);
+        var xmlMimetype = new MimeType("application", "xml", Encoding.UTF8);
+        var converter = new NewtonJsonMessageConverter(jsonMimetype, xmlMimetype);
+        Assert.Contains(jsonMimetype, converter.SupportedMimeTypes);
+        Assert.Contains(xmlMimetype, converter.SupportedMimeTypes);
+        Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
+    }
+
+    [Fact]
+    public void FromMessage()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "{" +
+                      "\"bytes\":\"AQI=\"," +
+                      "\"array\":[\"Foo\",\"Bar\"]," +
+                      "\"number\":42," +
+                      "\"string\":\"Foo\"," +
+                      "\"bool\":true," +
+                      "\"fraction\":42.0}";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+        var actual = (MyBean)converter.FromMessage(message, typeof(MyBean));
+
+        Assert.Equal("Foo", actual.String);
+        Assert.Equal(42, actual.Number);
+        Assert.Equal(42F, actual.Fraction);
+        Assert.Equal(new string[] { "Foo", "Bar" }, actual.Array);
+        Assert.True(actual.Bool);
+        Assert.Equal(new byte[] { 0x1, 0x2 }, actual.Bytes);
+    }
+
+    [Fact(Skip = "Failing with NewtonSoft, need to dig into")]
+    public void FromMessageUntyped()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "{\"bytes\":\"AQI=\",\"array\":[\"Foo\",\"Bar\"],"
+                      + "\"number\":42,\"string\":\"Foo\",\"bool\":true,\"fraction\":42.0}";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+
+        var actual = converter.FromMessage<Dictionary<string, object>>(message);
+
+        Assert.Equal("Foo", actual["string"]);
+        Assert.Equal(42L, actual["number"]);
+        Assert.Equal(42D, (double)actual["fraction"]);
+        Assert.Equal(new string[] { "Foo", "Bar" }, actual["array"]);
+        Assert.Equal(true, actual["bool"]);
+        Assert.Equal("AQI=", actual["bytes"]);
+    }
+
+    [Fact]
+    public void FromMessageMatchingInstance()
+    {
+        var myBean = new MyBean();
+        var converter = new NewtonJsonMessageConverter();
+        var message = MessageBuilder.WithPayload(myBean).Build();
+        Assert.Same(myBean, converter.FromMessage(message, typeof(MyBean)));
+    }
+
+    [Fact]
+
+    public void FromMessageInvalidJson()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "FooBar";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+        Assert.Throws<MessageConversionException>(() => converter.FromMessage<MyBean>(message));
+    }
+
+    [Fact]
+    public void FromMessageValidJsonWithUnknownProperty()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+        var myBean = converter.FromMessage<MyBean>(message);
+        Assert.Equal("string", myBean.String);
+    }
+
+    [Fact]
+    public void FromMessageToList()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "[1, 2, 3, 4, 5, 6, 7, 8, 9]";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+
+        var info = GetType().GetMethod("HandleList", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
+        var actual = converter.FromMessage(message, typeof(List<long>), info);
+
+        Assert.NotNull(actual);
+        Assert.Equal(new List<long>() { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L }, actual);
+    }
+
+    [Fact]
+    public void FromMessageToMessageWithPojo()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = "{\"string\":\"foo\"}";
+        var bytes = Encoding.UTF8.GetBytes(payload);
+        var message = MessageBuilder.WithPayload(bytes).Build();
+
+        var info = GetType().GetMethod("HandleMessage", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
+        var actual = converter.FromMessage(message, typeof(MyBean), info);
+
+        Assert.IsType<MyBean>(actual);
+        Assert.Equal("foo", ((MyBean)actual).String);
+    }
+
+    [Fact]
+    public void ToMessage()
+    {
+        var converter = new NewtonJsonMessageConverter();
+        var payload = new MyBean
         {
-            var converter = new NewtonJsonMessageConverter();
-            Assert.Contains(new MimeType("application", "json", Encoding.UTF8), converter.SupportedMimeTypes);
-            Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
-        }
+            String = "Foo",
+            Number = 42,
+            Fraction = 42F,
+            Array = new string[] { "Foo", "Bar" },
+            Bool = true,
+            Bytes = new byte[] { 0x1, 0x2 }
+        };
 
-        [Fact]
-        public void MimetypeParametrizedConstructor()
+        var message = converter.ToMessage(payload, null);
+
+        var actual = Encoding.UTF8.GetString((byte[])message.Payload);
+
+        Assert.Contains("\"string\":\"Foo\"", actual);
+        Assert.Contains("\"number\":42", actual);
+        Assert.Contains("\"fraction\":42.0", actual);
+        Assert.Contains("\"array\":[\"Foo\",\"Bar\"]", actual);
+        Assert.Contains("\"bool\":true", actual);
+        Assert.Contains("\"bytes\":\"AQI=\"", actual);
+        Assert.Equal(new MimeType("application", "json", Encoding.UTF8), message.Headers[MessageHeaders.CONTENT_TYPE]);
+    }
+
+    [Fact]
+    public void ToMessageUtf16()
+    {
+        var e = Encoding.Default;
+        var converter = new NewtonJsonMessageConverter();
+        var encoding = new UnicodeEncoding(true, false);
+        var contentType = new MimeType("application", "json", encoding);
+        var map = new Dictionary<string, object>
         {
-            var mimetype = new MimeType("application", "xml", Encoding.UTF8);
-            var converter = new NewtonJsonMessageConverter(mimetype);
-            Assert.Contains(mimetype, converter.SupportedMimeTypes);
-            Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
-        }
+            { MessageHeaders.CONTENT_TYPE, contentType }
+        };
+        var headers = new MessageHeaders(map);
+        var payload = "H\u00e9llo W\u00f6rld";
+        var message = converter.ToMessage(payload, headers);
+        var actual = encoding.GetString((byte[])message.Payload);
+        var expected = "\"" + payload + "\"";
+        Assert.Equal(expected, actual);
+        Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
+    }
 
-        [Fact]
-        public void MimetypesParametrizedConstructor()
+    [Fact]
+    public void ToMessageUtf16String()
+    {
+        var converter = new NewtonJsonMessageConverter
         {
-            var jsonMimetype = new MimeType("application", "json", Encoding.UTF8);
-            var xmlMimetype = new MimeType("application", "xml", Encoding.UTF8);
-            var converter = new NewtonJsonMessageConverter(jsonMimetype, xmlMimetype);
-            Assert.Contains(jsonMimetype, converter.SupportedMimeTypes);
-            Assert.Contains(xmlMimetype, converter.SupportedMimeTypes);
-            Assert.Equal(MissingMemberHandling.Ignore, converter.Settings.MissingMemberHandling);
-        }
-
-        [Fact]
-        public void FromMessage()
+            SerializedPayloadClass = typeof(string)
+        };
+        var encoding = new UnicodeEncoding(true, false);
+        var contentType = new MimeType("application", "json", encoding);
+        var map = new Dictionary<string, object>
         {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "{" +
-                    "\"bytes\":\"AQI=\"," +
-                    "\"array\":[\"Foo\",\"Bar\"]," +
-                    "\"number\":42," +
-                    "\"string\":\"Foo\"," +
-                    "\"bool\":true," +
-                    "\"fraction\":42.0}";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
-            var actual = (MyBean)converter.FromMessage(message, typeof(MyBean));
+            { MessageHeaders.CONTENT_TYPE, contentType }
+        };
+        var headers = new MessageHeaders(map);
+        var payload = "H\u00e9llo W\u00f6rld";
+        var message = converter.ToMessage(payload, headers);
 
-            Assert.Equal("Foo", actual.String);
-            Assert.Equal(42, actual.Number);
-            Assert.Equal(42F, actual.Fraction);
-            Assert.Equal(new string[] { "Foo", "Bar" }, actual.Array);
-            Assert.True(actual.Bool);
-            Assert.Equal(new byte[] { 0x1, 0x2 }, actual.Bytes);
-        }
+        Assert.Equal("\"" + payload + "\"", message.Payload);
+        Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
+    }
 
-        [Fact(Skip = "Failing with NewtonSoft, need to dig into")]
-        public void FromMessageUntyped()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "{\"bytes\":\"AQI=\",\"array\":[\"Foo\",\"Bar\"],"
-                    + "\"number\":42,\"string\":\"Foo\",\"bool\":true,\"fraction\":42.0}";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
+    [Fact]
+    public void GetIMessageGenericType()
+    {
+        Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T1)));
+        Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T2)));
+        Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T3<MyBean>)));
+        Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T4<MyBean>)));
+        Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage<MyBean>)));
+        Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMyInterface<MyBean>)));
+        Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage)));
+    }
 
-            var actual = converter.FromMessage<Dictionary<string, object>>(message);
+    internal void HandleList(IList<long> payload)
+    {
+    }
 
-            Assert.Equal("Foo", actual["string"]);
-            Assert.Equal(42L, actual["number"]);
-            Assert.Equal(42D, (double)actual["fraction"]);
-            Assert.Equal(new string[] { "Foo", "Bar" }, actual["array"]);
-            Assert.Equal(true, actual["bool"]);
-            Assert.Equal("AQI=", actual["bytes"]);
-        }
+    internal void HandleMessage(IMessage<MyBean> message)
+    {
+    }
 
-        [Fact]
-        public void FromMessageMatchingInstance()
-        {
-            var myBean = new MyBean();
-            var converter = new NewtonJsonMessageConverter();
-            var message = MessageBuilder.WithPayload(myBean).Build();
-            Assert.Same(myBean, converter.FromMessage(message, typeof(MyBean)));
-        }
+    public interface IMyInterface<T> : IMessage<T>
+    {
+    }
 
-        [Fact]
+    public class T1 : IMessage
+    {
+        public object Payload => throw new NotImplementedException();
 
-        public void FromMessageInvalidJson()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "FooBar";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
-            Assert.Throws<MessageConversionException>(() => converter.FromMessage<MyBean>(message));
-        }
+        public IMessageHeaders Headers => throw new NotImplementedException();
+    }
 
-        [Fact]
-        public void FromMessageValidJsonWithUnknownProperty()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
-            var myBean = converter.FromMessage<MyBean>(message);
-            Assert.Equal("string", myBean.String);
-        }
+    public class T2 : IMessage<MyBean>
+    {
+        public MyBean Payload => throw new NotImplementedException();
 
-        [Fact]
-        public void FromMessageToList()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "[1, 2, 3, 4, 5, 6, 7, 8, 9]";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
+        public IMessageHeaders Headers => throw new NotImplementedException();
 
-            var info = GetType().GetMethod("HandleList", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
-            var actual = converter.FromMessage(message, typeof(List<long>), info);
+        object IMessage.Payload => throw new NotImplementedException();
+    }
 
-            Assert.NotNull(actual);
-            Assert.Equal(new List<long>() { 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L }, actual);
-        }
+    public class T4<T> : IMyInterface<T>
+    {
+        public T Payload => throw new NotImplementedException();
 
-        [Fact]
-        public void FromMessageToMessageWithPojo()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = "{\"string\":\"foo\"}";
-            var bytes = Encoding.UTF8.GetBytes(payload);
-            var message = MessageBuilder.WithPayload(bytes).Build();
+        public IMessageHeaders Headers => throw new NotImplementedException();
 
-            var info = GetType().GetMethod("HandleMessage", BindingFlags.Instance | BindingFlags.NonPublic).GetParameters()[0];
-            var actual = converter.FromMessage(message, typeof(MyBean), info);
+        object IMessage.Payload => throw new NotImplementedException();
+    }
 
-            Assert.IsType<MyBean>(actual);
-            Assert.Equal("foo", ((MyBean)actual).String);
-        }
+    public class T3<T> : IMessage<T>
+    {
+        public T Payload => throw new NotImplementedException();
 
-        [Fact]
-        public void ToMessage()
-        {
-            var converter = new NewtonJsonMessageConverter();
-            var payload = new MyBean
-            {
-                String = "Foo",
-                Number = 42,
-                Fraction = 42F,
-                Array = new string[] { "Foo", "Bar" },
-                Bool = true,
-                Bytes = new byte[] { 0x1, 0x2 }
-            };
+        public IMessageHeaders Headers => throw new NotImplementedException();
 
-            var message = converter.ToMessage(payload, null);
+        object IMessage.Payload => throw new NotImplementedException();
+    }
 
-            var actual = Encoding.UTF8.GetString((byte[])message.Payload);
+    public class MyBean
+    {
+        public byte[] Bytes { get; set; }
 
-            Assert.Contains("\"string\":\"Foo\"", actual);
-            Assert.Contains("\"number\":42", actual);
-            Assert.Contains("\"fraction\":42.0", actual);
-            Assert.Contains("\"array\":[\"Foo\",\"Bar\"]", actual);
-            Assert.Contains("\"bool\":true", actual);
-            Assert.Contains("\"bytes\":\"AQI=\"", actual);
-            Assert.Equal(new MimeType("application", "json", Encoding.UTF8), message.Headers[MessageHeaders.CONTENT_TYPE]);
-        }
+        public bool Bool { get; set; }
 
-        [Fact]
-        public void ToMessageUtf16()
-        {
-            var e = Encoding.Default;
-            var converter = new NewtonJsonMessageConverter();
-            var encoding = new UnicodeEncoding(true, false);
-            var contentType = new MimeType("application", "json", encoding);
-            var map = new Dictionary<string, object>
-            {
-                { MessageHeaders.CONTENT_TYPE, contentType }
-            };
-            var headers = new MessageHeaders(map);
-            var payload = "H\u00e9llo W\u00f6rld";
-            var message = converter.ToMessage(payload, headers);
-            var actual = encoding.GetString((byte[])message.Payload);
-            var expected = "\"" + payload + "\"";
-            Assert.Equal(expected, actual);
-            Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
-        }
+        public string String { get; set; }
 
-        [Fact]
-        public void ToMessageUtf16String()
-        {
-            var converter = new NewtonJsonMessageConverter
-            {
-                SerializedPayloadClass = typeof(string)
-            };
-            var encoding = new UnicodeEncoding(true, false);
-            var contentType = new MimeType("application", "json", encoding);
-            var map = new Dictionary<string, object>
-            {
-                { MessageHeaders.CONTENT_TYPE, contentType }
-            };
-            var headers = new MessageHeaders(map);
-            var payload = "H\u00e9llo W\u00f6rld";
-            var message = converter.ToMessage(payload, headers);
+        public string[] Array { get; set; }
 
-            Assert.Equal("\"" + payload + "\"", message.Payload);
-            Assert.Equal(contentType, message.Headers[MessageHeaders.CONTENT_TYPE]);
-        }
+        public int Number { get; set; }
 
-        [Fact]
-        public void GetIMessageGenericType()
-        {
-            Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T1)));
-            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T2)));
-            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T3<MyBean>)));
-            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(T4<MyBean>)));
-            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage<MyBean>)));
-            Assert.Equal(typeof(MyBean), NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMyInterface<MyBean>)));
-            Assert.Null(NewtonJsonMessageConverter.GetIMessageGenericType(typeof(IMessage)));
-        }
-
-        internal void HandleList(IList<long> payload)
-        {
-        }
-
-        internal void HandleMessage(IMessage<MyBean> message)
-        {
-        }
-
-        public interface IMyInterface<T> : IMessage<T>
-        {
-        }
-
-        public class T1 : IMessage
-        {
-            public object Payload => throw new NotImplementedException();
-
-            public IMessageHeaders Headers => throw new NotImplementedException();
-        }
-
-        public class T2 : IMessage<MyBean>
-        {
-            public MyBean Payload => throw new NotImplementedException();
-
-            public IMessageHeaders Headers => throw new NotImplementedException();
-
-            object IMessage.Payload => throw new NotImplementedException();
-        }
-
-        public class T4<T> : IMyInterface<T>
-        {
-            public T Payload => throw new NotImplementedException();
-
-            public IMessageHeaders Headers => throw new NotImplementedException();
-
-            object IMessage.Payload => throw new NotImplementedException();
-        }
-
-        public class T3<T> : IMessage<T>
-        {
-            public T Payload => throw new NotImplementedException();
-
-            public IMessageHeaders Headers => throw new NotImplementedException();
-
-            object IMessage.Payload => throw new NotImplementedException();
-        }
-
-        public class MyBean
-        {
-            public byte[] Bytes { get; set; }
-
-            public bool Bool { get; set; }
-
-            public string String { get; set; }
-
-            public string[] Array { get; set; }
-
-            public int Number { get; set; }
-
-            public float Fraction { get; set; }
-        }
+        public float Fraction { get; set; }
     }
 }

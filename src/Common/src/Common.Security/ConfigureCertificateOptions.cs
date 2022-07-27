@@ -8,44 +8,43 @@ using Steeltoe.Common.Options;
 using System;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Steeltoe.Common.Security
+namespace Steeltoe.Common.Security;
+
+public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
 {
-    public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOptions>
+    private readonly IConfiguration _config;
+
+    public ConfigureCertificateOptions(IConfiguration config)
     {
-        private readonly IConfiguration _config;
-
-        public ConfigureCertificateOptions(IConfiguration config)
+        if (config == null)
         {
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            _config = config;
+            throw new ArgumentNullException(nameof(config));
         }
 
-        public void Configure(string name, CertificateOptions options)
+        _config = config;
+    }
+
+    public void Configure(string name, CertificateOptions options)
+    {
+        if (options == null)
         {
-            if (options == null)
-            {
-                throw new ArgumentNullException(nameof(options));
-            }
-
-            options.Name = name;
-
-            var certPath = _config["certificate"];
-
-            if (string.IsNullOrEmpty(certPath))
-            {
-                return;
-            }
-
-            options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+            throw new ArgumentNullException(nameof(options));
         }
 
-        public void Configure(CertificateOptions options)
+        options.Name = name;
+
+        var certPath = _config["certificate"];
+
+        if (string.IsNullOrEmpty(certPath))
         {
-            Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
+            return;
         }
+
+        options.Certificate = new X509Certificate2(certPath, string.Empty, X509KeyStorageFlags.EphemeralKeySet);
+    }
+
+    public void Configure(CertificateOptions options)
+    {
+        Configure(Microsoft.Extensions.Options.Options.DefaultName, options);
     }
 }

@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class CloudFoundryClaimActionExtensionsTest
 {
-    public class CloudFoundryClaimActionExtensionsTest
+    [Fact]
+    public void MapScopes_AddsClaimAction()
     {
-        [Fact]
-        public void MapScopes_AddsClaimAction()
-        {
-            var col = new ClaimActionCollection();
-            col.MapScopes();
-            Assert.Single(col);
-            Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
-        }
+        var col = new ClaimActionCollection();
+        col.MapScopes();
+        Assert.Single(col);
+        Assert.IsType<CloudFoundryScopeClaimAction>(col.FirstOrDefault());
     }
 }

@@ -12,140 +12,138 @@ using Steeltoe.Stream.Config;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binder
-{
+namespace Steeltoe.Stream.Binder;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
-    public abstract class AbstractBinder<T> : IBinder<T>
+public abstract class AbstractBinder<T> : IBinder<T>
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
+{
+    private const string GROUP_INDEX_DELIMITER = ".";
+
+    private readonly IApplicationContext _context;
+    private readonly ILogger _logger;
+
+    private IEvaluationContext _evaluationContext;
+    private IExpressionParser _expressionParser;
+
+    protected AbstractBinder(IApplicationContext context, ILogger logger)
     {
-        private const string GROUP_INDEX_DELIMITER = ".";
+        _context = context;
+        _logger = logger;
+    }
 
-        private readonly IApplicationContext _context;
-        private readonly ILogger _logger;
+    public virtual IApplicationContext ApplicationContext
+    {
+        get { return _context; }
+    }
 
-        private IEvaluationContext _evaluationContext;
-        private IExpressionParser _expressionParser;
+    public static string ApplyPrefix(string prefix, string name)
+    {
+        return prefix + name;
+    }
 
-        protected AbstractBinder(IApplicationContext context, ILogger logger)
+    public static string ConstructDLQName(string name)
+    {
+        return name + ".dlq";
+    }
+
+    public abstract string ServiceName { get; set; }
+
+    public abstract Type TargetType { get; }
+
+    public virtual IBinding BindConsumer(string name, string group, T inboundTarget, IConsumerOptions consumerOptions)
+    {
+        if (string.IsNullOrEmpty(group) && consumerOptions.IsPartitioned)
         {
-            _context = context;
-            _logger = logger;
+            throw new ArgumentException("A consumer group is required for a partitioned subscription");
         }
 
-        public virtual IApplicationContext ApplicationContext
+        return DoBindConsumer(name, group, inboundTarget, consumerOptions);
+    }
+
+    public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+    {
+        return DoBindConsumer(name, group, (T)inboundTarget, consumerOptions);
+    }
+
+    public virtual IBinding BindProducer(string name, T outboundTarget, IProducerOptions producerOptions)
+    {
+        return DoBindProducer(name, outboundTarget, producerOptions);
+    }
+
+    public virtual IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
+    {
+        return DoBindProducer(name, (T)outboundTarget, producerOptions);
+    }
+
+    public abstract void Dispose();
+
+    protected abstract IBinding DoBindProducer(string name, T outboundTarget, IProducerOptions producerOptions);
+
+    protected abstract IBinding DoBindConsumer(string name, string group, T inputTarget, IConsumerOptions consumerOptions);
+
+    protected virtual IEvaluationContext EvaluationContext
+    {
+        get
         {
-            get { return _context; }
-        }
-
-        public static string ApplyPrefix(string prefix, string name)
-        {
-            return prefix + name;
-        }
-
-        public static string ConstructDLQName(string name)
-        {
-            return name + ".dlq";
-        }
-
-        public abstract string ServiceName { get; set; }
-
-        public abstract Type TargetType { get; }
-
-        public virtual IBinding BindConsumer(string name, string group, T inboundTarget, IConsumerOptions consumerOptions)
-        {
-            if (string.IsNullOrEmpty(group) && consumerOptions.IsPartitioned)
+            if (_evaluationContext == null)
             {
-                throw new ArgumentException("A consumer group is required for a partitioned subscription");
+                _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
             }
 
-            return DoBindConsumer(name, group, inboundTarget, consumerOptions);
+            return _evaluationContext;
         }
 
-        public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+        set
         {
-            return DoBindConsumer(name, group, (T)inboundTarget, consumerOptions);
+            _evaluationContext = value;
         }
+    }
 
-        public virtual IBinding BindProducer(string name, T outboundTarget, IProducerOptions producerOptions)
+    protected virtual IExpressionParser ExpressionParser
+    {
+        get
         {
-            return DoBindProducer(name, outboundTarget, producerOptions);
-        }
-
-        public virtual IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
-        {
-            return DoBindProducer(name, (T)outboundTarget, producerOptions);
-        }
-
-        public abstract void Dispose();
-
-        protected abstract IBinding DoBindProducer(string name, T outboundTarget, IProducerOptions producerOptions);
-
-        protected abstract IBinding DoBindConsumer(string name, string group, T inputTarget, IConsumerOptions consumerOptions);
-
-        protected virtual IEvaluationContext EvaluationContext
-        {
-            get
+            if (_expressionParser == null)
             {
-                if (_evaluationContext == null)
-                {
-                    _evaluationContext = _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
-                }
-
-                return _evaluationContext;
+                _expressionParser = new SpelExpressionParser();
             }
 
-            set
-            {
-                _evaluationContext = value;
-            }
+            return _expressionParser;
         }
 
-        protected virtual IExpressionParser ExpressionParser
+        set
         {
-            get
-            {
-                if (_expressionParser == null)
-                {
-                    _expressionParser = new SpelExpressionParser();
-                }
-
-                return _expressionParser;
-            }
-
-            set
-            {
-                _expressionParser = value;
-            }
+            _expressionParser = value;
         }
+    }
 
-        protected virtual string GroupedName(string name, string group)
-        {
-            return name + GROUP_INDEX_DELIMITER
+    protected virtual string GroupedName(string name, string group)
+    {
+        return name + GROUP_INDEX_DELIMITER
                     + (!string.IsNullOrEmpty(group) ? group : "default");
-        }
+    }
 
-        protected RetryTemplate BuildRetryTemplate(IConsumerOptions options)
-        {
-            return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
-        }
+    protected RetryTemplate BuildRetryTemplate(IConsumerOptions options)
+    {
+        return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
+    }
 
-        protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)
+    protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)
+    {
+        var dict = new Dictionary<Type, bool>();
+        foreach (var exception in exceptionList)
         {
-            var dict = new Dictionary<Type, bool>();
-            foreach (var exception in exceptionList)
+            if (exception[0] == '!')
             {
-                if (exception[0] == '!')
-                {
-                    var type = Type.GetType(exception[1..], true);
-                    dict.Add(type, false);
-                }
-                else
-                {
-                    dict.Add(Type.GetType(exception), true);
-                }
+                var type = Type.GetType(exception[1..], true);
+                dict.Add(type, false);
             }
-
-            return dict;
+            else
+            {
+                dict.Add(Type.GetType(exception), true);
+            }
         }
+
+        return dict;
     }
 }

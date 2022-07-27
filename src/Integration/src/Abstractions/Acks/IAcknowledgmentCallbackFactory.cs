@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Acks
+namespace Steeltoe.Integration.Acks;
+
+public interface IAcknowledgmentCallbackFactory<in T>
 {
-    public interface IAcknowledgmentCallbackFactory<in T>
-    {
-        IAcknowledgmentCallback CreateCallback(T info);
-    }
+    IAcknowledgmentCallback CreateCallback(T info);
 }

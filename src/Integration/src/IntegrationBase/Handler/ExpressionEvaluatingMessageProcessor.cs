@@ -7,67 +7,66 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<T>
 {
-    public class ExpressionEvaluatingMessageProcessor<T> : AbstractMessageProcessor<T>
-    {
-        private IExpression Expression { get; }
+    private IExpression Expression { get; }
 
-        private Type ExpectedType { get; }
+    private Type ExpectedType { get; }
 
-        public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression)
+    public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression)
         : this(context, expression, typeof(T))
+    {
+    }
+
+    public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression, Type expectedType)
+        : base(context)
+    {
+        if (expression == null)
         {
+            throw new ArgumentNullException(nameof(expression));
         }
 
-        public ExpressionEvaluatingMessageProcessor(IApplicationContext context, IExpression expression, Type expectedType)
-            : base(context)
-        {
-            if (expression == null)
-            {
-                throw new ArgumentNullException(nameof(expression));
-            }
+        Expression = expression;
+        ExpectedType = expectedType;
+    }
 
-            Expression = expression;
+    public ExpressionEvaluatingMessageProcessor(IApplicationContext context, string expression)
+        : base(context)
+    {
+        try
+        {
+            Expression = ExpressionParser.ParseExpression(expression);
+            ExpectedType = typeof(T);
+        }
+        catch (ParseException ex)
+        {
+            throw new ArgumentException("Failed to parse expression.", ex);
+        }
+    }
+
+    public ExpressionEvaluatingMessageProcessor(IApplicationContext context, string expression, Type expectedType)
+        : base(context)
+    {
+        try
+        {
+            Expression = ExpressionParser.ParseExpression(expression);
             ExpectedType = expectedType;
         }
-
-        public ExpressionEvaluatingMessageProcessor(IApplicationContext context, string expression)
-            : base(context)
+        catch (ParseException ex)
         {
-            try
-            {
-                Expression = ExpressionParser.ParseExpression(expression);
-                ExpectedType = typeof(T);
-            }
-            catch (ParseException ex)
-            {
-                throw new ArgumentException("Failed to parse expression.", ex);
-            }
+            throw new ArgumentException("Failed to parse expression.", ex);
         }
+    }
 
-        public ExpressionEvaluatingMessageProcessor(IApplicationContext context, string expression, Type expectedType)
-            : base(context)
-        {
-            try
-            {
-                Expression = ExpressionParser.ParseExpression(expression);
-                ExpectedType = expectedType;
-            }
-            catch (ParseException ex)
-            {
-                throw new ArgumentException("Failed to parse expression.", ex);
-            }
-        }
+    public override T ProcessMessage(IMessage message)
+    {
+        return (T)EvaluateExpression(Expression, message, ExpectedType);
+    }
 
-        public override T ProcessMessage(IMessage message)
-        {
-            return (T)EvaluateExpression(Expression, message, ExpectedType);
-        }
-
-        public override string ToString()
-        {
-            return "ExpressionEvaluatingMessageProcessor for: [" + Expression.ExpressionString + "]";
-        }
+    public override string ToString()
+    {
+        return "ExpressionEvaluatingMessageProcessor for: [" + Expression.ExpressionString + "]";
     }
 }

@@ -8,386 +8,385 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public static class ConversionUtils
 {
-    public static class ConversionUtils
+    private const string DELIMITER = ",";
+
+    public static bool CanConvertElements(Type sourceElementType, Type targetElementType, IConversionService conversionService)
     {
-        private const string DELIMITER = ",";
-
-        public static bool CanConvertElements(Type sourceElementType, Type targetElementType, IConversionService conversionService)
+        if (targetElementType == null)
         {
-            if (targetElementType == null)
-            {
-                // yes
-                return true;
-            }
+            // yes
+            return true;
+        }
 
-            if (sourceElementType == null)
-            {
-                // maybe
-                return true;
-            }
+        if (sourceElementType == null)
+        {
+            // maybe
+            return true;
+        }
 
-            if (conversionService.CanConvert(sourceElementType, targetElementType))
-            {
-                // yes
-                return true;
-            }
+        if (conversionService.CanConvert(sourceElementType, targetElementType))
+        {
+            // yes
+            return true;
+        }
 
-            if (sourceElementType.IsAssignableFrom(targetElementType))
-            {
-                // maybe
-                return true;
-            }
+        if (sourceElementType.IsAssignableFrom(targetElementType))
+        {
+            // maybe
+            return true;
+        }
 
-            // no
+        // no
+        return false;
+    }
+
+    public static Type GetElementType(Type sourceType)
+    {
+        if (sourceType.HasElementType)
+        {
+            return sourceType.GetElementType();
+        }
+
+        if (sourceType.IsConstructedGenericType)
+        {
+            return sourceType.GetGenericArguments()[0];
+        }
+
+        return null;
+    }
+
+    public static string ToString(IEnumerable collection, Type targetType, IConversionService conversionService)
+    {
+        var sj = new StringBuilder();
+        foreach (var sourceElement in collection)
+        {
+            var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
+            sj.Append(targetElement.ToString());
+            sj.Append(DELIMITER);
+        }
+
+        return sj.ToString(0, sj.Length - 1);
+    }
+
+    public static int Count(IEnumerable enumerable)
+    {
+        if (enumerable is ICollection collection)
+        {
+            return collection.Count;
+        }
+
+        var count = 0;
+        foreach (var element in enumerable)
+        {
+            count++;
+        }
+
+        return count;
+    }
+
+    public static Type GetNullableElementType(Type nullable)
+    {
+        if (nullable.IsGenericType && typeof(System.Nullable<>) == nullable.GetGenericTypeDefinition())
+        {
+            return nullable.GetGenericArguments()[0];
+        }
+
+        return nullable;
+    }
+
+    public static bool CanCreateCompatListFor(Type type)
+    {
+        if (type == null)
+        {
             return false;
         }
 
-        public static Type GetElementType(Type sourceType)
+        if (type.IsGenericTypeDefinition)
         {
-            if (sourceType.HasElementType)
+            return false;
+        }
+
+        if (type.IsInterface)
+        {
+            if (typeof(IList).IsAssignableFrom(type))
             {
-                return sourceType.GetElementType();
+                return true;
             }
 
-            if (sourceType.IsConstructedGenericType)
+            if (typeof(IEnumerable).IsAssignableFrom(type))
             {
-                return sourceType.GetGenericArguments()[0];
+                return true;
+            }
+
+            if (type.IsGenericType)
+            {
+                var defn = type.GetGenericTypeDefinition();
+                if (typeof(IList<>) == defn || typeof(IEnumerator<>) == defn || typeof(ICollection<>) == defn)
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return typeof(IList).IsAssignableFrom(type) && ContainsPublicNoArgConstructor(type);
+        }
+
+        return false;
+    }
+
+    public static bool CanCreateCompatDictionaryFor(Type type)
+    {
+        if (type == null)
+        {
+            return false;
+        }
+
+        if (type.IsGenericTypeDefinition)
+        {
+            return false;
+        }
+
+        if (type.IsInterface)
+        {
+            if (typeof(IDictionary).IsAssignableFrom(type))
+            {
+                return true;
+            }
+
+            if (type.IsGenericType)
+            {
+                var defn = type.GetGenericTypeDefinition();
+                if (typeof(IDictionary<,>) == defn)
+                {
+                    return true;
+                }
+
+                if (typeof(IEnumerator<>) == defn)
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            return typeof(IDictionary).IsAssignableFrom(type) && ContainsPublicNoArgConstructor(type);
+        }
+
+        return false;
+    }
+
+    public static Type GetDictionaryKeyType(Type sourceType)
+    {
+        return GetDictionaryKeyOrValueType(sourceType, 0);
+    }
+
+    public static Type GetDictionaryValueType(Type sourceType)
+    {
+        return GetDictionaryKeyOrValueType(sourceType, 1);
+    }
+
+    public static bool ContainsPublicNoArgConstructor(Type collectionType)
+    {
+        if (collectionType == null)
+        {
+            return false;
+        }
+
+        return collectionType.GetConstructor(new Type[0]) != null;
+    }
+
+    public static IList CreateCompatListFor(Type type)
+    {
+        if (!CanCreateCompatListFor(type))
+        {
+            return null;
+        }
+
+        if (type.IsInterface)
+        {
+            if (type.IsGenericType)
+            {
+                var defn = type.GetGenericTypeDefinition();
+                if (typeof(IList<>) == defn || typeof(IEnumerable<>) == defn || typeof(ICollection<>) == defn)
+                {
+                    return (IList)Activator.CreateInstance(MakeGenericListType(type));
+                }
+            }
+
+            if (typeof(IList).IsAssignableFrom(type))
+            {
+                return new ArrayList();
+            }
+
+            if (typeof(IEnumerable).IsAssignableFrom(type))
+            {
+                return new ArrayList();
             }
 
             return null;
         }
-
-        public static string ToString(IEnumerable collection, Type targetType, IConversionService conversionService)
+        else
         {
-            var sj = new StringBuilder();
-            foreach (var sourceElement in collection)
-            {
-                var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
-                sj.Append(targetElement.ToString());
-                sj.Append(DELIMITER);
-            }
+            return (IList)Activator.CreateInstance(type);
+        }
+    }
 
-            return sj.ToString(0, sj.Length - 1);
+    public static IDictionary CreateCompatDictionaryFor(Type type)
+    {
+        if (!CanCreateCompatDictionaryFor(type))
+        {
+            return null;
         }
 
-        public static int Count(IEnumerable enumerable)
+        if (type.IsInterface)
         {
-            if (enumerable is ICollection collection)
+            if (type.IsGenericType)
             {
-                return collection.Count;
+                var defn = type.GetGenericTypeDefinition();
+                if (typeof(IDictionary<,>) == defn)
+                {
+                    return (IDictionary)Activator.CreateInstance(MakeGenericDictionaryType(type));
+                }
             }
 
-            var count = 0;
-            foreach (var element in enumerable)
+            if (typeof(IDictionary).IsAssignableFrom(type))
             {
-                count++;
+                return new Hashtable();
             }
 
-            return count;
+            if (typeof(IEnumerable).IsAssignableFrom(type))
+            {
+                return new Hashtable();
+            }
+
+            return null;
+        }
+        else
+        {
+            return (IDictionary)Activator.CreateInstance(type);
+        }
+    }
+
+    public static ConstructorInfo GetConstructorIfAvailable(Type clazz, params Type[] paramTypes)
+    {
+        if (clazz == null)
+        {
+            throw new ArgumentNullException(nameof(clazz));
         }
 
-        public static Type GetNullableElementType(Type nullable)
+        try
         {
-            if (nullable.IsGenericType && typeof(System.Nullable<>) == nullable.GetGenericTypeDefinition())
-            {
-                return nullable.GetGenericArguments()[0];
-            }
+            return clazz.GetConstructor(paramTypes);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
 
-            return nullable;
+    public static MethodInfo GetStaticMethod(Type clazz, string methodName, params Type[] args)
+    {
+        if (clazz == null)
+        {
+            throw new ArgumentNullException(nameof(clazz));
         }
 
-        public static bool CanCreateCompatListFor(Type type)
+        if (string.IsNullOrEmpty(methodName))
         {
-            if (type == null)
-            {
-                return false;
-            }
-
-            if (type.IsGenericTypeDefinition)
-            {
-                return false;
-            }
-
-            if (type.IsInterface)
-            {
-                if (typeof(IList).IsAssignableFrom(type))
-                {
-                    return true;
-                }
-
-                if (typeof(IEnumerable).IsAssignableFrom(type))
-                {
-                    return true;
-                }
-
-                if (type.IsGenericType)
-                {
-                    var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IList<>) == defn || typeof(IEnumerator<>) == defn || typeof(ICollection<>) == defn)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                return typeof(IList).IsAssignableFrom(type) && ContainsPublicNoArgConstructor(type);
-            }
-
-            return false;
+            throw new ArgumentException(nameof(methodName));
         }
 
-        public static bool CanCreateCompatDictionaryFor(Type type)
+        try
         {
-            if (type == null)
+            var method = clazz.GetMethod(methodName, args);
+            if (method != null)
             {
-                return false;
+                return method.IsStatic ? method : null;
             }
 
-            if (type.IsGenericTypeDefinition)
-            {
-                return false;
-            }
+            return null;
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
 
-            if (type.IsInterface)
-            {
-                if (typeof(IDictionary).IsAssignableFrom(type))
-                {
-                    return true;
-                }
-
-                if (type.IsGenericType)
-                {
-                    var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IDictionary<,>) == defn)
-                    {
-                        return true;
-                    }
-
-                    if (typeof(IEnumerator<>) == defn)
-                    {
-                        return true;
-                    }
-                }
-            }
-            else
-            {
-                return typeof(IDictionary).IsAssignableFrom(type) && ContainsPublicNoArgConstructor(type);
-            }
-
-            return false;
+    public static MethodInfo GetMethodIfAvailable(Type clazz, string methodName, params Type[] paramTypes)
+    {
+        if (clazz == null)
+        {
+            throw new ArgumentNullException(nameof(clazz));
         }
 
-        public static Type GetDictionaryKeyType(Type sourceType)
+        if (string.IsNullOrEmpty(methodName))
         {
-            return GetDictionaryKeyOrValueType(sourceType, 0);
+            throw new ArgumentException(nameof(methodName));
         }
 
-        public static Type GetDictionaryValueType(Type sourceType)
+        if (paramTypes != null)
         {
-            return GetDictionaryKeyOrValueType(sourceType, 1);
-        }
-
-        public static bool ContainsPublicNoArgConstructor(Type collectionType)
-        {
-            if (collectionType == null)
-            {
-                return false;
-            }
-
-            return collectionType.GetConstructor(new Type[0]) != null;
-        }
-
-        public static IList CreateCompatListFor(Type type)
-        {
-            if (!CanCreateCompatListFor(type))
-            {
-                return null;
-            }
-
-            if (type.IsInterface)
-            {
-                if (type.IsGenericType)
-                {
-                    var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IList<>) == defn || typeof(IEnumerable<>) == defn || typeof(ICollection<>) == defn)
-                    {
-                        return (IList)Activator.CreateInstance(MakeGenericListType(type));
-                    }
-                }
-
-                if (typeof(IList).IsAssignableFrom(type))
-                {
-                    return new ArrayList();
-                }
-
-                if (typeof(IEnumerable).IsAssignableFrom(type))
-                {
-                    return new ArrayList();
-                }
-
-                return null;
-            }
-            else
-            {
-                return (IList)Activator.CreateInstance(type);
-            }
-        }
-
-        public static IDictionary CreateCompatDictionaryFor(Type type)
-        {
-            if (!CanCreateCompatDictionaryFor(type))
-            {
-                return null;
-            }
-
-            if (type.IsInterface)
-            {
-                if (type.IsGenericType)
-                {
-                    var defn = type.GetGenericTypeDefinition();
-                    if (typeof(IDictionary<,>) == defn)
-                    {
-                        return (IDictionary)Activator.CreateInstance(MakeGenericDictionaryType(type));
-                    }
-                }
-
-                if (typeof(IDictionary).IsAssignableFrom(type))
-                {
-                    return new Hashtable();
-                }
-
-                if (typeof(IEnumerable).IsAssignableFrom(type))
-                {
-                    return new Hashtable();
-                }
-
-                return null;
-            }
-            else
-            {
-                return (IDictionary)Activator.CreateInstance(type);
-            }
-        }
-
-        public static ConstructorInfo GetConstructorIfAvailable(Type clazz, params Type[] paramTypes)
-        {
-            if (clazz == null)
-            {
-                throw new ArgumentNullException(nameof(clazz));
-            }
-
             try
             {
-                return clazz.GetConstructor(paramTypes);
+                return clazz.GetMethod(methodName, paramTypes);
             }
             catch (Exception)
             {
                 return null;
             }
         }
-
-        public static MethodInfo GetStaticMethod(Type clazz, string methodName, params Type[] args)
+        else
         {
-            if (clazz == null)
+            var candidates = FindMethodCandidatesByName(clazz, methodName);
+            if (candidates.Count == 1)
             {
-                throw new ArgumentNullException(nameof(clazz));
+                return candidates[0];
             }
 
-            if (string.IsNullOrEmpty(methodName))
-            {
-                throw new ArgumentException(nameof(methodName));
-            }
+            return null;
+        }
+    }
 
-            try
+    internal static List<MethodInfo> FindMethodCandidatesByName(Type clazz, string methodName)
+    {
+        var candidates = new List<MethodInfo>();
+        var methods = clazz.GetMethods();
+        foreach (var method in methods)
+        {
+            if (methodName.Equals(method.Name))
             {
-                var method = clazz.GetMethod(methodName, args);
-                if (method != null)
-                {
-                    return method.IsStatic ? method : null;
-                }
-
-                return null;
-            }
-            catch (Exception)
-            {
-                return null;
+                candidates.Add(method);
             }
         }
 
-        public static MethodInfo GetMethodIfAvailable(Type clazz, string methodName, params Type[] paramTypes)
+        return candidates;
+    }
+
+    internal static Type GetDictionaryKeyOrValueType(Type sourceType, int index)
+    {
+        if (sourceType.IsGenericType)
         {
-            if (clazz == null)
-            {
-                throw new ArgumentNullException(nameof(clazz));
-            }
-
-            if (string.IsNullOrEmpty(methodName))
-            {
-                throw new ArgumentException(nameof(methodName));
-            }
-
-            if (paramTypes != null)
-            {
-                try
-                {
-                    return clazz.GetMethod(methodName, paramTypes);
-                }
-                catch (Exception)
-                {
-                    return null;
-                }
-            }
-            else
-            {
-                var candidates = FindMethodCandidatesByName(clazz, methodName);
-                if (candidates.Count == 1)
-                {
-                    return candidates[0];
-                }
-
-                return null;
-            }
+            return sourceType.GetGenericArguments()[index];
         }
 
-        internal static List<MethodInfo> FindMethodCandidatesByName(Type clazz, string methodName)
-        {
-            var candidates = new List<MethodInfo>();
-            var methods = clazz.GetMethods();
-            foreach (var method in methods)
-            {
-                if (methodName.Equals(method.Name))
-                {
-                    candidates.Add(method);
-                }
-            }
+        return typeof(object);
+    }
 
-            return candidates;
-        }
+    internal static Type MakeGenericListType(Type type)
+    {
+        var elemType = type.GetGenericArguments()[0];
+        return typeof(List<>).MakeGenericType(new Type[] { elemType });
+    }
 
-        internal static Type GetDictionaryKeyOrValueType(Type sourceType, int index)
-        {
-            if (sourceType.IsGenericType)
-            {
-                return sourceType.GetGenericArguments()[index];
-            }
-
-            return typeof(object);
-        }
-
-        internal static Type MakeGenericListType(Type type)
-        {
-            var elemType = type.GetGenericArguments()[0];
-            return typeof(List<>).MakeGenericType(new Type[] { elemType });
-        }
-
-        internal static Type MakeGenericDictionaryType(Type type)
-        {
-            var keyType = type.GetGenericArguments()[0];
-            var valType = type.GetGenericArguments()[1];
-            return typeof(Dictionary<,>).MakeGenericType(new Type[] { keyType, valType });
-        }
+    internal static Type MakeGenericDictionaryType(Type type)
+    {
+        var keyType = type.GetGenericArguments()[0];
+        var valType = type.GetGenericArguments()[1];
+        return typeof(Dictionary<,>).MakeGenericType(new Type[] { keyType, valType });
     }
 }

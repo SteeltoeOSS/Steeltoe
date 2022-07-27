@@ -8,53 +8,52 @@ using System.Collections.Generic;
 using System.Diagnostics.Tracing;
 using System.Linq;
 
-namespace Steeltoe.Management.Endpoint.Metrics.Observer
+namespace Steeltoe.Management.Endpoint.Metrics.Observer;
+
+public class HystrixEventsListener : EventSourceListener
 {
-    public class HystrixEventsListener : EventSourceListener
+    private const string EventSourceName = "Steeltoe.Hystrix.Events";
+    private static string[] _allowedEvents = new string[]
     {
-        private const string EventSourceName = "Steeltoe.Hystrix.Events";
-        private static string[] _allowedEvents = new string[]
-        {
-            "CommandMetrics",
-            "ThreadPoolMetrics",
-            "CollapserMetrics",
-        };
+        "CommandMetrics",
+        "ThreadPoolMetrics",
+        "CollapserMetrics",
+    };
 
-        private readonly ILogger<EventSourceListener> _logger;
-        private readonly Dictionary<string, object> _cktBreakerLabels = new ();
+    private readonly ILogger<EventSourceListener> _logger;
+    private readonly Dictionary<string, object> _cktBreakerLabels = new ();
 
-        public HystrixEventsListener(ILogger<EventSourceListener> logger = null)
-            : base(logger)
+    public HystrixEventsListener(ILogger<EventSourceListener> logger = null)
+        : base(logger)
+    {
+        _logger = logger;
+    }
+
+    protected override void OnEventWritten(EventWrittenEventArgs eventData)
+    {
+        if (eventData == null)
         {
-            _logger = logger;
+            throw new ArgumentNullException(nameof(eventData));
         }
 
-        protected override void OnEventWritten(EventWrittenEventArgs eventData)
+        try
         {
-            if (eventData == null)
+            if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
             {
-                throw new ArgumentNullException(nameof(eventData));
-            }
-
-            try
-            {
-                if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
-                {
-                    ExtractAndRecordMetric(EventSourceName, eventData, _cktBreakerLabels);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger?.LogError(ex.Message);
+                ExtractAndRecordMetric(EventSourceName, eventData, _cktBreakerLabels);
             }
         }
-
-        protected override void OnEventSourceCreated(EventSource eventSource)
+        catch (Exception ex)
         {
-            if (eventSource.Name == EventSourceName)
-            {
-                SafelyEnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
-            }
+            _logger?.LogError(ex.Message);
+        }
+    }
+
+    protected override void OnEventSourceCreated(EventSource eventSource)
+    {
+        if (eventSource.Name == EventSourceName)
+        {
+            SafelyEnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
         }
     }
 }

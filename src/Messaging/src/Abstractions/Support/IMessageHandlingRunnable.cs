@@ -4,21 +4,20 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+/// <summary>
+/// A runnable to encapsulates a message and message handler
+/// </summary>
+public interface IMessageHandlingRunnable : IRunnable
 {
     /// <summary>
-    /// A runnable to encapsulates a message and message handler
+    /// Gets the message this runnable is processing
     /// </summary>
-    public interface IMessageHandlingRunnable : IRunnable
-    {
-        /// <summary>
-        /// Gets the message this runnable is processing
-        /// </summary>
-        IMessage Message { get; }
+    IMessage Message { get; }
 
-        /// <summary>
-        /// Gets the message handler that will process this message;
-        /// </summary>
-        IMessageHandler MessageHandler { get; }
-    }
+    /// <summary>
+    /// Gets the message handler that will process this message;
+    /// </summary>
+    IMessageHandler MessageHandler { get; }
 }

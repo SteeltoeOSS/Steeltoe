@@ -8,35 +8,34 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
 
-namespace Steeltoe.Common.Contexts
+namespace Steeltoe.Common.Contexts;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services, Action<IServiceProvider, GenericApplicationContext> configure)
     {
-        public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services, Action<IServiceProvider, GenericApplicationContext> configure)
+        services.TryAddSingleton<IApplicationContext>((p) =>
         {
-            services.TryAddSingleton<IApplicationContext>((p) =>
+            var config = p.GetService<IConfiguration>();
+            var context = new GenericApplicationContext(p, config);
+            if (configure != null)
             {
-                var config = p.GetService<IConfiguration>();
-                var context = new GenericApplicationContext(p, config);
-                if (configure != null)
-                {
-                    configure(p, context);
-                }
+                configure(p, context);
+            }
 
-                return context;
-            });
-            return services;
-        }
+            return context;
+        });
+        return services;
+    }
 
-        public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services)
-        {
-            return services.AddGenericApplicationContext(null);
-        }
+    public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services)
+    {
+        return services.AddGenericApplicationContext(null);
+    }
 
-        public static IServiceCollection RegisterService(this IServiceCollection services, string serviceName, Type implementationType)
-        {
-            services.AddSingleton(new NameToTypeMapping(serviceName, implementationType));
-            return services;
-        }
+    public static IServiceCollection RegisterService(this IServiceCollection services, string serviceName, Type implementationType)
+    {
+        services.AddSingleton(new NameToTypeMapping(serviceName, implementationType));
+        return services;
     }
 }

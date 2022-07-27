@@ -4,15 +4,14 @@
 
 using Microsoft.AspNetCore.Mvc;
 
-namespace Steeltoe.Management.Endpoint.Mappings.Test
+namespace Steeltoe.Management.Endpoint.Mappings.Test;
+
+public class HomeController : Controller
 {
-    public class HomeController : Controller
+    [HttpGet]
+    [Produces("text/plain", new string[] { "application/json", "text/json" })]
+    public Person Index()
     {
-        [HttpGet]
-        [Produces("text/plain", new string[] { "application/json", "text/json" })]
-        public Person Index()
-        {
-            return new Person();
-        }
+        return new Person();
     }
 }

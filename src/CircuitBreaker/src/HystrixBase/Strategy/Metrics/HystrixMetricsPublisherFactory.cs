@@ -5,73 +5,72 @@
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
+
+public class HystrixMetricsPublisherFactory
 {
-    public class HystrixMetricsPublisherFactory
+    private static HystrixMetricsPublisherFactory singleton = new ();
+
+    public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
     {
-        private static HystrixMetricsPublisherFactory singleton = new ();
+        return singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
+    }
 
-        public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
+    public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    {
+        return singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+    }
+
+    public static IHystrixMetricsPublisherCollapser CreateOrRetrievePublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
+    {
+        return singleton.GetPublisherForCollapser(collapserKey, metrics, properties);
+    }
+
+    public static void Reset()
+    {
+        singleton = new HystrixMetricsPublisherFactory();
+        singleton.CommandPublishers.Clear();
+        singleton.ThreadPoolPublishers.Clear();
+        singleton.CollapserPublishers.Clear();
+    }
+
+    internal HystrixMetricsPublisherFactory()
+    {
+    }
+
+    internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    {
+        return CommandPublishers.GetOrAddEx(commandKey.Name, (k) =>
         {
-            return singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
-        }
+            var newPublisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+            newPublisher.Initialize();
+            return newPublisher;
+        });
+    }
 
-        public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    internal IHystrixMetricsPublisherThreadPool GetPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
+    {
+        return ThreadPoolPublishers.GetOrAddEx(threadPoolKey.Name, (k) =>
         {
-            return singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
-        }
+            var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
+            publisher.Initialize();
+            return publisher;
+        });
+    }
 
-        public static IHystrixMetricsPublisherCollapser CreateOrRetrievePublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
+
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool>();
+
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser>();
+
+    internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
+    {
+        return CollapserPublishers.GetOrAddEx(collapserKey.Name, (k) =>
         {
-            return singleton.GetPublisherForCollapser(collapserKey, metrics, properties);
-        }
-
-        public static void Reset()
-        {
-            singleton = new HystrixMetricsPublisherFactory();
-            singleton.CommandPublishers.Clear();
-            singleton.ThreadPoolPublishers.Clear();
-            singleton.CollapserPublishers.Clear();
-        }
-
-        internal HystrixMetricsPublisherFactory()
-        {
-        }
-
-        internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
-        {
-            return CommandPublishers.GetOrAddEx(commandKey.Name, (k) =>
-            {
-                var newPublisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
-                newPublisher.Initialize();
-                return newPublisher;
-            });
-        }
-
-        internal IHystrixMetricsPublisherThreadPool GetPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
-        {
-            return ThreadPoolPublishers.GetOrAddEx(threadPoolKey.Name, (k) =>
-            {
-                var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
-                publisher.Initialize();
-                return publisher;
-            });
-        }
-
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCommand>();
-
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool>();
-
-        internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser>();
-
-        internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
-        {
-            return CollapserPublishers.GetOrAddEx(collapserKey.Name, (k) =>
-            {
-                var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
-                publisher.Initialize();
-                return publisher;
-            });
-        }
+            var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
+            publisher.Initialize();
+            return publisher;
+        });
     }
 }

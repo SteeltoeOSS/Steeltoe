@@ -4,19 +4,18 @@
 
 using System;
 
-namespace Steeltoe.Common.Attributes
-{
-    /// <summary>
-    /// This abstract attribute can be used to quickly identify assemblies containing desired types
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public abstract class AssemblyContainsTypeAttribute : Attribute
-    {
-        public Type ContainedType { get; private set; }
+namespace Steeltoe.Common.Attributes;
 
-        protected AssemblyContainsTypeAttribute(Type type)
-        {
-            ContainedType = type;
-        }
+/// <summary>
+/// This abstract attribute can be used to quickly identify assemblies containing desired types
+/// </summary>
+[AttributeUsage(AttributeTargets.Assembly)]
+public abstract class AssemblyContainsTypeAttribute : Attribute
+{
+    public Type ContainedType { get; private set; }
+
+    protected AssemblyContainsTypeAttribute(Type type)
+    {
+        ContainedType = type;
     }
 }

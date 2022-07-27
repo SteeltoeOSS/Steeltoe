@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace A.B.C.D
+namespace A.B.C.D;
+
+public class TestClass
 {
-    public class TestClass
+    public TestClass()
     {
-        public TestClass()
-        {
-        }
     }
 }

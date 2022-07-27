@@ -6,12 +6,11 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 using T = System.Threading.Tasks;
 
-namespace Steeltoe.Discovery.Eureka
-{
-    public interface IEurekaClient : ILookupService
-    {
-        IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
+namespace Steeltoe.Discovery.Eureka;
 
-        T.Task ShutdownAsync();
-    }
+public interface IEurekaClient : ILookupService
+{
+    IList<InstanceInfo> GetInstancesByVipAddress(string vipAddress, bool secure);
+
+    T.Task ShutdownAsync();
 }

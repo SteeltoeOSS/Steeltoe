@@ -4,44 +4,43 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Hystrix.Util;
+
+public class LongMaxUpdater
 {
-    public class LongMaxUpdater
+    private readonly AtomicLong _value = new (long.MinValue);
+
+    public void Update(long value)
     {
-        private readonly AtomicLong _value = new (long.MinValue);
-
-        public void Update(long value)
+        while (true)
         {
-            while (true)
+            var current = _value.Value;
+            if (current >= value)
             {
-                var current = _value.Value;
-                if (current >= value)
-                {
-                    return;
-                }
+                return;
+            }
 
-                if (_value.CompareAndSet(current, value))
-                {
-                    return;
-                }
+            if (_value.CompareAndSet(current, value))
+            {
+                return;
             }
         }
+    }
 
-        public long Max => _value.Value;
+    public long Max => _value.Value;
 
-        public void Reset()
-        {
-            _value.GetAndSet(long.MinValue);
-        }
+    public void Reset()
+    {
+        _value.GetAndSet(long.MinValue);
+    }
 
-        public long MaxThenReset()
-        {
-            return _value.GetAndSet(long.MinValue);
-        }
+    public long MaxThenReset()
+    {
+        return _value.GetAndSet(long.MinValue);
+    }
 
-        public override string ToString()
-        {
-            return _value.Value.ToString();
-        }
+    public override string ToString()
+    {
+        return _value.Value.ToString();
     }
 }

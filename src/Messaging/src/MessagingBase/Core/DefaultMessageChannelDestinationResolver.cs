@@ -5,31 +5,30 @@
 using Steeltoe.Common.Contexts;
 using System;
 
-namespace Steeltoe.Messaging.Core
+namespace Steeltoe.Messaging.Core;
+
+public class DefaultMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
 {
-    public class DefaultMessageChannelDestinationResolver : IDestinationResolver<IMessageChannel>
+    public IApplicationContext Context { get; }
+
+    public DefaultMessageChannelDestinationResolver(IApplicationContext context)
     {
-        public IApplicationContext Context { get; }
-
-        public DefaultMessageChannelDestinationResolver(IApplicationContext context)
+        if (context == null)
         {
-            if (context == null)
-            {
-                throw new ArgumentNullException(nameof(context));
-            }
-
-            Context = context;
+            throw new ArgumentNullException(nameof(context));
         }
 
-        public virtual IMessageChannel ResolveDestination(string name)
-        {
-            return Context.GetService<IMessageChannel>(name);
-        }
+        Context = context;
+    }
 
-        object IDestinationResolver.ResolveDestination(string name)
-        {
-            var result = ResolveDestination(name);
-            return result;
-        }
+    public virtual IMessageChannel ResolveDestination(string name)
+    {
+        return Context.GetService<IMessageChannel>(name);
+    }
+
+    object IDestinationResolver.ResolveDestination(string name)
+    {
+        var result = ResolveDestination(name);
+        return result;
     }
 }

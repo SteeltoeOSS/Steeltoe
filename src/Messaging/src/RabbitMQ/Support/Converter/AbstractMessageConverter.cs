@@ -8,67 +8,66 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using System;
 using System.Net.Sockets;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
+
+public abstract class AbstractMessageConverter : ISmartMessageConverter
 {
-    public abstract class AbstractMessageConverter : ISmartMessageConverter
+    protected readonly ILogger _logger;
+
+    protected AbstractMessageConverter(ILogger logger = null)
     {
-        protected readonly ILogger _logger;
+        _logger = logger;
+    }
 
-        protected AbstractMessageConverter(ILogger logger = null)
+    public bool CreateMessageIds { get; set; }
+
+    public abstract string ServiceName { get; set; }
+
+    public abstract object FromMessage(IMessage message, Type targetClass, object conversionHint);
+
+    public T FromMessage<T>(IMessage message, object conversionHint)
+    {
+        return (T)FromMessage(message, typeof(T), conversionHint);
+    }
+
+    public object FromMessage(IMessage message, Type targetClass)
+    {
+        return FromMessage(message, targetClass, null);
+    }
+
+    public T FromMessage<T>(IMessage message)
+    {
+        return (T)FromMessage(message, typeof(T), null);
+    }
+
+    public IMessage ToMessage(object payload, IMessageHeaders messageProperties)
+    {
+        return ToMessage(payload, messageProperties, null);
+    }
+
+    public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
+    {
+        var messageProperties = headers;
+        if (messageProperties == null)
         {
-            _logger = logger;
+            messageProperties = new MessageHeaders();
         }
 
-        public bool CreateMessageIds { get; set; }
+        var message = CreateMessage(payload, messageProperties, conversionHint);
 
-        public abstract string ServiceName { get; set; }
-
-        public abstract object FromMessage(IMessage message, Type targetClass, object conversionHint);
-
-        public T FromMessage<T>(IMessage message, object conversionHint)
+        if (CreateMessageIds && message.Headers.MessageId() == null)
         {
-            return (T)FromMessage(message, typeof(T), conversionHint);
+            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            accessor.MessageId = Guid.NewGuid().ToString();
         }
 
-        public object FromMessage(IMessage message, Type targetClass)
-        {
-            return FromMessage(message, targetClass, null);
-        }
+        return message;
+    }
 
-        public T FromMessage<T>(IMessage message)
-        {
-            return (T)FromMessage(message, typeof(T), null);
-        }
+    protected abstract IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint);
 
-        public IMessage ToMessage(object payload, IMessageHeaders messageProperties)
-        {
-            return ToMessage(payload, messageProperties, null);
-        }
-
-        public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
-        {
-            var messageProperties = headers;
-            if (messageProperties == null)
-            {
-                messageProperties = new MessageHeaders();
-            }
-
-            var message = CreateMessage(payload, messageProperties, conversionHint);
-
-            if (CreateMessageIds && message.Headers.MessageId() == null)
-            {
-                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-                accessor.MessageId = Guid.NewGuid().ToString();
-            }
-
-            return message;
-        }
-
-        protected abstract IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint);
-
-        protected virtual IMessage CreateMessage(object payload, IMessageHeaders messageProperties)
-        {
-            return CreateMessage(payload, messageProperties, null);
-        }
+    protected virtual IMessage CreateMessage(object payload, IMessageHeaders messageProperties)
+    {
+        return CreateMessage(payload, messageProperties, null);
     }
 }

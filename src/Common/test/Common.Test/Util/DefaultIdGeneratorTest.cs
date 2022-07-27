@@ -5,14 +5,13 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Common.Util.Test
+namespace Steeltoe.Common.Util.Test;
+
+public class DefaultIdGeneratorTest
 {
-    public class DefaultIdGeneratorTest
+    [Fact]
+    public void TestGenerateId()
     {
-        [Fact]
-        public void TestGenerateId()
-        {
-            Assert.NotEqual(default(Guid).ToString(), new DefaultIdGenerator().GenerateId());
-        }
+        Assert.NotEqual(default(Guid).ToString(), new DefaultIdGenerator().GenerateId());
     }
 }

@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class TransactionSuspensionNotSupportedException : CannotCreateTransactionException
-    {
-        public TransactionSuspensionNotSupportedException(string msg)
-        : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public TransactionSuspensionNotSupportedException(string msg, Exception cause)
+public class TransactionSuspensionNotSupportedException : CannotCreateTransactionException
+{
+    public TransactionSuspensionNotSupportedException(string msg)
+        : base(msg)
+    {
+    }
+
+    public TransactionSuspensionNotSupportedException(string msg, Exception cause)
         : base(msg, cause)
-        {
-        }
+    {
     }
 }

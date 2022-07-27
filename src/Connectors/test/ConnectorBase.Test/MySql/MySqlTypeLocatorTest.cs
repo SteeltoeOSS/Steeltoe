@@ -5,50 +5,49 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.MySql.Test
+namespace Steeltoe.Connector.MySql.Test;
+
+/// <summary>
+/// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.
+/// This version should be testing the MySqlConnector driver
+/// Don't remove it unless you've got a better idea for making sure we work with multiple assemblies
+/// with conflicting names/types
+/// </summary>
+public class MySqlTypeLocatorTest
 {
-    /// <summary>
-    /// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.
-    /// This version should be testing the MySqlConnector driver
-    /// Don't remove it unless you've got a better idea for making sure we work with multiple assemblies
-    /// with conflicting names/types
-    /// </summary>
-    public class MySqlTypeLocatorTest
+    [Fact]
+    public void Property_Can_Locate_ConnectionType()
     {
-        [Fact]
-        public void Property_Can_Locate_ConnectionType()
-        {
-            // arrange -- handled by including a compatible MySql NuGet package
-            var type = MySqlTypeLocator.MySqlConnection;
+        // arrange -- handled by including a compatible MySql NuGet package
+        var type = MySqlTypeLocator.MySqlConnection;
 
-            Assert.NotNull(type);
-        }
+        Assert.NotNull(type);
+    }
 
-        [Fact]
-        public void Driver_Found_In_MySqlConnector_Assembly()
-        {
-            // arrange ~ narrow the assembly list to one specific nuget package
-            var types = MySqlTypeLocator.ConnectionTypeNames;
-            MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
+    [Fact]
+    public void Driver_Found_In_MySqlConnector_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var types = MySqlTypeLocator.ConnectionTypeNames;
+        MySqlTypeLocator.Assemblies = new string[] { "MySqlConnector" };
 
-            var type = MySqlTypeLocator.MySqlConnection;
+        var type = MySqlTypeLocator.MySqlConnection;
 
-            Assert.NotNull(type);
-            MySqlTypeLocator.ConnectionTypeNames = types;
-        }
+        Assert.NotNull(type);
+        MySqlTypeLocator.ConnectionTypeNames = types;
+    }
 
-        [Fact]
-        public void Throws_When_ConnectionType_NotFound()
-        {
-            var types = MySqlTypeLocator.ConnectionTypeNames;
-            MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+    [Fact]
+    public void Throws_When_ConnectionType_NotFound()
+    {
+        var types = MySqlTypeLocator.ConnectionTypeNames;
+        MySqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            var exception = Assert.Throws<TypeLoadException>(() => MySqlTypeLocator.MySqlConnection);
+        var exception = Assert.Throws<TypeLoadException>(() => MySqlTypeLocator.MySqlConnection);
 
-            Assert.Equal("Unable to find MySqlConnection, are you missing a MySql ADO.NET assembly?", exception.Message);
+        Assert.Equal("Unable to find MySqlConnection, are you missing a MySql ADO.NET assembly?", exception.Message);
 
-            // reset
-            MySqlTypeLocator.ConnectionTypeNames = types;
-        }
+        // reset
+        MySqlTypeLocator.ConnectionTypeNames = types;
     }
 }

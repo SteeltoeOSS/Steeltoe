@@ -5,13 +5,12 @@
 using MySql.Data.EntityFramework;
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.MySql.EF6.Test
+namespace Steeltoe.Connector.MySql.EF6.Test;
+
+[DbConfigurationType(typeof(MySqlEFConfiguration))]
+public class Good2MySqlDbContext : DbContext
 {
-    [DbConfigurationType(typeof(MySqlEFConfiguration))]
-    public class Good2MySqlDbContext : DbContext
+    public Good2MySqlDbContext(string str)
     {
-        public Good2MySqlDbContext(string str)
-        {
-        }
     }
 }

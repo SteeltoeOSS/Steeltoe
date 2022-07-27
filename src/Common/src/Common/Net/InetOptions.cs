@@ -5,42 +5,41 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Net
+namespace Steeltoe.Common.Net;
+
+public class InetOptions
 {
-    public class InetOptions
+    public const string PREFIX = "spring:cloud:inet";
+
+    public string DefaultHostname { get; set; } = "localhost";
+
+    public string DefaultIpAddress { get; set; } = "127.0.0.1";
+
+    public string IgnoredInterfaces { get; set; }
+
+    public bool UseOnlySiteLocalInterfaces { get; set; } = false;
+
+    public string PreferredNetworks { get; set; }
+
+    public bool SkipReverseDnsLookup { get; set; }
+
+    internal IEnumerable<string> GetIgnoredInterfaces()
     {
-        public const string PREFIX = "spring:cloud:inet";
-
-        public string DefaultHostname { get; set; } = "localhost";
-
-        public string DefaultIpAddress { get; set; } = "127.0.0.1";
-
-        public string IgnoredInterfaces { get; set; }
-
-        public bool UseOnlySiteLocalInterfaces { get; set; } = false;
-
-        public string PreferredNetworks { get; set; }
-
-        public bool SkipReverseDnsLookup { get; set; }
-
-        internal IEnumerable<string> GetIgnoredInterfaces()
+        if (string.IsNullOrEmpty(IgnoredInterfaces))
         {
-            if (string.IsNullOrEmpty(IgnoredInterfaces))
-            {
-                return new List<string>();
-            }
-
-            return IgnoredInterfaces.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+            return new List<string>();
         }
 
-        internal IEnumerable<string> GetPreferredNetworks()
-        {
-            if (string.IsNullOrEmpty(PreferredNetworks))
-            {
-                return new List<string>();
-            }
+        return IgnoredInterfaces.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+    }
 
-            return PreferredNetworks.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+    internal IEnumerable<string> GetPreferredNetworks()
+    {
+        if (string.IsNullOrEmpty(PreferredNetworks))
+        {
+            return new List<string>();
         }
+
+        return PreferredNetworks.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
     }
 }

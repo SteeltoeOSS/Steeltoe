@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Converter
-{
-    public class ConversionException : Exception
-    {
-        public ConversionException(string message)
-        : base(message)
-        {
-        }
+namespace Steeltoe.Common.Converter;
 
-        public ConversionException(string message, Exception cause)
-         : base(message, cause)
-        {
-        }
+public class ConversionException : Exception
+{
+    public ConversionException(string message)
+        : base(message)
+    {
+    }
+
+    public ConversionException(string message, Exception cause)
+        : base(message, cause)
+    {
     }
 }

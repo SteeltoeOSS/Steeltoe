@@ -8,49 +8,48 @@ using Steeltoe.Messaging;
 using System;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessageHandler, ILifecycle
 {
-    public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessageHandler, ILifecycle
+    private readonly IMessageHandler _target;
+
+    public ReplyProducingMessageHandlerWrapper(IApplicationContext context, IMessageHandler target)
+        : base(context)
     {
-        private readonly IMessageHandler _target;
+        _target = target ?? throw new ArgumentNullException(nameof(target));
+    }
 
-        public ReplyProducingMessageHandlerWrapper(IApplicationContext context, IMessageHandler target)
-            : base(context)
+    public Task Start()
+    {
+        if (_target is ILifecycle lifeCycle)
         {
-            _target = target ?? throw new ArgumentNullException(nameof(target));
+            return lifeCycle.Start();
         }
 
-        public Task Start()
-        {
-            if (_target is ILifecycle lifeCycle)
-            {
-                return lifeCycle.Start();
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
+    public Task Stop()
+    {
+        if (_target is ILifecycle lifeCycle)
+        {
+            return lifeCycle.Stop();
         }
 
-        public Task Stop()
-        {
-            if (_target is ILifecycle lifeCycle)
-            {
-                return lifeCycle.Stop();
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    public bool IsRunning => _target is not ILifecycle lifecycle || lifecycle.IsRunning;
 
-        public bool IsRunning => _target is not ILifecycle lifecycle || lifecycle.IsRunning;
+    public override void Initialize()
+    {
+        // Nothing to do
+    }
 
-        public override void Initialize()
-        {
-            // Nothing to do
-        }
-
-        protected override object HandleRequestMessage(IMessage requestMessage)
-        {
-            _target.HandleMessage(requestMessage);
-            return null;
-        }
+    protected override object HandleRequestMessage(IMessage requestMessage)
+    {
+        _target.HandleMessage(requestMessage);
+        return null;
     }
 }

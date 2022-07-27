@@ -5,20 +5,19 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
 
-namespace Steeltoe.Common.Test.Options
+namespace Steeltoe.Common.Test.Options;
+
+internal class TestOptions : AbstractOptions
 {
-    internal class TestOptions : AbstractOptions
-    {
-        public TestOptions(IConfigurationRoot root, string prefix)
+    public TestOptions(IConfigurationRoot root, string prefix)
         : base(root, prefix)
-        {
-        }
-
-        public TestOptions(IConfiguration config)
-            : base(config)
-        {
-        }
-
-        public string Foo { get; set; }
+    {
     }
+
+    public TestOptions(IConfiguration config)
+        : base(config)
+    {
+    }
+
+    public string Foo { get; set; }
 }

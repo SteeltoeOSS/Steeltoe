@@ -4,27 +4,26 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+public class MethodArgumentResolutionException : MessagingException
 {
-    public class MethodArgumentResolutionException : MessagingException
+    public ParameterInfo Parameter { get; private set; }
+
+    public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter)
+        : base(message, GetMethodParameterMessage(parameter))
     {
-        public ParameterInfo Parameter { get; private set; }
+        Parameter = parameter;
+    }
 
-        public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter)
-            : base(message, GetMethodParameterMessage(parameter))
-        {
-            Parameter = parameter;
-        }
+    public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter, string description)
+        : base(message, GetMethodParameterMessage(parameter) + ": " + description)
+    {
+        Parameter = parameter;
+    }
 
-        public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter, string description)
-            : base(message, GetMethodParameterMessage(parameter) + ": " + description)
-        {
-            Parameter = parameter;
-        }
-
-        private static string GetMethodParameterMessage(ParameterInfo parameter)
-        {
-            return "Could not resolve method parameter at index " + parameter.Position + " in " + parameter.Member.ToString();
-        }
+    private static string GetMethodParameterMessage(ParameterInfo parameter)
+    {
+        return "Could not resolve method parameter at index " + parameter.Position + " in " + parameter.Member.ToString();
     }
 }

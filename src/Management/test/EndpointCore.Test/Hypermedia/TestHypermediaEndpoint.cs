@@ -4,18 +4,17 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia.Test
-{
-    internal class TestHypermediaEndpoint : ActuatorEndpoint
-    {
-        public TestHypermediaEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
-            : base(options, mgmtOptions, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
-        public override Links Invoke(string baseUrl)
-        {
-            return new Links();
-        }
+internal class TestHypermediaEndpoint : ActuatorEndpoint
+{
+    public TestHypermediaEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+        : base(options, mgmtOptions, logger)
+    {
+    }
+
+    public override Links Invoke(string baseUrl)
+    {
+        return new Links();
     }
 }

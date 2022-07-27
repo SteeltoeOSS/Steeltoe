@@ -6,20 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Attributes
+namespace Steeltoe.Common.Attributes;
+
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class ServiceAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class ServiceAttribute : Attribute
+    public ServiceAttribute()
     {
-        public ServiceAttribute()
-        {
-        }
-
-        public ServiceAttribute(string name)
-        {
-            Name = name;
-        }
-
-        public string Name { get; } = string.Empty;
     }
+
+    public ServiceAttribute(string name)
+    {
+        Name = name;
+    }
+
+    public string Name { get; } = string.Empty;
 }

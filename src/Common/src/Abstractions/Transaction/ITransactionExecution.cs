@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+public interface ITransactionExecution
 {
-    public interface ITransactionExecution
-    {
-        void SetRollbackOnly();
+    void SetRollbackOnly();
 
-        bool IsCompleted { get; }
+    bool IsCompleted { get; }
 
-        bool IsRollbackOnly { get; }
+    bool IsRollbackOnly { get; }
 
-        bool IsNewTransaction { get; }
-    }
+    bool IsNewTransaction { get; }
 }

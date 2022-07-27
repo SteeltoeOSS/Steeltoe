@@ -4,18 +4,17 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier
-{
-    public abstract class HystrixEventNotifier
-    {
-        public void MarkEvent(HystrixEventType eventType, IHystrixCommandKey key)
-        {
-            // do nothing
-        }
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 
-        public void MarkCommandExecution(IHystrixCommandKey key, ExecutionIsolationStrategy isolationStrategy, int duration, IList<HystrixEventType> eventsDuringExecution)
-        {
-            // do nothing
-        }
+public abstract class HystrixEventNotifier
+{
+    public void MarkEvent(HystrixEventType eventType, IHystrixCommandKey key)
+    {
+        // do nothing
+    }
+
+    public void MarkCommandExecution(IHystrixCommandKey key, ExecutionIsolationStrategy isolationStrategy, int duration, IList<HystrixEventType> eventsDuringExecution)
+    {
+        // do nothing
     }
 }

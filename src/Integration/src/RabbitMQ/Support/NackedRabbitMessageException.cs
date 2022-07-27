@@ -7,19 +7,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Rabbit.Support
+namespace Steeltoe.Integration.Rabbit.Support;
+
+public class NackedRabbitMessageException : MessagingException
 {
-    public class NackedRabbitMessageException : MessagingException
+    public object CorrelationData { get; }
+
+    public string NackReason { get; }
+
+    public NackedRabbitMessageException(IMessage message, object correlationData, string nackReason)
+        : base(message)
     {
-        public object CorrelationData { get; }
-
-        public string NackReason { get; }
-
-        public NackedRabbitMessageException(IMessage message, object correlationData, string nackReason)
-            : base(message)
-        {
-            CorrelationData = correlationData;
-            NackReason = nackReason;
-        }
+        CorrelationData = correlationData;
+        NackReason = nackReason;
     }
 }

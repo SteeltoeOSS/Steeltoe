@@ -7,20 +7,19 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Security;
 using System;
 
-namespace Steeltoe.Security.Authentication.Mtls
+namespace Steeltoe.Security.Authentication.Mtls;
+
+public static class CertificateApplicationBuilderExtensions
 {
-    public static class CertificateApplicationBuilderExtensions
+    /// <summary>
+    /// Start the certificate rotation service
+    /// </summary>
+    /// <param name="applicationBuilder">The <see cref="ApplicationBuilder"/></param>
+    [Obsolete("This functionality has moved to CertificateRotationService, this method will be removed in a future release")]
+    public static IApplicationBuilder UseCertificateRotation(this IApplicationBuilder applicationBuilder)
     {
-        /// <summary>
-        /// Start the certificate rotation service
-        /// </summary>
-        /// <param name="applicationBuilder">The <see cref="ApplicationBuilder"/></param>
-        [Obsolete("This functionality has moved to CertificateRotationService, this method will be removed in a future release")]
-        public static IApplicationBuilder UseCertificateRotation(this IApplicationBuilder applicationBuilder)
-        {
-            var certificateStoreService = applicationBuilder.ApplicationServices.GetService<ICertificateRotationService>();
-            certificateStoreService.Start();
-            return applicationBuilder;
-        }
+        var certificateStoreService = applicationBuilder.ApplicationServices.GetService<ICertificateRotationService>();
+        certificateStoreService.Start();
+        return applicationBuilder;
     }
 }

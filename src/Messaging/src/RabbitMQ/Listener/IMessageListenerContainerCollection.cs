@@ -5,12 +5,11 @@
 using Steeltoe.Common.Services;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
-{
-    public interface IMessageListenerContainerCollection : IServiceNameAware
-    {
-        string GroupName { get; }
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
-        IList<IMessageListenerContainer> Containers { get; }
-    }
+public interface IMessageListenerContainerCollection : IServiceNameAware
+{
+    string GroupName { get; }
+
+    IList<IMessageListenerContainer> Containers { get; }
 }

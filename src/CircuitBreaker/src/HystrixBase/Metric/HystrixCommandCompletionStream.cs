@@ -8,46 +8,45 @@ using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
+
+public class HystrixCommandCompletionStream : IHystrixEventStream<HystrixCommandCompletion>
 {
-    public class HystrixCommandCompletionStream : IHystrixEventStream<HystrixCommandCompletion>
+    private static readonly ConcurrentDictionary<string, HystrixCommandCompletionStream> Streams = new ();
+
+    private readonly IHystrixCommandKey _commandKey;
+    private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> _writeOnlySubject;
+    private readonly IObservable<HystrixCommandCompletion> _readOnlyStream;
+
+    public static HystrixCommandCompletionStream GetInstance(IHystrixCommandKey commandKey)
     {
-        private static readonly ConcurrentDictionary<string, HystrixCommandCompletionStream> Streams = new ();
+        return Streams.GetOrAddEx(commandKey.Name, (k) => new HystrixCommandCompletionStream(commandKey));
+    }
 
-        private readonly IHystrixCommandKey _commandKey;
-        private readonly ISubject<HystrixCommandCompletion, HystrixCommandCompletion> _writeOnlySubject;
-        private readonly IObservable<HystrixCommandCompletion> _readOnlyStream;
+    internal HystrixCommandCompletionStream(IHystrixCommandKey commandKey)
+    {
+        _commandKey = commandKey;
+        _writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
+        _readOnlyStream = _writeOnlySubject.AsObservable();
+    }
 
-        public static HystrixCommandCompletionStream GetInstance(IHystrixCommandKey commandKey)
-        {
-            return Streams.GetOrAddEx(commandKey.Name, (k) => new HystrixCommandCompletionStream(commandKey));
-        }
+    public static void Reset()
+    {
+        Streams.Clear();
+    }
 
-        internal HystrixCommandCompletionStream(IHystrixCommandKey commandKey)
-        {
-            _commandKey = commandKey;
-            _writeOnlySubject = Subject.Synchronize<HystrixCommandCompletion, HystrixCommandCompletion>(new Subject<HystrixCommandCompletion>());
-            _readOnlyStream = _writeOnlySubject.AsObservable();
-        }
+    public void Write(HystrixCommandCompletion @event)
+    {
+        _writeOnlySubject.OnNext(@event);
+    }
 
-        public static void Reset()
-        {
-            Streams.Clear();
-        }
+    public IObservable<HystrixCommandCompletion> Observe()
+    {
+        return _readOnlyStream;
+    }
 
-        public void Write(HystrixCommandCompletion @event)
-        {
-            _writeOnlySubject.OnNext(@event);
-        }
-
-        public IObservable<HystrixCommandCompletion> Observe()
-        {
-            return _readOnlyStream;
-        }
-
-        public override string ToString()
-        {
-            return "HystrixCommandCompletionStream(" + _commandKey.Name + ")";
-        }
+    public override string ToString()
+    {
+        return "HystrixCommandCompletionStream(" + _commandKey.Name + ")";
     }
 }

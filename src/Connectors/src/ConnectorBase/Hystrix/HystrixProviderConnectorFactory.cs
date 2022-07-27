@@ -7,83 +7,82 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Connector.Hystrix
+namespace Steeltoe.Connector.Hystrix;
+
+public class HystrixProviderConnectorFactory
 {
-    public class HystrixProviderConnectorFactory
+    private readonly HystrixRabbitMQServiceInfo _info;
+    private readonly HystrixProviderConnectorOptions _config;
+    private readonly HystrixProviderConfigurer _configurer = new ();
+    private readonly Type _type;
+
+    private readonly MethodInfo _setUri;
+
+    public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
     {
-        private readonly HystrixRabbitMQServiceInfo _info;
-        private readonly HystrixProviderConnectorOptions _config;
-        private readonly HystrixProviderConfigurer _configurer = new ();
-        private readonly Type _type;
-
-        private readonly MethodInfo _setUri;
-
-        public HystrixProviderConnectorFactory(HystrixRabbitMQServiceInfo sinfo, HystrixProviderConnectorOptions config, Type connectFactory)
+        _info = sinfo;
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
+        _setUri = FindSetUriMethod(_type);
+        if (_setUri == null)
         {
-            _info = sinfo;
-            _config = config ?? throw new ArgumentNullException(nameof(config));
-            _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
-            _setUri = FindSetUriMethod(_type);
-            if (_setUri == null)
+            throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
+        }
+    }
+
+    internal HystrixProviderConnectorFactory()
+    {
+    }
+
+    public static MethodInfo FindSetUriMethod(Type type)
+    {
+        var typeInfo = type.GetTypeInfo();
+        var declaredMethods = typeInfo.DeclaredMethods;
+
+        foreach (var ci in declaredMethods)
+        {
+            if (ci.Name.Equals("SetUri"))
             {
-                throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
+                return ci;
             }
         }
 
-        internal HystrixProviderConnectorFactory()
+        return null;
+    }
+
+    public virtual object Create(IServiceProvider provider)
+    {
+        var connectionString = CreateConnectionString();
+        object result = null;
+        if (connectionString != null)
         {
+            result = CreateConnection(connectionString);
         }
 
-        public static MethodInfo FindSetUriMethod(Type type)
+        if (result == null)
         {
-            var typeInfo = type.GetTypeInfo();
-            var declaredMethods = typeInfo.DeclaredMethods;
+            throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
+        }
 
-            foreach (var ci in declaredMethods)
-            {
-                if (ci.Name.Equals("SetUri"))
-                {
-                    return ci;
-                }
-            }
+        return result;
+    }
 
+    public virtual string CreateConnectionString()
+    {
+        return _configurer.Configure(_info, _config);
+    }
+
+    public virtual object CreateConnection(string connectionString)
+    {
+        var inst = ReflectionHelpers.CreateInstance(_type, null);
+        if (inst == null)
+        {
             return null;
         }
 
-        public virtual object Create(IServiceProvider provider)
-        {
-            var connectionString = CreateConnectionString();
-            object result = null;
-            if (connectionString != null)
-            {
-                result = CreateConnection(connectionString);
-            }
+        var uri = new Uri(connectionString, UriKind.Absolute);
 
-            if (result == null)
-            {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}'", _type));
-            }
-
-            return result;
-        }
-
-        public virtual string CreateConnectionString()
-        {
-            return _configurer.Configure(_info, _config);
-        }
-
-        public virtual object CreateConnection(string connectionString)
-        {
-            var inst = ReflectionHelpers.CreateInstance(_type, null);
-            if (inst == null)
-            {
-                return null;
-            }
-
-            var uri = new Uri(connectionString, UriKind.Absolute);
-
-            ReflectionHelpers.Invoke(_setUri, inst, new object[] { uri });
-            return new HystrixConnectionFactory(inst);
-        }
+        ReflectionHelpers.Invoke(_setUri, inst, new object[] { uri });
+        return new HystrixConnectionFactory(inst);
     }
 }

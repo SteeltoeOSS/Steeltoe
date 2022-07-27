@@ -9,60 +9,59 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+
+public class ConfigServerConfigurationSourceTest
 {
-    public class ConfigServerConfigurationSourceTest
+    [Fact]
+    public void Constructors__ThrowsIfNulls()
     {
-        [Fact]
-        public void Constructors__ThrowsIfNulls()
-        {
-            ConfigServerClientSettings settings = null;
+        ConfigServerClientSettings settings = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
-            ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, (IConfiguration)null, null));
-            ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null, null));
-            ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>(), null));
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IConfiguration)null));
+        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, (IConfiguration)null, null));
+        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource((IList<IConfigurationSource>)null, null));
+        ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerConfigurationSource(settings, new List<IConfigurationSource>(), null));
+    }
 
-        [Fact]
-        public void Constructors__InitializesProperties()
-        {
-            var settings = new ConfigServerClientSettings();
-            var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
-            ILoggerFactory factory = new LoggerFactory();
+    [Fact]
+    public void Constructors__InitializesProperties()
+    {
+        var settings = new ConfigServerClientSettings();
+        var memSource = new MemoryConfigurationSource();
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+        ILoggerFactory factory = new LoggerFactory();
 
-            var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object>() { { "foo", "bar" } }, factory);
-            Assert.Equal(settings, source.DefaultSettings);
-            Assert.Equal(factory, source.LogFactory);
-            Assert.Null(source.Configuration);
-            Assert.NotSame(sources, source._sources);
-            Assert.Single(source._sources);
-            Assert.Equal(memSource, source._sources[0]);
-            Assert.Single(source._properties);
-            Assert.Equal("bar", source._properties["foo"]);
+        var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object>() { { "foo", "bar" } }, factory);
+        Assert.Equal(settings, source.DefaultSettings);
+        Assert.Equal(factory, source.LogFactory);
+        Assert.Null(source.Configuration);
+        Assert.NotSame(sources, source._sources);
+        Assert.Single(source._sources);
+        Assert.Equal(memSource, source._sources[0]);
+        Assert.Single(source._properties);
+        Assert.Equal("bar", source._properties["foo"]);
 
-            var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
-            source = new ConfigServerConfigurationSource(settings, config, factory);
-            Assert.Equal(settings, source.DefaultSettings);
-            Assert.Equal(factory, source.LogFactory);
-            Assert.NotNull(source.Configuration);
-            var root = source.Configuration as IConfigurationRoot;
-            Assert.NotNull(root);
-            Assert.Same(config, root);
-        }
+        var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        source = new ConfigServerConfigurationSource(settings, config, factory);
+        Assert.Equal(settings, source.DefaultSettings);
+        Assert.Equal(factory, source.LogFactory);
+        Assert.NotNull(source.Configuration);
+        var root = source.Configuration as IConfigurationRoot;
+        Assert.NotNull(root);
+        Assert.Same(config, root);
+    }
 
-        [Fact]
-        public void Build__ReturnsProvider()
-        {
-            var settings = new ConfigServerClientSettings();
-            var memSource = new MemoryConfigurationSource();
-            IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
-            ILoggerFactory factory = new LoggerFactory();
+    [Fact]
+    public void Build__ReturnsProvider()
+    {
+        var settings = new ConfigServerClientSettings();
+        var memSource = new MemoryConfigurationSource();
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>() { memSource };
+        ILoggerFactory factory = new LoggerFactory();
 
-            var source = new ConfigServerConfigurationSource(settings, sources, null);
-            var provider = source.Build(new ConfigurationBuilder());
-            Assert.IsType<ConfigServerConfigurationProvider>(provider);
-        }
+        var source = new ConfigServerConfigurationSource(settings, sources, null);
+        var provider = source.Build(new ConfigurationBuilder());
+        Assert.IsType<ConfigServerConfigurationProvider>(provider);
     }
 }

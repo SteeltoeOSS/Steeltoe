@@ -6,20 +6,19 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Common.Http.Serialization
-{
-    public class BoolStringJsonConverter : JsonConverter<bool>
-    {
-        public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True
-                ? reader.GetBoolean()
-                : bool.Parse(reader.GetString());
-        }
+namespace Steeltoe.Common.Http.Serialization;
 
-        public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString().ToLower());
-        }
+public class BoolStringJsonConverter : JsonConverter<bool>
+{
+    public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True
+            ? reader.GetBoolean()
+            : bool.Parse(reader.GetString());
+    }
+
+    public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString().ToLower());
     }
 }

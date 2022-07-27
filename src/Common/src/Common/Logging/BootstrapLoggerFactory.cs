@@ -7,10 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System;
 
-namespace Steeltoe.Common.Logging
+namespace Steeltoe.Common.Logging;
+
+internal static class BootstrapLoggerFactory
 {
-    internal static class BootstrapLoggerFactory
-    {
-        public static IBoostrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
-    }
+    public static IBoostrapLoggerFactory Instance { get; } = new UpgradableBootstrapLoggerFactory();
 }

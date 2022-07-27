@@ -6,19 +6,18 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
 using System;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+/// <summary>
+/// A strategy to build an ErrorMessage based on the provided Exception AttributeAccessor as a context.
+/// </summary>
+public interface IErrorMessageStrategy
 {
     /// <summary>
-    /// A strategy to build an ErrorMessage based on the provided Exception AttributeAccessor as a context.
+    /// Build the error message
     /// </summary>
-    public interface IErrorMessageStrategy
-    {
-        /// <summary>
-        /// Build the error message
-        /// </summary>
-        /// <param name="payload">the payload of the error message</param>
-        /// <param name="attributes">the context to use</param>
-        /// <returns>the error message</returns>
-        ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes);
-    }
+    /// <param name="payload">the payload of the error message</param>
+    /// <param name="attributes">the context to use</param>
+    /// <returns>the error message</returns>
+    ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes);
 }

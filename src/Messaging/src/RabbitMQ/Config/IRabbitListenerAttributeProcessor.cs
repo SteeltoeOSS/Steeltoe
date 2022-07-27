@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public interface IRabbitListenerAttributeProcessor : IServiceNameAware
 {
-    public interface IRabbitListenerAttributeProcessor : IServiceNameAware
-    {
-        void Initialize();
-    }
+    void Initialize();
 }

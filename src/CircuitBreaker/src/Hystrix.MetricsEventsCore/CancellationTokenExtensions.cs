@@ -6,41 +6,40 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents;
+
+public static class CancellationTokenExtensions
 {
-    public static class CancellationTokenExtensions
+    public static CancellationTokenAwaiter GetAwaiter(this CancellationToken cancellationToken)
     {
-        public static CancellationTokenAwaiter GetAwaiter(this CancellationToken cancellationToken)
+        return new CancellationTokenAwaiter(cancellationToken);
+    }
+
+    public class CancellationTokenAwaiter : INotifyCompletion
+    {
+        private readonly CancellationToken _cancellationToken;
+
+        public CancellationTokenAwaiter(CancellationToken cancellationToken)
         {
-            return new CancellationTokenAwaiter(cancellationToken);
+            _cancellationToken = cancellationToken;
         }
 
-        public class CancellationTokenAwaiter : INotifyCompletion
+        public void GetResult()
         {
-            private readonly CancellationToken _cancellationToken;
+            // for future use
+        }
 
-            public CancellationTokenAwaiter(CancellationToken cancellationToken)
+        public bool IsCompleted
+        {
+            get
             {
-                _cancellationToken = cancellationToken;
+                return _cancellationToken.IsCancellationRequested;
             }
+        }
 
-            public void GetResult()
-            {
-                // for future use
-            }
-
-            public bool IsCompleted
-            {
-                get
-                {
-                    return _cancellationToken.IsCancellationRequested;
-                }
-            }
-
-            public void OnCompleted(Action action)
-            {
-                _cancellationToken.Register(action);
-            }
+        public void OnCompleted(Action action)
+        {
+            _cancellationToken.Register(action);
         }
     }
 }

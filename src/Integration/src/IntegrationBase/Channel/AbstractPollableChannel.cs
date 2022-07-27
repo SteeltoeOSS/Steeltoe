@@ -11,161 +11,160 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Channel
+namespace Steeltoe.Integration.Channel;
+
+public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollableChannel, ITaskSchedulerChannelInterceptorAware
 {
-    public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollableChannel, ITaskSchedulerChannelInterceptorAware
+    protected AbstractPollableChannel(IApplicationContext context, ILogger logger = null)
+        : base(context, logger)
     {
-        protected AbstractPollableChannel(IApplicationContext context, ILogger logger = null)
-            : base(context, logger)
+    }
+
+    protected AbstractPollableChannel(IApplicationContext context, string name, ILogger logger = null)
+        : base(context, name, logger)
+    {
+    }
+
+    public int TaskSchedulerInterceptorsSize { get; private set; }
+
+    public virtual ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
+    {
+        return new ValueTask<IMessage>(DoReceive(cancellationToken));
+    }
+
+    public virtual IMessage Receive()
+    {
+        return Receive(-1);
+    }
+
+    public virtual IMessage Receive(int timeout)
+    {
+        return DoReceive(timeout);
+    }
+
+    protected virtual IMessage DoReceive(int timeout)
+    {
+        if (timeout == 0)
         {
+            return DoReceive();
         }
-
-        protected AbstractPollableChannel(IApplicationContext context, string name, ILogger logger = null)
-            : base(context, name, logger)
+        else
         {
-        }
-
-        public int TaskSchedulerInterceptorsSize { get; private set; }
-
-        public virtual ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
-        {
-            return new ValueTask<IMessage>(DoReceive(cancellationToken));
-        }
-
-        public virtual IMessage Receive()
-        {
-            return Receive(-1);
-        }
-
-        public virtual IMessage Receive(int timeout)
-        {
-            return DoReceive(timeout);
-        }
-
-        protected virtual IMessage DoReceive(int timeout)
-        {
-            if (timeout == 0)
+            using (var source = new CancellationTokenSource())
             {
-                return DoReceive();
+                source.CancelAfter(timeout);
+                return DoReceive(source.Token);
+            }
+        }
+    }
+
+    protected virtual IMessage DoReceive(CancellationToken cancellationToken = default)
+    {
+        var interceptorList = Interceptors;
+        Stack<IChannelInterceptor> interceptorStack = null;
+        try
+        {
+            logger?.LogTrace("PreReceive on channel '" + this + "'");
+            if (interceptorList.Count > 0)
+            {
+                interceptorStack = new Stack<IChannelInterceptor>();
+
+                if (!interceptorList.PreReceive(this, interceptorStack))
+                {
+                    return null;
+                }
+            }
+
+            var message = DoReceiveInternal(cancellationToken);
+
+            if (message == null)
+            {
+                logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
             }
             else
             {
-                using (var source = new CancellationTokenSource())
+                logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
+            }
+
+            if (interceptorStack != null && message != null)
+            {
+                message = interceptorList.PostReceive(message, this);
+            }
+
+            interceptorList.AfterReceiveCompletion(message, this, null, interceptorStack);
+            return message;
+        }
+        catch (Exception ex)
+        {
+            interceptorList.AfterReceiveCompletion(null, this, ex, interceptorStack);
+            throw;
+        }
+    }
+
+    protected abstract IMessage DoReceiveInternal(CancellationToken cancellationToken);
+
+    public override List<IChannelInterceptor> ChannelInterceptors
+    {
+        get
+        {
+            return base.ChannelInterceptors;
+        }
+
+        set
+        {
+            base.ChannelInterceptors = value;
+            foreach (var interceptor in value)
+            {
+                if (interceptor is ITaskSchedulerChannelInterceptor)
                 {
-                    source.CancelAfter(timeout);
-                    return DoReceive(source.Token);
+                    TaskSchedulerInterceptorsSize++;
                 }
             }
         }
+    }
 
-        protected virtual IMessage DoReceive(CancellationToken cancellationToken = default)
+    public override void AddInterceptor(IChannelInterceptor interceptor)
+    {
+        base.AddInterceptor(interceptor);
+        if (interceptor is ITaskSchedulerChannelInterceptor)
         {
-            var interceptorList = Interceptors;
-            Stack<IChannelInterceptor> interceptorStack = null;
-            try
-            {
-                logger?.LogTrace("PreReceive on channel '" + this + "'");
-                if (interceptorList.Count > 0)
-                {
-                    interceptorStack = new Stack<IChannelInterceptor>();
+            TaskSchedulerInterceptorsSize++;
+        }
+    }
 
-                    if (!interceptorList.PreReceive(this, interceptorStack))
-                    {
-                        return null;
-                    }
-                }
+    public override void AddInterceptor(int index, IChannelInterceptor interceptor)
+    {
+        base.AddInterceptor(index, interceptor);
+        if (interceptor is ITaskSchedulerChannelInterceptor)
+        {
+            TaskSchedulerInterceptorsSize++;
+        }
+    }
 
-                var message = DoReceiveInternal(cancellationToken);
-
-                if (message == null)
-                {
-                    logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
-                }
-                else
-                {
-                    logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
-                }
-
-                if (interceptorStack != null && message != null)
-                {
-                    message = interceptorList.PostReceive(message, this);
-                }
-
-                interceptorList.AfterReceiveCompletion(message, this, null, interceptorStack);
-                return message;
-            }
-            catch (Exception ex)
-            {
-                interceptorList.AfterReceiveCompletion(null, this, ex, interceptorStack);
-                throw;
-            }
+    public override bool RemoveInterceptor(IChannelInterceptor interceptor)
+    {
+        var removed = base.RemoveInterceptor(interceptor);
+        if (removed && interceptor is ITaskSchedulerChannelInterceptor)
+        {
+            TaskSchedulerInterceptorsSize--;
         }
 
-        protected abstract IMessage DoReceiveInternal(CancellationToken cancellationToken);
+        return removed;
+    }
 
-        public override List<IChannelInterceptor> ChannelInterceptors
+    public override IChannelInterceptor RemoveInterceptor(int index)
+    {
+        var interceptor = base.RemoveInterceptor(index);
+        if (interceptor is ITaskSchedulerChannelInterceptor)
         {
-            get
-            {
-                return base.ChannelInterceptors;
-            }
-
-            set
-            {
-                base.ChannelInterceptors = value;
-                foreach (var interceptor in value)
-                {
-                    if (interceptor is ITaskSchedulerChannelInterceptor)
-                    {
-                        TaskSchedulerInterceptorsSize++;
-                    }
-                }
-            }
+            TaskSchedulerInterceptorsSize--;
         }
 
-        public override void AddInterceptor(IChannelInterceptor interceptor)
-        {
-            base.AddInterceptor(interceptor);
-            if (interceptor is ITaskSchedulerChannelInterceptor)
-            {
-                TaskSchedulerInterceptorsSize++;
-            }
-        }
+        return interceptor;
+    }
 
-        public override void AddInterceptor(int index, IChannelInterceptor interceptor)
-        {
-            base.AddInterceptor(index, interceptor);
-            if (interceptor is ITaskSchedulerChannelInterceptor)
-            {
-                TaskSchedulerInterceptorsSize++;
-            }
-        }
-
-        public override bool RemoveInterceptor(IChannelInterceptor interceptor)
-        {
-            var removed = base.RemoveInterceptor(interceptor);
-            if (removed && interceptor is ITaskSchedulerChannelInterceptor)
-            {
-                TaskSchedulerInterceptorsSize--;
-            }
-
-            return removed;
-        }
-
-        public override IChannelInterceptor RemoveInterceptor(int index)
-        {
-            var interceptor = base.RemoveInterceptor(index);
-            if (interceptor is ITaskSchedulerChannelInterceptor)
-            {
-                TaskSchedulerInterceptorsSize--;
-            }
-
-            return interceptor;
-        }
-
-        public virtual bool HasTaskSchedulerInterceptors
-        {
-            get { return TaskSchedulerInterceptorsSize > 0; }
-        }
+    public virtual bool HasTaskSchedulerInterceptors
+    {
+        get { return TaskSchedulerInterceptorsSize > 0; }
     }
 }

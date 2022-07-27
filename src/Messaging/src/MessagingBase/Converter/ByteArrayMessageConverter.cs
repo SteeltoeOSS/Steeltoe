@@ -5,32 +5,31 @@
 using Steeltoe.Common.Util;
 using System;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public class ByteArrayMessageConverter : AbstractMessageConverter
 {
-    public class ByteArrayMessageConverter : AbstractMessageConverter
-    {
-        public const string DEFAULT_SERVICE_NAME = nameof(ByteArrayMessageConverter);
+    public const string DEFAULT_SERVICE_NAME = nameof(ByteArrayMessageConverter);
 
-        public ByteArrayMessageConverter()
+    public ByteArrayMessageConverter()
         : base(MimeTypeUtils.APPLICATION_OCTET_STREAM)
-        {
-        }
+    {
+    }
 
-        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        protected override bool Supports(Type clazz)
-        {
-            return typeof(byte[]) == clazz;
-        }
+    protected override bool Supports(Type clazz)
+    {
+        return typeof(byte[]) == clazz;
+    }
 
-        protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
-        {
-            return message.Payload;
-        }
+    protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
+    {
+        return message.Payload;
+    }
 
-        protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
-        {
-            return payload;
-        }
+    protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
+    {
+        return payload;
     }
 }

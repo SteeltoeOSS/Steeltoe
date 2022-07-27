@@ -4,17 +4,16 @@
 
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
-{
-    public class HystrixCachedTask<T>
-    {
-        public HystrixCachedTask()
-        {
-        }
+namespace Steeltoe.CircuitBreaker.Hystrix;
 
-        public Task<T> CachedTask
-        {
-            get; set;
-        }
+public class HystrixCachedTask<T>
+{
+    public HystrixCachedTask()
+    {
+    }
+
+    public Task<T> CachedTask
+    {
+        get; set;
     }
 }

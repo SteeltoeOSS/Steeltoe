@@ -5,12 +5,11 @@
 using RabbitMQ.Client.Events;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
-{
-    public interface IBlockedListener
-    {
-        void HandleBlocked(object sender, ConnectionBlockedEventArgs args);
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
-        void HandleUnblocked(object sender, EventArgs args);
-    }
+public interface IBlockedListener
+{
+    void HandleBlocked(object sender, ConnectionBlockedEventArgs args);
+
+    void HandleUnblocked(object sender, EventArgs args);
 }

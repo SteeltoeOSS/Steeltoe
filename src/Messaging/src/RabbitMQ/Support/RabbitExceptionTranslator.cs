@@ -8,24 +8,23 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 using System.IO;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support;
+
+public static class RabbitExceptionTranslator
 {
-    public static class RabbitExceptionTranslator
-    {
-        public static Exception ConvertRabbitAccessException(Exception exception)
-            => exception switch
-                {
-                    null => throw new ArgumentNullException(nameof(exception)),
-                    RabbitException rabbitException => rabbitException,
-                    ChannelAllocationException => new RabbitResourceNotAvailableException(exception),
-                    ProtocolException or ShutdownSignalException => new RabbitConnectException(exception),
-                    ConnectFailureException or BrokerUnreachableException => new RabbitConnectException(exception),
-                    PossibleAuthenticationFailureException => new RabbitAuthenticationException(exception),
-                    OperationInterruptedException => new RabbitIOException(exception),
-                    IOException => new RabbitIOException(exception),
-                    TimeoutException => new RabbitTimeoutException(exception),
-                    ConsumerCancelledException => exception,
-                    _ => new RabbitUncategorizedException(exception)
-                };
-    }
+    public static Exception ConvertRabbitAccessException(Exception exception)
+        => exception switch
+        {
+            null => throw new ArgumentNullException(nameof(exception)),
+            RabbitException rabbitException => rabbitException,
+            ChannelAllocationException => new RabbitResourceNotAvailableException(exception),
+            ProtocolException or ShutdownSignalException => new RabbitConnectException(exception),
+            ConnectFailureException or BrokerUnreachableException => new RabbitConnectException(exception),
+            PossibleAuthenticationFailureException => new RabbitAuthenticationException(exception),
+            OperationInterruptedException => new RabbitIOException(exception),
+            IOException => new RabbitIOException(exception),
+            TimeoutException => new RabbitTimeoutException(exception),
+            ConsumerCancelledException => exception,
+            _ => new RabbitUncategorizedException(exception)
+        };
 }

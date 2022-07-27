@@ -5,19 +5,18 @@
 using System;
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.Test;
+
+public static class CountDownEventExtensions
 {
-    public static class CountDownEventExtensions
+    public static void SignalEx(this CountdownEvent target)
     {
-        public static void SignalEx(this CountdownEvent target)
+        try
         {
-            try
-            {
-                target.Signal();
-            }
-            catch (Exception)
-            {
-            }
+            target.Signal();
+        }
+        catch (Exception)
+        {
         }
     }
 }

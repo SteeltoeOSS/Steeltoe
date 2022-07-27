@@ -7,22 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Hypermedia
+namespace Steeltoe.Management.Endpoint.Test.Hypermedia;
+
+public class ServiceCollectionTests
 {
-    public class ServiceCollectionTests
+    [Fact]
+    public void AddHypermediaActuatorServices_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddHypermediaActuatorServices_ThrowsOnNulls()
-        {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services, config));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services, config));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHypermediaActuatorServices(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
     }
 }

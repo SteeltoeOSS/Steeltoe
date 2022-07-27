@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Kubernetes
+namespace Steeltoe.Common.Kubernetes;
+
+public class KubernetesConfiguration : WatchableResource
 {
-    public class KubernetesConfiguration : WatchableResource
-    {
-        public List<string> Paths { get; set; } = new List<string>();
-    }
+    public List<string> Paths { get; set; } = new List<string>();
 }

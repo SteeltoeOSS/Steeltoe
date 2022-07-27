@@ -4,17 +4,16 @@
 
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+/// <summary>
+/// An object that can be invoked asynchronously via a run method.
+/// </summary>
+public interface IAsyncRunnable
 {
     /// <summary>
-    /// An object that can be invoked asynchronously via a run method.
+    /// Run this component.
     /// </summary>
-    public interface IAsyncRunnable
-    {
-        /// <summary>
-        /// Run this component.
-        /// </summary>
-        /// <returns>return a task to signal completion</returns>
-        Task<bool> Run();
-    }
+    /// <returns>return a task to signal completion</returns>
+    Task<bool> Run();
 }

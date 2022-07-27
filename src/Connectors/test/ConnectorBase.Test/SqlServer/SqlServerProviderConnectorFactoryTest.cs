@@ -7,33 +7,32 @@ using System;
 using System.Data.SqlClient;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.Test
+namespace Steeltoe.Connector.SqlServer.Test;
+
+public class SqlServerProviderConnectorFactoryTest
 {
-    public class SqlServerProviderConnectorFactoryTest
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
     {
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
-        {
-            SqlServerProviderConnectorOptions config = null;
+        SqlServerProviderConnectorOptions config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlConnection)));
-            Assert.Contains(nameof(config), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => new SqlServerProviderConnectorFactory(null, config, typeof(SqlConnection)));
+        Assert.Contains(nameof(config), ex.Message);
+    }
 
-        [Fact]
-        public void Create_ReturnsSqlConnection()
+    [Fact]
+    public void Create_ReturnsSqlConnection()
+    {
+        var config = new SqlServerProviderConnectorOptions()
         {
-            var config = new SqlServerProviderConnectorOptions()
-            {
-                Server = "servername",
-                Password = "password",
-                Username = "username",
-                Database = "database"
-            };
-            var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
-            var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
-            var connection = factory.Create(null);
-            Assert.NotNull(connection);
-        }
+            Server = "servername",
+            Password = "password",
+            Username = "username",
+            Database = "database"
+        };
+        var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
+        var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
+        var connection = factory.Create(null);
+        Assert.NotNull(connection);
     }
 }

@@ -6,15 +6,14 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class PojoToPojoStreamListener
 {
-    public class PojoToPojoStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public Person Echo(Person value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public Person Echo(Person value)
-        {
-            return value;
-        }
+        return value;
     }
 }

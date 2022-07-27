@@ -4,26 +4,25 @@
 
 using System;
 
-namespace Steeltoe.Stream.Attributes
+namespace Steeltoe.Stream.Attributes;
+
+/// <summary>
+/// Indicates that an input binding target will be created by the framework.
+/// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
+public class InputAttribute : Attribute
 {
     /// <summary>
-    /// Indicates that an input binding target will be created by the framework.
+    /// Initializes a new instance of the <see cref="InputAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = false)]
-    public class InputAttribute : Attribute
+    /// <param name="name">the binding target name</param>
+    public InputAttribute(string name = null)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InputAttribute"/> class.
-        /// </summary>
-        /// <param name="name">the binding target name</param>
-        public InputAttribute(string name = null)
-        {
-            Name = name;
-        }
-
-        /// <summary>
-        /// Gets or sets the binding target name; used as a name for binding target and as a destination name by default.
-        /// </summary>
-        public virtual string Name { get; set; }
+        Name = name;
     }
+
+    /// <summary>
+    /// Gets or sets the binding target name; used as a name for binding target and as a destination name by default.
+    /// </summary>
+    public virtual string Name { get; set; }
 }

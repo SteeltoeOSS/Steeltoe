@@ -6,12 +6,11 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Text;
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
-{
-    public interface IMessageHeadersConverter
-    {
-        IMessageHeaders ToMessageHeaders(RC.IBasicProperties source, Envelope envelope, Encoding charset);
+namespace Steeltoe.Messaging.RabbitMQ.Support;
 
-        void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset);
-    }
+public interface IMessageHeadersConverter
+{
+    IMessageHeaders ToMessageHeaders(RC.IBasicProperties source, Envelope envelope, Encoding charset);
+
+    void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset);
 }

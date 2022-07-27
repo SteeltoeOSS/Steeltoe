@@ -11,68 +11,67 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Kubernetes.Test
+namespace Steeltoe.Management.Kubernetes.Test;
+
+public class ServiceCollectionExtensionsTest
 {
-    public class ServiceCollectionExtensionsTest
+    [Fact]
+    public void AddKubernetesInfoContributorThrowsOnNull()
     {
-        [Fact]
-        public void AddKubernetesInfoContributorThrowsOnNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
-            Assert.Equal("services", ex.ParamName);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
+        Assert.Equal("services", ex.ParamName);
+    }
 
-        [Fact]
-        public void AddKubernetesInfoContributorAddsContributor()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+    [Fact]
+    public void AddKubernetesInfoContributorAddsContributor()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            services.AddKubernetesInfoContributor();
-            var contributor = services.BuildServiceProvider().GetRequiredService<IInfoContributor>();
+        services.AddKubernetesInfoContributor();
+        var contributor = services.BuildServiceProvider().GetRequiredService<IInfoContributor>();
 
-            Assert.NotNull(contributor);
-        }
+        Assert.NotNull(contributor);
+    }
 
-        [Fact]
-        public void AddKubernetesInfoContributorAddsContributorWithCustomUtilities()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+    [Fact]
+    public void AddKubernetesInfoContributorAddsContributorWithCustomUtilities()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-            services.AddKubernetesInfoContributor(new FakePodUtilities(null));
-            var provider = services.BuildServiceProvider();
-            var contributor = provider.GetRequiredService<IInfoContributor>();
-            var podUtils = provider.GetRequiredService<IPodUtilities>();
+        services.AddKubernetesInfoContributor(new FakePodUtilities(null));
+        var provider = services.BuildServiceProvider();
+        var contributor = provider.GetRequiredService<IInfoContributor>();
+        var podUtils = provider.GetRequiredService<IPodUtilities>();
 
-            Assert.NotNull(contributor);
-            Assert.NotNull(podUtils);
-            Assert.IsType<FakePodUtilities>(podUtils);
-        }
+        Assert.NotNull(contributor);
+        Assert.NotNull(podUtils);
+        Assert.IsType<FakePodUtilities>(podUtils);
+    }
 
-        [Fact]
-        public void AddKubernetesActuatorsThrowsOnNull()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
-            Assert.Equal("services", ex.ParamName);
-        }
+    [Fact]
+    public void AddKubernetesActuatorsThrowsOnNull()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddKubernetesInfoContributor(null));
+        Assert.Equal("services", ex.ParamName);
+    }
 
-        [Fact]
-        public void AddKubernetesActuators()
-        {
-            var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>();
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appSettings);
-            services.AddSingleton<IConfiguration>(configurationBuilder.Build());
-            var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
+    [Fact]
+    public void AddKubernetesActuators()
+    {
+        var services = new ServiceCollection();
+        var appSettings = new Dictionary<string, string>();
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appSettings);
+        services.AddSingleton<IConfiguration>(configurationBuilder.Build());
+        var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
 
-            services.AddKubernetesActuators(null, utils);
-            var provider = services.BuildServiceProvider();
+        services.AddKubernetesActuators(null, utils);
+        var provider = services.BuildServiceProvider();
 
-            var infocontributors = provider.GetServices<IInfoContributor>();
-            Assert.Equal(4, infocontributors.Count());
-            Assert.Equal(1, infocontributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
-        }
+        var infocontributors = provider.GetServices<IInfoContributor>();
+        Assert.Equal(4, infocontributors.Count());
+        Assert.Equal(1, infocontributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
     }
 }

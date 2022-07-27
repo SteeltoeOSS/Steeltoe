@@ -5,25 +5,24 @@
 using Microsoft.Extensions.Options;
 using System;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class MonitorWrapper<T> : IOptionsMonitor<T>
 {
-    public class MonitorWrapper<T> : IOptionsMonitor<T>
+    public MonitorWrapper(T options)
     {
-        public MonitorWrapper(T options)
-        {
-            CurrentValue = options;
-        }
+        CurrentValue = options;
+    }
 
-        public T CurrentValue { get; private set; }
+    public T CurrentValue { get; private set; }
 
-        public T Get(string name)
-        {
-            return CurrentValue;
-        }
+    public T Get(string name)
+    {
+        return CurrentValue;
+    }
 
-        public IDisposable OnChange(Action<T, string> listener)
-        {
-            throw new NotImplementedException();
-        }
+    public IDisposable OnChange(Action<T, string> listener)
+    {
+        throw new NotImplementedException();
     }
 }

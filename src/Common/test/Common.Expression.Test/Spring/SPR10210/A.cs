@@ -8,12 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210
+namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210;
+
+public abstract class A : B<IC>
 {
-    public abstract class A : B<IC>
+    public void BridgeMethod()
     {
-        public void BridgeMethod()
-        {
-        }
     }
 }

@@ -9,36 +9,35 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+/// <summary>
+/// A group of commonly used services used by the integration components
+/// </summary>
+public interface IIntegrationServices
 {
     /// <summary>
-    /// A group of commonly used services used by the integration components
+    /// Gets or sets the current message builder factory
     /// </summary>
-    public interface IIntegrationServices
-    {
-        /// <summary>
-        /// Gets or sets the current message builder factory
-        /// </summary>
-        IMessageBuilderFactory MessageBuilderFactory { get; set; }
+    IMessageBuilderFactory MessageBuilderFactory { get; set; }
 
-        /// <summary>
-        /// Gets or sets the current channel resolver
-        /// </summary>
-        IDestinationResolver<IMessageChannel> ChannelResolver { get; set; }
+    /// <summary>
+    /// Gets or sets the current channel resolver
+    /// </summary>
+    IDestinationResolver<IMessageChannel> ChannelResolver { get; set; }
 
-        /// <summary>
-        /// Gets or sets the current conversion service
-        /// </summary>
-        IConversionService ConversionService { get; set; }
+    /// <summary>
+    /// Gets or sets the current conversion service
+    /// </summary>
+    IConversionService ConversionService { get; set; }
 
-        /// <summary>
-        /// Gets or sets the current id generator
-        /// </summary>
-        IIDGenerator IdGenerator { get; set; }
+    /// <summary>
+    /// Gets or sets the current id generator
+    /// </summary>
+    IIDGenerator IdGenerator { get; set; }
 
-        /// <summary>
-        /// Gets or sets the current id expression parser
-        /// </summary>
-        IExpressionParser ExpressionParser { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets the current id expression parser
+    /// </summary>
+    IExpressionParser ExpressionParser { get; set; }
 }

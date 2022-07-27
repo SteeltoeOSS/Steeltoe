@@ -4,10 +4,9 @@
 
 using Steeltoe.Messaging.RabbitMQ.Listener;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public interface IRabbitListenerConfigurer
 {
-    public interface IRabbitListenerConfigurer
-    {
-        void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar);
-    }
+    void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar);
 }

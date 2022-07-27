@@ -6,37 +6,36 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
 using System;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public class SimpleMessageConverter : IMessageConverter
 {
-    public class SimpleMessageConverter : IMessageConverter
+    public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+
+    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+    public virtual object FromMessage(IMessage message, Type targetClass)
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+        var payload = message.Payload;
+        return ClassUtils.IsAssignableValue(targetClass, payload) ? payload : null;
+    }
 
-        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public virtual T FromMessage<T>(IMessage message)
+    {
+        return (T)FromMessage(message, typeof(T));
+    }
 
-        public virtual object FromMessage(IMessage message, Type targetClass)
+    public virtual IMessage ToMessage(object payload, IMessageHeaders headers)
+    {
+        if (headers != null)
         {
-            var payload = message.Payload;
-            return ClassUtils.IsAssignableValue(targetClass, payload) ? payload : null;
-        }
-
-        public virtual T FromMessage<T>(IMessage message)
-        {
-            return (T)FromMessage(message, typeof(T));
-        }
-
-        public virtual IMessage ToMessage(object payload, IMessageHeaders headers)
-        {
-            if (headers != null)
+            var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
+            if (accessor != null && accessor.IsMutable)
             {
-                var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
-                if (accessor != null && accessor.IsMutable)
-                {
-                    return MessageBuilder.CreateMessage(payload, accessor.MessageHeaders);
-                }
+                return MessageBuilder.CreateMessage(payload, accessor.MessageHeaders);
             }
-
-            return MessageBuilder.WithPayload(payload).CopyHeaders(headers).Build();
         }
+
+        return MessageBuilder.WithPayload(payload).CopyHeaders(headers).Build();
     }
 }

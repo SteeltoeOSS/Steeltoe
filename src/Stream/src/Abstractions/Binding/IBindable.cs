@@ -6,32 +6,31 @@ using Steeltoe.Stream.Binder;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+/// <summary>
+/// Marker interface for instances that can bind/unbind groups of inputs and outputs.
+/// TODO: Try to make this internal
+/// </summary>
+public interface IBindable
 {
-    /// <summary>
-    /// Marker interface for instances that can bind/unbind groups of inputs and outputs.
-    /// TODO: Try to make this internal
-    /// </summary>
-    public interface IBindable
-    {
-        Type BindingType { get; }
+    Type BindingType { get; }
 
-        ICollection<string> Inputs { get; }
+    ICollection<string> Inputs { get; }
 
-        ICollection<string> Outputs { get; }
+    ICollection<string> Outputs { get; }
 
-        ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService);
+    ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService);
 
-        ICollection<IBinding> CreateAndBindOutputs(IBindingService bindingService);
+    ICollection<IBinding> CreateAndBindOutputs(IBindingService bindingService);
 
-        void UnbindInputs(IBindingService bindingService);
+    void UnbindInputs(IBindingService bindingService);
 
-        void UnbindOutputs(IBindingService bindingService);
+    void UnbindOutputs(IBindingService bindingService);
 
-        object GetBoundTarget(string name);
+    object GetBoundTarget(string name);
 
-        object GetBoundInputTarget(string name);
+    object GetBoundInputTarget(string name);
 
-        object GetBoundOutputTarget(string name);
-    }
+    object GetBoundOutputTarget(string name);
 }

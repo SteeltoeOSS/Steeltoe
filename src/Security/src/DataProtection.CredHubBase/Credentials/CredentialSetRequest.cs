@@ -5,14 +5,13 @@
 using Steeltoe.Security.DataProtection.CredHub.Credentials.Utilities;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+[JsonConverter(typeof(SetRequestJsonConverter))]
+public class CredentialSetRequest : CredHubBaseObject
 {
-    [JsonConverter(typeof(SetRequestJsonConverter))]
-    public class CredentialSetRequest : CredHubBaseObject
-    {
-        /// <summary>
-        /// Gets or sets value of the credential to be set
-        /// </summary>
-        public ICredentialValue Value { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets value of the credential to be set
+    /// </summary>
+    public ICredentialValue Value { get; set; }
 }

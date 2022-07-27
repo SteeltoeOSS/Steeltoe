@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class TransactionUsageException : TransactionException
-    {
-        public TransactionUsageException(string msg)
-        : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public TransactionUsageException(string msg, Exception cause)
+public class TransactionUsageException : TransactionException
+{
+    public TransactionUsageException(string msg)
+        : base(msg)
+    {
+    }
+
+    public TransactionUsageException(string msg, Exception cause)
         : base(msg, cause)
-        {
-        }
+    {
     }
 }

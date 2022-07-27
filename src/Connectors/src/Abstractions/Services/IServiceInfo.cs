@@ -4,12 +4,11 @@
 
 using Steeltoe.Common;
 
-namespace Steeltoe.Connector.Services
-{
-    public interface IServiceInfo
-    {
-        string Id { get; }
+namespace Steeltoe.Connector.Services;
 
-        IApplicationInstanceInfo ApplicationInfo { get; }
-    }
+public interface IServiceInfo
+{
+    string Id { get; }
+
+    IApplicationInstanceInfo ApplicationInfo { get; }
 }

@@ -11,175 +11,174 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.SqlServer.EFCore.Test
+namespace Steeltoe.Connector.SqlServer.EFCore.Test;
+
+public class SqlServerDbContextOptionsExtensionsTest
 {
-    public class SqlServerDbContextOptionsExtensionsTest
+    public SqlServerDbContextOptionsExtensionsTest()
     {
-        public SqlServerDbContextOptionsExtensionsTest()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    }
 
-        [Fact]
-        public void UseSqlServer_ThrowsIfDbContextOptionsBuilderNull()
-        {
-            DbContextOptionsBuilder optionsBuilder = null;
-            DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
-            IConfigurationRoot config = null;
+    [Fact]
+    public void UseSqlServer_ThrowsIfDbContextOptionsBuilderNull()
+    {
+        DbContextOptionsBuilder optionsBuilder = null;
+        DbContextOptionsBuilder<GoodDbContext> goodBuilder = null;
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
-            Assert.Contains(nameof(optionsBuilder), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
+        Assert.Contains(nameof(optionsBuilder), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
-            Assert.Contains(nameof(optionsBuilder), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
+        Assert.Contains(nameof(optionsBuilder), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
-            Assert.Contains(nameof(optionsBuilder), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
+        Assert.Contains(nameof(optionsBuilder), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
-            Assert.Contains(nameof(optionsBuilder), ex4.Message);
-        }
+        var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
+        Assert.Contains(nameof(optionsBuilder), ex4.Message);
+    }
 
-        [Fact]
-        public void UseSqlServer_ThrowsIfConfigurationNull()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            IConfigurationRoot config = null;
+    [Fact]
+    public void UseSqlServer_ThrowsIfConfigurationNull()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder();
+        var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
-            Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config));
+        Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
-            Assert.Contains(nameof(config), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, "foobar"));
+        Assert.Contains(nameof(config), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
-            Assert.Contains(nameof(config), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config));
+        Assert.Contains(nameof(config), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
-            Assert.Contains(nameof(config), ex4.Message);
-        }
+        var ex4 = Assert.Throws<ArgumentNullException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, "foobar"));
+        Assert.Contains(nameof(config), ex4.Message);
+    }
 
-        [Fact]
-        public void UseSqlServer_ThrowsIfServiceNameNull()
-        {
-            var optionsBuilder = new DbContextOptionsBuilder();
-            var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-            var config = new ConfigurationBuilder().Build();
-            string serviceName = null;
+    [Fact]
+    public void UseSqlServer_ThrowsIfServiceNameNull()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder();
+        var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
+        var config = new ConfigurationBuilder().Build();
+        string serviceName = null;
 
-            var ex2 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, serviceName));
-            Assert.Contains(nameof(serviceName), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer(optionsBuilder, config, serviceName));
+        Assert.Contains(nameof(serviceName), ex2.Message);
 
-            var ex4 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, serviceName));
-            Assert.Contains(nameof(serviceName), ex4.Message);
-        }
+        var ex4 = Assert.Throws<ArgumentException>(() => SqlServerDbContextOptionsExtensions.UseSqlServer<GoodDbContext>(goodBuilder, config, serviceName));
+        Assert.Contains(nameof(serviceName), ex4.Message);
+    }
 
-        [Fact]
-        public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
-        {
-            IServiceCollection services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+    [Fact]
+    public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
+    {
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
 
-            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
-            var service = services.BuildServiceProvider().GetService<GoodDbContext>();
-            Assert.NotNull(service);
-            var con = service.Database.GetDbConnection();
-            Assert.NotNull(con);
-            Assert.IsType<SqlConnection>(con);
-        }
+        var service = services.BuildServiceProvider().GetService<GoodDbContext>();
+        Assert.NotNull(service);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.IsType<SqlConnection>(con);
+    }
 
-        [Fact]
-        public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
-        {
-            IServiceCollection services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+    [Fact]
+    public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
+    {
+        IServiceCollection services = new ServiceCollection();
+        var config = new ConfigurationBuilder().Build();
 
-            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
 
-            var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-            Assert.Contains("foobar", ex.Message);
-        }
+        var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
+        Assert.Contains("foobar", ex.Message);
+    }
 
-        [Fact]
-        public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddDbContext_MultipleSqlServerServices_ThrowsConnectorException()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVCAP);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
 
-            services.AddDbContext<GoodDbContext>(options =>
-                  options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options =>
+            options.UseSqlServer(config));
 
-            var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
-            Assert.Contains("Multiple", ex.Message);
-        }
+        var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
+        Assert.Contains("Multiple", ex.Message);
+    }
 
-        [Fact]
-        public void AddDbContexts_WithVCAPs_AddsDbContexts()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddDbContexts_WithVCAPs_AddsDbContexts()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerVCAP);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
 
-            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
-            var built = services.BuildServiceProvider();
-            var service = built.GetService<GoodDbContext>();
-            Assert.NotNull(service);
+        var built = services.BuildServiceProvider();
+        var service = built.GetService<GoodDbContext>();
+        Assert.NotNull(service);
 
-            var con = service.Database.GetDbConnection();
-            Assert.NotNull(con);
-            Assert.IsType<SqlConnection>(con);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.IsType<SqlConnection>(con);
 
-            var connString = con.ConnectionString;
-            Assert.NotNull(connString);
-            Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e", connString);
-            Assert.Contains("Data Source=192.168.0.80", connString);
-            Assert.Contains("User Id=uf33b2b30783a4087948c30f6c3b0c90f", connString);
-            Assert.Contains("Password=Pefbb929c1e0945b5bab5b8f0d110c503", connString);
-        }
+        var connString = con.ConnectionString;
+        Assert.NotNull(connString);
+        Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e", connString);
+        Assert.Contains("Data Source=192.168.0.80", connString);
+        Assert.Contains("User Id=uf33b2b30783a4087948c30f6c3b0c90f", connString);
+        Assert.Contains("Password=Pefbb929c1e0945b5bab5b8f0d110c503", connString);
+    }
 
-        [Fact]
-        public void AddDbContexts_WithAzureVCAPs_AddsDbContexts()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddDbContexts_WithAzureVCAPs_AddsDbContexts()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.SingleServerAzureVCAP);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
 
-            services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
-            var built = services.BuildServiceProvider();
-            var service = built.GetService<GoodDbContext>();
-            Assert.NotNull(service);
+        var built = services.BuildServiceProvider();
+        var service = built.GetService<GoodDbContext>();
+        Assert.NotNull(service);
 
-            var con = service.Database.GetDbConnection();
-            Assert.NotNull(con);
-            Assert.IsType<SqlConnection>(con);
+        var con = service.Database.GetDbConnection();
+        Assert.NotNull(con);
+        Assert.IsType<SqlConnection>(con);
 
-            var connString = con.ConnectionString;
-            Assert.NotNull(connString);
-            Assert.Contains("Initial Catalog=u9e44b3e8e31", connString);
-            Assert.Contains("Data Source=ud6893c77875.database.windows.net", connString);
-            Assert.Contains("User Id=ud61c2c9ed2a", connString);
-            Assert.Contains("Password=yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==", connString);
-        }
+        var connString = con.ConnectionString;
+        Assert.NotNull(connString);
+        Assert.Contains("Initial Catalog=u9e44b3e8e31", connString);
+        Assert.Contains("Data Source=ud6893c77875.database.windows.net", connString);
+        Assert.Contains("User Id=ud61c2c9ed2a", connString);
+        Assert.Contains("Password=yNOaMnbsjGT3qk5eW6BXcbHE6b2Da8sLcao7SdIFFqA2q345jQ9RSw==", connString);
     }
 }

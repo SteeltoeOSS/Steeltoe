@@ -5,20 +5,19 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Info;
 
-namespace Steeltoe.Management.Endpoint.Info.Contributor
+namespace Steeltoe.Management.Endpoint.Info.Contributor;
+
+public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
 {
-    public class AppSettingsInfoContributor : AbstractConfigurationContributor, IInfoContributor
+    private const string APPSETTINGS_PREFIX = "info";
+
+    public AppSettingsInfoContributor(IConfiguration config)
+        : base(config)
     {
-        private const string APPSETTINGS_PREFIX = "info";
+    }
 
-        public AppSettingsInfoContributor(IConfiguration config)
-            : base(config)
-        {
-        }
-
-        public void Contribute(IInfoBuilder builder)
-        {
-            Contribute(builder, APPSETTINGS_PREFIX, false);
-        }
+    public void Contribute(IInfoBuilder builder)
+    {
+        Contribute(builder, APPSETTINGS_PREFIX, false);
     }
 }

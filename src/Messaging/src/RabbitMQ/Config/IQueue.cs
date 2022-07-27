@@ -4,22 +4,21 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public interface IQueue : IDeclarable, IServiceNameAware
 {
-    public interface IQueue : IDeclarable, IServiceNameAware
-    {
-        string QueueName { get; set; }
+    string QueueName { get; set; }
 
-        string ActualName { get; set; }
+    string ActualName { get; set; }
 
-        bool IsDurable { get; set; }
+    bool IsDurable { get; set; }
 
-        bool IsExclusive { get; set; }
+    bool IsExclusive { get; set; }
 
-        bool IsAutoDelete { get; set; }
+    bool IsAutoDelete { get; set; }
 
-        string MasterLocator { get; set; }
+    string MasterLocator { get; set; }
 
-        object Clone();
-    }
+    object Clone();
 }

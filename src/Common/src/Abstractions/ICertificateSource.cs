@@ -5,10 +5,9 @@
 using Microsoft.Extensions.Configuration;
 using System;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public interface ICertificateSource : IConfigurationSource
 {
-    public interface ICertificateSource : IConfigurationSource
-    {
-        Type OptionsConfigurer { get; }
-    }
+    Type OptionsConfigurer { get; }
 }

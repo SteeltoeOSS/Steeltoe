@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class IllegalTransactionStateException : TransactionUsageException
-    {
-        public IllegalTransactionStateException(string msg)
-        : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public IllegalTransactionStateException(string msg, Exception cause)
+public class IllegalTransactionStateException : TransactionUsageException
+{
+    public IllegalTransactionStateException(string msg)
+        : base(msg)
+    {
+    }
+
+    public IllegalTransactionStateException(string msg, Exception cause)
         : base(msg, cause)
-        {
-        }
+    {
     }
 }

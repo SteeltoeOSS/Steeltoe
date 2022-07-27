@@ -4,12 +4,11 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+/// <summary>
+/// A pollable source that calls a message handler with a message
+/// </summary>
+public interface IPollableMessageSource : IPollableSource<IMessageHandler>
 {
-    /// <summary>
-    /// A pollable source that calls a message handler with a message
-    /// </summary>
-    public interface IPollableMessageSource : IPollableSource<IMessageHandler>
-    {
-    }
 }

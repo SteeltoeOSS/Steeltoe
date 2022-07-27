@@ -6,24 +6,23 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.OAuth
+namespace Steeltoe.Connector.OAuth;
+
+public class OAuthConnectorFactory
 {
-    public class OAuthConnectorFactory
+    private readonly SsoServiceInfo _info;
+    private readonly OAuthConnectorOptions _config;
+    private readonly OAuthConfigurer _configurer = new ();
+
+    public OAuthConnectorFactory(SsoServiceInfo sinfo, OAuthConnectorOptions config)
     {
-        private readonly SsoServiceInfo _info;
-        private readonly OAuthConnectorOptions _config;
-        private readonly OAuthConfigurer _configurer = new ();
+        _info = sinfo;
+        _config = config;
+    }
 
-        public OAuthConnectorFactory(SsoServiceInfo sinfo, OAuthConnectorOptions config)
-        {
-            _info = sinfo;
-            _config = config;
-        }
-
-        public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
-        {
-            var opts = _configurer.Configure(_info, _config);
-            return opts;
-        }
+    public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
+    {
+        var opts = _configurer.Configure(_info, _config);
+        return opts;
     }
 }

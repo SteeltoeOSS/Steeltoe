@@ -10,68 +10,67 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Http.LoadBalancer
+namespace Steeltoe.Common.Http.LoadBalancer;
+
+/// <summary>
+/// Same as <see cref="LoadBalancerHttpClientHandler"/> except is a <see cref="DelegatingHandler"/>, for use with HttpClientFactory
+/// </summary>
+public class LoadBalancerDelegatingHandler : DelegatingHandler
 {
+    private readonly ILoadBalancer _loadBalancer;
+
     /// <summary>
-    /// Same as <see cref="LoadBalancerHttpClientHandler"/> except is a <see cref="DelegatingHandler"/>, for use with HttpClientFactory
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
+    /// For use with <see cref="IHttpClientBuilder"/>
     /// </summary>
-    public class LoadBalancerDelegatingHandler : DelegatingHandler
+    /// <param name="loadBalancer">Load balancer to use</param>
+    public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
     {
-        private readonly ILoadBalancer _loadBalancer;
+        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
-        /// For use with <see cref="IHttpClientBuilder"/>
-        /// </summary>
-        /// <param name="loadBalancer">Load balancer to use</param>
-        public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
+    /// For use with <see cref="IHttpClientBuilder"/>
+    /// </summary>
+    /// <param name="loadBalancer">Load balancer to use</param>
+    /// <param name="logger">For logging</param>
+    [Obsolete("Please remove ILogger parameter")]
+    public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
+    {
+        _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+    }
+
+    /// <inheritdoc />
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        // record the original request
+        var originalUri = request.RequestUri;
+
+        // look up a service instance and update the request
+        var resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
+        request.RequestUri = resolvedUri;
+
+        // allow other handlers to operate and the request to continue
+        var startTime = DateTime.UtcNow;
+
+        Exception exception = null;
+        try
         {
-            _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
-        /// For use with <see cref="IHttpClientBuilder"/>
-        /// </summary>
-        /// <param name="loadBalancer">Load balancer to use</param>
-        /// <param name="logger">For logging</param>
-        [Obsolete("Please remove ILogger parameter")]
-        public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
+        catch (Exception ex)
         {
-            _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
+            exception = ex;
+
+            throw;
         }
-
-        /// <inheritdoc />
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        finally
         {
-            // record the original request
-            var originalUri = request.RequestUri;
+            request.RequestUri = originalUri;
 
-            // look up a service instance and update the request
-            var resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
-            request.RequestUri = resolvedUri;
-
-            // allow other handlers to operate and the request to continue
-            var startTime = DateTime.UtcNow;
-
-            Exception exception = null;
-            try
-            {
-                return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                exception = ex;
-
-                throw;
-            }
-            finally
-            {
-                request.RequestUri = originalUri;
-
-                // track stats
-                await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
-            }
+            // track stats
+            await _loadBalancer.UpdateStatsAsync(originalUri, resolvedUri, DateTime.UtcNow - startTime, exception).ConfigureAwait(false);
         }
     }
 }

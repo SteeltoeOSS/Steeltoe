@@ -13,25 +13,25 @@ using RichardSzalay.MockHttp;
 using System;
 using System.Net.Http;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class TestServerOpenIdStartup
 {
-    public class TestServerOpenIdStartup
+    public IConfiguration Configuration { get; }
+
+    public TestServerOpenIdStartup(IConfiguration configuration)
     {
-        public IConfiguration Configuration { get; }
+        Configuration = configuration;
+    }
 
-        public TestServerOpenIdStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
+        var jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
+        var mockHttpMessageHandler = new MockHttpMessageHandler();
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            var openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
-            var jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
-            var mockHttpMessageHandler = new MockHttpMessageHandler();
-
-            services.AddOptions();
-            services.AddAuthentication((options) =>
+        services.AddOptions();
+        services.AddAuthentication((options) =>
             {
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
@@ -46,17 +46,16 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test
                 var jwksRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
                 options.Backchannel = new HttpClient(mockHttpMessageHandler);
             });
-        }
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseAuthentication();
+
+        app.Run(async context =>
         {
-            app.UseAuthentication();
-
-            app.Run(async context =>
-            {
-                await context.ChallengeAsync();
-                return;
-            });
-        }
+            await context.ChallengeAsync();
+            return;
+        });
     }
 }

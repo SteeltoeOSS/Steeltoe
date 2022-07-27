@@ -4,17 +4,16 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging
+namespace Steeltoe.Messaging;
+
+/// <summary>
+/// Simple contract for handling a Message
+/// </summary>
+public interface IMessageHandler : IServiceNameAware
 {
     /// <summary>
-    /// Simple contract for handling a Message
+    /// Handle the given method
     /// </summary>
-    public interface IMessageHandler : IServiceNameAware
-    {
-        /// <summary>
-        /// Handle the given method
-        /// </summary>
-        /// <param name="message">the message to process</param>
-        void HandleMessage(IMessage message);
-    }
+    /// <param name="message">the message to process</param>
+    void HandleMessage(IMessage message);
 }

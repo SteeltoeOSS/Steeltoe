@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Expression.Internal;
 
-namespace Steeltoe.Integration.Expression
+namespace Steeltoe.Integration.Expression;
+
+public interface IEvaluationCallback
 {
-    public interface IEvaluationCallback
-    {
-        object Evaluate(IExpression expression);
-    }
+    object Evaluate(IExpression expression);
 }

@@ -4,33 +4,32 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
+public class SpelParseException : ParseException
 {
-    public class SpelParseException : ParseException
+    public SpelMessage MessageCode { get; }
+
+    public object[] Inserts { get; }
+
+    public SpelParseException(string expressionString, int position, SpelMessage message, params object[] inserts)
+        : base(expressionString, position, message.FormatMessage(inserts))
     {
-        public SpelMessage MessageCode { get; }
+        MessageCode = message;
+        Inserts = inserts;
+    }
 
-        public object[] Inserts { get; }
-
-        public SpelParseException(string expressionString, int position, SpelMessage message, params object[] inserts)
-            : base(expressionString, position, message.FormatMessage(inserts))
-        {
-            MessageCode = message;
-            Inserts = inserts;
-        }
-
-        public SpelParseException(int position, SpelMessage message, params object[] inserts)
+    public SpelParseException(int position, SpelMessage message, params object[] inserts)
         : base(position, message.FormatMessage(inserts))
-        {
-            MessageCode = message;
-            Inserts = inserts;
-        }
+    {
+        MessageCode = message;
+        Inserts = inserts;
+    }
 
-        public SpelParseException(int position, Exception cause, SpelMessage message, params object[] inserts)
+    public SpelParseException(int position, Exception cause, SpelMessage message, params object[] inserts)
         : base(position, message.FormatMessage(inserts), cause)
-        {
-            MessageCode = message;
-            Inserts = inserts;
-        }
+    {
+        MessageCode = message;
+        Inserts = inserts;
     }
 }

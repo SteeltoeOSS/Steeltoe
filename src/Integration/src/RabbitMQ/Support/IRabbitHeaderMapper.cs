@@ -8,9 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Rabbit.Support
+namespace Steeltoe.Integration.Rabbit.Support;
+
+public interface IRabbitHeaderMapper : IRequestReplyHeaderMapper<IMessageHeaders>
 {
-    public interface IRabbitHeaderMapper : IRequestReplyHeaderMapper<IMessageHeaders>
-    {
-    }
 }

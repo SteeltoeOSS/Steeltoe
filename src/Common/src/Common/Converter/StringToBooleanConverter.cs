@@ -6,50 +6,49 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public class StringToBooleanConverter : AbstractGenericConditionalConverter
 {
-    public class StringToBooleanConverter : AbstractGenericConditionalConverter
+    private static readonly ISet<string> _trueValues = new HashSet<string>() { "true", "on", "yes", "1" };
+
+    private static readonly ISet<string> _falseValues = new HashSet<string>() { "false", "off", "no", "0" };
+
+    public StringToBooleanConverter()
+        : base(null)
     {
-        private static readonly ISet<string> _trueValues = new HashSet<string>() { "true", "on", "yes", "1" };
+    }
 
-        private static readonly ISet<string> _falseValues = new HashSet<string>() { "false", "off", "no", "0" };
+    public override bool Matches(Type sourceType, Type targetType)
+    {
+        var targetCheck = ConversionUtils.GetNullableElementType(targetType);
+        return sourceType == typeof(string) && targetCheck == typeof(bool);
+    }
 
-        public StringToBooleanConverter()
-            : base(null)
+    public override object Convert(object source, Type sourceType, Type targetType)
+    {
+        if (source == null)
         {
+            return null;
         }
 
-        public override bool Matches(Type sourceType, Type targetType)
+        var value = ((string)source).Trim();
+        if (string.IsNullOrEmpty(value))
         {
-            var targetCheck = ConversionUtils.GetNullableElementType(targetType);
-            return sourceType == typeof(string) && targetCheck == typeof(bool);
+            return null;
         }
 
-        public override object Convert(object source, Type sourceType, Type targetType)
+        if (_trueValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
         {
-            if (source == null)
-            {
-                return null;
-            }
-
-            var value = ((string)source).Trim();
-            if (string.IsNullOrEmpty(value))
-            {
-                return null;
-            }
-
-            if (_trueValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
-            {
-                return true;
-            }
-            else if (_falseValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
-            {
-                return false;
-            }
-            else
-            {
-                throw new ArgumentException("Invalid boolean value '" + source + "'");
-            }
+            return true;
+        }
+        else if (_falseValues.Contains(value, StringComparer.InvariantCultureIgnoreCase))
+        {
+            return false;
+        }
+        else
+        {
+            throw new ArgumentException("Invalid boolean value '" + source + "'");
         }
     }
 }

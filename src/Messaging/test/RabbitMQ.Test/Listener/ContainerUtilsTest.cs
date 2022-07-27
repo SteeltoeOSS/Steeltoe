@@ -7,24 +7,23 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
-{
-    public class ContainerUtilsTest
-    {
-        [Fact]
-        public void TestMustRequeue()
-        {
-            Assert.True(ContainerUtils.ShouldRequeue(
-                false,
-                new ListenerExecutionFailedException(string.Empty, new ImmediateRequeueException("requeue"))));
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
-        [Fact]
-        public void TestMustNotRequeue()
-        {
-            Assert.False(ContainerUtils.ShouldRequeue(
-                true,
-                new ListenerExecutionFailedException(string.Empty, new RabbitRejectAndDontRequeueException("no requeue"))));
-        }
+public class ContainerUtilsTest
+{
+    [Fact]
+    public void TestMustRequeue()
+    {
+        Assert.True(ContainerUtils.ShouldRequeue(
+            false,
+            new ListenerExecutionFailedException(string.Empty, new ImmediateRequeueException("requeue"))));
+    }
+
+    [Fact]
+    public void TestMustNotRequeue()
+    {
+        Assert.False(ContainerUtils.ShouldRequeue(
+            true,
+            new ListenerExecutionFailedException(string.Empty, new RabbitRejectAndDontRequeueException("no requeue"))));
     }
 }

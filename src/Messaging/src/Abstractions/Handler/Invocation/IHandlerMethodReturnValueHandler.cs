@@ -4,26 +4,25 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+/// <summary>
+/// Strategy interface to handle the value returned from the invocation of a method handling a Message.
+/// </summary>
+public interface IHandlerMethodReturnValueHandler
 {
     /// <summary>
-    /// Strategy interface to handle the value returned from the invocation of a method handling a Message.
+    /// Determine whether the given method return type is supported by this handler.
     /// </summary>
-    public interface IHandlerMethodReturnValueHandler
-    {
-        /// <summary>
-        /// Determine whether the given method return type is supported by this handler.
-        /// </summary>
-        /// <param name="returnType">the return parameter info</param>
-        /// <returns>true if it supports the supplied return type</returns>
-        bool SupportsReturnType(ParameterInfo returnType);
+    /// <param name="returnType">the return parameter info</param>
+    /// <returns>true if it supports the supplied return type</returns>
+    bool SupportsReturnType(ParameterInfo returnType);
 
-        /// <summary>
-        /// Handle the given return value.
-        /// </summary>
-        /// <param name="returnValue">the value returned from the handler method</param>
-        /// <param name="returnType">the type of the return value</param>
-        /// <param name="message">the message that was passed to the handler</param>
-        void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message);
-    }
+    /// <summary>
+    /// Handle the given return value.
+    /// </summary>
+    /// <param name="returnValue">the value returned from the handler method</param>
+    /// <param name="returnType">the type of the return value</param>
+    /// <param name="message">the message that was passed to the handler</param>
+    void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message);
 }

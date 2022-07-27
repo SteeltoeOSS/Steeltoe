@@ -10,70 +10,69 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+
+public class DelegatingDecompressingPostProcessor : IMessagePostProcessor, IOrdered
 {
-    public class DelegatingDecompressingPostProcessor : IMessagePostProcessor, IOrdered
+    private readonly Dictionary<string, IMessagePostProcessor> _decompressors = new ();
+
+    public DelegatingDecompressingPostProcessor()
     {
-        private readonly Dictionary<string, IMessagePostProcessor> _decompressors = new ();
+        _decompressors.Add("gzip", new GUnzipPostProcessor());
+        _decompressors.Add("zip", new UnzipPostProcessor());
+        _decompressors.Add("deflate", new InflaterPostProcessor());
+    }
 
-        public DelegatingDecompressingPostProcessor()
+    public int Order { get; set; }
+
+    public void AddDecompressor(string contentEncoding, IMessagePostProcessor decompressor)
+    {
+        _decompressors[contentEncoding] = decompressor;
+    }
+
+    public IMessagePostProcessor RemoveDecompressor(string contentEncoding)
+    {
+        _decompressors.Remove(contentEncoding, out var result);
+        return result;
+    }
+
+    public void SetDecompressors(Dictionary<string, IMessagePostProcessor> decompressors)
+    {
+        _decompressors.Clear();
+        foreach (var d in decompressors)
         {
-            _decompressors.Add("gzip", new GUnzipPostProcessor());
-            _decompressors.Add("zip", new UnzipPostProcessor());
-            _decompressors.Add("deflate", new InflaterPostProcessor());
+            decompressors.Add(d.Key, d.Value);
         }
+    }
 
-        public int Order { get; set; }
+    public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
+    {
+        return PostProcessMessage(message);
+    }
 
-        public void AddDecompressor(string contentEncoding, IMessagePostProcessor decompressor)
+    public IMessage PostProcessMessage(IMessage message)
+    {
+        var encoding = message.Headers.ContentEncoding();
+        if (encoding == null)
         {
-            _decompressors[contentEncoding] = decompressor;
+            return message;
         }
-
-        public IMessagePostProcessor RemoveDecompressor(string contentEncoding)
+        else
         {
-            _decompressors.Remove(contentEncoding, out var result);
-            return result;
-        }
-
-        public void SetDecompressors(Dictionary<string, IMessagePostProcessor> decompressors)
-        {
-            _decompressors.Clear();
-            foreach (var d in decompressors)
+            var colonAt = encoding.IndexOf(':');
+            if (colonAt > 0)
             {
-                decompressors.Add(d.Key, d.Value);
+                encoding = encoding.Substring(0, colonAt);
             }
-        }
 
-        public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
-        {
-            return PostProcessMessage(message);
-        }
-
-        public IMessage PostProcessMessage(IMessage message)
-        {
-            var encoding = message.Headers.ContentEncoding();
-            if (encoding == null)
+            _decompressors.TryGetValue(encoding, out var decompressor);
+            if (decompressor != null)
             {
-                return message;
+                return decompressor.PostProcessMessage(message);
             }
             else
             {
-                var colonAt = encoding.IndexOf(':');
-                if (colonAt > 0)
-                {
-                    encoding = encoding.Substring(0, colonAt);
-                }
-
-                _decompressors.TryGetValue(encoding, out var decompressor);
-                if (decompressor != null)
-                {
-                    return decompressor.PostProcessMessage(message);
-                }
-                else
-                {
-                    return message;
-                }
+                return message;
             }
         }
     }

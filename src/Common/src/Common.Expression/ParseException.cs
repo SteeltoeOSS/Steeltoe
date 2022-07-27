@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public class ParseException : ExpressionException
 {
-    public class ParseException : ExpressionException
+    public ParseException(string expressionString, int position, string message)
+        : base(expressionString, position, message)
     {
-        public ParseException(string expressionString, int position, string message)
-           : base(expressionString, position, message)
-        {
-        }
+    }
 
-        public ParseException(int position, string message, Exception cause)
+    public ParseException(int position, string message, Exception cause)
         : base(position, message, cause)
-        {
-        }
+    {
+    }
 
-        public ParseException(int position, string message)
+    public ParseException(int position, string message)
         : base(position, message)
-        {
-        }
+    {
     }
 }

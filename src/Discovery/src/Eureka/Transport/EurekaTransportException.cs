@@ -5,28 +5,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+[Serializable]
+public class EurekaTransportException : Exception
 {
-    [Serializable]
-    public class EurekaTransportException : Exception
+    public EurekaTransportException(string message)
+        : base(message)
     {
-        public EurekaTransportException(string message)
-            : base(message)
-        {
-        }
+    }
 
-        public EurekaTransportException(string message, Exception cause)
-            : base(message, cause)
-        {
-        }
+    public EurekaTransportException(string message, Exception cause)
+        : base(message, cause)
+    {
+    }
 
-        public EurekaTransportException()
-        {
-        }
+    public EurekaTransportException()
+    {
+    }
 
-        protected EurekaTransportException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected EurekaTransportException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

@@ -4,17 +4,16 @@
 
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class EurekaApplicationInfoManagerTest : AbstractBaseTest
 {
-    public class EurekaApplicationInfoManagerTest : AbstractBaseTest
+    [Fact]
+    public void Constructor_Initializes_Correctly()
     {
-        [Fact]
-        public void Constructor_Initializes_Correctly()
-        {
-            var instOptions = new EurekaInstanceOptions();
-            var wrap = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
-            var mgr = new EurekaApplicationInfoManager(wrap);
-            Assert.Equal(instOptions, mgr.InstanceConfig);
-        }
+        var instOptions = new EurekaInstanceOptions();
+        var wrap = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
+        var mgr = new EurekaApplicationInfoManager(wrap);
+        Assert.Equal(instOptions, mgr.InstanceConfig);
     }
 }

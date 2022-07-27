@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Converter
-{
-    public class StringToGuidConverter : AbstractConverter<string, Guid>
-    {
-        public override Guid Convert(string source)
-        {
-            return Guid.Parse(source.Trim());
-        }
+namespace Steeltoe.Common.Converter;
 
-        public override object Convert(object source, Type sourceType, Type targetType)
-        {
-            return Convert((string)source);
-        }
+public class StringToGuidConverter : AbstractConverter<string, Guid>
+{
+    public override Guid Convert(string source)
+    {
+        return Guid.Parse(source.Trim());
+    }
+
+    public override object Convert(object source, Type sourceType, Type targetType)
+    {
+        return Convert((string)source);
     }
 }

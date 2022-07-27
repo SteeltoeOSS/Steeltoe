@@ -5,20 +5,19 @@
 using Steeltoe.Stream.Binder;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+/// <summary>
+/// Handles binding of input/output targets by delegating to an underlying Binder.
+/// TODO: Try to make this internal interface
+/// </summary>
+public interface IBindingService
 {
-    /// <summary>
-    /// Handles binding of input/output targets by delegating to an underlying Binder.
-    /// TODO: Try to make this internal interface
-    /// </summary>
-    public interface IBindingService
-    {
-        ICollection<IBinding> BindConsumer<T>(T inputChannel, string name);
+    ICollection<IBinding> BindConsumer<T>(T inputChannel, string name);
 
-        IBinding BindProducer<T>(T outputChannel, string name);
+    IBinding BindProducer<T>(T outputChannel, string name);
 
-        void UnbindProducers(string outputName);
+    void UnbindProducers(string outputName);
 
-        void UnbindConsumers(string inputName);
-    }
+    void UnbindConsumers(string inputName);
 }

@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
-{
-    public interface ITypeComparator
-    {
-        bool CanCompare(object firstObject, object secondObject);
+namespace Steeltoe.Common.Expression.Internal;
 
-        int Compare(object firstObject, object secondObject);
-    }
+public interface ITypeComparator
+{
+    bool CanCompare(object firstObject, object secondObject);
+
+    int Compare(object firstObject, object secondObject);
 }

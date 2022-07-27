@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface INamingStrategy
 {
-    public interface INamingStrategy
-    {
-        string GenerateName();
-    }
+    string GenerateName();
 }

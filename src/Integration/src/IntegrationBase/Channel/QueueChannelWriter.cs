@@ -4,13 +4,12 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Integration.Channel
+namespace Steeltoe.Integration.Channel;
+
+public class QueueChannelWriter : AbstractMessageChannelWriter
 {
-    public class QueueChannelWriter : AbstractMessageChannelWriter
+    public QueueChannelWriter(AbstractPollableChannel channel, ILogger logger = null)
+        : base(channel, logger)
     {
-        public QueueChannelWriter(AbstractPollableChannel channel, ILogger logger = null)
-            : base(channel, logger)
-        {
-        }
     }
 }

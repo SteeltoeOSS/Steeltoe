@@ -6,28 +6,27 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Task.Test
+namespace Steeltoe.Discovery.Eureka.Task.Test;
+
+public class TimedTaskTest : AbstractBaseTest
 {
-    public class TimedTaskTest : AbstractBaseTest
+    [Fact]
+    public void Run_Enforces_SingleActiveTask()
     {
-        [Fact]
-        public void Run_Enforces_SingleActiveTask()
-        {
-            _timerFuncCount = 0;
-            var timedTask = new TimedTask("MyTask", TimerFunc);
-            var timer = new Timer(timedTask.Run, null, 10, 100);
-            System.Threading.Thread.Sleep(1000);
-            Assert.Equal(1, _timerFuncCount);
+        _timerFuncCount = 0;
+        var timedTask = new TimedTask("MyTask", TimerFunc);
+        var timer = new Timer(timedTask.Run, null, 10, 100);
+        System.Threading.Thread.Sleep(1000);
+        Assert.Equal(1, _timerFuncCount);
 
-            timer.Dispose();
-        }
+        timer.Dispose();
+    }
 
-        private volatile int _timerFuncCount;
+    private volatile int _timerFuncCount;
 
-        private void TimerFunc()
-        {
-            ++_timerFuncCount;
-            System.Threading.Thread.Sleep(3000);
-        }
+    private void TimerFunc()
+    {
+        ++_timerFuncCount;
+        System.Threading.Thread.Sleep(3000);
     }
 }

@@ -7,30 +7,29 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Stream.Binder;
 using System;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class MessageSourceBindingTargetFactory : AbstractBindingTargetFactory<IPollableMessageSource>
 {
-    public class MessageSourceBindingTargetFactory : AbstractBindingTargetFactory<IPollableMessageSource>
+    private readonly IMessageChannelAndSourceConfigurer _messageConfigurer;
+    private readonly ISmartMessageConverter _messageConverter;
+
+    public MessageSourceBindingTargetFactory(IApplicationContext context, ISmartMessageConverter messageConverter, CompositeMessageChannelConfigurer messageConfigurer)
+        : base(context)
     {
-        private readonly IMessageChannelAndSourceConfigurer _messageConfigurer;
-        private readonly ISmartMessageConverter _messageConverter;
+        _messageConfigurer = messageConfigurer;
+        _messageConverter = messageConverter;
+    }
 
-        public MessageSourceBindingTargetFactory(IApplicationContext context, ISmartMessageConverter messageConverter, CompositeMessageChannelConfigurer messageConfigurer)
-            : base(context)
-        {
-            _messageConfigurer = messageConfigurer;
-            _messageConverter = messageConverter;
-        }
+    public override IPollableMessageSource CreateInput(string name)
+    {
+        var chan = new DefaultPollableMessageSource(ApplicationContext, _messageConverter);
+        _messageConfigurer.ConfigurePolledMessageSource(chan, name);
+        return chan;
+    }
 
-        public override IPollableMessageSource CreateInput(string name)
-        {
-            var chan = new DefaultPollableMessageSource(ApplicationContext, _messageConverter);
-            _messageConfigurer.ConfigurePolledMessageSource(chan, name);
-            return chan;
-        }
-
-        public override IPollableMessageSource CreateOutput(string name)
-        {
-            throw new InvalidOperationException();
-        }
+    public override IPollableMessageSource CreateOutput(string name)
+    {
+        throw new InvalidOperationException();
     }
 }

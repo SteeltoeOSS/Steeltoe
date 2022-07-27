@@ -14,64 +14,63 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 
-namespace Steeltoe.Common.Expression.Internal.Contexts
+namespace Steeltoe.Common.Expression.Internal.Contexts;
+
+public class ServiceFactoryAccessorTests
 {
-    public class ServiceFactoryAccessorTests
+    private IServiceProvider serviceProvider;
+
+    public ServiceFactoryAccessorTests()
     {
-        private IServiceProvider serviceProvider;
-
-        public ServiceFactoryAccessorTests()
+        var config = new ConfigurationBuilder().Build();
+        var collection = new ServiceCollection();
+        collection.AddSingleton<IConfiguration>(config);
+        collection.AddSingleton<IApplicationContext>((p) =>
         {
-            var config = new ConfigurationBuilder().Build();
-            var collection = new ServiceCollection();
-            collection.AddSingleton<IConfiguration>(config);
-            collection.AddSingleton<IApplicationContext>((p) =>
-            {
-                return new GenericApplicationContext(p, config);
-            });
-            collection.AddSingleton(typeof(Car));
-            collection.AddSingleton(typeof(Boat));
-            serviceProvider = collection.BuildServiceProvider();
-        }
+            return new GenericApplicationContext(p, config);
+        });
+        collection.AddSingleton(typeof(Car));
+        collection.AddSingleton(typeof(Boat));
+        serviceProvider = collection.BuildServiceProvider();
+    }
 
-        [Fact]
-        public void TestServiceAccess()
+    [Fact]
+    public void TestServiceAccess()
+    {
+        var appContext = serviceProvider.GetService<IApplicationContext>();
+        var context = new StandardEvaluationContext
         {
-            var appContext = serviceProvider.GetService<IApplicationContext>();
-            var context = new StandardEvaluationContext
-            {
-                ServiceResolver = new ServiceFactoryResolver(appContext)
-            };
+            ServiceResolver = new ServiceFactoryResolver(appContext)
+        };
 
-            var car = appContext.GetService<Car>();
-            var boat = appContext.GetService<Boat>();
+        var car = appContext.GetService<Car>();
+        var boat = appContext.GetService<Boat>();
 
-            var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Colour");
-            Assert.Equal("red", expr.GetValue<string>(context));
-            expr = new SpelExpressionParser().ParseRaw("@car.Colour");
-            Assert.Equal("red", expr.GetValue<string>(context));
+        var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Colour");
+        Assert.Equal("red", expr.GetValue<string>(context));
+        expr = new SpelExpressionParser().ParseRaw("@car.Colour");
+        Assert.Equal("red", expr.GetValue<string>(context));
 
-            expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Boat)boat'.Colour");
-            Assert.Equal("blue", expr.GetValue<string>(context));
-            expr = new SpelExpressionParser().ParseRaw("@boat.Colour");
-            Assert.Equal("blue", expr.GetValue<string>(context));
+        expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Boat)boat'.Colour");
+        Assert.Equal("blue", expr.GetValue<string>(context));
+        expr = new SpelExpressionParser().ParseRaw("@boat.Colour");
+        Assert.Equal("blue", expr.GetValue<string>(context));
 
-            var noServiceExpr = new SpelExpressionParser().ParseRaw("@truck");
-            Assert.Throws<SpelEvaluationException>(() => noServiceExpr.GetValue(context));
-        }
+        var noServiceExpr = new SpelExpressionParser().ParseRaw("@truck");
+        Assert.Throws<SpelEvaluationException>(() => noServiceExpr.GetValue(context));
+    }
 
-        public class Car : IServiceNameAware
-        {
-            public string Colour => "red";
+    public class Car : IServiceNameAware
+    {
+        public string Colour => "red";
 
-            public string ServiceName { get; set; } = "car";
-        }
+        public string ServiceName { get; set; } = "car";
+    }
 
-        public class Boat : IServiceNameAware
-        {
-            public string Colour => "blue";
+    public class Boat : IServiceNameAware
+    {
+        public string Colour => "blue";
 
-            public string ServiceName { get; set; } = "boat";
-        }
+        public string ServiceName { get; set; } = "boat";
     }
 }

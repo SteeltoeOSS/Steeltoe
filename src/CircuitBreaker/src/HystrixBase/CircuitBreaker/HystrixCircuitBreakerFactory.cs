@@ -5,26 +5,25 @@
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker
+namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
+
+public static class HystrixCircuitBreakerFactory
 {
-    public static class HystrixCircuitBreakerFactory
+    private static readonly ConcurrentDictionary<string, ICircuitBreaker> CircuitBreakersByCommand = new ();
+
+    public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
     {
-        private static readonly ConcurrentDictionary<string, ICircuitBreaker> CircuitBreakersByCommand = new ();
+        return CircuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
+    }
 
-        public static ICircuitBreaker GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey group, IHystrixCommandOptions options, HystrixCommandMetrics metrics)
-        {
-            return CircuitBreakersByCommand.GetOrAddEx(key.Name, (k) => new HystrixCircuitBreakerImpl(key, group, options, metrics));
-        }
+    public static ICircuitBreaker GetInstance(IHystrixCommandKey key)
+    {
+        CircuitBreakersByCommand.TryGetValue(key.Name, out var previouslyCached);
+        return previouslyCached;
+    }
 
-        public static ICircuitBreaker GetInstance(IHystrixCommandKey key)
-        {
-            CircuitBreakersByCommand.TryGetValue(key.Name, out var previouslyCached);
-            return previouslyCached;
-        }
-
-        internal static void Reset()
-        {
-            CircuitBreakersByCommand.Clear();
-        }
+    internal static void Reset()
+    {
+        CircuitBreakersByCommand.Clear();
     }
 }

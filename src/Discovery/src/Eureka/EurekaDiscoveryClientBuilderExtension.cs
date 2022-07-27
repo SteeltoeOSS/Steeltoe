@@ -4,19 +4,18 @@
 
 using Steeltoe.Discovery.Client;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public static class EurekaDiscoveryClientBuilderExtension
 {
-    public static class EurekaDiscoveryClientBuilderExtension
+    /// <summary>
+    /// Configures <see cref="EurekaDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
+    /// </summary>
+    /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
+    /// <param name="serviceInfoName">Optionally specify the name of a specific Eureka service binding</param>
+    public static DiscoveryClientBuilder UseEureka(this DiscoveryClientBuilder clientBuilder, string serviceInfoName = null)
     {
-        /// <summary>
-        /// Configures <see cref="EurekaDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
-        /// </summary>
-        /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
-        /// <param name="serviceInfoName">Optionally specify the name of a specific Eureka service binding</param>
-        public static DiscoveryClientBuilder UseEureka(this DiscoveryClientBuilder clientBuilder, string serviceInfoName = null)
-        {
-            clientBuilder.Extensions.Add(new EurekaDiscoveryClientExtension(serviceInfoName));
-            return clientBuilder;
-        }
+        clientBuilder.Extensions.Add(new EurekaDiscoveryClientExtension(serviceInfoName));
+        return clientBuilder;
     }
 }

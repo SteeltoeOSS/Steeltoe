@@ -6,30 +6,29 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Channel
+namespace Steeltoe.Integration.Channel;
+
+public abstract class AbstractSubscribableChannelWriter : AbstractMessageChannelWriter
 {
-    public abstract class AbstractSubscribableChannelWriter : AbstractMessageChannelWriter
+    protected AbstractSubscribableChannelWriter(AbstractSubscribableChannel channel, ILogger logger = null)
+        : base(channel, logger)
     {
-        protected AbstractSubscribableChannelWriter(AbstractSubscribableChannel channel, ILogger logger = null)
-            : base(channel, logger)
+    }
+
+    public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)channel;
+
+    public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)
+    {
+        if (cancellationToken.IsCancellationRequested)
         {
+            return new ValueTask<bool>(Task.FromCanceled<bool>(cancellationToken));
         }
 
-        public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)channel;
-
-        public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)
+        if (Channel.SubscriberCount > 0)
         {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return new ValueTask<bool>(Task.FromCanceled<bool>(cancellationToken));
-            }
-
-            if (Channel.SubscriberCount > 0)
-            {
-                return new ValueTask<bool>(true);
-            }
-
-            return new ValueTask<bool>(false);
+            return new ValueTask<bool>(true);
         }
+
+        return new ValueTask<bool>(false);
     }
 }

@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Stream.Provisioning
-{
-    public class ProvisioningException : Exception
-    {
-        public ProvisioningException(string msg)
-            : base(msg)
-        {
-        }
+namespace Steeltoe.Stream.Provisioning;
 
-        public ProvisioningException(string msg, Exception cause)
-            : base(msg, cause)
-        {
-        }
+public class ProvisioningException : Exception
+{
+    public ProvisioningException(string msg)
+        : base(msg)
+    {
+    }
+
+    public ProvisioningException(string msg, Exception cause)
+        : base(msg, cause)
+    {
     }
 }

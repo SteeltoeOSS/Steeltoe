@@ -14,32 +14,31 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Tracing.Test
-{
-    public class TracingBaseHostBuilderExtensionsTest : TestBase
-    {
-        [Fact]
-        public void AddDistributedTracing_ThrowsOnNulls()
-        {
-            var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
-            Assert.Equal("services", ex.ParamName);
-        }
+namespace Steeltoe.Management.Tracing.Test;
 
-        [Fact]
-        public void AddDistributedTracing_ConfiguresExpectedDefaults()
+public class TracingBaseHostBuilderExtensionsTest : TestBase
+{
+    [Fact]
+    public void AddDistributedTracing_ThrowsOnNulls()
+    {
+        var ex = Assert.Throws<ArgumentNullException>(() => TracingBaseServiceCollectionExtensions.AddDistributedTracing(null));
+        Assert.Equal("services", ex.ParamName);
+    }
+
+    [Fact]
+    public void AddDistributedTracing_ConfiguresExpectedDefaults()
+    {
+        var hostBuilder = new HostBuilder();
+        IServiceCollection services = null;
+        hostBuilder.ConfigureServices(svc =>
         {
-            var hostBuilder = new HostBuilder();
-            IServiceCollection services = null;
-            hostBuilder.ConfigureServices(svc =>
-            {
-                services = svc;
-                svc.AddSingleton(GetConfiguration());
-                svc.AddDistributedTracing();
-            });
-            var host = hostBuilder.Build();
-            var serviceProvider = services.BuildServiceProvider();
-            ValidateServiceCollectionCommon(serviceProvider);
-            ValidateServiceCollectionBase(serviceProvider);
-        }
+            services = svc;
+            svc.AddSingleton(GetConfiguration());
+            svc.AddDistributedTracing();
+        });
+        var host = hostBuilder.Build();
+        var serviceProvider = services.BuildServiceProvider();
+        ValidateServiceCollectionCommon(serviceProvider);
+        ValidateServiceCollectionBase(serviceProvider);
     }
 }

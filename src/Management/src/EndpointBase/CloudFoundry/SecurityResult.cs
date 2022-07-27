@@ -5,31 +5,30 @@
 using System.Net;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
+public class SecurityResult
 {
-    public class SecurityResult
+    [JsonIgnore]
+    public HttpStatusCode Code { get; }
+
+    [JsonIgnore]
+    public Permissions Permissions { get; }
+
+    [JsonPropertyName("security_error")]
+    public string Message { get; }
+
+    public SecurityResult(Permissions level)
     {
-        [JsonIgnore]
-        public HttpStatusCode Code { get; }
+        Code = HttpStatusCode.OK;
+        Message = string.Empty;
+        Permissions = level;
+    }
 
-        [JsonIgnore]
-        public Permissions Permissions { get; }
-
-        [JsonPropertyName("security_error")]
-        public string Message { get; }
-
-        public SecurityResult(Permissions level)
-        {
-            Code = HttpStatusCode.OK;
-            Message = string.Empty;
-            Permissions = level;
-        }
-
-        public SecurityResult(HttpStatusCode code, string message)
-        {
-            Code = code;
-            Message = message;
-            Permissions = Permissions.NONE;
-        }
+    public SecurityResult(HttpStatusCode code, string message)
+    {
+        Code = code;
+        Message = message;
+        Permissions = Permissions.NONE;
     }
 }

@@ -4,31 +4,30 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Endpoint.Mappings
+namespace Steeltoe.Management.Endpoint.Mappings;
+
+public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
 {
-    public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
+    private readonly ILogger<MappingsEndpoint> _logger;
+
+    public MappingsEndpoint(IMappingsOptions options, ILogger<MappingsEndpoint> logger = null)
+        : base(options)
     {
-        private readonly ILogger<MappingsEndpoint> _logger;
+        _logger = logger;
+    }
 
-        public MappingsEndpoint(IMappingsOptions options, ILogger<MappingsEndpoint> logger = null)
-            : base(options)
+    public new IMappingsOptions Options
+    {
+        get
         {
-            _logger = logger;
+            return options as IMappingsOptions;
         }
+    }
 
-        public new IMappingsOptions Options
-        {
-            get
-            {
-                return options as IMappingsOptions;
-            }
-        }
-
-        public override ApplicationMappings Invoke()
-        {
-            // Note: This is not called, as all the work in
-            // done in runtime specific code (i.e. Asp.NET, Asp.NET Core, etc)
-            return null;
-        }
+    public override ApplicationMappings Invoke()
+    {
+        // Note: This is not called, as all the work in
+        // done in runtime specific code (i.e. Asp.NET, Asp.NET Core, etc)
+        return null;
     }
 }

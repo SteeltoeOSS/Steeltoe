@@ -6,24 +6,23 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class JsonCredentialJsonConverter : JsonConverter<JsonCredential>
 {
-    public class JsonCredentialJsonConverter : JsonConverter<JsonCredential>
+    public override void Write(Utf8JsonWriter writer, JsonCredential value, JsonSerializerOptions options)
     {
-        public override void Write(Utf8JsonWriter writer, JsonCredential value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
-        }
+        writer.WriteStringValue(value.ToString());
+    }
 
-        public override JsonCredential Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
-            return new JsonCredential(json);
-        }
+    public override JsonCredential Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        var json = JsonSerializer.Deserialize<JsonElement>(ref reader, options);
+        return new JsonCredential(json);
+    }
 
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(JsonCredential);
-        }
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeToConvert == typeof(JsonCredential);
     }
 }

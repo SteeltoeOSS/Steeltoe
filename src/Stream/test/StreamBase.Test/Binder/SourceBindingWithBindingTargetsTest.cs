@@ -10,30 +10,29 @@ using Steeltoe.Stream.Messaging;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class SourceBindingWithBindingTargetsTest : AbstractTest
 {
-    public class SourceBindingWithBindingTargetsTest : AbstractTest
+    [Fact]
+    public async Task TestSourceOutputChannelBound()
     {
-        [Fact]
-        public async Task TestSourceOutputChannelBound()
-        {
-            var searchDirectories = GetSearchDirectories("MockBinder");
-            var provider = CreateStreamsContainerWithISourceBinding(
+        var searchDirectories = GetSearchDirectories("MockBinder");
+        var provider = CreateStreamsContainerWithISourceBinding(
                 searchDirectories,
                 "spring:cloud:stream:defaultBinder=mock",
                 "spring.cloud.stream.bindings.output.destination=testtock")
-                .BuildServiceProvider();
+            .BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            var factory = provider.GetService<IBinderFactory>();
-            Assert.NotNull(factory);
-            var binder = factory.GetBinder(null);
-            Assert.NotNull(binder);
+        var factory = provider.GetService<IBinderFactory>();
+        Assert.NotNull(factory);
+        var binder = factory.GetBinder(null);
+        Assert.NotNull(binder);
 
-            var source = provider.GetService<ISource>();
-            var mock = Mock.Get(binder);
-            mock.Verify(b => b.BindProducer("testtock", source.Output, It.IsAny<ProducerOptions>()));
-        }
+        var source = provider.GetService<ISource>();
+        var mock = Mock.Get(binder);
+        mock.Verify(b => b.BindProducer("testtock", source.Output, It.IsAny<ProducerOptions>()));
     }
 }

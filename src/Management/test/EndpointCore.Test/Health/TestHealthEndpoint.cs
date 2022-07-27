@@ -7,18 +7,17 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Health.Test
-{
-    internal class TestHealthEndpoint : HealthEndpoint
-    {
-        public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
-            : base(options, aggregator, contributors, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Health.Test;
 
-        public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
-        {
-            return new HealthEndpointResponse(null);
-        }
+internal class TestHealthEndpoint : HealthEndpoint
+{
+    public TestHealthEndpoint(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, ILogger<HealthEndpoint> logger = null)
+        : base(options, aggregator, contributors, logger)
+    {
+    }
+
+    public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
+    {
+        return new HealthEndpointResponse(null);
     }
 }

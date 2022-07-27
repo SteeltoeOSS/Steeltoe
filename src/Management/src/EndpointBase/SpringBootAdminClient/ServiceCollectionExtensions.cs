@@ -9,28 +9,27 @@ using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 using System;
 
-namespace Microsoft.Extensions.DependencyInjection
-{
-    public static partial class ServiceCollectionExtensions
-    {
-        /// <summary>
-        /// Register startup/shutdown interactions with Spring Boot Admin server
-        /// </summary>
-        /// <param name="services">Reference to the service collection</param>
-        /// <returns>A reference to the service collection</returns>
-        public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
-        {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
+namespace Microsoft.Extensions.DependencyInjection;
 
-            services.RegisterDefaultApplicationInstanceInfo();
-            services.TryAddSingleton<ManagementEndpointOptions>();
-            services.TryAddSingleton<HealthEndpointOptions>();
-            services.AddSingleton<SpringBootAdminClientOptions>();
-            services.AddHostedService<SpringBootAdminClientHostedService>();
-            return services;
+public static partial class ServiceCollectionExtensions
+{
+    /// <summary>
+    /// Register startup/shutdown interactions with Spring Boot Admin server
+    /// </summary>
+    /// <param name="services">Reference to the service collection</param>
+    /// <returns>A reference to the service collection</returns>
+    public static IServiceCollection AddSpringBootAdminClient(this IServiceCollection services)
+    {
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
         }
+
+        services.RegisterDefaultApplicationInstanceInfo();
+        services.TryAddSingleton<ManagementEndpointOptions>();
+        services.TryAddSingleton<HealthEndpointOptions>();
+        services.AddSingleton<SpringBootAdminClientOptions>();
+        services.AddHostedService<SpringBootAdminClientHostedService>();
+        return services;
     }
 }

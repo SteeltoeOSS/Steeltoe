@@ -11,59 +11,58 @@ using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Messaging;
 using System;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFactory<ISubscribableChannel>
 {
-    public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFactory<ISubscribableChannel>
+    private readonly IMessageChannelConfigurer _messageChannelConfigurer;
+
+    public SubscribableChannelBindingTargetFactory(IApplicationContext context, CompositeMessageChannelConfigurer messageChannelConfigurer)
+        : base(context)
     {
-        private readonly IMessageChannelConfigurer _messageChannelConfigurer;
+        _messageChannelConfigurer = messageChannelConfigurer;
+    }
 
-        public SubscribableChannelBindingTargetFactory(IApplicationContext context, CompositeMessageChannelConfigurer messageChannelConfigurer)
-            : base(context)
+    public override ISubscribableChannel CreateInput(string name)
+    {
+        var chan = new DirectWithAttributesChannel(ApplicationContext)
         {
-            _messageChannelConfigurer = messageChannelConfigurer;
-        }
+            ServiceName = name
+        };
+        chan.SetAttribute("type", "input");
+        _messageChannelConfigurer.ConfigureInputChannel(chan, name);
 
-        public override ISubscribableChannel CreateInput(string name)
+        AddChannelInterceptors(chan);
+
+        ApplicationContext.Register(name, chan);
+
+        return chan;
+    }
+
+    public override ISubscribableChannel CreateOutput(string name)
+    {
+        var chan = new DirectWithAttributesChannel(ApplicationContext)
         {
-            var chan = new DirectWithAttributesChannel(ApplicationContext)
+            ServiceName = name
+        };
+        chan.SetAttribute("type", "output");
+        _messageChannelConfigurer.ConfigureOutputChannel(chan, name);
+
+        AddChannelInterceptors(chan);
+
+        ApplicationContext.Register(name, chan);
+
+        return chan;
+    }
+
+    private void AddChannelInterceptors(IMessageChannel chan)
+    {
+        if (chan is IChannelInterceptorAware aware)
+        {
+            var interceptors = ApplicationContext.GetServices<IChannelInterceptor>();
+            foreach (var interceptor in interceptors)
             {
-                ServiceName = name
-            };
-            chan.SetAttribute("type", "input");
-            _messageChannelConfigurer.ConfigureInputChannel(chan, name);
-
-            AddChannelInterceptors(chan);
-
-            ApplicationContext.Register(name, chan);
-
-            return chan;
-        }
-
-        public override ISubscribableChannel CreateOutput(string name)
-        {
-            var chan = new DirectWithAttributesChannel(ApplicationContext)
-            {
-                ServiceName = name
-            };
-            chan.SetAttribute("type", "output");
-            _messageChannelConfigurer.ConfigureOutputChannel(chan, name);
-
-            AddChannelInterceptors(chan);
-
-            ApplicationContext.Register(name, chan);
-
-            return chan;
-        }
-
-        private void AddChannelInterceptors(IMessageChannel chan)
-        {
-            if (chan is IChannelInterceptorAware aware)
-            {
-                var interceptors = ApplicationContext.GetServices<IChannelInterceptor>();
-                foreach (var interceptor in interceptors)
-                {
-                    aware.AddInterceptor(interceptor);
-                }
+                aware.AddInterceptor(interceptor);
             }
         }
     }

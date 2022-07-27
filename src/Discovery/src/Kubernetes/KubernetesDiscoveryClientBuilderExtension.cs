@@ -5,18 +5,17 @@
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 
-namespace Steeltoe.Discovery.Kubernetes
+namespace Steeltoe.Discovery.Kubernetes;
+
+public static class KubernetesDiscoveryClientBuilderExtension
 {
-    public static class KubernetesDiscoveryClientBuilderExtension
+    /// <summary>
+    /// Configures <see cref="KubernetesDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
+    /// </summary>
+    /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
+    public static DiscoveryClientBuilder UseKubernetes(this DiscoveryClientBuilder clientBuilder)
     {
-        /// <summary>
-        /// Configures <see cref="KubernetesDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice
-        /// </summary>
-        /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/></param>
-        public static DiscoveryClientBuilder UseKubernetes(this DiscoveryClientBuilder clientBuilder)
-        {
-            clientBuilder.Extensions.Add(new KubernetesDiscoveryClientExtension());
-            return clientBuilder;
-        }
+        clientBuilder.Extensions.Add(new KubernetesDiscoveryClientExtension());
+        return clientBuilder;
     }
 }

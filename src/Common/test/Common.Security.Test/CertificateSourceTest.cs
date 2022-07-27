@@ -4,14 +4,13 @@
 
 using Xunit;
 
-namespace Steeltoe.Common.Security.Test
+namespace Steeltoe.Common.Security.Test;
+
+public class CertificateSourceTest
 {
-    public class CertificateSourceTest
+    [Fact]
+    public void CertificateSource_HasOptionsConfigurer()
     {
-        [Fact]
-        public void CertificateSource_HasOptionsConfigurer()
-        {
-            Assert.NotNull(new CertificateSource("somePath").OptionsConfigurer);
-        }
+        Assert.NotNull(new CertificateSource("somePath").OptionsConfigurer);
     }
 }

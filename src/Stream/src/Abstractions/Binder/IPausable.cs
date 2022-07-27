@@ -5,15 +5,14 @@
 using Steeltoe.Common.Lifecycle;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Stream.Binder
-{
-    /// <summary>
-    /// TODO: IPausable is a integration type.
-    /// </summary>
-    public interface IPausable : ILifecycle
-    {
-        Task Pause();
+namespace Steeltoe.Stream.Binder;
 
-        Task Resume();
-    }
+/// <summary>
+/// TODO: IPausable is a integration type.
+/// </summary>
+public interface IPausable : ILifecycle
+{
+    Task Pause();
+
+    Task Resume();
 }

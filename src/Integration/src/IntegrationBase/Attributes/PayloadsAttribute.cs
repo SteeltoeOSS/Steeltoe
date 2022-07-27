@@ -4,21 +4,20 @@
 
 using System;
 
-namespace Steeltoe.Integration.Attributes
+namespace Steeltoe.Integration.Attributes;
+
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = false)]
+public class PayloadsAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter, AllowMultiple = false)]
-    public class PayloadsAttribute : Attribute
+    public PayloadsAttribute()
     {
-        public PayloadsAttribute()
-        {
-            Expression = string.Empty;
-        }
-
-        public PayloadsAttribute(string expression)
-        {
-            Expression = expression;
-        }
-
-        public virtual string Expression { get; set; }
+        Expression = string.Empty;
     }
+
+    public PayloadsAttribute(string expression)
+    {
+        Expression = expression;
+    }
+
+    public virtual string Expression { get; set; }
 }

@@ -12,166 +12,165 @@ using System.Globalization;
 using System.Reflection;
 using Xunit;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support.Test
+namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
+
+public class DefaultMessageHandlerMethodFactoryTest
 {
-    public class DefaultMessageHandlerMethodFactoryTest
+    private readonly SampleBean sample = new ();
+
+    [Fact]
+    public void CustomConversion()
     {
-        private readonly SampleBean sample = new ();
+        var conversionService = new GenericConversionService();
+        conversionService.AddConverter(new SampleBeanConverter());
+        var instance = CreateInstance(conversionService);
 
-        [Fact]
-        public void CustomConversion()
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+
+        invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(sample).Build());
+        AssertMethodInvocation(sample, "SimpleString");
+    }
+
+    [Fact]
+    public void CustomConversionServiceFailure()
+    {
+        var conversionService = new GenericConversionService();
+        var instance = CreateInstance(conversionService);
+        Assert.False(conversionService.CanConvert(typeof(int), typeof(string)));
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
+    }
+
+    [Fact]
+    public void CustomMessageConverterFailure()
+    {
+        IMessageConverter messageConverter = new ByteArrayMessageConverter();
+        var instance = CreateInstance(messageConverter);
+
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
+    }
+
+    [Fact]
+    public void CustomArgumentResolver()
+    {
+        var customResolvers = new List<IHandlerMethodArgumentResolver>
         {
-            var conversionService = new GenericConversionService();
-            conversionService.AddConverter(new SampleBeanConverter());
-            var instance = CreateInstance(conversionService);
+            new CustomHandlerMethodArgumentResolver()
+        };
+        var instance = CreateInstance(customResolvers);
 
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
 
-            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(sample).Build());
-            AssertMethodInvocation(sample, "SimpleString");
+        invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build());
+        AssertMethodInvocation(sample, "CustomArgumentResolver");
+    }
+
+    [Fact]
+    public void OverrideArgumentResolvers()
+    {
+        var instance = new DefaultMessageHandlerMethodFactory();
+        var customResolvers = new List<IHandlerMethodArgumentResolver>
+        {
+            new CustomHandlerMethodArgumentResolver()
+        };
+        instance.SetArgumentResolvers(customResolvers); // Override defaults
+
+        var message = MessageBuilder.WithPayload("sample").Build();
+
+        // This will work as the local resolver is set
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
+        invocableHandlerMethod.Invoke(message);
+        AssertMethodInvocation(sample, "CustomArgumentResolver");
+
+        // This won't work as no resolver is known for the payload
+        var invocableHandlerMethod2 = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        Assert.Throws<MethodArgumentResolutionException>(() => invocableHandlerMethod2.Invoke(message));
+    }
+
+    [Fact]
+    public void NoValidationByDefault()
+    {
+        var instance = new DefaultMessageHandlerMethodFactory();
+        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
+        invocableHandlerMethod.Invoke(MessageBuilder.WithPayload("failure").Build());
+        AssertMethodInvocation(sample, "PayloadValidation");
+    }
+
+    private DefaultMessageHandlerMethodFactory CreateInstance(List<IHandlerMethodArgumentResolver> customResolvers)
+    {
+        var factory = new DefaultMessageHandlerMethodFactory(null, null, customResolvers);
+        return factory;
+    }
+
+    private DefaultMessageHandlerMethodFactory CreateInstance(IMessageConverter converter)
+    {
+        var factory = new DefaultMessageHandlerMethodFactory(null, converter);
+        return factory;
+    }
+
+    private DefaultMessageHandlerMethodFactory CreateInstance(GenericConversionService conversionService)
+    {
+        var factory = new DefaultMessageHandlerMethodFactory(conversionService);
+        return factory;
+    }
+
+    private IInvocableHandlerMethod CreateInvocableHandlerMethod(DefaultMessageHandlerMethodFactory factory, string methodName, params Type[] parameterTypes)
+    {
+        return factory.CreateInvocableHandlerMethod(sample, GetListenerMethod(methodName, parameterTypes));
+    }
+
+    private MethodInfo GetListenerMethod(string methodName, params Type[] parameterTypes)
+    {
+        var method = typeof(SampleBean).GetMethod(methodName, parameterTypes);
+        Assert.NotNull(method);
+        return method;
+    }
+
+    private void AssertMethodInvocation(SampleBean bean, string methodName)
+    {
+        Assert.True(bean.Invocations[methodName]);
+    }
+
+    internal class SampleBeanConverter : AbstractConverter<SampleBean, string>
+    {
+        public override string Convert(SampleBean soruce)
+        {
+            return "foo bar";
+        }
+    }
+
+    internal class SampleBean
+    {
+        public readonly Dictionary<string, bool> Invocations = new ();
+
+        public void SimpleString(string value)
+        {
+            Invocations.Add("SimpleString", true);
         }
 
-        [Fact]
-        public void CustomConversionServiceFailure()
+        public void PayloadValidation([Payload] string value)
         {
-            var conversionService = new GenericConversionService();
-            var instance = CreateInstance(conversionService);
-            Assert.False(conversionService.CanConvert(typeof(int), typeof(string)));
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
-            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
+            Invocations.Add("PayloadValidation", true);
         }
 
-        [Fact]
-        public void CustomMessageConverterFailure()
+        public void CustomArgumentResolver(CultureInfo locale)
         {
-            IMessageConverter messageConverter = new ByteArrayMessageConverter();
-            var instance = CreateInstance(messageConverter);
+            Invocations.Add("CustomArgumentResolver", true);
+            Assert.Equal(CultureInfo.CurrentCulture, locale);
+        }
+    }
 
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
-            Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
+    internal class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
+    {
+        public bool SupportsParameter(ParameterInfo parameter)
+        {
+            return parameter.ParameterType.IsAssignableFrom(typeof(CultureInfo));
         }
 
-        [Fact]
-        public void CustomArgumentResolver()
+        public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
-            var customResolvers = new List<IHandlerMethodArgumentResolver>
-            {
-                new CustomHandlerMethodArgumentResolver()
-            };
-            var instance = CreateInstance(customResolvers);
-
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
-
-            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build());
-            AssertMethodInvocation(sample, "CustomArgumentResolver");
-        }
-
-        [Fact]
-        public void OverrideArgumentResolvers()
-        {
-            var instance = new DefaultMessageHandlerMethodFactory();
-            var customResolvers = new List<IHandlerMethodArgumentResolver>
-            {
-                new CustomHandlerMethodArgumentResolver()
-            };
-            instance.SetArgumentResolvers(customResolvers); // Override defaults
-
-            var message = MessageBuilder.WithPayload("sample").Build();
-
-            // This will work as the local resolver is set
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
-            invocableHandlerMethod.Invoke(message);
-            AssertMethodInvocation(sample, "CustomArgumentResolver");
-
-            // This won't work as no resolver is known for the payload
-            var invocableHandlerMethod2 = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
-            Assert.Throws<MethodArgumentResolutionException>(() => invocableHandlerMethod2.Invoke(message));
-        }
-
-        [Fact]
-        public void NoValidationByDefault()
-        {
-            var instance = new DefaultMessageHandlerMethodFactory();
-            var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
-            invocableHandlerMethod.Invoke(MessageBuilder.WithPayload("failure").Build());
-            AssertMethodInvocation(sample, "PayloadValidation");
-        }
-
-        private DefaultMessageHandlerMethodFactory CreateInstance(List<IHandlerMethodArgumentResolver> customResolvers)
-        {
-            var factory = new DefaultMessageHandlerMethodFactory(null, null, customResolvers);
-            return factory;
-        }
-
-        private DefaultMessageHandlerMethodFactory CreateInstance(IMessageConverter converter)
-        {
-            var factory = new DefaultMessageHandlerMethodFactory(null, converter);
-            return factory;
-        }
-
-        private DefaultMessageHandlerMethodFactory CreateInstance(GenericConversionService conversionService)
-        {
-            var factory = new DefaultMessageHandlerMethodFactory(conversionService);
-            return factory;
-        }
-
-        private IInvocableHandlerMethod CreateInvocableHandlerMethod(DefaultMessageHandlerMethodFactory factory, string methodName, params Type[] parameterTypes)
-        {
-            return factory.CreateInvocableHandlerMethod(sample, GetListenerMethod(methodName, parameterTypes));
-        }
-
-        private MethodInfo GetListenerMethod(string methodName, params Type[] parameterTypes)
-        {
-            var method = typeof(SampleBean).GetMethod(methodName, parameterTypes);
-            Assert.NotNull(method);
-            return method;
-        }
-
-        private void AssertMethodInvocation(SampleBean bean, string methodName)
-        {
-            Assert.True(bean.Invocations[methodName]);
-        }
-
-        internal class SampleBeanConverter : AbstractConverter<SampleBean, string>
-        {
-            public override string Convert(SampleBean soruce)
-            {
-                return "foo bar";
-            }
-        }
-
-        internal class SampleBean
-        {
-            public readonly Dictionary<string, bool> Invocations = new ();
-
-            public void SimpleString(string value)
-            {
-                Invocations.Add("SimpleString", true);
-            }
-
-            public void PayloadValidation([Payload] string value)
-            {
-                Invocations.Add("PayloadValidation", true);
-            }
-
-            public void CustomArgumentResolver(CultureInfo locale)
-            {
-                Invocations.Add("CustomArgumentResolver", true);
-                Assert.Equal(CultureInfo.CurrentCulture, locale);
-            }
-        }
-
-        internal class CustomHandlerMethodArgumentResolver : IHandlerMethodArgumentResolver
-        {
-            public bool SupportsParameter(ParameterInfo parameter)
-            {
-                return parameter.ParameterType.IsAssignableFrom(typeof(CultureInfo));
-            }
-
-            public object ResolveArgument(ParameterInfo parameter, IMessage message)
-            {
-                return CultureInfo.CurrentCulture;
-            }
+            return CultureInfo.CurrentCulture;
         }
     }
 }

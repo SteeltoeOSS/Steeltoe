@@ -9,179 +9,179 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Connector.Services.Test
+namespace Steeltoe.Connector.Services.Test;
+
+public class HystrixRabbitMQServiceInfoFactoryTest
 {
-    public class HystrixRabbitMQServiceInfoFactoryTest
+    public HystrixRabbitMQServiceInfoFactoryTest()
     {
-        public HystrixRabbitMQServiceInfoFactoryTest()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-        }
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+    }
 
-        [Fact]
-        public void Accept_AcceptsValidServiceBinding()
-        {
-            var s = CreateHystrixService();
-            Assert.NotNull(s);
+    [Fact]
+    public void Accept_AcceptsValidServiceBinding()
+    {
+        var s = CreateHystrixService();
+        Assert.NotNull(s);
 
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.True(factory.Accepts(s));
-        }
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.True(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Accept_RejectsNoLabelNoTagsServiceBinding()
+    [Fact]
+    public void Accept_RejectsNoLabelNoTagsServiceBinding()
+    {
+        var s = new Service()
         {
-            var s = new Service()
+            Name = "myHystrixService",
+            Plan = "standard",
+            Credentials = new Credential()
             {
-                Name = "myHystrixService",
-                Plan = "standard",
-                Credentials = new Credential()
+                { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    "amqp", new Credential()
                     {
-                        "amqp", new Credential()
-                        {
-                            { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
-                            { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                            { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
-                            { "ssl", new Credential("false") }
-                        }
+                        { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
+                        { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
+                        { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
+                        { "ssl", new Credential("false") }
                     }
                 }
-            };
+            }
+        };
 
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accepts(s));
-        }
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.False(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Accept_RejectsNoLabelNoTagsSecureUriServiceBinding()
+    [Fact]
+    public void Accept_RejectsNoLabelNoTagsSecureUriServiceBinding()
+    {
+        var s = new Service()
         {
-            var s = new Service()
+            Name = "myHystrixService",
+            Plan = "standard",
+            Credentials = new Credential()
             {
-                Name = "myHystrixService",
-                Plan = "standard",
-                Credentials = new Credential()
+                { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    "amqp", new Credential()
                     {
-                        "amqp", new Credential()
-                        {
-                            { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
-                            { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                            { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
-                            { "ssl", new Credential("false") }
-                        }
+                        { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
+                        { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
+                        { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
+                        { "ssl", new Credential("false") }
                     }
                 }
-            };
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accepts(s));
-        }
+            }
+        };
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.False(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Accept_RejectsWithLabelNoTagsServiceBinding()
+    [Fact]
+    public void Accept_RejectsWithLabelNoTagsServiceBinding()
+    {
+        var s = new Service()
         {
-            var s = new Service()
+            Label = "p-circuit-breaker-dashboard",
+            Name = "myHystrixService",
+            Plan = "standard",
+            Credentials = new Credential()
             {
-                Label = "p-circuit-breaker-dashboard",
-                Name = "myHystrixService",
-                Plan = "standard",
-                Credentials = new Credential()
+                { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
                 {
-                    { "stream", new Credential("https://turbine-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
-                    { "dashboard", new Credential("https://hystrix-5ac7e504-3ca5-4f02-9302-d5554c059043.apps.testcloud.com") },
+                    "amqp", new Credential()
                     {
-                        "amqp", new Credential()
-                        {
-                            { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
-                            { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                            { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
-                            { "ssl", new Credential("false") }
-                        }
+                        { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
+                        { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
+                        { "uri", new Credential("amqps://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
+                        { "ssl", new Credential("false") }
                     }
                 }
-            };
+            }
+        };
 
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accepts(s));
-        }
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.False(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Accept_RejectsMySQLServiceBinding()
+    [Fact]
+    public void Accept_RejectsMySQLServiceBinding()
+    {
+        var s = new Service()
         {
-            var s = new Service()
+            Label = "p-mysql",
+            Tags = new string[] { "foobar", "relational" },
+            Name = "mySqlService",
+            Plan = "100mb-dev",
+            Credentials = new Credential()
             {
-                Label = "p-mysql",
-                Tags = new string[] { "foobar", "relational" },
-                Name = "mySqlService",
-                Plan = "100mb-dev",
-                Credentials = new Credential()
-                {
-                    { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
-                    { "username", new Credential("Dd6O1BPXUHdrmzbP") },
-                    { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
-                }
-            };
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accepts(s));
-        }
+                { "hostname", new Credential("192.168.0.90") },
+                { "port", new Credential("3306") },
+                { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
+                { "username", new Credential("Dd6O1BPXUHdrmzbP") },
+                { "password", new Credential("7E1LxXnlH2hhlPVt") },
+                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+            }
+        };
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.False(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Accept_RejectsRabbitMQServiceBinding()
+    [Fact]
+    public void Accept_RejectsRabbitMQServiceBinding()
+    {
+        var s = new Service()
         {
-            var s = new Service()
+            Label = "rabbitmq",
+            Tags = new string[] { "rabbitmq", "rabbit" },
+            Name = "myService",
+            Plan = "Standard",
+            Credentials = new Credential()
             {
-                Label = "rabbitmq",
-                Tags = new string[] { "rabbitmq", "rabbit" },
-                Name = "myService",
-                Plan = "Standard",
-                Credentials = new Credential()
-                {
-                    { "hostname", new Credential("192.168.0.90") },
-                    { "port", new Credential("3306") },
-                    { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
-                    { "username", new Credential("Dd6O1BPXUHdrmzbP") },
-                    { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                    { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                    { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
-                }
-            };
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            Assert.False(factory.Accepts(s));
-        }
+                { "hostname", new Credential("192.168.0.90") },
+                { "port", new Credential("3306") },
+                { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
+                { "username", new Credential("Dd6O1BPXUHdrmzbP") },
+                { "password", new Credential("7E1LxXnlH2hhlPVt") },
+                { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
+            }
+        };
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        Assert.False(factory.Accepts(s));
+    }
 
-        [Fact]
-        public void Create_CreatesValidServiceBinding()
-        {
-            var s = CreateHystrixService();
-            var factory = new HystrixRabbitMQServiceInfoFactory();
-            var info = factory.Create(s) as HystrixRabbitMQServiceInfo;
-            Assert.NotNull(info);
-            Assert.Equal("myHystrixService", info.Id);
-            Assert.Equal("1clgf5ipeop36437dmr2em4duk", info.Password);
-            Assert.Equal("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd", info.UserName);
-            Assert.Equal("192.168.1.55", info.Host);
-            Assert.Equal(-1, info.Port);
-            Assert.Equal("06f0b204-9f95-4829-a662-844d3c3d6120", info.Path);
-            Assert.Null(info.Query);
-            Assert.NotNull(info.Uris);
-            Assert.Single(info.Uris);
-            Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uris[0]);
-            Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uri);
-            Assert.False(info.IsSslEnabled);
-        }
+    [Fact]
+    public void Create_CreatesValidServiceBinding()
+    {
+        var s = CreateHystrixService();
+        var factory = new HystrixRabbitMQServiceInfoFactory();
+        var info = factory.Create(s) as HystrixRabbitMQServiceInfo;
+        Assert.NotNull(info);
+        Assert.Equal("myHystrixService", info.Id);
+        Assert.Equal("1clgf5ipeop36437dmr2em4duk", info.Password);
+        Assert.Equal("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd", info.UserName);
+        Assert.Equal("192.168.1.55", info.Host);
+        Assert.Equal(-1, info.Port);
+        Assert.Equal("06f0b204-9f95-4829-a662-844d3c3d6120", info.Path);
+        Assert.Null(info.Query);
+        Assert.NotNull(info.Uris);
+        Assert.Single(info.Uris);
+        Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uris[0]);
+        Assert.Equal("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120", info.Uri);
+        Assert.False(info.IsSslEnabled);
+    }
 
-        private static Service CreateHystrixService()
-        {
-            var environment = @"
+    private static Service CreateHystrixService()
+    {
+        var environment = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                         ""credentials"": {
@@ -239,16 +239,15 @@ namespace Steeltoe.Connector.Services.Test
                     }]
                 }";
 
-            Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", environment);
 
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
-            var opt = new CloudFoundryServicesOptions(config);
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
+        var opt = new CloudFoundryServicesOptions(config);
 
-            Assert.Single(opt.Services);
+        Assert.Single(opt.Services);
 
-            return opt.Services.First().Value.First();
-        }
+        return opt.Services.First().Value.First();
     }
 }

@@ -8,27 +8,26 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.HystrixBase.Util;
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public class HystrixRequestContextMiddleware
 {
-    public class HystrixRequestContextMiddleware
-    {
-        private readonly RequestDelegate _next;
+    private readonly RequestDelegate _next;
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        public HystrixRequestContextMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime)
+    public HystrixRequestContextMiddleware(RequestDelegate next, IApplicationLifetime applicationLifetime)
 #pragma warning restore CS0618 // Type or member is obsolete
-        {
-            _next = next;
-            applicationLifetime.ApplicationStopping.Register(() => HystrixShutdown.ShutdownThreads());
-        }
+    {
+        _next = next;
+        applicationLifetime.ApplicationStopping.Register(() => HystrixShutdown.ShutdownThreads());
+    }
 
-        public async Task Invoke(HttpContext context)
-        {
-            var hystrix = HystrixRequestContext.InitializeContext();
+    public async Task Invoke(HttpContext context)
+    {
+        var hystrix = HystrixRequestContext.InitializeContext();
 
-            await _next.Invoke(context).ConfigureAwait(false);
+        await _next.Invoke(context).ConfigureAwait(false);
 
-            hystrix.Dispose();
-        }
+        hystrix.Dispose();
     }
 }

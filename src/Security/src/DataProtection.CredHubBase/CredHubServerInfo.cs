@@ -5,16 +5,15 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
-{
-    /// <summary>
-    /// Response object from CredHub /info endpoint
-    /// </summary>
-    public class CredHubServerInfo
-    {
-        [JsonPropertyName("auth-server")]
-        public Dictionary<string, string> AuthServer { get; set; }
+namespace Steeltoe.Security.DataProtection.CredHub;
 
-        public Dictionary<string, string> App { get; set; }
-    }
+/// <summary>
+/// Response object from CredHub /info endpoint
+/// </summary>
+public class CredHubServerInfo
+{
+    [JsonPropertyName("auth-server")]
+    public Dictionary<string, string> AuthServer { get; set; }
+
+    public Dictionary<string, string> App { get; set; }
 }

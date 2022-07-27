@@ -5,31 +5,30 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test
+namespace Steeltoe.Connector.PostgreSql.Test;
+
+public class PostgreSqlTypeLocatorTest
 {
-    public class PostgreSqlTypeLocatorTest
+    [Fact]
+    public void Property_Can_Locate_ConnectionType()
     {
-        [Fact]
-        public void Property_Can_Locate_ConnectionType()
-        {
-            // arrange -- handled by including a compatible PostgreSql NuGet package
-            var type = PostgreSqlTypeLocator.NpgsqlConnection;
+        // arrange -- handled by including a compatible PostgreSql NuGet package
+        var type = PostgreSqlTypeLocator.NpgsqlConnection;
 
-            Assert.NotNull(type);
-        }
+        Assert.NotNull(type);
+    }
 
-        [Fact]
-        public void Throws_When_ConnectionType_NotFound()
-        {
-            var types = PostgreSqlTypeLocator.ConnectionTypeNames;
-            PostgreSqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+    [Fact]
+    public void Throws_When_ConnectionType_NotFound()
+    {
+        var types = PostgreSqlTypeLocator.ConnectionTypeNames;
+        PostgreSqlTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            var exception = Assert.Throws<TypeLoadException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
+        var exception = Assert.Throws<TypeLoadException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
 
-            Assert.Equal("Unable to find NpgsqlConnection, are you missing a PostgreSQL ADO.NET assembly?", exception.Message);
+        Assert.Equal("Unable to find NpgsqlConnection, are you missing a PostgreSQL ADO.NET assembly?", exception.Message);
 
-            // reset
-            PostgreSqlTypeLocator.ConnectionTypeNames = types;
-        }
+        // reset
+        PostgreSqlTypeLocator.ConnectionTypeNames = types;
     }
 }

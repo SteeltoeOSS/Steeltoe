@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IMethodResolver
 {
-    public interface IMethodResolver
-    {
-        IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes);
-    }
+    IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes);
 }

@@ -4,14 +4,13 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging
+namespace Steeltoe.Extensions.Logging;
+
+public interface ILoggerConfiguration
 {
-    public interface ILoggerConfiguration
-    {
-        string Name { get; }
+    string Name { get; }
 
-        LogLevel? ConfiguredLevel { get; }
+    LogLevel? ConfiguredLevel { get; }
 
-        LogLevel EffectiveLevel { get; }
-    }
+    LogLevel EffectiveLevel { get; }
 }

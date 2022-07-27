@@ -7,18 +7,17 @@ using Steeltoe.Common.Options;
 using System;
 using System.Net.Http;
 
-namespace Steeltoe.Common.Http
+namespace Steeltoe.Common.Http;
+
+[Obsolete("Use ClientCertificateHttpHandler directly instead")]
+public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
 {
-    [Obsolete("Use ClientCertificateHttpHandler directly instead")]
-    public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
+    private readonly ClientCertificateHttpHandler _handler;
+
+    public ClientCertificateHttpHandlerProvider(IOptionsMonitor<CertificateOptions> certOptions)
     {
-        private readonly ClientCertificateHttpHandler _handler;
-
-        public ClientCertificateHttpHandlerProvider(IOptionsMonitor<CertificateOptions> certOptions)
-        {
-            _handler = new ClientCertificateHttpHandler(certOptions);
-        }
-
-        public HttpClientHandler GetHttpClientHandler() => _handler;
+        _handler = new ClientCertificateHttpHandler(certOptions);
     }
+
+    public HttpClientHandler GetHttpClientHandler() => _handler;
 }

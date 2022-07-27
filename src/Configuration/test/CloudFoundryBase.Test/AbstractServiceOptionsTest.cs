@@ -6,23 +6,23 @@ using Microsoft.Extensions.Configuration;
 using System;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
-{
-    public class AbstractServiceOptionsTest
-    {
-        [Fact]
-        public void Bind_ThrowsWithBadArguments()
-        {
-            var opt = new MySqlServiceOption();
-            Assert.Throws<ArgumentNullException>(() => opt.Bind(null, "foobar"));
-            Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), null));
-            Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), string.Empty));
-        }
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-        [Fact]
-        public void Bind_BindsConfiguration()
-        {
-            var configJson = @"
+public class AbstractServiceOptionsTest
+{
+    [Fact]
+    public void Bind_ThrowsWithBadArguments()
+    {
+        var opt = new MySqlServiceOption();
+        Assert.Throws<ArgumentNullException>(() => opt.Bind(null, "foobar"));
+        Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), null));
+        Assert.Throws<ArgumentException>(() => opt.Bind(new ConfigurationBuilder().Build(), string.Empty));
+    }
+
+    [Fact]
+    public void Bind_BindsConfiguration()
+    {
+        var configJson = @"
             {
                 ""vcap"": {
                     ""services"" : {
@@ -65,41 +65,40 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
                     }
                 }
             }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var opt = new MySqlServiceOption();
-            opt.Bind(config, "mySql2");
-            Assert.Equal("mySql2", opt.Name);
-            Assert.Equal("p-mysql", opt.Label);
+        var opt = new MySqlServiceOption();
+        opt.Bind(config, "mySql2");
+        Assert.Equal("mySql2", opt.Name);
+        Assert.Equal("p-mysql", opt.Label);
 
-            var opt2 = new MySqlServiceOption();
-            opt2.Bind(config, "mySql1");
-            Assert.Equal("mySql1", opt2.Name);
-            Assert.Equal("p-mysql", opt2.Label);
-        }
+        var opt2 = new MySqlServiceOption();
+        opt2.Bind(config, "mySql1");
+        Assert.Equal("mySql1", opt2.Name);
+        Assert.Equal("p-mysql", opt2.Label);
+    }
 
-        [Fact]
-        public void Bind_DoesNotBindsConfiguration()
-        {
-            var configJson = @"
+    [Fact]
+    public void Bind_DoesNotBindsConfiguration()
+    {
+        var configJson = @"
             {
                 ""foo"": {
                     ""bar"" : {
                     }
                 }
             }";
-            var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
-            var jsonSource = new JsonStreamConfigurationSource(memStream);
-            var builder = new ConfigurationBuilder().Add(jsonSource);
-            var config = builder.Build();
+        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        var jsonSource = new JsonStreamConfigurationSource(memStream);
+        var builder = new ConfigurationBuilder().Add(jsonSource);
+        var config = builder.Build();
 
-            var opt = new MySqlServiceOption();
-            opt.Bind(config, "mySql2");
-            Assert.NotEqual("mySql2", opt.Name);
-            Assert.NotEqual("p-mysql", opt.Label);
-        }
+        var opt = new MySqlServiceOption();
+        opt.Bind(config, "mySql2");
+        Assert.NotEqual("mySql2", opt.Name);
+        Assert.NotEqual("p-mysql", opt.Label);
     }
 }

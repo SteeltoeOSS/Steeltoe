@@ -5,21 +5,20 @@
 using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Health
-{
-    public class HealthEndpointResponse : HealthCheckResult
-    {
-        public HealthEndpointResponse(HealthCheckResult result)
-        {
-            result ??= new HealthCheckResult();
-            Description = result.Description;
-            Details = result.Details;
-            Status = result.Status;
-        }
+namespace Steeltoe.Management.Endpoint.Health;
 
-        /// <summary>
-        /// Gets or sets the list of available health groups
-        /// </summary>
-        public IEnumerable<string> Groups { get; set; }
+public class HealthEndpointResponse : HealthCheckResult
+{
+    public HealthEndpointResponse(HealthCheckResult result)
+    {
+        result ??= new HealthCheckResult();
+        Description = result.Description;
+        Details = result.Details;
+        Status = result.Status;
     }
+
+    /// <summary>
+    /// Gets or sets the list of available health groups
+    /// </summary>
+    public IEnumerable<string> Groups { get; set; }
 }

@@ -7,19 +7,18 @@ using System.Collections.Generic;
 using System.IO.Compression;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+
+public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostProcessor
 {
-    public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostProcessor
+    protected AbstractDeflaterPostProcessor()
     {
-        protected AbstractDeflaterPostProcessor()
-        {
-        }
-
-        protected AbstractDeflaterPostProcessor(bool autoDecompress)
-        : base(autoDecompress)
-        {
-        }
-
-        public virtual CompressionLevel Level { get; set; } = CompressionLevel.Fastest;
     }
+
+    protected AbstractDeflaterPostProcessor(bool autoDecompress)
+        : base(autoDecompress)
+    {
+    }
+
+    public virtual CompressionLevel Level { get; set; } = CompressionLevel.Fastest;
 }

@@ -5,15 +5,14 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Converter
-{
-    public abstract class AbstractGenericConditionalConverter : AbstractGenericConverter, IConditionalGenericConverter
-    {
-        protected AbstractGenericConditionalConverter(ISet<(Type Source, Type Target)> convertableTypes)
-            : base(convertableTypes)
-        {
-        }
+namespace Steeltoe.Common.Converter;
 
-        public abstract bool Matches(Type sourceType, Type targetType);
+public abstract class AbstractGenericConditionalConverter : AbstractGenericConverter, IConditionalGenericConverter
+{
+    protected AbstractGenericConditionalConverter(ISet<(Type Source, Type Target)> convertableTypes)
+        : base(convertableTypes)
+    {
     }
+
+    public abstract bool Matches(Type sourceType, Type targetType);
 }

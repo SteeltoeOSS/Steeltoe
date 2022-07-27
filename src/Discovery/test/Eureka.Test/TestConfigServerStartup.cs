@@ -5,41 +5,40 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class TestConfigServerStartup
 {
-    public class TestConfigServerStartup
+    public static string Host { get; set; }
+
+    public static string Response { get; set; }
+
+    public static int ReturnStatus { get; set; } = 200;
+
+    public static HttpRequestInfo LastRequest { get; set; }
+
+    public TestConfigServerStartup()
     {
-        public static string Host { get; set; }
+        LastRequest = null;
+    }
 
-        public static string Response { get; set; }
-
-        public static int ReturnStatus { get; set; } = 200;
-
-        public static HttpRequestInfo LastRequest { get; set; }
-
-        public TestConfigServerStartup()
+    public void Configure(IApplicationBuilder app)
+    {
+        app.Run(async context =>
         {
-            LastRequest = null;
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.Run(async context =>
+            if (!string.IsNullOrEmpty(Host))
             {
-                if (!string.IsNullOrEmpty(Host))
+                if (!Host.Equals(context.Request.Host.Value))
                 {
-                    if (!Host.Equals(context.Request.Host.Value))
-                    {
-                        context.Response.StatusCode = 500;
-                        return;
-                    }
+                    context.Response.StatusCode = 500;
+                    return;
                 }
+            }
 
-                LastRequest = new HttpRequestInfo(context.Request);
-                context.Response.StatusCode = ReturnStatus;
-                context.Response.Headers.Add("content-type", "application/json");
-                await context.Response.WriteAsync(Response);
-            });
-        }
+            LastRequest = new HttpRequestInfo(context.Request);
+            context.Response.StatusCode = ReturnStatus;
+            context.Response.Headers.Add("content-type", "application/json");
+            await context.Response.WriteAsync(Response);
+        });
     }
 }

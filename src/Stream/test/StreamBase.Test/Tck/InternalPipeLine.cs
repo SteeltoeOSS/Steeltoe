@@ -6,22 +6,21 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck
-{
-    public class InternalPipeLine
-    {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo("internalchannel")]
-        public string HandleA(Person value)
-        {
-            return "{\"name\":\"" + value.Name.ToUpper() + "\"}";
-        }
+namespace Steeltoe.Stream.Tck;
 
-        [StreamListener("internalchannel")]
-        [SendTo(IProcessor.OUTPUT)]
-        public string HandleB(Person value)
-        {
-            return value.ToString();
-        }
+public class InternalPipeLine
+{
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo("internalchannel")]
+    public string HandleA(Person value)
+    {
+        return "{\"name\":\"" + value.Name.ToUpper() + "\"}";
+    }
+
+    [StreamListener("internalchannel")]
+    [SendTo(IProcessor.OUTPUT)]
+    public string HandleB(Person value)
+    {
+        return value.ToString();
     }
 }

@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.HealthChecks
+namespace Steeltoe.Common.HealthChecks;
+
+public interface IHealthAggregator
 {
-    public interface IHealthAggregator
-    {
-        HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
-    }
+    HealthCheckResult Aggregate(IList<IHealthContributor> contributors);
 }

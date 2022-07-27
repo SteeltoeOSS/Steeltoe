@@ -5,28 +5,27 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.Management.Tracing.Test
+namespace Steeltoe.Management.Tracing.Test;
+
+[Serializable]
+internal class TestSamplerException : Exception
 {
-    [Serializable]
-    internal class TestSamplerException : Exception
+    public TestSamplerException()
     {
-        public TestSamplerException()
-        {
-        }
+    }
 
-        public TestSamplerException(string message)
-            : base(message)
-        {
-        }
+    public TestSamplerException(string message)
+        : base(message)
+    {
+    }
 
-        public TestSamplerException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public TestSamplerException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
-        protected TestSamplerException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected TestSamplerException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
     }
 }

@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
-{
-    public interface IOperatorOverloader
-    {
-        bool OverridesOperation(Operation operation, object leftOperand, object rightOperand);
+namespace Steeltoe.Common.Expression.Internal;
 
-        object Operate(Operation operation, object leftOperand, object rightOperand);
-    }
+public interface IOperatorOverloader
+{
+    bool OverridesOperation(Operation operation, object leftOperand, object rightOperand);
+
+    object Operate(Operation operation, object leftOperand, object rightOperand);
 }

@@ -4,14 +4,13 @@
 
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Connection
+namespace Steeltoe.Messaging.RabbitMQ.Connection;
+
+public interface IChannelProxy : RC.IModel
 {
-    public interface IChannelProxy : RC.IModel
-    {
-        RC.IModel TargetChannel { get; }
+    RC.IModel TargetChannel { get; }
 
-        bool IsTransactional { get; }
+    bool IsTransactional { get; }
 
-        bool IsConfirmSelected { get; }
-    }
+    bool IsConfirmSelected { get; }
 }

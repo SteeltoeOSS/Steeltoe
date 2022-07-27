@@ -5,20 +5,19 @@
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+public abstract class AbstractAsyncReturnValueHandler : IAsyncHandlerMethodReturnValueHandler
 {
-    public abstract class AbstractAsyncReturnValueHandler : IAsyncHandlerMethodReturnValueHandler
+    public void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message)
     {
-        public void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message)
-        {
-            throw new InvalidOperationException("Unexpected invocation");
-        }
-
-        public virtual bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
-        {
-            return true;
-        }
-
-        public abstract bool SupportsReturnType(ParameterInfo returnType);
+        throw new InvalidOperationException("Unexpected invocation");
     }
+
+    public virtual bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
+    {
+        return true;
+    }
+
+    public abstract bool SupportsReturnType(ParameterInfo returnType);
 }

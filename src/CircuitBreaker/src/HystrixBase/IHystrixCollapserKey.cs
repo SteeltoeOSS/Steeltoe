@@ -5,24 +5,23 @@
 using Steeltoe.Common;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public interface IHystrixCollapserKey : IHystrixKey
 {
-    public interface IHystrixCollapserKey : IHystrixKey
+}
+
+public class HystrixCollapserKeyDefault : HystrixKeyDefault, IHystrixCollapserKey
+{
+    private static readonly ConcurrentDictionary<string, HystrixCollapserKeyDefault> Intern = new ();
+
+    internal HystrixCollapserKeyDefault(string name)
+        : base(name)
     {
     }
 
-    public class HystrixCollapserKeyDefault : HystrixKeyDefault, IHystrixCollapserKey
+    public static IHystrixCollapserKey AsKey(string name)
     {
-        private static readonly ConcurrentDictionary<string, HystrixCollapserKeyDefault> Intern = new ();
-
-        internal HystrixCollapserKeyDefault(string name)
-            : base(name)
-        {
-        }
-
-        public static IHystrixCollapserKey AsKey(string name)
-        {
-            return Intern.GetOrAddEx(name, k => new HystrixCollapserKeyDefault(k));
-        }
+        return Intern.GetOrAddEx(name, k => new HystrixCollapserKeyDefault(k));
     }
 }

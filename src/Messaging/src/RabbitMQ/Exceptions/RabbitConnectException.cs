@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
-{
-    public class RabbitConnectException : RabbitException
-    {
-        public RabbitConnectException(Exception cause)
-        : base(cause)
-        {
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
-        public RabbitConnectException(string message, Exception cause)
+public class RabbitConnectException : RabbitException
+{
+    public RabbitConnectException(Exception cause)
+        : base(cause)
+    {
+    }
+
+    public RabbitConnectException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

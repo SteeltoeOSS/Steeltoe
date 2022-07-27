@@ -4,16 +4,15 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+/// <summary>
+///  Routers implementing this interface have a default output channel.
+/// </summary>
+public interface IMessageRouter
 {
     /// <summary>
-    ///  Routers implementing this interface have a default output channel.
+    /// Gets the default output channel
     /// </summary>
-    public interface IMessageRouter
-    {
-        /// <summary>
-        /// Gets the default output channel
-        /// </summary>
-        IMessageChannel DefaultOutputChannel { get; }
-    }
+    IMessageChannel DefaultOutputChannel { get; }
 }

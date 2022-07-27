@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer
-{
-    public class SpringCloudConfigHealth
-    {
-        public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED;
+namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
-        public long TimeToLive { get; set; } = ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
-    }
+public class SpringCloudConfigHealth
+{
+    public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_HEALTH_ENABLED;
+
+    public long TimeToLive { get; set; } = ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
 }

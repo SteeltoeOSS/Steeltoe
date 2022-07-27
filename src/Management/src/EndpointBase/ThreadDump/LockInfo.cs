@@ -4,14 +4,13 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
-{
-    public class LockInfo
-    {
-        [JsonPropertyName("className")]
-        public string ClassName { get; set; }
+namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-        [JsonPropertyName("identityHashCode")]
-        public int IdentityHashCode { get; set; }
-    }
+public class LockInfo
+{
+    [JsonPropertyName("className")]
+    public string ClassName { get; set; }
+
+    [JsonPropertyName("identityHashCode")]
+    public int IdentityHashCode { get; set; }
 }

@@ -7,22 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Health
+namespace Steeltoe.Management.Endpoint.Test.Health;
+
+public class ServiceCollectionTests
 {
-    public class ServiceCollectionTests
+    [Fact]
+    public void AddHealthActuatorServices_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddHealthActuatorServices_ThrowsOnNulls()
-        {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services, config));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services, config));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services2, config));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddHealthActuatorServices(services2, config));
+        Assert.Contains(nameof(config), ex2.Message);
     }
 }

@@ -7,44 +7,43 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class DynamicDestinationsBindable : AbstractBindable
 {
-    public class DynamicDestinationsBindable : AbstractBindable
+    private readonly ConcurrentDictionary<string, IBinding> _outputBindings = new ();
+
+    public DynamicDestinationsBindable()
+        : base()
     {
-        private readonly ConcurrentDictionary<string, IBinding> _outputBindings = new ();
+    }
 
-        public DynamicDestinationsBindable()
-            : base()
+    public override Type BindingType => typeof(DynamicDestinationsBindable);
+
+    public override ICollection<string> Outputs
+    {
+        get
         {
+            return _outputBindings.Keys;
         }
+    }
 
-        public override Type BindingType => typeof(DynamicDestinationsBindable);
+    public void AddOutputBinding(string name, IBinding binding)
+    {
+        _outputBindings.TryAdd(name, binding);
+    }
 
-        public override ICollection<string> Outputs
+    public override void UnbindOutputs(IBindingService adapter)
+    {
+        foreach (var entry in _outputBindings)
         {
-            get
+            _outputBindings.TryRemove(entry.Key, out var binding);
+            if (binding != null)
             {
-                return _outputBindings.Keys;
+                binding.Unbind();
             }
         }
 
-        public void AddOutputBinding(string name, IBinding binding)
-        {
-            _outputBindings.TryAdd(name, binding);
-        }
-
-        public override void UnbindOutputs(IBindingService adapter)
-        {
-            foreach (var entry in _outputBindings)
-            {
-                _outputBindings.TryRemove(entry.Key, out var binding);
-                if (binding != null)
-                {
-                    binding.Unbind();
-                }
-            }
-
-            return;
-        }
+        return;
     }
 }

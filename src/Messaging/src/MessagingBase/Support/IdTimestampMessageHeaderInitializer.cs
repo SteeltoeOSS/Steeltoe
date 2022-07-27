@@ -5,36 +5,35 @@
 using Steeltoe.Common.Util;
 using System;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
 {
-    public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
+    public IIDGenerator IdGenerator { get; set; }
+
+    public bool EnableTimestamp { get; set; }
+
+    public void SetDisableIdGeneration()
     {
-        public IIDGenerator IdGenerator { get; set; }
+        IdGenerator = new DisabledIDGenerator();
+    }
 
-        public bool EnableTimestamp { get; set; }
-
-        public void SetDisableIdGeneration()
+    public void InitHeaders(IMessageHeaderAccessor headerAccessor)
+    {
+        var idGenerator = IdGenerator;
+        if (idGenerator != null)
         {
-            IdGenerator = new DisabledIDGenerator();
+            headerAccessor.IdGenerator = idGenerator;
         }
 
-        public void InitHeaders(IMessageHeaderAccessor headerAccessor)
-        {
-            var idGenerator = IdGenerator;
-            if (idGenerator != null)
-            {
-                headerAccessor.IdGenerator = idGenerator;
-            }
+        headerAccessor.EnableTimestamp = EnableTimestamp;
+    }
 
-            headerAccessor.EnableTimestamp = EnableTimestamp;
-        }
-
-        internal class DisabledIDGenerator : IIDGenerator
+    internal class DisabledIDGenerator : IIDGenerator
+    {
+        public string GenerateId()
         {
-            public string GenerateId()
-            {
-                return MessageHeaders.ID_VALUE_NONE;
-            }
+            return MessageHeaders.ID_VALUE_NONE;
         }
     }
 }

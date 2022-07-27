@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
+
+public interface IHystrixMetricsPublisherThreadPool
 {
-    public interface IHystrixMetricsPublisherThreadPool
-    {
-        void Initialize();
-    }
+    void Initialize();
 }

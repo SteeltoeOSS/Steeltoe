@@ -10,71 +10,70 @@ using Steeltoe.Connector.Services;
 using System;
 using System.Data;
 
-namespace Steeltoe.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer;
+
+public static class SqlServerServiceCollectionExtensions
 {
-    public static class SqlServerServiceCollectionExtensions
+    /// <summary>
+    /// Add an IHealthContributor to a ServiceCollection for SqlServer
+    /// </summary>
+    /// <param name="services">Service collection to add to</param>
+    /// <param name="config">App configuration</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject</param>
+    /// <returns>IServiceCollection for chaining</returns>
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
-        /// <summary>
-        /// Add an IHealthContributor to a ServiceCollection for SqlServer
-        /// </summary>
-        /// <param name="services">Service collection to add to</param>
-        /// <param name="config">App configuration</param>
-        /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
-
-            DoAdd(services, info, config, contextLifetime);
-            return services;
+            throw new ArgumentNullException(nameof(services));
         }
 
-        /// <summary>
-        /// Add an IHealthContributor to a ServiceCollection for SqlServer
-        /// </summary>
-        /// <param name="services">Service collection to add to</param>
-        /// <param name="config">App configuration</param>
-        /// <param name="serviceName">cloud foundry service name binding</param>
-        /// <param name="contextLifetime">Lifetime of the service to inject</param>
-        /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+        if (config == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                throw new ArgumentNullException(nameof(serviceName));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
-
-            DoAdd(services, info, config, contextLifetime);
-            return services;
+            throw new ArgumentNullException(nameof(config));
         }
 
-        private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+        var info = config.GetSingletonServiceInfo<SqlServerServiceInfo>();
+
+        DoAdd(services, info, config, contextLifetime);
+        return services;
+    }
+
+    /// <summary>
+    /// Add an IHealthContributor to a ServiceCollection for SqlServer
+    /// </summary>
+    /// <param name="services">Service collection to add to</param>
+    /// <param name="config">App configuration</param>
+    /// <param name="serviceName">cloud foundry service name binding</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject</param>
+    /// <returns>IServiceCollection for chaining</returns>
+    public static IServiceCollection AddSqlServerHealthContributor(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    {
+        if (services == null)
         {
-            var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
-            var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
-            services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), contextLifetime));
+            throw new ArgumentNullException(nameof(services));
         }
+
+        if (string.IsNullOrEmpty(serviceName))
+        {
+            throw new ArgumentNullException(nameof(serviceName));
+        }
+
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        var info = config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+
+        DoAdd(services, info, config, contextLifetime);
+        return services;
+    }
+
+    private static void DoAdd(IServiceCollection services, SqlServerServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
+    {
+        var sqlServerConfig = new SqlServerProviderConnectorOptions(config);
+        var factory = new SqlServerProviderConnectorFactory(info, sqlServerConfig, SqlServerTypeLocator.SqlConnection);
+        services.Add(new ServiceDescriptor(typeof(IHealthContributor), ctx => new RelationalDbHealthContributor((IDbConnection)factory.Create(ctx), ctx.GetService<ILogger<RelationalDbHealthContributor>>()), contextLifetime));
     }
 }

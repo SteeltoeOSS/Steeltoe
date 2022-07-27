@@ -4,10 +4,9 @@
 
 using Steeltoe.Discovery.Eureka.AppInfo;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public interface IHealthCheckHandler
 {
-    public interface IHealthCheckHandler
-    {
-        InstanceStatus GetStatus(InstanceStatus currentStatus);
-    }
+    InstanceStatus GetStatus(InstanceStatus currentStatus);
 }

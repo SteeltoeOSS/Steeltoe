@@ -5,15 +5,14 @@
 using Microsoft.AspNetCore.DataProtection.StackExchangeRedis;
 using StackExchange.Redis;
 
-namespace Steeltoe.Security.DataProtection.Redis
-{
-    public class CloudFoundryRedisXmlRepository : RedisXmlRepository
-    {
-        private const string DataProtectionKeysName = "DataProtection-Keys";
+namespace Steeltoe.Security.DataProtection.Redis;
 
-        public CloudFoundryRedisXmlRepository(IConnectionMultiplexer redis)
-            : base(() => redis.GetDatabase(), DataProtectionKeysName)
-        {
-        }
+public class CloudFoundryRedisXmlRepository : RedisXmlRepository
+{
+    private const string DataProtectionKeysName = "DataProtection-Keys";
+
+    public CloudFoundryRedisXmlRepository(IConnectionMultiplexer redis)
+        : base(() => redis.GetDatabase(), DataProtectionKeysName)
+    {
     }
 }

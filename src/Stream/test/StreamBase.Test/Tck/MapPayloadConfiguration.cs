@@ -8,15 +8,14 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class MapPayloadConfiguration
 {
-    public class MapPayloadConfiguration
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public Dictionary<object, object> Echo(IMessage<Dictionary<object, object>> value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public Dictionary<object, object> Echo(IMessage<Dictionary<object, object>> value)
-        {
-            return value.Payload;
-        }
+        return value.Payload;
     }
 }

@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public interface IThreadDumper
 {
-    public interface IThreadDumper
-    {
-        List<ThreadInfo> DumpThreads();
-    }
+    List<ThreadInfo> DumpThreads();
 }

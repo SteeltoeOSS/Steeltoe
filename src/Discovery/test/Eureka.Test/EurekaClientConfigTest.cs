@@ -4,22 +4,21 @@
 
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Test
+namespace Steeltoe.Discovery.Eureka.Test;
+
+public class EurekaClientConfigTest : AbstractBaseTest
 {
-    public class EurekaClientConfigTest : AbstractBaseTest
+    [Fact]
+    public void DefaultConstructor_InitializedWithDefaults()
     {
-        [Fact]
-        public void DefaultConstructor_InitializedWithDefaults()
-        {
-            var config = new EurekaClientConfig();
-            Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
-            Assert.True(config.ShouldGZipContent);
-            Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
-            Assert.True(config.ShouldRegisterWithEureka);
-            Assert.False(config.ShouldDisableDelta);
-            Assert.True(config.ShouldFilterOnlyUpInstances);
-            Assert.True(config.ShouldFetchRegistry);
-            Assert.True(config.ShouldOnDemandUpdateStatusChange);
-        }
+        var config = new EurekaClientConfig();
+        Assert.Equal(EurekaClientConfig.Default_RegistryFetchIntervalSeconds, config.RegistryFetchIntervalSeconds);
+        Assert.True(config.ShouldGZipContent);
+        Assert.Equal(EurekaClientConfig.Default_EurekaServerConnectTimeoutSeconds, config.EurekaServerConnectTimeoutSeconds);
+        Assert.True(config.ShouldRegisterWithEureka);
+        Assert.False(config.ShouldDisableDelta);
+        Assert.True(config.ShouldFilterOnlyUpInstances);
+        Assert.True(config.ShouldFetchRegistry);
+        Assert.True(config.ShouldOnDemandUpdateStatusChange);
     }
 }

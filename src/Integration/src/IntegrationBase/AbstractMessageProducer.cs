@@ -5,23 +5,22 @@
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public abstract class AbstractMessageProducer : IMessageProducer
 {
-    public abstract class AbstractMessageProducer : IMessageProducer
+    public abstract IMessageChannel OutputChannel { get; set; }
+
+    public string OutputChannelName
     {
-        public abstract IMessageChannel OutputChannel { get; set; }
-
-        public string OutputChannelName
+        get
         {
-            get
-            {
-                return string.Empty;
-            }
+            return string.Empty;
+        }
 
-            set
-            {
-                throw new InvalidOperationException("This MessageProducer does not support setting the channel by name.");
-            }
+        set
+        {
+            throw new InvalidOperationException("This MessageProducer does not support setting the channel by name.");
         }
     }
 }

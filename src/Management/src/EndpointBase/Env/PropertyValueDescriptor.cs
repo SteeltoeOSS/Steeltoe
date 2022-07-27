@@ -4,20 +4,19 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Env
+namespace Steeltoe.Management.Endpoint.Env;
+
+public class PropertyValueDescriptor
 {
-    public class PropertyValueDescriptor
+    public PropertyValueDescriptor(object value, string origin = null)
     {
-        public PropertyValueDescriptor(object value, string origin = null)
-        {
-            Value = value;
-            Origin = origin;
-        }
-
-        [JsonPropertyName("value")]
-        public object Value { get; }
-
-        [JsonPropertyName("origin")]
-        public string Origin { get; }
+        Value = value;
+        Origin = origin;
     }
+
+    [JsonPropertyName("value")]
+    public object Value { get; }
+
+    [JsonPropertyName("origin")]
+    public string Origin { get; }
 }

@@ -5,23 +5,22 @@
 using Microsoft.Extensions.Configuration;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+
+public static class CloudFoundryConfigurationBuilderExtensions
 {
-    public static class CloudFoundryConfigurationBuilderExtensions
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
     {
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder)
+        return configurationBuilder.AddCloudFoundry(null);
+    }
+
+    public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
+    {
+        if (configurationBuilder == null)
         {
-            return configurationBuilder.AddCloudFoundry(null);
+            throw new ArgumentNullException(nameof(configurationBuilder));
         }
 
-        public static IConfigurationBuilder AddCloudFoundry(this IConfigurationBuilder configurationBuilder, ICloudFoundrySettingsReader settingsReader)
-        {
-            if (configurationBuilder == null)
-            {
-                throw new ArgumentNullException(nameof(configurationBuilder));
-            }
-
-            return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
-        }
+        return configurationBuilder.Add(new CloudFoundryConfigurationSource { SettingsReader = settingsReader });
     }
 }

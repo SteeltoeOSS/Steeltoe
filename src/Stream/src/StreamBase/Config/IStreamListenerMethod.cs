@@ -6,14 +6,13 @@ using Steeltoe.Stream.Attributes;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+public interface IStreamListenerMethod
 {
-    public interface IStreamListenerMethod
-    {
-        public MethodInfo Method { get; }
+    public MethodInfo Method { get; }
 
-        public StreamListenerAttribute Attribute { get; }
+    public StreamListenerAttribute Attribute { get; }
 
-        public Type ImplementationType { get; }
-    }
+    public Type ImplementationType { get; }
 }

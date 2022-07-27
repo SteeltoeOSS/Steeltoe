@@ -4,38 +4,37 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+
+public abstract class DeclareQueueBase : Attribute
 {
-    public abstract class DeclareQueueBase : Attribute
+    public virtual string Durable { get; set; } = string.Empty;
+
+    public virtual string Exclusive { get; set; } = string.Empty;
+
+    public virtual string AutoDelete { get; set; } = string.Empty;
+
+    public virtual string IgnoreDeclarationExceptions { get; set; } = "False";
+
+    public virtual string Declare { get; set; } = "True";
+
+    public virtual string Admin
     {
-        public virtual string Durable { get; set; } = string.Empty;
-
-        public virtual string Exclusive { get; set; } = string.Empty;
-
-        public virtual string AutoDelete { get; set; } = string.Empty;
-
-        public virtual string IgnoreDeclarationExceptions { get; set; } = "False";
-
-        public virtual string Declare { get; set; } = "True";
-
-        public virtual string Admin
+        get
         {
-            get
+            if (Admins.Length == 0)
             {
-                if (Admins.Length == 0)
-                {
-                    return null;
-                }
-
-                return Admins[0];
+                return null;
             }
 
-            set
-            {
-                Admins = new string[] { value };
-            }
+            return Admins[0];
         }
 
-        public virtual string[] Admins { get; set; } = Array.Empty<string>();
+        set
+        {
+            Admins = new string[] { value };
+        }
     }
+
+    public virtual string[] Admins { get; set; } = Array.Empty<string>();
 }

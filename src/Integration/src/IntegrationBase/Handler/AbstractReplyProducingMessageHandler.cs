@@ -5,32 +5,31 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public abstract class AbstractReplyProducingMessageHandler : AbstractMessageProducingHandler
 {
-    public abstract class AbstractReplyProducingMessageHandler : AbstractMessageProducingHandler
+    protected AbstractReplyProducingMessageHandler(IApplicationContext context)
+        : base(context)
     {
-        protected AbstractReplyProducingMessageHandler(IApplicationContext context)
-            : base(context)
-        {
-        }
-
-        public bool RequiresReply { get; set; } = false;
-
-        protected override void HandleMessageInternal(IMessage message)
-        {
-            var result = HandleRequestMessage(message);
-            if (result != null)
-            {
-                SendOutputs(result, message);
-            }
-            else if (RequiresReply)
-            {
-                throw new ReplyRequiredException(
-                    message,
-                    "No reply produced by handler '" + GetType().Name + "', and its 'requiresReply' property is set to true.");
-            }
-        }
-
-        protected abstract object HandleRequestMessage(IMessage requestMessage);
     }
+
+    public bool RequiresReply { get; set; } = false;
+
+    protected override void HandleMessageInternal(IMessage message)
+    {
+        var result = HandleRequestMessage(message);
+        if (result != null)
+        {
+            SendOutputs(result, message);
+        }
+        else if (RequiresReply)
+        {
+            throw new ReplyRequiredException(
+                message,
+                "No reply produced by handler '" + GetType().Name + "', and its 'requiresReply' property is set to true.");
+        }
+    }
+
+    protected abstract object HandleRequestMessage(IMessage requestMessage);
 }

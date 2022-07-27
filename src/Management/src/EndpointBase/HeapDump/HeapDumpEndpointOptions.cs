@@ -5,30 +5,29 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 
-namespace Steeltoe.Management.Endpoint.HeapDump
-{
-    public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
-    {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";
+namespace Steeltoe.Management.Endpoint.HeapDump;
 
-        public HeapDumpEndpointOptions()
-            : base()
+public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
+{
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";
+
+    public HeapDumpEndpointOptions()
+        : base()
+    {
+        Id = "heapdump";
+    }
+
+    public HeapDumpEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "heapdump";
         }
-
-        public HeapDumpEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "heapdump";
-            }
-        }
-
-        public string HeapDumpType { get; set; }
-
-        // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
-        public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
     }
+
+    public string HeapDumpType { get; set; }
+
+    // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
+    public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
 }

@@ -4,27 +4,26 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
-{
-    public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOptions
-    {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
+namespace Steeltoe.Management.Endpoint.ThreadDump;
 
-        public ThreadDumpEndpointOptions()
-            : base()
+public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOptions
+{
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:dump";
+
+    public ThreadDumpEndpointOptions()
+        : base()
+    {
+        Id = "dump";
+    }
+
+    public ThreadDumpEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "dump";
         }
-
-        public ThreadDumpEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "dump";
-            }
-        }
-
-        public int Duration { get; set; } = 10; // 10 ms
     }
+
+    public int Duration { get; set; } = 10; // 10 ms
 }

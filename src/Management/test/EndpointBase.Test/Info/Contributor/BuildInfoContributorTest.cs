@@ -5,23 +5,22 @@
 using Steeltoe.Management.Info;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Info.Contributor.Test
+namespace Steeltoe.Management.Endpoint.Info.Contributor.Test;
+
+public class BuildInfoContributorTest
 {
-    public class BuildInfoContributorTest
+    [Fact]
+    public void BuildAddsVersionInfo()
     {
-        [Fact]
-        public void BuildAddsVersionInfo()
-        {
-            var contributor = new BuildInfoContributor();
-            var builder = new InfoBuilder();
+        var contributor = new BuildInfoContributor();
+        var builder = new InfoBuilder();
 
-            contributor.Contribute(builder);
-            var results = builder.Build();
+        contributor.Contribute(builder);
+        var results = builder.Build();
 
-            Assert.True(results.ContainsKey("applicationVersionInfo"));
-            Assert.NotNull(results["applicationVersionInfo"]);
-            Assert.True(results.ContainsKey("steeltoeVersionInfo"));
-            Assert.NotNull(results["steeltoeVersionInfo"]);
-        }
+        Assert.True(results.ContainsKey("applicationVersionInfo"));
+        Assert.NotNull(results["applicationVersionInfo"]);
+        Assert.True(results.ContainsKey("steeltoeVersionInfo"));
+        Assert.NotNull(results["steeltoeVersionInfo"]);
     }
 }

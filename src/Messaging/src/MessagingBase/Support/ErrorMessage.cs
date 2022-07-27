@@ -5,56 +5,55 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.Support
+namespace Steeltoe.Messaging.Support;
+
+public class ErrorMessage : Message<Exception>
 {
-    public class ErrorMessage : Message<Exception>
+    public ErrorMessage(Exception payload)
+        : base(payload)
     {
-        public ErrorMessage(Exception payload)
+        OriginalMessage = null;
+    }
+
+    public ErrorMessage(Exception payload, IDictionary<string, object> headers)
+        : base(payload, headers)
+    {
+        OriginalMessage = null;
+    }
+
+    public ErrorMessage(Exception payload, IMessageHeaders headers)
+        : base(payload, headers)
+    {
+        OriginalMessage = null;
+    }
+
+    public ErrorMessage(Exception payload, IMessage originalMessage)
         : base(payload)
-        {
-            OriginalMessage = null;
-        }
+    {
+        OriginalMessage = originalMessage;
+    }
 
-        public ErrorMessage(Exception payload, IDictionary<string, object> headers)
+    public ErrorMessage(Exception payload, IDictionary<string, object> headers, IMessage originalMessage)
         : base(payload, headers)
-        {
-            OriginalMessage = null;
-        }
+    {
+        OriginalMessage = originalMessage;
+    }
 
-        public ErrorMessage(Exception payload, IMessageHeaders headers)
-         : base(payload, headers)
-        {
-            OriginalMessage = null;
-        }
-
-        public ErrorMessage(Exception payload, IMessage originalMessage)
-        : base(payload)
-        {
-            OriginalMessage = originalMessage;
-        }
-
-        public ErrorMessage(Exception payload, IDictionary<string, object> headers, IMessage originalMessage)
+    public ErrorMessage(Exception payload, IMessageHeaders headers, IMessage originalMessage)
         : base(payload, headers)
+    {
+        OriginalMessage = originalMessage;
+    }
+
+    public IMessage OriginalMessage { get; }
+
+    public override string ToString()
+    {
+        if (OriginalMessage == null)
         {
-            OriginalMessage = originalMessage;
+            return base.ToString();
         }
 
-        public ErrorMessage(Exception payload, IMessageHeaders headers, IMessage originalMessage)
-        : base(payload, headers)
-        {
-            OriginalMessage = originalMessage;
-        }
-
-        public IMessage OriginalMessage { get; }
-
-        public override string ToString()
-        {
-            if (OriginalMessage == null)
-            {
-                return base.ToString();
-            }
-
-            return base.ToString() + " for original " + OriginalMessage;
-        }
+        return base.ToString() + " for original " + OriginalMessage;
     }
 }

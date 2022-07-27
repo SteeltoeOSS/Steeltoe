@@ -5,11 +5,10 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
+namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
+
+internal static class DictionaryExtensions
 {
-    internal static class DictionaryExtensions
-    {
-        internal static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
-            from?.ToList().ForEach(item => to.Add(item));
-    }
+    internal static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
+        from?.ToList().ForEach(item => to.Add(item));
 }

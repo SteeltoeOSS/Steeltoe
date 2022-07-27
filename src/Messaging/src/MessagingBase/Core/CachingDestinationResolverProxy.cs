@@ -5,40 +5,39 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.Messaging.Core
+namespace Steeltoe.Messaging.Core;
+
+public class CachingDestinationResolverProxy<D> : IDestinationResolver<D>
 {
-    public class CachingDestinationResolverProxy<D> : IDestinationResolver<D>
+    private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ();
+
+    private IDestinationResolver<D> _targetDestinationResolver;
+
+    public CachingDestinationResolverProxy(IDestinationResolver<D> targetDestinationResolver)
     {
-        private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ();
-
-        private IDestinationResolver<D> _targetDestinationResolver;
-
-        public CachingDestinationResolverProxy(IDestinationResolver<D> targetDestinationResolver)
+        if (targetDestinationResolver == null)
         {
-            if (targetDestinationResolver == null)
-            {
-                throw new ArgumentNullException(nameof(targetDestinationResolver));
-            }
-
-            _targetDestinationResolver = targetDestinationResolver;
+            throw new ArgumentNullException(nameof(targetDestinationResolver));
         }
 
-        public D ResolveDestination(string name)
-        {
-            _resolvedDestinationCache.TryGetValue(name, out var destination);
-            if (destination == null)
-            {
-                destination = _targetDestinationResolver.ResolveDestination(name);
-                _resolvedDestinationCache.TryAdd(name, destination);
-            }
+        _targetDestinationResolver = targetDestinationResolver;
+    }
 
-            return destination;
+    public D ResolveDestination(string name)
+    {
+        _resolvedDestinationCache.TryGetValue(name, out var destination);
+        if (destination == null)
+        {
+            destination = _targetDestinationResolver.ResolveDestination(name);
+            _resolvedDestinationCache.TryAdd(name, destination);
         }
 
-        object IDestinationResolver.ResolveDestination(string name)
-        {
-            var result = ResolveDestination(name);
-            return result;
-        }
+        return destination;
+    }
+
+    object IDestinationResolver.ResolveDestination(string name)
+    {
+        var result = ResolveDestination(name);
+        return result;
     }
 }

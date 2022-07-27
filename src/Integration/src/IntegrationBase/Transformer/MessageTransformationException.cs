@@ -5,28 +5,27 @@
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration.Transformer
+namespace Steeltoe.Integration.Transformer;
+
+public class MessageTransformationException : MessagingException
 {
-    public class MessageTransformationException : MessagingException
+    public MessageTransformationException(IMessage message, string description, Exception cause)
+        : base(message, description, cause)
     {
-        public MessageTransformationException(IMessage message, string description, Exception cause)
-            : base(message, description, cause)
-        {
-        }
+    }
 
-        public MessageTransformationException(IMessage message, string description)
+    public MessageTransformationException(IMessage message, string description)
         : base(message, description)
-        {
-        }
+    {
+    }
 
-        public MessageTransformationException(string description, Exception cause)
+    public MessageTransformationException(string description, Exception cause)
         : base(description, cause)
-        {
-        }
+    {
+    }
 
-        public MessageTransformationException(string description)
+    public MessageTransformationException(string description)
         : base(description)
-        {
-        }
+    {
     }
 }

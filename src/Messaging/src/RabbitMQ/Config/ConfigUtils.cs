@@ -5,46 +5,45 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+internal static class ConfigUtils
 {
-    internal static class ConfigUtils
+    private static readonly Regex _regex = new (@"\s+");
+
+    public static bool IsExpression(string expression)
     {
-        private static readonly Regex _regex = new (@"\s+");
-
-        public static bool IsExpression(string expression)
+        if (expression.StartsWith("#{") && expression.EndsWith("}"))
         {
-            if (expression.StartsWith("#{") && expression.EndsWith("}"))
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
-        public static string ExtractExpressionString(string expression)
+        return false;
+    }
+
+    public static string ExtractExpressionString(string expression)
+    {
+        expression = expression.Substring(2, expression.Length - 2 - 1);
+        return ReplaceWhitespace(expression, string.Empty);
+    }
+
+    public static bool IsServiceReference(string expression)
+    {
+        return expression[0] == '@';
+    }
+
+    public static string ExtractServiceName(string expression)
+    {
+        if (expression[0] == '@')
         {
-            expression = expression.Substring(2, expression.Length - 2 - 1);
-            return ReplaceWhitespace(expression, string.Empty);
+            return expression.Substring(1);
         }
 
-        public static bool IsServiceReference(string expression)
-        {
-            return expression[0] == '@';
-        }
+        return expression;
+    }
 
-        public static string ExtractServiceName(string expression)
-        {
-            if (expression[0] == '@')
-            {
-                return expression.Substring(1);
-            }
-
-            return expression;
-        }
-
-        public static string ReplaceWhitespace(string input, string replacement)
-        {
-            return _regex.Replace(input, replacement);
-        }
+    public static string ReplaceWhitespace(string input, string replacement)
+    {
+        return _regex.Replace(input, replacement);
     }
 }

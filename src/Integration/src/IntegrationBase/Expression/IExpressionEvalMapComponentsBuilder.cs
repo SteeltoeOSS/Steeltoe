@@ -5,14 +5,13 @@
 using Steeltoe.Common.Expression.Internal;
 using System;
 
-namespace Steeltoe.Integration.Expression
+namespace Steeltoe.Integration.Expression;
+
+public interface IExpressionEvalMapComponentsBuilder : IExpressionEvalMapFinalBuilder
 {
-    public interface IExpressionEvalMapComponentsBuilder : IExpressionEvalMapFinalBuilder
-    {
-        IExpressionEvalMapComponentsBuilder UsingEvaluationContext(IEvaluationContext context);
+    IExpressionEvalMapComponentsBuilder UsingEvaluationContext(IEvaluationContext context);
 
-        IExpressionEvalMapComponentsBuilder WithRoot(object root);
+    IExpressionEvalMapComponentsBuilder WithRoot(object root);
 
-        IExpressionEvalMapComponentsBuilder WithReturnType(Type returnType);
-    }
+    IExpressionEvalMapComponentsBuilder WithReturnType(Type returnType);
 }

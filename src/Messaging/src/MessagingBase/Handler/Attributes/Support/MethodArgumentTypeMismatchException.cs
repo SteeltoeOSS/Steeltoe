@@ -5,13 +5,12 @@
 using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
+
+public class MethodArgumentTypeMismatchException : MethodArgumentResolutionException
 {
-    public class MethodArgumentTypeMismatchException : MethodArgumentResolutionException
-    {
-        public MethodArgumentTypeMismatchException(IMessage message, ParameterInfo parameter, string description)
+    public MethodArgumentTypeMismatchException(IMessage message, ParameterInfo parameter, string description)
         : base(message, parameter, description)
-        {
-        }
+    {
     }
 }

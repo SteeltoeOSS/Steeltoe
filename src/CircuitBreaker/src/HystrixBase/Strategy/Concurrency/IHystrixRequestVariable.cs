@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency
+namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
+
+public interface IHystrixRequestVariable<out T> : IDisposable
 {
-    public interface IHystrixRequestVariable<out T> : IDisposable
-    {
-        T Value { get; }
-    }
+    T Value { get; }
 }

@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Info
+namespace Steeltoe.Management.Endpoint.Info;
+
+public interface IInfoEndpoint
 {
-    public interface IInfoEndpoint
-    {
-        Dictionary<string, object> Invoke();
-    }
+    Dictionary<string, object> Invoke();
 }

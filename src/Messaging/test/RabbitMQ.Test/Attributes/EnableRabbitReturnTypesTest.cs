@@ -14,265 +14,264 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes
+namespace Steeltoe.Messaging.RabbitMQ.Attributes;
+
+[Trait("Category", "Integration")]
+public class EnableRabbitReturnTypesTest
 {
-    [Trait("Category", "Integration")]
-    public class EnableRabbitReturnTypesTest
+    public const string Q1 = "EnableRabbitReturnTypesTests.1";
+    public const string Q2 = "EnableRabbitReturnTypesTests.2";
+    public const string Q3 = "EnableRabbitReturnTypesTests.3";
+    public const string Q4 = "EnableRabbitReturnTypesTests.4";
+
+    private static ITestOutputHelper _output;
+
+    public EnableRabbitReturnTypesTest(ITestOutputHelper output)
     {
-        public const string Q1 = "EnableRabbitReturnTypesTests.1";
-        public const string Q2 = "EnableRabbitReturnTypesTests.2";
-        public const string Q3 = "EnableRabbitReturnTypesTests.3";
-        public const string Q4 = "EnableRabbitReturnTypesTests.4";
+        _output = output;
+    }
 
-        private static ITestOutputHelper _output;
-
-        public EnableRabbitReturnTypesTest(ITestOutputHelper output)
+    [Fact]
+    public async Task TestInterfaceReturn()
+    {
+        var queues = new List<IQueue>()
         {
-            _output = output;
+            new Config.Queue(Q1),
+            new Config.Queue(Q2),
+            new Config.Queue(Q3),
+            new Config.Queue(Q4)
+        };
+
+        ServiceProvider provider = null;
+        try
+        {
+            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            var template = provider.GetRabbitTemplate();
+            var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.1", "3");
+            Assert.NotNull(reply);
+            var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.1", "4");
+            Assert.NotNull(reply2);
+        }
+        finally
+        {
+            var admin = provider.GetRabbitAdmin();
+            admin.DeleteQueue(Q1);
+            admin.DeleteQueue(Q2);
+            admin.DeleteQueue(Q3);
+            admin.DeleteQueue(Q4);
+            provider?.Dispose();
+        }
+    }
+
+    [Fact]
+    public async Task TestAbstractReturn()
+    {
+        var queues = new List<IQueue>()
+        {
+            new Config.Queue(Q1),
+            new Config.Queue(Q2),
+            new Config.Queue(Q3),
+            new Config.Queue(Q4)
+        };
+
+        ServiceProvider provider = null;
+        try
+        {
+            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            var template = provider.GetRabbitTemplate();
+            var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.2", "3");
+            Assert.NotNull(reply);
+            var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.2", "4");
+            Assert.NotNull(reply2);
+        }
+        catch (Exception)
+        {
+        }
+        finally
+        {
+            var admin = provider.GetRabbitAdmin();
+            admin.DeleteQueue(Q1);
+            admin.DeleteQueue(Q2);
+            admin.DeleteQueue(Q3);
+            admin.DeleteQueue(Q4);
+            provider?.Dispose();
+        }
+    }
+
+    [Fact]
+    public async Task TestListOfThree()
+    {
+        var queues = new List<IQueue>()
+        {
+            new Config.Queue(Q1),
+            new Config.Queue(Q2),
+            new Config.Queue(Q3),
+            new Config.Queue(Q4)
+        };
+
+        ServiceProvider provider = null;
+        try
+        {
+            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            var template = provider.GetRabbitTemplate();
+            var reply = template.ConvertSendAndReceive<List<Three>>("EnableRabbitReturnTypesTests.3", "3");
+            Assert.NotNull(reply);
+        }
+        finally
+        {
+            var admin = provider.GetRabbitAdmin();
+            admin.DeleteQueue(Q1);
+            admin.DeleteQueue(Q2);
+            admin.DeleteQueue(Q3);
+            admin.DeleteQueue(Q4);
+            provider?.Dispose();
+        }
+    }
+
+    [Fact]
+    public async Task TestGenericInterfaceReturn()
+    {
+        var queues = new List<IQueue>()
+        {
+            new Config.Queue(Q1),
+            new Config.Queue(Q2),
+            new Config.Queue(Q3),
+            new Config.Queue(Q4)
+        };
+
+        ServiceProvider provider = null;
+        try
+        {
+            provider = await CreateAndStartServices(null, queues, typeof(Listener));
+            var template = provider.GetRabbitTemplate();
+            var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.4", "3");
+            Assert.NotNull(reply);
+            var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.4", "4");
+            Assert.NotNull(reply2);
+        }
+        finally
+        {
+            var admin = provider.GetRabbitAdmin();
+            admin.DeleteQueue(Q1);
+            admin.DeleteQueue(Q2);
+            admin.DeleteQueue(Q3);
+            admin.DeleteQueue(Q4);
+            provider?.Dispose();
+        }
+    }
+
+    public class Listener
+    {
+        [RabbitListener("EnableRabbitReturnTypesTests.1")]
+
+        public IOne Listen1(string input)
+        {
+            _output.WriteLine("Listen1 " + input);
+            if ("3".Equals(input))
+            {
+                return new Three();
+            }
+            else
+            {
+                return new Four();
+            }
         }
 
-        [Fact]
-        public async Task TestInterfaceReturn()
+        [RabbitListener("EnableRabbitReturnTypesTests.2")]
+        public Two Listen2(string input)
         {
-            var queues = new List<IQueue>()
+            _output.WriteLine("Listen2 " + input);
+            if ("3".Equals(input))
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
+                return new Three();
+            }
+            else
+            {
+                return new Four();
+            }
+        }
+
+        [RabbitListener("EnableRabbitReturnTypesTests.3")]
+        public List<Three> Listen3(string input)
+        {
+            _output.WriteLine("Listen3 " + input);
+            var list = new List<Three>
+            {
+                new Three()
             };
-
-            ServiceProvider provider = null;
-            try
-            {
-                provider = await CreateAndStartServices(null, queues, typeof(Listener));
-                var template = provider.GetRabbitTemplate();
-                var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.1", "3");
-                Assert.NotNull(reply);
-                var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.1", "4");
-                Assert.NotNull(reply2);
-            }
-            finally
-            {
-                var admin = provider.GetRabbitAdmin();
-                admin.DeleteQueue(Q1);
-                admin.DeleteQueue(Q2);
-                admin.DeleteQueue(Q3);
-                admin.DeleteQueue(Q4);
-                provider?.Dispose();
-            }
+            return list;
         }
 
-        [Fact]
-        public async Task TestAbstractReturn()
+        [RabbitListener("EnableRabbitReturnTypesTests.4")]
+        public IOne Listen4(string input)
         {
-            var queues = new List<IQueue>()
+            _output.WriteLine("Listen4 " + input);
+            if ("3".Equals(input))
             {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
-            };
-
-            ServiceProvider provider = null;
-            try
-            {
-                provider = await CreateAndStartServices(null, queues, typeof(Listener));
-                var template = provider.GetRabbitTemplate();
-                var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.2", "3");
-                Assert.NotNull(reply);
-                var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.2", "4");
-                Assert.NotNull(reply2);
+                return (IOne)new Three();
             }
-            catch (Exception)
+            else
             {
-            }
-            finally
-            {
-                var admin = provider.GetRabbitAdmin();
-                admin.DeleteQueue(Q1);
-                admin.DeleteQueue(Q2);
-                admin.DeleteQueue(Q3);
-                admin.DeleteQueue(Q4);
-                provider?.Dispose();
+                return (IOne)new Four();
             }
         }
+    }
 
-        [Fact]
-        public async Task TestListOfThree()
+    public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
+    {
+        var services = new ServiceCollection();
+        var config = configuration;
+        if (config == null)
         {
-            var queues = new List<IQueue>()
-            {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
-            };
-
-            ServiceProvider provider = null;
-            try
-            {
-                provider = await CreateAndStartServices(null, queues, typeof(Listener));
-                var template = provider.GetRabbitTemplate();
-                var reply = template.ConvertSendAndReceive<List<Three>>("EnableRabbitReturnTypesTests.3", "3");
-                Assert.NotNull(reply);
-            }
-            finally
-            {
-                var admin = provider.GetRabbitAdmin();
-                admin.DeleteQueue(Q1);
-                admin.DeleteQueue(Q2);
-                admin.DeleteQueue(Q3);
-                admin.DeleteQueue(Q4);
-                provider?.Dispose();
-            }
+            config = new ConfigurationBuilder().Build();
         }
 
-        [Fact]
-        public async Task TestGenericInterfaceReturn()
+        services.AddSingleton<IConfiguration>(config);
+        services.AddRabbitHostingServices();
+        services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>();
+        services.AddRabbitMessageHandlerMethodFactory();
+        services.AddRabbitListenerEndpointRegistry();
+        services.AddRabbitListenerEndpointRegistrar();
+        services.AddRabbitListenerAttributeProcessor();
+        services.AddSingleton<IConnectionFactory>((p) =>
         {
-            var queues = new List<IQueue>()
-            {
-                new Config.Queue(Q1),
-                new Config.Queue(Q2),
-                new Config.Queue(Q3),
-                new Config.Queue(Q4)
-            };
+            return new CachingConnectionFactory("localhost");
+        });
 
-            ServiceProvider provider = null;
-            try
-            {
-                provider = await CreateAndStartServices(null, queues, typeof(Listener));
-                var template = provider.GetRabbitTemplate();
-                var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.4", "3");
-                Assert.NotNull(reply);
-                var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.4", "4");
-                Assert.NotNull(reply2);
-            }
-            finally
-            {
-                var admin = provider.GetRabbitAdmin();
-                admin.DeleteQueue(Q1);
-                admin.DeleteQueue(Q2);
-                admin.DeleteQueue(Q3);
-                admin.DeleteQueue(Q4);
-                provider?.Dispose();
-            }
-        }
-
-        public class Listener
+        services.AddRabbitListenerContainerFactory((p, f) =>
         {
-            [RabbitListener("EnableRabbitReturnTypesTests.1")]
+            f.DefaultRequeueRejected = false;
+        });
 
-            public IOne Listen1(string input)
-            {
-                _output.WriteLine("Listen1 " + input);
-                if ("3".Equals(input))
-                {
-                    return new Three();
-                }
-                else
-                {
-                    return new Four();
-                }
-            }
+        services.AddRabbitAdmin();
+        services.AddRabbitTemplate();
+        services.AddRabbitQueues(queues.ToArray());
 
-            [RabbitListener("EnableRabbitReturnTypesTests.2")]
-            public Two Listen2(string input)
-            {
-                _output.WriteLine("Listen2 " + input);
-                if ("3".Equals(input))
-                {
-                    return new Three();
-                }
-                else
-                {
-                    return new Four();
-                }
-            }
-
-            [RabbitListener("EnableRabbitReturnTypesTests.3")]
-            public List<Three> Listen3(string input)
-            {
-                _output.WriteLine("Listen3 " + input);
-                var list = new List<Three>
-                {
-                    new Three()
-                };
-                return list;
-            }
-
-            [RabbitListener("EnableRabbitReturnTypesTests.4")]
-            public IOne Listen4(string input)
-            {
-                _output.WriteLine("Listen4 " + input);
-                if ("3".Equals(input))
-                {
-                    return (IOne)new Three();
-                }
-                else
-                {
-                    return (IOne)new Four();
-                }
-            }
-        }
-
-        public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
+        foreach (var listener in listeners)
         {
-            var services = new ServiceCollection();
-            var config = configuration;
-            if (config == null)
-            {
-                config = new ConfigurationBuilder().Build();
-            }
-
-            services.AddSingleton<IConfiguration>(config);
-            services.AddRabbitHostingServices();
-            services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>();
-            services.AddRabbitMessageHandlerMethodFactory();
-            services.AddRabbitListenerEndpointRegistry();
-            services.AddRabbitListenerEndpointRegistrar();
-            services.AddRabbitListenerAttributeProcessor();
-            services.AddSingleton<IConnectionFactory>((p) =>
-            {
-                return new CachingConnectionFactory("localhost");
-            });
-
-            services.AddRabbitListenerContainerFactory((p, f) =>
-            {
-                f.DefaultRequeueRejected = false;
-            });
-
-            services.AddRabbitAdmin();
-            services.AddRabbitTemplate();
-            services.AddRabbitQueues(queues.ToArray());
-
-            foreach (var listener in listeners)
-            {
-                services.AddSingleton(listener);
-            }
-
-            services.AddRabbitListeners(config, listeners);
-            var provider = services.BuildServiceProvider();
-            await provider.GetRequiredService<IHostedService>().StartAsync(default);
-            return provider;
+            services.AddSingleton(listener);
         }
 
-        public interface IOne
-        {
-        }
+        services.AddRabbitListeners(config, listeners);
+        var provider = services.BuildServiceProvider();
+        await provider.GetRequiredService<IHostedService>().StartAsync(default);
+        return provider;
+    }
 
-        public abstract class Two : IOne
-        {
-            public string Field { get; set; }
-        }
+    public interface IOne
+    {
+    }
 
-        public class Three : Two
-        {
-        }
+    public abstract class Two : IOne
+    {
+        public string Field { get; set; }
+    }
 
-        public class Four : Two
-        {
-        }
+    public class Three : Two
+    {
+    }
+
+    public class Four : Two
+    {
     }
 }

@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions
-{
-    public class FatalListenerExecutionException : Exception
-    {
-        public FatalListenerExecutionException(string msg, Exception cause)
-        : base(msg, cause)
-        {
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
-        public FatalListenerExecutionException(string msg)
+public class FatalListenerExecutionException : Exception
+{
+    public FatalListenerExecutionException(string msg, Exception cause)
+        : base(msg, cause)
+    {
+    }
+
+    public FatalListenerExecutionException(string msg)
         : base(msg)
-        {
-        }
+    {
     }
 }

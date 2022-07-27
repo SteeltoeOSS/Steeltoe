@@ -6,28 +6,27 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
+namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
+
+internal class Application
 {
-    internal class Application
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 
-        [JsonPropertyName("managementUrl")]
-        public Uri ManagementUrl { get; set; }
+    [JsonPropertyName("managementUrl")]
+    public Uri ManagementUrl { get; set; }
 
-        [JsonPropertyName("healthUrl")]
-        public Uri HealthUrl { get; set; }
+    [JsonPropertyName("healthUrl")]
+    public Uri HealthUrl { get; set; }
 
-        [JsonPropertyName("serviceUrl")]
-        public Uri ServiceUrl { get; set; }
+    [JsonPropertyName("serviceUrl")]
+    public Uri ServiceUrl { get; set; }
 
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, object> Metadata { get; set; }
-    }
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, object> Metadata { get; set; }
+}
 
-    internal class RegistrationResult
-    {
-        public string Id { get; set; }
-    }
+internal class RegistrationResult
+{
+    public string Id { get; set; }
 }

@@ -5,31 +5,30 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry
+namespace Steeltoe.Security.Authentication.CloudFoundry;
+
+public static class CloudFoundryJwtBearerConfigurer
 {
-    public static class CloudFoundryJwtBearerConfigurer
+    internal static void Configure(SsoServiceInfo si, JwtBearerOptions jwtOptions, CloudFoundryJwtBearerOptions options)
     {
-        internal static void Configure(SsoServiceInfo si, JwtBearerOptions jwtOptions, CloudFoundryJwtBearerOptions options)
+        if (jwtOptions == null || options == null)
         {
-            if (jwtOptions == null || options == null)
-            {
-                return;
-            }
-
-            if (si != null)
-            {
-                options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenUri;
-            }
-
-            jwtOptions.ClaimsIssuer = options.ClaimsIssuer;
-            jwtOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
-            jwtOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(
-                options.TokenValidationParameters,
-                options.JwtKeyUrl,
-                jwtOptions.BackchannelHttpHandler,
-                options.ValidateCertificates,
-                new AuthServerOptions { ClientTimeout = options.Timeout });
-            jwtOptions.SaveToken = options.SaveToken;
+            return;
         }
+
+        if (si != null)
+        {
+            options.JwtKeyUrl = si.AuthDomain + CloudFoundryDefaults.JwtTokenUri;
+        }
+
+        jwtOptions.ClaimsIssuer = options.ClaimsIssuer;
+        jwtOptions.BackchannelHttpHandler = CloudFoundryHelper.GetBackChannelHandler(options.ValidateCertificates);
+        jwtOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(
+            options.TokenValidationParameters,
+            options.JwtKeyUrl,
+            jwtOptions.BackchannelHttpHandler,
+            options.ValidateCertificates,
+            new AuthServerOptions { ClientTimeout = options.Timeout });
+        jwtOptions.SaveToken = options.SaveToken;
     }
 }

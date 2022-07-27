@@ -4,31 +4,30 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class RabbitRejectAndDontRequeueException : RabbitException
 {
-    public class RabbitRejectAndDontRequeueException : RabbitException
-    {
-        public RabbitRejectAndDontRequeueException(string message)
+    public RabbitRejectAndDontRequeueException(string message)
         : this(message, false, null)
-        {
-        }
-
-        public RabbitRejectAndDontRequeueException(Exception cause)
-        : this(null, false, cause)
-        {
-        }
-
-        public RabbitRejectAndDontRequeueException(string message, Exception cause)
-        : this(message, false, cause)
-        {
-        }
-
-        public RabbitRejectAndDontRequeueException(string message, bool rejectManual, Exception cause)
-        : base(message, cause)
-        {
-            IsRejectManual = rejectManual;
-        }
-
-        public bool IsRejectManual { get; }
+    {
     }
+
+    public RabbitRejectAndDontRequeueException(Exception cause)
+        : this(null, false, cause)
+    {
+    }
+
+    public RabbitRejectAndDontRequeueException(string message, Exception cause)
+        : this(message, false, cause)
+    {
+    }
+
+    public RabbitRejectAndDontRequeueException(string message, bool rejectManual, Exception cause)
+        : base(message, cause)
+    {
+        IsRejectManual = rejectManual;
+    }
+
+    public bool IsRejectManual { get; }
 }

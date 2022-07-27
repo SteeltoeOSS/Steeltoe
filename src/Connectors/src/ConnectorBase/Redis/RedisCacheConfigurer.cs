@@ -4,46 +4,45 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.Redis
+namespace Steeltoe.Connector.Redis;
+
+public class RedisCacheConfigurer
 {
-    public class RedisCacheConfigurer
+    /// <summary>
+    /// Create a configuration object to be used to connect to Redis
+    /// </summary>
+    /// <param name="si">Redis Service Info</param>
+    /// <param name="configuration">Configuration parameters</param>
+    /// <returns>A dynamically typed object for use connecting to Redis</returns>
+    public RedisCacheConnectorOptions Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
     {
-        /// <summary>
-        /// Create a configuration object to be used to connect to Redis
-        /// </summary>
-        /// <param name="si">Redis Service Info</param>
-        /// <param name="configuration">Configuration parameters</param>
-        /// <returns>A dynamically typed object for use connecting to Redis</returns>
-        public RedisCacheConnectorOptions Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
+        // apply service info to exising configuration
+        UpdateOptions(si, configuration);
+        return configuration;
+    }
+
+    internal void UpdateOptions(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
+    {
+        if (si == null)
         {
-            // apply service info to exising configuration
-            UpdateOptions(si, configuration);
-            return configuration;
+            return;
         }
 
-        internal void UpdateOptions(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
+        if (!string.IsNullOrEmpty(si.Host))
         {
-            if (si == null)
-            {
-                return;
-            }
+            configuration.Host = si.Host;
+            configuration.Port = si.Port;
+            configuration.EndPoints = null;
+        }
 
-            if (!string.IsNullOrEmpty(si.Host))
-            {
-                configuration.Host = si.Host;
-                configuration.Port = si.Port;
-                configuration.EndPoints = null;
-            }
+        if (!string.IsNullOrEmpty(si.Password))
+        {
+            configuration.Password = si.Password;
+        }
 
-            if (!string.IsNullOrEmpty(si.Password))
-            {
-                configuration.Password = si.Password;
-            }
-
-            if (si.Scheme == RedisServiceInfo.REDIS_SECURE_SCHEME)
-            {
-                configuration.Ssl = true;
-            }
+        if (si.Scheme == RedisServiceInfo.REDIS_SECURE_SCHEME)
+        {
+            configuration.Ssl = true;
         }
     }
 }

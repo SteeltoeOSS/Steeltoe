@@ -5,23 +5,22 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
+public abstract class CompiledExpression
 {
-    public abstract class CompiledExpression
+    internal readonly Dictionary<string, object> _dynamicFields = new ();
+
+    internal Delegate MethodDelegate { get; set; }
+
+    internal Delegate InitDelegate { get; set; }
+
+    protected CompiledExpression()
     {
-        internal readonly Dictionary<string, object> _dynamicFields = new ();
+    }
 
-        internal Delegate MethodDelegate { get; set; }
-
-        internal Delegate InitDelegate { get; set; }
-
-        protected CompiledExpression()
-        {
-        }
-
-        public virtual object GetValue(object target, IEvaluationContext context)
-        {
-            return null;
-        }
+    public virtual object GetValue(object target, IEvaluationContext context)
+    {
+        return null;
     }
 }

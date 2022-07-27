@@ -6,18 +6,17 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IPropertyAccessor
 {
-    public interface IPropertyAccessor
-    {
-        IList<Type> GetSpecificTargetClasses();
+    IList<Type> GetSpecificTargetClasses();
 
-        bool CanRead(IEvaluationContext context, object target, string name);
+    bool CanRead(IEvaluationContext context, object target, string name);
 
-        ITypedValue Read(IEvaluationContext context, object target, string name);
+    ITypedValue Read(IEvaluationContext context, object target, string name);
 
-        bool CanWrite(IEvaluationContext context, object target, string name);
+    bool CanWrite(IEvaluationContext context, object target, string name);
 
-        void Write(IEvaluationContext context, object target, string name, object newValue);
-    }
+    void Write(IEvaluationContext context, object target, string name, object newValue);
 }

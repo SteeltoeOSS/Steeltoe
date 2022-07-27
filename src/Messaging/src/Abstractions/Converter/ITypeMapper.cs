@@ -4,24 +4,23 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public enum TypePrecedence
 {
-    public enum TypePrecedence
-    {
-        INFERRED,
-        TYPE_ID
-    }
+    INFERRED,
+    TYPE_ID
+}
 
-    public interface ITypeMapper
-    {
-        void FromType(Type type, IMessageHeaders headers);
+public interface ITypeMapper
+{
+    void FromType(Type type, IMessageHeaders headers);
 
-        Type ToType(IMessageHeaders headers);
+    Type ToType(IMessageHeaders headers);
 
-        TypePrecedence Precedence { get; set; }
+    TypePrecedence Precedence { get; set; }
 
-        Type GetInferredType(IMessageHeaders headers);
+    Type GetInferredType(IMessageHeaders headers);
 
-        Type DefaultType { get; set; }
-    }
+    Type DefaultType { get; set; }
 }

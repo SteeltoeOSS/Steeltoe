@@ -7,32 +7,31 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Rabbit.Support
+namespace Steeltoe.Integration.Rabbit.Support;
+
+public class ReturnedRabbitMessageException : MessagingException
 {
-    public class ReturnedRabbitMessageException : MessagingException
+    public ReturnedRabbitMessageException(IMessage message, int replyCode, string replyText, string exchange, string routingKey)
+        : base(message)
     {
-        public ReturnedRabbitMessageException(IMessage message, int replyCode, string replyText, string exchange, string routingKey)
-            : base(message)
-        {
-            ReplyCode = replyCode;
-            ReplyText = replyText;
-            Exchange = exchange;
-            RoutingKey = routingKey;
-        }
+        ReplyCode = replyCode;
+        ReplyText = replyText;
+        Exchange = exchange;
+        RoutingKey = routingKey;
+    }
 
-        public int ReplyCode { get; }
+    public int ReplyCode { get; }
 
-        public string ReplyText { get; }
+    public string ReplyText { get; }
 
-        public string Exchange { get; }
+    public string Exchange { get; }
 
-        public string RoutingKey { get; }
+    public string RoutingKey { get; }
 
-        public override string ToString()
-        {
-            return base.ToString() + ", replyCode=" + ReplyCode
-                    + ", replyText=" + ReplyText + ", exchange=" + Exchange + ", routingKey=" + RoutingKey
-                    + "]";
-        }
+    public override string ToString()
+    {
+        return base.ToString() + ", replyCode=" + ReplyCode
+               + ", replyText=" + ReplyText + ", exchange=" + Exchange + ", routingKey=" + RoutingKey
+               + "]";
     }
 }

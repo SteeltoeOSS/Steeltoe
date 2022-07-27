@@ -4,13 +4,12 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+public class MessagingExceptionWrapperException : MessagingException
 {
-    public class MessagingExceptionWrapperException : MessagingException
-    {
-        public MessagingExceptionWrapperException(IMessage originalMessage, MessagingException cause)
+    public MessagingExceptionWrapperException(IMessage originalMessage, MessagingException cause)
         : base(originalMessage, cause)
-        {
-        }
+    {
     }
 }

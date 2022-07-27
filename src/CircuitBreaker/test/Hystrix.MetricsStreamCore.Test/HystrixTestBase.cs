@@ -10,38 +10,37 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
+
+public class HystrixTestBase : IDisposable
 {
-    public class HystrixTestBase : IDisposable
+    protected HystrixRequestContext context;
+
+    public HystrixTestBase()
     {
-        protected HystrixRequestContext context;
+        context = HystrixRequestContext.InitializeContext();
 
-        public HystrixTestBase()
+        HystrixCommandMetrics.Reset();
+        HystrixThreadPoolMetrics.Reset();
+        HystrixCollapserMetrics.Reset();
+
+        // clear collapsers
+        RequestCollapserFactory.Reset();
+
+        // clear circuit breakers
+        HystrixCircuitBreakerFactory.Reset();
+        HystrixPlugins.Reset();
+        HystrixOptionsFactory.Reset();
+    }
+
+    public virtual void Dispose()
+    {
+        if (context != null)
         {
-            context = HystrixRequestContext.InitializeContext();
-
-            HystrixCommandMetrics.Reset();
-            HystrixThreadPoolMetrics.Reset();
-            HystrixCollapserMetrics.Reset();
-
-            // clear collapsers
-            RequestCollapserFactory.Reset();
-
-            // clear circuit breakers
-            HystrixCircuitBreakerFactory.Reset();
-            HystrixPlugins.Reset();
-            HystrixOptionsFactory.Reset();
+            context.Dispose();
+            context = null;
         }
 
-        public virtual void Dispose()
-        {
-            if (context != null)
-            {
-                context.Dispose();
-                context = null;
-            }
-
-            HystrixThreadPoolFactory.Shutdown();
-        }
+        HystrixThreadPoolFactory.Shutdown();
     }
 }

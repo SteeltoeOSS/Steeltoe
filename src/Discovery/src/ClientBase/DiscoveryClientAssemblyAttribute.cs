@@ -6,22 +6,21 @@ using Steeltoe.Common.Attributes;
 using Steeltoe.Discovery.Client;
 using System;
 
-namespace Steeltoe.Discovery
+namespace Steeltoe.Discovery;
+
+/// <summary>
+/// Identify assemblies containing ServiceInfoCreators
+/// </summary>
+[AttributeUsage(AttributeTargets.Assembly)]
+public sealed class DiscoveryClientAssemblyAttribute : AssemblyContainsTypeAttribute
 {
     /// <summary>
-    /// Identify assemblies containing ServiceInfoCreators
+    /// Initializes a new instance of the <see cref="DiscoveryClientAssemblyAttribute"/> class.
+    /// Used to identify assemblies that contain a discovery client
     /// </summary>
-    [AttributeUsage(AttributeTargets.Assembly)]
-    public sealed class DiscoveryClientAssemblyAttribute : AssemblyContainsTypeAttribute
+    /// <param name="discoveryClientExtensionType">The <see cref="IDiscoveryClientExtension"/></param>
+    public DiscoveryClientAssemblyAttribute(Type discoveryClientExtensionType)
+        : base(discoveryClientExtensionType)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DiscoveryClientAssemblyAttribute"/> class.
-        /// Used to identify assemblies that contain a discovery client
-        /// </summary>
-        /// <param name="discoveryClientExtensionType">The <see cref="IDiscoveryClientExtension"/></param>
-        public DiscoveryClientAssemblyAttribute(Type discoveryClientExtensionType)
-            : base(discoveryClientExtensionType)
-        {
-        }
     }
 }

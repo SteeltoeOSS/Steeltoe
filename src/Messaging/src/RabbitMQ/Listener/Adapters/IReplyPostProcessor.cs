@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters
+namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+
+public interface IReplyPostProcessor : IServiceNameAware
 {
-    public interface IReplyPostProcessor : IServiceNameAware
-    {
-        IMessage Apply(IMessage arg1, IMessage arg2);
-    }
+    IMessage Apply(IMessage arg1, IMessage arg2);
 }

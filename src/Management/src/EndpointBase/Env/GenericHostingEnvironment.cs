@@ -5,16 +5,15 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace Steeltoe.Management.Endpoint.Env
+namespace Steeltoe.Management.Endpoint.Env;
+
+public class GenericHostingEnvironment : IHostEnvironment
 {
-    public class GenericHostingEnvironment : IHostEnvironment
-    {
-        public string EnvironmentName { get; set; }
+    public string EnvironmentName { get; set; }
 
-        public string ApplicationName { get; set; }
+    public string ApplicationName { get; set; }
 
-        public string ContentRootPath { get; set; }
+    public string ContentRootPath { get; set; }
 
-        public IFileProvider ContentRootFileProvider { get; set; }
-    }
+    public IFileProvider ContentRootFileProvider { get; set; }
 }

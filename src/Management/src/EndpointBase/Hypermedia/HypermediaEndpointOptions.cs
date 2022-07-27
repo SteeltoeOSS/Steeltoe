@@ -4,21 +4,20 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia
+namespace Steeltoe.Management.Endpoint.Hypermedia;
+
+public class HypermediaEndpointOptions : AbstractEndpointOptions, IActuatorHypermediaOptions
 {
-    public class HypermediaEndpointOptions : AbstractEndpointOptions, IActuatorHypermediaOptions
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:actuator";
+
+    public HypermediaEndpointOptions()
+        : base()
     {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:actuator";
+        Id = string.Empty;
+    }
 
-        public HypermediaEndpointOptions()
-            : base()
-        {
-            Id = string.Empty;
-        }
-
-        public HypermediaEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-        }
+    public HypermediaEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
     }
 }

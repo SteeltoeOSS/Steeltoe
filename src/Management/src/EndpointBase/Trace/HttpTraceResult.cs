@@ -5,100 +5,99 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public class HttpTraceResult
 {
-    public class HttpTraceResult
+    private readonly List<TraceResult> _list;
+
+    [JsonPropertyName("traces")]
+    public List<HttpTrace> Traces { get; }
+
+    public HttpTraceResult(List<HttpTrace> traces)
     {
-        private readonly List<TraceResult> _list;
-
-        [JsonPropertyName("traces")]
-        public List<HttpTrace> Traces { get; }
-
-        public HttpTraceResult(List<HttpTrace> traces)
-        {
-            Traces = traces;
-        }
-
-        public HttpTraceResult(List<TraceResult> list)
-        {
-            _list = list;
-        }
+        Traces = traces;
     }
 
-    public class HttpTrace
+    public HttpTraceResult(List<TraceResult> list)
     {
-        public long Timestamp { get; }
-
-        public Principal Principal { get; }
-
-        public Session Session { get; }
-
-        public Request Request { get; }
-
-        public Response Response { get; }
-
-        public long TimeTaken { get; }
-
-        public HttpTrace(Request request, Response response, long timestamp, Principal principal, Session session, double timeTaken)
-        {
-            Request = request;
-            Response = response;
-            Timestamp = timestamp;
-            Principal = principal;
-            Session = session;
-            TimeTaken = (long)timeTaken;
-        }
+        _list = list;
     }
+}
 
-    public class Request
+public class HttpTrace
+{
+    public long Timestamp { get; }
+
+    public Principal Principal { get; }
+
+    public Session Session { get; }
+
+    public Request Request { get; }
+
+    public Response Response { get; }
+
+    public long TimeTaken { get; }
+
+    public HttpTrace(Request request, Response response, long timestamp, Principal principal, Session session, double timeTaken)
     {
-        public string Method { get; }
-
-        public string Uri { get; }
-
-        public IDictionary<string, string[]> Headers { get; }
-
-        public string RemoteAddress { get; }
-
-        public Request(string method, string uri, IDictionary<string, string[]> headers, string remoteAddress)
-        {
-            Method = method;
-            Uri = uri;
-            Headers = headers;
-            RemoteAddress = remoteAddress;
-        }
+        Request = request;
+        Response = response;
+        Timestamp = timestamp;
+        Principal = principal;
+        Session = session;
+        TimeTaken = (long)timeTaken;
     }
+}
 
-    public class Response
+public class Request
+{
+    public string Method { get; }
+
+    public string Uri { get; }
+
+    public IDictionary<string, string[]> Headers { get; }
+
+    public string RemoteAddress { get; }
+
+    public Request(string method, string uri, IDictionary<string, string[]> headers, string remoteAddress)
     {
-        public int Status { get; }
-
-        public IDictionary<string, string[]> Headers { get; }
-
-        public Response(int status, IDictionary<string, string[]> headers)
-        {
-            Status = status;
-            Headers = headers;
-        }
+        Method = method;
+        Uri = uri;
+        Headers = headers;
+        RemoteAddress = remoteAddress;
     }
+}
 
-    public class Session
+public class Response
+{
+    public int Status { get; }
+
+    public IDictionary<string, string[]> Headers { get; }
+
+    public Response(int status, IDictionary<string, string[]> headers)
     {
-        public string Id { get; }
-
-        public Session(string id)
-        {
-            Id = id;
-        }
+        Status = status;
+        Headers = headers;
     }
+}
 
-    public class Principal
+public class Session
+{
+    public string Id { get; }
+
+    public Session(string id)
     {
-        public string Name { get; }
+        Id = id;
+    }
+}
 
-        public Principal(string name)
-        {
-            Name = name;
-        }
+public class Principal
+{
+    public string Name { get; }
+
+    public Principal(string name)
+    {
+        Name = name;
     }
 }

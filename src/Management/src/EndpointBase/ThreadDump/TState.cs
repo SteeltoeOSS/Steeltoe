@@ -2,15 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public enum TState
 {
-    public enum TState
-    {
-        NEW,
-        RUNNABLE,
-        BLOCKED,
-        WAITING,
-        TIMED_WAITING,
-        TERMINATED
-    }
+    NEW,
+    RUNNABLE,
+    BLOCKED,
+    WAITING,
+    TIMED_WAITING,
+    TERMINATED
 }

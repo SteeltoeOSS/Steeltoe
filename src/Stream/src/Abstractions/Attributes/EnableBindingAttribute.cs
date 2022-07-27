@@ -4,16 +4,15 @@
 
 using System;
 
-namespace Steeltoe.Stream.Attributes
-{
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class EnableBindingAttribute : Attribute
-    {
-        public EnableBindingAttribute(params Type[] bindings)
-        {
-            Bindings = bindings;
-        }
+namespace Steeltoe.Stream.Attributes;
 
-        public virtual Type[] Bindings { get; set; }
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+public class EnableBindingAttribute : Attribute
+{
+    public EnableBindingAttribute(params Type[] bindings)
+    {
+        Bindings = bindings;
     }
+
+    public virtual Type[] Bindings { get; set; }
 }

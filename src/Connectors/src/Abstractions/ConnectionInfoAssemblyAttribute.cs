@@ -4,16 +4,15 @@
 
 using Steeltoe.Common.Attributes;
 
-namespace Steeltoe.Connector
+namespace Steeltoe.Connector;
+
+/// <summary>
+/// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />
+/// </summary>
+public sealed class ConnectionInfoAssemblyAttribute : AssemblyContainsTypeAttribute
 {
-    /// <summary>
-    /// Identifies an assembly that contains one or more <see cref="IConnectionInfo" />
-    /// </summary>
-    public sealed class ConnectionInfoAssemblyAttribute : AssemblyContainsTypeAttribute
+    public ConnectionInfoAssemblyAttribute()
+        : base(typeof(IConnectionInfo))
     {
-        public ConnectionInfoAssemblyAttribute()
-            : base(typeof(IConnectionInfo))
-        {
-        }
     }
 }

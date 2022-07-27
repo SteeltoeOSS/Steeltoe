@@ -4,9 +4,8 @@
 
 using System.Data.Entity;
 
-namespace Steeltoe.Connector.SqlServer.EF6.Test
+namespace Steeltoe.Connector.SqlServer.EF6.Test;
+
+public class BadSqlServerDbContext : DbContext
 {
-    public class BadSqlServerDbContext : DbContext
-    {
-    }
 }

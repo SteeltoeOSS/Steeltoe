@@ -5,31 +5,30 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Converter
-{
-    public class ObjectToNumberConverter : AbstractToNumberConverter
-    {
-        public ObjectToNumberConverter()
-            : base(GetConvertiblePairs())
-        {
-        }
+namespace Steeltoe.Common.Converter;
 
-        private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+public class ObjectToNumberConverter : AbstractToNumberConverter
+{
+    public ObjectToNumberConverter()
+        : base(GetConvertiblePairs())
+    {
+    }
+
+    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    {
+        return new HashSet<(Type Source, Type Target)>()
         {
-            return new HashSet<(Type Source, Type Target)>()
-            {
-                (typeof(object), typeof(int)),
-                (typeof(object), typeof(float)),
-                (typeof(object), typeof(uint)),
-                (typeof(object), typeof(ulong)),
-                (typeof(object), typeof(long)),
-                (typeof(object), typeof(double)),
-                (typeof(object), typeof(short)),
-                (typeof(object), typeof(ushort)),
-                (typeof(object), typeof(decimal)),
-                (typeof(object), typeof(byte)),
-                (typeof(object), typeof(sbyte)),
-            };
-        }
+            (typeof(object), typeof(int)),
+            (typeof(object), typeof(float)),
+            (typeof(object), typeof(uint)),
+            (typeof(object), typeof(ulong)),
+            (typeof(object), typeof(long)),
+            (typeof(object), typeof(double)),
+            (typeof(object), typeof(short)),
+            (typeof(object), typeof(ushort)),
+            (typeof(object), typeof(decimal)),
+            (typeof(object), typeof(byte)),
+            (typeof(object), typeof(sbyte)),
+        };
     }
 }

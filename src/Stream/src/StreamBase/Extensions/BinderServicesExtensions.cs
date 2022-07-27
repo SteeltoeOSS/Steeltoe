@@ -10,59 +10,54 @@ using Steeltoe.Stream.Config;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Extensions
+namespace Steeltoe.Stream.Extensions;
+
+public static class BinderServicesExtensions
 {
-    public static class BinderServicesExtensions
+    public static IServiceCollection AddBinderServices(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddBinderServices(this IServiceCollection services, IConfiguration configuration)
-        {
-            var registry = new DefaultBinderTypeRegistry();
-            services.TryAddSingleton<IBinderTypeRegistry>(registry);
-            services.AddBinderServices(registry, configuration);
+        var registry = new DefaultBinderTypeRegistry();
+        services.TryAddSingleton<IBinderTypeRegistry>(registry);
+        services.AddBinderServices(registry, configuration);
 
-            return services;
-        }
+        return services;
+    }
 
-        internal static void AddBinderServices(this IServiceCollection services, IBinderTypeRegistry registry, IConfiguration configuration)
-        {
-            var binderConfigurations = new BinderConfigurations(registry, configuration.GetSection("spring:cloud:stream"));
-            services.TryAddSingleton<IBinderConfigurations>(binderConfigurations);
-            services.AddBinderServices(binderConfigurations, configuration);
-        }
+    internal static void AddBinderServices(this IServiceCollection services, IBinderTypeRegistry registry, IConfiguration configuration)
+    {
+        var binderConfigurations = new BinderConfigurations(registry, configuration.GetSection("spring:cloud:stream"));
+        services.TryAddSingleton<IBinderConfigurations>(binderConfigurations);
+        services.AddBinderServices(binderConfigurations, configuration);
+    }
 
-        internal static void AddBinderServices(this IServiceCollection services, IBinderConfigurations binderConfigurations, IConfiguration configuration)
-        {
-            services.TryAddSingleton<IBinderFactory, DefaultBinderFactory>();
-            services.ConfigureBinderServices(binderConfigurations, configuration);
-        }
+    internal static void AddBinderServices(this IServiceCollection services, IBinderConfigurations binderConfigurations, IConfiguration configuration)
+    {
+        services.TryAddSingleton<IBinderFactory, DefaultBinderFactory>();
+        services.ConfigureBinderServices(binderConfigurations, configuration);
+    }
 
-        internal static void ConfigureBinderServices(this IServiceCollection services, IBinderConfigurations binderConfigurations, IConfiguration configuration)
+    internal static void ConfigureBinderServices(this IServiceCollection services, IBinderConfigurations binderConfigurations, IConfiguration configuration)
+    {
+        foreach (var binderConfiguration in binderConfigurations.Configurations)
         {
-            foreach (var binderConfiguration in binderConfigurations.Configurations)
+            var type = FindConfigureType(binderConfiguration.Value);
+            if (type != null)
             {
-                var type = FindConfigureType(binderConfiguration.Value);
-                if (type != null)
+                var constr = FindConstructor(type);
+                var method = FindConfigureServicesMethod(type);
+                if (constr != null && method != null)
                 {
-                    var constr = FindConstructor(type);
-                    var method = FindConfigureServicesMethod(type);
-                    if (constr != null && method != null)
+                    try
                     {
-                        try
+                        var instance = constr.Invoke(new object[] { configuration });
+                        if (instance != null)
                         {
-                            var instance = constr.Invoke(new object[] { configuration });
-                            if (instance != null)
-                            {
-                                method.Invoke(instance, new object[] { services });
-                            }
+                            method.Invoke(instance, new object[] { services });
+                        }
 
-                            binderConfiguration.Value.ResolvedAssembly = type.Assembly.Location;
-                        }
-                        catch (Exception)
-                        {
-                            // Log
-                        }
+                        binderConfiguration.Value.ResolvedAssembly = type.Assembly.Location;
                     }
-                    else
+                    catch (Exception)
                     {
                         // Log
                     }
@@ -72,37 +67,41 @@ namespace Steeltoe.Stream.Extensions
                     // Log
                 }
             }
-        }
-
-        internal static MethodInfo FindConfigureServicesMethod(Type type)
-        {
-            return type.GetMethod("ConfigureServices", new Type[] { typeof(IServiceCollection) });
-        }
-
-        internal static Type FindConfigureType(BinderConfiguration binderConfiguration)
-        {
-            if (string.IsNullOrEmpty(binderConfiguration.ConfigureAssembly))
-            {
-                return Type.GetType(binderConfiguration.ConfigureClass, false);
-            }
             else
             {
-#pragma warning disable S3885 // "Assembly.Load" should be used
-                var assembly = Assembly.LoadFrom(binderConfiguration.ConfigureAssembly);
-#pragma warning restore S3885 // "Assembly.Load" should be used
-                return assembly.GetType(binderConfiguration.ConfigureClass.Split(',')[0], false);
+                // Log
             }
         }
+    }
 
-        internal static ConstructorInfo FindConstructor(Type type)
+    internal static MethodInfo FindConfigureServicesMethod(Type type)
+    {
+        return type.GetMethod("ConfigureServices", new Type[] { typeof(IServiceCollection) });
+    }
+
+    internal static Type FindConfigureType(BinderConfiguration binderConfiguration)
+    {
+        if (string.IsNullOrEmpty(binderConfiguration.ConfigureAssembly))
         {
-            var constr = type.GetConstructor(new Type[] { typeof(IConfiguration) });
-            if (constr == null)
-            {
-                constr = type.GetConstructor(Array.Empty<Type>());
-            }
-
-            return constr;
+            return Type.GetType(binderConfiguration.ConfigureClass, false);
         }
+        else
+        {
+#pragma warning disable S3885 // "Assembly.Load" should be used
+            var assembly = Assembly.LoadFrom(binderConfiguration.ConfigureAssembly);
+#pragma warning restore S3885 // "Assembly.Load" should be used
+            return assembly.GetType(binderConfiguration.ConfigureClass.Split(',')[0], false);
+        }
+    }
+
+    internal static ConstructorInfo FindConstructor(Type type)
+    {
+        var constr = type.GetConstructor(new Type[] { typeof(IConfiguration) });
+        if (constr == null)
+        {
+            constr = type.GetConstructor(Array.Empty<Type>());
+        }
+
+        return constr;
     }
 }

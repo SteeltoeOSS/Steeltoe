@@ -4,22 +4,21 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public interface IPathMatcher
 {
-    public interface IPathMatcher
-    {
-        bool IsPattern(string path);
+    bool IsPattern(string path);
 
-        bool Match(string pattern, string path);
+    bool Match(string pattern, string path);
 
-        bool MatchStart(string pattern, string path);
+    bool MatchStart(string pattern, string path);
 
-        string ExtractPathWithinPattern(string pattern, string path);
+    string ExtractPathWithinPattern(string pattern, string path);
 
-        IDictionary<string, string> ExtractUriTemplateVariables(string pattern, string path);
+    IDictionary<string, string> ExtractUriTemplateVariables(string pattern, string path);
 
-        IComparer<string> GetPatternComparer(string path);
+    IComparer<string> GetPatternComparer(string path);
 
-        string Combine(string pattern1, string pattern2);
-    }
+    string Combine(string pattern1, string pattern2);
 }

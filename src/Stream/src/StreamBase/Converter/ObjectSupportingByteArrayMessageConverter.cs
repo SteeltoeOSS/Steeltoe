@@ -5,18 +5,17 @@
 using Steeltoe.Messaging.Converter;
 using System;
 
-namespace Steeltoe.Stream.Converter
-{
-    public class ObjectSupportingByteArrayMessageConverter : ByteArrayMessageConverter
-    {
-        protected override bool Supports(Type clazz)
-        {
-            if (!base.Supports(clazz))
-            {
-                return typeof(object) == clazz;
-            }
+namespace Steeltoe.Stream.Converter;
 
-            return true;
+public class ObjectSupportingByteArrayMessageConverter : ByteArrayMessageConverter
+{
+    protected override bool Supports(Type clazz)
+    {
+        if (!base.Supports(clazz))
+        {
+            return typeof(object) == clazz;
         }
+
+        return true;
     }
 }

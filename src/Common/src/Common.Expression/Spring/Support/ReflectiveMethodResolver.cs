@@ -6,230 +6,229 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Support
+namespace Steeltoe.Common.Expression.Internal.Spring.Support;
+
+public class ReflectiveMethodResolver : IMethodResolver
 {
-    public class ReflectiveMethodResolver : IMethodResolver
+    private readonly bool _useDistance;
+    private Dictionary<Type, IMethodFilter> _filters;
+
+    public ReflectiveMethodResolver()
     {
-        private readonly bool _useDistance;
-        private Dictionary<Type, IMethodFilter> _filters;
+        _useDistance = true;
+    }
 
-        public ReflectiveMethodResolver()
+    public ReflectiveMethodResolver(bool useDistance)
+    {
+        _useDistance = useDistance;
+    }
+
+    public virtual void RegisterMethodFilter(Type type, IMethodFilter filter)
+    {
+        if (_filters == null)
         {
-            _useDistance = true;
+            _filters = new Dictionary<Type, IMethodFilter>();
         }
 
-        public ReflectiveMethodResolver(bool useDistance)
+        if (filter != null)
         {
-            _useDistance = useDistance;
+            _filters[type] = filter;
         }
-
-        public virtual void RegisterMethodFilter(Type type, IMethodFilter filter)
+        else
         {
-            if (_filters == null)
-            {
-                _filters = new Dictionary<Type, IMethodFilter>();
-            }
+            _filters.Remove(type);
+        }
+    }
 
+    public virtual IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+    {
+        try
+        {
+            var typeConverter = context.TypeConverter;
+            var type = targetObject is Type type1 ? type1 : targetObject.GetType();
+            var methods = new List<MethodInfo>(GetMethods(type, targetObject));
+
+            // If a filter is registered for this type, call it
+            IMethodFilter filter = null;
+            _filters?.TryGetValue(type, out filter);
             if (filter != null)
             {
-                _filters[type] = filter;
+                methods = filter.Filter(methods);
             }
-            else
+
+            // Sort methods into a sensible order
+            if (methods.Count > 1)
             {
-                _filters.Remove(type);
-            }
-        }
-
-        public virtual IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
-        {
-            try
-            {
-                var typeConverter = context.TypeConverter;
-                var type = targetObject is Type type1 ? type1 : targetObject.GetType();
-                var methods = new List<MethodInfo>(GetMethods(type, targetObject));
-
-                // If a filter is registered for this type, call it
-                IMethodFilter filter = null;
-                _filters?.TryGetValue(type, out filter);
-                if (filter != null)
+                methods.Sort((m1, m2) =>
                 {
-                    methods = filter.Filter(methods);
-                }
+                    var m1pl = m1.GetParameters().Length;
+                    var m2pl = m2.GetParameters().Length;
 
-                // Sort methods into a sensible order
-                if (methods.Count > 1)
-                {
-                    methods.Sort((m1, m2) =>
+                    // vararg methods go last
+                    if (m1pl == m2pl)
                     {
-                        var m1pl = m1.GetParameters().Length;
-                        var m2pl = m2.GetParameters().Length;
-
-                        // vararg methods go last
-                        if (m1pl == m2pl)
+                        if (!m1.IsVarArgs() && m2.IsVarArgs())
                         {
-                            if (!m1.IsVarArgs() && m2.IsVarArgs())
+                            return -1;
+                        }
+                        else if (m1.IsVarArgs() && !m2.IsVarArgs())
+                        {
+                            return 1;
+                        }
+                        else
+                        {
+                            return 0;
+                        }
+                    }
+
+                    return m1pl.CompareTo(m2pl);
+                });
+            }
+
+            // Remove duplicate methods (possible due to resolved bridge methods)
+            var methodsToIterate = new HashSet<MethodInfo>(methods);
+
+            MethodInfo closeMatch = null;
+            var closeMatchDistance = int.MaxValue;
+            MethodInfo matchRequiringConversion = null;
+            var multipleOptions = false;
+
+            foreach (var method in methodsToIterate)
+            {
+                if (method.Name.Equals(name))
+                {
+                    var parameters = method.GetParameters();
+                    var paramCount = parameters.Length;
+
+                    var paramDescriptors = new List<Type>(paramCount);
+                    for (var i = 0; i < paramCount; i++)
+                    {
+                        paramDescriptors.Add(parameters[i].ParameterType);
+                    }
+
+                    ArgumentsMatchInfo matchInfo = null;
+                    if (method.IsVarArgs() && argumentTypes.Count >= (paramCount - 1))
+                    {
+                        // *sigh* complicated
+                        matchInfo = ReflectionHelper.CompareArgumentsVarargs(paramDescriptors, argumentTypes, typeConverter);
+                    }
+                    else if (paramCount == argumentTypes.Count)
+                    {
+                        // Name and parameter number match, check the arguments
+                        matchInfo = ReflectionHelper.CompareArguments(paramDescriptors, argumentTypes, typeConverter);
+                    }
+
+                    if (matchInfo != null)
+                    {
+                        if (matchInfo.IsExactMatch)
+                        {
+                            return new ReflectiveMethodExecutor(method);
+                        }
+                        else if (matchInfo.IsCloseMatch)
+                        {
+                            if (_useDistance)
                             {
-                                return -1;
-                            }
-                            else if (m1.IsVarArgs() && !m2.IsVarArgs())
-                            {
-                                return 1;
+                                var matchDistance = ReflectionHelper.GetTypeDifferenceWeight(paramDescriptors, argumentTypes);
+                                if (closeMatch == null || matchDistance < closeMatchDistance)
+                                {
+                                    // This is a better match...
+                                    closeMatch = method;
+                                    closeMatchDistance = matchDistance;
+                                }
                             }
                             else
                             {
-                                return 0;
-                            }
-                        }
-
-                        return m1pl.CompareTo(m2pl);
-                    });
-                }
-
-                // Remove duplicate methods (possible due to resolved bridge methods)
-                var methodsToIterate = new HashSet<MethodInfo>(methods);
-
-                MethodInfo closeMatch = null;
-                var closeMatchDistance = int.MaxValue;
-                MethodInfo matchRequiringConversion = null;
-                var multipleOptions = false;
-
-                foreach (var method in methodsToIterate)
-                {
-                    if (method.Name.Equals(name))
-                    {
-                        var parameters = method.GetParameters();
-                        var paramCount = parameters.Length;
-
-                        var paramDescriptors = new List<Type>(paramCount);
-                        for (var i = 0; i < paramCount; i++)
-                        {
-                            paramDescriptors.Add(parameters[i].ParameterType);
-                        }
-
-                        ArgumentsMatchInfo matchInfo = null;
-                        if (method.IsVarArgs() && argumentTypes.Count >= (paramCount - 1))
-                        {
-                            // *sigh* complicated
-                            matchInfo = ReflectionHelper.CompareArgumentsVarargs(paramDescriptors, argumentTypes, typeConverter);
-                        }
-                        else if (paramCount == argumentTypes.Count)
-                        {
-                            // Name and parameter number match, check the arguments
-                            matchInfo = ReflectionHelper.CompareArguments(paramDescriptors, argumentTypes, typeConverter);
-                        }
-
-                        if (matchInfo != null)
-                        {
-                            if (matchInfo.IsExactMatch)
-                            {
-                                return new ReflectiveMethodExecutor(method);
-                            }
-                            else if (matchInfo.IsCloseMatch)
-                            {
-                                if (_useDistance)
+                                // Take this as a close match if there isn't one already
+                                if (closeMatch == null)
                                 {
-                                    var matchDistance = ReflectionHelper.GetTypeDifferenceWeight(paramDescriptors, argumentTypes);
-                                    if (closeMatch == null || matchDistance < closeMatchDistance)
-                                    {
-                                        // This is a better match...
-                                        closeMatch = method;
-                                        closeMatchDistance = matchDistance;
-                                    }
-                                }
-                                else
-                                {
-                                    // Take this as a close match if there isn't one already
-                                    if (closeMatch == null)
-                                    {
-                                        closeMatch = method;
-                                    }
+                                    closeMatch = method;
                                 }
                             }
-                            else if (matchInfo.IsMatchRequiringConversion)
+                        }
+                        else if (matchInfo.IsMatchRequiringConversion)
+                        {
+                            if (matchRequiringConversion != null)
                             {
-                                if (matchRequiringConversion != null)
-                                {
-                                    multipleOptions = true;
-                                }
-
-                                matchRequiringConversion = method;
+                                multipleOptions = true;
                             }
+
+                            matchRequiringConversion = method;
                         }
                     }
-                }
-
-                if (closeMatch != null)
-                {
-                    return new ReflectiveMethodExecutor(closeMatch);
-                }
-                else if (matchRequiringConversion != null)
-                {
-                    if (multipleOptions)
-                    {
-                        throw new SpelEvaluationException(SpelMessage.MULTIPLE_POSSIBLE_METHODS, name);
-                    }
-
-                    return new ReflectiveMethodExecutor(matchRequiringConversion);
-                }
-                else
-                {
-                    return null;
                 }
             }
-            catch (EvaluationException ex)
+
+            if (closeMatch != null)
             {
-                throw new AccessException("Failed to resolve method", ex);
+                return new ReflectiveMethodExecutor(closeMatch);
             }
-        }
-
-        protected virtual MethodInfo[] GetMethods(Type type)
-        {
-            return type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
-        }
-
-        protected virtual bool IsCandidateForInvocation(MethodInfo method, Type targetClass)
-        {
-            return true;
-        }
-
-        private ISet<MethodInfo> GetMethods(Type type, object targetObject)
-        {
-            if (targetObject is Type)
+            else if (matchRequiringConversion != null)
             {
-                var result = new HashSet<MethodInfo>();
-
-                // Add these so that static methods are invocable on the type: e.g. Float.valueOf(..)
-                var methods = GetMethods(type);
-                foreach (var method in methods)
+                if (multipleOptions)
                 {
-                    if (method.IsStatic)
-                    {
-                        result.Add(method);
-                    }
+                    throw new SpelEvaluationException(SpelMessage.MULTIPLE_POSSIBLE_METHODS, name);
                 }
 
-                // Also expose methods from System.Type itself
-                foreach (var m in GetMethods(typeof(Type)))
-                {
-                    result.Add(m);
-                }
-
-                return result;
+                return new ReflectiveMethodExecutor(matchRequiringConversion);
             }
             else
             {
-                var result = new HashSet<MethodInfo>();
-                var methods = GetMethods(type);
-                foreach (var method in methods)
-                {
-                    if (IsCandidateForInvocation(method, type))
-                    {
-                        result.Add(method);
-                    }
-                }
-
-                return result;
+                return null;
             }
+        }
+        catch (EvaluationException ex)
+        {
+            throw new AccessException("Failed to resolve method", ex);
+        }
+    }
+
+    protected virtual MethodInfo[] GetMethods(Type type)
+    {
+        return type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.Instance | BindingFlags.FlattenHierarchy);
+    }
+
+    protected virtual bool IsCandidateForInvocation(MethodInfo method, Type targetClass)
+    {
+        return true;
+    }
+
+    private ISet<MethodInfo> GetMethods(Type type, object targetObject)
+    {
+        if (targetObject is Type)
+        {
+            var result = new HashSet<MethodInfo>();
+
+            // Add these so that static methods are invocable on the type: e.g. Float.valueOf(..)
+            var methods = GetMethods(type);
+            foreach (var method in methods)
+            {
+                if (method.IsStatic)
+                {
+                    result.Add(method);
+                }
+            }
+
+            // Also expose methods from System.Type itself
+            foreach (var m in GetMethods(typeof(Type)))
+            {
+                result.Add(m);
+            }
+
+            return result;
+        }
+        else
+        {
+            var result = new HashSet<MethodInfo>();
+            var methods = GetMethods(type);
+            foreach (var method in methods)
+            {
+                if (IsCandidateForInvocation(method, type))
+                {
+                    result.Add(method);
+                }
+            }
+
+            return result;
         }
     }
 }

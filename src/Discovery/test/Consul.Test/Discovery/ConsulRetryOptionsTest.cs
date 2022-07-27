@@ -4,19 +4,18 @@
 
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Discovery.Test
+namespace Steeltoe.Discovery.Consul.Discovery.Test;
+
+public class ConsulRetryOptionsTest
 {
-    public class ConsulRetryOptionsTest
+    [Fact]
+    public void Constructor_InitsDefaults()
     {
-        [Fact]
-        public void Constructor_InitsDefaults()
-        {
-            var opts = new ConsulRetryOptions();
-            Assert.False(opts.Enabled);
-            Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_ATTEMPTS, opts.MaxAttempts);
-            Assert.Equal(ConsulRetryOptions.DEFAULT_INITIAL_RETRY_INTERVAL, opts.InitialInterval);
-            Assert.Equal(ConsulRetryOptions.DEFAULT_RETRY_MULTIPLIER, opts.Multiplier);
-            Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_INTERVAL, opts.MaxInterval);
-        }
+        var opts = new ConsulRetryOptions();
+        Assert.False(opts.Enabled);
+        Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_ATTEMPTS, opts.MaxAttempts);
+        Assert.Equal(ConsulRetryOptions.DEFAULT_INITIAL_RETRY_INTERVAL, opts.InitialInterval);
+        Assert.Equal(ConsulRetryOptions.DEFAULT_RETRY_MULTIPLIER, opts.Multiplier);
+        Assert.Equal(ConsulRetryOptions.DEFAULT_MAX_RETRY_INTERVAL, opts.MaxInterval);
     }
 }

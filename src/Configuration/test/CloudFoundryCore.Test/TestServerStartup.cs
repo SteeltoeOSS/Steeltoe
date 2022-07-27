@@ -5,18 +5,17 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
-{
-    public class TestServerStartup
-    {
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddMvc();
-        }
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-        }
+public class TestServerStartup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddMvc();
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
     }
 }

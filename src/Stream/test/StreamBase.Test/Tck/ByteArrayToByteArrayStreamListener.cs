@@ -6,15 +6,14 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class ByteArrayToByteArrayStreamListener
 {
-    public class ByteArrayToByteArrayStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public byte[] Echo(byte[] value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public byte[] Echo(byte[] value)
-        {
-            return value;
-        }
+        return value;
     }
 }

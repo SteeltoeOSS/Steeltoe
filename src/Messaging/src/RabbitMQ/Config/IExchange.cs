@@ -4,20 +4,19 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public interface IExchange : IDeclarable, IServiceNameAware
 {
-    public interface IExchange : IDeclarable, IServiceNameAware
-    {
-        string ExchangeName { get; set; }
+    string ExchangeName { get; set; }
 
-        string Type { get; }
+    string Type { get; }
 
-        bool IsDurable { get; set; }
+    bool IsDurable { get; set; }
 
-        bool IsAutoDelete { get; set; }
+    bool IsAutoDelete { get; set; }
 
-        bool IsDelayed { get; set; }
+    bool IsDelayed { get; set; }
 
-        bool IsInternal { get; set; }
-    }
+    bool IsInternal { get; set; }
 }

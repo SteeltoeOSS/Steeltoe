@@ -7,39 +7,38 @@ using Steeltoe.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test
+namespace Steeltoe.Management.Endpoint.Loggers.Test;
+
+internal class TestLogProvider : IDynamicLoggerProvider
 {
-    internal class TestLogProvider : IDynamicLoggerProvider
+    public string Category { get; set; }
+
+    public LogLevel Level { get; set; }
+
+    public bool GetLoggerConfigurationsCalled
     {
-        public string Category { get; set; }
+        get; set;
+    }
 
-        public LogLevel Level { get; set; }
+    public ILogger CreateLogger(string categoryName)
+    {
+        throw new NotImplementedException();
+    }
 
-        public bool GetLoggerConfigurationsCalled
-        {
-            get; set;
-        }
+    public void Dispose()
+    {
+        throw new NotImplementedException();
+    }
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            throw new NotImplementedException();
-        }
+    public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
+    {
+        GetLoggerConfigurationsCalled = true;
+        return new List<ILoggerConfiguration>();
+    }
 
-        public void Dispose()
-        {
-            throw new NotImplementedException();
-        }
-
-        public ICollection<ILoggerConfiguration> GetLoggerConfigurations()
-        {
-            GetLoggerConfigurationsCalled = true;
-            return new List<ILoggerConfiguration>();
-        }
-
-        public void SetLogLevel(string category, LogLevel? level)
-        {
-            Category = category;
-            Level = level ?? LogLevel.None;
-        }
+    public void SetLogLevel(string category, LogLevel? level)
+    {
+        Category = category;
+        Level = level ?? LogLevel.None;
     }
 }

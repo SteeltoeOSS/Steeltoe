@@ -4,24 +4,23 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
-namespace Steeltoe.CircuitBreaker.HystrixBase.Util
+namespace Steeltoe.CircuitBreaker.HystrixBase.Util;
+
+public static class HystrixShutdown
 {
-    public static class HystrixShutdown
+    public static void ShutdownThreads()
     {
-        public static void ShutdownThreads()
-        {
-            CumulativeCommandEventCounterStream.Reset();
-            CumulativeThreadPoolEventCounterStream.Reset();
-            RollingCommandEventCounterStream.Reset();
-            RollingThreadPoolEventCounterStream.Reset();
-            RollingCollapserEventCounterStream.Reset();
-            RollingCollapserEventCounterStream.Reset();
-            HealthCountsStream.Reset();
-            RollingCollapserBatchSizeDistributionStream.Reset();
-            RollingCommandLatencyDistributionStream.Reset();
-            RollingCommandUserLatencyDistributionStream.Reset();
-            RollingCommandMaxConcurrencyStream.Reset();
-            RollingThreadPoolMaxConcurrencyStream.Reset();
-        }
+        CumulativeCommandEventCounterStream.Reset();
+        CumulativeThreadPoolEventCounterStream.Reset();
+        RollingCommandEventCounterStream.Reset();
+        RollingThreadPoolEventCounterStream.Reset();
+        RollingCollapserEventCounterStream.Reset();
+        RollingCollapserEventCounterStream.Reset();
+        HealthCountsStream.Reset();
+        RollingCollapserBatchSizeDistributionStream.Reset();
+        RollingCommandLatencyDistributionStream.Reset();
+        RollingCommandUserLatencyDistributionStream.Reset();
+        RollingCommandMaxConcurrencyStream.Reset();
+        RollingThreadPoolMaxConcurrencyStream.Reset();
     }
 }

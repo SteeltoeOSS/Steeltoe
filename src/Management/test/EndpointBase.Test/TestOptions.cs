@@ -4,33 +4,32 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Test;
+
+internal class TestOptions : IEndpointOptions
 {
-    internal class TestOptions : IEndpointOptions
+    public string Id { get; set; }
+
+    public bool? Enabled { get; set; }
+
+    public IManagementOptions Global { get; set; }
+
+    public string Path { get; set; }
+
+    public Permissions RequiredPermissions { get; set; }
+
+    public bool IsEnabled => Enabled.Value;
+
+    public bool IsSensitive => throw new System.NotImplementedException();
+
+    public bool? Sensitive => throw new System.NotImplementedException();
+
+    public IEnumerable<string> AllowedVerbs { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public bool ExactMatch { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+
+    public bool IsAccessAllowed(Permissions permissions)
     {
-        public string Id { get; set; }
-
-        public bool? Enabled { get; set; }
-
-        public IManagementOptions Global { get; set; }
-
-        public string Path { get; set; }
-
-        public Permissions RequiredPermissions { get; set; }
-
-        public bool IsEnabled => Enabled.Value;
-
-        public bool IsSensitive => throw new System.NotImplementedException();
-
-        public bool? Sensitive => throw new System.NotImplementedException();
-
-        public IEnumerable<string> AllowedVerbs { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public bool ExactMatch { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
-
-        public bool IsAccessAllowed(Permissions permissions)
-        {
-            return false;
-        }
+        return false;
     }
 }

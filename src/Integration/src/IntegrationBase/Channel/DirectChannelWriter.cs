@@ -4,15 +4,14 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Integration.Channel
-{
-    public class DirectChannelWriter : AbstractSubscribableChannelWriter
-    {
-        public DirectChannelWriter(DirectChannel channel, ILogger logger = null)
-            : base(channel, logger)
-        {
-        }
+namespace Steeltoe.Integration.Channel;
 
-        public new DirectChannel Channel => (DirectChannel)channel;
+public class DirectChannelWriter : AbstractSubscribableChannelWriter
+{
+    public DirectChannelWriter(DirectChannel channel, ILogger logger = null)
+        : base(channel, logger)
+    {
     }
+
+    public new DirectChannel Channel => (DirectChannel)channel;
 }

@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IFatalExceptionStrategy
 {
-    public interface IFatalExceptionStrategy
-    {
-        bool IsFatal(Exception exception);
-    }
+    bool IsFatal(Exception exception);
 }

@@ -7,10 +7,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Integration.Transformer
+namespace Steeltoe.Integration.Transformer;
+
+public interface ITransformer
 {
-    public interface ITransformer
-    {
-        IMessage Transform(IMessage message);
-    }
+    IMessage Transform(IMessage message);
 }

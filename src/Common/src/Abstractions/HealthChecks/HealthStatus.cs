@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.HealthChecks
+namespace Steeltoe.Common.HealthChecks;
+
+public enum HealthStatus
 {
-    public enum HealthStatus
-    {
-        UNKNOWN,
-        UP,
-        WARNING,
-        OUT_OF_SERVICE,
-        DOWN,
-    }
+    UNKNOWN,
+    UP,
+    WARNING,
+    OUT_OF_SERVICE,
+    DOWN,
 }

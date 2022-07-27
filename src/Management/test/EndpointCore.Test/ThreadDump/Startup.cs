@@ -7,31 +7,30 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
+namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; set; }
+    public IConfiguration Configuration { get; set; }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddCloudFoundryActuator(Configuration);
-            services.AddThreadDumpActuator(Configuration);
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddCloudFoundryActuator(Configuration);
+        services.AddThreadDumpActuator(Configuration);
+    }
 
-        public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ThreadDumpEndpoint_v2>();
-            });
-        }
+            endpoints.Map<ThreadDumpEndpoint_v2>();
+        });
     }
 }
