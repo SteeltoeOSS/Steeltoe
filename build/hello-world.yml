@@ -29,6 +29,9 @@ jobs:
       targetType: 'inline'
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+          dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
+        }
+        else {
           # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because the PR may be outdated.
           $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
           if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
@@ -38,7 +41,4 @@ jobs:
   
           echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
           dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
-        }
-        else {
-          dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
         }
