@@ -30,12 +30,15 @@ jobs:
           dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
         }
         else {
-          # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because the PR may be outdated.
-          $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
-          if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
+          # In case this PR is outdated (the target branch has newer commits), the check below may report on files which are not in this PR.
+          # There's no point in using the common ancestor to diff against, because we are in detached head (the merge result), so we're
+          # always going to see files unchanged by this PR if outdated. To resolve from this, update the outdated PR.
+
+          $baseCommitHash = git rev-parse origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
+          if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (1)' failed with exit code $LastExitCode." }
   
           $headCommitHash = git rev-parse HEAD
-          if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
+          if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (2)' failed with exit code $LastExitCode." }
   
           echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
           dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
