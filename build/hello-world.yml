@@ -1,7 +1,7 @@
 trigger: none
 
 jobs:
-- job: Verify_Code_Style
+- job: Hello_World
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
