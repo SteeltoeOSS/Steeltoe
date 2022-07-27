@@ -11,28 +11,27 @@ using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Messaging;
 using System.IO;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class StringMessageToStringMessageServiceActivator
 {
-    public class StringMessageToStringMessageServiceActivator
+    [ServiceActivator(InputChannel = IProcessor.INPUT, OutputChannel = IProcessor.OUTPUT)]
+    public IMessage<string> Echo(IMessage<string> value)
     {
-        [ServiceActivator(InputChannel = IProcessor.INPUT, OutputChannel = IProcessor.OUTPUT)]
-        public IMessage<string> Echo(IMessage<string> value)
+        var settings = new JsonSerializerSettings()
         {
-            var settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
 
-            // assume it is string because CT is text/plain
-            var serializer = JsonSerializer.Create(settings);
-            var textReader = new StringReader(value.Payload);
-            var person = (Person)serializer.Deserialize(textReader, typeof(Person));
+        // assume it is string because CT is text/plain
+        var serializer = JsonSerializer.Create(settings);
+        var textReader = new StringReader(value.Payload);
+        var person = (Person)serializer.Deserialize(textReader, typeof(Person));
 
-            return (IMessage<string>)MessageBuilder.WithPayload<string>(person.ToString())
-                    .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
-                    .Build();
-        }
+        return (IMessage<string>)MessageBuilder.WithPayload<string>(person.ToString())
+            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .Build();
     }
 }

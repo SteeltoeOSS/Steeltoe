@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
-{
-    public interface ITypedValue
-    {
-        object Value { get; }
+namespace Steeltoe.Common.Expression.Internal;
 
-        Type TypeDescriptor { get; }
-    }
+public interface ITypedValue
+{
+    object Value { get; }
+
+    Type TypeDescriptor { get; }
 }

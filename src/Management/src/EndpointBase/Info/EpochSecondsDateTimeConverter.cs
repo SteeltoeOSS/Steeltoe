@@ -6,19 +6,18 @@ using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Info
+namespace Steeltoe.Management.Endpoint.Info;
+
+public class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
 {
-    public class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
+    private static readonly DateTime _baseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => DateTime.Parse(reader.GetString());
+
+    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
-        private static readonly DateTime _baseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => DateTime.Parse(reader.GetString());
-
-        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            var utc = value.ToUniversalTime();
-            var valueToInsert = (utc.Ticks - _baseTime.Ticks) / 10000;
-            writer.WriteNumberValue(valueToInsert);
-        }
+        var utc = value.ToUniversalTime();
+        var valueToInsert = (utc.Ticks - _baseTime.Ticks) / 10000;
+        writer.WriteNumberValue(valueToInsert);
     }
 }

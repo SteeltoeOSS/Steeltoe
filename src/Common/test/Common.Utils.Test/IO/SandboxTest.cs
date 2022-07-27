@@ -7,57 +7,56 @@ using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Utils.Test.IO
+namespace Steeltoe.Common.Utils.Test.IO;
+
+public class SandboxTest
 {
-    public class SandboxTest
+    [Fact]
+    public void DefaultSandboxShouldUseDefaultPrefix()
     {
-        [Fact]
-        public void DefaultSandboxShouldUseDefaultPrefix()
-        {
-            using var sandbox = new Sandbox();
+        using var sandbox = new Sandbox();
 
-            Sandbox.DefaultPrefix.Should().Be("Sandbox-");
-            sandbox.Name.Should().StartWith(Sandbox.DefaultPrefix);
-        }
+        Sandbox.DefaultPrefix.Should().Be("Sandbox-");
+        sandbox.Name.Should().StartWith(Sandbox.DefaultPrefix);
+    }
 
-        [Fact]
-        public void SandboxShouldResolvePaths()
-        {
-            using var sandbox = new Sandbox();
+    [Fact]
+    public void SandboxShouldResolvePaths()
+    {
+        using var sandbox = new Sandbox();
 
-            var path = sandbox.ResolvePath("some/path");
+        var path = sandbox.ResolvePath("some/path");
 
-            path.Should().Be(Path.Join(sandbox.FullPath, "some/path"));
-        }
+        path.Should().Be(Path.Join(sandbox.FullPath, "some/path"));
+    }
 
-        [Fact]
-        public void SandboxShouldCreateDirectories()
-        {
-            using var sandbox = new Sandbox();
+    [Fact]
+    public void SandboxShouldCreateDirectories()
+    {
+        using var sandbox = new Sandbox();
 
-            var path = sandbox.CreateDirectory("path/to/dir");
+        var path = sandbox.CreateDirectory("path/to/dir");
 
-            Directory.Exists(path).Should().BeTrue();
-        }
+        Directory.Exists(path).Should().BeTrue();
+    }
 
-        [Fact]
-        public void SandboxShouldCreateFiles()
-        {
-            using var sandbox = new Sandbox();
+    [Fact]
+    public void SandboxShouldCreateFiles()
+    {
+        using var sandbox = new Sandbox();
 
-            var path = sandbox.CreateFile("path/to/file");
+        var path = sandbox.CreateFile("path/to/file");
 
-            File.Exists(path).Should().BeTrue();
-        }
+        File.Exists(path).Should().BeTrue();
+    }
 
-        [Fact]
-        public void SandboxShouldCreateFilesWithText()
-        {
-            using var sandbox = new Sandbox();
+    [Fact]
+    public void SandboxShouldCreateFilesWithText()
+    {
+        using var sandbox = new Sandbox();
 
-            var path = sandbox.CreateFile("path/to/file", "mytext");
+        var path = sandbox.CreateFile("path/to/file", "mytext");
 
-            File.ReadAllText(path).Should().Be("mytext");
-        }
+        File.ReadAllText(path).Should().Be("mytext");
     }
 }

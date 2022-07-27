@@ -9,190 +9,190 @@ using System.IO;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Common.Configuration.Test
+namespace Steeltoe.Common.Configuration.Test;
+
+public class PropertyPlaceholderHelperTest
 {
-    public class PropertyPlaceholderHelperTest
+    [Fact]
+    public void ResolvePlaceholders_ResolvesSinglePlaceholder()
     {
-        [Fact]
-        public void ResolvePlaceholders_ResolvesSinglePlaceholder()
+        var text = "foo=${foo}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${foo}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
+            { "foo", "bar" }
+        };
+        builder.AddInMemoryCollection(dic1);
+        var config = builder.Build();
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=bar", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
+    {
+        var text = "foo=${foo.bar}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${foo.bar}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo:bar", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
+            { "foo:bar", "bar" }
+        };
+        builder.AddInMemoryCollection(dic1);
+        var config = builder.Build();
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=bar", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
+    {
+        var text = "foo=${foo},bar=${bar}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${foo},bar=${bar}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo", "bar" },
-                    { "bar", "baz" }
-                };
-            builder.AddInMemoryCollection(dic1);
+            { "foo", "bar" },
+            { "bar", "baz" }
+        };
+        builder.AddInMemoryCollection(dic1);
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
-            Assert.Equal("foo=bar,bar=baz", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
+        Assert.Equal("foo=bar,bar=baz", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
+    {
+        var text = "foo=${foo.boo},bar=${bar.far}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${foo.boo},bar=${bar.far}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo:boo", "bar" },
-                    { "bar:far", "baz" }
-                };
-            builder.AddInMemoryCollection(dic1);
+            { "foo:boo", "bar" },
+            { "bar:far", "baz" }
+        };
+        builder.AddInMemoryCollection(dic1);
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
-            Assert.Equal("foo=bar,bar=baz", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
+        Assert.Equal("foo=bar,bar=baz", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursivePlaceholders()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultipleRecursivePlaceholders()
+    {
+        var text = "foo=${bar}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${bar}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar", "${baz}" },
-                    { "baz", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
+            { "bar", "${baz}" },
+            { "baz", "bar" }
+        };
+        builder.AddInMemoryCollection(dic1);
+        var config = builder.Build();
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=bar", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
+    {
+        var text = "foo=${bar.boo}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${bar.boo}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar:boo", "${baz.faz}" },
-                    { "baz:faz", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
+            { "bar:boo", "${baz.faz}" },
+            { "baz:faz", "bar" }
+        };
+        builder.AddInMemoryCollection(dic1);
+        var config = builder.Build();
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=bar", result);
+    }
 
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
+    {
+        var text1 = "foo=${b${inner}}";
+        var builder1 = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text1 = "foo=${b${inner}}";
-            var builder1 = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar", "bar" },
-                    { "inner", "ar" }
-                };
-            builder1.AddInMemoryCollection(dic1);
-            var config1 = builder1.Build();
+            { "bar", "bar" },
+            { "inner", "ar" }
+        };
+        builder1.AddInMemoryCollection(dic1);
+        var config1 = builder1.Build();
 
-            var text2 = "${top}";
-            var builder2 = new ConfigurationBuilder();
-            var dic2 = new Dictionary<string, string>()
-                {
-                    { "top", "${child}+${child}" },
-                    { "child", "${${differentiator}.grandchild}" },
-                    { "differentiator", "first" },
-                    { "first.grandchild", "actualValue" }
-                };
-            builder2.AddInMemoryCollection(dic2);
-            var config2 = builder2.Build();
-
-            var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
-            Assert.Equal("foo=bar", result1);
-            var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
-            Assert.Equal("actualValue+actualValue", result2);
-        }
-
-        [Fact]
-        public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
+        var text2 = "${top}";
+        var builder2 = new ConfigurationBuilder();
+        var dic2 = new Dictionary<string, string>()
         {
-            var text1 = "foo=${b${inner.placeholder}}";
-            var builder1 = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "bar", "bar" },
-                    { "inner:placeholder", "ar" }
-                };
-            builder1.AddInMemoryCollection(dic1);
-            var config1 = builder1.Build();
+            { "top", "${child}+${child}" },
+            { "child", "${${differentiator}.grandchild}" },
+            { "differentiator", "first" },
+            { "first.grandchild", "actualValue" }
+        };
+        builder2.AddInMemoryCollection(dic2);
+        var config2 = builder2.Build();
 
-            var text2 = "${top}";
-            var builder2 = new ConfigurationBuilder();
-            var dic2 = new Dictionary<string, string>()
-                {
-                    { "top", "${child}+${child}" },
-                    { "child", "${${differentiator}.grandchild}" },
-                    { "differentiator", "first" },
-                    { "first:grandchild", "actualValue" }
-                };
-            builder2.AddInMemoryCollection(dic2);
-            var config2 = builder2.Build();
+        var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
+        Assert.Equal("foo=bar", result1);
+        var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
+        Assert.Equal("actualValue+actualValue", result2);
+    }
 
-            var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
-            Assert.Equal("foo=bar", result1);
-            var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
-            Assert.Equal("actualValue+actualValue", result2);
-        }
-
-        [Fact]
-        public void ResolvePlaceholders_UnresolvedPlaceholderIsIgnored()
+    [Fact]
+    public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
+    {
+        var text1 = "foo=${b${inner.placeholder}}";
+        var builder1 = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
         {
-            var text = "foo=${foo},bar=${bar}";
-            var builder = new ConfigurationBuilder();
-            var dic1 = new Dictionary<string, string>()
-                {
-                    { "foo", "bar" }
-                };
-            builder.AddInMemoryCollection(dic1);
-            var config = builder.Build();
+            { "bar", "bar" },
+            { "inner:placeholder", "ar" }
+        };
+        builder1.AddInMemoryCollection(dic1);
+        var config1 = builder1.Build();
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=bar,bar=${bar}", result);
-        }
-
-        [Fact]
-        public void ResolvePlaceholders_ResolvesArrayRefPlaceholder()
+        var text2 = "${top}";
+        var builder2 = new ConfigurationBuilder();
+        var dic2 = new Dictionary<string, string>()
         {
-            var json1 = @"
+            { "top", "${child}+${child}" },
+            { "child", "${${differentiator}.grandchild}" },
+            { "differentiator", "first" },
+            { "first:grandchild", "actualValue" }
+        };
+        builder2.AddInMemoryCollection(dic2);
+        var config2 = builder2.Build();
+
+        var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
+        Assert.Equal("foo=bar", result1);
+        var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
+        Assert.Equal("actualValue+actualValue", result2);
+    }
+
+    [Fact]
+    public void ResolvePlaceholders_UnresolvedPlaceholderIsIgnored()
+    {
+        var text = "foo=${foo},bar=${bar}";
+        var builder = new ConfigurationBuilder();
+        var dic1 = new Dictionary<string, string>()
+        {
+            { "foo", "bar" }
+        };
+        builder.AddInMemoryCollection(dic1);
+        var config = builder.Build();
+
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=bar,bar=${bar}", result);
+    }
+
+    [Fact]
+    public void ResolvePlaceholders_ResolvesArrayRefPlaceholder()
+    {
+        var json1 = @"
 {
     ""vcap"": {
         ""application"": {
@@ -219,54 +219,53 @@ namespace Steeltoe.Common.Configuration.Test
         }
     }
 }";
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("json", json1);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var builder = new ConfigurationBuilder();
-            builder.SetBasePath(directory);
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("json", json1);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var builder = new ConfigurationBuilder();
+        builder.SetBasePath(directory);
 
-            builder.AddJsonFile(fileName);
-            var config = builder.Build();
+        builder.AddJsonFile(fileName);
+        var config = builder.Build();
 
-            var text = "foo=${vcap:application:uris[1]}";
+        var text = "foo=${vcap:application:uris[1]}";
 
-            var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
-            Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
-        }
+        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
+    }
 
-        [Fact]
-        public void GetResolvedConfigurationPlaceholders_ReturnsValues_WhenResolved()
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(
-                new Dictionary<string, string>()
-                {
-                    { "foo", "${bar}" },
-                    { "bar", "baz" }
-                });
+    [Fact]
+    public void GetResolvedConfigurationPlaceholders_ReturnsValues_WhenResolved()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(
+            new Dictionary<string, string>()
+            {
+                { "foo", "${bar}" },
+                { "bar", "baz" }
+            });
 
-            var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+        var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
 
-            Assert.Contains(resolved, f => f.Key == "foo");
-            Assert.DoesNotContain(resolved, f => f.Key == "bar");
-            Assert.Equal("baz", resolved.First(k => k.Key == "foo").Value);
-        }
+        Assert.Contains(resolved, f => f.Key == "foo");
+        Assert.DoesNotContain(resolved, f => f.Key == "bar");
+        Assert.Equal("baz", resolved.First(k => k.Key == "foo").Value);
+    }
 
-        [Fact]
-        public void GetResolvedConfigurationPlaceholders_ReturnsEmpty_WhenUnResolved()
-        {
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(
-                new Dictionary<string, string>()
-                {
-                    { "foo", "${bar}" }
-                });
+    [Fact]
+    public void GetResolvedConfigurationPlaceholders_ReturnsEmpty_WhenUnResolved()
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(
+            new Dictionary<string, string>()
+            {
+                { "foo", "${bar}" }
+            });
 
-            var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+        var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
 
-            Assert.Contains(resolved, f => f.Key == "foo");
-            Assert.Equal(string.Empty, resolved.First(k => k.Key == "foo").Value);
-        }
+        Assert.Contains(resolved, f => f.Key == "foo");
+        Assert.Equal(string.Empty, resolved.First(k => k.Key == "foo").Value);
     }
 }

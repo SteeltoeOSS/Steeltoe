@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+
+public class TestDiscoveryClientOptions
 {
-    public class TestDiscoveryClientOptions
-    {
-        public bool Enabled { get; set; }
-    }
+    public bool Enabled { get; set; }
 }

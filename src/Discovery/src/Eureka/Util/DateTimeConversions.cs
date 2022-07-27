@@ -4,32 +4,31 @@
 
 using System;
 
-namespace Steeltoe.Discovery.Eureka.Util
+namespace Steeltoe.Discovery.Eureka.Util;
+
+public static class DateTimeConversions
 {
-    public static class DateTimeConversions
+    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    public static long ToJavaMillis(DateTime dt)
     {
-        private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-
-        public static long ToJavaMillis(DateTime dt)
+        if (dt.Kind != DateTimeKind.Utc)
         {
-            if (dt.Kind != DateTimeKind.Utc)
-            {
-                throw new ArgumentException("Kind != UTC");
-            }
-
-            if (dt.Ticks <= 0)
-            {
-                return 0;
-            }
-
-            var javaTicks = dt.Ticks - BaseTime.Ticks;
-            return javaTicks / 10000;
+            throw new ArgumentException("Kind != UTC");
         }
 
-        public static DateTime FromJavaMillis(long javaMillis)
+        if (dt.Ticks <= 0)
         {
-            var dotNetTicks = (javaMillis * 10000) + BaseTime.Ticks;
-            return new DateTime(dotNetTicks, DateTimeKind.Utc);
+            return 0;
         }
+
+        var javaTicks = dt.Ticks - BaseTime.Ticks;
+        return javaTicks / 10000;
+    }
+
+    public static DateTime FromJavaMillis(long javaMillis)
+    {
+        var dotNetTicks = (javaMillis * 10000) + BaseTime.Ticks;
+        return new DateTime(dotNetTicks, DateTimeKind.Utc);
     }
 }

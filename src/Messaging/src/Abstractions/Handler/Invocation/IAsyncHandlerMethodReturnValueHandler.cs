@@ -4,19 +4,18 @@
 
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation
+namespace Steeltoe.Messaging.Handler.Invocation;
+
+/// <summary>
+/// Async return value handler
+/// </summary>
+public interface IAsyncHandlerMethodReturnValueHandler : IHandlerMethodReturnValueHandler
 {
     /// <summary>
-    /// Async return value handler
+    /// Check if async return value
     /// </summary>
-    public interface IAsyncHandlerMethodReturnValueHandler : IHandlerMethodReturnValueHandler
-    {
-        /// <summary>
-        /// Check if async return value
-        /// </summary>
-        /// <param name="returnValue">the value</param>
-        /// <param name="parameterInfo">the return type info</param>
-        /// <returns>true if the return type represents a async value</returns>
-        bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo);
-    }
+    /// <param name="returnValue">the value</param>
+    /// <param name="parameterInfo">the return type info</param>
+    /// <returns>true if the return type represents a async value</returns>
+    bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo);
 }

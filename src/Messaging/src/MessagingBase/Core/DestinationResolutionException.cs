@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Core
-{
-    public class DestinationResolutionException : MessagingException
-    {
-        public DestinationResolutionException(string description)
-        : base(description)
-        {
-        }
+namespace Steeltoe.Messaging.Core;
 
-        public DestinationResolutionException(string description, Exception cause)
+public class DestinationResolutionException : MessagingException
+{
+    public DestinationResolutionException(string description)
+        : base(description)
+    {
+    }
+
+    public DestinationResolutionException(string description, Exception cause)
         : base(description, cause)
-        {
-        }
+    {
     }
 }

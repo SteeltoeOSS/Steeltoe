@@ -6,46 +6,45 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Invocation.Test
+namespace Steeltoe.Messaging.Handler.Invocation.Test;
+
+internal class StubArgumentResolver : IHandlerMethodArgumentResolver
 {
-    internal class StubArgumentResolver : IHandlerMethodArgumentResolver
-    {
-        private readonly Type valueType;
+    private readonly Type valueType;
 
-        private readonly object value;
+    private readonly object value;
 
-        private readonly List<ParameterInfo> resolvedParameters = new ();
+    private readonly List<ParameterInfo> resolvedParameters = new ();
 
-        public StubArgumentResolver(object value)
+    public StubArgumentResolver(object value)
         : this(value.GetType(), value)
-        {
-        }
+    {
+    }
 
-        public StubArgumentResolver(Type valueType)
+    public StubArgumentResolver(Type valueType)
         : this(valueType, null)
-        {
-        }
+    {
+    }
 
-        public StubArgumentResolver(Type valueType, object value)
-        {
-            this.valueType = valueType;
-            this.value = value;
-        }
+    public StubArgumentResolver(Type valueType, object value)
+    {
+        this.valueType = valueType;
+        this.value = value;
+    }
 
-        public List<ParameterInfo> ResolvedParameters
-        {
-            get { return resolvedParameters; }
-        }
+    public List<ParameterInfo> ResolvedParameters
+    {
+        get { return resolvedParameters; }
+    }
 
-        public bool SupportsParameter(ParameterInfo parameter)
-        {
-            return parameter.ParameterType.IsAssignableFrom(valueType);
-        }
+    public bool SupportsParameter(ParameterInfo parameter)
+    {
+        return parameter.ParameterType.IsAssignableFrom(valueType);
+    }
 
-        public object ResolveArgument(ParameterInfo parameter, IMessage message)
-        {
-            resolvedParameters.Add(parameter);
-            return value;
-        }
+    public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        resolvedParameters.Add(parameter);
+        return value;
     }
 }

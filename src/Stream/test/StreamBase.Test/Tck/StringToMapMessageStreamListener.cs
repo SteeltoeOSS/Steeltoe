@@ -9,17 +9,16 @@ using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class StringToMapMessageStreamListener
 {
-    public class StringToMapMessageStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public string Echo(IMessage<Dictionary<object, object>> value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public string Echo(IMessage<Dictionary<object, object>> value)
-        {
-            Assert.IsType<Dictionary<object, object>>(value.Payload);
-            value.Payload.TryGetValue("name", out var result);
-            return (string)result;
-        }
+        Assert.IsType<Dictionary<object, object>>(value.Payload);
+        value.Payload.TryGetValue("name", out var result);
+        return (string)result;
     }
 }

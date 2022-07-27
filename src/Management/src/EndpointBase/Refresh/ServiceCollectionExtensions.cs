@@ -8,38 +8,37 @@ using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Refresh;
 using System;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Microsoft.Extensions.DependencyInjection;
+
+/// <summary>
+/// Add services used by the Refresh actuator
+/// </summary>
+public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Add services used by the Refresh actuator
+    /// Adds the services used by the Refresh actuator
     /// </summary>
-    public static partial class ServiceCollectionExtensions
+    /// <param name="services">Reference to the service collection</param>
+    /// <param name="configuration">Reference to the configuration system</param>
+    /// <returns>A reference to the service collection</returns>
+    public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
-        /// <summary>
-        /// Adds the services used by the Refresh actuator
-        /// </summary>
-        /// <param name="services">Reference to the service collection</param>
-        /// <param name="configuration">Reference to the configuration system</param>
-        /// <returns>A reference to the service collection</returns>
-        public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services, IConfiguration configuration)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
-
-            var options = new RefreshEndpointOptions(configuration);
-            services.TryAddSingleton<IRefreshOptions>(options);
-            services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
-            services.TryAddSingleton<RefreshEndpoint>();
-            services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
-
-            return services;
+            throw new ArgumentNullException(nameof(services));
         }
+
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+
+        var options = new RefreshEndpointOptions(configuration);
+        services.TryAddSingleton<IRefreshOptions>(options);
+        services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
+        services.TryAddSingleton<RefreshEndpoint>();
+        services.TryAddSingleton<IRefreshEndpoint>(provider => provider.GetRequiredService<RefreshEndpoint>());
+
+        return services;
     }
 }

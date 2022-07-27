@@ -5,18 +5,17 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class InvalidBindingConfigurationTest : AbstractTest
 {
-    public class InvalidBindingConfigurationTest : AbstractTest
+    [Fact]
+    public void TestDuplicateBindingConfig()
     {
-        [Fact]
-        public void TestDuplicateBindingConfig()
-        {
-            var searchDirectories = GetSearchDirectories("MockBinder");
-            Assert.Throws<InvalidOperationException>(() => CreateStreamsContainerWithBinding(
-                searchDirectories,
-                typeof(ITestInvalidBinding),
-                "spring.cloud.stream.defaultbinder=mock"));
-        }
+        var searchDirectories = GetSearchDirectories("MockBinder");
+        Assert.Throws<InvalidOperationException>(() => CreateStreamsContainerWithBinding(
+            searchDirectories,
+            typeof(ITestInvalidBinding),
+            "spring.cloud.stream.defaultbinder=mock"));
     }
 }

@@ -4,31 +4,30 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.Oracle
+namespace Steeltoe.Connector.Oracle;
+
+public class OracleProviderConfigurer
 {
-    public class OracleProviderConfigurer
+    public string Configure(OracleServiceInfo si, OracleProviderConnectorOptions configuration)
     {
-        public string Configure(OracleServiceInfo si, OracleProviderConnectorOptions configuration)
+        UpdateConfiguration(si, configuration);
+        return configuration.ToString();
+    }
+
+    public void UpdateConfiguration(OracleServiceInfo si, OracleProviderConnectorOptions configuration)
+    {
+        if (si == null)
         {
-            UpdateConfiguration(si, configuration);
-            return configuration.ToString();
+            return;
         }
 
-        public void UpdateConfiguration(OracleServiceInfo si, OracleProviderConnectorOptions configuration)
+        if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si == null)
-            {
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(si.Uri))
-            {
-                configuration.Port = si.Port;
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
-                configuration.Server = si.Host;
-                configuration.ServiceName = si.Path;
-            }
+            configuration.Port = si.Port;
+            configuration.Username = si.UserName;
+            configuration.Password = si.Password;
+            configuration.Server = si.Host;
+            configuration.ServiceName = si.Path;
         }
     }
 }

@@ -5,21 +5,20 @@
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public class StatusChangedArgs : EventArgs
 {
-    public class StatusChangedArgs : EventArgs
+    public InstanceStatus Previous { get; private set; }
+
+    public InstanceStatus Current { get; private set; }
+
+    public string InstanceId { get; private set; }
+
+    public StatusChangedArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
     {
-        public InstanceStatus Previous { get; private set; }
-
-        public InstanceStatus Current { get; private set; }
-
-        public string InstanceId { get; private set; }
-
-        public StatusChangedArgs(InstanceStatus prev, InstanceStatus current, string instanceId)
-        {
-            Previous = prev;
-            Current = current;
-            InstanceId = instanceId;
-        }
+        Previous = prev;
+        Current = current;
+        InstanceId = instanceId;
     }
 }

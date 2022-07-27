@@ -4,13 +4,12 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+/// <summary>
+/// TODO: See if this can be made internal
+/// </summary>
+public interface IBindingCleaner
 {
-    /// <summary>
-    /// TODO: See if this can be made internal
-    /// </summary>
-    public interface IBindingCleaner
-    {
-        IDictionary<string, List<string>> Clean(string entity, bool isJob);
-    }
+    IDictionary<string, List<string>> Clean(string entity, bool isJob);
 }

@@ -9,53 +9,52 @@ using Steeltoe.Discovery.Kubernetes.Discovery;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Discovery.Kubernetes.Test
+namespace Steeltoe.Discovery.Kubernetes.Test;
+
+public class KubernetesDiscoveryClientExtensionTest
 {
-    public class KubernetesDiscoveryClientExtensionTest
+    [Fact]
+    public void ClientEnabledByDefault()
     {
-        [Fact]
-        public void ClientEnabledByDefault()
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+
+        KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
+        var provider = services.BuildServiceProvider();
+        var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+
+        Assert.True(clientOptions.Value.Enabled);
+    }
+
+    [Fact]
+    public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
+    {
+        var services = new ServiceCollection();
+        var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+
+        KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
+        var provider = services.BuildServiceProvider();
+        var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+
+        Assert.False(clientOptions.Value.Enabled);
+    }
+
+    [Fact]
+    public void ClientFavorsKubernetesDiscoveryEnabled()
+    {
+        var services = new ServiceCollection();
+        var appSettings = new Dictionary<string, string>
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+            { "spring:cloud:discovery:enabled", "false" },
+            { "spring:cloud:kubernetes:discovery:enabled", "true" }
+        };
+        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
-            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-            var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
+        KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
+        var provider = services.BuildServiceProvider();
+        var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
-            Assert.True(clientOptions.Value.Enabled);
-        }
-
-        [Fact]
-        public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
-        {
-            var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
-
-            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-            var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-
-            Assert.False(clientOptions.Value.Enabled);
-        }
-
-        [Fact]
-        public void ClientFavorsKubernetesDiscoveryEnabled()
-        {
-            var services = new ServiceCollection();
-            var appSettings = new Dictionary<string, string>
-            {
-                { "spring:cloud:discovery:enabled", "false" },
-                { "spring:cloud:kubernetes:discovery:enabled", "true" }
-            };
-            services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
-
-            KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-            var provider = services.BuildServiceProvider();
-            var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
-
-            Assert.True(clientOptions.Value.Enabled);
-        }
+        Assert.True(clientOptions.Value.Enabled);
     }
 }

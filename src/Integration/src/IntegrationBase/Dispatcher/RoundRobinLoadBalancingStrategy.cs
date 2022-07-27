@@ -6,35 +6,34 @@ using Steeltoe.Messaging;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Steeltoe.Integration.Dispatcher
+namespace Steeltoe.Integration.Dispatcher;
+
+public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
 {
-    public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
+    private int _currentHandlerIndex = -1;
+
+    public int GetNextHandlerStartIndex(IMessage message, List<IMessageHandler> handlers)
     {
-        private int _currentHandlerIndex = -1;
-
-        public int GetNextHandlerStartIndex(IMessage message, List<IMessageHandler> handlers)
+        if (handlers == null)
         {
-            if (handlers == null)
-            {
-                return 0;
-            }
-
-            var size = handlers.Count;
-            if (size > 0)
-            {
-                var indexTail = Interlocked.Increment(ref _currentHandlerIndex) % size;
-                return indexTail < 0 ? indexTail + size : indexTail;
-            }
-            else
-            {
-                return size;
-            }
+            return 0;
         }
 
-        internal int CurrentHandlerIndex
+        var size = handlers.Count;
+        if (size > 0)
         {
-            get { return _currentHandlerIndex; }
-            set { _currentHandlerIndex = value; }
+            var indexTail = Interlocked.Increment(ref _currentHandlerIndex) % size;
+            return indexTail < 0 ? indexTail + size : indexTail;
         }
+        else
+        {
+            return size;
+        }
+    }
+
+    internal int CurrentHandlerIndex
+    {
+        get { return _currentHandlerIndex; }
+        set { _currentHandlerIndex = value; }
     }
 }

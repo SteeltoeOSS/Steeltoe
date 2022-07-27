@@ -4,13 +4,12 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.TestBinder
+namespace Steeltoe.Stream.TestBinder;
+
+public class InputDestination : AbstractDestination
 {
-    public class InputDestination : AbstractDestination
+    public void Send(IMessage<byte[]> message)
     {
-        public void Send(IMessage<byte[]> message)
-        {
-            Channel.Send(message);
-        }
+        Channel.Send(message);
     }
 }

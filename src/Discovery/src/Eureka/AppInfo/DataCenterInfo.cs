@@ -5,39 +5,38 @@
 using Steeltoe.Discovery.Eureka.Transport;
 using System;
 
-namespace Steeltoe.Discovery.Eureka.AppInfo
+namespace Steeltoe.Discovery.Eureka.AppInfo;
+
+public class DataCenterInfo : IDataCenterInfo
 {
-    public class DataCenterInfo : IDataCenterInfo
+    public DataCenterName Name { get; private set; }
+
+    public DataCenterInfo(DataCenterName name)
     {
-        public DataCenterName Name { get; private set; }
+        Name = name;
+    }
 
-        public DataCenterInfo(DataCenterName name)
+    internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo jcenter)
+    {
+        if (DataCenterName.MyOwn.ToString().Equals(jcenter.Name))
         {
-            Name = name;
+            return new DataCenterInfo(DataCenterName.MyOwn);
         }
+        else if (DataCenterName.Amazon.ToString().Equals(jcenter.Name))
+        {
+            return new DataCenterInfo(DataCenterName.Amazon);
+        }
+        else
+        {
+            throw new ArgumentOutOfRangeException("Datacenter name");
+        }
+    }
 
-        internal static IDataCenterInfo FromJson(JsonInstanceInfo.JsonDataCenterInfo jcenter)
-        {
-            if (DataCenterName.MyOwn.ToString().Equals(jcenter.Name))
-            {
-                return new DataCenterInfo(DataCenterName.MyOwn);
-            }
-            else if (DataCenterName.Amazon.ToString().Equals(jcenter.Name))
-            {
-                return new DataCenterInfo(DataCenterName.Amazon);
-            }
-            else
-            {
-                throw new ArgumentOutOfRangeException("Datacenter name");
-            }
-        }
-
-        internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
-        {
-            // TODO: Other datacenters @class settings?
-            return new JsonInstanceInfo.JsonDataCenterInfo(
-                "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-                Name.ToString());
-        }
+    internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
+    {
+        // TODO: Other datacenters @class settings?
+        return new JsonInstanceInfo.JsonDataCenterInfo(
+            "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+            Name.ToString());
     }
 }

@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class UnexpectedRollbackException : TransactionException
-    {
-        public UnexpectedRollbackException(string msg)
-        : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public UnexpectedRollbackException(string msg, Exception cause)
+public class UnexpectedRollbackException : TransactionException
+{
+    public UnexpectedRollbackException(string msg)
+        : base(msg)
+    {
+    }
+
+    public UnexpectedRollbackException(string msg, Exception cause)
         : base(msg, cause)
-        {
-        }
+    {
     }
 }

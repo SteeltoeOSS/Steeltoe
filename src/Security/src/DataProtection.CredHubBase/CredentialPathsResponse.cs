@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+/// <summary>
+/// Used internally to process a list of paths from CredHub
+/// </summary>
+internal class CredentialPathsResponse
 {
     /// <summary>
-    /// Used internally to process a list of paths from CredHub
+    /// Gets or sets list of paths containing credentials
     /// </summary>
-    internal class CredentialPathsResponse
-    {
-        /// <summary>
-        /// Gets or sets list of paths containing credentials
-        /// </summary>
-        public List<CredentialPath> Paths { get; set; }
-    }
+    public List<CredentialPath> Paths { get; set; }
 }

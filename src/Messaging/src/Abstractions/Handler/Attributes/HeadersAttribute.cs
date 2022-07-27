@@ -4,19 +4,18 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Handler.Attributes
+namespace Steeltoe.Messaging.Handler.Attributes;
+
+/// <summary>
+///  Attribute which indicates that a method parameter should be bound to the headers of a message.
+/// </summary>
+[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
+public class HeadersAttribute : Attribute
 {
     /// <summary>
-    ///  Attribute which indicates that a method parameter should be bound to the headers of a message.
+    /// Initializes a new instance of the <see cref="HeadersAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class HeadersAttribute : Attribute
+    public HeadersAttribute()
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HeadersAttribute"/> class.
-        /// </summary>
-        public HeadersAttribute()
-        {
-        }
     }
 }

@@ -6,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Stream.Binder.Rabbit.Config
-{
-    public class RabbitBindingOptions
-    {
-        public RabbitProducerOptions Producer { get; set; }
+namespace Steeltoe.Stream.Binder.Rabbit.Config;
 
-        public RabbitConsumerOptions Consumer { get; set; }
-    }
+public class RabbitBindingOptions
+{
+    public RabbitProducerOptions Producer { get; set; }
+
+    public RabbitConsumerOptions Consumer { get; set; }
 }

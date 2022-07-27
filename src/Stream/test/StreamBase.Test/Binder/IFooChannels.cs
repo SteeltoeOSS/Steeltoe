@@ -5,20 +5,19 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public interface IFooChannels
 {
-    public interface IFooChannels
-    {
-        [Input]
-        IMessageChannel Foo { get; }
+    [Input]
+    IMessageChannel Foo { get; }
 
-        [Input]
-        IMessageChannel Bar { get; }
+    [Input]
+    IMessageChannel Bar { get; }
 
-        [Output]
-        IMessageChannel Baz { get; }
+    [Output]
+    IMessageChannel Baz { get; }
 
-        [Output]
-        IMessageChannel Qux { get; }
-    }
+    [Output]
+    IMessageChannel Qux { get; }
 }

@@ -5,16 +5,15 @@
 using Steeltoe.Common.Discovery;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Discovery
-{
-    public interface IDiscoveryClient : IServiceInstanceProvider
-    {
-        /// <summary>
-        ///  ServiceInstance with information used to register the local service
-        /// </summary>
-        /// <returns>The IServiceInstance</returns>
-        IServiceInstance GetLocalServiceInstance();
+namespace Steeltoe.Discovery;
 
-        Task ShutdownAsync();
-    }
+public interface IDiscoveryClient : IServiceInstanceProvider
+{
+    /// <summary>
+    ///  ServiceInstance with information used to register the local service
+    /// </summary>
+    /// <returns>The IServiceInstance</returns>
+    IServiceInstance GetLocalServiceInstance();
+
+    Task ShutdownAsync();
 }

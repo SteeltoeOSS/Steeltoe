@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface IConsumerTagStrategy : IServiceNameAware
 {
-    public interface IConsumerTagStrategy : IServiceNameAware
-    {
-        string CreateConsumerTag(string queue);
-    }
+    string CreateConsumerTag(string queue);
 }

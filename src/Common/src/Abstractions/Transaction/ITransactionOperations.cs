@@ -4,12 +4,11 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public interface ITransactionOperations
-    {
-        T Execute<T>(Func<ITransactionStatus, T> action);
+namespace Steeltoe.Common.Transaction;
 
-        void ExecuteWithoutResult(Action<ITransactionStatus> action);
-    }
+public interface ITransactionOperations
+{
+    T Execute<T>(Func<ITransactionStatus, T> action);
+
+    void ExecuteWithoutResult(Action<ITransactionStatus> action);
 }

@@ -4,22 +4,21 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer
+namespace Steeltoe.Extensions.Configuration.ConfigServer;
+
+public class PropertySource
 {
-    public class PropertySource
+    public PropertySource()
     {
-        public PropertySource()
-        {
-        }
-
-        public PropertySource(string name, IDictionary<string, object> properties)
-        {
-            Name = name;
-            Source = properties;
-        }
-
-        public string Name { get; set; }
-
-        public IDictionary<string, object> Source { get; set; }
     }
+
+    public PropertySource(string name, IDictionary<string, object> properties)
+    {
+        Name = name;
+        Source = properties;
+    }
+
+    public string Name { get; set; }
+
+    public IDictionary<string, object> Source { get; set; }
 }

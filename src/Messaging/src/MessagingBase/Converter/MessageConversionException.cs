@@ -4,28 +4,27 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public class MessageConversionException : MessagingException
 {
-    public class MessageConversionException : MessagingException
-    {
-        public MessageConversionException(string description)
+    public MessageConversionException(string description)
         : base(description)
-        {
-        }
+    {
+    }
 
-        public MessageConversionException(string description, Exception cause)
+    public MessageConversionException(string description, Exception cause)
         : base(description, cause)
-        {
-        }
+    {
+    }
 
-        public MessageConversionException(IMessage failedMessage, string description)
+    public MessageConversionException(IMessage failedMessage, string description)
         : base(failedMessage, description)
-        {
-        }
+    {
+    }
 
-        public MessageConversionException(IMessage failedMessage, string description, Exception cause)
+    public MessageConversionException(IMessage failedMessage, string description, Exception cause)
         : base(failedMessage, description, cause)
-        {
-        }
+    {
     }
 }

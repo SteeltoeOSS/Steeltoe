@@ -21,558 +21,557 @@ using System.Text;
 using System.Threading;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class PollableConsumerTest : AbstractTest
 {
-    public class PollableConsumerTest : AbstractTest
+    [Fact]
+    public void TestSimple()
     {
-        [Fact]
-        public void TestSimple()
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
+
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
+
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
+
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
+
+        var properties = new ConsumerOptions()
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
+            MaxAttempts = 2,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var handler = new TestSimpleHandler();
+        Assert.True(pollableSource.Poll(handler));
 
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
+        Assert.Equal(2, handler.Count);
+    }
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
+    [Fact]
+    public void TestConvertSimple()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 2,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var handler = new TestSimpleHandler();
-            Assert.True(pollableSource.Poll(handler));
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
 
-            Assert.Equal(2, handler.Count);
-        }
+        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        var messageSource = new TestMessageSource("{\"foo\":\"bar\"}");
+        setter.Invoke(binder, new object[] { messageSource });
 
-        [Fact]
-        public void TestConvertSimple()
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+
+        var properties = new ConsumerOptions()
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
+            MaxAttempts = 2,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var handler = new TestConvertSimpleHandler();
+        Assert.True(pollableSource.Poll(handler, typeof(FooType)));
 
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
+        Assert.IsType<FooType>(handler.Payload);
+        var fooType = handler.Payload as FooType;
+        Assert.Equal("bar", fooType.Foo);
 
-            var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
-            var messageSource = new TestMessageSource("{\"foo\":\"bar\"}");
-            setter.Invoke(binder, new object[] { messageSource });
+        Assert.True(pollableSource.Poll(handler, typeof(FooType)));
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        Assert.IsType<FooType>(handler.Payload);
+        fooType = handler.Payload as FooType;
+        Assert.Equal("bar", fooType.Foo);
+    }
 
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 2,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
+    [Fact]
+    public void TestConvertSimpler()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain").BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var handler = new TestConvertSimpleHandler();
-            Assert.True(pollableSource.Poll(handler, typeof(FooType)));
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-            Assert.IsType<FooType>(handler.Payload);
-            var fooType = handler.Payload as FooType;
-            Assert.Equal("bar", fooType.Foo);
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
 
-            Assert.True(pollableSource.Poll(handler, typeof(FooType)));
+        var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
+        options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
+        Assert.Equal("text/plain", bindingOptions.ContentType);
 
-            Assert.IsType<FooType>(handler.Payload);
-            fooType = handler.Payload as FooType;
-            Assert.Equal("bar", fooType.Foo);
-        }
+        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        var messageSource = new TestMessageSource("foo");
+        setter.Invoke(binder, new object[] { messageSource });
 
-        [Fact]
-        public void TestConvertSimpler()
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        var properties = new ConsumerOptions()
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain").BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
+            MaxAttempts = 1,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var handler = new TestConvertSimpleHandler();
+        Assert.True(pollableSource.Poll(handler, typeof(string)));
 
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
+        Assert.IsType<string>(handler.Payload);
+        var str = handler.Payload as string;
+        Assert.Equal("foo", str);
 
-            var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
-            options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
-            Assert.Equal("text/plain", bindingOptions.ContentType);
+        Assert.True(pollableSource.Poll(handler, typeof(string)));
 
-            var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
-            var messageSource = new TestMessageSource("foo");
-            setter.Invoke(binder, new object[] { messageSource });
+        Assert.IsType<string>(handler.Payload);
+        str = handler.Payload as string;
+        Assert.Equal("foo", str);
+    }
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 1,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
+    [Fact]
+    public void TestConvertList()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var handler = new TestConvertSimpleHandler();
-            Assert.True(pollableSource.Poll(handler, typeof(string)));
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-            Assert.IsType<string>(handler.Payload);
-            var str = handler.Payload as string;
-            Assert.Equal("foo", str);
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
 
-            Assert.True(pollableSource.Poll(handler, typeof(string)));
+        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        var messageSource = new TestMessageSource("[{\"foo\":\"bar\"},{\"foo\":\"baz\"}]");
+        setter.Invoke(binder, new object[] { messageSource });
 
-            Assert.IsType<string>(handler.Payload);
-            str = handler.Payload as string;
-            Assert.Equal("foo", str);
-        }
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
-        [Fact]
-        public void TestConvertList()
+        var properties = new ConsumerOptions()
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
+            MaxAttempts = 1,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var handler = new TestConvertSimpleHandler();
+        Assert.True(pollableSource.Poll(handler, typeof(List<FooType>)));
 
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
+        Assert.IsType<List<FooType>>(handler.Payload);
+        var list = handler.Payload as List<FooType>;
+        Assert.Equal("bar", list[0].Foo);
+        Assert.Equal("baz", list[1].Foo);
+    }
 
-            var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
-            var messageSource = new TestMessageSource("[{\"foo\":\"bar\"},{\"foo\":\"baz\"}]");
-            setter.Invoke(binder, new object[] { messageSource });
+    [Fact]
+    public void TestConvertMap()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 1,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
 
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var handler = new TestConvertSimpleHandler();
-            Assert.True(pollableSource.Poll(handler, typeof(List<FooType>)));
+        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        var messageSource = new TestMessageSource("{\"qux\":{\"foo\":\"bar\"}}");
+        setter.Invoke(binder, new object[] { messageSource });
 
-            Assert.IsType<List<FooType>>(handler.Payload);
-            var list = handler.Payload as List<FooType>;
-            Assert.Equal("bar", list[0].Foo);
-            Assert.Equal("baz", list[1].Foo);
-        }
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
 
-        [Fact]
-        public void TestConvertMap()
+        var properties = new ConsumerOptions()
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
+            MaxAttempts = 1,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var handler = new TestConvertSimpleHandler();
+        Assert.True(pollableSource.Poll(handler, typeof(Dictionary<string, FooType>)));
 
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
+        Assert.IsType<Dictionary<string, FooType>>(handler.Payload);
+        var dict = handler.Payload as Dictionary<string, FooType>;
+        Assert.Single(dict);
+        Assert.Equal("bar", dict["qux"].Foo);
+    }
 
-            var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
-            var messageSource = new TestMessageSource("{\"qux\":{\"foo\":\"bar\"}}");
-            setter.Invoke(binder, new object[] { messageSource });
+    [Fact]
+    public void TestEmbedded()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(
+            searchDirectories,
+            "spring:cloud:stream:bindings:foo:consumer:headerMode=" + HeaderMode.EmbeddedHeaders.ToString()).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 1,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
 
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var handler = new TestConvertSimpleHandler();
-            Assert.True(pollableSource.Poll(handler, typeof(Dictionary<string, FooType>)));
-
-            Assert.IsType<Dictionary<string, FooType>>(handler.Payload);
-            var dict = handler.Payload as Dictionary<string, FooType>;
-            Assert.Single(dict);
-            Assert.Equal("bar", dict["qux"].Foo);
-        }
-
-        [Fact]
-        public void TestEmbedded()
+        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        var messageSource = new TestFuncMessageSource(() =>
         {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(
-                searchDirectories,
-                "spring:cloud:stream:bindings:foo:consumer:headerMode=" + HeaderMode.EmbeddedHeaders.ToString()).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
-
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
-
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
-
-            var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
-            var messageSource = new TestFuncMessageSource(() =>
+            var original = new MessageValues(
+                Encoding.UTF8.GetBytes("foo"),
+                new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
+            var payload = Array.Empty<byte>();
+            try
             {
-                var original = new MessageValues(
-                    Encoding.UTF8.GetBytes("foo"),
-                    new Dictionary<string, object>() { { MessageHeaders.CONTENT_TYPE, "application/octet-stream" } });
-                var payload = Array.Empty<byte>();
-                try
-                {
-                    payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.CONTENT_TYPE);
-                }
-                catch (Exception e)
-                {
-                    Assert.NotNull(e);
-                }
-
-                return Message.Create<byte[]>(payload);
-            });
-
-            setter.Invoke(binder, new object[] { messageSource });
-
-            var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
-            options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
-            Assert.Equal(HeaderMode.EmbeddedHeaders, bindingOptions.Consumer.HeaderMode);
-
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            pollableSource.AddInterceptor(new TestEmbededChannelInterceptor());
-
-            binder.BindConsumer("foo", "bar", pollableSource, bindingOptions.Consumer);
-
-            var handler = new TestConvertSimpleHandler();
-            Assert.True(pollableSource.Poll(handler));
-
-            Assert.IsType<string>(handler.Payload);
-            var str = handler.Payload as string;
-            Assert.Equal("FOO", str);
-            handler.Message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var contentType);
-            Assert.Equal("application/octet-stream", contentType.ToString());
-        }
-
-        [Fact]
-        public void TestErrors()
-        {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
-
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
-
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
-
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
-
-            var properties = new ConsumerOptions()
+                payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.CONTENT_TYPE);
+            }
+            catch (Exception e)
             {
-                MaxAttempts = 2,
-                BackOffInitialInterval = 0,
-                RetryableExceptions = new List<string>() { "!System.InvalidOperationException" }
-            };
-            properties.PostProcess("testbinding");
-
-            var latch = new CountdownEvent(2);
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
-            var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
-            errorChan.Subscribe(errorChanHandler);
-
-            var h1 = new TestFuncMessageHandler((m) =>
-            {
-                throw new Exception("test recoverer");
-            });
-
-            Assert.True(pollableSource.Poll(h1));
-            Assert.Equal(2, h1.Count);
-
-            var getter = binder.GetType().GetProperty("LastError").GetGetMethod();
-
-            var lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
-            Assert.NotNull(lastError);
-
-            var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
-            Assert.Equal("test recoverer", lastErrorMessage);
-
-            var h2 = new TestFuncMessageHandler((m) =>
-            {
-                throw new InvalidOperationException("no retries");
-            });
-
-            Assert.True(pollableSource.Poll(h2));
-            Assert.Equal(1, h2.Count);
-
-            lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
-            lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
-            Assert.Equal("no retries", lastErrorMessage);
-        }
-
-        [Fact]
-        public void TestErrorsNoRetry()
-        {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
-
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
-
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
-
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-            pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
-
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 1
-            };
-            properties.PostProcess("testbinding");
-
-            var latch = new CountdownEvent(1);
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
-            var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
-            errorChan.Subscribe(errorChanHandler);
-
-            var h1 = new TestFuncMessageHandler((m) =>
-            {
-                throw new Exception("test recoverer");
-            });
-
-            Assert.True(pollableSource.Poll(h1));
-            Assert.Equal(1, h1.Count);
-        }
-
-        [Fact]
-        public void TestRequeue()
-        {
-            var searchDirectories = GetSearchDirectories("TestBinder");
-            IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
-            var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
-            Assert.NotNull(messageConverter);
-
-            var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
-            Assert.NotNull(binder);
-
-            var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
-            Assert.NotNull(configurer);
-
-            var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
-            configurer.ConfigurePolledMessageSource(pollableSource, "foo");
-
-            var mockCallback = new Mock<IAcknowledgmentCallback>(MockBehavior.Default);
-
-            pollableSource.AddInterceptor(new TestRequeueChannelInterceptor(mockCallback));
-            var properties = new ConsumerOptions()
-            {
-                MaxAttempts = 2,
-                BackOffInitialInterval = 0
-            };
-            properties.PostProcess("testbinding");
-
-            binder.BindConsumer("foo", "bar", pollableSource, properties);
-            var h1 = new TestFuncMessageHandler((m) =>
-            {
-                throw new RequeueCurrentMessageException("test retry");
-            });
-
-            Assert.True(pollableSource.Poll(h1));
-            Assert.Equal(2, h1.Count);
-            mockCallback.Verify((call) => call.Acknowledge(Status.REQUEUE));
-        }
-
-        private class TestErrorsErrorChannelHandler : IMessageHandler
-        {
-            private readonly CountdownEvent latch;
-
-            public TestErrorsErrorChannelHandler(CountdownEvent latch)
-            {
-                this.latch = latch;
-                ServiceName = GetType().Name + "@" + GetHashCode();
+                Assert.NotNull(e);
             }
 
-            public virtual string ServiceName { get; set; }
+            return Message.Create<byte[]>(payload);
+        });
 
-            public void HandleMessage(IMessage message)
-            {
-                latch.Signal();
-            }
-        }
+        setter.Invoke(binder, new object[] { messageSource });
 
-        private class TestFuncMessageHandler : IMessageHandler
+        var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
+        options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
+        Assert.Equal(HeaderMode.EmbeddedHeaders, bindingOptions.Consumer.HeaderMode);
+
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        pollableSource.AddInterceptor(new TestEmbededChannelInterceptor());
+
+        binder.BindConsumer("foo", "bar", pollableSource, bindingOptions.Consumer);
+
+        var handler = new TestConvertSimpleHandler();
+        Assert.True(pollableSource.Poll(handler));
+
+        Assert.IsType<string>(handler.Payload);
+        var str = handler.Payload as string;
+        Assert.Equal("FOO", str);
+        handler.Message.Headers.TryGetValue(MessageHeaders.CONTENT_TYPE, out var contentType);
+        Assert.Equal("application/octet-stream", contentType.ToString());
+    }
+
+    [Fact]
+    public void TestErrors()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
+
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
+
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
+
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
+
+        var properties = new ConsumerOptions()
         {
-            public int Count { get; set; }
+            MaxAttempts = 2,
+            BackOffInitialInterval = 0,
+            RetryableExceptions = new List<string>() { "!System.InvalidOperationException" }
+        };
+        properties.PostProcess("testbinding");
 
-            public TestFuncMessageHandler(Action<IMessage> action)
-            {
-                Act = action;
-                ServiceName = GetType().Name + "@" + GetHashCode();
-            }
+        var latch = new CountdownEvent(2);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+        var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
+        errorChan.Subscribe(errorChanHandler);
 
-            public virtual string ServiceName { get; set; }
-
-            public Action<IMessage> Act { get; }
-
-            public void HandleMessage(IMessage message)
-            {
-                Count++;
-                Act(message);
-            }
-        }
-
-        private class TestFuncMessageSource : IMessageSource
+        var h1 = new TestFuncMessageHandler((m) =>
         {
-            public TestFuncMessageSource(Func<IMessage> func)
-            {
-                Func = func;
-            }
+            throw new Exception("test recoverer");
+        });
 
-            public Func<IMessage> Func { get; }
+        Assert.True(pollableSource.Poll(h1));
+        Assert.Equal(2, h1.Count);
 
-            public IMessage Receive()
-            {
-                return Func();
-            }
-        }
+        var getter = binder.GetType().GetProperty("LastError").GetGetMethod();
 
-        private class TestMessageSource : IMessageSource
+        var lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
+        Assert.NotNull(lastError);
+
+        var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
+        Assert.Equal("test recoverer", lastErrorMessage);
+
+        var h2 = new TestFuncMessageHandler((m) =>
         {
-            private readonly string payload;
+            throw new InvalidOperationException("no retries");
+        });
 
-            public TestMessageSource(string payload)
-            {
-                this.payload = payload;
-            }
+        Assert.True(pollableSource.Poll(h2));
+        Assert.Equal(1, h2.Count);
 
-            public IMessage Receive()
-            {
-                return Message.Create<byte[]>(Encoding.UTF8.GetBytes(payload));
-            }
-        }
+        lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
+        lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
+        Assert.Equal("no retries", lastErrorMessage);
+    }
 
-        private class TestConvertSimpleHandler : IMessageHandler
+    [Fact]
+    public void TestErrorsNoRetry()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
+
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
+
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
+
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+        pollableSource.AddInterceptor(new TestSimpleChannelInterceptor());
+
+        var properties = new ConsumerOptions()
         {
-            public object Payload { get; set; }
+            MaxAttempts = 1
+        };
+        properties.PostProcess("testbinding");
 
-            public IMessage Message { get; set; }
+        var latch = new CountdownEvent(1);
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var errorChan = serviceProvider.GetServices<IMessageChannel>().Where(chan => chan.ServiceName == IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME).Single() as ISubscribableChannel;
+        var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
+        errorChan.Subscribe(errorChanHandler);
 
-            public TestConvertSimpleHandler()
-            {
-                ServiceName = GetType().Name + "@" + GetHashCode();
-            }
-
-            public virtual string ServiceName { get; set; }
-
-            public void HandleMessage(IMessage message)
-            {
-                Message = message;
-                Payload = message.Payload;
-            }
-        }
-
-        private class TestSimpleHandler : IMessageHandler
+        var h1 = new TestFuncMessageHandler((m) =>
         {
-            public int Count { get; set; }
+            throw new Exception("test recoverer");
+        });
 
-            public TestSimpleHandler()
-            {
-                ServiceName = GetType().Name + "@" + GetHashCode();
-            }
+        Assert.True(pollableSource.Poll(h1));
+        Assert.Equal(1, h1.Count);
+    }
 
-            public virtual string ServiceName { get; set; }
+    [Fact]
+    public void TestRequeue()
+    {
+        var searchDirectories = GetSearchDirectories("TestBinder");
+        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
+        var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
+        Assert.NotNull(messageConverter);
 
-            public void HandleMessage(IMessage message)
-            {
-                Assert.Equal("POLLED DATA", message.Payload);
-                var contentType = message.Headers[MessageHeaders.CONTENT_TYPE];
-                Assert.Equal("text/plain", contentType.ToString());
-                Count++;
-                if (Count == 1)
-                {
-                    throw new Exception("test retry");
-                }
-            }
-        }
+        var binder = serviceProvider.GetService<IBinder>() as AbstractPollableMessageSourceBinder;
+        Assert.NotNull(binder);
 
-        private class TestRequeueChannelInterceptor : AbstractChannelInterceptor
+        var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
+        Assert.NotNull(configurer);
+
+        var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
+        configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+
+        var mockCallback = new Mock<IAcknowledgmentCallback>(MockBehavior.Default);
+
+        pollableSource.AddInterceptor(new TestRequeueChannelInterceptor(mockCallback));
+        var properties = new ConsumerOptions()
         {
-            public TestRequeueChannelInterceptor(Mock mock)
-            {
-                Mock = mock;
-            }
+            MaxAttempts = 2,
+            BackOffInitialInterval = 0
+        };
+        properties.PostProcess("testbinding");
 
-            public Mock Mock { get; }
-
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                return MessageBuilder
-                        .FromMessage(message)
-                        .SetHeader(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, Mock.Object)
-                        .Build();
-            }
-        }
-
-        private class TestEmbededChannelInterceptor : AbstractChannelInterceptor
+        binder.BindConsumer("foo", "bar", pollableSource, properties);
+        var h1 = new TestFuncMessageHandler((m) =>
         {
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                return MessageBuilder
-                        .WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper())
-                        .CopyHeaders(message.Headers)
-                        .Build();
-            }
+            throw new RequeueCurrentMessageException("test retry");
+        });
+
+        Assert.True(pollableSource.Poll(h1));
+        Assert.Equal(2, h1.Count);
+        mockCallback.Verify((call) => call.Acknowledge(Status.REQUEUE));
+    }
+
+    private class TestErrorsErrorChannelHandler : IMessageHandler
+    {
+        private readonly CountdownEvent latch;
+
+        public TestErrorsErrorChannelHandler(CountdownEvent latch)
+        {
+            this.latch = latch;
+            ServiceName = GetType().Name + "@" + GetHashCode();
         }
 
-        private class TestSimpleChannelInterceptor : AbstractChannelInterceptor
+        public virtual string ServiceName { get; set; }
+
+        public void HandleMessage(IMessage message)
         {
-            public override IMessage PreSend(IMessage message, IMessageChannel channel)
-            {
-                return MessageBuilder
-                        .WithPayload(((string)message.Payload).ToUpper())
-                        .CopyHeaders(message.Headers)
-                        .Build();
-            }
+            latch.Signal();
+        }
+    }
+
+    private class TestFuncMessageHandler : IMessageHandler
+    {
+        public int Count { get; set; }
+
+        public TestFuncMessageHandler(Action<IMessage> action)
+        {
+            Act = action;
+            ServiceName = GetType().Name + "@" + GetHashCode();
         }
 
-        private class FooType
+        public virtual string ServiceName { get; set; }
+
+        public Action<IMessage> Act { get; }
+
+        public void HandleMessage(IMessage message)
         {
-            public string Foo { get; set; }
+            Count++;
+            Act(message);
         }
+    }
+
+    private class TestFuncMessageSource : IMessageSource
+    {
+        public TestFuncMessageSource(Func<IMessage> func)
+        {
+            Func = func;
+        }
+
+        public Func<IMessage> Func { get; }
+
+        public IMessage Receive()
+        {
+            return Func();
+        }
+    }
+
+    private class TestMessageSource : IMessageSource
+    {
+        private readonly string payload;
+
+        public TestMessageSource(string payload)
+        {
+            this.payload = payload;
+        }
+
+        public IMessage Receive()
+        {
+            return Message.Create<byte[]>(Encoding.UTF8.GetBytes(payload));
+        }
+    }
+
+    private class TestConvertSimpleHandler : IMessageHandler
+    {
+        public object Payload { get; set; }
+
+        public IMessage Message { get; set; }
+
+        public TestConvertSimpleHandler()
+        {
+            ServiceName = GetType().Name + "@" + GetHashCode();
+        }
+
+        public virtual string ServiceName { get; set; }
+
+        public void HandleMessage(IMessage message)
+        {
+            Message = message;
+            Payload = message.Payload;
+        }
+    }
+
+    private class TestSimpleHandler : IMessageHandler
+    {
+        public int Count { get; set; }
+
+        public TestSimpleHandler()
+        {
+            ServiceName = GetType().Name + "@" + GetHashCode();
+        }
+
+        public virtual string ServiceName { get; set; }
+
+        public void HandleMessage(IMessage message)
+        {
+            Assert.Equal("POLLED DATA", message.Payload);
+            var contentType = message.Headers[MessageHeaders.CONTENT_TYPE];
+            Assert.Equal("text/plain", contentType.ToString());
+            Count++;
+            if (Count == 1)
+            {
+                throw new Exception("test retry");
+            }
+        }
+    }
+
+    private class TestRequeueChannelInterceptor : AbstractChannelInterceptor
+    {
+        public TestRequeueChannelInterceptor(Mock mock)
+        {
+            Mock = mock;
+        }
+
+        public Mock Mock { get; }
+
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            return MessageBuilder
+                .FromMessage(message)
+                .SetHeader(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK, Mock.Object)
+                .Build();
+        }
+    }
+
+    private class TestEmbededChannelInterceptor : AbstractChannelInterceptor
+    {
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            return MessageBuilder
+                .WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper())
+                .CopyHeaders(message.Headers)
+                .Build();
+        }
+    }
+
+    private class TestSimpleChannelInterceptor : AbstractChannelInterceptor
+    {
+        public override IMessage PreSend(IMessage message, IMessageChannel channel)
+        {
+            return MessageBuilder
+                .WithPayload(((string)message.Payload).ToUpper())
+                .CopyHeaders(message.Headers)
+                .Build();
+        }
+    }
+
+    private class FooType
+    {
+        public string Foo { get; set; }
     }
 }

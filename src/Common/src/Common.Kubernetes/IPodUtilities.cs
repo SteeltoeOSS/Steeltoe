@@ -5,10 +5,9 @@
 using k8s.Models;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Kubernetes
+namespace Steeltoe.Common.Kubernetes;
+
+public interface IPodUtilities
 {
-    public interface IPodUtilities
-    {
-        Task<V1Pod> GetCurrentPodAsync();
-    }
+    Task<V1Pod> GetCurrentPodAsync();
 }

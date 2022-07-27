@@ -5,12 +5,11 @@
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
 
-namespace Steeltoe.Extensions.Configuration
-{
-    public interface IPlaceholderResolverProvider : IConfigurationProvider
-    {
-        IList<IConfigurationProvider> Providers { get; }
+namespace Steeltoe.Extensions.Configuration;
 
-        IList<string> ResolvedKeys { get; }
-    }
+public interface IPlaceholderResolverProvider : IConfigurationProvider
+{
+    IList<IConfigurationProvider> Providers { get; }
+
+    IList<string> ResolvedKeys { get; }
 }

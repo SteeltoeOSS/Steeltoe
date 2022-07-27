@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.Connector.Services
+namespace Steeltoe.Connector.Services;
+
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class ServiceInfoFactoryAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class)]
-    public sealed class ServiceInfoFactoryAttribute : Attribute
-    {
-    }
 }

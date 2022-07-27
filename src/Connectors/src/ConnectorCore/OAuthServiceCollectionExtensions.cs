@@ -8,64 +8,63 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.OAuth
+namespace Steeltoe.Connector.OAuth;
+
+public static class OAuthServiceCollectionExtensions
 {
-    public static class OAuthServiceCollectionExtensions
+    /// <summary>
+    /// Adds OAuthServiceOptions to Service Collection
+    /// </summary>
+    /// <param name="services">Your Service Collection</param>
+    /// <param name="config">Application Configuration</param>
+    /// <returns>IServiceCollection for chaining</returns>
+    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
     {
-        /// <summary>
-        /// Adds OAuthServiceOptions to Service Collection
-        /// </summary>
-        /// <param name="services">Your Service Collection</param>
-        /// <param name="config">Application Configuration</param>
-        /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var oauthConfig = new OAuthConnectorOptions(config);
-            var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
-            var factory = new OAuthConnectorFactory(info, oauthConfig);
-            services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
-            return services;
+            throw new ArgumentNullException(nameof(services));
         }
 
-        /// <summary>
-        /// Adds OAuthServiceOptions to Service Collection
-        /// </summary>
-        /// <param name="services">Your Service Collection</param>
-        /// <param name="config">Application Configuration</param>
-        /// <param name="serviceName">Cloud Foundry service name binding</param>
-        /// <returns>IServiceCollection for chaining</returns>
-        public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
+        if (config == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            if (string.IsNullOrEmpty(serviceName))
-            {
-                throw new ArgumentNullException(nameof(serviceName));
-            }
-
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            var oauthConfig = new OAuthConnectorOptions(config);
-            var info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
-            var factory = new OAuthConnectorFactory(info, oauthConfig);
-            services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
-            return services;
+            throw new ArgumentNullException(nameof(config));
         }
+
+        var oauthConfig = new OAuthConnectorOptions(config);
+        var info = config.GetSingletonServiceInfo<SsoServiceInfo>();
+        var factory = new OAuthConnectorFactory(info, oauthConfig);
+        services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
+        return services;
+    }
+
+    /// <summary>
+    /// Adds OAuthServiceOptions to Service Collection
+    /// </summary>
+    /// <param name="services">Your Service Collection</param>
+    /// <param name="config">Application Configuration</param>
+    /// <param name="serviceName">Cloud Foundry service name binding</param>
+    /// <returns>IServiceCollection for chaining</returns>
+    public static IServiceCollection AddOAuthServiceOptions(this IServiceCollection services, IConfiguration config, string serviceName)
+    {
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
+        }
+
+        if (string.IsNullOrEmpty(serviceName))
+        {
+            throw new ArgumentNullException(nameof(serviceName));
+        }
+
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        var oauthConfig = new OAuthConnectorOptions(config);
+        var info = config.GetRequiredServiceInfo<SsoServiceInfo>(serviceName);
+        var factory = new OAuthConnectorFactory(info, oauthConfig);
+        services.AddSingleton(typeof(IOptions<OAuthServiceOptions>), factory.Create);
+        return services;
     }
 }

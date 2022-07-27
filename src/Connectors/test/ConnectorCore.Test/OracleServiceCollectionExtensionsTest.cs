@@ -9,59 +9,58 @@ using Steeltoe.Extensions.Configuration.CloudFoundry;
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test;
+
+public class OracleServiceCollectionExtensionsTest
 {
-    public class OracleServiceCollectionExtensionsTest
+    [Fact]
+    public void AddOracleHealthContributor_ThrowsIfServiceCollectionNull()
     {
-        [Fact]
-        public void AddOracleHealthContributor_ThrowsIfServiceCollectionNull()
-        {
-            IServiceCollection services = null;
-            IConfigurationRoot config = null;
+        IServiceCollection services = null;
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
-            Assert.Contains(nameof(services), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
+        Assert.Contains(nameof(services), ex2.Message);
+    }
 
-        [Fact]
-        public void AddOracleHealthContributor_ThrowsIfConfigurationNull()
-        {
-            IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
+    [Fact]
+    public void AddOracleHealthContributor_ThrowsIfConfigurationNull()
+    {
+        IServiceCollection services = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
-            Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config));
+        Assert.Contains(nameof(config), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, "foobar"));
+        Assert.Contains(nameof(config), ex2.Message);
+    }
 
-        [Fact]
-        public void AddOracleHealthContributor_ThrowsIfServiceNameNull()
-        {
-            IServiceCollection services = new ServiceCollection();
-            IConfigurationRoot config = null;
-            string serviceName = null;
+    [Fact]
+    public void AddOracleHealthContributor_ThrowsIfServiceNameNull()
+    {
+        IServiceCollection services = new ServiceCollection();
+        IConfigurationRoot config = null;
+        string serviceName = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, serviceName));
-            Assert.Contains(nameof(serviceName), ex.Message);
-        }
+        var ex = Assert.Throws<ArgumentNullException>(() => OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config, serviceName));
+        Assert.Contains(nameof(serviceName), ex.Message);
+    }
 
-        [Fact]
-        public void AddOracleHealthContributor_AddsRelationalHealthContributor()
-        {
-            IServiceCollection services = new ServiceCollection();
-            var builder = new ConfigurationBuilder();
-            builder.AddCloudFoundry();
-            var config = builder.Build();
+    [Fact]
+    public void AddOracleHealthContributor_AddsRelationalHealthContributor()
+    {
+        IServiceCollection services = new ServiceCollection();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry();
+        var config = builder.Build();
 
-            OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config);
-            var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
+        OracleServiceCollectionExtensions.AddOracleHealthContributor(services, config);
+        var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
 
-            Assert.NotNull(healthContributor);
-        }
+        Assert.NotNull(healthContributor);
     }
 }

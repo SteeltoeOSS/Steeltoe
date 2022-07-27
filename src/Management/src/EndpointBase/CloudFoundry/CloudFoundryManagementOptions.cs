@@ -4,21 +4,20 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
+public class CloudFoundryManagementOptions : ManagementEndpointOptions
 {
-    public class CloudFoundryManagementOptions : ManagementEndpointOptions
+    private const string DEFAULT_ACTUATOR_PATH = "/cloudfoundryapplication";
+
+    public CloudFoundryManagementOptions()
     {
-        private const string DEFAULT_ACTUATOR_PATH = "/cloudfoundryapplication";
+        Path = DEFAULT_ACTUATOR_PATH;
+    }
 
-        public CloudFoundryManagementOptions()
-        {
-            Path = DEFAULT_ACTUATOR_PATH;
-        }
-
-        public CloudFoundryManagementOptions(IConfiguration config)
-            : base(config)
-        {
-             Path = DEFAULT_ACTUATOR_PATH;
-        }
+    public CloudFoundryManagementOptions(IConfiguration config)
+        : base(config)
+    {
+        Path = DEFAULT_ACTUATOR_PATH;
     }
 }

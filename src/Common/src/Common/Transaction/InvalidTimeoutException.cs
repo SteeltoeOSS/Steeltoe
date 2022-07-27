@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
-{
-    public class InvalidTimeoutException : TransactionUsageException
-    {
-        public InvalidTimeoutException(string msg, int timeout)
-        : base(msg)
-        {
-            Timeout = timeout;
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public int Timeout { get; }
+public class InvalidTimeoutException : TransactionUsageException
+{
+    public InvalidTimeoutException(string msg, int timeout)
+        : base(msg)
+    {
+        Timeout = timeout;
     }
+
+    public int Timeout { get; }
 }

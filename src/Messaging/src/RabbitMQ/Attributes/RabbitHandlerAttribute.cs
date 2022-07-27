@@ -4,16 +4,15 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Attributes
-{
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class RabbitHandlerAttribute : Attribute
-    {
-        public RabbitHandlerAttribute(bool isDefault = false)
-        {
-            IsDefault = isDefault;
-        }
+namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
-        public bool IsDefault { get; set; }
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+public class RabbitHandlerAttribute : Attribute
+{
+    public RabbitHandlerAttribute(bool isDefault = false)
+    {
+        IsDefault = isDefault;
     }
+
+    public bool IsDefault { get; set; }
 }

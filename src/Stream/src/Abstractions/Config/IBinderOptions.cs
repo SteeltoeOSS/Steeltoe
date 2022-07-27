@@ -4,19 +4,18 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Stream.Config
+namespace Steeltoe.Stream.Config;
+
+/// <summary>
+/// Contains the configuration options for a binder
+/// </summary>
+public interface IBinderOptions
 {
-    /// <summary>
-    /// Contains the configuration options for a binder
-    /// </summary>
-    public interface IBinderOptions
-    {
-        string ConfigureClass { get; }
+    string ConfigureClass { get; }
 
-        Dictionary<string, object> Environment { get; }
+    Dictionary<string, object> Environment { get; }
 
-        bool InheritEnvironment { get; }
+    bool InheritEnvironment { get; }
 
-        bool DefaultCandidate { get; }
-    }
+    bool DefaultCandidate { get; }
 }

@@ -4,32 +4,31 @@
 
 using System;
 
-namespace Steeltoe.Messaging.Handler.Attributes
+namespace Steeltoe.Messaging.Handler.Attributes;
+
+/// <summary>
+///  Attribute that indicates a method's return value should be converted to a
+///  message if necessary and sent to the specified destination.
+/// </summary>
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
+public class SendToAttribute : Attribute
 {
+    private readonly string[] _destinations;
+
     /// <summary>
-    ///  Attribute that indicates a method's return value should be converted to a
-    ///  message if necessary and sent to the specified destination.
+    /// Initializes a new instance of the <see cref="SendToAttribute"/> class.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
-    public class SendToAttribute : Attribute
+    /// <param name="destinations">the destinations for the message created</param>
+    public SendToAttribute(params string[] destinations)
     {
-        private readonly string[] _destinations;
+        _destinations = destinations;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SendToAttribute"/> class.
-        /// </summary>
-        /// <param name="destinations">the destinations for the message created</param>
-        public SendToAttribute(params string[] destinations)
-        {
-            _destinations = destinations;
-        }
-
-        /// <summary>
-        /// Gets the destinations for any messages created by the method
-        /// </summary>
-        public virtual string[] Destinations
-        {
-            get { return _destinations; }
-        }
+    /// <summary>
+    /// Gets the destinations for any messages created by the method
+    /// </summary>
+    public virtual string[] Destinations
+    {
+        get { return _destinations; }
     }
 }

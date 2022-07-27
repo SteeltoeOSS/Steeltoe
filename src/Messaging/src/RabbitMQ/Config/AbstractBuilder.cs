@@ -4,20 +4,19 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
-{
-    public abstract class AbstractBuilder
-    {
-        protected Dictionary<string, object> GetOrCreateArguments()
-        {
-            if (Arguments == null)
-            {
-                Arguments = new Dictionary<string, object>();
-            }
+namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-            return Arguments;
+public abstract class AbstractBuilder
+{
+    protected Dictionary<string, object> GetOrCreateArguments()
+    {
+        if (Arguments == null)
+        {
+            Arguments = new Dictionary<string, object>();
         }
 
-        protected Dictionary<string, object> Arguments { get; private set; }
+        return Arguments;
     }
+
+    protected Dictionary<string, object> Arguments { get; private set; }
 }

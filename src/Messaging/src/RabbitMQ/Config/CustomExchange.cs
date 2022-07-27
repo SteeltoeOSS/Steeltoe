@@ -4,28 +4,27 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Config
+namespace Steeltoe.Messaging.RabbitMQ.Config;
+
+public class CustomExchange : AbstractExchange, ICustomExchange
 {
-    public class CustomExchange : AbstractExchange, ICustomExchange
-    {
-        public CustomExchange(string name, string type)
+    public CustomExchange(string name, string type)
         : base(name)
-        {
-            Type = type;
-        }
-
-        public CustomExchange(string name, string type, bool durable, bool autoDelete)
-        : base(name, durable, autoDelete)
-        {
-            Type = type;
-        }
-
-        public CustomExchange(string name, string type, bool durable, bool autoDelete, Dictionary<string, object> arguments)
-        : base(name, durable, autoDelete, arguments)
-        {
-            Type = type;
-        }
-
-        public override string Type { get; }
+    {
+        Type = type;
     }
+
+    public CustomExchange(string name, string type, bool durable, bool autoDelete)
+        : base(name, durable, autoDelete)
+    {
+        Type = type;
+    }
+
+    public CustomExchange(string name, string type, bool durable, bool autoDelete, Dictionary<string, object> arguments)
+        : base(name, durable, autoDelete, arguments)
+    {
+        Type = type;
+    }
+
+    public override string Type { get; }
 }

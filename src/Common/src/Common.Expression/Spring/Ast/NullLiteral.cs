@@ -4,26 +4,25 @@
 
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class NullLiteral : Literal
 {
-    public class NullLiteral : Literal
-    {
-        public NullLiteral(int startPos, int endPos)
+    public NullLiteral(int startPos, int endPos)
         : base(null, startPos, endPos)
-        {
-            _exitTypeDescriptor = TypeDescriptor.OBJECT;
-        }
+    {
+        _exitTypeDescriptor = TypeDescriptor.OBJECT;
+    }
 
-        public override ITypedValue GetLiteralValue() => TypedValue.NULL;
+    public override ITypedValue GetLiteralValue() => TypedValue.NULL;
 
-        public override string ToString() => "null";
+    public override string ToString() => "null";
 
-        public override bool IsCompilable() => true;
+    public override bool IsCompilable() => true;
 
-        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
-        {
-            gen.Emit(OpCodes.Ldnull);
-            cf.PushDescriptor(_exitTypeDescriptor);
-        }
+    public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+    {
+        gen.Emit(OpCodes.Ldnull);
+        cf.PushDescriptor(_exitTypeDescriptor);
     }
 }

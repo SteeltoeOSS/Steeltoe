@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public interface ITraceRepository
 {
-    public interface ITraceRepository
-    {
-        List<TraceResult> GetTraces();
-    }
+    List<TraceResult> GetTraces();
 }

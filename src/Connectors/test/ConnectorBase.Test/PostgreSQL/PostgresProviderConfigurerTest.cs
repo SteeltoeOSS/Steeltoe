@@ -5,121 +5,120 @@
 using Steeltoe.Connector.Services;
 using Xunit;
 
-namespace Steeltoe.Connector.PostgreSql.Test
+namespace Steeltoe.Connector.PostgreSql.Test;
+
+public class PostgresProviderConfigurerTest
 {
-    public class PostgresProviderConfigurerTest
+    [Fact]
+    public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
     {
-        [Fact]
-        public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
+        var configurer = new PostgresProviderConfigurer();
+        var config = new PostgresProviderConnectorOptions()
         {
-            var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Username = "username",
-                Password = "password",
-                Database = "database"
-            };
-            configurer.UpdateConfiguration(null, config);
+            Host = "localhost",
+            Port = 1234,
+            Username = "username",
+            Password = "password",
+            Database = "database"
+        };
+        configurer.UpdateConfiguration(null, config);
 
-            Assert.Equal("localhost", config.Host);
-            Assert.Equal(1234, config.Port);
-            Assert.Equal("username", config.Username);
-            Assert.Equal("password", config.Password);
-            Assert.Equal("database", config.Database);
-            Assert.Null(config.ConnectionString);
-        }
+        Assert.Equal("localhost", config.Host);
+        Assert.Equal(1234, config.Port);
+        Assert.Equal("username", config.Username);
+        Assert.Equal("password", config.Password);
+        Assert.Equal("database", config.Database);
+        Assert.Null(config.ConnectionString);
+    }
 
-        [Fact]
-        public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
+    [Fact]
+    public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
+    {
+        var configurer = new PostgresProviderConfigurer();
+        var config = new PostgresProviderConnectorOptions()
         {
-            var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Username = "username",
-                Password = "password",
-                Database = "database"
-            };
-            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            Host = "localhost",
+            Port = 1234,
+            Username = "username",
+            Password = "password",
+            Database = "database"
+        };
+        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-            configurer.UpdateConfiguration(si, config);
+        configurer.UpdateConfiguration(si, config);
 
-            Assert.Equal("192.168.0.90", config.Host);
-            Assert.Equal(5432, config.Port);
-            Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
-            Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
-            Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", config.Database);
-        }
+        Assert.Equal("192.168.0.90", config.Host);
+        Assert.Equal(5432, config.Port);
+        Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
+        Assert.Equal("7E1LxXnlH2hhlPVt", config.Password);
+        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", config.Database);
+    }
 
-        [Fact]
-        public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
+    [Fact]
+    public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
+    {
+        var configurer = new PostgresProviderConfigurer();
+        var config = new PostgresProviderConnectorOptions()
         {
-            var configurer = new PostgresProviderConfigurer();
-            var config = new PostgresProviderConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Username = "username",
-                Password = "password",
-                Database = "database"
-            };
-            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+            Host = "localhost",
+            Port = 1234,
+            Username = "username",
+            Password = "password",
+            Database = "database"
+        };
+        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-            configurer.UpdateConfiguration(si, config);
+        configurer.UpdateConfiguration(si, config);
 
-            Assert.Equal("192.168.0.90", config.Host);
-            Assert.Equal(5432, config.Port);
-            Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
-            Assert.Equal("$7E1LxXnlH2hhlPVt", config.Password);
-            Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", config.Database);
-        }
+        Assert.Equal("192.168.0.90", config.Host);
+        Assert.Equal(5432, config.Port);
+        Assert.Equal("Dd6O1BPXUHdrmzbP", config.Username);
+        Assert.Equal("$7E1LxXnlH2hhlPVt", config.Password);
+        Assert.Equal("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", config.Database);
+    }
 
-        [Fact]
-        public void Configure_NoServiceInfo_ReturnsExpected()
+    [Fact]
+    public void Configure_NoServiceInfo_ReturnsExpected()
+    {
+        var config = new PostgresProviderConnectorOptions()
         {
-            var config = new PostgresProviderConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Username = "username",
-                Password = "password",
-                Database = "database"
-            };
+            Host = "localhost",
+            Port = 1234,
+            Username = "username",
+            Password = "password",
+            Database = "database"
+        };
 
-            var configurer = new PostgresProviderConfigurer();
-            var opts = configurer.Configure(null, config);
-            Assert.Contains("Host=localhost;", opts);
-            Assert.Contains("Port=1234;", opts);
-            Assert.Contains("Username=username;", opts);
-            Assert.Contains("Password=password;", opts);
-            Assert.Contains("Database=database;", opts);
-        }
+        var configurer = new PostgresProviderConfigurer();
+        var opts = configurer.Configure(null, config);
+        Assert.Contains("Host=localhost;", opts);
+        Assert.Contains("Port=1234;", opts);
+        Assert.Contains("Username=username;", opts);
+        Assert.Contains("Password=password;", opts);
+        Assert.Contains("Database=database;", opts);
+    }
 
-        [Fact]
-        public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    [Fact]
+    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    {
+        var config = new PostgresProviderConnectorOptions()
         {
-            var config = new PostgresProviderConnectorOptions()
-            {
-                Host = "localhost",
-                Port = 1234,
-                Username = "username",
-                Password = "password",
-                Database = "database"
-            };
+            Host = "localhost",
+            Port = 1234,
+            Username = "username",
+            Password = "password",
+            Database = "database"
+        };
 
-            var configurer = new PostgresProviderConfigurer();
-            var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
+        var configurer = new PostgresProviderConfigurer();
+        var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-            var opts = configurer.Configure(si, config);
+        var opts = configurer.Configure(si, config);
 
-            Assert.Contains("Host=192.168.0.90;", opts);
-            Assert.Contains("Port=5432;", opts);
-            Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", opts);
-            Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
-            Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", opts);
-        }
+        Assert.Contains("Host=192.168.0.90;", opts);
+        Assert.Contains("Port=5432;", opts);
+        Assert.Contains("Username=Dd6O1BPXUHdrmzbP;", opts);
+        Assert.Contains("Password=7E1LxXnlH2hhlPVt;", opts);
+        Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", opts);
     }
 }

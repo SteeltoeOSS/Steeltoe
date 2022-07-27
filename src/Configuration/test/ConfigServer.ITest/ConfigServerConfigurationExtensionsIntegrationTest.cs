@@ -11,27 +11,27 @@ using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
-{
-    // NOTE: Some of the tests assume a running Spring Cloud Config Server is started
-    //       with repository data for application: foo, profile: development
-    //
-    //       The easiest way to get that to happen is clone the spring-cloud-config
-    //       repo and run the config-server.
-    //          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
-    //              cd spring-cloud-config\spring-cloud-config-server
-    //              mvn spring-boot:run
-    public class ConfigServerConfigurationExtensionsIntegrationTest
-    {
-        public ConfigServerConfigurationExtensionsIntegrationTest()
-        {
-        }
+namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
 
-        [Fact]
-        [Trait("Category", "Integration")]
-        public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
-        {
-            var appsettings = @"
+// NOTE: Some of the tests assume a running Spring Cloud Config Server is started
+//       with repository data for application: foo, profile: development
+//
+//       The easiest way to get that to happen is clone the spring-cloud-config
+//       repo and run the config-server.
+//          eg. git clone https://github.com/spring-cloud/spring-cloud-config.git
+//              cd spring-cloud-config\spring-cloud-config-server
+//              mvn spring-boot:run
+public class ConfigServerConfigurationExtensionsIntegrationTest
+{
+    public ConfigServerConfigurationExtensionsIntegrationTest()
+    {
+    }
+
+    [Fact]
+    [Trait("Category", "Integration")]
+    public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
+    {
+        var appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -47,33 +47,33 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
 
-            var hostingEnv = HostingHelpers.GetHostingEnvironment();
-            configurationBuilder.AddJsonFile(fileName);
+        var hostingEnv = HostingHelpers.GetHostingEnvironment();
+        configurationBuilder.AddJsonFile(fileName);
 
-            // Act and Assert (expects Spring Cloud Config server to be running)
-            configurationBuilder.AddConfigServer(hostingEnv);
-            var root = configurationBuilder.Build();
+        // Act and Assert (expects Spring Cloud Config server to be running)
+        configurationBuilder.AddConfigServer(hostingEnv);
+        var root = configurationBuilder.Build();
 
-            Assert.Equal("spam", root["bar"]);
-            Assert.Equal("from foo development", root["foo"]);
-            Assert.Equal("Spring Cloud Samples", root["info:description"]);
-            Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
-            Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
-        }
+        Assert.Equal("spam", root["bar"]);
+        Assert.Equal("from foo development", root["foo"]);
+        Assert.Equal("Spring Cloud Samples", root["info:description"]);
+        Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
+        Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
+    }
 
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
-        {
-            // These settings match the default java config server
-            var appsettings = @"
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
+    {
+        // These settings match the default java config server
+        var appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -91,37 +91,37 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       }
                     }
                 }";
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var builder = new WebHostBuilder()
-                .UseEnvironment("development")
-                .UseStartup<TestServerStartup>()
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.SetBasePath(directory)
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var builder = new WebHostBuilder()
+            .UseEnvironment("development")
+            .UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(directory)
                     .AddJsonFile(fileName)
                     .AddConfigServer(context.HostingEnvironment);
-                });
+            });
 
-            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-            using var server = new TestServer(builder);
-            using var client = server.CreateClient();
-            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+        // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+        using var server = new TestServer(builder);
+        using var client = server.CreateClient();
+        var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-            Assert.Equal(
-                "spam" +
-                "from foo development" +
-                "Spring Cloud Samples" +
-                "https://github.com/spring-cloud-samples", result);
-        }
+        Assert.Equal(
+            "spam" +
+            "from foo development" +
+            "Spring Cloud Samples" +
+            "https://github.com/spring-cloud-samples", result);
+    }
 
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
-        {
-            var vcap_application = @" 
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
+    {
+        var vcap_application = @" 
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                     ""application_name"": ""foo"",
@@ -145,7 +145,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-            var vcap_services = @"
+        var vcap_services = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -164,10 +164,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }]
                 }";
 
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
+        System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
-            var appSettings = @"
+        var appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -179,44 +179,44 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appSettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var builder = new WebHostBuilder()
-                .UseEnvironment("development")
-                .UseStartup<TestServerStartup>()
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.SetBasePath(directory)
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appSettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var builder = new WebHostBuilder()
+            .UseEnvironment("development")
+            .UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(directory)
                     .AddJsonFile(fileName)
                     .AddConfigServer(context.HostingEnvironment);
-                });
-            try
-            {
-                // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
-                using var server = new TestServer(builder);
-                using var client = server.CreateClient();
-                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
-
-                Assert.Equal(
-                    "spam" +
-                    "from foo development" +
-                    "Spring Cloud Samples" +
-                    "https://github.com/spring-cloud-samples", result);
-            }
-            finally
-            {
-                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-                System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-            }
-        }
-
-        [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
-        [Trait("Category", "Integration")]
-        public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
+            });
+        try
         {
-            var vcap_application = @" 
+            // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
+            using var server = new TestServer(builder);
+            using var client = server.CreateClient();
+            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+
+            Assert.Equal(
+                "spam" +
+                "from foo development" +
+                "Spring Cloud Samples" +
+                "https://github.com/spring-cloud-samples", result);
+        }
+        finally
+        {
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        }
+    }
+
+    [Fact(Skip = "Requires matching PCF environment with SCCS provisioned")]
+    [Trait("Category", "Integration")]
+    public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
+    {
+        var vcap_application = @" 
                 {
                     ""limits"": {
                     ""mem"": 1024,
@@ -239,7 +239,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ""users"": null
                 }";
 
-            var vcap_services = @"
+        var vcap_services = @"
                 {
                     ""p-config-server"": [
                     {
@@ -260,10 +260,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     ]
                 }";
 
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
+        System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
-            var appSettings = @"
+        var appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -274,90 +274,90 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                         }
                     }
                 }";
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appSettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var builder = new WebHostBuilder()
-                .UseEnvironment("development")
-                .UseStartup<TestServerStartup>()
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.SetBasePath(directory)
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appSettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var builder = new WebHostBuilder()
+            .UseEnvironment("development")
+            .UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(directory)
                     .AddJsonFile(fileName)
                     .AddConfigServer(context.HostingEnvironment);
-                });
-            try
-            {
-                // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-                using var server = new TestServer(builder);
-                using var client = server.CreateClient();
-                var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
-
-                Assert.Equal(
-                    "spam" +
-                    "barcelona" +
-                    "Spring Cloud Samples" +
-                    "https://github.com/spring-cloud-samples", result);
-            }
-            finally
-            {
-                System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-                System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
-            }
-        }
-
-        // NOTE: This test assumes a running Spring Cloud Config Server is started
-        //      and a Spring Cloud Eureka Server is also running. The Config server must be
-        //      configured to register itself with Eureka upon start up.
-        //
-        //      The easiest way to get that to happen is create a spring boot application:
-        //  @SpringBootApplication
-        //  @EnableDiscoveryClient
-        //  @EnableConfigServer
-        //  public class ConfigServerApplication
-        //  {
-        //    public static void main(String[] args)
-        //    {
-        //        SpringApplication.run(ConfigServerApplication.class, args);
-        //    }
-        //  }
-        //
-        //  Then configure the above Config Server as follows (application.yml)
-        //
-        //  info:
-        //      component: Config Server
-        //  spring:
-        //      application:
-        //          name: configserver
-        //      autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
-        //      jmx:
-        //          default_domain: cloud.config.server
-        //      cloud:
-        //          config:
-        //              server:
-        //                  git:
-        //                      uri: https://github.com/spring-cloud-samples/config-repo
-        //                  repos:
-        //                      - patterns: multi-repo-demo-*
-        //                        uri: https://github.com/spring-cloud-samples/config-repo
-        //
-        //  server:
-        //      port: 8888
-        //  eureka:
-        //      instance:
-        //          hostname: localhost
-        //          port: 8888
-        //      client:
-        //          registerWithEureka: true
-        //      fetchRegistry: true
-        //      serviceUrl:
-        //          defaultZone: http://localhost:8761/eureka/
-        [Fact(Skip = "Config server image needs to be enhanced to support discovery-first")]
-        [Trait("Category", "Integration")]
-        public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
+            });
+        try
         {
-            var appsettings = @"
+            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+            using var server = new TestServer(builder);
+            using var client = server.CreateClient();
+            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+
+            Assert.Equal(
+                "spam" +
+                "barcelona" +
+                "Spring Cloud Samples" +
+                "https://github.com/spring-cloud-samples", result);
+        }
+        finally
+        {
+            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+        }
+    }
+
+    // NOTE: This test assumes a running Spring Cloud Config Server is started
+    //      and a Spring Cloud Eureka Server is also running. The Config server must be
+    //      configured to register itself with Eureka upon start up.
+    //
+    //      The easiest way to get that to happen is create a spring boot application:
+    //  @SpringBootApplication
+    //  @EnableDiscoveryClient
+    //  @EnableConfigServer
+    //  public class ConfigServerApplication
+    //  {
+    //    public static void main(String[] args)
+    //    {
+    //        SpringApplication.run(ConfigServerApplication.class, args);
+    //    }
+    //  }
+    //
+    //  Then configure the above Config Server as follows (application.yml)
+    //
+    //  info:
+    //      component: Config Server
+    //  spring:
+    //      application:
+    //          name: configserver
+    //      autoconfigure.exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+    //      jmx:
+    //          default_domain: cloud.config.server
+    //      cloud:
+    //          config:
+    //              server:
+    //                  git:
+    //                      uri: https://github.com/spring-cloud-samples/config-repo
+    //                  repos:
+    //                      - patterns: multi-repo-demo-*
+    //                        uri: https://github.com/spring-cloud-samples/config-repo
+    //
+    //  server:
+    //      port: 8888
+    //  eureka:
+    //      instance:
+    //          hostname: localhost
+    //          port: 8888
+    //      client:
+    //          registerWithEureka: true
+    //      fetchRegistry: true
+    //      serviceUrl:
+    //          defaultZone: http://localhost:8761/eureka/
+    [Fact(Skip = "Config server image needs to be enhanced to support discovery-first")]
+    [Trait("Category", "Integration")]
+    public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
+    {
+        var appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -381,33 +381,33 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                     }
                 }";
 
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.SetBasePath(directory);
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
 
-            var hostingEnv = HostingHelpers.GetHostingEnvironment("development");
-            configurationBuilder.AddJsonFile(fileName);
+        var hostingEnv = HostingHelpers.GetHostingEnvironment("development");
+        configurationBuilder.AddJsonFile(fileName);
 
-            // Act and Assert (expects Spring Cloud Config server to be running)
-            configurationBuilder.AddConfigServer(hostingEnv);
-            var root = configurationBuilder.Build();
+        // Act and Assert (expects Spring Cloud Config server to be running)
+        configurationBuilder.AddConfigServer(hostingEnv);
+        var root = configurationBuilder.Build();
 
-            Assert.Equal("spam", root["bar"]);
-            Assert.Equal("from foo development", root["foo"]);
-            Assert.Equal("Spring Cloud Samples", root["info:description"]);
-            Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
-            Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
-        }
+        Assert.Equal("spam", root["bar"]);
+        Assert.Equal("from foo development", root["foo"]);
+        Assert.Equal("Spring Cloud Samples", root["info:description"]);
+        Assert.Equal("https://github.com/spring-cloud-samples", root["info:url"]);
+        Assert.Equal("http://localhost:8761/eureka/", root["eureka:client:serviceUrl:defaultZone"]);
+    }
 
-        [Fact]
-        [Trait("Category", "Integration")]
-        public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
-        {
-            // These settings match the default java config server
-            var appsettings = @"
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
+    {
+        // These settings match the default java config server
+        var appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -425,27 +425,26 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest
                       }
                     }
                 }";
-            using var sandbox = new Sandbox();
-            var path = sandbox.CreateFile("appsettings.json", appsettings);
-            var directory = Path.GetDirectoryName(path);
-            var fileName = Path.GetFileName(path);
-            var builder = new WebHostBuilder()
-                .UseStartup<TestServerStartup>()
-                .ConfigureAppConfiguration((context, config) =>
-                {
-                    config.SetBasePath(directory)
+        using var sandbox = new Sandbox();
+        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        var directory = Path.GetDirectoryName(path);
+        var fileName = Path.GetFileName(path);
+        var builder = new WebHostBuilder()
+            .UseStartup<TestServerStartup>()
+            .ConfigureAppConfiguration((context, config) =>
+            {
+                config.SetBasePath(directory)
                     .AddJsonFile(fileName)
                     .AddConfigServer(context.HostingEnvironment);
-                });
+            });
 
-            // Act and Assert (TestServer expects Spring Cloud Config server to be running)
-            using var server = new TestServer(builder);
-            using var client = server.CreateClient();
-            var result = await client.GetStringAsync("http://localhost/Home/Health");
+        // Act and Assert (TestServer expects Spring Cloud Config server to be running)
+        using var server = new TestServer(builder);
+        using var client = server.CreateClient();
+        var result = await client.GetStringAsync("http://localhost/Home/Health");
 
-            // after switching to newer config server image, the health response has changed to
-            // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
-            Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config", result);
-        }
+        // after switching to newer config server image, the health response has changed to
+        // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
+        Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config", result);
     }
 }

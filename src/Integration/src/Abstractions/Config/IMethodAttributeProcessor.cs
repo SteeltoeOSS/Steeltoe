@@ -6,13 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Integration.Config
-{
-    public interface IMethodAttributeProcessor<A>
-        where A : Attribute
-    {
-        object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes);
+namespace Steeltoe.Integration.Config;
 
-        bool ShouldCreateEndpoint(MethodInfo method, List<Attribute> attributes);
-    }
+public interface IMethodAttributeProcessor<A>
+    where A : Attribute
+{
+    object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes);
+
+    bool ShouldCreateEndpoint(MethodInfo method, List<Attribute> attributes);
 }

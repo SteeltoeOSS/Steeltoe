@@ -6,62 +6,61 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using System.IO;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Serial
+namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
+
+public static class SerialHystrixUtilization
 {
-    public static class SerialHystrixUtilization
+    public static string ToJsonString(HystrixUtilization utilization)
     {
-        public static string ToJsonString(HystrixUtilization utilization)
+        using var sw = new StringWriter();
+        using (var writer = new JsonTextWriter(sw))
         {
-            using var sw = new StringWriter();
-            using (var writer = new JsonTextWriter(sw))
-            {
-                SerializeUtilization(writer, utilization);
-            }
-
-            return sw.ToString();
+            SerializeUtilization(writer, utilization);
         }
 
-        private static void SerializeUtilization(JsonTextWriter json, HystrixUtilization utilization)
+        return sw.ToString();
+    }
+
+    private static void SerializeUtilization(JsonTextWriter json, HystrixUtilization utilization)
+    {
+        json.WriteStartObject();
+        json.WriteStringField("type", "HystrixUtilization");
+        json.WriteObjectFieldStart("commands");
+        foreach (var entry in utilization.CommandUtilizationMap)
         {
-            json.WriteStartObject();
-            json.WriteStringField("type", "HystrixUtilization");
-            json.WriteObjectFieldStart("commands");
-            foreach (var entry in utilization.CommandUtilizationMap)
-            {
-                var key = entry.Key;
-                var commandUtilization = entry.Value;
-                WriteCommandUtilizationJson(json, key, commandUtilization);
-            }
-
-            json.WriteEndObject();
-
-            json.WriteObjectFieldStart("threadpools");
-            foreach (var entry in utilization.ThreadPoolUtilizationMap)
-            {
-                var threadPoolKey = entry.Key;
-                var threadPoolUtilization = entry.Value;
-                WriteThreadPoolUtilizationJson(json, threadPoolKey, threadPoolUtilization);
-            }
-
-            json.WriteEndObject();
-            json.WriteEndObject();
+            var key = entry.Key;
+            var commandUtilization = entry.Value;
+            WriteCommandUtilizationJson(json, key, commandUtilization);
         }
 
-        private static void WriteCommandUtilizationJson(JsonTextWriter json, IHystrixCommandKey key, HystrixCommandUtilization utilization)
+        json.WriteEndObject();
+
+        json.WriteObjectFieldStart("threadpools");
+        foreach (var entry in utilization.ThreadPoolUtilizationMap)
         {
-            json.WriteObjectFieldStart(key.Name);
-            json.WriteIntegerField("activeCount", utilization.ConcurrentCommandCount);
-            json.WriteEndObject();
+            var threadPoolKey = entry.Key;
+            var threadPoolUtilization = entry.Value;
+            WriteThreadPoolUtilizationJson(json, threadPoolKey, threadPoolUtilization);
         }
 
-        private static void WriteThreadPoolUtilizationJson(JsonTextWriter json, IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolUtilization utilization)
-        {
-            json.WriteObjectFieldStart(threadPoolKey.Name);
-            json.WriteIntegerField("activeCount", utilization.CurrentActiveCount);
-            json.WriteIntegerField("queueSize", utilization.CurrentQueueSize);
-            json.WriteIntegerField("corePoolSize", utilization.CurrentCorePoolSize);
-            json.WriteIntegerField("poolSize", utilization.CurrentPoolSize);
-            json.WriteEndObject();
-        }
+        json.WriteEndObject();
+        json.WriteEndObject();
+    }
+
+    private static void WriteCommandUtilizationJson(JsonTextWriter json, IHystrixCommandKey key, HystrixCommandUtilization utilization)
+    {
+        json.WriteObjectFieldStart(key.Name);
+        json.WriteIntegerField("activeCount", utilization.ConcurrentCommandCount);
+        json.WriteEndObject();
+    }
+
+    private static void WriteThreadPoolUtilizationJson(JsonTextWriter json, IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolUtilization utilization)
+    {
+        json.WriteObjectFieldStart(threadPoolKey.Name);
+        json.WriteIntegerField("activeCount", utilization.CurrentActiveCount);
+        json.WriteIntegerField("queueSize", utilization.CurrentQueueSize);
+        json.WriteIntegerField("corePoolSize", utilization.CurrentCorePoolSize);
+        json.WriteIntegerField("poolSize", utilization.CurrentPoolSize);
+        json.WriteEndObject();
     }
 }

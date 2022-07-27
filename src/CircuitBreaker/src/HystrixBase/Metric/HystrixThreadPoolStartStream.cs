@@ -8,46 +8,45 @@ using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
+
+public class HystrixThreadPoolStartStream : IHystrixEventStream<HystrixCommandExecutionStarted>
 {
-    public class HystrixThreadPoolStartStream : IHystrixEventStream<HystrixCommandExecutionStarted>
+    private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ();
+
+    private readonly IHystrixThreadPoolKey _threadPoolKey;
+    private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
+    private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
+
+    public static HystrixThreadPoolStartStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
     {
-        private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ();
+        return Streams.GetOrAddEx(threadPoolKey.Name, (k) => new HystrixThreadPoolStartStream(threadPoolKey));
+    }
 
-        private readonly IHystrixThreadPoolKey _threadPoolKey;
-        private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
-        private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
+    internal HystrixThreadPoolStartStream(IHystrixThreadPoolKey threadPoolKey)
+    {
+        _threadPoolKey = threadPoolKey;
+        _writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
+        _readOnlyStream = _writeOnlySubject.AsObservable();
+    }
 
-        public static HystrixThreadPoolStartStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
-        {
-            return Streams.GetOrAddEx(threadPoolKey.Name, (k) => new HystrixThreadPoolStartStream(threadPoolKey));
-        }
+    public static void Reset()
+    {
+        Streams.Clear();
+    }
 
-        internal HystrixThreadPoolStartStream(IHystrixThreadPoolKey threadPoolKey)
-        {
-            _threadPoolKey = threadPoolKey;
-            _writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
-            _readOnlyStream = _writeOnlySubject.AsObservable();
-        }
+    public void Write(HystrixCommandExecutionStarted @event)
+    {
+        _writeOnlySubject.OnNext(@event);
+    }
 
-        public static void Reset()
-        {
-            Streams.Clear();
-        }
+    public IObservable<HystrixCommandExecutionStarted> Observe()
+    {
+        return _readOnlyStream;
+    }
 
-        public void Write(HystrixCommandExecutionStarted @event)
-        {
-            _writeOnlySubject.OnNext(@event);
-        }
-
-        public IObservable<HystrixCommandExecutionStarted> Observe()
-        {
-            return _readOnlyStream;
-        }
-
-        public override string ToString()
-        {
-            return "HystrixThreadPoolStartStream(" + _threadPoolKey.Name + ")";
-        }
+    public override string ToString()
+    {
+        return "HystrixThreadPoolStartStream(" + _threadPoolKey.Name + ")";
     }
 }

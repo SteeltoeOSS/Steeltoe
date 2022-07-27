@@ -7,52 +7,51 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Discovery.Eureka.Transport
+namespace Steeltoe.Discovery.Eureka.Transport;
+
+internal class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
 {
-    internal class JsonApplicationConverter : JsonConverter<List<JsonApplication>>
+    public override bool CanConvert(Type typeToConvert)
     {
-        public override bool CanConvert(Type typeToConvert)
-        {
-            return typeToConvert == typeof(IList<JsonApplication>);
-        }
+        return typeToConvert == typeof(IList<JsonApplication>);
+    }
 
-        public override List<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override List<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        List<JsonApplication> result = null;
+        try
         {
-            List<JsonApplication> result = null;
-            try
+            if (reader.TokenType == JsonTokenType.StartArray)
             {
-                if (reader.TokenType == JsonTokenType.StartArray)
+                result = JsonSerializer.Deserialize<List<JsonApplication>>(ref reader, options);
+            }
+            else
+            {
+                var singleInst = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
+                if (singleInst != null)
                 {
-                    result = JsonSerializer.Deserialize<List<JsonApplication>>(ref reader, options);
-                }
-                else
-                {
-                    var singleInst = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
-                    if (singleInst != null)
+                    result = new List<JsonApplication>
                     {
-                        result = new List<JsonApplication>
-                        {
-                            singleInst
-                        };
-                    }
+                        singleInst
+                    };
                 }
             }
-            catch (Exception)
-            {
-                result = new List<JsonApplication>();
-            }
-
-            if (result == null)
-            {
-                result = new List<JsonApplication>();
-            }
-
-            return result;
         }
-
-        public override void Write(Utf8JsonWriter writer, List<JsonApplication> value, JsonSerializerOptions options)
+        catch (Exception)
         {
-            writer.WriteStringValue(value.ToString());
+            result = new List<JsonApplication>();
         }
+
+        if (result == null)
+        {
+            result = new List<JsonApplication>();
+        }
+
+        return result;
+    }
+
+    public override void Write(Utf8JsonWriter writer, List<JsonApplication> value, JsonSerializerOptions options)
+    {
+        writer.WriteStringValue(value.ToString());
     }
 }

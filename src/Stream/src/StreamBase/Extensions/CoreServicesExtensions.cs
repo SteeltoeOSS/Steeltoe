@@ -10,17 +10,16 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.Core;
 
-namespace Steeltoe.Stream.Extensions
-{
-    public static class CoreServicesExtensions
-    {
-        public static IServiceCollection AddCoreServices(this IServiceCollection services)
-        {
-            services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
-            services.TryAddSingleton<IConversionService>(DefaultConversionService.Singleton);
-            services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
+namespace Steeltoe.Stream.Extensions;
 
-            return services;
-        }
+public static class CoreServicesExtensions
+{
+    public static IServiceCollection AddCoreServices(this IServiceCollection services)
+    {
+        services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
+        services.TryAddSingleton<IConversionService>(DefaultConversionService.Singleton);
+        services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
+
+        return services;
     }
 }

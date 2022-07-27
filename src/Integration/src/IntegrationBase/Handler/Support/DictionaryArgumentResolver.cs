@@ -10,32 +10,31 @@ using Steeltoe.Messaging.Handler.Invocation;
 using System.Collections;
 using System.Reflection;
 
-namespace Steeltoe.Integration.Handler.Support
+namespace Steeltoe.Integration.Handler.Support;
+
+public class DictionaryArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
 {
-    public class DictionaryArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
+    public DictionaryArgumentResolver(IApplicationContext context)
+        : base(context)
     {
-        public DictionaryArgumentResolver(IApplicationContext context)
-            : base(context)
-        {
-        }
+    }
 
-        public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        var payload = message.Payload;
+        if (parameter.GetCustomAttribute<HeadersAttribute>() == null && payload is IDictionary)
         {
-            var payload = message.Payload;
-            if (parameter.GetCustomAttribute<HeadersAttribute>() == null && payload is IDictionary)
-            {
-                return payload;
-            }
-            else
-            {
-                return message.Headers;
-            }
+            return payload;
         }
+        else
+        {
+            return message.Headers;
+        }
+    }
 
-        public bool SupportsParameter(ParameterInfo parameter)
-        {
-            return parameter.GetCustomAttribute<PayloadAttribute>() == null &&
-                typeof(IDictionary).IsAssignableFrom(parameter.ParameterType);
-        }
+    public bool SupportsParameter(ParameterInfo parameter)
+    {
+        return parameter.GetCustomAttribute<PayloadAttribute>() == null &&
+               typeof(IDictionary).IsAssignableFrom(parameter.ParameterType);
     }
 }

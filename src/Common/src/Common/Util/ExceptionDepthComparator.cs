@@ -5,54 +5,53 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public class ExceptionDepthComparator : IComparer<Type>
 {
-    public class ExceptionDepthComparator : IComparer<Type>
+    private readonly Type _targetException;
+
+    public ExceptionDepthComparator(Exception exception)
     {
-        private readonly Type _targetException;
-
-        public ExceptionDepthComparator(Exception exception)
+        if (exception == null)
         {
-            if (exception == null)
-            {
-                throw new ArgumentNullException(nameof(exception));
-            }
-
-            _targetException = exception.GetType();
+            throw new ArgumentNullException(nameof(exception));
         }
 
-        public ExceptionDepthComparator(Type exceptionType)
-        {
-            if (exceptionType == null)
-            {
-                throw new ArgumentNullException(nameof(exceptionType));
-            }
+        _targetException = exception.GetType();
+    }
 
-            _targetException = exceptionType;
+    public ExceptionDepthComparator(Type exceptionType)
+    {
+        if (exceptionType == null)
+        {
+            throw new ArgumentNullException(nameof(exceptionType));
         }
 
-        public int Compare(Type o1, Type o2)
+        _targetException = exceptionType;
+    }
+
+    public int Compare(Type o1, Type o2)
+    {
+        var depth1 = GetDepth(o1, _targetException, 0);
+        var depth2 = GetDepth(o2, _targetException, 0);
+        return depth1 - depth2;
+    }
+
+    private int GetDepth(Type declaredException, Type exceptionToMatch, int depth)
+    {
+        if (exceptionToMatch.Equals(declaredException))
         {
-            var depth1 = GetDepth(o1, _targetException, 0);
-            var depth2 = GetDepth(o2, _targetException, 0);
-            return depth1 - depth2;
+            // Found it!
+            return depth;
         }
 
-        private int GetDepth(Type declaredException, Type exceptionToMatch, int depth)
+        // If we've gone as far as we can go and haven't found it...
+        if (exceptionToMatch == typeof(Exception))
         {
-            if (exceptionToMatch.Equals(declaredException))
-            {
-                // Found it!
-                return depth;
-            }
-
-            // If we've gone as far as we can go and haven't found it...
-            if (exceptionToMatch == typeof(Exception))
-            {
-                return int.MaxValue;
-            }
-
-            return GetDepth(declaredException, exceptionToMatch.BaseType, depth + 1);
+            return int.MaxValue;
         }
+
+        return GetDepth(declaredException, exceptionToMatch.BaseType, depth + 1);
     }
 }

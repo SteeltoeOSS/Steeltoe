@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public interface IThreadDumpEndpoint
 {
-    public interface IThreadDumpEndpoint
-    {
-        List<ThreadInfo> Invoke();
-    }
+    List<ThreadInfo> Invoke();
 }

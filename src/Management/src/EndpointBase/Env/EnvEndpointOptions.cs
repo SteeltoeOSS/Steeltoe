@@ -4,40 +4,39 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Env
-{
-    public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
-    {
-        private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:env";
-        private static readonly string[] KEYS_TO_SANITIZE = new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" };
+namespace Steeltoe.Management.Endpoint.Env;
 
-        public EnvEndpointOptions()
-            : base()
+public class EnvEndpointOptions : AbstractEndpointOptions, IEnvOptions
+{
+    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:env";
+    private static readonly string[] KEYS_TO_SANITIZE = new string[] { "password", "secret", "key", "token", ".*credentials.*", "vcap_services" };
+
+    public EnvEndpointOptions()
+        : base()
+    {
+        Id = "env";
+        RequiredPermissions = Permissions.RESTRICTED;
+        KeysToSanitize = KEYS_TO_SANITIZE;
+    }
+
+    public EnvEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "env";
+        }
+
+        if (RequiredPermissions == Permissions.UNDEFINED)
+        {
             RequiredPermissions = Permissions.RESTRICTED;
+        }
+
+        if (KeysToSanitize == null)
+        {
             KeysToSanitize = KEYS_TO_SANITIZE;
         }
-
-        public EnvEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "env";
-            }
-
-            if (RequiredPermissions == Permissions.UNDEFINED)
-            {
-                RequiredPermissions = Permissions.RESTRICTED;
-            }
-
-            if (KeysToSanitize == null)
-            {
-                KeysToSanitize = KEYS_TO_SANITIZE;
-            }
-        }
-
-        public string[] KeysToSanitize { get; set; }
     }
+
+    public string[] KeysToSanitize { get; set; }
 }

@@ -5,21 +5,20 @@
 using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.RabbitMQ.Core;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support
+namespace Steeltoe.Messaging.RabbitMQ.Support;
+
+public static class SendRetryContextAccessor
 {
-    public static class SendRetryContextAccessor
+    public const string MESSAGE = "message";
+    public const string ADDRESS = "address";
+
+    public static IMessage GetMessage(IRetryContext context)
     {
-        public const string MESSAGE = "message";
-        public const string ADDRESS = "address";
+        return (IMessage)context.GetAttribute(MESSAGE);
+    }
 
-        public static IMessage GetMessage(IRetryContext context)
-        {
-            return (IMessage)context.GetAttribute(MESSAGE);
-        }
-
-        public static Address GetAddress(IRetryContext context)
-        {
-            return (Address)context.GetAttribute(ADDRESS);
-        }
+    public static Address GetAddress(IRetryContext context)
+    {
+        return (Address)context.GetAttribute(ADDRESS);
     }
 }

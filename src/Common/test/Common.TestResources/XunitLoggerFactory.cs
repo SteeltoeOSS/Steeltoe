@@ -6,34 +6,33 @@ using Microsoft.Extensions.Logging;
 using System;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public sealed class XunitLoggerFactory : ILoggerFactory
 {
-    public sealed class XunitLoggerFactory : ILoggerFactory
+    private readonly ITestOutputHelper _output;
+    private readonly ILoggerFactory _factory;
+
+    public XunitLoggerFactory(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
-        private readonly ILoggerFactory _factory;
-
-        public XunitLoggerFactory(ITestOutputHelper output)
+        _output = output;
+        _factory = LoggerFactory.Create(builder =>
         {
-            _output = output;
-            _factory = LoggerFactory.Create(builder =>
-            {
-                builder.AddDebug();
-            });
-        }
+            builder.AddDebug();
+        });
+    }
 
-        public void AddProvider(ILoggerProvider provider)
-        {
-            throw new NotImplementedException();
-        }
+    public void AddProvider(ILoggerProvider provider)
+    {
+        throw new NotImplementedException();
+    }
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            return new XunitLogger(_output);
-        }
+    public ILogger CreateLogger(string categoryName)
+    {
+        return new XunitLogger(_output);
+    }
 
-        public void Dispose()
-        {
-        }
+    public void Dispose()
+    {
     }
 }

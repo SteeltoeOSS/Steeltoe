@@ -8,59 +8,58 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.HeapDump
+namespace Steeltoe.Management.Endpoint.HeapDump;
+
+public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
-    public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
+    private readonly RequestDelegate _next;
+
+    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleHeapDumpRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleHeapDumpRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
+    protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
+    {
+        var filename = _endpoint.Invoke();
+        _logger?.LogDebug("Returning: {0}", filename);
+        context.Response.Headers.Add("Content-Type", "application/octet-stream");
+
+        if (!File.Exists(filename))
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            return;
         }
 
-        protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
+        var gzFilename = filename + ".gz";
+        var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
+
+        if (result != null)
         {
-            var filename = _endpoint.Invoke();
-            _logger?.LogDebug("Returning: {0}", filename);
-            context.Response.Headers.Add("Content-Type", "application/octet-stream");
-
-            if (!File.Exists(filename))
+            using (result)
             {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
+                context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
+                context.Response.StatusCode = StatusCodes.Status200OK;
+                context.Response.ContentLength = result.Length;
+                await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
             }
 
-            var gzFilename = filename + ".gz";
-            var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
-
-            if (result != null)
-            {
-                using (result)
-                {
-                    context.Response.Headers.Add("Content-Disposition", "attachment; filename=\"" + Path.GetFileName(gzFilename) + "\"");
-                    context.Response.StatusCode = StatusCodes.Status200OK;
-                    context.Response.ContentLength = result.Length;
-                    await result.CopyToAsync(context.Response.Body).ConfigureAwait(false);
-                }
-
-                File.Delete(gzFilename);
-            }
-            else
-            {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-            }
+            File.Delete(gzFilename);
+        }
+        else
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
         }
     }
 }

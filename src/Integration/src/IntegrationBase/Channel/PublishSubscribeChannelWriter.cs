@@ -4,15 +4,14 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Integration.Channel
-{
-    public class PublishSubscribeChannelWriter : AbstractSubscribableChannelWriter
-    {
-        public PublishSubscribeChannelWriter(PublishSubscribeChannel channel, ILogger logger = null)
-            : base(channel, logger)
-        {
-        }
+namespace Steeltoe.Integration.Channel;
 
-        public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)channel;
+public class PublishSubscribeChannelWriter : AbstractSubscribableChannelWriter
+{
+    public PublishSubscribeChannelWriter(PublishSubscribeChannel channel, ILogger logger = null)
+        : base(channel, logger)
+    {
     }
+
+    public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)channel;
 }

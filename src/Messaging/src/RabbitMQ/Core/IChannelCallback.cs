@@ -4,10 +4,9 @@
 
 using RC=RabbitMQ.Client;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface IChannelCallback<out T>
 {
-    public interface IChannelCallback<out T>
-    {
-        T DoInRabbit(RC.IModel channel);
-    }
+    T DoInRabbit(RC.IModel channel);
 }

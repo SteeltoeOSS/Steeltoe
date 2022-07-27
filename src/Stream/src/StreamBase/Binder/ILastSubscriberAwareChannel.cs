@@ -4,10 +4,9 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public interface ILastSubscriberAwareChannel : ISubscribableChannel
 {
-    public interface ILastSubscriberAwareChannel : ISubscribableChannel
-    {
-        int Subscribers { get; }
-    }
+    int Subscribers { get; }
 }

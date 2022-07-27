@@ -4,20 +4,19 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test
+namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
+
+public class MySqlServiceOption : CloudFoundryServicesOptions
 {
-    public class MySqlServiceOption : CloudFoundryServicesOptions
+    public MySqlServiceOption()
+        : base()
     {
-        public MySqlServiceOption()
-            : base()
-        {
-        }
-
-        public MySqlServiceOption(IConfiguration config)
-            : base(config)
-        {
-        }
-
-        public MySqlCredentials Credentials { get; set; }
     }
+
+    public MySqlServiceOption(IConfiguration config)
+        : base(config)
+    {
+    }
+
+    public MySqlCredentials Credentials { get; set; }
 }

@@ -5,55 +5,54 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions
+namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+
+[Serializable]
+public class HystrixRuntimeException : Exception
 {
-    [Serializable]
-    public class HystrixRuntimeException : Exception
+    public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message)
+        : base(message)
     {
-        public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message)
-            : base(message)
-        {
-            FailureType = failureCause;
-            ImplementingClass = commandClass;
-            FallbackException = null;
-        }
+        FailureType = failureCause;
+        ImplementingClass = commandClass;
+        FallbackException = null;
+    }
 
-        public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message, Exception cause, Exception fallbackException)
-            : base(message, cause)
-        {
-            FailureType = failureCause;
-            ImplementingClass = commandClass;
-            FallbackException = fallbackException;
-        }
+    public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message, Exception cause, Exception fallbackException)
+        : base(message, cause)
+    {
+        FailureType = failureCause;
+        ImplementingClass = commandClass;
+        FallbackException = fallbackException;
+    }
 
-        public HystrixRuntimeException()
-        {
-        }
+    public HystrixRuntimeException()
+    {
+    }
 
-        public HystrixRuntimeException(string message)
-            : base(message)
-        {
-        }
+    public HystrixRuntimeException(string message)
+        : base(message)
+    {
+    }
 
-        public HystrixRuntimeException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+    public HystrixRuntimeException(string message, Exception innerException)
+        : base(message, innerException)
+    {
+    }
 
-        protected HystrixRuntimeException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-        }
+    protected HystrixRuntimeException(SerializationInfo info, StreamingContext context)
+        : base(info, context)
+    {
+    }
 
-        public FailureType FailureType { get; }
+    public FailureType FailureType { get; }
 
-        public Exception FallbackException { get; }
+    public Exception FallbackException { get; }
 
-        public Type ImplementingClass { get; }
+    public Type ImplementingClass { get; }
 
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-        }
+    public override void GetObjectData(SerializationInfo info, StreamingContext context)
+    {
+        base.GetObjectData(info, context);
     }
 }

@@ -2,22 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
+namespace Steeltoe.Common.Transaction;
+
+public interface ITransactionSynchronization
 {
-    public interface ITransactionSynchronization
-    {
-        void Suspend();
+    void Suspend();
 
-        void Resume();
+    void Resume();
 
-        void Flush();
+    void Flush();
 
-        void BeforeCommit(bool readOnly);
+    void BeforeCommit(bool readOnly);
 
-        void BeforeCompletion();
+    void BeforeCompletion();
 
-        void AfterCommit();
+    void AfterCommit();
 
-        void AfterCompletion(int status);
-    }
+    void AfterCompletion(int status);
 }

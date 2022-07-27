@@ -2,9 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Mappings
+namespace Steeltoe.Management.Endpoint.Mappings;
+
+public interface IMappingsOptions : IEndpointOptions
 {
-    public interface IMappingsOptions : IEndpointOptions
-    {
-    }
 }

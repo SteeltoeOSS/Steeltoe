@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra
+namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210.Infra;
+
+public interface IC
 {
-    public interface IC
-    {
-    }
 }

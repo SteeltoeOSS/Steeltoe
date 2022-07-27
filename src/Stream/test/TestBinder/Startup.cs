@@ -11,28 +11,27 @@ using Steeltoe.Stream.TestBinder;
 
 [assembly: Binder("testbinder", typeof(Startup))]
 
-namespace Steeltoe.Stream.TestBinder
+namespace Steeltoe.Stream.TestBinder;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        Configuration = configuration;
+    }
 
-        public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; }
 
-        public bool ConfigureServicesInvoked { get; set; } = false;
+    public bool ConfigureServicesInvoked { get; set; } = false;
 
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            ConfigureServicesInvoked = true; // Testing
-            services.AddSingleton<TestChannelBinderProvisioner>();
-            services.AddSingleton<InputDestination>();
-            services.AddSingleton<OutputDestination>();
-            services.AddSingleton<TestChannelBinder>();
-            services.AddSingleton<IBinder>((p) => p.GetRequiredService<TestChannelBinder>());
-        }
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        ConfigureServicesInvoked = true; // Testing
+        services.AddSingleton<TestChannelBinderProvisioner>();
+        services.AddSingleton<InputDestination>();
+        services.AddSingleton<OutputDestination>();
+        services.AddSingleton<TestChannelBinder>();
+        services.AddSingleton<IBinder>((p) => p.GetRequiredService<TestChannelBinder>());
     }
 }

@@ -4,13 +4,12 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class RabbitUnsupportedEncodingException : RabbitException
 {
-    public class RabbitUnsupportedEncodingException : RabbitException
-    {
-        public RabbitUnsupportedEncodingException(Exception cause)
+    public RabbitUnsupportedEncodingException(Exception cause)
         : base(cause)
-        {
-        }
+    {
     }
 }

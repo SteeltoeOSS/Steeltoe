@@ -6,9 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210
+namespace Steeltoe.Common.Expression.Internal.Spring.SPR10210;
+
+public class D : A
 {
-    public class D : A
-    {
-    }
 }

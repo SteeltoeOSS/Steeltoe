@@ -7,134 +7,133 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public class AbstractBindableProxyFactory : AbstractBindable
 {
-    public class AbstractBindableProxyFactory : AbstractBindable
+    protected IDictionary<string, Bindable> _bindables;
+    protected IList<IBindingTargetFactory> _bindingTargetFactories;
+
+    protected Dictionary<string, Lazy<object>> _boundInputTargets = new ();
+    protected Dictionary<string, Lazy<object>> _boundOutputTargets = new ();
+
+    public AbstractBindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
+        : base(bindingType)
     {
-        protected IDictionary<string, Bindable> _bindables;
-        protected IList<IBindingTargetFactory> _bindingTargetFactories;
+        _bindingTargetFactories = bindingTargetFactories.ToList();
+        Initialize();
+    }
 
-        protected Dictionary<string, Lazy<object>> _boundInputTargets = new ();
-        protected Dictionary<string, Lazy<object>> _boundOutputTargets = new ();
+    public override ICollection<string> Inputs => _boundInputTargets.Keys;
 
-        public AbstractBindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
-            : base(bindingType)
+    public override ICollection<string> Outputs => _boundOutputTargets.Keys;
+
+    public override ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)
+    {
+        var bindings = new List<IBinding>();
+        foreach (var boundTarget in _boundInputTargets)
         {
-            _bindingTargetFactories = bindingTargetFactories.ToList();
-            Initialize();
+            var result = bindingService.BindConsumer(boundTarget.Value.Value, boundTarget.Key);
+            bindings.AddRange(result);
         }
 
-        public override ICollection<string> Inputs => _boundInputTargets.Keys;
+        return bindings;
+    }
 
-        public override ICollection<string> Outputs => _boundOutputTargets.Keys;
-
-        public override ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)
+    public override ICollection<IBinding> CreateAndBindOutputs(IBindingService bindingService)
+    {
+        var bindings = new List<IBinding>();
+        foreach (var boundTarget in _boundOutputTargets)
         {
-            var bindings = new List<IBinding>();
-            foreach (var boundTarget in _boundInputTargets)
+            var result = bindingService.BindProducer(boundTarget.Value.Value, boundTarget.Key);
+            bindings.Add(result);
+        }
+
+        return bindings;
+    }
+
+    public override void UnbindInputs(IBindingService bindingService)
+    {
+        foreach (var boundTarget in _boundInputTargets)
+        {
+            bindingService.UnbindConsumers(boundTarget.Key);
+        }
+    }
+
+    public override void UnbindOutputs(IBindingService bindingService)
+    {
+        foreach (var boundTarget in _boundOutputTargets)
+        {
+            bindingService.UnbindProducers(boundTarget.Key);
+        }
+    }
+
+    public override object GetBoundTarget(string name)
+    {
+        var result = GetBoundInputTarget(name);
+        if (result == null)
+        {
+            result = GetBoundOutputTarget(name);
+        }
+
+        return result;
+    }
+
+    public override object GetBoundInputTarget(string name)
+    {
+        _boundInputTargets.TryGetValue(name, out var result);
+        return result.Value;
+    }
+
+    public override object GetBoundOutputTarget(string name)
+    {
+        _boundOutputTargets.TryGetValue(name, out var result);
+        return result.Value;
+    }
+
+    protected void Initialize()
+    {
+        _bindables = BindingHelpers.CollectBindables(BindingType);
+        foreach (var bindable in _bindables.Values)
+        {
+            var factory = GetBindingTargetFactory(bindable.BindingTargetType);
+            if (bindable.IsInput)
             {
-                var result = bindingService.BindConsumer(boundTarget.Value.Value, boundTarget.Key);
-                bindings.AddRange(result);
+                var creator = new Lazy<object>(() => factory.CreateInput(bindable.Name));
+                _boundInputTargets.Add(bindable.Name, creator);
             }
-
-            return bindings;
-        }
-
-        public override ICollection<IBinding> CreateAndBindOutputs(IBindingService bindingService)
-        {
-            var bindings = new List<IBinding>();
-            foreach (var boundTarget in _boundOutputTargets)
+            else
             {
-                var result = bindingService.BindProducer(boundTarget.Value.Value, boundTarget.Key);
-                bindings.Add(result);
-            }
-
-            return bindings;
-        }
-
-        public override void UnbindInputs(IBindingService bindingService)
-        {
-            foreach (var boundTarget in _boundInputTargets)
-            {
-                bindingService.UnbindConsumers(boundTarget.Key);
+                var creator = new Lazy<object>(() => factory.CreateOutput(bindable.Name));
+                _boundOutputTargets.Add(bindable.Name, creator);
             }
         }
+    }
 
-        public override void UnbindOutputs(IBindingService bindingService)
+    protected virtual IBindingTargetFactory GetBindingTargetFactory(Type bindingTargetType)
+    {
+        IBindingTargetFactory result = null;
+
+        foreach (var factory in _bindingTargetFactories)
         {
-            foreach (var boundTarget in _boundOutputTargets)
+            if (factory.CanCreate(bindingTargetType))
             {
-                bindingService.UnbindProducers(boundTarget.Key);
-            }
-        }
-
-        public override object GetBoundTarget(string name)
-        {
-            var result = GetBoundInputTarget(name);
-            if (result == null)
-            {
-                result = GetBoundOutputTarget(name);
-            }
-
-            return result;
-        }
-
-        public override object GetBoundInputTarget(string name)
-        {
-            _boundInputTargets.TryGetValue(name, out var result);
-            return result.Value;
-        }
-
-        public override object GetBoundOutputTarget(string name)
-        {
-            _boundOutputTargets.TryGetValue(name, out var result);
-            return result.Value;
-        }
-
-        protected void Initialize()
-        {
-            _bindables = BindingHelpers.CollectBindables(BindingType);
-            foreach (var bindable in _bindables.Values)
-            {
-                var factory = GetBindingTargetFactory(bindable.BindingTargetType);
-                if (bindable.IsInput)
+                if (result == null)
                 {
-                    var creator = new Lazy<object>(() => factory.CreateInput(bindable.Name));
-                    _boundInputTargets.Add(bindable.Name, creator);
+                    result = factory;
                 }
                 else
                 {
-                    var creator = new Lazy<object>(() => factory.CreateOutput(bindable.Name));
-                    _boundOutputTargets.Add(bindable.Name, creator);
+                    throw new InvalidOperationException("Multiple factories found for binding target type: " + bindingTargetType);
                 }
             }
         }
 
-        protected virtual IBindingTargetFactory GetBindingTargetFactory(Type bindingTargetType)
+        if (result == null)
         {
-            IBindingTargetFactory result = null;
-
-            foreach (var factory in _bindingTargetFactories)
-            {
-                if (factory.CanCreate(bindingTargetType))
-                {
-                    if (result == null)
-                    {
-                        result = factory;
-                    }
-                    else
-                    {
-                        throw new InvalidOperationException("Multiple factories found for binding target type: " + bindingTargetType);
-                    }
-                }
-            }
-
-            if (result == null)
-            {
-                throw new InvalidOperationException("No factory found for binding target type: " + bindingTargetType);
-            }
-
-            return result;
+            throw new InvalidOperationException("No factory found for binding target type: " + bindingTargetType);
         }
+
+        return result;
     }
 }

@@ -6,21 +6,20 @@ using Steeltoe.Integration.Attributes;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Integration.Config
+namespace Steeltoe.Integration.Config;
+
+public class ServiceActivatorMethod : IServiceActivatorMethod
 {
-    public class ServiceActivatorMethod : IServiceActivatorMethod
+    public ServiceActivatorMethod(MethodInfo method, Type targetClass, ServiceActivatorAttribute attribute)
     {
-        public ServiceActivatorMethod(MethodInfo method, Type targetClass, ServiceActivatorAttribute attribute)
-        {
-            Method = method;
-            ImplementationType = targetClass;
-            Attribute = attribute;
-        }
-
-        public MethodInfo Method { get; }
-
-        public ServiceActivatorAttribute Attribute { get; }
-
-        public Type ImplementationType { get; }
+        Method = method;
+        ImplementationType = targetClass;
+        Attribute = attribute;
     }
+
+    public MethodInfo Method { get; }
+
+    public ServiceActivatorAttribute Attribute { get; }
+
+    public Type ImplementationType { get; }
 }

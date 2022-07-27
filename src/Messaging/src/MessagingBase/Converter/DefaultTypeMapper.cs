@@ -7,126 +7,125 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Loader;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 {
-    public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
+    public TypePrecedence Precedence { get; set; } = TypePrecedence.INFERRED;
+
+    public Type DefaultType { get; set; } = typeof(object);
+
+    public Type ToType(IMessageHeaders headers)
     {
-        public TypePrecedence Precedence { get; set; } = TypePrecedence.INFERRED;
-
-        public Type DefaultType { get; set; } = typeof(object);
-
-        public Type ToType(IMessageHeaders headers)
+        var inferredType = GetInferredType(headers);
+        if (inferredType != null && (!inferredType.IsAbstract && !inferredType.IsInterface))
         {
-            var inferredType = GetInferredType(headers);
-            if (inferredType != null && (!inferredType.IsAbstract && !inferredType.IsInterface))
-            {
-                return inferredType;
-            }
-
-            var typeIdHeader = RetrieveHeaderAsString(headers, ClassIdFieldName);
-
-            if (typeIdHeader != null)
-            {
-                return FromTypeHeader(headers, typeIdHeader);
-            }
-
-            if (HasInferredTypeHeader(headers))
-            {
-                return FromInferredTypeHeader(headers);
-            }
-
-            return DefaultType;
+            return inferredType;
         }
 
-        public void FromType(Type type, IMessageHeaders headers)
+        var typeIdHeader = RetrieveHeaderAsString(headers, ClassIdFieldName);
+
+        if (typeIdHeader != null)
         {
-            AddHeader(headers, ClassIdFieldName, type);
-
-            if (IsContainerType(type))
-            {
-                AddHeader(headers, ContentClassIdFieldName, GetContentType(type));
-            }
-
-            var keyType = GetKeyType(type);
-            if (keyType != null)
-            {
-                AddHeader(headers, KeyClassIdFieldName, keyType);
-            }
+            return FromTypeHeader(headers, typeIdHeader);
         }
 
-        public Type GetInferredType(IMessageHeaders headers)
+        if (HasInferredTypeHeader(headers))
         {
-            if (HasInferredTypeHeader(headers) && Precedence.Equals(TypePrecedence.INFERRED))
-            {
-                return FromInferredTypeHeader(headers);
-            }
-
-            return null;
+            return FromInferredTypeHeader(headers);
         }
 
-        private Type FromTypeHeader(IMessageHeaders headers, string typeIdHeader)
+        return DefaultType;
+    }
+
+    public void FromType(Type type, IMessageHeaders headers)
+    {
+        AddHeader(headers, ClassIdFieldName, type);
+
+        if (IsContainerType(type))
         {
-            var classType = GetClassIdType(typeIdHeader);
-            if (!IsContainerType(classType) || classType.IsArray)
-            {
-                return classType;
-            }
-
-            var contentClassType = GetClassIdType(RetrieveHeader(headers, ContentClassIdFieldName));
-            if (!HasKeyType(classType))
-            {
-                return ConstructCollectionType(classType, contentClassType);
-            }
-
-            var keyClassType = GetClassIdType(RetrieveHeader(headers, KeyClassIdFieldName));
-            return ConstructDictionaryType(classType, keyClassType, contentClassType);
+            AddHeader(headers, ContentClassIdFieldName, GetContentType(type));
         }
 
-        private bool HasKeyType(Type classType)
+        var keyType = GetKeyType(type);
+        if (keyType != null)
         {
-            if (typeof(Dictionary<,>) == classType)
+            AddHeader(headers, KeyClassIdFieldName, keyType);
+        }
+    }
+
+    public Type GetInferredType(IMessageHeaders headers)
+    {
+        if (HasInferredTypeHeader(headers) && Precedence.Equals(TypePrecedence.INFERRED))
+        {
+            return FromInferredTypeHeader(headers);
+        }
+
+        return null;
+    }
+
+    private Type FromTypeHeader(IMessageHeaders headers, string typeIdHeader)
+    {
+        var classType = GetClassIdType(typeIdHeader);
+        if (!IsContainerType(classType) || classType.IsArray)
+        {
+            return classType;
+        }
+
+        var contentClassType = GetClassIdType(RetrieveHeader(headers, ContentClassIdFieldName));
+        if (!HasKeyType(classType))
+        {
+            return ConstructCollectionType(classType, contentClassType);
+        }
+
+        var keyClassType = GetClassIdType(RetrieveHeader(headers, KeyClassIdFieldName));
+        return ConstructDictionaryType(classType, keyClassType, contentClassType);
+    }
+
+    private bool HasKeyType(Type classType)
+    {
+        if (typeof(Dictionary<,>) == classType)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private Type ConstructDictionaryType(Type classType, Type keyClassType, Type contentClassType)
+    {
+        return classType.MakeGenericType(keyClassType, contentClassType);
+    }
+
+    private Type ConstructCollectionType(Type classType, Type contentClassType)
+    {
+        return classType.MakeGenericType(contentClassType);
+    }
+
+    private Type GetClassIdType(string classId)
+    {
+        if (IdClassMapping.ContainsKey(classId))
+        {
+            return IdClassMapping[classId];
+        }
+        else
+        {
+            try
             {
-                return true;
+                return Type.GetType(classId, true);
             }
-
-            return false;
-        }
-
-        private Type ConstructDictionaryType(Type classType, Type keyClassType, Type contentClassType)
-        {
-            return classType.MakeGenericType(keyClassType, contentClassType);
-        }
-
-        private Type ConstructCollectionType(Type classType, Type contentClassType)
-        {
-            return classType.MakeGenericType(contentClassType);
-        }
-
-        private Type GetClassIdType(string classId)
-        {
-            if (IdClassMapping.ContainsKey(classId))
+            catch (Exception)
             {
-                return IdClassMapping[classId];
-            }
-            else
-            {
-                try
+                foreach (var assembly in AssemblyLoadContext.Default.Assemblies)
                 {
-                    return Type.GetType(classId, true);
-                }
-                catch (Exception)
-                {
-                    foreach (var assembly in AssemblyLoadContext.Default.Assemblies)
+                    var result = assembly.GetType(classId, false);
+                    if (result != null)
                     {
-                        var result = assembly.GetType(classId, false);
-                        if (result != null)
-                        {
-                            return result;
-                        }
+                        return result;
                     }
-
-                    throw new MessageConversionException("failed to resolve class name. Class not found [" + classId + "]");
                 }
+
+                throw new MessageConversionException("failed to resolve class name. Class not found [" + classId + "]");
             }
         }
     }

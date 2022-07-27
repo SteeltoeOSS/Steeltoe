@@ -7,15 +7,14 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.Text;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class PojoToByteArrayStreamListener
 {
-    public class PojoToByteArrayStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public byte[] Echo(Person value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public byte[] Echo(Person value)
-        {
-            return Encoding.UTF8.GetBytes(value.ToString());
-        }
+        return Encoding.UTF8.GetBytes(value.ToString());
     }
 }

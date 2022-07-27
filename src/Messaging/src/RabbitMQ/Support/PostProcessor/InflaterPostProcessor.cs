@@ -8,27 +8,26 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor
+namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
+
+public class InflaterPostProcessor : AbstractDecompressingPostProcessor
 {
-    public class InflaterPostProcessor : AbstractDecompressingPostProcessor
+    public InflaterPostProcessor()
     {
-        public InflaterPostProcessor()
-        {
-        }
+    }
 
-        public InflaterPostProcessor(bool autoDecompress)
+    public InflaterPostProcessor(bool autoDecompress)
         : base(autoDecompress)
-        {
-        }
+    {
+    }
 
-        protected override Stream GetDeCompressorStream(Stream stream)
-        {
-            return new DeflateStream(stream, CompressionMode.Decompress);
-        }
+    protected override Stream GetDeCompressorStream(Stream stream)
+    {
+        return new DeflateStream(stream, CompressionMode.Decompress);
+    }
 
-        protected override string GetEncoding()
-        {
-            return "deflate";
-        }
+    protected override string GetEncoding()
+    {
+        return "deflate";
     }
 }

@@ -5,27 +5,26 @@
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Retry
+namespace Steeltoe.Common.Retry;
+
+public abstract class RetryTemplate : IRetryOperation
 {
-    public abstract class RetryTemplate : IRetryOperation
+    protected List<IRetryListener> listeners = new ();
+
+    public void RegisterListener(IRetryListener listener)
     {
-        protected List<IRetryListener> listeners = new ();
-
-        public void RegisterListener(IRetryListener listener)
-        {
-            listeners.Add(listener);
-        }
-
-        public abstract T Execute<T>(Func<IRetryContext, T> retryCallback);
-
-        public abstract T Execute<T>(Func<IRetryContext, T> retryCallback, IRecoveryCallback<T> recoveryCallback);
-
-        public abstract void Execute(Action<IRetryContext> retryCallback);
-
-        public abstract void Execute(Action<IRetryContext> retryCallback, IRecoveryCallback recoveryCallback);
-
-        public abstract T Execute<T>(Func<IRetryContext, T> retryCallback, Func<IRetryContext, T> recoveryCallback);
-
-        public abstract void Execute(Action<IRetryContext> retryCallback, Action<IRetryContext> recoveryCallback);
+        listeners.Add(listener);
     }
+
+    public abstract T Execute<T>(Func<IRetryContext, T> retryCallback);
+
+    public abstract T Execute<T>(Func<IRetryContext, T> retryCallback, IRecoveryCallback<T> recoveryCallback);
+
+    public abstract void Execute(Action<IRetryContext> retryCallback);
+
+    public abstract void Execute(Action<IRetryContext> retryCallback, IRecoveryCallback recoveryCallback);
+
+    public abstract T Execute<T>(Func<IRetryContext, T> retryCallback, Func<IRetryContext, T> recoveryCallback);
+
+    public abstract void Execute(Action<IRetryContext> retryCallback, Action<IRetryContext> recoveryCallback);
 }

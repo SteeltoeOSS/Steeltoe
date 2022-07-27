@@ -4,30 +4,29 @@
 
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Metrics
-{
-    public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
-    {
-        internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
+namespace Steeltoe.Management.Endpoint.Metrics;
 
-        public PrometheusEndpointOptions()
-            : base()
+public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEndpointOptions
+{
+    internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:prometheus";
+
+    public PrometheusEndpointOptions()
+        : base()
+    {
+        Id = "prometheus";
+        ExactMatch = false;
+    }
+
+    public PrometheusEndpointOptions(IConfiguration config)
+        : base(MANAGEMENT_INFO_PREFIX, config)
+    {
+        if (string.IsNullOrEmpty(Id))
         {
             Id = "prometheus";
-            ExactMatch = false;
         }
 
-        public PrometheusEndpointOptions(IConfiguration config)
-            : base(MANAGEMENT_INFO_PREFIX, config)
-        {
-            if (string.IsNullOrEmpty(Id))
-            {
-                Id = "prometheus";
-            }
-
-            ExactMatch = false;
-        }
-
-        public long ScrapeResponseCacheDurationMilliseconds { get; set; }
+        ExactMatch = false;
     }
+
+    public long ScrapeResponseCacheDurationMilliseconds { get; set; }
 }

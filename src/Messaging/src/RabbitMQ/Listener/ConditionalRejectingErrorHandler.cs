@@ -9,75 +9,74 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public class ConditionalRejectingErrorHandler : IErrorHandler
 {
-    public class ConditionalRejectingErrorHandler : IErrorHandler
+    public const string DEFAULT_SERVICE_NAME = nameof(ConditionalRejectingErrorHandler);
+
+    private readonly ILogger _logger;
+    private readonly IFatalExceptionStrategy _exceptionStrategy;
+
+    public ConditionalRejectingErrorHandler(ILogger logger = null)
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(ConditionalRejectingErrorHandler);
+        _logger = logger;
+        _exceptionStrategy = new DefaultExceptionStrategy(logger);
+    }
 
-        private readonly ILogger _logger;
-        private readonly IFatalExceptionStrategy _exceptionStrategy;
+    public ConditionalRejectingErrorHandler(IFatalExceptionStrategy exceptionStrategy, ILogger logger = null)
+    {
+        _logger = logger;
+        _exceptionStrategy = exceptionStrategy;
+    }
 
-        public ConditionalRejectingErrorHandler(ILogger logger = null)
+    public virtual bool DiscardFatalsWithXDeath { get; set; } = true;
+
+    public virtual bool RejectManual { get; set; } = true;
+
+    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+
+    public virtual bool HandleError(Exception exception)
+    {
+        _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
+        if (!CauseChainContainsRRADRE(exception) && _exceptionStrategy.IsFatal(exception))
         {
-            _logger = logger;
-            _exceptionStrategy = new DefaultExceptionStrategy(logger);
-        }
-
-        public ConditionalRejectingErrorHandler(IFatalExceptionStrategy exceptionStrategy, ILogger logger = null)
-        {
-            _logger = logger;
-            _exceptionStrategy = exceptionStrategy;
-        }
-
-        public virtual bool DiscardFatalsWithXDeath { get; set; } = true;
-
-        public virtual bool RejectManual { get; set; } = true;
-
-        public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
-
-        public virtual bool HandleError(Exception exception)
-        {
-            _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
-            if (!CauseChainContainsRRADRE(exception) && _exceptionStrategy.IsFatal(exception))
+            if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException listenerException)
             {
-                if (DiscardFatalsWithXDeath && exception is ListenerExecutionFailedException listenerException)
+                var failed = listenerException.FailedMessage;
+                if (failed != null)
                 {
-                    var failed = listenerException.FailedMessage;
-                    if (failed != null)
+                    var accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
+                    var xDeath = accessor.GetXDeathHeader();
+                    if (xDeath != null && xDeath.Count > 0)
                     {
-                        var accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
-                        var xDeath = accessor.GetXDeathHeader();
-                        if (xDeath != null && xDeath.Count > 0)
-                        {
-                            _logger?.LogError(
-                                "x-death header detected on a message with a fatal exception; "
-                                + "perhaps requeued from a DLQ? - discarding: {failedMessage} ", failed);
-                            throw new ImmediateAcknowledgeException("Fatal and x-death present");
-                        }
+                        _logger?.LogError(
+                            "x-death header detected on a message with a fatal exception; "
+                            + "perhaps requeued from a DLQ? - discarding: {failedMessage} ", failed);
+                        throw new ImmediateAcknowledgeException("Fatal and x-death present");
                     }
                 }
-
-                throw new RabbitRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
             }
 
-            return true;
+            throw new RabbitRejectAndDontRequeueException("Error Handler converted exception to fatal", RejectManual, exception);
         }
 
-        protected virtual bool CauseChainContainsRRADRE(Exception exception)
+        return true;
+    }
+
+    protected virtual bool CauseChainContainsRRADRE(Exception exception)
+    {
+        var cause = exception.InnerException;
+        while (cause != null)
         {
-            var cause = exception.InnerException;
-            while (cause != null)
+            if (cause is RabbitRejectAndDontRequeueException)
             {
-                if (cause is RabbitRejectAndDontRequeueException)
-                {
-                    return true;
-                }
-
-                cause = cause.InnerException;
+                return true;
             }
 
-            return false;
+            cause = cause.InnerException;
         }
+
+        return false;
     }
 }

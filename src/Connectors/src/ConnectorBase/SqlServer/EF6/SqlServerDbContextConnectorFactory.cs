@@ -6,38 +6,37 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.SqlServer.EF6
+namespace Steeltoe.Connector.SqlServer.EF6;
+
+public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
 {
-    public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
+    public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
+        : base(info, config, dbContextType)
     {
-        public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
-            : base(info, config, dbContextType)
+        if (dbContextType == null)
         {
-            if (dbContextType == null)
-            {
-                throw new ArgumentNullException(nameof(dbContextType));
-            }
+            throw new ArgumentNullException(nameof(dbContextType));
+        }
+    }
+
+    internal SqlServerDbContextConnectorFactory()
+    {
+    }
+
+    public override object Create(IServiceProvider arg)
+    {
+        var connectionString = CreateConnectionString();
+        object result = null;
+        if (connectionString != null)
+        {
+            result = ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
         }
 
-        internal SqlServerDbContextConnectorFactory()
+        if (result == null)
         {
+            throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", ConnectorType));
         }
 
-        public override object Create(IServiceProvider arg)
-        {
-            var connectionString = CreateConnectionString();
-            object result = null;
-            if (connectionString != null)
-            {
-                result = ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
-            }
-
-            if (result == null)
-            {
-                throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", ConnectorType));
-            }
-
-            return result;
-        }
+        return result;
     }
 }

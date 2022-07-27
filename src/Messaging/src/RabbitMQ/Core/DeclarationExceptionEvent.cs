@@ -5,24 +5,23 @@
 using Steeltoe.Messaging.RabbitMQ.Config;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public class DeclarationExceptionEvent : RabbitAdminEvent
 {
-    public class DeclarationExceptionEvent : RabbitAdminEvent
-    {
-        public DeclarationExceptionEvent(object source, IDeclarable declarable, Exception exception)
+    public DeclarationExceptionEvent(object source, IDeclarable declarable, Exception exception)
         : base(source)
-        {
-            Declarable = declarable;
-            Exception = exception;
-        }
+    {
+        Declarable = declarable;
+        Exception = exception;
+    }
 
-        public IDeclarable Declarable { get; }
+    public IDeclarable Declarable { get; }
 
-        public Exception Exception { get; }
+    public Exception Exception { get; }
 
-        public override string ToString()
-        {
-            return "DeclarationExceptionEvent [declarable=" + Declarable + ", throwable=" + Exception + ", source=" + Source + "]";
-        }
+    public override string ToString()
+    {
+        return "DeclarationExceptionEvent [declarable=" + Declarable + ", throwable=" + Exception + ", source=" + Source + "]";
     }
 }

@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+internal class CredHubResponse<T>
 {
-    internal class CredHubResponse<T>
-    {
-        public List<CredHubCredential<T>> Data { get; set; }
-    }
+    public List<CredHubCredential<T>> Data { get; set; }
 }

@@ -4,12 +4,11 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+/// <summary>
+/// TODO: See if this can be internal
+/// </summary>
+public interface IMessageSelector : ISelector<IMessage>
 {
-    /// <summary>
-    /// TODO: See if this can be internal
-    /// </summary>
-    public interface IMessageSelector : ISelector<IMessage>
-    {
-    }
 }

@@ -5,11 +5,10 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public class ThreadDumpResult
 {
-    public class ThreadDumpResult
-    {
-        [JsonPropertyName("threads")]
-        public List<ThreadInfo> Threads { get; set; }
-    }
+    [JsonPropertyName("threads")]
+    public List<ThreadInfo> Threads { get; set; }
 }

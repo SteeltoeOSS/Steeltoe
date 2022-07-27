@@ -6,25 +6,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
+
+public static class EndpointServiceCollectionExtensions
 {
-    public static class EndpointServiceCollectionExtensions
+    public static void AddCloudFoundryActuator(this IServiceCollection services, IConfiguration config = null)
     {
-        public static void AddCloudFoundryActuator(this IServiceCollection services, IConfiguration config = null)
+        if (services == null)
         {
-            if (services == null)
-            {
-                throw new ArgumentNullException(nameof(services));
-            }
-
-            config ??= services.BuildServiceProvider().GetService<IConfiguration>();
-            if (config == null)
-            {
-                throw new ArgumentNullException(nameof(config));
-            }
-
-            services.AddCloudFoundryActuatorServices(config);
-            services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
+            throw new ArgumentNullException(nameof(services));
         }
+
+        config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        services.AddCloudFoundryActuatorServices(config);
+        services.AddActuatorEndpointMapping<CloudFoundryEndpoint>();
     }
 }

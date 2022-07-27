@@ -4,20 +4,19 @@
 
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class CloudFoundryTokenValidatorTest
 {
-    public class CloudFoundryTokenValidatorTest
+    [Fact]
+    public void ValidateIssuer_ValidatesCorrectly()
     {
-        [Fact]
-        public void ValidateIssuer_ValidatesCorrectly()
-        {
-            var cftv = new CloudFoundryTokenValidator();
+        var cftv = new CloudFoundryTokenValidator();
 
-            var uaaResult = cftv.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
-            var foobarResult = cftv.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
+        var uaaResult = cftv.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
+        var foobarResult = cftv.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
 
-            Assert.NotNull(uaaResult);
-            Assert.Null(foobarResult);
-        }
+        Assert.NotNull(uaaResult);
+        Assert.Null(foobarResult);
     }
 }

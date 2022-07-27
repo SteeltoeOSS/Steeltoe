@@ -4,10 +4,9 @@
 
 using Steeltoe.Messaging.RabbitMQ.Connection;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public interface IMessagePostProcessor : Messaging.Core.IMessagePostProcessor
 {
-    public interface IMessagePostProcessor : Messaging.Core.IMessagePostProcessor
-    {
-        IMessage PostProcessMessage(IMessage message, CorrelationData correlation);
-    }
+    IMessage PostProcessMessage(IMessage message, CorrelationData correlation);
 }

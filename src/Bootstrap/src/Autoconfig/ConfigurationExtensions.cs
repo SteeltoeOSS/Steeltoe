@@ -6,19 +6,18 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using System;
 
-namespace Steeltoe.Bootstrap.Autoconfig
-{
-    internal static class ConfigurationExtensions
-    {
-        public static bool HasWavefront(this IConfiguration configuration)
-        {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+namespace Steeltoe.Bootstrap.Autoconfig;
 
-            var options = new WavefrontExporterOptions(configuration);
-            return !string.IsNullOrEmpty(options.Uri);
+internal static class ConfigurationExtensions
+{
+    public static bool HasWavefront(this IConfiguration configuration)
+    {
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
         }
+
+        var options = new WavefrontExporterOptions(configuration);
+        return !string.IsNullOrEmpty(options.Uri);
     }
 }

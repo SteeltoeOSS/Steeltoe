@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Exceptions
+namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
+
+public class RabbitException : Exception
 {
-    public class RabbitException : Exception
-    {
-        public RabbitException(string message)
+    public RabbitException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public RabbitException(Exception cause)
+    public RabbitException(Exception cause)
         : base(null, cause)
-        {
-        }
+    {
+    }
 
-        public RabbitException(string message, Exception cause)
+    public RabbitException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
     }
 }

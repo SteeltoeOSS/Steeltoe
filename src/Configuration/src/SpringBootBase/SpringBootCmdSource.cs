@@ -6,27 +6,26 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.CommandLine;
 using System;
 
-namespace Steeltoe.Extensions.Configuration.SpringBoot
+namespace Steeltoe.Extensions.Configuration.SpringBoot;
+
+/// <summary>
+///  Configuration source used in creating a <see cref="SpringBootCmdProvider"/> that translates spring style CommandLine arguments to .NET
+/// </summary>
+public class SpringBootCmdSource : IConfigurationSource
 {
+    internal IConfiguration _config;
+
     /// <summary>
-    ///  Configuration source used in creating a <see cref="SpringBootCmdProvider"/> that translates spring style CommandLine arguments to .NET
+    /// Initializes a new instance of the <see cref="SpringBootCmdSource"/> class.
     /// </summary>
-    public class SpringBootCmdSource : IConfigurationSource
+    /// <param name="configuration">The <see cref="CommandLineConfigurationProvider"/> provider by the framework </param>
+    public SpringBootCmdSource(IConfiguration configuration)
     {
-        internal IConfiguration _config;
+        _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SpringBootCmdSource"/> class.
-        /// </summary>
-        /// <param name="configuration">The <see cref="CommandLineConfigurationProvider"/> provider by the framework </param>
-        public SpringBootCmdSource(IConfiguration configuration)
-        {
-            _config = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        }
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return new SpringBootCmdProvider(_config);
-        }
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        return new SpringBootCmdProvider(_config);
     }
 }

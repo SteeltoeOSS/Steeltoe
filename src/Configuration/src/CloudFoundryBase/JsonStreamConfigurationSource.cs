@@ -7,25 +7,24 @@ using Microsoft.Extensions.Configuration.Json;
 using System;
 using System.IO;
 
-namespace Steeltoe.Extensions.Configuration.CloudFoundry
+namespace Steeltoe.Extensions.Configuration.CloudFoundry;
+
+internal class JsonStreamConfigurationSource : JsonConfigurationSource
 {
-    internal class JsonStreamConfigurationSource : JsonConfigurationSource
+    internal JsonStreamConfigurationSource(MemoryStream stream)
     {
-        internal JsonStreamConfigurationSource(MemoryStream stream)
+        if (stream == null)
         {
-            if (stream == null)
-            {
-                throw new ArgumentNullException(nameof(stream));
-            }
-
-            Stream = stream;
+            throw new ArgumentNullException(nameof(stream));
         }
 
-        internal MemoryStream Stream { get; }
+        Stream = stream;
+    }
 
-        public override IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            return new JsonStreamConfigurationProvider(this);
-        }
+    internal MemoryStream Stream { get; }
+
+    public override IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        return new JsonStreamConfigurationProvider(this);
     }
 }

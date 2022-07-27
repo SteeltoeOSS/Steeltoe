@@ -4,26 +4,25 @@
 
 using Steeltoe.Common.Services;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IRabbitListenerContainerFactory : IServiceNameAware
 {
-    public interface IRabbitListenerContainerFactory : IServiceNameAware
-    {
-        IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
+    IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint);
 
-        IMessageListenerContainer CreateListenerContainer()
-        {
-            return CreateListenerContainer(null);
-        }
+    IMessageListenerContainer CreateListenerContainer()
+    {
+        return CreateListenerContainer(null);
     }
+}
 
-    public interface IRabbitListenerContainerFactory<out C> : IRabbitListenerContainerFactory
-        where C : IMessageListenerContainer
+public interface IRabbitListenerContainerFactory<out C> : IRabbitListenerContainerFactory
+    where C : IMessageListenerContainer
+{
+    new C CreateListenerContainer(IRabbitListenerEndpoint endpoint);
+
+    new C CreateListenerContainer()
     {
-        new C CreateListenerContainer(IRabbitListenerEndpoint endpoint);
-
-        new C CreateListenerContainer()
-        {
-            return CreateListenerContainer(null);
-        }
+        return CreateListenerContainer(null);
     }
 }

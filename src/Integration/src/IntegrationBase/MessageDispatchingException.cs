@@ -5,28 +5,27 @@
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration
+namespace Steeltoe.Integration;
+
+public class MessageDispatchingException : MessageDeliveryException
 {
-    public class MessageDispatchingException : MessageDeliveryException
-    {
-        public MessageDispatchingException(string description)
+    public MessageDispatchingException(string description)
         : base(description)
-        {
-        }
+    {
+    }
 
-        public MessageDispatchingException(IMessage undeliveredMessage, string description, Exception cause)
+    public MessageDispatchingException(IMessage undeliveredMessage, string description, Exception cause)
         : base(undeliveredMessage, description, cause)
-        {
-        }
+    {
+    }
 
-        public MessageDispatchingException(IMessage undeliveredMessage, string description)
+    public MessageDispatchingException(IMessage undeliveredMessage, string description)
         : base(undeliveredMessage, description)
-        {
-        }
+    {
+    }
 
-        public MessageDispatchingException(IMessage undeliveredMessage)
+    public MessageDispatchingException(IMessage undeliveredMessage)
         : base(undeliveredMessage)
-        {
-        }
+    {
     }
 }

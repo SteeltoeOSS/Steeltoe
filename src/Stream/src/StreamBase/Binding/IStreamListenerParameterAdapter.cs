@@ -5,17 +5,16 @@
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public interface IStreamListenerParameterAdapter
 {
-    public interface IStreamListenerParameterAdapter
-    {
-        bool Supports(Type bindingTargetType, ParameterInfo methodParameter);
+    bool Supports(Type bindingTargetType, ParameterInfo methodParameter);
 
-        object Adapt(object bindingTarget, ParameterInfo parameter);
-    }
+    object Adapt(object bindingTarget, ParameterInfo parameter);
+}
 
-    public interface IStreamListenerParameterAdapter<out A, in B> : IStreamListenerParameterAdapter
-    {
-        A Adapt(B bindingTarget, ParameterInfo parameter);
-    }
+public interface IStreamListenerParameterAdapter<out A, in B> : IStreamListenerParameterAdapter
+{
+    A Adapt(B bindingTarget, ParameterInfo parameter);
 }

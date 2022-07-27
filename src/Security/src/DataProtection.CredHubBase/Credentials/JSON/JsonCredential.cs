@@ -5,37 +5,36 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+[JsonConverter(typeof(JsonCredentialJsonConverter))]
+public class JsonCredential : ICredentialValue
 {
-    [JsonConverter(typeof(JsonCredentialJsonConverter))]
-    public class JsonCredential : ICredentialValue
+    public JsonCredential(JsonElement value)
     {
-        public JsonCredential(JsonElement value)
-        {
-            Value = value;
-        }
+        Value = value;
+    }
 
-        public JsonCredential(string valueAsString)
-        {
-            using var doc = JsonDocument.Parse(valueAsString);
-            Value = doc.RootElement;
-        }
+    public JsonCredential(string valueAsString)
+    {
+        using var doc = JsonDocument.Parse(valueAsString);
+        Value = doc.RootElement;
+    }
 
-        public JsonElement Value { get; private set; }
+    public JsonElement Value { get; private set; }
 
-        public override string ToString()
-        {
-            return Value.ToString();
-        }
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
 
-        public override bool Equals(object obj)
-        {
-            return Value.ToString() == obj.ToString();
-        }
+    public override bool Equals(object obj)
+    {
+        return Value.ToString() == obj.ToString();
+    }
 
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
     }
 }

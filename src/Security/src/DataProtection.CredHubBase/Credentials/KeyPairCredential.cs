@@ -4,20 +4,19 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
-{
-    public abstract class KeyPairCredential : ICredentialValue
-    {
-        /// <summary>
-        /// Gets or sets public key for a credential
-        /// </summary>
-        [JsonPropertyName("public_key")]
-        public string PublicKey { get; set; }
+namespace Steeltoe.Security.DataProtection.CredHub;
 
-        /// <summary>
-        /// Gets or sets private key for a certificate
-        /// </summary>
-        [JsonPropertyName("private_key")]
-        public string PrivateKey { get; set; }
-    }
+public abstract class KeyPairCredential : ICredentialValue
+{
+    /// <summary>
+    /// Gets or sets public key for a credential
+    /// </summary>
+    [JsonPropertyName("public_key")]
+    public string PublicKey { get; set; }
+
+    /// <summary>
+    /// Gets or sets private key for a certificate
+    /// </summary>
+    [JsonPropertyName("private_key")]
+    public string PrivateKey { get; set; }
 }

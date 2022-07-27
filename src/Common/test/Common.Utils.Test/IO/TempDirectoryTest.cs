@@ -7,30 +7,29 @@ using Steeltoe.Common.Utils.IO;
 using System.IO;
 using Xunit;
 
-namespace Steeltoe.Common.Utils.Test.IO
+namespace Steeltoe.Common.Utils.Test.IO;
+
+public class TempDirectoryTest
 {
-    public class TempDirectoryTest
+    [Fact]
+    public void TempDirectoryRemovesItself()
     {
-        [Fact]
-        public void TempDirectoryRemovesItself()
-        {
-            var tempDir = new TempDirectory();
+        var tempDir = new TempDirectory();
 
-            Directory.Exists(tempDir.FullPath).Should().BeTrue();
+        Directory.Exists(tempDir.FullPath).Should().BeTrue();
 
-            File.Create(Path.Join(tempDir.FullPath, "foo")).Dispose();
-            tempDir.Dispose();
+        File.Create(Path.Join(tempDir.FullPath, "foo")).Dispose();
+        tempDir.Dispose();
 
-            Directory.Exists(tempDir.FullPath).Should().BeFalse();
-        }
+        Directory.Exists(tempDir.FullPath).Should().BeFalse();
+    }
 
-        [Fact]
-        public void TempDirectoryCanSetPrefix()
-        {
-            const string prefix = "MyPrefix-";
-            using var tempDir = new TempDirectory(prefix);
+    [Fact]
+    public void TempDirectoryCanSetPrefix()
+    {
+        const string prefix = "MyPrefix-";
+        using var tempDir = new TempDirectory(prefix);
 
-            tempDir.Name.Should().StartWith(prefix);
-        }
+        tempDir.Name.Should().StartWith(prefix);
     }
 }

@@ -7,55 +7,53 @@ using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using System;
 
-namespace Steeltoe.Stream.StubBinder1
-{
+namespace Steeltoe.Stream.StubBinder1;
 #pragma warning disable S3881 // "IDisposable" should be implemented correctly: No unmanaged resources here.
-    public class StubBinder1 : IBinder<object>
+public class StubBinder1 : IBinder<object>
 #pragma warning restore S3881 // "IDisposable" should be implemented correctly
+{
+    public const string BINDER_NAME = "binder1";
+
+    public Func<string, string, object, IConsumerOptions, IBinding> BindConsumerFunc { get; set; }
+
+    public Func<string, object, IProducerOptions, IBinding> BindProducerFunc { get; set; }
+
+    public string ServiceName { get; set; } = BINDER_NAME;
+
+    public Type TargetType => typeof(object);
+
+    public IServiceProvider ServiceProvider { get; }
+
+    public IConfiguration Configuration { get; }
+
+    public StubBinder1(IServiceProvider serviceProvider, IConfiguration configuration)
     {
-        public const string BINDER_NAME = "binder1";
+        ServiceProvider = serviceProvider;
+        Configuration = configuration;
+    }
 
-        public Func<string, string, object, IConsumerOptions, IBinding> BindConsumerFunc { get; set; }
-
-        public Func<string, object, IProducerOptions, IBinding> BindProducerFunc { get; set; }
-
-        public string ServiceName { get; set; } = BINDER_NAME;
-
-        public Type TargetType => typeof(object);
-
-        public IServiceProvider ServiceProvider { get; }
-
-        public IConfiguration Configuration { get; }
-
-        public StubBinder1(IServiceProvider serviceProvider, IConfiguration configuration)
+    public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+    {
+        if (BindConsumerFunc != null)
         {
-            ServiceProvider = serviceProvider;
-            Configuration = configuration;
+            return BindConsumerFunc(name, group, inboundTarget, consumerOptions);
         }
 
-        public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
-        {
-            if (BindConsumerFunc != null)
-            {
-                return BindConsumerFunc(name, group, inboundTarget, consumerOptions);
-            }
+        return null;
+    }
 
-            return null;
+    public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
+    {
+        if (BindProducerFunc != null)
+        {
+            return BindProducerFunc(name, outboundTarget, producerOptions);
         }
 
-        public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
-        {
-            if (BindProducerFunc != null)
-            {
-                return BindProducerFunc(name, outboundTarget, producerOptions);
-            }
+        return null;
+    }
 
-            return null;
-        }
-
-        public void Dispose()
-        {
-            // Nothing to dispose
-        }
+    public void Dispose()
+    {
+        // Nothing to dispose
     }
 }

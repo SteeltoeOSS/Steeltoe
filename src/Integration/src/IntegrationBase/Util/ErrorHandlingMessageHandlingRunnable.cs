@@ -7,44 +7,43 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using System;
 
-namespace Steeltoe.Integration.Util
+namespace Steeltoe.Integration.Util;
+
+public class ErrorHandlingMessageHandlingRunnable : IMessageHandlingRunnable
 {
-    public class ErrorHandlingMessageHandlingRunnable : IMessageHandlingRunnable
+    private IMessageHandlingRunnable _runnable;
+    private IErrorHandler _errorHandler;
+
+    public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
     {
-        private IMessageHandlingRunnable _runnable;
-        private IErrorHandler _errorHandler;
-
-        public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
+        if (runnable == null)
         {
-            if (runnable == null)
-            {
-                throw new ArgumentNullException(nameof(runnable));
-            }
-
-            if (errorHandler == null)
-            {
-                throw new ArgumentNullException(nameof(errorHandler));
-            }
-
-            _runnable = runnable;
-            _errorHandler = errorHandler;
+            throw new ArgumentNullException(nameof(runnable));
         }
 
-        public IMessage Message => _runnable.Message;
-
-        public IMessageHandler MessageHandler => _runnable.MessageHandler;
-
-        public bool Run()
+        if (errorHandler == null)
         {
-            try
-            {
-                return _runnable.Run();
-            }
-            catch (Exception e)
-            {
-                _errorHandler.HandleError(e);
-                return false;
-            }
+            throw new ArgumentNullException(nameof(errorHandler));
+        }
+
+        _runnable = runnable;
+        _errorHandler = errorHandler;
+    }
+
+    public IMessage Message => _runnable.Message;
+
+    public IMessageHandler MessageHandler => _runnable.MessageHandler;
+
+    public bool Run()
+    {
+        try
+        {
+            return _runnable.Run();
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+            return false;
         }
     }
 }

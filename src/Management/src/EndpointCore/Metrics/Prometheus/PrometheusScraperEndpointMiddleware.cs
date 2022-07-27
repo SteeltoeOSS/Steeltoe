@@ -8,53 +8,52 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Metrics
-{
-    public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
-    {
-        private readonly RequestDelegate _next;
+namespace Steeltoe.Management.Endpoint.Metrics;
 
-        public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger)
+public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
+{
+    private readonly RequestDelegate _next;
+
+    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger)
+    {
+        _next = next;
+    }
+
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleMetricsRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleMetricsRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
+    public override string HandleRequest()
+    {
+        var result = _endpoint.Invoke();
+        return result;
+    }
+
+    protected internal Task HandleMetricsRequestAsync(HttpContext context)
+    {
+        var request = context.Request;
+        var response = context.Response;
+
+        _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
+
+        // GET /metrics/{metricName}?tag=key:value&tag=key:value
+        var serialInfo = HandleRequest();
+
+        if (serialInfo == null)
+        {
+            response.StatusCode = (int)HttpStatusCode.NotFound;
             return Task.CompletedTask;
         }
 
-        public override string HandleRequest()
-        {
-            var result = _endpoint.Invoke();
-            return result;
-        }
-
-        protected internal Task HandleMetricsRequestAsync(HttpContext context)
-        {
-            var request = context.Request;
-            var response = context.Response;
-
-            _logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-
-            // GET /metrics/{metricName}?tag=key:value&tag=key:value
-            var serialInfo = HandleRequest();
-
-            if (serialInfo == null)
-            {
-                response.StatusCode = (int)HttpStatusCode.NotFound;
-                return Task.CompletedTask;
-            }
-
-            response.StatusCode = (int)HttpStatusCode.OK;
-            response.ContentType = "text/plain; version=0.0.4;";
-            return context.Response.WriteAsync(serialInfo);
-        }
+        response.StatusCode = (int)HttpStatusCode.OK;
+        response.ContentType = "text/plain; version=0.0.4;";
+        return context.Response.WriteAsync(serialInfo);
     }
 }

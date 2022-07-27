@@ -6,21 +6,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.HeapDump
+namespace Steeltoe.Management.Endpoint.HeapDump;
+
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class HeapDumpStartupFilter : IStartupFilter
 {
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class HeapDumpStartupFilter : IStartupFilter
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+        return app =>
         {
-            return app =>
+            next(app);
+            app.UseEndpoints(endpoints =>
             {
-                next(app);
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<HeapDumpEndpoint>();
-                });
-            };
-        }
+                endpoints.Map<HeapDumpEndpoint>();
+            });
+        };
     }
 }

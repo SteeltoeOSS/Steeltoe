@@ -6,19 +6,18 @@ using System.Security.Claims;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Security.Authentication.CloudFoundry.Test
+namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
+
+public class CloudFoundryScopeClaimActionTest
 {
-    public class CloudFoundryScopeClaimActionTest
+    [Fact]
+    public void Run_AddsClaims()
     {
-        [Fact]
-        public void Run_AddsClaims()
-        {
-            var resp = TestHelpers.GetValidTokenInfoRequestResponse();
-            var payload = JsonDocument.Parse(resp).RootElement;
-            var action = new CloudFoundryScopeClaimAction("scope", ClaimValueTypes.String);
-            var ident = new ClaimsIdentity();
-            action.Run(payload, ident, "Issuer");
-            Assert.NotEmpty(ident.Claims);
-        }
+        var resp = TestHelpers.GetValidTokenInfoRequestResponse();
+        var payload = JsonDocument.Parse(resp).RootElement;
+        var action = new CloudFoundryScopeClaimAction("scope", ClaimValueTypes.String);
+        var ident = new ClaimsIdentity();
+        action.Run(payload, ident, "Issuer");
+        Assert.NotEmpty(ident.Claims);
     }
 }

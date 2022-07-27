@@ -5,14 +5,13 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream.Binding
-{
-    public interface ITestInvalidBinding
-    {
-        [Input("testname")]
-        ISubscribableChannel In { get; }
+namespace Steeltoe.Stream.Binding;
 
-        [Output("testname")]
-        IMessageChannel Out { get; }
-    }
+public interface ITestInvalidBinding
+{
+    [Input("testname")]
+    ISubscribableChannel In { get; }
+
+    [Output("testname")]
+    IMessageChannel Out { get; }
 }

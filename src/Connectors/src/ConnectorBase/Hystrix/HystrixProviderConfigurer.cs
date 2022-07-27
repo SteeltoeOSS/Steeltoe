@@ -4,40 +4,39 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.Hystrix
+namespace Steeltoe.Connector.Hystrix;
+
+public class HystrixProviderConfigurer
 {
-    public class HystrixProviderConfigurer
+    internal string Configure(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
     {
-        internal string Configure(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
+        UpdateConfiguration(si, configuration);
+        return configuration.ToString();
+    }
+
+    internal void UpdateConfiguration(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
+    {
+        if (si == null)
         {
-            UpdateConfiguration(si, configuration);
-            return configuration.ToString();
+            return;
         }
 
-        internal void UpdateConfiguration(HystrixRabbitMQServiceInfo si, HystrixProviderConnectorOptions configuration)
+        if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si == null)
+            if (si.Scheme.Equals(HystrixProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
             {
-                return;
+                configuration.SslEnabled = true;
+                configuration.SslPort = si.Port;
+            }
+            else
+            {
+                configuration.Port = si.Port;
             }
 
-            if (!string.IsNullOrEmpty(si.Uri))
-            {
-                if (si.Scheme.Equals(HystrixProviderConnectorOptions.Default_SSLScheme, System.StringComparison.OrdinalIgnoreCase))
-                {
-                    configuration.SslEnabled = true;
-                    configuration.SslPort = si.Port;
-                }
-                else
-                {
-                    configuration.Port = si.Port;
-                }
-
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
-                configuration.Server = si.Host;
-                configuration.VirtualHost = si.Path;
-            }
+            configuration.Username = si.UserName;
+            configuration.Password = si.Password;
+            configuration.Server = si.Host;
+            configuration.VirtualHost = si.Path;
         }
     }
 }

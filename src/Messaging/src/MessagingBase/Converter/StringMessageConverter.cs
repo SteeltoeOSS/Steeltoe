@@ -6,64 +6,63 @@ using Steeltoe.Common.Util;
 using System;
 using System.Text;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+public class StringMessageConverter : AbstractMessageConverter
 {
-    public class StringMessageConverter : AbstractMessageConverter
+    public const string DEFAULT_SERVICE_NAME = nameof(StringMessageConverter);
+
+    private readonly Encoding _defaultCharset;
+
+    public StringMessageConverter()
+        : this(Encoding.UTF8)
     {
-        public const string DEFAULT_SERVICE_NAME = nameof(StringMessageConverter);
+    }
 
-        private readonly Encoding _defaultCharset;
-
-        public StringMessageConverter()
-            : this(Encoding.UTF8)
-        {
-        }
-
-        public StringMessageConverter(Encoding defaultCharset)
+    public StringMessageConverter(Encoding defaultCharset)
         : base(new MimeType("text", "plain", defaultCharset))
+    {
+        if (defaultCharset == null)
         {
-            if (defaultCharset == null)
-            {
-                throw new ArgumentNullException(nameof(defaultCharset));
-            }
-
-            _defaultCharset = defaultCharset;
+            throw new ArgumentNullException(nameof(defaultCharset));
         }
 
-        public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+        _defaultCharset = defaultCharset;
+    }
 
-        protected override bool Supports(Type clazz) => typeof(string) == clazz;
+    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
 
-        protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
+    protected override bool Supports(Type clazz) => typeof(string) == clazz;
+
+    protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
+    {
+        var charset = GetContentTypeCharset(GetMimeType(message.Headers));
+        var payload = message.Payload;
+
+        return payload is string ? payload : new string(charset.GetChars((byte[])payload));
+    }
+
+    protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
+    {
+        if (typeof(byte[]) == SerializedPayloadClass)
         {
-            var charset = GetContentTypeCharset(GetMimeType(message.Headers));
-            var payload = message.Payload;
-
-            return payload is string ? payload : new string(charset.GetChars((byte[])payload));
+            var charset = GetContentTypeCharset(GetMimeType(headers));
+            var payStr = (string)payload;
+            payload = charset.GetBytes(payStr);
         }
 
-        protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
-        {
-            if (typeof(byte[]) == SerializedPayloadClass)
-            {
-                var charset = GetContentTypeCharset(GetMimeType(headers));
-                var payStr = (string)payload;
-                payload = charset.GetBytes(payStr);
-            }
+        return payload;
+    }
 
-            return payload;
+    private Encoding GetContentTypeCharset(MimeType mimeType)
+    {
+        if (mimeType != null && mimeType.Encoding != null)
+        {
+            return mimeType.Encoding;
         }
-
-        private Encoding GetContentTypeCharset(MimeType mimeType)
+        else
         {
-            if (mimeType != null && mimeType.Encoding != null)
-            {
-                return mimeType.Encoding;
-            }
-            else
-            {
-                return _defaultCharset;
-            }
+            return _defaultCharset;
         }
     }
 }

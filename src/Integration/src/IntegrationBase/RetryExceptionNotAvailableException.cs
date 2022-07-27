@@ -4,18 +4,17 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration
-{
-    public class RetryExceptionNotAvailableException : MessagingException
-    {
-        public RetryExceptionNotAvailableException(IMessage message, string description)
-            : base(message, description)
-        {
-        }
+namespace Steeltoe.Integration;
 
-        internal RetryExceptionNotAvailableException(string description)
-            : base(description)
-        {
-        }
+public class RetryExceptionNotAvailableException : MessagingException
+{
+    public RetryExceptionNotAvailableException(IMessage message, string description)
+        : base(message, description)
+    {
+    }
+
+    internal RetryExceptionNotAvailableException(string description)
+        : base(description)
+    {
     }
 }

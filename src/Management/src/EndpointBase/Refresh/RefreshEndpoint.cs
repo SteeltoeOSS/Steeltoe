@@ -7,52 +7,51 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Refresh
+namespace Steeltoe.Management.Endpoint.Refresh;
+
+public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
 {
-    public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
+    private readonly ILogger<RefreshEndpoint> _logger;
+    private readonly IConfiguration _configuration;
+
+    public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
+        : base(options)
     {
-        private readonly ILogger<RefreshEndpoint> _logger;
-        private readonly IConfiguration _configuration;
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _logger = logger;
+    }
 
-        public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
-            : base(options)
+    public new IRefreshOptions Options
+    {
+        get
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _logger = logger;
+            return options as IRefreshOptions;
+        }
+    }
+
+    public override IList<string> Invoke()
+    {
+        return DoInvoke(_configuration);
+    }
+
+    public IList<string> DoInvoke(IConfiguration configuration)
+    {
+        if (configuration is IConfigurationRoot root)
+        {
+            root.Reload();
         }
 
-        public new IRefreshOptions Options
+        if (!Options.ReturnConfiguration)
         {
-            get
-            {
-                return options as IRefreshOptions;
-            }
+            return new List<string>();
         }
 
-        public override IList<string> Invoke()
+        var keys = new List<string>();
+        foreach (var kvp in configuration.AsEnumerable())
         {
-            return DoInvoke(_configuration);
+            keys.Add(kvp.Key);
         }
 
-        public IList<string> DoInvoke(IConfiguration configuration)
-        {
-            if (configuration is IConfigurationRoot root)
-            {
-                root.Reload();
-            }
-
-            if (!Options.ReturnConfiguration)
-            {
-                return new List<string>();
-            }
-
-            var keys = new List<string>();
-            foreach (var kvp in configuration.AsEnumerable())
-            {
-                keys.Add(kvp.Key);
-            }
-
-            return keys;
-        }
+        return keys;
     }
 }

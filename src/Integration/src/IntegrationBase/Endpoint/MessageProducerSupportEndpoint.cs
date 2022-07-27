@@ -11,211 +11,210 @@ using Steeltoe.Messaging.Support;
 using System;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Endpoint
+namespace Steeltoe.Integration.Endpoint;
+
+public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
 {
-    public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
+    protected object _lock = new ();
+
+    private readonly MessagingTemplate _messagingTemplate;
+
+    private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
+
+    private volatile IMessageChannel _outputChannel;
+
+    private volatile string _outputChannelName;
+
+    private volatile IMessageChannel _errorChannel;
+
+    private volatile string _errorChannelName;
+
+    protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)
+        : base(context)
     {
-        protected object _lock = new ();
+        Phase = int.MaxValue / 2;
+        _messagingTemplate = new MessagingTemplate(context, logger);
+    }
 
-        private readonly MessagingTemplate _messagingTemplate;
-
-        private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
-
-        private volatile IMessageChannel _outputChannel;
-
-        private volatile string _outputChannelName;
-
-        private volatile IMessageChannel _errorChannel;
-
-        private volatile string _errorChannelName;
-
-        protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)
-            : base(context)
+    public virtual IMessageChannel OutputChannel
+    {
+        get
         {
-            Phase = int.MaxValue / 2;
-            _messagingTemplate = new MessagingTemplate(context, logger);
-        }
-
-        public virtual IMessageChannel OutputChannel
-        {
-            get
+            if (_outputChannelName != null)
             {
-                if (_outputChannelName != null)
+                lock (_lock)
                 {
-                    lock (_lock)
+                    if (_outputChannelName != null)
                     {
-                        if (_outputChannelName != null)
-                        {
-                            _outputChannel = IntegrationServices.ChannelResolver.ResolveDestination(_outputChannelName);
-                        }
-
-                        _outputChannelName = null;
+                        _outputChannel = IntegrationServices.ChannelResolver.ResolveDestination(_outputChannelName);
                     }
+
+                    _outputChannelName = null;
                 }
-
-                return _outputChannel;
             }
 
-            set
-            {
-                _outputChannel = value;
-            }
+            return _outputChannel;
         }
 
-        public virtual string OutputChannelName
+        set
         {
-            get
-            {
-                return _outputChannelName;
-            }
+            _outputChannel = value;
+        }
+    }
 
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("OutputChannelName can not be null or empty");
-                }
-
-                _outputChannelName = value;
-            }
+    public virtual string OutputChannelName
+    {
+        get
+        {
+            return _outputChannelName;
         }
 
-        public virtual IMessageChannel ErrorChannel
+        set
         {
-            get
+            if (string.IsNullOrEmpty(value))
             {
-                if (_errorChannelName != null)
+                throw new ArgumentException("OutputChannelName can not be null or empty");
+            }
+
+            _outputChannelName = value;
+        }
+    }
+
+    public virtual IMessageChannel ErrorChannel
+    {
+        get
+        {
+            if (_errorChannelName != null)
+            {
+                lock (_lock)
                 {
-                    lock (_lock)
+                    if (_errorChannelName != null)
                     {
-                        if (_errorChannelName != null)
-                        {
-                            _errorChannel = IntegrationServices.ChannelResolver.ResolveDestination(_errorChannelName);
-                        }
-
-                        _errorChannelName = null;
+                        _errorChannel = IntegrationServices.ChannelResolver.ResolveDestination(_errorChannelName);
                     }
-                }
 
-                return _errorChannel;
-            }
-
-            set
-            {
-                _errorChannel = value;
-            }
-        }
-
-        public virtual string ErrorChannelName
-        {
-            get
-            {
-                return _errorChannelName;
-            }
-
-            set
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    throw new ArgumentException("ErrorChannelName can not be null or empty");
-                }
-
-                _errorChannelName = value;
-            }
-        }
-
-        public virtual int SendTimeout
-        {
-            get
-            {
-                return _messagingTemplate.SendTimeout;
-            }
-
-            set
-            {
-                _messagingTemplate.SendTimeout = value;
-            }
-        }
-
-        public virtual IErrorMessageStrategy ErrorMessageStrategy
-        {
-            get
-            {
-                return _errorMessageStrategy;
-            }
-
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
-                }
-
-                _errorMessageStrategy = value;
-            }
-        }
-
-        protected internal virtual void SendMessage(IMessage messageArg)
-        {
-            var message = messageArg;
-            if (message == null)
-            {
-                throw new MessagingException("cannot send a null message");
-            }
-
-            try
-            {
-                if (OutputChannel == null)
-                {
-                    throw new InvalidOperationException("The 'outputChannel' or `outputChannelName` must be configured");
-                }
-
-                _messagingTemplate.Send(OutputChannel, message);
-            }
-            catch (Exception e)
-            {
-                if (!SendErrorMessageIfNecessary(message, e))
-                {
-                    throw;
+                    _errorChannelName = null;
                 }
             }
+
+            return _errorChannel;
         }
 
-        protected virtual MessagingTemplate MessagingTemplate
+        set
         {
-            get { return _messagingTemplate; }
+            _errorChannel = value;
+        }
+    }
+
+    public virtual string ErrorChannelName
+    {
+        get
+        {
+            return _errorChannelName;
         }
 
-        protected override Task DoStart()
+        set
         {
-            return Task.CompletedTask;
-        }
-
-        protected override Task DoStop()
-        {
-            return Task.CompletedTask;
-        }
-
-        protected bool SendErrorMessageIfNecessary(IMessage message, Exception exception)
-        {
-            var channel = ErrorChannel;
-            if (channel != null)
+            if (string.IsNullOrEmpty(value))
             {
-                _messagingTemplate.Send(channel, BuildErrorMessage(message, exception));
-                return true;
+                throw new ArgumentException("ErrorChannelName can not be null or empty");
             }
 
-            return false;
+            _errorChannelName = value;
+        }
+    }
+
+    public virtual int SendTimeout
+    {
+        get
+        {
+            return _messagingTemplate.SendTimeout;
         }
 
-        protected ErrorMessage BuildErrorMessage(IMessage message, Exception exception)
+        set
         {
-            return _errorMessageStrategy.BuildErrorMessage(exception, GetErrorMessageAttributes(message));
+            _messagingTemplate.SendTimeout = value;
+        }
+    }
+
+    public virtual IErrorMessageStrategy ErrorMessageStrategy
+    {
+        get
+        {
+            return _errorMessageStrategy;
         }
 
-        protected virtual IAttributeAccessor GetErrorMessageAttributes(IMessage message)
+        set
         {
-            return ErrorMessageUtils.GetAttributeAccessor(message, null);
+            if (value == null)
+            {
+                throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
+            }
+
+            _errorMessageStrategy = value;
         }
+    }
+
+    protected internal virtual void SendMessage(IMessage messageArg)
+    {
+        var message = messageArg;
+        if (message == null)
+        {
+            throw new MessagingException("cannot send a null message");
+        }
+
+        try
+        {
+            if (OutputChannel == null)
+            {
+                throw new InvalidOperationException("The 'outputChannel' or `outputChannelName` must be configured");
+            }
+
+            _messagingTemplate.Send(OutputChannel, message);
+        }
+        catch (Exception e)
+        {
+            if (!SendErrorMessageIfNecessary(message, e))
+            {
+                throw;
+            }
+        }
+    }
+
+    protected virtual MessagingTemplate MessagingTemplate
+    {
+        get { return _messagingTemplate; }
+    }
+
+    protected override Task DoStart()
+    {
+        return Task.CompletedTask;
+    }
+
+    protected override Task DoStop()
+    {
+        return Task.CompletedTask;
+    }
+
+    protected bool SendErrorMessageIfNecessary(IMessage message, Exception exception)
+    {
+        var channel = ErrorChannel;
+        if (channel != null)
+        {
+            _messagingTemplate.Send(channel, BuildErrorMessage(message, exception));
+            return true;
+        }
+
+        return false;
+    }
+
+    protected ErrorMessage BuildErrorMessage(IMessage message, Exception exception)
+    {
+        return _errorMessageStrategy.BuildErrorMessage(exception, GetErrorMessageAttributes(message));
+    }
+
+    protected virtual IAttributeAccessor GetErrorMessageAttributes(IMessage message)
+    {
+        return ErrorMessageUtils.GetAttributeAccessor(message, null);
     }
 }

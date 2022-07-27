@@ -4,16 +4,15 @@
 
 using Microsoft.Extensions.Options;
 
-namespace Steeltoe.Connector
-{
-    public class ConnectorIOptions<T> : IOptions<T>
-        where T : class, new()
-    {
-        public ConnectorIOptions(T value)
-        {
-            Value = value;
-        }
+namespace Steeltoe.Connector;
 
-        public T Value { get; internal protected set; }
+public class ConnectorIOptions<T> : IOptions<T>
+    where T : class, new()
+{
+    public ConnectorIOptions(T value)
+    {
+        Value = value;
     }
+
+    public T Value { get; internal protected set; }
 }

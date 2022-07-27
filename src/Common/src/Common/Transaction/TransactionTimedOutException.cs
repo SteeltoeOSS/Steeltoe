@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class TransactionTimedOutException : TransactionException
-    {
-        public TransactionTimedOutException(string msg)
-            : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public TransactionTimedOutException(string msg, Exception cause)
-            : base(msg, cause)
-        {
-        }
+public class TransactionTimedOutException : TransactionException
+{
+    public TransactionTimedOutException(string msg)
+        : base(msg)
+    {
+    }
+
+    public TransactionTimedOutException(string msg, Exception cause)
+        : base(msg, cause)
+    {
     }
 }

@@ -6,21 +6,20 @@ using Steeltoe.Common.Services;
 using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
+
+/// <summary>
+/// A factory for invokable handler methods that is suitable to process an incoming message
+/// </summary>
+public interface IMessageHandlerMethodFactory : IServiceNameAware
 {
     /// <summary>
-    /// A factory for invokable handler methods that is suitable to process an incoming message
+    /// Create the invokable handler method that can process the specified method endpoint.
     /// </summary>
-    public interface IMessageHandlerMethodFactory : IServiceNameAware
-    {
-        /// <summary>
-        /// Create the invokable handler method that can process the specified method endpoint.
-        /// </summary>
-        /// <param name="instance">the instance of the object</param>
-        /// <param name="method">the method to invoke</param>
-        /// <returns>a suitable invokable handler for the method</returns>
-        IInvocableHandlerMethod CreateInvocableHandlerMethod(object instance, MethodInfo method);
+    /// <param name="instance">the instance of the object</param>
+    /// <param name="method">the method to invoke</param>
+    /// <returns>a suitable invokable handler for the method</returns>
+    IInvocableHandlerMethod CreateInvocableHandlerMethod(object instance, MethodInfo method);
 
-        void Initialize();
-    }
+    void Initialize();
 }

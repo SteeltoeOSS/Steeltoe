@@ -4,11 +4,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class SshCredential : KeyPairCredential
 {
-    public class SshCredential : KeyPairCredential
-    {
-        [JsonPropertyName("public_key_fingerprint")]
-        public string PublicKeyFingerprint { get; set; }
-    }
+    [JsonPropertyName("public_key_fingerprint")]
+    public string PublicKeyFingerprint { get; set; }
 }

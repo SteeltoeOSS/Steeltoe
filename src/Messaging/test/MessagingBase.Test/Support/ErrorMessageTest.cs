@@ -5,29 +5,28 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Messaging.Support.Test
+namespace Steeltoe.Messaging.Support.Test;
+
+public class ErrorMessageTest
 {
-    public class ErrorMessageTest
+    [Fact]
+    public void TestToString()
     {
-        [Fact]
-        public void TestToString()
-        {
-            var em = new ErrorMessage(new Exception("foo"));
-            var emString = em.ToString();
-            Assert.DoesNotContain("original", emString);
+        var em = new ErrorMessage(new Exception("foo"));
+        var emString = em.ToString();
+        Assert.DoesNotContain("original", emString);
 
-            em = new ErrorMessage(new Exception("foo"), Message.Create<string>("bar"));
-            emString = em.ToString();
-            Assert.Contains("original", emString);
-            Assert.Contains(em.OriginalMessage.ToString(), emString);
-        }
+        em = new ErrorMessage(new Exception("foo"), Message.Create<string>("bar"));
+        emString = em.ToString();
+        Assert.Contains("original", emString);
+        Assert.Contains(em.OriginalMessage.ToString(), emString);
+    }
 
-        [Fact]
-        public void TestAnyExceptionType()
-        {
-            var em = new ErrorMessage(new InvalidOperationException("foo"));
-            var emString = em.ToString();
-            Assert.Contains("InvalidOperationException", emString);
-        }
+    [Fact]
+    public void TestAnyExceptionType()
+    {
+        var em = new ErrorMessage(new InvalidOperationException("foo"));
+        var emString = em.ToString();
+        Assert.Contains("InvalidOperationException", emString);
     }
 }

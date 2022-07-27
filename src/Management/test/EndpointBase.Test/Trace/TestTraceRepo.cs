@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
-{
-    internal class TestTraceRepo : ITraceRepository
-    {
-        public bool GetTracesCalled { get; set; }
+namespace Steeltoe.Management.Endpoint.Trace.Test;
 
-        public List<TraceResult> GetTraces()
-        {
-            GetTracesCalled = true;
-            return new List<TraceResult>();
-        }
+internal class TestTraceRepo : ITraceRepository
+{
+    public bool GetTracesCalled { get; set; }
+
+    public List<TraceResult> GetTraces()
+    {
+        GetTracesCalled = true;
+        return new List<TraceResult>();
     }
 }

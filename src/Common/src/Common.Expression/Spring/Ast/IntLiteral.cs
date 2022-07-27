@@ -5,44 +5,43 @@
 using System;
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Ast
+namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
+
+public class IntLiteral : Literal
 {
-    public class IntLiteral : Literal
+    private readonly ITypedValue _value;
+
+    public IntLiteral(string payload, int startPos, int endPos, int value)
+        : base(payload, startPos, endPos)
     {
-        private readonly ITypedValue _value;
+        _value = new TypedValue(value);
+        _exitTypeDescriptor = TypeDescriptor.I;
+    }
 
-        public IntLiteral(string payload, int startPos, int endPos, int value)
-            : base(payload, startPos, endPos)
+    public override ITypedValue GetLiteralValue() => _value;
+
+    public override bool IsCompilable() => true;
+
+    public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+    {
+        var intVal = _value.Value;
+        if (intVal == null)
         {
-            _value = new TypedValue(value);
-            _exitTypeDescriptor = TypeDescriptor.I;
+            throw new InvalidOperationException("No int value");
         }
 
-        public override ITypedValue GetLiteralValue() => _value;
+        var intValue = (int)intVal;
 
-        public override bool IsCompilable() => true;
-
-        public override void GenerateCode(ILGenerator gen, CodeFlow cf)
+        if (intValue == -1)
         {
-            var intVal = _value.Value;
-            if (intVal == null)
-            {
-                throw new InvalidOperationException("No int value");
-            }
-
-            var intValue = (int)intVal;
-
-            if (intValue == -1)
-            {
-                // Not sure we can get here because -1 is OpMinus
-                gen.Emit(OpCodes.Ldc_I4_M1);
-            }
-            else
-            {
-                gen.Emit(OpCodes.Ldc_I4, intValue);
-            }
-
-            cf.PushDescriptor(_exitTypeDescriptor);
+            // Not sure we can get here because -1 is OpMinus
+            gen.Emit(OpCodes.Ldc_I4_M1);
         }
+        else
+        {
+            gen.Emit(OpCodes.Ldc_I4, intValue);
+        }
+
+        cf.PushDescriptor(_exitTypeDescriptor);
     }
 }

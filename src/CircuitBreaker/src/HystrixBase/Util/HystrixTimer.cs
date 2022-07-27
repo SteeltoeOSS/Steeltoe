@@ -6,47 +6,46 @@ using Steeltoe.Common.Util;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Util
+namespace Steeltoe.CircuitBreaker.Hystrix.Util;
+
+public class HystrixTimer
 {
-    public class HystrixTimer
+    private static readonly HystrixTimer Instance = new ();
+
+    private readonly List<TimerReference> _timerList = new ();
+    private readonly object _lock = new ();
+
+    private HystrixTimer()
     {
-        private static readonly HystrixTimer Instance = new ();
+    }
 
-        private readonly List<TimerReference> _timerList = new ();
-        private readonly object _lock = new ();
+    public static HystrixTimer GetInstance()
+    {
+        return Instance;
+    }
 
-        private HystrixTimer()
+    public static void Reset()
+    {
+        var timer = GetInstance();
+        lock (timer._lock)
         {
-        }
-
-        public static HystrixTimer GetInstance()
-        {
-            return Instance;
-        }
-
-        public static void Reset()
-        {
-            var timer = GetInstance();
-            lock (timer._lock)
+            foreach (var refr in timer._timerList)
             {
-                foreach (var refr in timer._timerList)
-                {
-                    refr.Dispose();
-                }
+                refr.Dispose();
             }
         }
+    }
 
-        public TimerReference AddTimerListener(ITimerListener listener)
+    public TimerReference AddTimerListener(ITimerListener listener)
+    {
+        var refr = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
+        refr.Start();
+
+        lock (_lock)
         {
-            var refr = new TimerReference(listener, TimeSpan.FromMilliseconds(listener.IntervalTimeInMilliseconds));
-            refr.Start();
-
-            lock (_lock)
-            {
-                _timerList.Add(refr);
-            }
-
-            return refr;
+            _timerList.Add(refr);
         }
+
+        return refr;
     }
 }

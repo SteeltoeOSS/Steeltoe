@@ -5,23 +5,22 @@
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 
-namespace External.Connector.Test
+namespace External.Connector.Test;
+
+internal class TestServiceInfoFactory : ServiceInfoFactory
 {
-    internal class TestServiceInfoFactory : ServiceInfoFactory
+    public TestServiceInfoFactory()
+        : base(new Tags("test"), "test")
     {
-        public TestServiceInfoFactory()
-            : base(new Tags("test"), "test")
-        {
-        }
+    }
 
-        public override bool Accepts(Service binding)
-        {
-            return true;
-        }
+    public override bool Accepts(Service binding)
+    {
+        return true;
+    }
 
-        public override IServiceInfo Create(Service binding)
-        {
-            return new DB2ServiceInfo("test", "test://test/test");
-        }
+    public override IServiceInfo Create(Service binding)
+    {
+        return new DB2ServiceInfo("test", "test://test/test");
     }
 }

@@ -8,57 +8,56 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.Trace.Test;
+
+internal class TestSession : ISession
 {
-    internal class TestSession : ISession
+    private readonly Dictionary<string, byte[]> _store
+        = new (StringComparer.OrdinalIgnoreCase);
+
+    public bool IsAvailable { get; } = true;
+
+    public string Id { get; set; } = "TestSessionId";
+
+    public IEnumerable<string> Keys => _store.Keys;
+
+    public void Clear()
     {
-        private readonly Dictionary<string, byte[]> _store
-                = new (StringComparer.OrdinalIgnoreCase);
+        _store.Clear();
+    }
 
-        public bool IsAvailable { get; } = true;
+    public Task CommitAsync()
+    {
+        return Task.FromResult(0);
+    }
 
-        public string Id { get; set; } = "TestSessionId";
+    public Task CommitAsync(CancellationToken cancellationToken = default)
+    {
+        return CommitAsync();
+    }
 
-        public IEnumerable<string> Keys => _store.Keys;
+    public Task LoadAsync()
+    {
+        return Task.FromResult(0);
+    }
 
-        public void Clear()
-        {
-            _store.Clear();
-        }
+    public Task LoadAsync(CancellationToken cancellationToken = default)
+    {
+        return LoadAsync();
+    }
 
-        public Task CommitAsync()
-        {
-            return Task.FromResult(0);
-        }
+    public void Remove(string key)
+    {
+        _store.Remove(key);
+    }
 
-        public Task CommitAsync(CancellationToken cancellationToken = default)
-        {
-            return CommitAsync();
-        }
+    public void Set(string key, byte[] value)
+    {
+        _store[key] = value;
+    }
 
-        public Task LoadAsync()
-        {
-            return Task.FromResult(0);
-        }
-
-        public Task LoadAsync(CancellationToken cancellationToken = default)
-        {
-            return LoadAsync();
-        }
-
-        public void Remove(string key)
-        {
-            _store.Remove(key);
-        }
-
-        public void Set(string key, byte[] value)
-        {
-            _store[key] = value;
-        }
-
-        public bool TryGetValue(string key, out byte[] value)
-        {
-            return _store.TryGetValue(key, out value);
-        }
+    public bool TryGetValue(string key, out byte[] value)
+    {
+        return _store.TryGetValue(key, out value);
     }
 }

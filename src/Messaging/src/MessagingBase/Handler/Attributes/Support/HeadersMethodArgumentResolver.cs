@@ -9,51 +9,50 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace Steeltoe.Messaging.Handler.Attributes.Support
-{
-    public class HeadersMethodArgumentResolver : IHandlerMethodArgumentResolver
-    {
-        public object ResolveArgument(ParameterInfo parameter, IMessage message)
-        {
-            var paramType = parameter.ParameterType;
-            if (typeof(IDictionary<string, object>).IsAssignableFrom(paramType))
-            {
-                return message.Headers;
-            }
-            else if (typeof(MessageHeaderAccessor) == paramType)
-            {
-                var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
-                return accessor ?? new MessageHeaderAccessor(message);
-            }
-            else if (typeof(MessageHeaderAccessor).IsAssignableFrom(paramType))
-            {
-                var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
-                if (accessor != null && paramType.IsInstanceOfType(accessor))
-                {
-                    return accessor;
-                }
-                else
-                {
-                    var method = ReflectionHelpers.FindMethod(paramType, "Wrap", new Type[] { typeof(IMessage) });
-                    if (method == null)
-                    {
-                        throw new InvalidOperationException("Cannot create accessor of type " + paramType + " for message " + message);
-                    }
+namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
-                    return ReflectionHelpers.Invoke(method, null, new object[] { message });
-                }
+public class HeadersMethodArgumentResolver : IHandlerMethodArgumentResolver
+{
+    public object ResolveArgument(ParameterInfo parameter, IMessage message)
+    {
+        var paramType = parameter.ParameterType;
+        if (typeof(IDictionary<string, object>).IsAssignableFrom(paramType))
+        {
+            return message.Headers;
+        }
+        else if (typeof(MessageHeaderAccessor) == paramType)
+        {
+            var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+            return accessor ?? new MessageHeaderAccessor(message);
+        }
+        else if (typeof(MessageHeaderAccessor).IsAssignableFrom(paramType))
+        {
+            var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+            if (accessor != null && paramType.IsInstanceOfType(accessor))
+            {
+                return accessor;
             }
             else
             {
-                throw new InvalidOperationException("Unexpected parameter of type " + paramType + " in method " + parameter.Member + ". ");
+                var method = ReflectionHelpers.FindMethod(paramType, "Wrap", new Type[] { typeof(IMessage) });
+                if (method == null)
+                {
+                    throw new InvalidOperationException("Cannot create accessor of type " + paramType + " for message " + message);
+                }
+
+                return ReflectionHelpers.Invoke(method, null, new object[] { message });
             }
         }
-
-        public bool SupportsParameter(ParameterInfo parameter)
+        else
         {
-            var paramType = parameter.ParameterType;
-            return (parameter.GetCustomAttribute<HeadersAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(paramType)) ||
-                typeof(IMessageHeaders).IsAssignableFrom(paramType) || typeof(IMessageHeaderAccessor).IsAssignableFrom(paramType);
+            throw new InvalidOperationException("Unexpected parameter of type " + paramType + " in method " + parameter.Member + ". ");
         }
+    }
+
+    public bool SupportsParameter(ParameterInfo parameter)
+    {
+        var paramType = parameter.ParameterType;
+        return (parameter.GetCustomAttribute<HeadersAttribute>() != null && typeof(IDictionary<string, object>).IsAssignableFrom(paramType)) ||
+               typeof(IMessageHeaders).IsAssignableFrom(paramType) || typeof(IMessageHeaderAccessor).IsAssignableFrom(paramType);
     }
 }

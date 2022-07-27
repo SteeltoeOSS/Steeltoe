@@ -5,44 +5,43 @@
 using System;
 using Xunit;
 
-namespace Steeltoe.Connector.Oracle.Test
+namespace Steeltoe.Connector.Oracle.Test;
+
+public class OracleTypeLocatorTest
 {
-    public class OracleTypeLocatorTest
+    [Fact]
+    public void Property_Can_Locate_ConnectionType()
     {
-        [Fact]
-        public void Property_Can_Locate_ConnectionType()
-        {
-            // arrange -- handled by including a compatible Oracle NuGet package
-            var type = OracleTypeLocator.OracleConnection;
+        // arrange -- handled by including a compatible Oracle NuGet package
+        var type = OracleTypeLocator.OracleConnection;
 
-            Assert.NotNull(type);
-        }
+        Assert.NotNull(type);
+    }
 
-        [Fact]
-        public void Driver_Found_In_ODPNet_Assembly()
-        {
-            // arrange ~ narrow the assembly list to one specific nuget package
-            var assemblies = OracleTypeLocator.Assemblies;
-            OracleTypeLocator.Assemblies = new string[] { "Oracle.ManagedDataAccess" };
+    [Fact]
+    public void Driver_Found_In_ODPNet_Assembly()
+    {
+        // arrange ~ narrow the assembly list to one specific nuget package
+        var assemblies = OracleTypeLocator.Assemblies;
+        OracleTypeLocator.Assemblies = new string[] { "Oracle.ManagedDataAccess" };
 
-            var type = OracleTypeLocator.OracleConnection;
+        var type = OracleTypeLocator.OracleConnection;
 
-            Assert.NotNull(type);
-            OracleTypeLocator.Assemblies = assemblies;
-        }
+        Assert.NotNull(type);
+        OracleTypeLocator.Assemblies = assemblies;
+    }
 
-        [Fact]
-        public void Throws_When_ConnectionType_NotFound()
-        {
-            var types = OracleTypeLocator.ConnectionTypeNames;
-            OracleTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
+    [Fact]
+    public void Throws_When_ConnectionType_NotFound()
+    {
+        var types = OracleTypeLocator.ConnectionTypeNames;
+        OracleTypeLocator.ConnectionTypeNames = new string[] { "something-Wrong" };
 
-            var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
+        var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
 
-            Assert.Equal("Unable to find OracleConnection, are you missing a Oracle ODP.NET assembly?", exception.Message);
+        Assert.Equal("Unable to find OracleConnection, are you missing a Oracle ODP.NET assembly?", exception.Message);
 
-            // reset
-            OracleTypeLocator.ConnectionTypeNames = types;
-        }
+        // reset
+        OracleTypeLocator.ConnectionTypeNames = types;
     }
 }

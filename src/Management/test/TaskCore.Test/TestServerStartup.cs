@@ -7,28 +7,27 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-namespace Steeltoe.Management.TaskCore.Test
+namespace Steeltoe.Management.TaskCore.Test;
+
+public class TestServerStartup
 {
-    public class TestServerStartup
+    public TestServerStartup(IConfiguration configuration)
     {
-        public TestServerStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddTask("test", _ => throw new PassException());
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-        }
+        Configuration = configuration;
     }
 
-    internal class PassException : Exception
+    public IConfiguration Configuration { get; }
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddTask("test", _ => throw new PassException());
+    }
+
+    public void Configure(IApplicationBuilder app)
     {
     }
+}
+
+internal class PassException : Exception
+{
 }

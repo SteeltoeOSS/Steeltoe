@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface ITypeLocator
 {
-    public interface ITypeLocator
-    {
-        Type FindType(string typeName);
-    }
+    Type FindType(string typeName);
 }

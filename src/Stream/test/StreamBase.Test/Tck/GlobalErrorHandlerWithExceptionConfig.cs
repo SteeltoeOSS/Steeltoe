@@ -6,22 +6,21 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class GlobalErrorHandlerWithExceptionConfig
 {
-    public class GlobalErrorHandlerWithExceptionConfig
+    public bool GlobalErroInvoked { get; set; }
+
+    [StreamListener(IProcessor.INPUT)]
+    public void Input(string value)
     {
-        public bool GlobalErroInvoked { get; set; }
+        throw new Exception("test exception");
+    }
 
-        [StreamListener(IProcessor.INPUT)]
-        public void Input(string value)
-        {
-            throw new Exception("test exception");
-        }
-
-        [StreamListener("errorChannel")]
-        public void GeneralError(Exception exception)
-        {
-            GlobalErroInvoked = true;
-        }
+    [StreamListener("errorChannel")]
+    public void GeneralError(Exception exception)
+    {
+        GlobalErroInvoked = true;
     }
 }

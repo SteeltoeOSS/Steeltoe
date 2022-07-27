@@ -6,36 +6,35 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
 {
-    public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
+    private readonly ILogger<TraceEndpoint> _logger;
+    private readonly ITraceRepository _traceRepo;
+
+    public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
+        : base(options)
     {
-        private readonly ILogger<TraceEndpoint> _logger;
-        private readonly ITraceRepository _traceRepo;
+        _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
+        _logger = logger;
+    }
 
-        public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
-            : base(options)
+    public new ITraceOptions Options
+    {
+        get
         {
-            _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
-            _logger = logger;
+            return options as ITraceOptions;
         }
+    }
 
-        public new ITraceOptions Options
-        {
-            get
-            {
-                return options as ITraceOptions;
-            }
-        }
+    public override List<TraceResult> Invoke()
+    {
+        return DoInvoke(_traceRepo);
+    }
 
-        public override List<TraceResult> Invoke()
-        {
-            return DoInvoke(_traceRepo);
-        }
-
-        public List<TraceResult> DoInvoke(ITraceRepository repo)
-        {
-            return repo.GetTraces();
-        }
+    public List<TraceResult> DoInvoke(ITraceRepository repo)
+    {
+        return repo.GetTraces();
     }
 }

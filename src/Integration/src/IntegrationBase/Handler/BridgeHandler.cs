@@ -5,33 +5,32 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public class BridgeHandler : AbstractReplyProducingMessageHandler
 {
-    public class BridgeHandler : AbstractReplyProducingMessageHandler
+    public BridgeHandler(IApplicationContext context)
+        : base(context)
     {
-        public BridgeHandler(IApplicationContext context)
-            : base(context)
-        {
-        }
+    }
 
-        public override string ComponentType
-        {
-            get { return "bridge"; }
-        }
+    public override string ComponentType
+    {
+        get { return "bridge"; }
+    }
 
-        public override void Initialize()
-        {
-            // Nothing to do
-        }
+    public override void Initialize()
+    {
+        // Nothing to do
+    }
 
-        protected override object HandleRequestMessage(IMessage requestMessage)
-        {
-            return requestMessage;
-        }
+    protected override object HandleRequestMessage(IMessage requestMessage)
+    {
+        return requestMessage;
+    }
 
-        protected override bool ShouldCopyRequestHeaders
-        {
-            get { return false; }
-        }
+    protected override bool ShouldCopyRequestHeaders
+    {
+        get { return false; }
     }
 }

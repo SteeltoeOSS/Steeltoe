@@ -6,18 +6,17 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
-{
-    public class CloudFoundrySecurityStartupFilter : IStartupFilter
-    {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                app.UseCloudFoundrySecurity();
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-                next(app);
-            };
-        }
+public class CloudFoundrySecurityStartupFilter : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            app.UseCloudFoundrySecurity();
+
+            next(app);
+        };
     }
 }

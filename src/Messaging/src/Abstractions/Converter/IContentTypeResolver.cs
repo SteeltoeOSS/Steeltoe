@@ -4,18 +4,17 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.Messaging.Converter
+namespace Steeltoe.Messaging.Converter;
+
+/// <summary>
+/// Resolve the content type for a message
+/// </summary>
+public interface IContentTypeResolver
 {
     /// <summary>
-    /// Resolve the content type for a message
+    /// Determine the MimeType of a message from the given message headers
     /// </summary>
-    public interface IContentTypeResolver
-    {
-        /// <summary>
-        /// Determine the MimeType of a message from the given message headers
-        /// </summary>
-        /// <param name="headers">the headers to use</param>
-        /// <returns>the resolved MimeType</returns>
-        MimeType Resolve(IMessageHeaders headers);
-    }
+    /// <param name="headers">the headers to use</param>
+    /// <returns>the resolved MimeType</returns>
+    MimeType Resolve(IMessageHeaders headers);
 }

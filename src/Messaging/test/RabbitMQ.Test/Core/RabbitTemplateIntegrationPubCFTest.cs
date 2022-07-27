@@ -6,15 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+public class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
 {
-    public class RabbitTemplateIntegrationPubCFTest : RabbitTemplateIntegrationTest
+    public RabbitTemplateIntegrationPubCFTest()
+        : base()
     {
-        public RabbitTemplateIntegrationPubCFTest()
-            : base()
-        {
-            template.UsePublisherConnection = true;
-            routingTemplate.UsePublisherConnection = true;
-        }
+        template.UsePublisherConnection = true;
+        routingTemplate.UsePublisherConnection = true;
     }
 }

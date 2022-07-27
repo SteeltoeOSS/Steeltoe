@@ -4,22 +4,21 @@
 
 using Xunit;
 
-namespace Steeltoe.Discovery.Consul.Client.Test
+namespace Steeltoe.Discovery.Consul.Client.Test;
+
+public class ConsulOptionsTest
 {
-    public class ConsulOptionsTest
+    [Fact]
+    public void Constructor_InitializesDefaults()
     {
-        [Fact]
-        public void Constructor_InitializesDefaults()
-        {
-            var opts = new ConsulOptions();
-            Assert.Null(opts.Datacenter);
-            Assert.Null(opts.Password);
-            Assert.Null(opts.Username);
-            Assert.Null(opts.WaitTime);
-            Assert.Null(opts.Token);
-            Assert.Equal("localhost", opts.Host);
-            Assert.Equal("http", opts.Scheme);
-            Assert.Equal(8500, opts.Port);
-        }
+        var opts = new ConsulOptions();
+        Assert.Null(opts.Datacenter);
+        Assert.Null(opts.Password);
+        Assert.Null(opts.Username);
+        Assert.Null(opts.WaitTime);
+        Assert.Null(opts.Token);
+        Assert.Equal("localhost", opts.Host);
+        Assert.Equal("http", opts.Scheme);
+        Assert.Equal(8500, opts.Port);
     }
 }

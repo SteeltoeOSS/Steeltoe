@@ -5,16 +5,15 @@
 using Steeltoe.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Loggers
+namespace Steeltoe.Management.Endpoint.Loggers;
+
+public interface ILoggersEndpoint
 {
-    public interface ILoggersEndpoint
-    {
-        Dictionary<string, object> Invoke(LoggersChangeRequest request);
+    Dictionary<string, object> Invoke(LoggersChangeRequest request);
 
-        void AddLevels(Dictionary<string, object> result);
+    void AddLevels(Dictionary<string, object> result);
 
-        void SetLogLevel(IDynamicLoggerProvider provider, string name, string level);
+    void SetLogLevel(IDynamicLoggerProvider provider, string name, string level);
 
-        ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider);
-    }
+    ICollection<ILoggerConfiguration> GetLoggerConfigurations(IDynamicLoggerProvider provider);
 }

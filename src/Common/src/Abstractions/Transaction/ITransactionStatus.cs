@@ -2,12 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Transaction
-{
-    public interface ITransactionStatus : ITransactionExecution, ISavepointManager
-    {
-        bool HasSavepoint { get; }
+namespace Steeltoe.Common.Transaction;
 
-        void Flush();
-    }
+public interface ITransactionStatus : ITransactionExecution, ISavepointManager
+{
+    bool HasSavepoint { get; }
+
+    void Flush();
 }

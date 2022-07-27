@@ -4,22 +4,21 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+/// <summary>
+/// Credential information returned from a Find request
+/// </summary>
+public class FoundCredential
 {
     /// <summary>
-    /// Credential information returned from a Find request
+    /// Gets or sets full name of credential
     /// </summary>
-    public class FoundCredential
-    {
-        /// <summary>
-        /// Gets or sets full name of credential
-        /// </summary>
-        public string Name { get; set; }
+    public string Name { get; set; }
 
-        /// <summary>
-        /// Gets or sets when this version of the credential was created
-        /// </summary>
-        [JsonPropertyName("version_created_at")]
-        public string VersionCreatedAt { get; set; }
-    }
+    /// <summary>
+    /// Gets or sets when this version of the credential was created
+    /// </summary>
+    [JsonPropertyName("version_created_at")]
+    public string VersionCreatedAt { get; set; }
 }

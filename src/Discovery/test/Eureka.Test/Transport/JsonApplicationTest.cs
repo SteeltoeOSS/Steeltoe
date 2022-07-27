@@ -6,14 +6,14 @@ using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
 using Xunit;
 
-namespace Steeltoe.Discovery.Eureka.Transport.Test
+namespace Steeltoe.Discovery.Eureka.Transport.Test;
+
+public class JsonApplicationTest : AbstractBaseTest
 {
-    public class JsonApplicationTest : AbstractBaseTest
+    [Fact]
+    public void Deserialize_GoodJson()
     {
-        [Fact]
-        public void Deserialize_GoodJson()
-        {
-            var json = @"
+        var json = @"
 {
     ""name"":""FOO"",
     ""instance"":[{ 
@@ -39,13 +39,12 @@ namespace Steeltoe.Discovery.Eureka.Transport.Test
         ""actionType"":""ADDED""
     }]
 }";
-            var result = JsonSerializer.Deserialize<JsonApplication>(json);
-            Assert.NotNull(result);
-            Assert.Equal("FOO", result.Name);
-            Assert.NotNull(result.Instances);
-            Assert.Equal(1, result.Instances.Count);
+        var result = JsonSerializer.Deserialize<JsonApplication>(json);
+        Assert.NotNull(result);
+        Assert.Equal("FOO", result.Name);
+        Assert.NotNull(result.Instances);
+        Assert.Equal(1, result.Instances.Count);
 
-            // Rest is validated by JsonInstanceInfoTest
-        }
+        // Rest is validated by JsonInstanceInfoTest
     }
 }

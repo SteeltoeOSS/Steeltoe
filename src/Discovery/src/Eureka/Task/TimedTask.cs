@@ -5,42 +5,41 @@
 using System;
 using System.Threading;
 
-namespace Steeltoe.Discovery.Eureka.Task
+namespace Steeltoe.Discovery.Eureka.Task;
+
+internal class TimedTask
 {
-    internal class TimedTask
+    public string Name { get; private set; }
+
+    public Action Task { get; private set; }
+
+    private int _taskRunning;
+
+    public TimedTask(string name, Action task)
     {
-        public string Name { get; private set; }
+        Name = name;
+        Task = task;
+        _taskRunning = 0;
+    }
 
-        public Action Task { get; private set; }
-
-        private int _taskRunning;
-
-        public TimedTask(string name, Action task)
+    public void Run(object state)
+    {
+        if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0)
         {
-            Name = name;
-            Task = task;
-            _taskRunning = 0;
+            try
+            {
+                Task();
+            }
+            catch (Exception)
+            {
+                // Log
+            }
+
+            Interlocked.Exchange(ref _taskRunning, 0);
         }
-
-        public void Run(object state)
+        else
         {
-            if (Interlocked.CompareExchange(ref _taskRunning, 1, 0) == 0)
-            {
-                try
-                {
-                    Task();
-                }
-                catch (Exception)
-                {
-                    // Log
-                }
-
-                Interlocked.Exchange(ref _taskRunning, 0);
-            }
-            else
-            {
-                // Log, already running
-            }
+            // Log, already running
         }
     }
 }

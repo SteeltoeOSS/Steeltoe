@@ -8,101 +8,100 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Mappings
+namespace Steeltoe.Management.Endpoint.Mappings;
+
+public class MappingDescription
 {
-    public class MappingDescription
+    public const string ALL_HTTP_METHODS = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
+
+    public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
-        public const string ALL_HTTP_METHODS = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
-
-        public MappingDescription(string routeHandler, IRouteDetails routeDetails)
+        if (routeHandler == null)
         {
-            if (routeHandler == null)
-            {
-                throw new ArgumentNullException(nameof(routeHandler));
-            }
-
-            if (routeDetails == null)
-            {
-                throw new ArgumentNullException(nameof(routeDetails));
-            }
-
-            Predicate = CreatePredicateString(routeDetails);
-            Handler = routeHandler;
+            throw new ArgumentNullException(nameof(routeHandler));
         }
 
-        public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)
+        if (routeDetails == null)
         {
-            if (routeHandler == null)
-            {
-                throw new ArgumentNullException(nameof(routeHandler));
-            }
-
-            if (routeDetails == null)
-            {
-                throw new ArgumentNullException(nameof(routeDetails));
-            }
-
-            Predicate = CreatePredicateString(routeDetails);
-            Handler = CreateHandlerString(routeHandler);
+            throw new ArgumentNullException(nameof(routeDetails));
         }
 
-        [JsonPropertyName("handler")]
-        public string Handler { get; }
+        Predicate = CreatePredicateString(routeDetails);
+        Handler = routeHandler;
+    }
 
-        [JsonPropertyName("predicate")]
-        public string Predicate { get; }
-
-        [JsonPropertyName("details")]
-        public object Details { get; } // Always null for .NET
-
-        private string CreateHandlerString(MethodInfo actionHandlerMethod)
+    public MappingDescription(MethodInfo routeHandler, IRouteDetails routeDetails)
+    {
+        if (routeHandler == null)
         {
-            return actionHandlerMethod.ToString();
+            throw new ArgumentNullException(nameof(routeHandler));
         }
 
-        private string CreatePredicateString(IRouteDetails routeDetails)
+        if (routeDetails == null)
         {
-            var sb = new StringBuilder("{");
-
-            sb.Append("[" + routeDetails.RouteTemplate + "]");
-
-            sb.Append(",methods=");
-            sb.Append("[" + CreateRouteMethods(routeDetails.HttpMethods) + "]");
-
-            if (!IsEmpty(routeDetails.Produces))
-            {
-                sb.Append(",produces=");
-                sb.Append("[" + string.Join(" || ", routeDetails.Produces) + "]");
-            }
-
-            if (!IsEmpty(routeDetails.Consumes))
-            {
-                sb.Append(",consumes=");
-                sb.Append("[" + string.Join(" || ", routeDetails.Consumes) + "]");
-            }
-
-            sb.Append('}');
-            return sb.ToString();
+            throw new ArgumentNullException(nameof(routeDetails));
         }
 
-        private string CreateRouteMethods(IList<string> httpMethods)
-        {
-            if (IsEmpty(httpMethods))
-            {
-                return ALL_HTTP_METHODS;
-            }
+        Predicate = CreatePredicateString(routeDetails);
+        Handler = CreateHandlerString(routeHandler);
+    }
 
-            return string.Join(" || ", httpMethods);
+    [JsonPropertyName("handler")]
+    public string Handler { get; }
+
+    [JsonPropertyName("predicate")]
+    public string Predicate { get; }
+
+    [JsonPropertyName("details")]
+    public object Details { get; } // Always null for .NET
+
+    private string CreateHandlerString(MethodInfo actionHandlerMethod)
+    {
+        return actionHandlerMethod.ToString();
+    }
+
+    private string CreatePredicateString(IRouteDetails routeDetails)
+    {
+        var sb = new StringBuilder("{");
+
+        sb.Append("[" + routeDetails.RouteTemplate + "]");
+
+        sb.Append(",methods=");
+        sb.Append("[" + CreateRouteMethods(routeDetails.HttpMethods) + "]");
+
+        if (!IsEmpty(routeDetails.Produces))
+        {
+            sb.Append(",produces=");
+            sb.Append("[" + string.Join(" || ", routeDetails.Produces) + "]");
         }
 
-        private bool IsEmpty(IList<string> list)
+        if (!IsEmpty(routeDetails.Consumes))
         {
-            if (list == null || list.Count == 0)
-            {
-                return true;
-            }
-
-            return false;
+            sb.Append(",consumes=");
+            sb.Append("[" + string.Join(" || ", routeDetails.Consumes) + "]");
         }
+
+        sb.Append('}');
+        return sb.ToString();
+    }
+
+    private string CreateRouteMethods(IList<string> httpMethods)
+    {
+        if (IsEmpty(httpMethods))
+        {
+            return ALL_HTTP_METHODS;
+        }
+
+        return string.Join(" || ", httpMethods);
+    }
+
+    private bool IsEmpty(IList<string> list)
+    {
+        if (list == null || list.Count == 0)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

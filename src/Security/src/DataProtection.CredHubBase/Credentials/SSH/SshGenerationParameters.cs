@@ -4,11 +4,10 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class SshGenerationParameters : KeyParameters
 {
-    public class SshGenerationParameters : KeyParameters
-    {
-        [JsonPropertyName("ssh_comment")]
-        public string SshComment { get; set; }
-    }
+    [JsonPropertyName("ssh_comment")]
+    public string SshComment { get; set; }
 }

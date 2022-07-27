@@ -5,18 +5,17 @@
 using System.Collections.Concurrent;
 using System.Threading;
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public abstract class AbstractCommandBase
 {
-    public abstract class AbstractCommandBase
+    // we can return a static version since it's immutable
+    internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
+
+    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ();
+    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ();
+
+    protected AbstractCommandBase()
     {
-        // we can return a static version since it's immutable
-        internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
-
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ();
-        protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ();
-
-        protected AbstractCommandBase()
-        {
-        }
     }
 }

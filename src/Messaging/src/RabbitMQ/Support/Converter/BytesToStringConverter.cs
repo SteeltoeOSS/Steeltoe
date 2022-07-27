@@ -8,23 +8,22 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Messaging.RabbitMQ.Support.Converter
+namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
+
+public class BytesToStringConverter : IGenericConverter
 {
-    public class BytesToStringConverter : IGenericConverter
+    private readonly Encoding _charset;
+
+    public BytesToStringConverter(Encoding charset)
     {
-        private readonly Encoding _charset;
-
-        public BytesToStringConverter(Encoding charset)
-        {
-            _charset = charset ?? EncodingUtils.Utf8;
-            ConvertibleTypes = new HashSet<(Type Source, Type Target)>() { (typeof(byte[]), typeof(string)) };
-        }
-
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
-
-        public object Convert(object source, Type sourceType, Type targetType)
-            => source is not byte[] asByteArray
-                ? null
-                : _charset.GetString(asByteArray);
+        _charset = charset ?? EncodingUtils.Utf8;
+        ConvertibleTypes = new HashSet<(Type Source, Type Target)>() { (typeof(byte[]), typeof(string)) };
     }
+
+    public ISet<(Type Source, Type Target)> ConvertibleTypes { get; }
+
+    public object Convert(object source, Type sourceType, Type targetType)
+        => source is not byte[] asByteArray
+            ? null
+            : _charset.GetString(asByteArray);
 }

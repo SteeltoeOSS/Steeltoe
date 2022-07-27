@@ -5,20 +5,19 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Env
+namespace Steeltoe.Management.Endpoint.Env;
+
+public class PropertySourceDescriptor
 {
-    public class PropertySourceDescriptor
+    public PropertySourceDescriptor(string name, IDictionary<string, PropertyValueDescriptor> properties)
     {
-        public PropertySourceDescriptor(string name, IDictionary<string, PropertyValueDescriptor> properties)
-        {
-            Name = name;
-            Properties = properties;
-        }
-
-        [JsonPropertyName("name")]
-        public string Name { get; }
-
-        [JsonPropertyName("properties")]
-        public IDictionary<string, PropertyValueDescriptor> Properties { get; }
+        Name = name;
+        Properties = properties;
     }
+
+    [JsonPropertyName("name")]
+    public string Name { get; }
+
+    [JsonPropertyName("properties")]
+    public IDictionary<string, PropertyValueDescriptor> Properties { get; }
 }

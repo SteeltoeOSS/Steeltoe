@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump.Test
-{
-    internal class TestThreadDumper : IThreadDumper
-    {
-        public bool DumpThreadsCalled { get; set; }
+namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
 
-        public List<ThreadInfo> DumpThreads()
-        {
-            DumpThreadsCalled = true;
-            return new List<ThreadInfo>();
-        }
+internal class TestThreadDumper : IThreadDumper
+{
+    public bool DumpThreadsCalled { get; set; }
+
+    public List<ThreadInfo> DumpThreads()
+    {
+        DumpThreadsCalled = true;
+        return new List<ThreadInfo>();
     }
 }

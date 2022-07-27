@@ -10,117 +10,116 @@ using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.Middleware
+namespace Steeltoe.Management.Endpoint.Middleware;
+
+public class EndpointMiddleware<TResult>
 {
-    public class EndpointMiddleware<TResult>
+    protected IEndpoint<TResult> _endpoint;
+    protected ILogger _logger;
+    protected IManagementOptions _mgmtOptions;
+
+    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
     {
-        protected IEndpoint<TResult> _endpoint;
-        protected ILogger _logger;
-        protected IManagementOptions _mgmtOptions;
-
-        public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
+        _logger = logger;
+        _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
+        if (_mgmtOptions is ManagementEndpointOptions mgmt)
         {
-            _logger = logger;
-            _mgmtOptions = mgmtOptions ?? throw new ArgumentNullException(nameof(mgmtOptions));
-            if (_mgmtOptions is ManagementEndpointOptions mgmt)
-            {
-                mgmt.SerializerOptions = GetSerializerOptions(mgmt.SerializerOptions);
-            }
-        }
-
-        public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-            : this(mgmtOptions, logger)
-        {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
-        }
-
-        public IEndpoint<TResult> Endpoint
-        {
-            get => _endpoint;
-
-            set => _endpoint = value;
-        }
-
-        public virtual string HandleRequest()
-        {
-            var result = _endpoint.Invoke();
-            return Serialize(result);
-        }
-
-        public virtual string Serialize(TResult result)
-        {
-            try
-            {
-                JsonSerializerOptions options;
-                if (_mgmtOptions is ManagementEndpointOptions mgmt)
-                {
-                    options = mgmt.SerializerOptions;
-                }
-                else
-                {
-                    options = GetSerializerOptions(null);
-                }
-
-                return JsonSerializer.Serialize(result, options);
-            }
-            catch (Exception e)
-            {
-                _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
-            }
-
-            return string.Empty;
-        }
-
-        internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
-        {
-            serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
-            serializerOptions.IgnoreNullValues = true;
-
-            if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
-            {
-                serializerOptions.Converters.Add(new JsonStringEnumConverter());
-            }
-
-            if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
-            {
-                serializerOptions.Converters.Add(new HealthConverter());
-            }
-
-            if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
-            {
-                serializerOptions.Converters.Add(new MetricsResponseConverter());
-            }
-
-            return serializerOptions;
+            mgmt.SerializerOptions = GetSerializerOptions(mgmt.SerializerOptions);
         }
     }
 
-    public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
+    public EndpointMiddleware(IEndpoint<TResult> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
+        : this(mgmtOptions, logger)
     {
-        protected new IEndpoint<TResult, TRequest> _endpoint;
+        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+    }
 
-        internal new IEndpoint<TResult, TRequest> Endpoint
+    public IEndpoint<TResult> Endpoint
+    {
+        get => _endpoint;
+
+        set => _endpoint = value;
+    }
+
+    public virtual string HandleRequest()
+    {
+        var result = _endpoint.Invoke();
+        return Serialize(result);
+    }
+
+    public virtual string Serialize(TResult result)
+    {
+        try
         {
-            get => _endpoint;
+            JsonSerializerOptions options;
+            if (_mgmtOptions is ManagementEndpointOptions mgmt)
+            {
+                options = mgmt.SerializerOptions;
+            }
+            else
+            {
+                options = GetSerializerOptions(null);
+            }
 
-            set => _endpoint = value;
+            return JsonSerializer.Serialize(result, options);
+        }
+        catch (Exception e)
+        {
+            _logger?.LogError("Error {Exception} serializing {MiddlewareResponse}", e, result);
         }
 
-        public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
-            : base(mgmtOptions, logger)
+        return string.Empty;
+    }
+
+    internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
+    {
+        serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        serializerOptions.IgnoreNullValues = true;
+
+        if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
         {
-            _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+            serializerOptions.Converters.Add(new JsonStringEnumConverter());
         }
 
-        public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
-          : base(mgmtOptions, logger)
+        if (serializerOptions.Converters?.Any(c => c is HealthConverter or HealthConverterV3) != true)
         {
+            serializerOptions.Converters.Add(new HealthConverter());
         }
 
-        public virtual string HandleRequest(TRequest arg)
+        if (serializerOptions.Converters?.Any(c => c is MetricsResponseConverter) != true)
         {
-            var result = _endpoint.Invoke(arg);
-            return Serialize(result);
+            serializerOptions.Converters.Add(new MetricsResponseConverter());
         }
+
+        return serializerOptions;
+    }
+}
+
+public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
+{
+    protected new IEndpoint<TResult, TRequest> _endpoint;
+
+    internal new IEndpoint<TResult, TRequest> Endpoint
+    {
+        get => _endpoint;
+
+        set => _endpoint = value;
+    }
+
+    public EndpointMiddleware(IEndpoint<TResult, TRequest> endpoint, IManagementOptions mgmtOptions, ILogger logger = null)
+        : base(mgmtOptions, logger)
+    {
+        _endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
+    }
+
+    public EndpointMiddleware(IManagementOptions mgmtOptions, ILogger logger = null)
+        : base(mgmtOptions, logger)
+    {
+    }
+
+    public virtual string HandleRequest(TRequest arg)
+    {
+        var result = _endpoint.Invoke(arg);
+        return Serialize(result);
     }
 }

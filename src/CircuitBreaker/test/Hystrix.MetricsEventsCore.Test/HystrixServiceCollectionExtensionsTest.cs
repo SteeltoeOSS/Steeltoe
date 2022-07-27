@@ -13,99 +13,98 @@ using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using System;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
+
+public class HystrixServiceCollectionExtensionsTest
 {
-    public class HystrixServiceCollectionExtensionsTest
+    [Fact]
+    public void AddHystrixStreams_ThrowsIfServiceContainerNull()
     {
-        [Fact]
-        public void AddHystrixStreams_ThrowsIfServiceContainerNull()
-        {
-            IServiceCollection services = null;
-            IConfiguration config = new ConfigurationBuilder().Build();
+        IServiceCollection services = null;
+        IConfiguration config = new ConfigurationBuilder().Build();
 
-            var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConfigStream());
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(null));
-            Assert.Contains(nameof(services), ex2.Message);
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsStream(null));
+        Assert.Contains(nameof(services), ex2.Message);
 
-            var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(null));
-            Assert.Contains(nameof(services), ex3.Message);
+        var ex3 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMonitoringStreams(null));
+        Assert.Contains(nameof(services), ex3.Message);
 
-            var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream());
-            Assert.Contains(nameof(services), ex4.Message);
-        }
+        var ex4 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixRequestEventStream());
+        Assert.Contains(nameof(services), ex4.Message);
+    }
 
-        [Fact]
-        public void AddHystrixMetricsEventSource_ThrowsIfServiceContainerNull()
-        {
-            IServiceCollection services = null;
-            var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsEventSource());
-            Assert.Contains(nameof(services), ex5.Message);
-        }
+    [Fact]
+    public void AddHystrixMetricsEventSource_ThrowsIfServiceContainerNull()
+    {
+        IServiceCollection services = null;
+        var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixMetricsEventSource());
+        Assert.Contains(nameof(services), ex5.Message);
+    }
 
-        [Fact]
-        public void AddHystrixMetricsStream_AddsStream()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixMetricsStream_AddsStream()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixMetricsStream(null);
+        services.AddHystrixMetricsStream(null);
 
-            Assert.NotNull(services.BuildServiceProvider().GetService<HystrixDashboardStream>());
-        }
+        Assert.NotNull(services.BuildServiceProvider().GetService<HystrixDashboardStream>());
+    }
 
-        [Fact]
-        public void AddHystrixMetricsEventSource_AddsHostedService()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixMetricsEventSource_AddsHostedService()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixMetricsEventSource();
+        services.AddHystrixMetricsEventSource();
 
-            Assert.IsType<HystrixEventSourceService>(services.BuildServiceProvider().GetService<IHostedService>());
-        }
+        Assert.IsType<HystrixEventSourceService>(services.BuildServiceProvider().GetService<IHostedService>());
+    }
 
-        [Fact]
-        public void AddHystrixRequestEventStream_AddsStream()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixRequestEventStream_AddsStream()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixRequestEventStream();
+        services.AddHystrixRequestEventStream();
 
-            Assert.NotNull(services.BuildServiceProvider().GetService<HystrixRequestEventsStream>());
-        }
+        Assert.NotNull(services.BuildServiceProvider().GetService<HystrixRequestEventsStream>());
+    }
 
-        [Fact]
-        public void AddHystrixUtilizationStream_AddsStream()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixUtilizationStream_AddsStream()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixUtilizationStream();
+        services.AddHystrixUtilizationStream();
 
-            Assert.NotNull(services.BuildServiceProvider().GetService<HystrixUtilizationStream>());
-        }
+        Assert.NotNull(services.BuildServiceProvider().GetService<HystrixUtilizationStream>());
+    }
 
-        [Fact]
-        public void AddHystrixConfigStream_AddsStream()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixConfigStream_AddsStream()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixConfigStream();
+        services.AddHystrixConfigStream();
 
-            Assert.NotNull(services.BuildServiceProvider().GetService<HystrixConfigurationStream>());
-        }
+        Assert.NotNull(services.BuildServiceProvider().GetService<HystrixConfigurationStream>());
+    }
 
-        [Fact]
-        public void AddHystrixMonitoringStreams_AddsAllStreams()
-        {
-            IServiceCollection services = new ServiceCollection();
+    [Fact]
+    public void AddHystrixMonitoringStreams_AddsAllStreams()
+    {
+        IServiceCollection services = new ServiceCollection();
 
-            services.AddHystrixMonitoringStreams(null);
-            var sp = services.BuildServiceProvider();
+        services.AddHystrixMonitoringStreams(null);
+        var sp = services.BuildServiceProvider();
 
-            Assert.NotNull(sp.GetService<HystrixDashboardStream>());
-            Assert.NotNull(sp.GetService<HystrixRequestEventsStream>());
-            Assert.NotNull(sp.GetService<HystrixUtilizationStream>());
-            Assert.NotNull(sp.GetService<HystrixConfigurationStream>());
-        }
+        Assert.NotNull(sp.GetService<HystrixDashboardStream>());
+        Assert.NotNull(sp.GetService<HystrixRequestEventsStream>());
+        Assert.NotNull(sp.GetService<HystrixUtilizationStream>());
+        Assert.NotNull(sp.GetService<HystrixConfigurationStream>());
     }
 }

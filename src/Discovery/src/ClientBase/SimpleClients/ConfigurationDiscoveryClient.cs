@@ -8,23 +8,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Discovery.Client.SimpleClients
+namespace Steeltoe.Discovery.Client.SimpleClients;
+
+public class ConfigurationDiscoveryClient : ConfigurationServiceInstanceProvider, IDiscoveryClient
 {
-    public class ConfigurationDiscoveryClient : ConfigurationServiceInstanceProvider, IDiscoveryClient
+    public ConfigurationDiscoveryClient(IOptionsMonitor<List<ConfigurationServiceInstance>> serviceInstances)
+        : base(serviceInstances)
     {
-        public ConfigurationDiscoveryClient(IOptionsMonitor<List<ConfigurationServiceInstance>> serviceInstances)
-            : base(serviceInstances)
-        {
-        }
+    }
 
-        public IServiceInstance GetLocalServiceInstance()
-        {
-            throw new NotImplementedException("No known use case for implementing this method");
-        }
+    public IServiceInstance GetLocalServiceInstance()
+    {
+        throw new NotImplementedException("No known use case for implementing this method");
+    }
 
-        public Task ShutdownAsync()
-        {
-            return Task.CompletedTask;
-        }
+    public Task ShutdownAsync()
+    {
+        return Task.CompletedTask;
     }
 }

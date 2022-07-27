@@ -9,25 +9,24 @@ using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 using System.IO;
 
-namespace Steeltoe.Stream.Tck
-{
-    public class TypelessToPojoStreamListener
-    {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public Person Echo(object value)
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                NullValueHandling = NullValueHandling.Ignore,
-                MissingMemberHandling = MissingMemberHandling.Ignore,
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+namespace Steeltoe.Stream.Tck;
 
-            // assume it is string because CT is text/plain
-            var serializer = JsonSerializer.Create(settings);
-            var textReader = new StringReader((string)value);
-            return (Person)serializer.Deserialize(textReader, typeof(Person));
-        }
+public class TypelessToPojoStreamListener
+{
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public Person Echo(object value)
+    {
+        var settings = new JsonSerializerSettings()
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver()
+        };
+
+        // assume it is string because CT is text/plain
+        var serializer = JsonSerializer.Create(settings);
+        var textReader = new StringReader((string)value);
+        return (Person)serializer.Deserialize(textReader, typeof(Person));
     }
 }

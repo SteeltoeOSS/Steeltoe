@@ -4,13 +4,12 @@
 
 using Steeltoe.Management.Info;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
+namespace Steeltoe.Management.Endpoint.Info.Test;
+
+internal class TestInfoContributor : IInfoContributor
 {
-    internal class TestInfoContributor : IInfoContributor
+    public void Contribute(IInfoBuilder builder)
     {
-        public void Contribute(IInfoBuilder builder)
-        {
-            return;
-        }
+        return;
     }
 }

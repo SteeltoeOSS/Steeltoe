@@ -5,30 +5,29 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Steeltoe.Management.Endpoint.HeapDump
+namespace Steeltoe.Management.Endpoint.HeapDump;
+
+public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
 {
-    public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
+    private readonly ILogger<HeapDumpEndpoint> _logger;
+    private readonly IHeapDumper _heapDumper;
+
+    public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
+        : base(options)
     {
-        private readonly ILogger<HeapDumpEndpoint> _logger;
-        private readonly IHeapDumper _heapDumper;
-
-        public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
-            : base(options)
+        if (heapDumper == null)
         {
-            if (heapDumper == null)
-            {
-                throw new ArgumentNullException(nameof(heapDumper));
-            }
-
-            _heapDumper = heapDumper;
-            _logger = logger;
+            throw new ArgumentNullException(nameof(heapDumper));
         }
 
-        public new IHeapDumpOptions Options => options as IHeapDumpOptions;
+        _heapDumper = heapDumper;
+        _logger = logger;
+    }
 
-        public override string Invoke()
-        {
-            return _heapDumper.DumpHeap();
-        }
+    public new IHeapDumpOptions Options => options as IHeapDumpOptions;
+
+    public override string Invoke()
+    {
+        return _heapDumper.DumpHeap();
     }
 }

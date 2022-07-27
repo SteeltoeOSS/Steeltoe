@@ -4,12 +4,11 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Common.Kubernetes
-{
-    public class WatchableResource
-    {
-        public bool Enabled { get; set; } = true;
+namespace Steeltoe.Common.Kubernetes;
 
-        public List<NamespacedResource> Sources { get; set; } = new List<NamespacedResource>();
-    }
+public class WatchableResource
+{
+    public bool Enabled { get; set; } = true;
+
+    public List<NamespacedResource> Sources { get; set; } = new List<NamespacedResource>();
 }

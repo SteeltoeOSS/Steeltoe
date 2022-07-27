@@ -5,22 +5,21 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream.Messaging
+namespace Steeltoe.Stream.Messaging;
+
+/// <summary>
+/// Bindable interface with one input channel.
+/// </summary>
+public interface ISink
 {
     /// <summary>
-    /// Bindable interface with one input channel.
+    /// Default channel name
     /// </summary>
-    public interface ISink
-    {
-        /// <summary>
-        /// Default channel name
-        /// </summary>
-        const string INPUT = "input";
+    const string INPUT = "input";
 
-        /// <summary>
-        /// Gets the input channel
-        /// </summary>
-        [Input(INPUT)]
-        ISubscribableChannel Input { get; }
-    }
+    /// <summary>
+    /// Gets the input channel
+    /// </summary>
+    [Input(INPUT)]
+    ISubscribableChannel Input { get; }
 }

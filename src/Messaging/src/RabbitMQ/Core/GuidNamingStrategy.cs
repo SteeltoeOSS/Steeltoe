@@ -4,15 +4,14 @@
 
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
-{
-    public class GuidNamingStrategy : INamingStrategy
-    {
-        public static readonly GuidNamingStrategy DEFAULT = new ();
+namespace Steeltoe.Messaging.RabbitMQ.Core;
 
-        public string GenerateName()
-        {
-            return Guid.NewGuid().ToString();
-        }
+public class GuidNamingStrategy : INamingStrategy
+{
+    public static readonly GuidNamingStrategy DEFAULT = new ();
+
+    public string GenerateName()
+    {
+        return Guid.NewGuid().ToString();
     }
 }

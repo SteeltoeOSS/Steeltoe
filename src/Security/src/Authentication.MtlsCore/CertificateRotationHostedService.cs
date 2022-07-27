@@ -7,26 +7,25 @@ using Steeltoe.Common.Security;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Security.Authentication.Mtls
+namespace Steeltoe.Security.Authentication.Mtls;
+
+public class CertificateRotationHostedService : IHostedService
 {
-    public class CertificateRotationHostedService : IHostedService
+    private readonly ICertificateRotationService _certificateRotationService;
+
+    public CertificateRotationHostedService(ICertificateRotationService certificateRotationService)
     {
-        private readonly ICertificateRotationService _certificateRotationService;
+        _certificateRotationService = certificateRotationService;
+    }
 
-        public CertificateRotationHostedService(ICertificateRotationService certificateRotationService)
-        {
-            _certificateRotationService = certificateRotationService;
-        }
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _certificateRotationService.Start();
+        return Task.CompletedTask;
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _certificateRotationService.Start();
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
     }
 }

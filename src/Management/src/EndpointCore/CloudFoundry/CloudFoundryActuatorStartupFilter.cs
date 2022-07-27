@@ -6,22 +6,21 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using System;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry
-{
-    [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
-    public class CloudFoundryActuatorStartupFilter : IStartupFilter
-    {
-        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
-        {
-            return app =>
-            {
-                next(app);
+namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
-                app.UseEndpoints(endpoints =>
-                {
-                    endpoints.Map<CloudFoundryEndpoint>();
-                });
-            };
-        }
+[Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
+public class CloudFoundryActuatorStartupFilter : IStartupFilter
+{
+    public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
+    {
+        return app =>
+        {
+            next(app);
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.Map<CloudFoundryEndpoint>();
+            });
+        };
     }
 }

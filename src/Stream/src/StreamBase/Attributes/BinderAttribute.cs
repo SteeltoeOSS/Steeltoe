@@ -4,25 +4,24 @@
 
 using System;
 
-namespace Steeltoe.Stream.Attributes
+namespace Steeltoe.Stream.Attributes;
+
+[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
+public class BinderAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = false)]
-    public class BinderAttribute : Attribute
+    public BinderAttribute()
     {
-        public BinderAttribute()
-        {
-            Name = string.Empty;
-            ConfigureClass = string.Empty;
-        }
-
-        public BinderAttribute(string name, Type configureClass)
-        {
-            Name = name;
-            ConfigureClass = configureClass.AssemblyQualifiedName;
-        }
-
-        public virtual string Name { get; set; }
-
-        public virtual string ConfigureClass { get; set; }
+        Name = string.Empty;
+        ConfigureClass = string.Empty;
     }
+
+    public BinderAttribute(string name, Type configureClass)
+    {
+        Name = name;
+        ConfigureClass = configureClass.AssemblyQualifiedName;
+    }
+
+    public virtual string Name { get; set; }
+
+    public virtual string ConfigureClass { get; set; }
 }

@@ -5,14 +5,13 @@
 using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Collections.Generic;
 
-namespace Steeltoe.Messaging.RabbitMQ.Listener
+namespace Steeltoe.Messaging.RabbitMQ.Listener;
+
+public interface IMessageListener
 {
-    public interface IMessageListener
-    {
-        AcknowledgeMode ContainerAckMode { get; set; }
+    AcknowledgeMode ContainerAckMode { get; set; }
 
-        void OnMessage(IMessage message);
+    void OnMessage(IMessage message);
 
-        void OnMessageBatch(List<IMessage> messages);
-    }
+    void OnMessageBatch(List<IMessage> messages);
 }

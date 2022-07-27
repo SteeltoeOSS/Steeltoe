@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Lifecycle
-{
-    public class LifecycleException : Exception
-    {
-        public LifecycleException(string message)
-            : base(message)
-        {
-        }
+namespace Steeltoe.Common.Lifecycle;
 
-        public LifecycleException(string message, Exception innerException)
-            : base(message, innerException)
-        {
-        }
+public class LifecycleException : Exception
+{
+    public LifecycleException(string message)
+        : base(message)
+    {
+    }
+
+    public LifecycleException(string message, Exception innerException)
+        : base(message, innerException)
+    {
     }
 }

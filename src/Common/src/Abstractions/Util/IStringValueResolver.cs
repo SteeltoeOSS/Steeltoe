@@ -6,10 +6,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public interface IStringValueResolver
 {
-    public interface IStringValueResolver
-    {
-        string ResolveStringValue(string strVal);
-    }
+    string ResolveStringValue(string strVal);
 }

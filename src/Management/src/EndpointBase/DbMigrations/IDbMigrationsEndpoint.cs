@@ -4,10 +4,9 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.DbMigrations
+namespace Steeltoe.Management.Endpoint.DbMigrations;
+
+public interface IDbMigrationsEndpoint
 {
-    public interface IDbMigrationsEndpoint
-    {
-        Dictionary<string, DbMigrationsDescriptor> Invoke();
-    }
+    Dictionary<string, DbMigrationsDescriptor> Invoke();
 }

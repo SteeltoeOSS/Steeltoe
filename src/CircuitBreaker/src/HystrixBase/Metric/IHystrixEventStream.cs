@@ -4,11 +4,10 @@
 
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
+
+public interface IHystrixEventStream<out E>
+    where E : IHystrixEvent
 {
-    public interface IHystrixEventStream<out E>
-        where E : IHystrixEvent
-    {
-        IObservable<E> Observe();
-    }
+    IObservable<E> Observe();
 }

@@ -7,45 +7,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public static class CredHubServiceCollectionExtensions
 {
-    public static class CredHubServiceCollectionExtensions
+    /// <summary>
+    /// Make a CredHubClient available to DI
+    /// </summary>
+    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS</remarks>
+    /// <param name="services">Service collection</param>
+    /// <param name="config">App configuration</param>
+    /// <param name="loggerFactory">Logger factory</param>
+    /// <returns>Service collection with CredHubClient added in</returns>
+    public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
     {
-        /// <summary>
-        /// Make a CredHubClient available to DI
-        /// </summary>
-        /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS</remarks>
-        /// <param name="services">Service collection</param>
-        /// <param name="config">App configuration</param>
-        /// <param name="loggerFactory">Logger factory</param>
-        /// <returns>Service collection with CredHubClient added in</returns>
-        public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
+        ILogger startupLogger = null;
+        ILogger credhubLogger = null;
+        if (loggerFactory != null)
         {
-            ILogger startupLogger = null;
-            ILogger credhubLogger = null;
-            if (loggerFactory != null)
-            {
-                startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
-                credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
-            }
-
-            var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
-            credHubOptions.Validate();
-
-            CredHubClient credHubClient;
-            try
-            {
-                startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
-                credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
-
-                services.AddSingleton<ICredHubClient>(credHubClient);
-            }
-            catch (Exception e)
-            {
-                startupLogger?.LogCritical(e, "Failed to initialize CredHub client for ServiceCollection");
-            }
-
-            return services;
+            startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
+            credhubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
+
+        var credHubOptions = config.GetSection("CredHubClient").Get<CredHubOptions>();
+        credHubOptions.Validate();
+
+        CredHubClient credHubClient;
+        try
+        {
+            startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
+            credHubClient = CredHubClient.CreateUAAClientAsync(credHubOptions, credhubLogger).GetAwaiter().GetResult();
+
+            services.AddSingleton<ICredHubClient>(credHubClient);
+        }
+        catch (Exception e)
+        {
+            startupLogger?.LogCritical(e, "Failed to initialize CredHub client for ServiceCollection");
+        }
+
+        return services;
     }
 }

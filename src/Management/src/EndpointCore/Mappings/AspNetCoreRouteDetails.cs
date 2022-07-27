@@ -4,16 +4,15 @@
 
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Mappings
+namespace Steeltoe.Management.Endpoint.Mappings;
+
+public class AspNetCoreRouteDetails : IRouteDetails
 {
-    public class AspNetCoreRouteDetails : IRouteDetails
-    {
-        public IList<string> HttpMethods { get; set; }
+    public IList<string> HttpMethods { get; set; }
 
-        public string RouteTemplate { get; set; }
+    public string RouteTemplate { get; set; }
 
-        public IList<string> Produces { get; set; }
+    public IList<string> Produces { get; set; }
 
-        public IList<string> Consumes { get; set; }
-    }
+    public IList<string> Consumes { get; set; }
 }

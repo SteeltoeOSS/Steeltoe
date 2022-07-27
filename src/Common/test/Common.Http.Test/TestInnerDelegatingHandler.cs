@@ -7,15 +7,14 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Common.Http.Test
+namespace Steeltoe.Common.Http.Test;
+
+public class TestInnerDelegatingHandler : DelegatingHandler
 {
-    public class TestInnerDelegatingHandler : DelegatingHandler
+    protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
-            responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
-            return Task.Factory.StartNew(() => responseMessage, cancellationToken);
-        }
+        var responseMessage = new HttpResponseMessage(HttpStatusCode.OK);
+        responseMessage.Headers.Add("requestUri", request.RequestUri.AbsoluteUri);
+        return Task.Factory.StartNew(() => responseMessage, cancellationToken);
     }
 }

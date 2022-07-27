@@ -5,23 +5,22 @@
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 
-namespace Steeltoe.Integration.Support
+namespace Steeltoe.Integration.Support;
+
+public class NullAwarePayloadArgumentResolver : PayloadMethodArgumentResolver
 {
-    public class NullAwarePayloadArgumentResolver : PayloadMethodArgumentResolver
+    public NullAwarePayloadArgumentResolver(IMessageConverter messageConverter)
+        : base(messageConverter, false)
     {
-        public NullAwarePayloadArgumentResolver(IMessageConverter messageConverter)
-            : base(messageConverter, false)
-        {
-        }
+    }
 
-        public NullAwarePayloadArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
+    public NullAwarePayloadArgumentResolver(IMessageConverter messageConverter, bool useDefaultResolution)
         : base(messageConverter, useDefaultResolution)
-        {
-        }
+    {
+    }
 
-        protected override bool IsEmptyPayload(object payload)
-        {
-            return base.IsEmptyPayload(payload) || "KafkaNull".Equals(payload.GetType().Name);
-        }
+    protected override bool IsEmptyPayload(object payload)
+    {
+        return base.IsEmptyPayload(payload) || "KafkaNull".Equals(payload.GetType().Name);
     }
 }

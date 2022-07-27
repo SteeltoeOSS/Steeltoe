@@ -6,21 +6,20 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using System;
 
-namespace Steeltoe.Integration.Support.Converter
+namespace Steeltoe.Integration.Support.Converter;
+
+public class ObjectStringMessageConverter : StringMessageConverter
 {
-    public class ObjectStringMessageConverter : StringMessageConverter
+    protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {
-        protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
+        var payload = message.Payload;
+        if (payload is string || payload is byte[])
         {
-            var payload = message.Payload;
-            if (payload is string || payload is byte[])
-            {
-                return base.ConvertFromInternal(message, targetClass, conversionHint);
-            }
-            else
-            {
-                return payload.ToString();
-            }
+            return base.ConvertFromInternal(message, targetClass, conversionHint);
+        }
+        else
+        {
+            return payload.ToString();
         }
     }
 }

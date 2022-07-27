@@ -5,26 +5,25 @@
 using System;
 using System.Collections.Concurrent;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public static class ConcurrentDictionaryExtensions
 {
-    public static class ConcurrentDictionaryExtensions
+    public static V GetOrAddEx<K, V>(this ConcurrentDictionary<K, V> dict, K key, Func<K, V> factory)
     {
-        public static V GetOrAddEx<K, V>(this ConcurrentDictionary<K, V> dict, K key, Func<K, V> factory)
+        if (dict.TryGetValue(key, out var value))
         {
-            if (dict.TryGetValue(key, out var value))
+            return value;
+        }
+
+        lock (dict)
+        {
+            if (dict.TryGetValue(key, out value))
             {
                 return value;
             }
 
-            lock (dict)
-            {
-                if (dict.TryGetValue(key, out value))
-                {
-                    return value;
-                }
-
-                return dict.GetOrAdd(key, factory);
-            }
+            return dict.GetOrAdd(key, factory);
         }
     }
 }

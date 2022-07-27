@@ -16,156 +16,155 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Steeltoe.Integration.Config
+namespace Steeltoe.Integration.Config;
+
+public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcessor<ServiceActivatorAttribute>
 {
-    public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcessor<ServiceActivatorAttribute>
+    private readonly List<IServiceActivatorMethod> _serviceActivatorMethods;
+
+    public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods, ILogger<ServiceActivatorAttributeProcessor> logger)
+        : base(applicationContext, logger)
     {
-        private readonly List<IServiceActivatorMethod> _serviceActivatorMethods;
+        MessageHandlerProperties.AddRange(new List<string>() { "OutputChannel", "RequiresReply" });
+        _serviceActivatorMethods = methods.ToList();
+    }
 
-        public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods, ILogger<ServiceActivatorAttributeProcessor> logger)
-            : base(applicationContext, logger)
+    public void Initialize()
+    {
+        if (_serviceActivatorMethods.Count <= 0)
         {
-            MessageHandlerProperties.AddRange(new List<string>() { "OutputChannel", "RequiresReply" });
-            _serviceActivatorMethods = methods.ToList();
+            return;
         }
 
-        public void Initialize()
+        foreach (var method in _serviceActivatorMethods)
         {
-            if (_serviceActivatorMethods.Count <= 0)
+            var service = CreateTargetService(method.ImplementationType);
+            if (service == null)
             {
-                return;
+                continue;
             }
 
-            foreach (var method in _serviceActivatorMethods)
+            var attributes = method.Method.GetCustomAttributes().ToList();
+            var serviceName = GetServiceName(service);
+            var result = PostProcess(service, serviceName, method.Method, attributes);
+
+            var endpoint = GetEndpoint(attributes, result);
+            if (endpoint == null)
             {
-                var service = CreateTargetService(method.ImplementationType);
-                if (service == null)
-                {
-                    continue;
-                }
-
-                var attributes = method.Method.GetCustomAttributes().ToList();
-                var serviceName = GetServiceName(service);
-                var result = PostProcess(service, serviceName, method.Method, attributes);
-
-                var endpoint = GetEndpoint(attributes, result);
-                if (endpoint == null)
-                {
-                    continue;
-                }
-
-                var endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
-                endpoint.ServiceName = endpointName;
-                ApplicationContext?.Register(endpointName, endpoint);
+                continue;
             }
+
+            var endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
+            endpoint.ServiceName = endpointName;
+            ApplicationContext?.Register(endpointName, endpoint);
         }
+    }
 
-        protected override IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes)
+    protected override IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes)
+    {
+        AbstractReplyProducingMessageHandler serviceActivator;
+        if (method.GetCustomAttribute<ServiceAttribute>() != null)
         {
-            AbstractReplyProducingMessageHandler serviceActivator;
-            if (method.GetCustomAttribute<ServiceAttribute>() != null)
+            // Service Attribute usage
+            var target = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
+            serviceActivator = ExtractTypeIfPossible<AbstractReplyProducingMessageHandler>(target);
+            if (serviceActivator == null)
             {
-                // Service Attribute usage
-                var target = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
-                serviceActivator = ExtractTypeIfPossible<AbstractReplyProducingMessageHandler>(target);
-                if (serviceActivator == null)
+                if (target is IMessageHandler handler)
                 {
-                    if (target is IMessageHandler handler)
-                    {
-                        /*
-                         * Return a reply-producing message handler so that we still get 'produced no reply' messages
-                         * and the super class will inject the advice chain to advise the handler method if needed.
-                         */
-                        return new ReplyProducingMessageHandlerWrapper(ApplicationContext, handler);
-                    }
-                    else
-                    {
-                        serviceActivator = new ServiceActivatingHandler(ApplicationContext, target, method);
-                    }
+                    /*
+                     * Return a reply-producing message handler so that we still get 'produced no reply' messages
+                     * and the super class will inject the advice chain to advise the handler method if needed.
+                     */
+                    return new ReplyProducingMessageHandlerWrapper(ApplicationContext, handler);
                 }
                 else
                 {
-                    CheckMessageHandlerAttributes(ResolveTargetServiceName(method), attributes);
-                    return (IMessageHandler)target;
+                    serviceActivator = new ServiceActivatingHandler(ApplicationContext, target, method);
                 }
             }
             else
             {
-                serviceActivator = new ServiceActivatingHandler(ApplicationContext, service, method);
+                CheckMessageHandlerAttributes(ResolveTargetServiceName(method), attributes);
+                return (IMessageHandler)target;
             }
-
-            var requiresReply = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "RequiresReply");
-            if (!string.IsNullOrEmpty(requiresReply))
-            {
-                serviceActivator.RequiresReply = bool.Parse(ApplicationContext.ResolveEmbeddedValue(requiresReply));
-            }
-
-            SetOutputChannelIfPresent(attributes, serviceActivator);
-            return serviceActivator;
+        }
+        else
+        {
+            serviceActivator = new ServiceActivatingHandler(ApplicationContext, service, method);
         }
 
-        protected virtual string GenerateServiceName(string originalServiceName, MethodInfo method, Type attributeType)
+        var requiresReply = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "RequiresReply");
+        if (!string.IsNullOrEmpty(requiresReply))
         {
-            var name = MessagingAttributeUtils.EndpointIdValue(method);
-            if (string.IsNullOrEmpty(name))
-            {
-                name = originalServiceName + "." + method.Name + "." + attributeType.Name + "." + Guid.NewGuid().ToString();
-            }
-
-            return name;
+            serviceActivator.RequiresReply = bool.Parse(ApplicationContext.ResolveEmbeddedValue(requiresReply));
         }
 
-        private static string GetServiceName(object service)
-        {
-            if (service is IServiceNameAware aware)
-            {
-                return aware.ServiceName;
-            }
+        SetOutputChannelIfPresent(attributes, serviceActivator);
+        return serviceActivator;
+    }
 
-            return service.GetType().FullName;
+    protected virtual string GenerateServiceName(string originalServiceName, MethodInfo method, Type attributeType)
+    {
+        var name = MessagingAttributeUtils.EndpointIdValue(method);
+        if (string.IsNullOrEmpty(name))
+        {
+            name = originalServiceName + "." + method.Name + "." + attributeType.Name + "." + Guid.NewGuid().ToString();
         }
 
-        private AbstractEndpoint GetEndpoint(List<Attribute> attributes, object result)
-        {
-            var endpoint = result as AbstractEndpoint;
+        return name;
+    }
 
-            if (endpoint != null)
+    private static string GetServiceName(object service)
+    {
+        if (service is IServiceNameAware aware)
+        {
+            return aware.ServiceName;
+        }
+
+        return service.GetType().FullName;
+    }
+
+    private AbstractEndpoint GetEndpoint(List<Attribute> attributes, object result)
+    {
+        var endpoint = result as AbstractEndpoint;
+
+        if (endpoint != null)
+        {
+            var autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
+            if (!string.IsNullOrEmpty(autoStartup))
             {
-                var autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
+                autoStartup = ApplicationContext?.ResolveEmbeddedValue(autoStartup);
                 if (!string.IsNullOrEmpty(autoStartup))
                 {
-                    autoStartup = ApplicationContext?.ResolveEmbeddedValue(autoStartup);
-                    if (!string.IsNullOrEmpty(autoStartup))
-                    {
-                        endpoint.IsAutoStartup = bool.Parse(autoStartup);
-                    }
+                    endpoint.IsAutoStartup = bool.Parse(autoStartup);
                 }
+            }
 
-                var phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
+            var phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
+            if (!string.IsNullOrEmpty(phase))
+            {
+                phase = ApplicationContext?.ResolveEmbeddedValue(phase);
                 if (!string.IsNullOrEmpty(phase))
                 {
-                    phase = ApplicationContext?.ResolveEmbeddedValue(phase);
-                    if (!string.IsNullOrEmpty(phase))
-                    {
-                        endpoint.Phase = int.Parse(phase);
-                    }
+                    endpoint.Phase = int.Parse(phase);
                 }
             }
-
-            return endpoint;
         }
 
-        private object CreateTargetService(Type implementation)
+        return endpoint;
+    }
+
+    private object CreateTargetService(Type implementation)
+    {
+        try
         {
-            try
-            {
-                return ApplicationContext.GetService(implementation);
-            }
-            catch (Exception e)
-            {
-                // Log
-                throw new InvalidOperationException("Unable to CreateInstance of type containing StreamListener method, Type: " + implementation, e);
-            }
+            return ApplicationContext.GetService(implementation);
+        }
+        catch (Exception e)
+        {
+            // Log
+            throw new InvalidOperationException("Unable to CreateInstance of type containing StreamListener method, Type: " + implementation, e);
         }
     }
 }

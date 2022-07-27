@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Connector.PostgreSql.EFCore.Test
+namespace Steeltoe.Connector.PostgreSql.EFCore.Test;
+
+public static class PostgresTestHelpers
 {
-    public static class PostgresTestHelpers
-    {
-        public static string SingleServerVCAP_EDB = @"
+    public static string SingleServerVCAP_EDB = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                     ""credentials"": {
@@ -24,7 +24,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
                 }]
             }";
 
-        public static string TwoServerVCAP_EDB = @"
+    public static string TwoServerVCAP_EDB = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                         ""credentials"": {
@@ -56,7 +56,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
                 }]
             }";
 
-        public static string SingleServerVCAP_Crunchy = @"
+    public static string SingleServerVCAP_Crunchy = @"
             {
                 ""postgresql-9.5-odb"": [{
                     ""credentials"": {
@@ -88,7 +88,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
                 }]
             }";
 
-        public static string SingleServerEncodedVCAP_Crunchy = @"
+    public static string SingleServerEncodedVCAP_Crunchy = @"
             {
                 ""postgresql-9.5-odb"": [{
                     ""credentials"": {
@@ -119,5 +119,4 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test
                     ]
                 }]
             }";
-    }
 }

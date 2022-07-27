@@ -11,119 +11,118 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Integration.Channel.Test
+namespace Steeltoe.Integration.Channel.Test;
+
+public class PublishSubscribeChannelTest
 {
-    public class PublishSubscribeChannelTest
+    private IServiceProvider provider;
+
+    public PublishSubscribeChannelTest()
     {
-        private IServiceProvider provider;
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var config = new ConfigurationBuilder().Build();
+        services.AddSingleton<IConfiguration>(config);
+        services.AddSingleton<IApplicationContext, GenericApplicationContext>();
+        provider = services.BuildServiceProvider();
+    }
 
-        public PublishSubscribeChannelTest()
+    [Fact]
+    public void TestSend()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var handler = new CounterHandler();
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
+        channel.Subscribe(handler);
+        var message = Message.Create("test");
+        Assert.True(channel.Send(message));
+        Assert.Equal(1, handler.Count);
+    }
+
+    [Fact]
+    public async ValueTask TestSendAsync()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var handler = new CounterHandler();
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
+        channel.Subscribe(handler);
+        var message = Message.Create("test");
+        Assert.True(await channel.SendAsync(message));
+        Assert.Equal(1, handler.Count);
+    }
+
+    [Fact]
+    public void TestSendOneHandler_10_000_000()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var handler = new CounterHandler();
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
+        channel.Subscribe(handler);
+        var message = Message.Create("test");
+        Assert.True(channel.Send(message));
+        for (var i = 0; i < 10000000; i++)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var config = new ConfigurationBuilder().Build();
-            services.AddSingleton<IConfiguration>(config);
-            services.AddSingleton<IApplicationContext, GenericApplicationContext>();
-            provider = services.BuildServiceProvider();
+            channel.Send(message);
         }
 
-        [Fact]
-        public void TestSend()
+        Assert.Equal(10000001, handler.Count);
+    }
+
+    [Fact]
+    public async ValueTask TestSendAsyncOneHandler_10_000_000()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var handler = new CounterHandler();
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
+        channel.Subscribe(handler);
+        var message = Message.Create("test");
+        Assert.True(await channel.SendAsync(message));
+        for (var i = 0; i < 10000000; i++)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
-            channel.Subscribe(handler);
-            var message = Message.Create("test");
-            Assert.True(channel.Send(message));
-            Assert.Equal(1, handler.Count);
+            await channel.SendAsync(message);
         }
 
-        [Fact]
-        public async ValueTask TestSendAsync()
+        Assert.Equal(10000001, handler.Count);
+    }
+
+    [Fact]
+    public async ValueTask TestSendAsyncTwoHandler_10_000_000()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<IIntegrationServices, IntegrationServices>();
+        var provider = services.BuildServiceProvider();
+        var handler1 = new CounterHandler();
+        var handler2 = new CounterHandler();
+        var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
+        channel.Subscribe(handler1);
+        channel.Subscribe(handler2);
+        var message = Message.Create("test");
+        for (var i = 0; i < 10000000; i++)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
-            channel.Subscribe(handler);
-            var message = Message.Create("test");
-            Assert.True(await channel.SendAsync(message));
-            Assert.Equal(1, handler.Count);
+            await channel.SendAsync(message);
         }
 
-        [Fact]
-        public void TestSendOneHandler_10_000_000()
+        Assert.Equal(10000000, handler1.Count);
+        Assert.Equal(10000000, handler2.Count);
+    }
+
+    private class CounterHandler : IMessageHandler
+    {
+        public int Count;
+
+        public string ServiceName { get; set; } = nameof(CounterHandler);
+
+        public void HandleMessage(IMessage message)
         {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
-            channel.Subscribe(handler);
-            var message = Message.Create("test");
-            Assert.True(channel.Send(message));
-            for (var i = 0; i < 10000000; i++)
-            {
-                channel.Send(message);
-            }
-
-            Assert.Equal(10000001, handler.Count);
-        }
-
-        [Fact]
-        public async ValueTask TestSendAsyncOneHandler_10_000_000()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var handler = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
-            channel.Subscribe(handler);
-            var message = Message.Create("test");
-            Assert.True(await channel.SendAsync(message));
-            for (var i = 0; i < 10000000; i++)
-            {
-                await channel.SendAsync(message);
-            }
-
-            Assert.Equal(10000001, handler.Count);
-        }
-
-        [Fact]
-        public async ValueTask TestSendAsyncTwoHandler_10_000_000()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IIntegrationServices, IntegrationServices>();
-            var provider = services.BuildServiceProvider();
-            var handler1 = new CounterHandler();
-            var handler2 = new CounterHandler();
-            var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
-            channel.Subscribe(handler1);
-            channel.Subscribe(handler2);
-            var message = Message.Create("test");
-            for (var i = 0; i < 10000000; i++)
-            {
-                await channel.SendAsync(message);
-            }
-
-            Assert.Equal(10000000, handler1.Count);
-            Assert.Equal(10000000, handler2.Count);
-        }
-
-        private class CounterHandler : IMessageHandler
-        {
-            public int Count;
-
-            public string ServiceName { get; set; } = nameof(CounterHandler);
-
-            public void HandleMessage(IMessage message)
-            {
-                Count++;
-            }
+            Count++;
         }
     }
 }

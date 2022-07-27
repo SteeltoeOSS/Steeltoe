@@ -6,24 +6,23 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Net;
 using System;
 
-namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront
+namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
+
+public class WavefrontApplicationOptions
 {
-    public class WavefrontApplicationOptions
+    internal const string WAVEFRONT_PREFIX = "wavefront:application";
+
+    public WavefrontApplicationOptions(IConfiguration config)
     {
-        internal const string WAVEFRONT_PREFIX = "wavefront:application";
-
-        public WavefrontApplicationOptions(IConfiguration config)
-        {
-            var section = config?.GetSection(WAVEFRONT_PREFIX) ?? throw new ArgumentNullException(nameof(config));
-            section.Bind(this);
-        }
-
-        public string Source { get; set; }
-
-        public string Name { get; set; }
-
-        public string Service { get; set; }
-
-        public string Cluster { get; set; }
+        var section = config?.GetSection(WAVEFRONT_PREFIX) ?? throw new ArgumentNullException(nameof(config));
+        section.Bind(this);
     }
+
+    public string Source { get; set; }
+
+    public string Name { get; set; }
+
+    public string Service { get; set; }
+
+    public string Cluster { get; set; }
 }

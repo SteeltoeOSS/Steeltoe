@@ -9,35 +9,34 @@ using Steeltoe.Management.Endpoint.Middleware;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Refresh
+namespace Steeltoe.Management.Endpoint.Refresh;
+
+public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
 {
-    public class RefreshEndpointMiddleware : EndpointMiddleware<IList<string>>
+    private readonly RequestDelegate _next;
+
+    public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public RefreshEndpointMiddleware(RequestDelegate next, RefreshEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<RefreshEndpointMiddleware> logger = null)
-          : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleRefreshRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleRefreshRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    protected internal Task HandleRefreshRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest();
+        _logger?.LogDebug("Returning: {0}", serialInfo);
 
-        protected internal Task HandleRefreshRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest();
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-
-            context.HandleContentNegotiation(_logger);
-            return context.Response.WriteAsync(serialInfo);
-        }
+        context.HandleContentNegotiation(_logger);
+        return context.Response.WriteAsync(serialInfo);
     }
 }

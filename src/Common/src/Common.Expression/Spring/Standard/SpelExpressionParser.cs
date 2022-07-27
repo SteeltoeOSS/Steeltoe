@@ -5,35 +5,34 @@
 using Steeltoe.Common.Expression.Internal.Spring.Common;
 using System;
 
-namespace Steeltoe.Common.Expression.Internal.Spring.Standard
+namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
+
+public class SpelExpressionParser : TemplateAwareExpressionParser
 {
-    public class SpelExpressionParser : TemplateAwareExpressionParser
+    private readonly SpelParserOptions _configuration;
+
+    public SpelExpressionParser()
     {
-        private readonly SpelParserOptions _configuration;
+        _configuration = new SpelParserOptions();
+    }
 
-        public SpelExpressionParser()
+    public SpelExpressionParser(SpelParserOptions configuration)
+    {
+        if (configuration == null)
         {
-            _configuration = new SpelParserOptions();
+            throw new ArgumentNullException(nameof(configuration));
         }
 
-        public SpelExpressionParser(SpelParserOptions configuration)
-        {
-            if (configuration == null)
-            {
-                throw new ArgumentNullException(nameof(configuration));
-            }
+        _configuration = configuration;
+    }
 
-            _configuration = configuration;
-        }
+    public IExpression ParseRaw(string expressionString)
+    {
+        return DoParseExpression(expressionString, null);
+    }
 
-        public IExpression ParseRaw(string expressionString)
-        {
-            return DoParseExpression(expressionString, null);
-        }
-
-        protected internal override IExpression DoParseExpression(string expressionString, IParserContext context)
-        {
-            return new InternalSpelExpressionParser(_configuration).DoParseExpression(expressionString, context);
-        }
+    protected internal override IExpression DoParseExpression(string expressionString, IParserContext context)
+    {
+        return new InternalSpelExpressionParser(_configuration).DoParseExpression(expressionString, context);
     }
 }

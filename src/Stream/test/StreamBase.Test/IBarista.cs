@@ -5,17 +5,16 @@
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 
-namespace Steeltoe.Stream
+namespace Steeltoe.Stream;
+
+public interface IBarista
 {
-    public interface IBarista
-    {
-        [Input]
-        ISubscribableChannel Orders();
+    [Input]
+    ISubscribableChannel Orders();
 
-        [Output]
-        IMessageChannel HotDrinks();
+    [Output]
+    IMessageChannel HotDrinks();
 
-        [Output]
-        IMessageChannel ColdDrinks();
-    }
+    [Output]
+    IMessageChannel ColdDrinks();
 }

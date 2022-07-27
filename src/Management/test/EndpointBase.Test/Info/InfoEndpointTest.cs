@@ -10,91 +10,90 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Steeltoe.Management.Endpoint.Info.Test
+namespace Steeltoe.Management.Endpoint.Info.Test;
+
+public class InfoEndpointTest : BaseTest
 {
-    public class InfoEndpointTest : BaseTest
+    private readonly ITestOutputHelper _output;
+
+    public InfoEndpointTest(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        _output = output;
+    }
 
-        public InfoEndpointTest(ITestOutputHelper output)
+    [Fact]
+    public void Invoke_NoContributors_ReturnsExpectedInfo()
+    {
+        using (var tc = new TestContext(_output))
         {
-            _output = output;
-        }
+            var contributors = new List<IInfoContributor>();
 
-        [Fact]
-        public void Invoke_NoContributors_ReturnsExpectedInfo()
-        {
-            using (var tc = new TestContext(_output))
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var contributors = new List<IInfoContributor>();
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
-                {
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
-                };
+            var ep = tc.GetService<IInfoEndpoint>();
 
-                var ep = tc.GetService<IInfoEndpoint>();
+            var info = ep.Invoke();
+            Assert.NotNull(info);
+            Assert.Empty(info);
+        }
+    }
 
-                var info = ep.Invoke();
-                Assert.NotNull(info);
-                Assert.Empty(info);
+    [Fact]
+    public void Invoke_CallsAllContributors()
+    {
+        using (var tc = new TestContext(_output))
+        {
+            var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(), new TestContrib() };
+
+            tc.AdditionalServices = (services, configuration) =>
+            {
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
+            };
+
+            var ep = tc.GetService<IInfoEndpoint>();
+
+            var info = ep.Invoke();
+
+            foreach (var contrib in contributors)
+            {
+                var tcc = (TestContrib)contrib;
+                Assert.True(tcc.Called);
             }
         }
+    }
 
-        [Fact]
-        public void Invoke_CallsAllContributors()
+    [Fact]
+    public void Invoke_HandlesExceptions()
+    {
+        using (var tc = new TestContext(_output))
         {
-            using (var tc = new TestContext(_output))
+            var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(true), new TestContrib() };
+
+            tc.AdditionalServices = (services, configuration) =>
             {
-                var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(), new TestContrib() };
+                services.AddInfoActuatorServices(configuration);
+                services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
+            };
 
-                tc.AdditionalServices = (services, configuration) =>
+            var ep = tc.GetService<IInfoEndpoint>();
+
+            var info = ep.Invoke();
+
+            foreach (var contrib in contributors)
+            {
+                var tcc = (TestContrib)contrib;
+                if (tcc.Throws)
                 {
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
-                };
-
-                var ep = tc.GetService<IInfoEndpoint>();
-
-                var info = ep.Invoke();
-
-                foreach (var contrib in contributors)
-                {
-                    var tcc = (TestContrib)contrib;
-                    Assert.True(tcc.Called);
+                    Assert.False(tcc.Called);
                 }
-            }
-        }
-
-        [Fact]
-        public void Invoke_HandlesExceptions()
-        {
-            using (var tc = new TestContext(_output))
-            {
-                var contributors = new List<IInfoContributor>() { new TestContrib(), new TestContrib(true), new TestContrib() };
-
-                tc.AdditionalServices = (services, configuration) =>
+                else
                 {
-                    services.AddInfoActuatorServices(configuration);
-                    services.AddSingleton<IEnumerable<IInfoContributor>>(contributors);
-                };
-
-                var ep = tc.GetService<IInfoEndpoint>();
-
-                var info = ep.Invoke();
-
-                foreach (var contrib in contributors)
-                {
-                    var tcc = (TestContrib)contrib;
-                    if (tcc.Throws)
-                    {
-                        Assert.False(tcc.Called);
-                    }
-                    else
-                    {
-                        Assert.True(tcc.Called);
-                    }
+                    Assert.True(tcc.Called);
                 }
             }
         }

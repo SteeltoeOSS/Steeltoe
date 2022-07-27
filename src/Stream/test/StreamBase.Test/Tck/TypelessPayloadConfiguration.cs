@@ -6,15 +6,14 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class TypelessPayloadConfiguration
 {
-    public class TypelessPayloadConfiguration
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public object Echo(object value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public object Echo(object value)
-        {
-            return value;
-        }
+        return value;
     }
 }

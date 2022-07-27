@@ -4,23 +4,22 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.ThreadDump
+namespace Steeltoe.Management.Endpoint.ThreadDump;
+
+public class StackTraceElement
 {
-    public class StackTraceElement
-    {
-        [JsonPropertyName("className")]
-        public string ClassName { get; set; }
+    [JsonPropertyName("className")]
+    public string ClassName { get; set; }
 
-        [JsonPropertyName("fileName")]
-        public string FileName { get; set; }
+    [JsonPropertyName("fileName")]
+    public string FileName { get; set; }
 
-        [JsonPropertyName("lineNumber")]
-        public int LineNumber { get; set; }
+    [JsonPropertyName("lineNumber")]
+    public int LineNumber { get; set; }
 
-        [JsonPropertyName("methodName")]
-        public string MethodName { get; set; }
+    [JsonPropertyName("methodName")]
+    public string MethodName { get; set; }
 
-        [JsonPropertyName("nativeMethod")]
-        public bool IsNativeMethod { get; set; }
-    }
+    [JsonPropertyName("nativeMethod")]
+    public bool IsNativeMethod { get; set; }
 }

@@ -4,18 +4,17 @@
 
 using Steeltoe.Messaging.Support;
 
-namespace Steeltoe.Integration.Dispatcher
+namespace Steeltoe.Integration.Dispatcher;
+
+/// <summary>
+/// The strategy to decorate message handling tasks.
+/// </summary>
+public interface IMessageHandlingDecorator
 {
     /// <summary>
-    /// The strategy to decorate message handling tasks.
+    /// Decorate the incoming message handling runnable (task)
     /// </summary>
-    public interface IMessageHandlingDecorator
-    {
-        /// <summary>
-        /// Decorate the incoming message handling runnable (task)
-        /// </summary>
-        /// <param name="messageHandlingRunnable">incoming message handling task</param>
-        /// <returns>the newly decorated task</returns>
-        IMessageHandlingRunnable Decorate(IMessageHandlingRunnable messageHandlingRunnable);
-    }
+    /// <param name="messageHandlingRunnable">incoming message handling task</param>
+    /// <returns>the newly decorated task</returns>
+    IMessageHandlingRunnable Decorate(IMessageHandlingRunnable messageHandlingRunnable);
 }

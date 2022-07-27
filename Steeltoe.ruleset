@@ -197,11 +197,13 @@
     <Rule Id="S3254" Action="None" />
     <Rule Id="S3256" Action="Warning" />
     <Rule Id="S3257" Action="None" />
+    <Rule Id="S3260" Action="None" />
     <Rule Id="S3261" Action="Warning" />
     <Rule Id="S3262" Action="Warning" />
     <Rule Id="S3263" Action="Warning" />
     <Rule Id="S3264" Action="Warning" />
     <Rule Id="S3265" Action="Warning" />
+    <Rule Id="S3267" Action="None" />
     <Rule Id="S3330" Action="Warning" />
     <Rule Id="S3343" Action="Warning" />
     <Rule Id="S3346" Action="Warning" />

@@ -5,15 +5,14 @@
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Collapser
-{
-    public class RealCollapserTimer : ICollapserTimer
-    {
-        private static readonly HystrixTimer Timer = HystrixTimer.GetInstance();
+namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-        public TimerReference AddListener(ITimerListener collapseTask)
-        {
-            return Timer.AddTimerListener(collapseTask);
-        }
+public class RealCollapserTimer : ICollapserTimer
+{
+    private static readonly HystrixTimer Timer = HystrixTimer.GetInstance();
+
+    public TimerReference AddListener(ITimerListener collapseTask)
+    {
+        return Timer.AddTimerListener(collapseTask);
     }
 }

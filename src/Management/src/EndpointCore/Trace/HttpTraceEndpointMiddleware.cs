@@ -8,35 +8,34 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Management.Endpoint.Trace
+namespace Steeltoe.Management.Endpoint.Trace;
+
+public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
 {
-    public class HttpTraceEndpointMiddleware : EndpointMiddleware<HttpTraceResult>
+    private readonly RequestDelegate _next;
+
+    public HttpTraceEndpointMiddleware(RequestDelegate next, HttpTraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HttpTraceEndpointMiddleware> logger = null)
+        : base(endpoint, mgmtOptions, logger: logger)
     {
-        private readonly RequestDelegate _next;
+        _next = next;
+    }
 
-        public HttpTraceEndpointMiddleware(RequestDelegate next, HttpTraceEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<HttpTraceEndpointMiddleware> logger = null)
-            : base(endpoint, mgmtOptions, logger: logger)
+    public Task Invoke(HttpContext context)
+    {
+        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
         {
-            _next = next;
+            return HandleTraceRequestAsync(context);
         }
 
-        public Task Invoke(HttpContext context)
-        {
-            if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
-            {
-                return HandleTraceRequestAsync(context);
-            }
+        return Task.CompletedTask;
+    }
 
-            return Task.CompletedTask;
-        }
+    protected internal Task HandleTraceRequestAsync(HttpContext context)
+    {
+        var serialInfo = HandleRequest();
+        _logger?.LogDebug("Returning: {0}", serialInfo);
 
-        protected internal Task HandleTraceRequestAsync(HttpContext context)
-        {
-            var serialInfo = HandleRequest();
-            _logger?.LogDebug("Returning: {0}", serialInfo);
-
-            context.HandleContentNegotiation(_logger);
-            return context.Response.WriteAsync(serialInfo);
-        }
+        context.HandleContentNegotiation(_logger);
+        return context.Response.WriteAsync(serialInfo);
     }
 }

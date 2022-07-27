@@ -4,14 +4,13 @@
 
 using System.Security.Principal;
 
-namespace Steeltoe.Management.Endpoint.Trace.Test
+namespace Steeltoe.Management.Endpoint.Trace.Test;
+
+internal class MyIdentity : IIdentity
 {
-    internal class MyIdentity : IIdentity
-    {
-        public string Name { get; } = "MyTestName";
+    public string Name { get; } = "MyTestName";
 
-        public string AuthenticationType { get; } = "MyTestAuthType";
+    public string AuthenticationType { get; } = "MyTestAuthType";
 
-        public bool IsAuthenticated { get; } = true;
-    }
+    public bool IsAuthenticated { get; } = true;
 }

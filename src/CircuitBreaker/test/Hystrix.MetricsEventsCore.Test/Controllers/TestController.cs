@@ -6,17 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using System.Threading.Tasks;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
+
+[Route("test/test.command")]
+public class TestController : Controller
 {
-    [Route("test/test.command")]
-    public class TestController : Controller
+    [HttpGet]
+    public async Task<IActionResult> RunCommand()
     {
-        [HttpGet]
-        public async Task<IActionResult> RunCommand()
-        {
-            var cmd = new MyCommand();
-            await cmd.ExecuteAsync();
-            return Ok();
-        }
+        var cmd = new MyCommand();
+        await cmd.ExecuteAsync();
+        return Ok();
     }
 }

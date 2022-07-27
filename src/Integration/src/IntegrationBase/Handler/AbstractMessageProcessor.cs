@@ -6,20 +6,19 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Integration.Handler
+namespace Steeltoe.Integration.Handler;
+
+public abstract class AbstractMessageProcessor<T> : AbstractExpressionEvaluator, IMessageProcessor<T>
 {
-    public abstract class AbstractMessageProcessor<T> : AbstractExpressionEvaluator, IMessageProcessor<T>
+    protected AbstractMessageProcessor(IApplicationContext context)
+        : base(context)
     {
-        protected AbstractMessageProcessor(IApplicationContext context)
-            : base(context)
-        {
-        }
+    }
 
-        public abstract T ProcessMessage(IMessage message);
+    public abstract T ProcessMessage(IMessage message);
 
-        object IMessageProcessor.ProcessMessage(IMessage message)
-        {
-            return ProcessMessage(message);
-        }
+    object IMessageProcessor.ProcessMessage(IMessage message)
+    {
+        return ProcessMessage(message);
     }
 }

@@ -4,18 +4,17 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public class CannotCreateTransactionException : TransactionException
-    {
-        public CannotCreateTransactionException(string msg)
-        : base(msg)
-        {
-        }
+namespace Steeltoe.Common.Transaction;
 
-        public CannotCreateTransactionException(string msg, Exception cause)
+public class CannotCreateTransactionException : TransactionException
+{
+    public CannotCreateTransactionException(string msg)
+        : base(msg)
+    {
+    }
+
+    public CannotCreateTransactionException(string msg, Exception cause)
         : base(msg, cause)
-        {
-        }
+    {
     }
 }

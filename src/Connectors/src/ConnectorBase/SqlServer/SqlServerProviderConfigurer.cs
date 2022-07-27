@@ -6,58 +6,57 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
 using System;
 
-namespace Steeltoe.Connector.SqlServer
+namespace Steeltoe.Connector.SqlServer;
+
+public class SqlServerProviderConfigurer
 {
-    public class SqlServerProviderConfigurer
+    public string Configure(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
     {
-        public string Configure(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
+        UpdateConfiguration(si, configuration);
+        return configuration.ToString();
+    }
+
+    public void UpdateConfiguration(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
+    {
+        if (si == null)
         {
-            UpdateConfiguration(si, configuration);
-            return configuration.ToString();
+            return;
         }
 
-        public void UpdateConfiguration(SqlServerServiceInfo si, SqlServerProviderConnectorOptions configuration)
+        if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si == null)
+            configuration.Port = si.Port;
+            configuration.Server = si.Host;
+            if (!string.IsNullOrEmpty(si.Path))
             {
-                return;
+                configuration.Database = si.Path;
             }
 
-            if (!string.IsNullOrEmpty(si.Uri))
+            if (si.Query != null)
             {
-                configuration.Port = si.Port;
-                configuration.Server = si.Host;
-                if (!string.IsNullOrEmpty(si.Path))
+                foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
                 {
-                    configuration.Database = si.Path;
-                }
-
-                if (si.Query != null)
-                {
-                    foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
+                    if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            configuration.Database = kvp.Value;
-                        }
-                        else if (kvp.Key.EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            configuration.InstanceName = kvp.Value;
-                        }
-                        else if (kvp.Key.StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            // adding this key could result in "System.ArgumentException : Keyword not supported: 'hostnameincertificate'" later
-                        }
-                        else
-                        {
-                            configuration.Options.Add(kvp.Key, kvp.Value);
-                        }
+                        configuration.Database = kvp.Value;
+                    }
+                    else if (kvp.Key.EndsWith("instancename", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        configuration.InstanceName = kvp.Value;
+                    }
+                    else if (kvp.Key.StartsWith("hostnameincertificate", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // adding this key could result in "System.ArgumentException : Keyword not supported: 'hostnameincertificate'" later
+                    }
+                    else
+                    {
+                        configuration.Options.Add(kvp.Key, kvp.Value);
                     }
                 }
-
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
             }
+
+            configuration.Username = si.UserName;
+            configuration.Password = si.Password;
         }
     }
 }

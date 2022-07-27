@@ -6,32 +6,31 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Management.Endpoint.SpringBootAdminClient
+namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
+
+[Obsolete("This class is moving to EndpointBase")]
+internal class Application
 {
-    [Obsolete("This class is moving to EndpointBase")]
-    internal class Application
-    {
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
+    [JsonPropertyName("name")]
+    public string Name { get; set; }
 
-        [JsonPropertyName("managementUrl")]
-        public Uri ManagementUrl { get; set; }
+    [JsonPropertyName("managementUrl")]
+    public Uri ManagementUrl { get; set; }
 
-        [JsonPropertyName("healthUrl")]
-        public Uri HealthUrl { get; set; }
+    [JsonPropertyName("healthUrl")]
+    public Uri HealthUrl { get; set; }
 
-        [JsonPropertyName("serviceUrl")]
-        public Uri ServiceUrl { get; set; }
+    [JsonPropertyName("serviceUrl")]
+    public Uri ServiceUrl { get; set; }
 
-        [JsonPropertyName("metadata")]
-        public Dictionary<string, object> Metadata { get; set; }
-    }
+    [JsonPropertyName("metadata")]
+    public Dictionary<string, object> Metadata { get; set; }
+}
 
 #pragma warning disable SA1402 // File may only contain a single type
-    [Obsolete("This class is moving to EndpointBase")]
-    internal class RegistrationResult
+[Obsolete("This class is moving to EndpointBase")]
+internal class RegistrationResult
 #pragma warning restore SA1402 // File may only contain a single type
-    {
-        public string Id { get; set; }
-    }
+{
+    public string Id { get; set; }
 }

@@ -4,12 +4,11 @@
 
 using System;
 
-namespace Steeltoe.Common.Transaction
-{
-    public interface ITransactionAttribute : ITransactionDefinition
-    {
-        string Qualifier { get; }
+namespace Steeltoe.Common.Transaction;
 
-        bool RollbackOn(Exception exception);
-    }
+public interface ITransactionAttribute : ITransactionDefinition
+{
+    string Qualifier { get; }
+
+    bool RollbackOn(Exception exception);
 }

@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker
+namespace Steeltoe.CircuitBreaker;
+
+public interface ICircuitBreaker
 {
-    public interface ICircuitBreaker
-    {
-        bool AllowRequest { get; }
+    bool AllowRequest { get; }
 
-        bool IsOpen { get; }
+    bool IsOpen { get; }
 
-        void MarkSuccess();
-    }
+    void MarkSuccess();
 }

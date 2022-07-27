@@ -5,14 +5,13 @@
 using System;
 using System.Reflection.Emit;
 
-namespace Steeltoe.Common.Expression.Internal.Spring
+namespace Steeltoe.Common.Expression.Internal.Spring;
+
+public interface ICompilablePropertyAccessor : IPropertyAccessor
 {
-    public interface ICompilablePropertyAccessor : IPropertyAccessor
-    {
-        bool IsCompilable();
+    bool IsCompilable();
 
-        Type GetPropertyType();
+    Type GetPropertyType();
 
-        void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf);
-    }
+    void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf);
 }

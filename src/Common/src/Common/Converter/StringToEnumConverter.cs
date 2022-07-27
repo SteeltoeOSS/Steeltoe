@@ -4,31 +4,30 @@
 
 using System;
 
-namespace Steeltoe.Common.Converter
+namespace Steeltoe.Common.Converter;
+
+public class StringToEnumConverter : AbstractGenericConditionalConverter
 {
-    public class StringToEnumConverter : AbstractGenericConditionalConverter
+    public StringToEnumConverter()
+        : base(null)
     {
-        public StringToEnumConverter()
-            : base(null)
+    }
+
+    public override bool Matches(Type sourceType, Type targetType)
+    {
+        var targetCheck = ConversionUtils.GetNullableElementType(targetType);
+        return sourceType == typeof(string) && targetCheck.IsEnum;
+    }
+
+    public override object Convert(object source, Type sourceType, Type targetType)
+    {
+        var asString = source as string;
+        if (string.IsNullOrEmpty(asString))
         {
+            return null;
         }
 
-        public override bool Matches(Type sourceType, Type targetType)
-        {
-            var targetCheck = ConversionUtils.GetNullableElementType(targetType);
-            return sourceType == typeof(string) && targetCheck.IsEnum;
-        }
-
-        public override object Convert(object source, Type sourceType, Type targetType)
-        {
-            var asString = source as string;
-            if (string.IsNullOrEmpty(asString))
-            {
-                return null;
-            }
-
-            targetType = ConversionUtils.GetNullableElementType(targetType);
-            return Enum.Parse(targetType, asString.Trim(), true);
-        }
+        targetType = ConversionUtils.GetNullableElementType(targetType);
+        return Enum.Parse(targetType, asString.Trim(), true);
     }
 }

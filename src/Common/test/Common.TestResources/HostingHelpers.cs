@@ -5,13 +5,12 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
-namespace Steeltoe.Common
+namespace Steeltoe.Common;
+
+public static class HostingHelpers
 {
-    public static class HostingHelpers
+    public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
     {
-        public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
-        {
-            return new HostingEnvironment() { EnvironmentName = environmentName };
-        }
+        return new HostingEnvironment() { EnvironmentName = environmentName };
     }
 }

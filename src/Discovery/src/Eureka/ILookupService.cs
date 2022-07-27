@@ -5,16 +5,15 @@
 using Steeltoe.Discovery.Eureka.AppInfo;
 using System.Collections.Generic;
 
-namespace Steeltoe.Discovery.Eureka
+namespace Steeltoe.Discovery.Eureka;
+
+public interface ILookupService
 {
-    public interface ILookupService
-    {
-        Applications Applications { get; }
+    Applications Applications { get; }
 
-        Application GetApplication(string appName);
+    Application GetApplication(string appName);
 
-        IList<InstanceInfo> GetInstanceById(string id);
+    IList<InstanceInfo> GetInstanceById(string id);
 
-        InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
-    }
+    InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure);
 }

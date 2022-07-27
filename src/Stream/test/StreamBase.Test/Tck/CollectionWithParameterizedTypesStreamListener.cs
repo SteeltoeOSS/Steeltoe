@@ -8,17 +8,16 @@ using Steeltoe.Stream.Messaging;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Stream.Tck
+namespace Steeltoe.Stream.Tck;
+
+public class CollectionWithParameterizedTypesStreamListener
 {
-    public class CollectionWithParameterizedTypesStreamListener
+    [StreamListener(IProcessor.INPUT)]
+    [SendTo(IProcessor.OUTPUT)]
+    public List<Employee<Person>> Echo(List<Employee<Person>> value)
     {
-        [StreamListener(IProcessor.INPUT)]
-        [SendTo(IProcessor.OUTPUT)]
-        public List<Employee<Person>> Echo(List<Employee<Person>> value)
-        {
-            Assert.True(value.Count > 0);
-            Assert.NotNull(value[0]);
-            return value;
-        }
+        Assert.True(value.Count > 0);
+        Assert.NotNull(value[0]);
+        return value;
     }
 }

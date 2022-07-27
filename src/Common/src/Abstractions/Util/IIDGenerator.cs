@@ -4,10 +4,9 @@
 
 using System;
 
-namespace Steeltoe.Common.Util
+namespace Steeltoe.Common.Util;
+
+public interface IIDGenerator
 {
-    public interface IIDGenerator
-    {
-        string GenerateId();
-    }
+    string GenerateId();
 }

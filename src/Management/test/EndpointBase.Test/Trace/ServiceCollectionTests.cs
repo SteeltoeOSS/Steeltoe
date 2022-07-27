@@ -7,22 +7,21 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test.Trace
+namespace Steeltoe.Management.Endpoint.Test.Trace;
+
+public class ServiceCollectionTests
 {
-    public class ServiceCollectionTests
+    [Fact]
+    public void AddTraceActuatorServices_ThrowsOnNulls()
     {
-        [Fact]
-        public void AddTraceActuatorServices_ThrowsOnNulls()
-        {
-            IServiceCollection services = null;
-            IServiceCollection services2 = new ServiceCollection();
-            IConfigurationRoot config = null;
+        IServiceCollection services = null;
+        IServiceCollection services2 = new ServiceCollection();
+        IConfigurationRoot config = null;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddTraceActuatorServices(services, config, MediaTypeVersion.V2));
-            Assert.Contains(nameof(services), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddTraceActuatorServices(services, config, MediaTypeVersion.V2));
+        Assert.Contains(nameof(services), ex.Message);
 
-            var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddTraceActuatorServices(services2, config, MediaTypeVersion.V2));
-            Assert.Contains(nameof(config), ex2.Message);
-        }
+        var ex2 = Assert.Throws<ArgumentNullException>(() => ServiceCollectionExtensions.AddTraceActuatorServices(services2, config, MediaTypeVersion.V2));
+        Assert.Contains(nameof(config), ex2.Message);
     }
 }

@@ -8,133 +8,132 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using System;
 
-namespace Steeltoe.Messaging.RabbitMQ.Transaction
+namespace Steeltoe.Messaging.RabbitMQ.Transaction;
+
+public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager
 {
-    public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager
+    public RabbitTransactionManager()
     {
-        public RabbitTransactionManager()
+        TransactionSynchronization = SYNCHRONIZATION_NEVER;
+    }
+
+    public RabbitTransactionManager(IConnectionFactory connectionFactory, ILogger logger = null)
+        : base(logger)
+    {
+        if (connectionFactory == null)
         {
-            TransactionSynchronization = SYNCHRONIZATION_NEVER;
+            throw new ArgumentNullException(nameof(connectionFactory));
         }
 
-        public RabbitTransactionManager(IConnectionFactory connectionFactory, ILogger logger = null)
-            : base(logger)
+        ConnectionFactory = connectionFactory;
+    }
+
+    public IConnectionFactory ConnectionFactory { get; set; }
+
+    public object ResourceFactory => ConnectionFactory;
+
+    protected override object DoGetTransaction()
+    {
+        var txObject = new RabbitTransactionObject((RabbitResourceHolder)TransactionSynchronizationManager.GetResource(ConnectionFactory));
+        return txObject;
+    }
+
+    protected override bool IsExistingTransaction(object transaction)
+    {
+        var txObject = (RabbitTransactionObject)transaction;
+        return txObject.ResourceHolder != null;
+    }
+
+    protected override void DoBegin(object transaction, ITransactionDefinition definition)
+    {
+        if (definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT)
         {
-            if (connectionFactory == null)
+            throw new InvalidIsolationLevelException("AMQP does not support an isolation level concept");
+        }
+
+        var txObject = (RabbitTransactionObject)transaction;
+        RabbitResourceHolder resourceHolder = null;
+        try
+        {
+            resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, true);
+            _logger?.LogDebug("Created AMQP transaction on channel [{channel}]", resourceHolder.GetChannel());
+
+            txObject.ResourceHolder = resourceHolder;
+            txObject.ResourceHolder.SynchronizedWithTransaction = true;
+            var timeout = DetermineTimeout(definition);
+            if (timeout != AbstractTransactionDefinition.TIMEOUT_DEFAULT)
             {
-                throw new ArgumentNullException(nameof(connectionFactory));
+                txObject.ResourceHolder.SetTimeoutInSeconds(timeout);
             }
 
-            ConnectionFactory = connectionFactory;
+            TransactionSynchronizationManager.BindResource(ConnectionFactory, txObject.ResourceHolder);
         }
-
-        public IConnectionFactory ConnectionFactory { get; set; }
-
-        public object ResourceFactory => ConnectionFactory;
-
-        protected override object DoGetTransaction()
+        catch (RabbitException ex)
         {
-            var txObject = new RabbitTransactionObject((RabbitResourceHolder)TransactionSynchronizationManager.GetResource(ConnectionFactory));
-            return txObject;
-        }
-
-        protected override bool IsExistingTransaction(object transaction)
-        {
-            var txObject = (RabbitTransactionObject)transaction;
-            return txObject.ResourceHolder != null;
-        }
-
-        protected override void DoBegin(object transaction, ITransactionDefinition definition)
-        {
-            if (definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT)
+            if (resourceHolder != null)
             {
-                throw new InvalidIsolationLevelException("AMQP does not support an isolation level concept");
+                ConnectionFactoryUtils.ReleaseResources(resourceHolder);
             }
 
-            var txObject = (RabbitTransactionObject)transaction;
-            RabbitResourceHolder resourceHolder = null;
-            try
-            {
-                resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, true);
-                _logger?.LogDebug("Created AMQP transaction on channel [{channel}]", resourceHolder.GetChannel());
+            throw new CannotCreateTransactionException("Could not create AMQP transaction", ex);
+        }
+    }
 
-                txObject.ResourceHolder = resourceHolder;
-                txObject.ResourceHolder.SynchronizedWithTransaction = true;
-                var timeout = DetermineTimeout(definition);
-                if (timeout != AbstractTransactionDefinition.TIMEOUT_DEFAULT)
-                {
-                    txObject.ResourceHolder.SetTimeoutInSeconds(timeout);
-                }
+    protected override object DoSuspend(object transaction)
+    {
+        var txObject = (RabbitTransactionObject)transaction;
+        txObject.ResourceHolder = null;
+        return TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
+    }
 
-                TransactionSynchronizationManager.BindResource(ConnectionFactory, txObject.ResourceHolder);
-            }
-            catch (RabbitException ex)
-            {
-                if (resourceHolder != null)
-                {
-                    ConnectionFactoryUtils.ReleaseResources(resourceHolder);
-                }
+    protected override void DoResume(object transaction, object suspendedResources)
+    {
+        var conHolder = (RabbitResourceHolder)suspendedResources;
+        TransactionSynchronizationManager.BindResource(ConnectionFactory, conHolder);
+    }
 
-                throw new CannotCreateTransactionException("Could not create AMQP transaction", ex);
-            }
+    protected override void DoCommit(DefaultTransactionStatus status)
+    {
+        var txObject = (RabbitTransactionObject)status.Transaction;
+        var resourceHolder = txObject.ResourceHolder;
+        resourceHolder.CommitAll();
+    }
+
+    protected override void DoRollback(DefaultTransactionStatus status)
+    {
+        var txObject = (RabbitTransactionObject)status.Transaction;
+        var resourceHolder = txObject.ResourceHolder;
+        resourceHolder.RollbackAll();
+    }
+
+    protected override void DoSetRollbackOnly(DefaultTransactionStatus status)
+    {
+        var txObject = (RabbitTransactionObject)status.Transaction;
+        txObject.ResourceHolder.RollbackOnly = true;
+    }
+
+    protected override void DoCleanupAfterCompletion(object transaction)
+    {
+        var txObject = (RabbitTransactionObject)transaction;
+        TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
+        txObject.ResourceHolder.CloseAll();
+        txObject.ResourceHolder.Clear();
+    }
+
+    private class RabbitTransactionObject : ISmartTransactionObject
+    {
+        public RabbitTransactionObject(RabbitResourceHolder rabbitResourceHolder)
+        {
+            ResourceHolder = rabbitResourceHolder;
         }
 
-        protected override object DoSuspend(object transaction)
+        public RabbitResourceHolder ResourceHolder { get; set; }
+
+        public bool IsRollbackOnly => ResourceHolder.RollbackOnly;
+
+        public void Flush()
         {
-            var txObject = (RabbitTransactionObject)transaction;
-            txObject.ResourceHolder = null;
-            return TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
-        }
-
-        protected override void DoResume(object transaction, object suspendedResources)
-        {
-            var conHolder = (RabbitResourceHolder)suspendedResources;
-            TransactionSynchronizationManager.BindResource(ConnectionFactory, conHolder);
-        }
-
-        protected override void DoCommit(DefaultTransactionStatus status)
-        {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            var resourceHolder = txObject.ResourceHolder;
-            resourceHolder.CommitAll();
-        }
-
-        protected override void DoRollback(DefaultTransactionStatus status)
-        {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            var resourceHolder = txObject.ResourceHolder;
-            resourceHolder.RollbackAll();
-        }
-
-        protected override void DoSetRollbackOnly(DefaultTransactionStatus status)
-        {
-            var txObject = (RabbitTransactionObject)status.Transaction;
-            txObject.ResourceHolder.RollbackOnly = true;
-        }
-
-        protected override void DoCleanupAfterCompletion(object transaction)
-        {
-            var txObject = (RabbitTransactionObject)transaction;
-            TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
-            txObject.ResourceHolder.CloseAll();
-            txObject.ResourceHolder.Clear();
-        }
-
-        private class RabbitTransactionObject : ISmartTransactionObject
-        {
-            public RabbitTransactionObject(RabbitResourceHolder rabbitResourceHolder)
-            {
-                ResourceHolder = rabbitResourceHolder;
-            }
-
-            public RabbitResourceHolder ResourceHolder { get; set; }
-
-            public bool IsRollbackOnly => ResourceHolder.RollbackOnly;
-
-            public void Flush()
-            {
-                // no-op
-            }
+            // no-op
         }
     }
 }

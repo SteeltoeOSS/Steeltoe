@@ -4,15 +4,14 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Integration.Channel
-{
-    public class TaskSchedulerChannelWriter : AbstractSubscribableChannelWriter
-    {
-        public TaskSchedulerChannelWriter(TaskSchedulerChannel channel, ILogger logger = null)
-            : base(channel, logger)
-        {
-        }
+namespace Steeltoe.Integration.Channel;
 
-        public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)channel;
+public class TaskSchedulerChannelWriter : AbstractSubscribableChannelWriter
+{
+    public TaskSchedulerChannelWriter(TaskSchedulerChannel channel, ILogger logger = null)
+        : base(channel, logger)
+    {
     }
+
+    public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)channel;
 }

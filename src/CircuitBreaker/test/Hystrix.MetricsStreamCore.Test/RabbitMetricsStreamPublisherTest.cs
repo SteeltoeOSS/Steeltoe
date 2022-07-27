@@ -8,29 +8,28 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Connector.Hystrix;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
-{
-    public class RabbitMetricsStreamPublisherTest : HystrixTestBase
-    {
-        [Fact]
-        public void Constructor_SetsupStream()
-        {
-            var stream = HystrixDashboardStream.GetInstance();
-            var factory = new HystrixConnectionFactory(new ConnectionFactory());
-            var options = new OptionsWrapper<HystrixMetricsStreamOptions>()
-            {
-                Value = new HystrixMetricsStreamOptions()
-            };
-            var publisher = new RabbitMetricsStreamPublisher(options, stream, factory);
-            Assert.NotNull(publisher.SampleSubscription);
-            Assert.NotNull(publisher.Factory);
-            publisher.SampleSubscription.Dispose();
-        }
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
 
-        private class OptionsWrapper<T> : IOptions<T>
-            where T : class, new()
+public class RabbitMetricsStreamPublisherTest : HystrixTestBase
+{
+    [Fact]
+    public void Constructor_SetsupStream()
+    {
+        var stream = HystrixDashboardStream.GetInstance();
+        var factory = new HystrixConnectionFactory(new ConnectionFactory());
+        var options = new OptionsWrapper<HystrixMetricsStreamOptions>()
         {
-            public T Value { get; set; }
-        }
+            Value = new HystrixMetricsStreamOptions()
+        };
+        var publisher = new RabbitMetricsStreamPublisher(options, stream, factory);
+        Assert.NotNull(publisher.SampleSubscription);
+        Assert.NotNull(publisher.Factory);
+        publisher.SampleSubscription.Dispose();
+    }
+
+    private class OptionsWrapper<T> : IOptions<T>
+        where T : class, new()
+    {
+        public T Value { get; set; }
     }
 }

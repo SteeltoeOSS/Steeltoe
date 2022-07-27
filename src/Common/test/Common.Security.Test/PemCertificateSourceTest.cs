@@ -4,14 +4,13 @@
 
 using Xunit;
 
-namespace Steeltoe.Common.Security.Test
+namespace Steeltoe.Common.Security.Test;
+
+public class PemCertificateSourceTest
 {
-    public class PemCertificateSourceTest
+    [Fact]
+    public void PemCertificateSource_HasOptionsConfigurer()
     {
-        [Fact]
-        public void PemCertificateSource_HasOptionsConfigurer()
-        {
-            Assert.NotNull(new PemCertificateSource("somePath", "somePath").OptionsConfigurer);
-        }
+        Assert.NotNull(new PemCertificateSource("somePath", "somePath").OptionsConfigurer);
     }
 }

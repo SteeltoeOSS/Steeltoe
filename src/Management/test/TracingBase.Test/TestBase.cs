@@ -13,73 +13,72 @@ using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
 
-namespace Steeltoe.Management.Tracing.Test
+namespace Steeltoe.Management.Tracing.Test;
+
+public class TestBase
 {
-    public class TestBase
+    public virtual TracingOptions GetOptions()
     {
-        public virtual TracingOptions GetOptions()
-        {
-            var opts = new TracingOptions(null, GetConfiguration());
-            return opts;
-        }
+        var opts = new TracingOptions(null, GetConfiguration());
+        return opts;
+    }
 
-        public virtual IConfiguration GetConfiguration() =>
-            GetConfiguration(new Dictionary<string, string>());
+    public virtual IConfiguration GetConfiguration() =>
+        GetConfiguration(new Dictionary<string, string>());
 
-        public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
-            => new ConfigurationBuilder()
-                    .AddInMemoryCollection(new Dictionary<string, string>(moreSettings) { { "management:tracing:name", "foobar" } })
-                    .Build();
+    public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
+        => new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string>(moreSettings) { { "management:tracing:name", "foobar" } })
+            .Build();
 
-        protected TelemetrySpan GetCurrentSpan(Tracer tracer)
-        {
-            var span = Tracer.CurrentSpan;
-            return span.Context.IsValid ? span : null;
-        }
+    protected TelemetrySpan GetCurrentSpan(Tracer tracer)
+    {
+        var span = Tracer.CurrentSpan;
+        return span.Context.IsValid ? span : null;
+    }
 
-        protected object GetPrivateField(object baseObject, string fieldName)
-             => baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+    protected object GetPrivateField(object baseObject, string fieldName)
+        => baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
 
-        protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
-        {
-            // confirm Steeltoe types were registered
-            Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
-            Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
+    protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
+    {
+        // confirm Steeltoe types were registered
+        Assert.NotNull(serviceProvider.GetService<ITracingOptions>());
+        Assert.IsType<TracingLogProcessor>(serviceProvider.GetService<IDynamicMessageProcessor>());
 
-            // confirm OpenTelemetry types were registered
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            Assert.NotNull(tracerProvider);
-            var hst = serviceProvider.GetService<IHostedService>();
-            Assert.NotNull(hst);
-        }
+        // confirm OpenTelemetry types were registered
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        Assert.NotNull(tracerProvider);
+        var hst = serviceProvider.GetService<IHostedService>();
+        Assert.NotNull(hst);
+    }
 
-        protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
-        {
-            // confirm instrumentation(s) were added as expected
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
-            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
-            Assert.NotNull(instrumentations);
-            Assert.Single(instrumentations);
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+    protected void ValidateServiceCollectionBase(ServiceProvider serviceProvider)
+    {
+        // confirm instrumentation(s) were added as expected
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
+        var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+        Assert.NotNull(instrumentations);
+        Assert.Single(instrumentations);
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
 
-            Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
-            var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
-            var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
-            Assert.Equal(2, props.Count);
-            Assert.Contains(props, p => p is B3Propagator);
-            Assert.Contains(props, p => p is BaggagePropagator);
-        }
+        Assert.IsType<CompositeTextMapPropagator>(Propagators.DefaultTextMapPropagator);
+        var comp = Propagators.DefaultTextMapPropagator as CompositeTextMapPropagator;
+        var props = GetPrivateField(comp, "propagators") as List<TextMapPropagator>;
+        Assert.Equal(2, props.Count);
+        Assert.Contains(props, p => p is B3Propagator);
+        Assert.Contains(props, p => p is BaggagePropagator);
+    }
 
-        protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
-        {
-            var tracerProvider = serviceProvider.GetService<TracerProvider>();
+    protected void ValidateServiceContainerCore(ServiceProvider serviceProvider)
+    {
+        var tracerProvider = serviceProvider.GetService<TracerProvider>();
 
-            // confirm instrumentation(s) were added as expected
-            var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
-            Assert.NotNull(instrumentations);
-            Assert.Equal(2, instrumentations.Count);
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
-            Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
-        }
+        // confirm instrumentation(s) were added as expected
+        var instrumentations = GetPrivateField(tracerProvider, "instrumentations") as List<object>;
+        Assert.NotNull(instrumentations);
+        Assert.Equal(2, instrumentations.Count);
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("Http"));
+        Assert.Contains(instrumentations, obj => obj.GetType().Name.Contains("AspNetCore"));
     }
 }

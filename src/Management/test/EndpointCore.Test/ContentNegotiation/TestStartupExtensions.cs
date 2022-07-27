@@ -20,364 +20,363 @@ using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 
-namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test
+namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
+
+public static class TestStartupExtensions
 {
-    public static class TestStartupExtensions
+    public enum EndpointNames
     {
-        public enum EndpointNames
-        {
-            Cloudfoundry,
-            Hypermedia,
-            Info,
-            Metrics,
-            Loggers,
-            Health,
-            Trace,
-            DbMigrations,
-            Env,
-            Mappings,
-            Refresh,
-            ThreadDump
-        }
-
-        public static IWebHostBuilder StartupByEpName(this IWebHostBuilder builder, EndpointNames endpointName)
-        {
-            return endpointName switch
-            {
-                EndpointNames.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
-                EndpointNames.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
-                EndpointNames.Info => builder.UseStartup<InfoStartup>(),
-                EndpointNames.Metrics => builder.UseStartup<MetricsStartup>(),
-                EndpointNames.Loggers => builder.UseStartup<LoggersStartup>(),
-                EndpointNames.Health => builder.UseStartup<HealthStartup>(),
-                EndpointNames.Trace => builder.UseStartup<TraceStartup>(),
-                EndpointNames.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
-                EndpointNames.Env => builder.UseStartup<EnvStartup>(),
-                EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
-                EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
-                EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
-                _ => builder,
-            };
-        }
+        Cloudfoundry,
+        Hypermedia,
+        Info,
+        Metrics,
+        Loggers,
+        Health,
+        Trace,
+        DbMigrations,
+        Env,
+        Mappings,
+        Refresh,
+        ThreadDump
     }
 
-    public class CloudFoundryStartup
+    public static IWebHostBuilder StartupByEpName(this IWebHostBuilder builder, EndpointNames endpointName)
     {
-        public CloudFoundryStartup(IConfiguration configuration)
+        return endpointName switch
         {
-            Configuration = configuration;
-        }
+            EndpointNames.Cloudfoundry => builder.UseStartup<CloudFoundryStartup>(),
+            EndpointNames.Hypermedia => builder.UseStartup<HyperMediaStartup>(),
+            EndpointNames.Info => builder.UseStartup<InfoStartup>(),
+            EndpointNames.Metrics => builder.UseStartup<MetricsStartup>(),
+            EndpointNames.Loggers => builder.UseStartup<LoggersStartup>(),
+            EndpointNames.Health => builder.UseStartup<HealthStartup>(),
+            EndpointNames.Trace => builder.UseStartup<TraceStartup>(),
+            EndpointNames.DbMigrations => builder.UseStartup<DbMigrationsStartup>(),
+            EndpointNames.Env => builder.UseStartup<EnvStartup>(),
+            EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
+            EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
+            EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
+            _ => builder,
+        };
+    }
+}
 
-        public IConfiguration Configuration { get; set; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddCloudFoundryActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<CloudFoundryEndpoint>();
-            });
-        }
+public class CloudFoundryStartup
+{
+    public CloudFoundryStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class HyperMediaStartup
+    public IConfiguration Configuration { get; set; }
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public HyperMediaStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration { get; set; }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-            });
-        }
+        services.AddRouting();
+        services.AddCloudFoundryActuator(Configuration);
     }
 
-    public class InfoStartup
+    public void Configure(IApplicationBuilder app)
     {
-        public InfoStartup(IConfiguration configuration)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
+            endpoints.Map<CloudFoundryEndpoint>();
+        });
+    }
+}
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddInfoActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<InfoEndpoint>();
-            });
-        }
+public class HyperMediaStartup
+{
+    public HyperMediaStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class MetricsStartup
+    public IConfiguration Configuration { get; set; }
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public MetricsStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddMetricsActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<MetricsEndpoint>();
-            });
-        }
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
     }
 
-    public class LoggersStartup
+    public void Configure(IApplicationBuilder app)
     {
-        public LoggersStartup(IConfiguration configuration)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
+            endpoints.Map<ActuatorEndpoint>();
+        });
+    }
+}
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddLoggersActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<LoggersEndpoint>();
-            });
-        }
+public class InfoStartup
+{
+    public InfoStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class HealthStartup
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public HealthStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddHealthActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<HealthEndpointCore>();
-            });
-        }
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddInfoActuator(Configuration);
     }
 
-    public class TraceStartup
+    public void Configure(IApplicationBuilder app)
     {
-        public TraceStartup(IConfiguration configuration)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<InfoEndpoint>();
+        });
+    }
+}
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddTraceActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<HttpTraceEndpoint>();
-            });
-        }
+public class MetricsStartup
+{
+    public MetricsStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class DbMigrationsStartup
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public DbMigrationsStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddDbMigrationsActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<DbMigrationsEndpoint>();
-            });
-        }
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddMetricsActuator(Configuration);
     }
 
-    public class EnvStartup
+    public void Configure(IApplicationBuilder app)
     {
-        public EnvStartup(IConfiguration configuration)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<MetricsEndpoint>();
+        });
+    }
+}
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddEnvActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<EnvEndpoint>();
-            });
-        }
+public class LoggersStartup
+{
+    public LoggersStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class MappingsStartup
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public MappingsStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
-
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddMappingsActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<MappingsEndpoint>();
-            });
-        }
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddLoggersActuator(Configuration);
     }
 
-    public class RefreshStartup
+    public void Configure(IApplicationBuilder app)
     {
-        public RefreshStartup(IConfiguration configuration)
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            Configuration = configuration;
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<LoggersEndpoint>();
+        });
+    }
+}
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddRefreshActuator(Configuration);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<RefreshEndpoint>();
-            });
-        }
+public class HealthStartup
+{
+    public HealthStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
     }
 
-    public class ThreadDumpStartup
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
     {
-        public ThreadDumpStartup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddHealthActuator(Configuration);
+    }
 
-        public IConfiguration Configuration;
-
-        public void ConfigureServices(IServiceCollection services)
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            services.AddRouting();
-            services.AddHypermediaActuator(Configuration);
-            services.AddThreadDumpActuator(Configuration);
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<HealthEndpointCore>();
+        });
+    }
+}
 
-        public void Configure(IApplicationBuilder app)
+public class TraceStartup
+{
+    public TraceStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddTraceActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
         {
-            app.UseRouting();
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.Map<ActuatorEndpoint>();
-                endpoints.Map<ThreadDumpEndpoint>();
-            });
-        }
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<HttpTraceEndpoint>();
+        });
+    }
+}
+
+public class DbMigrationsStartup
+{
+    public DbMigrationsStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddDbMigrationsActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<DbMigrationsEndpoint>();
+        });
+    }
+}
+
+public class EnvStartup
+{
+    public EnvStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddEnvActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<EnvEndpoint>();
+        });
+    }
+}
+
+public class MappingsStartup
+{
+    public MappingsStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddMappingsActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<MappingsEndpoint>();
+        });
+    }
+}
+
+public class RefreshStartup
+{
+    public RefreshStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddRefreshActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<RefreshEndpoint>();
+        });
+    }
+}
+
+public class ThreadDumpStartup
+{
+    public ThreadDumpStartup(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration;
+
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.AddRouting();
+        services.AddHypermediaActuator(Configuration);
+        services.AddThreadDumpActuator(Configuration);
+    }
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.UseRouting();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.Map<ActuatorEndpoint>();
+            endpoints.Map<ThreadDumpEndpoint>();
+        });
     }
 }

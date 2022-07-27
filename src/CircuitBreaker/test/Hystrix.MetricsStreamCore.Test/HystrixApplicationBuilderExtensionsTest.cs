@@ -6,18 +6,17 @@ using Microsoft.AspNetCore.Builder;
 using System;
 using Xunit;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test
-{
-    public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
-    {
-        [Fact]
-        [Obsolete]
-        public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
-        {
-            IApplicationBuilder builder = null;
+namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;
 
-            var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
-            Assert.Contains(nameof(builder), ex.Message);
-        }
+public class HystrixApplicationBuilderExtensionsTest : HystrixTestBase
+{
+    [Fact]
+    [Obsolete]
+    public void UseHystrixMetricsStream_ThrowsIfBuilderNull()
+    {
+        IApplicationBuilder builder = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => builder.UseHystrixMetricsStream());
+        Assert.Contains(nameof(builder), ex.Message);
     }
 }

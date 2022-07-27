@@ -4,10 +4,9 @@
 
 using Steeltoe.Common.Util;
 
-namespace Steeltoe.CircuitBreaker
+namespace Steeltoe.CircuitBreaker;
+
+public interface ICollapserTimer
 {
-    public interface ICollapserTimer
-    {
-        TimerReference AddListener(ITimerListener collapseTask);
-    }
+    TimerReference AddListener(ITimerListener collapseTask);
 }

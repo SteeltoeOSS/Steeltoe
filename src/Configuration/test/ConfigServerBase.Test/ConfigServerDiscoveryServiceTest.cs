@@ -12,155 +12,154 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServer.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
+
+public class ConfigServerDiscoveryServiceTest
 {
-    public class ConfigServerDiscoveryServiceTest
+    [Fact]
+    public void ThrowsOnNulls()
     {
-        [Fact]
-        public void ThrowsOnNulls()
+        var config = new ConfigurationBuilder().Build();
+        var settings = new ConfigServerClientSettings();
+        var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerDiscoveryService(null, settings));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => new ConfigServerDiscoveryService(config, null));
+        Assert.Equal("configuration", ex.ParamName);
+        Assert.Equal("settings", ex2.ParamName);
+    }
+
+    [Fact]
+    public void ConfigServerDiscoveryService_FindsDiscoveryClient()
+    {
+        var values = new Dictionary<string, string>()
         {
-            var config = new ConfigurationBuilder().Build();
-            var settings = new ConfigServerClientSettings();
-            var ex = Assert.Throws<ArgumentNullException>(() => new ConfigServerDiscoveryService(null, settings));
-            var ex2 = Assert.Throws<ArgumentNullException>(() => new ConfigServerDiscoveryService(config, null));
-            Assert.Equal("configuration", ex.ParamName);
-            Assert.Equal("settings", ex2.ParamName);
-        }
+            { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
+        };
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(values);
+        var config = builder.Build();
+        var settings = new ConfigServerClientSettings();
+        var logFactory = new LoggerFactory();
 
-        [Fact]
-        public void ConfigServerDiscoveryService_FindsDiscoveryClient()
+        var service = new ConfigServerDiscoveryService(config, settings, logFactory);
+        Assert.NotNull(service._discoveryClient);
+        Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
+    }
+
+    [Fact]
+    public void InvokeGetInstances_ReturnsExpected()
+    {
+        var values = new Dictionary<string, string>()
         {
-            var values = new Dictionary<string, string>()
-            {
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" }
-            };
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(values);
-            var config = builder.Build();
-            var settings = new ConfigServerClientSettings();
-            var logFactory = new LoggerFactory();
+            { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
+            { "eureka:client:eurekaServer:retryCount", "0" }
+        };
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(values);
+        var config = builder.Build();
+        var settings = new ConfigServerClientSettings();
 
-            var service = new ConfigServerDiscoveryService(config, settings, logFactory);
-            Assert.NotNull(service._discoveryClient);
-            Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
-        }
+        var service = new ConfigServerDiscoveryService(config, settings);
+        var result = service.GetConfigServerInstances();
+        Assert.Empty(result);
+    }
 
-        [Fact]
-        public void InvokeGetInstances_ReturnsExpected()
+    [Fact]
+    public void InvokeGetInstances_RetryEnabled_ReturnsExpected()
+    {
+        var values = new Dictionary<string, string>()
         {
-            var values = new Dictionary<string, string>()
-            {
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:eurekaServer:retryCount", "0" }
-            };
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(values);
-            var config = builder.Build();
-            var settings = new ConfigServerClientSettings();
-
-            var service = new ConfigServerDiscoveryService(config, settings);
-            var result = service.GetConfigServerInstances();
-            Assert.Empty(result);
-        }
-
-        [Fact]
-        public void InvokeGetInstances_RetryEnabled_ReturnsExpected()
+            { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" },
+            { "eureka:client:eurekaServer:retryCount", "1" }
+        };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
+        var settings = new ConfigServerClientSettings()
         {
-            var values = new Dictionary<string, string>()
-            {
-                { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" },
-                { "eureka:client:eurekaServer:retryCount", "1" }
-            };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(values).Build();
-            var settings = new ConfigServerClientSettings()
-            {
-                RetryEnabled = true,
-                Timeout = 10,
-                RetryAttempts = 1
-            };
-            var service = new ConfigServerDiscoveryService(config, settings);
-            var result = service.GetConfigServerInstances();
-            Assert.Empty(result);
-        }
+            RetryEnabled = true,
+            Timeout = 10,
+            RetryAttempts = 1
+        };
+        var service = new ConfigServerDiscoveryService(config, settings);
+        var result = service.GetConfigServerInstances();
+        Assert.Empty(result);
+    }
 
-        [Fact]
-        public void GetConfigServerInstances_ReturnsExpected()
+    [Fact]
+    public void GetConfigServerInstances_ReturnsExpected()
+    {
+        var values = new Dictionary<string, string>()
         {
-            var values = new Dictionary<string, string>()
-            {
-                { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
-                { "eureka:client:eurekaServer:retryCount", "0" }
-            };
-            var builder = new ConfigurationBuilder();
-            builder.AddInMemoryCollection(values);
-            var config = builder.Build();
-            var settings = new ConfigServerClientSettings() { RetryEnabled = false, Timeout = 10 };
+            { "eureka:client:serviceUrl", "http://localhost:8761/eureka/" },
+            { "eureka:client:eurekaServer:retryCount", "0" }
+        };
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(values);
+        var config = builder.Build();
+        var settings = new ConfigServerClientSettings() { RetryEnabled = false, Timeout = 10 };
 
-            var service = new ConfigServerDiscoveryService(config, settings);
-            var result = service.GetConfigServerInstances();
-            Assert.Empty(result);
-        }
+        var service = new ConfigServerDiscoveryService(config, settings);
+        var result = service.GetConfigServerInstances();
+        Assert.Empty(result);
+    }
 
-        [Fact]
-        public void GetConfigServerInstancesCatchesDiscoveryExceptions()
-        {
-            var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
+    [Fact]
+    public void GetConfigServerInstancesCatchesDiscoveryExceptions()
+    {
+        var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
 
-            // act - the test discovery client throws on GetInstances()
-            var result = service.GetConfigServerInstances();
+        // act - the test discovery client throws on GetInstances()
+        var result = service.GetConfigServerInstances();
 
-            Assert.Empty(result);
-        }
+        Assert.Empty(result);
+    }
 
-        [Fact]
-        public async Task RuntimeReplacementsCanBeProvided()
-        {
-            // arrange a basic ConfigServerDiscoveryService w/o logging
-            var appSettings = new Dictionary<string, string> { { "eureka:client:anything", "true" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var testDiscoveryClient = new TestDiscoveryClient();
-            var logFactory = new LoggerFactory();
-            var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-            Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
+    [Fact]
+    public async Task RuntimeReplacementsCanBeProvided()
+    {
+        // arrange a basic ConfigServerDiscoveryService w/o logging
+        var appSettings = new Dictionary<string, string> { { "eureka:client:anything", "true" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var testDiscoveryClient = new TestDiscoveryClient();
+        var logFactory = new LoggerFactory();
+        var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
+        Assert.IsType<EurekaDiscoveryClient>(service._discoveryClient);
 
-            // replace the bootstrapped eureka client with a test client
-            await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient, logFactory);
-            service._discoveryClient.Should().Be(testDiscoveryClient);
-            service._logFactory.Should().NotBeNull();
-        }
+        // replace the bootstrapped eureka client with a test client
+        await service.ProvideRuntimeReplacementsAsync(testDiscoveryClient, logFactory);
+        service._discoveryClient.Should().Be(testDiscoveryClient);
+        service._logFactory.Should().NotBeNull();
+    }
 
-        [Fact]
-        public async Task RuntimeReplacementsShutdownInitialDiscoveryClient()
-        {
-            // arrange a basic ConfigServerDiscoveryService w/o logging
-            var replacementDiscoveryClient = new TestDiscoveryClient();
-            var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-            var originalClient = service._discoveryClient as TestDiscoveryClient;
+    [Fact]
+    public async Task RuntimeReplacementsShutdownInitialDiscoveryClient()
+    {
+        // arrange a basic ConfigServerDiscoveryService w/o logging
+        var replacementDiscoveryClient = new TestDiscoveryClient();
+        var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
+        var originalClient = service._discoveryClient as TestDiscoveryClient;
 
-            // replace the bootstrapped eureka client with a test client
-            await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient, null);
+        // replace the bootstrapped eureka client with a test client
+        await service.ProvideRuntimeReplacementsAsync(replacementDiscoveryClient, null);
 
-            Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
-            Assert.False(replacementDiscoveryClient.HasShutdown, "ShutdownAsync() NOT called on replacement discovery client.");
-        }
+        Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
+        Assert.False(replacementDiscoveryClient.HasShutdown, "ShutdownAsync() NOT called on replacement discovery client.");
+    }
 
-        [Fact]
-        public async Task ShutdownAsyncShutsDownOriginalDiscoveryClient()
-        {
-            // arrange a basic ConfigServerDiscoveryService w/o logging
-            var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
-            var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-            var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
-            var originalClient = service._discoveryClient as TestDiscoveryClient;
+    [Fact]
+    public async Task ShutdownAsyncShutsDownOriginalDiscoveryClient()
+    {
+        // arrange a basic ConfigServerDiscoveryService w/o logging
+        var appSettings = new Dictionary<string, string> { { "testdiscovery:enabled", "true" } };
+        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var service = new ConfigServerDiscoveryService(config, new ConfigServerClientSettings());
+        var originalClient = service._discoveryClient as TestDiscoveryClient;
 
-            // replace the bootstrapped eureka client with a test client
-            await service.ShutdownAsync();
+        // replace the bootstrapped eureka client with a test client
+        await service.ShutdownAsync();
 
-            Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
-        }
+        Assert.True(originalClient.HasShutdown, "ShutdownAsync() called on original discovery client.");
     }
 }

@@ -10,15 +10,15 @@ using Steeltoe.Stream.Config;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
 {
-    public class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
+    [Fact]
+    public async Task TestArbitraryInterfaceChannelsBound()
     {
-        [Fact]
-        public async Task TestArbitraryInterfaceChannelsBound()
-        {
-            var searchDirectories = GetSearchDirectories("MockBinder");
-            var provider = CreateStreamsContainerWithBinding(
+        var searchDirectories = GetSearchDirectories("MockBinder");
+        var provider = CreateStreamsContainerWithBinding(
                 searchDirectories,
                 typeof(IFooChannels),
                 "spring:cloud:stream:defaultBinder=mock",
@@ -26,23 +26,22 @@ namespace Steeltoe.Stream.Binder
                 "spring:cloud:stream:bindings:Bar:destination=someQueue.1",
                 "spring:cloud:stream:bindings:Baz:destination=someQueue.2",
                 "spring:cloud:stream:bindings:Qux:destination=someQueue.3")
-                .BuildServiceProvider();
+            .BuildServiceProvider();
 
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-            var factory = provider.GetService<IBinderFactory>();
-            Assert.NotNull(factory);
-            var binder = factory.GetBinder(null, typeof(IMessageChannel));
-            Assert.NotNull(binder);
-            var fooChannels = provider.GetService<IFooChannels>();
-            Assert.NotNull(fooChannels);
+        var factory = provider.GetService<IBinderFactory>();
+        Assert.NotNull(factory);
+        var binder = factory.GetBinder(null, typeof(IMessageChannel));
+        Assert.NotNull(binder);
+        var fooChannels = provider.GetService<IFooChannels>();
+        Assert.NotNull(fooChannels);
 
-            var mock = Mock.Get(binder);
-            mock.Verify(b => b.BindConsumer("someQueue.0", null, fooChannels.Foo, It.IsAny<ConsumerOptions>()));
-            mock.Verify(b => b.BindConsumer("someQueue.1", null, fooChannels.Bar, It.IsAny<ConsumerOptions>()));
+        var mock = Mock.Get(binder);
+        mock.Verify(b => b.BindConsumer("someQueue.0", null, fooChannels.Foo, It.IsAny<ConsumerOptions>()));
+        mock.Verify(b => b.BindConsumer("someQueue.1", null, fooChannels.Bar, It.IsAny<ConsumerOptions>()));
 
-            mock.Verify(b => b.BindProducer("someQueue.2", fooChannels.Baz, It.IsAny<ProducerOptions>()));
-            mock.Verify(b => b.BindProducer("someQueue.3", fooChannels.Qux, It.IsAny<ProducerOptions>()));
-        }
+        mock.Verify(b => b.BindProducer("someQueue.2", fooChannels.Baz, It.IsAny<ProducerOptions>()));
+        mock.Verify(b => b.BindProducer("someQueue.3", fooChannels.Qux, It.IsAny<ProducerOptions>()));
     }
 }

@@ -6,18 +6,17 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Steeltoe.Management.Endpoint.Loggers.Test
-{
-    internal class TestLoggersEndpoint : LoggersEndpoint
-    {
-        public TestLoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
-            : base(options, loggerProvider, logger)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Loggers.Test;
 
-        public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
-        {
-            return new Dictionary<string, object>();
-        }
+internal class TestLoggersEndpoint : LoggersEndpoint
+{
+    public TestLoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider loggerProvider = null, ILogger<LoggersEndpoint> logger = null)
+        : base(options, loggerProvider, logger)
+    {
+    }
+
+    public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
+    {
+        return new Dictionary<string, object>();
     }
 }

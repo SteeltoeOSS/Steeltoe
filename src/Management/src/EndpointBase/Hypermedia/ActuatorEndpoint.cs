@@ -4,29 +4,28 @@
 
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Management.Endpoint.Hypermedia
+namespace Steeltoe.Management.Endpoint.Hypermedia;
+
+/// <summary>
+/// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
+/// </summary>
+public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
 {
-    /// <summary>
-    /// Actuator Endpoint provider the hypermedia link collection for all registered and enabled actuators
-    /// </summary>
-    public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoint
-    {
-        private readonly ILogger<ActuatorEndpoint> _logger;
-        private readonly ActuatorManagementOptions _mgmtOption;
+    private readonly ILogger<ActuatorEndpoint> _logger;
+    private readonly ActuatorManagementOptions _mgmtOption;
 
-        public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
+    public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
-        {
-            _mgmtOption = mgmtOptions;
-            _logger = logger;
-        }
+    {
+        _mgmtOption = mgmtOptions;
+        _logger = logger;
+    }
 
-        protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
+    protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
 
-        public override Links Invoke(string baseUrl)
-        {
-            var service = new HypermediaService(_mgmtOption, options, _logger);
-            return service.Invoke(baseUrl);
-        }
+    public override Links Invoke(string baseUrl)
+    {
+        var service = new HypermediaService(_mgmtOption, options, _logger);
+        return service.Invoke(baseUrl);
     }
 }

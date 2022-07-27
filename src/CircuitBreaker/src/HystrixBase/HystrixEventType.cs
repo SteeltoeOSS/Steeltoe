@@ -2,40 +2,39 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.CircuitBreaker.Hystrix
+namespace Steeltoe.CircuitBreaker.Hystrix;
+
+public enum HystrixEventType
 {
-    public enum HystrixEventType
-    {
-        EMIT,
-        SUCCESS,
-        FAILURE,
-        TIMEOUT,
-        BAD_REQUEST,
-        SHORT_CIRCUITED,
-        THREAD_POOL_REJECTED,
-        SEMAPHORE_REJECTED,
-        FALLBACK_EMIT,
-        FALLBACK_SUCCESS,
-        FALLBACK_FAILURE,
-        FALLBACK_REJECTION,
-        FALLBACK_MISSING,
-        EXCEPTION_THROWN,
-        RESPONSE_FROM_CACHE,
-        CANCELLED,
-        COLLAPSED
-    }
+    EMIT,
+    SUCCESS,
+    FAILURE,
+    TIMEOUT,
+    BAD_REQUEST,
+    SHORT_CIRCUITED,
+    THREAD_POOL_REJECTED,
+    SEMAPHORE_REJECTED,
+    FALLBACK_EMIT,
+    FALLBACK_SUCCESS,
+    FALLBACK_FAILURE,
+    FALLBACK_REJECTION,
+    FALLBACK_MISSING,
+    EXCEPTION_THROWN,
+    RESPONSE_FROM_CACHE,
+    CANCELLED,
+    COLLAPSED
+}
 
-    public enum ThreadPoolEventType
-    {
-        EXECUTED,
-        REJECTED,
-        UNKNOWN
-    }
+public enum ThreadPoolEventType
+{
+    EXECUTED,
+    REJECTED,
+    UNKNOWN
+}
 
-    public enum CollapserEventType
-    {
-        BATCH_EXECUTED,
-        ADDED_TO_BATCH,
-        RESPONSE_FROM_CACHE
-    }
+public enum CollapserEventType
+{
+    BATCH_EXECUTED,
+    ADDED_TO_BATCH,
+    RESPONSE_FROM_CACHE
 }

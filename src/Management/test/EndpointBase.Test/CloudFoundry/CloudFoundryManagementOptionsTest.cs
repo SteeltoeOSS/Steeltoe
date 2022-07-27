@@ -9,63 +9,62 @@ using System;
 using System.Collections.Generic;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.CloudFoundry.Test
+namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
+
+public class CloudfoundryManagementOptionsTest : BaseTest
 {
-    public class CloudfoundryManagementOptionsTest : BaseTest
+    [Fact]
+    public void Constructor_InitializesWithDefaults()
     {
-        [Fact]
-        public void Constructor_InitializesWithDefaults()
+        var opts = new CloudFoundryManagementOptions();
+        Assert.Equal("/cloudfoundryapplication", opts.Path);
+    }
+
+    [Fact]
+    public void Constructor_ThrowsIfConfigNull()
+    {
+        IConfiguration config = null;
+        Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(config));
+    }
+
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>()
         {
-            var opts = new CloudFoundryManagementOptions();
-            Assert.Equal("/cloudfoundryapplication", opts.Path);
-        }
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/management",
+        };
 
-        [Fact]
-        public void Constructor_ThrowsIfConfigNull()
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
+
+        var opts = new ActuatorManagementOptions(config);
+
+        Assert.Equal("/management", opts.Path);
+        Assert.False(opts.Enabled);
+    }
+
+    [Fact]
+    public void Constructor_BindsConfigurationCorrectly_OnCF()
+    {
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
+
+        var appsettings = new Dictionary<string, string>()
         {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new CloudFoundryManagementOptions(config));
-        }
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/management",
+        };
 
-        [Fact]
-        public void Constructor_BindsConfigurationCorrectly()
-        {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/management",
-            };
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
 
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
+        var opts = new CloudFoundryManagementOptions(config);
 
-            var opts = new ActuatorManagementOptions(config);
-
-            Assert.Equal("/management", opts.Path);
-            Assert.False(opts.Enabled);
-        }
-
-        [Fact]
-        public void Constructor_BindsConfigurationCorrectly_OnCF()
-        {
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", "somestuff");
-
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/management",
-            };
-
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
-
-            var opts = new CloudFoundryManagementOptions(config);
-
-            Assert.Equal("/cloudfoundryapplication", opts.Path);
-            Assert.False(opts.Enabled);
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-        }
+        Assert.Equal("/cloudfoundryapplication", opts.Path);
+        Assert.False(opts.Enabled);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
     }
 }

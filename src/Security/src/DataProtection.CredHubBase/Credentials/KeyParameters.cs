@@ -4,14 +4,13 @@
 
 using System.Text.Json.Serialization;
 
-namespace Steeltoe.Security.DataProtection.CredHub
+namespace Steeltoe.Security.DataProtection.CredHub;
+
+public class KeyParameters : ICredentialParameter
 {
-    public class KeyParameters : ICredentialParameter
-    {
-        /// <summary>
-        /// Gets or sets specify the length of key to be generated
-        /// </summary>
-        [JsonPropertyName("key_length")]
-        public CertificateKeyLength KeyLength { get; set; } = CertificateKeyLength.Length_2048;
-    }
+    /// <summary>
+    /// Gets or sets specify the length of key to be generated
+    /// </summary>
+    [JsonPropertyName("key_length")]
+    public CertificateKeyLength KeyLength { get; set; } = CertificateKeyLength.Length_2048;
 }

@@ -9,96 +9,95 @@ using Steeltoe.Messaging;
 using System;
 using System.Threading.Tasks;
 
-namespace Steeltoe.Integration.Transformer
+namespace Steeltoe.Integration.Transformer;
+
+public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, ILifecycle
 {
-    public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, ILifecycle
+    public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
+        : base(context)
     {
-        public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
-            : base(context)
+        if (transformer == null)
         {
-            if (transformer == null)
-            {
-                throw new ArgumentNullException(nameof(transformer));
-            }
-
-            Transformer = transformer;
-            RequiresReply = true;
+            throw new ArgumentNullException(nameof(transformer));
         }
 
-        public ITransformer Transformer { get; }
+        Transformer = transformer;
+        RequiresReply = true;
+    }
 
-        public bool IsRunning
-        {
-            get
-            {
-                if (Transformer is ILifecycle asLifecycle)
-                {
-                    return asLifecycle.IsRunning;
-                }
+    public ITransformer Transformer { get; }
 
-                return false;
-            }
-        }
-
-        protected override bool ShouldCopyRequestHeaders => false;
-
-        public override void Initialize()
-        {
-            // Nothing to do
-        }
-
-        public override void AddNotPropagatedHeaders(params string[] headers)
-        {
-            base.AddNotPropagatedHeaders(headers);
-            PopulateNotPropagatedHeadersIfAny();
-        }
-
-        public Task Start()
+    public bool IsRunning
+    {
+        get
         {
             if (Transformer is ILifecycle asLifecycle)
             {
-                return asLifecycle.Start();
+                return asLifecycle.IsRunning;
             }
 
-            return Task.CompletedTask;
+            return false;
         }
+    }
 
-        public Task Stop()
+    protected override bool ShouldCopyRequestHeaders => false;
+
+    public override void Initialize()
+    {
+        // Nothing to do
+    }
+
+    public override void AddNotPropagatedHeaders(params string[] headers)
+    {
+        base.AddNotPropagatedHeaders(headers);
+        PopulateNotPropagatedHeadersIfAny();
+    }
+
+    public Task Start()
+    {
+        if (Transformer is ILifecycle asLifecycle)
         {
-            if (Transformer is ILifecycle asLifecycle)
-            {
-                return asLifecycle.Stop();
-            }
-
-            return Task.CompletedTask;
+            return asLifecycle.Start();
         }
 
-        protected override object HandleRequestMessage(IMessage requestMessage)
+        return Task.CompletedTask;
+    }
+
+    public Task Stop()
+    {
+        if (Transformer is ILifecycle asLifecycle)
         {
-            try
-            {
-                return Transformer.Transform(requestMessage);
-            }
-            catch (Exception e)
-            {
-                if (e is MessageTransformationException)
-                {
-                    throw;
-                }
-
-                throw new MessageTransformationException(requestMessage, "Failed to transform Message in " + this, e);
-            }
+            return asLifecycle.Stop();
         }
 
-        private void PopulateNotPropagatedHeadersIfAny()
+        return Task.CompletedTask;
+    }
+
+    protected override object HandleRequestMessage(IMessage requestMessage)
+    {
+        try
         {
-            var notPropagatedHeaders = NotPropagatedHeaders;
-
-            // if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0)
-            // {
-            //    ((AbstractMessageProcessingTransformer)this.Transformer)
-            //            .setNotPropagatedHeaders(notPropagatedHeaders.toArray(new String[0]));
-            // }
+            return Transformer.Transform(requestMessage);
         }
+        catch (Exception e)
+        {
+            if (e is MessageTransformationException)
+            {
+                throw;
+            }
+
+            throw new MessageTransformationException(requestMessage, "Failed to transform Message in " + this, e);
+        }
+    }
+
+    private void PopulateNotPropagatedHeadersIfAny()
+    {
+        var notPropagatedHeaders = NotPropagatedHeaders;
+
+        // if (Transformer is AbstractMessageProcessingTransformer && notPropagatedHeaders.Count != 0)
+        // {
+        //    ((AbstractMessageProcessingTransformer)this.Transformer)
+        //            .setNotPropagatedHeaders(notPropagatedHeaders.toArray(new String[0]));
+        // }
     }
 }

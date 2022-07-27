@@ -5,18 +5,17 @@
 using Steeltoe.Messaging;
 using System;
 
-namespace Steeltoe.Integration
-{
-    public class MessageRejectedException : MessageHandlingException
-    {
-        public MessageRejectedException(IMessage failedMessage, string description)
-         : base(failedMessage, description)
-        {
-        }
+namespace Steeltoe.Integration;
 
-        public MessageRejectedException(IMessage failedMessage, string description, Exception cause)
+public class MessageRejectedException : MessageHandlingException
+{
+    public MessageRejectedException(IMessage failedMessage, string description)
+        : base(failedMessage, description)
+    {
+    }
+
+    public MessageRejectedException(IMessage failedMessage, string description, Exception cause)
         : base(failedMessage, description, cause)
-        {
-        }
+    {
     }
 }

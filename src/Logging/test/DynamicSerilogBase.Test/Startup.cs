@@ -6,25 +6,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test
+namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
+
+public class Startup
 {
-    public class Startup
+    private readonly ILogger<Startup> _logger;
+
+    public Startup(ILogger<Startup> logger)
     {
-        private readonly ILogger<Startup> _logger;
+        _logger = logger;
+    }
 
-        public Startup(ILogger<Startup> logger)
-        {
-            _logger = logger;
-        }
+    public void ConfigureServices(IServiceCollection services)
+    {
+        _logger.LogError("error");
+        _logger.LogInformation("info");
+    }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
-            _logger.LogError("error");
-            _logger.LogInformation("info");
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-        }
+    public void Configure(IApplicationBuilder app)
+    {
     }
 }

@@ -4,31 +4,30 @@
 
 using Steeltoe.Connector.Services;
 
-namespace Steeltoe.Connector.MySql
+namespace Steeltoe.Connector.MySql;
+
+public class MySqlProviderConfigurer
 {
-    public class MySqlProviderConfigurer
+    public string Configure(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
     {
-        public string Configure(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
+        UpdateConfiguration(si, configuration);
+        return configuration.ToString();
+    }
+
+    public void UpdateConfiguration(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
+    {
+        if (si == null)
         {
-            UpdateConfiguration(si, configuration);
-            return configuration.ToString();
+            return;
         }
 
-        public void UpdateConfiguration(MySqlServiceInfo si, MySqlProviderConnectorOptions configuration)
+        if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si == null)
-            {
-                return;
-            }
-
-            if (!string.IsNullOrEmpty(si.Uri))
-            {
-                configuration.Port = si.Port;
-                configuration.Username = si.UserName;
-                configuration.Password = si.Password;
-                configuration.Server = si.Host;
-                configuration.Database = si.Path;
-            }
+            configuration.Port = si.Port;
+            configuration.Username = si.UserName;
+            configuration.Password = si.Password;
+            configuration.Server = si.Host;
+            configuration.Database = si.Path;
         }
     }
 }

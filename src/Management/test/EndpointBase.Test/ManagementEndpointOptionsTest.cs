@@ -10,52 +10,51 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Test
+namespace Steeltoe.Management.Endpoint.Test;
+
+public class ManagementEndpointOptionsTest : BaseTest
 {
-    public class ManagementEndpointOptionsTest : BaseTest
+    [Fact]
+    public void InitializedWithDefaults()
     {
-        [Fact]
-        public void InitializedWithDefaults()
+        var opts = new ManagementEndpointOptions();
+        Assert.False(opts.Enabled.HasValue);
+        Assert.Equal("/actuator", opts.Path);
+    }
+
+    [Fact]
+    public void ThrowsIfConfigNull()
+    {
+        IConfiguration config = null;
+        Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(config));
+    }
+
+    [Fact]
+    public void BindsConfigurationCorrectly()
+    {
+        var appsettings = new Dictionary<string, string>()
         {
-            var opts = new ManagementEndpointOptions();
-            Assert.False(opts.Enabled.HasValue);
-            Assert.Equal("/actuator", opts.Path);
-        }
+            ["management:endpoints:enabled"] = "false",
+            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:info:enabled"] = "true",
+            ["management:endpoints:info:id"] = "/infomanagement"
+        };
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.AddInMemoryCollection(appsettings);
+        var config = configurationBuilder.Build();
 
-        [Fact]
-        public void ThrowsIfConfigNull()
-        {
-            IConfiguration config = null;
-            Assert.Throws<ArgumentNullException>(() => new ManagementEndpointOptions(config));
-        }
+        var opts = new ManagementEndpointOptions(config);
+        Assert.False(opts.Enabled);
+        Assert.Equal("/management", opts.Path);
+    }
 
-        [Fact]
-        public void BindsConfigurationCorrectly()
-        {
-            var appsettings = new Dictionary<string, string>()
-            {
-                ["management:endpoints:enabled"] = "false",
-                ["management:endpoints:path"] = "/management",
-                ["management:endpoints:info:enabled"] = "true",
-                ["management:endpoints:info:id"] = "/infomanagement"
-            };
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddInMemoryCollection(appsettings);
-            var config = configurationBuilder.Build();
+    [Fact]
+    public void IsExposedCorrectly()
+    {
+        var mgmtOptions = new ActuatorManagementOptions();
+        mgmtOptions.Exposure.Exclude = new string[] { "*" }.ToList();
 
-            var opts = new ManagementEndpointOptions(config);
-            Assert.False(opts.Enabled);
-            Assert.Equal("/management", opts.Path);
-        }
-
-        [Fact]
-        public void IsExposedCorrectly()
-        {
-            var mgmtOptions = new ActuatorManagementOptions();
-            mgmtOptions.Exposure.Exclude = new string[] { "*" }.ToList();
-
-            var options = new InfoEndpointOptions();
-            Assert.False(options.IsExposed(mgmtOptions));
-        }
+        var options = new InfoEndpointOptions();
+        Assert.False(options.IsExposed(mgmtOptions));
     }
 }

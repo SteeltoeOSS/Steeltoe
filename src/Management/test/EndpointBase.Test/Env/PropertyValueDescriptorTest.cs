@@ -5,25 +5,24 @@
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
 
-namespace Steeltoe.Management.Endpoint.Env.Test
+namespace Steeltoe.Management.Endpoint.Env.Test;
+
+public class PropertyValueDescriptorTest : BaseTest
 {
-    public class PropertyValueDescriptorTest : BaseTest
+    [Fact]
+    public void Constructor_SetsValues()
     {
-        [Fact]
-        public void Constructor_SetsValues()
-        {
-            var property = new PropertyValueDescriptor("value", "origin");
+        var property = new PropertyValueDescriptor("value", "origin");
 
-            Assert.Equal("value", property.Value);
-            Assert.Equal("origin", property.Origin);
-        }
+        Assert.Equal("value", property.Value);
+        Assert.Equal("origin", property.Origin);
+    }
 
-        [Fact]
-        public void JsonSerialization_ReturnsExpected()
-        {
-            var property = new PropertyValueDescriptor("value", "origin");
-            var result = Serialize(property);
-            Assert.Equal("{\"value\":\"value\",\"origin\":\"origin\"}", result);
-        }
+    [Fact]
+    public void JsonSerialization_ReturnsExpected()
+    {
+        var property = new PropertyValueDescriptor("value", "origin");
+        var result = Serialize(property);
+        Assert.Equal("{\"value\":\"value\",\"origin\":\"origin\"}", result);
     }
 }

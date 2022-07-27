@@ -5,16 +5,15 @@
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Xunit;
 
-namespace Steeltoe.Messaging.RabbitMQ.Core
+namespace Steeltoe.Messaging.RabbitMQ.Core;
+
+[Trait("Category", "Integration")]
+public class RabbitTemplateDirectReplyToContainerIntegrationPubCFTest : RabbitTemplateDirectReplyToContainerIntegrationTest
 {
-    [Trait("Category", "Integration")]
-    public class RabbitTemplateDirectReplyToContainerIntegrationPubCFTest : RabbitTemplateDirectReplyToContainerIntegrationTest
+    protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
     {
-        protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
-        {
-            var srTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
-            srTemplate.UsePublisherConnection = true;
-            return srTemplate;
-        }
+        var srTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        srTemplate.UsePublisherConnection = true;
+        return srTemplate;
     }
 }

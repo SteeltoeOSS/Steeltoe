@@ -5,32 +5,31 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
-namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test
+namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
+
+public class TestConfigServerStartup
 {
-    public class TestConfigServerStartup
+    public TestConfigServerStartup()
     {
-        public TestConfigServerStartup()
+        LastRequest = null;
+    }
+
+    public static string Response { get; set; }
+
+    public static int ReturnStatus { get; set; } = 200;
+
+    public static HttpRequest LastRequest { get; set; }
+
+    public static int RequestCount { get; set; } = 0;
+
+    public void Configure(IApplicationBuilder app)
+    {
+        app.Run(async context =>
         {
-            LastRequest = null;
-        }
-
-        public static string Response { get; set; }
-
-        public static int ReturnStatus { get; set; } = 200;
-
-        public static HttpRequest LastRequest { get; set; }
-
-        public static int RequestCount { get; set; } = 0;
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.Run(async context =>
-            {
-                LastRequest = context.Request;
-                RequestCount++;
-                context.Response.StatusCode = ReturnStatus;
-                await context.Response.WriteAsync(Response);
-            });
-        }
+            LastRequest = context.Request;
+            RequestCount++;
+            context.Response.StatusCode = ReturnStatus;
+            await context.Response.WriteAsync(Response);
+        });
     }
 }

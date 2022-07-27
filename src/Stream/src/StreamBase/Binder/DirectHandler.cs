@@ -4,23 +4,22 @@
 
 using Steeltoe.Messaging;
 
-namespace Steeltoe.Stream.Binder
+namespace Steeltoe.Stream.Binder;
+
+public class DirectHandler : IMessageHandler
 {
-    public class DirectHandler : IMessageHandler
+    private readonly IMessageChannel _outputChannel;
+
+    public DirectHandler(IMessageChannel outputChannel)
     {
-        private readonly IMessageChannel _outputChannel;
+        _outputChannel = outputChannel;
+        ServiceName = GetType().Name + "@" + GetHashCode();
+    }
 
-        public DirectHandler(IMessageChannel outputChannel)
-        {
-            _outputChannel = outputChannel;
-            ServiceName = GetType().Name + "@" + GetHashCode();
-        }
+    public virtual string ServiceName { get; set; }
 
-        public virtual string ServiceName { get; set; }
-
-        public void HandleMessage(IMessage message)
-        {
-            _outputChannel.Send(message);
-        }
+    public void HandleMessage(IMessage message)
+    {
+        _outputChannel.Send(message);
     }
 }

@@ -2,10 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Management.Endpoint.Refresh
+namespace Steeltoe.Management.Endpoint.Refresh;
+
+public interface IRefreshOptions : IEndpointOptions
 {
-    public interface IRefreshOptions : IEndpointOptions
-    {
-        public bool ReturnConfiguration { get; }
-    }
+    public bool ReturnConfiguration { get; }
 }

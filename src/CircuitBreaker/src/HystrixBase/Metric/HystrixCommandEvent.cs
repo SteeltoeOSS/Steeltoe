@@ -4,47 +4,46 @@
 
 using System;
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metric
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
+
+public abstract class HystrixCommandEvent : IHystrixEvent
 {
-    public abstract class HystrixCommandEvent : IHystrixEvent
+    private readonly IHystrixCommandKey _commandKey;
+    private readonly IHystrixThreadPoolKey _threadPoolKey;
+
+    protected HystrixCommandEvent(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
     {
-        private readonly IHystrixCommandKey _commandKey;
-        private readonly IHystrixThreadPoolKey _threadPoolKey;
-
-        protected HystrixCommandEvent(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
-        {
-            _commandKey = commandKey;
-            _threadPoolKey = threadPoolKey;
-        }
-
-        public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = (commandEvent) =>
-        {
-            return commandEvent.IsCommandCompletion;
-        };
-
-        public static Func<HystrixCommandEvent, bool> FilterActualExecutions { get; } = (commandEvent) =>
-        {
-            return commandEvent.DidCommandExecute;
-        };
-
-        public virtual IHystrixCommandKey CommandKey
-        {
-            get { return _commandKey; }
-        }
-
-        public virtual IHystrixThreadPoolKey ThreadPoolKey
-        {
-            get { return _threadPoolKey; }
-        }
-
-        public abstract bool IsExecutionStart { get; }
-
-        public abstract bool IsExecutedInThread { get; }
-
-        public abstract bool IsResponseThreadPoolRejected { get; }
-
-        public abstract bool IsCommandCompletion { get; }
-
-        public abstract bool DidCommandExecute { get; }
+        _commandKey = commandKey;
+        _threadPoolKey = threadPoolKey;
     }
+
+    public static Func<HystrixCommandEvent, bool> FilterCompletionsOnly { get; } = (commandEvent) =>
+    {
+        return commandEvent.IsCommandCompletion;
+    };
+
+    public static Func<HystrixCommandEvent, bool> FilterActualExecutions { get; } = (commandEvent) =>
+    {
+        return commandEvent.DidCommandExecute;
+    };
+
+    public virtual IHystrixCommandKey CommandKey
+    {
+        get { return _commandKey; }
+    }
+
+    public virtual IHystrixThreadPoolKey ThreadPoolKey
+    {
+        get { return _threadPoolKey; }
+    }
+
+    public abstract bool IsExecutionStart { get; }
+
+    public abstract bool IsExecutedInThread { get; }
+
+    public abstract bool IsResponseThreadPoolRejected { get; }
+
+    public abstract bool IsCommandCompletion { get; }
+
+    public abstract bool DidCommandExecute { get; }
 }

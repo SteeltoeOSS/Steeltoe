@@ -7,10 +7,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public interface IMethodFilter
 {
-    public interface IMethodFilter
-    {
-        List<MethodInfo> Filter(List<MethodInfo> methods);
-    }
+    List<MethodInfo> Filter(List<MethodInfo> methods);
 }

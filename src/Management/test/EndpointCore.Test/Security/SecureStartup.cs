@@ -5,19 +5,18 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 
-namespace Steeltoe.Management.Endpoint.Security.Test
-{
-    public class SecureStartup : Startup
-    {
-        public SecureStartup(IConfiguration configuration)
-            : base(configuration)
-        {
-        }
+namespace Steeltoe.Management.Endpoint.Security.Test;
 
-        public override void Configure(IApplicationBuilder app)
-        {
-            app.UseMiddleware<SetsUserInContextForTestsMiddleware>();
-            base.Configure(app);
-        }
+public class SecureStartup : Startup
+{
+    public SecureStartup(IConfiguration configuration)
+        : base(configuration)
+    {
+    }
+
+    public override void Configure(IApplicationBuilder app)
+    {
+        app.UseMiddleware<SetsUserInContextForTestsMiddleware>();
+        base.Configure(app);
     }
 }

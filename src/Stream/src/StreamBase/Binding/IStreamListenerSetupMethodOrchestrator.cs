@@ -6,14 +6,13 @@ using Steeltoe.Stream.Attributes;
 using System;
 using System.Reflection;
 
-namespace Steeltoe.Stream.Binding
+namespace Steeltoe.Stream.Binding;
+
+public interface IStreamListenerSetupMethodOrchestrator
 {
-    public interface IStreamListenerSetupMethodOrchestrator
-    {
-        bool Supports(MethodInfo method);
+    bool Supports(MethodInfo method);
 
-        void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementation);
+    void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementation);
 
-        object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters);
-    }
+    object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters);
 }

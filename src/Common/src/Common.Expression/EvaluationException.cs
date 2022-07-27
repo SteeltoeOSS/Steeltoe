@@ -4,33 +4,32 @@
 
 using System;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public class EvaluationException : ExpressionException
 {
-    public class EvaluationException : ExpressionException
-    {
-        public EvaluationException(string message)
+    public EvaluationException(string message)
         : base(message)
-        {
-        }
+    {
+    }
 
-        public EvaluationException(string message, Exception cause)
+    public EvaluationException(string message, Exception cause)
         : base(message, cause)
-        {
-        }
+    {
+    }
 
-        public EvaluationException(int position, string message)
+    public EvaluationException(int position, string message)
         : base(position, message)
-        {
-        }
+    {
+    }
 
-        public EvaluationException(string expressionstring, string message)
+    public EvaluationException(string expressionstring, string message)
         : base(expressionstring, message)
-        {
-        }
+    {
+    }
 
-        public EvaluationException(int position, string message, Exception cause)
+    public EvaluationException(int position, string message, Exception cause)
         : base(position, message, cause)
-        {
-        }
+    {
     }
 }

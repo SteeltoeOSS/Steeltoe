@@ -6,15 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Steeltoe.Common.Expression.Internal
+namespace Steeltoe.Common.Expression.Internal;
+
+public enum Operation
 {
-    public enum Operation
-    {
-        ADD,
-        SUBTRACT,
-        DIVIDE,
-        MULTIPLY,
-        MODULUS,
-        POWER
-    }
+    ADD,
+    SUBTRACT,
+    DIVIDE,
+    MULTIPLY,
+    MODULUS,
+    POWER
 }

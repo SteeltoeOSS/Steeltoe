@@ -7,35 +7,34 @@ using Steeltoe.Connector;
 using Steeltoe.Extensions.Configuration;
 using System;
 
-namespace External.Connector.Test
+namespace External.Connector.Test;
+
+internal class TestServiceInfoCreator : ServiceInfoCreator
 {
-    internal class TestServiceInfoCreator : ServiceInfoCreator
+    internal TestServiceInfoCreator(IConfiguration configuration)
+        : base(configuration)
     {
-        internal TestServiceInfoCreator(IConfiguration configuration)
-            : base(configuration)
-        {
-        }
+    }
 
-        public static new bool IsRelevant => bool.Parse(Environment.GetEnvironmentVariable("TestServiceInfoCreator") ?? "true");
+    public static new bool IsRelevant => bool.Parse(Environment.GetEnvironmentVariable("TestServiceInfoCreator") ?? "true");
 
-        public static new TestServiceInfoCreator Instance(IConfiguration config)
-        {
-            var creator = new TestServiceInfoCreator(config);
-            creator.BuildServiceInfoFactories();
-            creator.BuildServiceInfos();
-            return creator;
-        }
+    public static new TestServiceInfoCreator Instance(IConfiguration config)
+    {
+        var creator = new TestServiceInfoCreator(config);
+        creator.BuildServiceInfoFactories();
+        creator.BuildServiceInfos();
+        return creator;
+    }
 
-        protected override void BuildServiceInfoFactories()
-        {
-            Factories.Clear();
-            Factories.Add(new TestServiceInfoFactory());
-        }
+    protected override void BuildServiceInfoFactories()
+    {
+        Factories.Clear();
+        Factories.Add(new TestServiceInfoFactory());
+    }
 
-        private void BuildServiceInfos()
-        {
-            var factory = FindFactory(new Service());
-            ServiceInfos.Add(factory.Create(null));
-        }
+    private void BuildServiceInfos()
+    {
+        var factory = FindFactory(new Service());
+        ServiceInfos.Add(factory.Create(null));
     }
 }

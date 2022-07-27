@@ -4,23 +4,22 @@
 
 using System;
 
-namespace Steeltoe.Discovery.Consul.Registry
+namespace Steeltoe.Discovery.Consul.Registry;
+
+public interface IServiceRegistrar : IDisposable
 {
-    public interface IServiceRegistrar : IDisposable
-    {
-        /// <summary>
-        /// Start the service registrar
-        /// </summary>
-        void Start();
+    /// <summary>
+    /// Start the service registrar
+    /// </summary>
+    void Start();
 
-        /// <summary>
-        /// Register any registrations configured
-        /// </summary>
-        void Register();
+    /// <summary>
+    /// Register any registrations configured
+    /// </summary>
+    void Register();
 
-        /// <summary>
-        /// Deregister any registrations configured
-        /// </summary>
-        void Deregister();
-    }
+    /// <summary>
+    /// Deregister any registrations configured
+    /// </summary>
+    void Deregister();
 }
