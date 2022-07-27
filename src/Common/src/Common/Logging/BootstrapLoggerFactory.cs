@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Logging;
 /// <summary>
 /// Provides access to logging infrastructure before service container is created. Any loggers created are updated with config settings after
 /// config subsystem and later DI subsystem are available.
-/// This class should only be used by components that need logging logging infrastructure before Service Container is available.
+/// This class should only be used by components that need logging infrastructure before Service Container is available.
 /// </summary>
 public static class BootstrapLoggerFactory
 {
