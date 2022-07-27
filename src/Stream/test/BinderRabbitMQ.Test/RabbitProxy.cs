@@ -69,7 +69,7 @@ public class RabbitProxy
         }
         catch (SocketException e)
         {
-            _logger.LogInformation("SocketException: {0}", e);
+            // _logger.LogInformation("SocketException: {0}", e);
             _listener.Stop();
         }
     }
@@ -109,7 +109,7 @@ public class RabbitProxy
                     }
                     catch (Exception ex)
                     {
-                        _logger?.LogInformation(ex.Message + ex.StackTrace);
+                       // _logger?.LogInformation(ex.Message + ex.StackTrace);
                     }
                 }
             });
@@ -127,7 +127,7 @@ public class RabbitProxy
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogInformation(ex.Message + ex.StackTrace);
+                   // _logger?.LogInformation(ex.Message + ex.StackTrace);
                 }
             }
 
@@ -135,7 +135,7 @@ public class RabbitProxy
         }
         catch (Exception e)
         {
-            _logger.LogInformation("Exception: {0}", e.ToString());
+           // _logger.LogInformation("Exception: {0}", e.ToString());
         }
         finally
         {
