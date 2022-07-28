@@ -24,7 +24,6 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
     {
         using var connectionFactory = new CachingConnectionFactory("localhost");
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
-        rabbitTemplate.Dispose();
         rabbitTemplate.ReplyTimeout = 1;
         var exception = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);

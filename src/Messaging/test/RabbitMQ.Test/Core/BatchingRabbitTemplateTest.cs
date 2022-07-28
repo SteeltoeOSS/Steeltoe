@@ -43,7 +43,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     public void Dispose()
     {
         var admin = new RabbitAdmin(_connectionFactory);
-        admin.DeleteQueue(ROUTE);
+        admin.DeleteQueue(Route);
         _connectionFactory.Dispose();
     }
 
