@@ -12,28 +12,28 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:health";
+    private const string ManagementInfoPrefix = "management:endpoints:health";
 
     public HealthEndpointOptions()
     {
         Id = "health";
-        RequiredPermissions = Permissions.RESTRICTED;
+        RequiredPermissions = Permissions.Restricted;
         ExactMatch = false;
 
         AddDefaultGroups();
     }
 
     public HealthEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
             Id = "health";
         }
 
-        if (RequiredPermissions == Permissions.UNDEFINED)
+        if (RequiredPermissions == Permissions.Undefined)
         {
-            RequiredPermissions = Permissions.RESTRICTED;
+            RequiredPermissions = Permissions.Restricted;
         }
 
         if (Claim == null && !string.IsNullOrEmpty(Role))

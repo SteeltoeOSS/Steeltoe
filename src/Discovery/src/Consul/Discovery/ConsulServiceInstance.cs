@@ -11,14 +11,14 @@ using System.Collections.Generic;
 namespace Steeltoe.Discovery.Consul.Discovery;
 
 /// <summary>
-/// A Consul service instance constructed from a ServiceEntry
+/// A Consul service instance constructed from a ServiceEntry.
 /// </summary>
 public class ConsulServiceInstance : IServiceInstance
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceInstance"/> class.
     /// </summary>
-    /// <param name="serviceEntry">the service entry from the Consul server</param>
+    /// <param name="serviceEntry">the service entry from the Consul server.</param>
     public ConsulServiceInstance(ServiceEntry serviceEntry)
     {
         // TODO: 3.0  ID = healthService.ID;
@@ -31,8 +31,6 @@ public class ConsulServiceInstance : IServiceInstance
         var scheme = IsSecure ? "https" : "http";
         Uri = new Uri($"{scheme}://{Host}:{Port}");
     }
-
-    #region Implementation of IServiceInstance
 
     /// <inheritdoc/>
     public string ServiceId { get; }
@@ -51,6 +49,4 @@ public class ConsulServiceInstance : IServiceInstance
 
     /// <inheritdoc/>
     public IDictionary<string, string> Metadata { get; }
-
-    #endregion Implementation of IServiceInstance
 }

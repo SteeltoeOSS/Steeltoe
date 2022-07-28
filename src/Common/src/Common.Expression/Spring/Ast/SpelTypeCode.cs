@@ -9,29 +9,29 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class SpelTypeCode
 {
-    private static readonly Dictionary<string, SpelTypeCode> _names = new ();
-    private static readonly Dictionary<Type, SpelTypeCode> _types = new ();
+    private static readonly Dictionary<string, SpelTypeCode> Names = new ();
+    private static readonly Dictionary<Type, SpelTypeCode> Types = new ();
 
-    public static readonly SpelTypeCode OBJECT = new ("OBJECT", typeof(object));
-    public static readonly SpelTypeCode BOOLEAN = new ("BOOLEAN", typeof(bool));
-    public static readonly SpelTypeCode BYTE = new ("BYTE", typeof(byte));
-    public static readonly SpelTypeCode SBYTE = new ("SBYTE", typeof(sbyte));
-    public static readonly SpelTypeCode CHAR = new ("CHAR", typeof(char));
-    public static readonly SpelTypeCode DOUBLE = new ("DOUBLE", typeof(double));
-    public static readonly SpelTypeCode FLOAT = new ("FLOAT", typeof(float));
-    public static readonly SpelTypeCode INT = new ("INT", typeof(int));
-    public static readonly SpelTypeCode UINT = new ("UINT", typeof(uint));
-    public static readonly SpelTypeCode LONG = new ("LONG", typeof(long));
-    public static readonly SpelTypeCode ULONG = new ("ULONG", typeof(ulong));
-    public static readonly SpelTypeCode SHORT = new ("SHORT", typeof(short));
-    public static readonly SpelTypeCode USHORT = new ("USHORT", typeof(ushort));
+    public static readonly SpelTypeCode Object = new ("OBJECT", typeof(object));
+    public static readonly SpelTypeCode Boolean = new ("BOOLEAN", typeof(bool));
+    public static readonly SpelTypeCode Byte = new ("BYTE", typeof(byte));
+    public static readonly SpelTypeCode Sbyte = new ("SBYTE", typeof(sbyte));
+    public static readonly SpelTypeCode Char = new ("CHAR", typeof(char));
+    public static readonly SpelTypeCode Double = new ("DOUBLE", typeof(double));
+    public static readonly SpelTypeCode Float = new ("FLOAT", typeof(float));
+    public static readonly SpelTypeCode Int = new ("INT", typeof(int));
+    public static readonly SpelTypeCode Uint = new ("UINT", typeof(uint));
+    public static readonly SpelTypeCode Long = new ("LONG", typeof(long));
+    public static readonly SpelTypeCode Ulong = new ("ULONG", typeof(ulong));
+    public static readonly SpelTypeCode Short = new ("SHORT", typeof(short));
+    public static readonly SpelTypeCode Ushort = new ("USHORT", typeof(ushort));
 
     private SpelTypeCode(string name, Type type)
     {
         Type = type;
         Name = name;
-        _names.Add(Name, this);
-        _types.Add(Type, this);
+        Names.Add(Name, this);
+        Types.Add(Type, this);
     }
 
     public Type Type { get; }
@@ -40,9 +40,9 @@ public class SpelTypeCode
 
     public static SpelTypeCode ForName(string name)
     {
-        if (!_names.TryGetValue(name.ToUpper(), out var result))
+        if (!Names.TryGetValue(name.ToUpper(), out var result))
         {
-            return OBJECT;
+            return Object;
         }
 
         return result;
@@ -50,9 +50,9 @@ public class SpelTypeCode
 
     public static SpelTypeCode ForType(Type clazz)
     {
-        if (!_types.TryGetValue(clazz, out var result))
+        if (!Types.TryGetValue(clazz, out var result))
         {
-            return OBJECT;
+            return Object;
         }
 
         return result;

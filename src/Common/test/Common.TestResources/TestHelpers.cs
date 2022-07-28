@@ -2,21 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
-#endif
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe;
 
-public static class TestHelpers
+public static partial class TestHelpers
 {
     public static Stream StringToStream(string str)
     {
@@ -37,23 +35,6 @@ public static class TestHelpers
         return reader.ReadToEnd();
     }
 
-    public static ILoggerFactory GetLoggerFactory()
-    {
-        IServiceCollection serviceCollection = new ServiceCollection();
-        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
-
-#if NET6_0_OR_GREATER
-        serviceCollection.AddLogging(builder => builder.AddConsole());
-#else
-#pragma warning disable CS0618 // Type or member is obsolete
-        serviceCollection.AddLogging(builder => builder.AddConsole(opts => opts.DisableColors = true));
-#pragma warning restore CS0618 // Type or member is obsolete
-#endif
-
-        serviceCollection.AddLogging(builder => builder.AddDebug());
-        return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
-    }
-
     public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
     {
         var builder = new ConfigurationBuilder();
@@ -63,7 +44,7 @@ public static class TestHelpers
 
     public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
 
-    public static readonly string VCAP_APPLICATION = @"
+    public static readonly string VcapApplication = @"
             {
                 ""limits"": {
                     ""fds"": 16384,
@@ -86,7 +67,7 @@ public static class TestHelpers
                 ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
             }";
 
-    public static readonly ImmutableDictionary<string, string> _fastTestsConfiguration = new Dictionary<string, string>
+    public static readonly ImmutableDictionary<string, string> FastTestsConfiguration = new Dictionary<string, string>
     {
         { "spring:cloud:config:enabled", "false" },
         { "eureka:client:serviceUrl", "http://127.0.0.1" },
@@ -98,18 +79,25 @@ public static class TestHelpers
         { "sqlserver:credentials:timeout", "1" },
     }.ToImmutableDictionary();
 
-    public static readonly ImmutableDictionary<string, string> _wavefrontConfiguration = new Dictionary<string, string>
+    public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>
     {
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
 
-#if NET6_0_OR_GREATER
+    public static ILoggerFactory GetLoggerFactory()
+    {
+        IServiceCollection serviceCollection = new ServiceCollection();
+        serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
+        serviceCollection.AddLogging(builder => builder.AddConsole());
+        serviceCollection.AddLogging(builder => builder.AddDebug());
+        return serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
+    }
+
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
     {
         var webAppBuilder = WebApplication.CreateBuilder(args);
-        webAppBuilder.Configuration.AddInMemoryCollection(_fastTestsConfiguration);
+        webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder;
     }
-#endif
 }

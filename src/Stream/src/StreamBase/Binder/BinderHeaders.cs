@@ -9,22 +9,22 @@ namespace Steeltoe.Stream.Binder;
 
 public static class BinderHeaders
 {
-    public const string BINDER_ORIGINAL_CONTENT_TYPE = "originalContentType";
+    public const string BinderOriginalContentType = "originalContentType";
 
-    public const string PARTITION_HEADER = $"{PREFIX}partition";
+    public const string PartitionHeader = $"{Prefix}partition";
 
-    public const string PARTITION_OVERRIDE = $"{PREFIX}partitionOverride";
+    public const string PartitionOverride = $"{Prefix}partitionOverride";
 
-    public const string NATIVE_HEADERS_PRESENT = $"{PREFIX}nativeHeadersPresent";
+    public const string NativeHeadersPresent = $"{Prefix}nativeHeadersPresent";
 
-    public static readonly string[] STANDARD_HEADERS =
+    public static readonly string[] StandardHeaders =
     {
-        IntegrationMessageHeaderAccessor.CORRELATION_ID,
-        IntegrationMessageHeaderAccessor.SEQUENCE_SIZE,
-        IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER,
-        MessageHeaders.CONTENT_TYPE,
-        BINDER_ORIGINAL_CONTENT_TYPE
+        IntegrationMessageHeaderAccessor.CorrelationId,
+        IntegrationMessageHeaderAccessor.SequenceSize,
+        IntegrationMessageHeaderAccessor.SequenceNumber,
+        MessageHeaders.ContentType,
+        BinderOriginalContentType
     };
 
-    private const string PREFIX = "scst_";
+    private const string Prefix = "scst_";
 }

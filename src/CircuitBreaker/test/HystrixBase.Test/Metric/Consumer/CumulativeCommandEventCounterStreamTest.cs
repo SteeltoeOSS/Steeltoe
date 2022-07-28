@@ -77,7 +77,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);  // Stream should start
-        var cmd = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Success, 0);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
@@ -86,7 +86,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
+        expected[(int)HystrixEventType.Success] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -98,7 +98,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
@@ -107,8 +107,8 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackSuccess] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -119,7 +119,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.TIMEOUT);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Timeout);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -129,8 +129,8 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.TIMEOUT] = 1;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
+        expected[(int)HystrixEventType.Timeout] = 1;
+        expected[(int)HystrixEventType.FallbackSuccess] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -141,7 +141,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.BadRequest);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -151,8 +151,8 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.BAD_REQUEST] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.BadRequest] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -163,9 +163,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -177,8 +177,8 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
-        expected[(int)HystrixEventType.RESPONSE_FROM_CACHE] = 2;
+        expected[(int)HystrixEventType.Success] = 1;
+        expected[(int)HystrixEventType.ResponseFromCache] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -190,11 +190,11 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
 
-        var failure1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var failure3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0);
-        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
-        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+        var failure1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var failure3 = Command.From(GroupKey, key, HystrixEventType.Failure, 0);
+        var shortCircuit1 = Command.From(GroupKey, key, HystrixEventType.Success);
+        var shortCircuit2 = Command.From(GroupKey, key, HystrixEventType.Success);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -216,9 +216,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         Assert.True(shortCircuit2.IsResponseShortCircuited);
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 3;
-        expected[(int)HystrixEventType.SHORT_CIRCUITED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
+        expected[(int)HystrixEventType.Failure] = 3;
+        expected[(int)HystrixEventType.ShortCircuited] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 5;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -233,11 +233,11 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -263,9 +263,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         Assert.True(rejected2.IsResponseSemaphoreRejected, "rejected2 not rejected");
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 10;
-        expected[(int)HystrixEventType.SEMAPHORE_REJECTED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
+        expected[(int)HystrixEventType.Success] = 10;
+        expected[(int)HystrixEventType.SemaphoreRejected] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -279,11 +279,11 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500));
         }
 
-        var rejected1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
-        var rejected2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0);
+        var rejected1 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
+        var rejected2 = Command.From(GroupKey, key, HystrixEventType.Success, 0);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -307,9 +307,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         Assert.True(rejected2.IsResponseThreadPoolRejected);
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 10;
-        expected[(int)HystrixEventType.THREAD_POOL_REJECTED] = 2;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 2;
+        expected[(int)HystrixEventType.Success] = 10;
+        expected[(int)HystrixEventType.ThreadPoolRejected] = 2;
+        expected[(int)HystrixEventType.FallbackSuccess] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -321,7 +321,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_FAILURE);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackFailure);
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
@@ -330,9 +330,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_FAILURE] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackFailure] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -343,7 +343,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var cmd = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_MISSING);
+        var cmd = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackMissing);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -354,9 +354,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_MISSING] = 1;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackMissing] = 1;
+        expected[(int)HystrixEventType.ExceptionThrown] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -371,11 +371,11 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
         for (var i = 0; i < 5; i++)
         {
-            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 500));
+            fallbackSaturators.Add(Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 500));
         }
 
-        var rejection1 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
-        var rejection2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 0, HystrixEventType.FALLBACK_SUCCESS, 0);
+        var rejection1 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
+        var rejection2 = Command.From(GroupKey, key, HystrixEventType.Failure, 0, HystrixEventType.FallbackSuccess, 0);
 
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
@@ -400,10 +400,10 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.FAILURE] = 7;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 5;
-        expected[(int)HystrixEventType.FALLBACK_REJECTION] = 2;
-        expected[(int)HystrixEventType.EXCEPTION_THROWN] = 2;
+        expected[(int)HystrixEventType.Failure] = 7;
+        expected[(int)HystrixEventType.FallbackSuccess] = 5;
+        expected[(int)HystrixEventType.FallbackRejection] = 2;
+        expected[(int)HystrixEventType.ExceptionThrown] = 2;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -415,9 +415,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 500);
-        var toCancel = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500);
+        var toCancel = Command.From(GroupKey, key, HystrixEventType.Success, 500);
 
-        _latchSubscription = _stream.Observe().Take(5 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(5 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
         _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : about to Observe and Subscribe");
@@ -447,7 +447,7 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.CANCELLED] = 1;
+        expected[(int)HystrixEventType.Cancelled] = 1;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -473,8 +473,8 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
-        expected[(int)HystrixEventType.COLLAPSED] = 3;
+        expected[(int)HystrixEventType.Success] = 1;
+        expected[(int)HystrixEventType.Collapsed] = 3;
         Assert.Equal(expected, _stream.Latest);
     }
 
@@ -486,11 +486,11 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = CumulativeCommandEventCounterStream.GetInstance(key, 10, 100);
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 20);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 20);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Failure, 10);
 
         // by doing a Take(30), we ensure that no rolling out of window takes place
-        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(30 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         await cmd1.Observe();
@@ -500,9 +500,9 @@ public class CumulativeCommandEventCounterStreamTest : CommandStreamTest
 
         Assert.Equal(HystrixEventTypeHelper.Values.Count, _stream.Latest.Length);
         var expected = new long[HystrixEventTypeHelper.Values.Count];
-        expected[(int)HystrixEventType.SUCCESS] = 1;
-        expected[(int)HystrixEventType.FAILURE] = 1;
-        expected[(int)HystrixEventType.FALLBACK_SUCCESS] = 1;
+        expected[(int)HystrixEventType.Success] = 1;
+        expected[(int)HystrixEventType.Failure] = 1;
+        expected[(int)HystrixEventType.FallbackSuccess] = 1;
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(expected, _stream.Latest);
     }

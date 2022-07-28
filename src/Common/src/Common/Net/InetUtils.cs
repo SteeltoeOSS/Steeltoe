@@ -45,26 +45,26 @@ public class InetUtils
         try
         {
             var lowest = int.MaxValue;
-            var ifaces = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (var iface in ifaces)
+            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            foreach (var @interface in interfaces)
             {
-                if (iface.OperationalStatus == OperationalStatus.Up && !iface.IsReceiveOnly)
+                if (@interface.OperationalStatus == OperationalStatus.Up && !@interface.IsReceiveOnly)
                 {
-                    _logger?.LogTrace("Testing interface: {name}, {id}", iface.Name, iface.Id);
+                    _logger?.LogTrace("Testing interface: {name}, {id}", @interface.Name, @interface.Id);
 
-                    var props = iface.GetIPProperties();
-                    var ipprops = props.GetIPv4Properties();
+                    var props = @interface.GetIPProperties();
+                    var ipProps = props.GetIPv4Properties();
 
-                    if (ipprops.Index < lowest || result == null)
+                    if (ipProps.Index < lowest || result == null)
                     {
-                        lowest = ipprops.Index;
+                        lowest = ipProps.Index;
                     }
                     else if (result != null)
                     {
                         continue;
                     }
 
-                    if (!IgnoreInterface(iface.Name))
+                    if (!IgnoreInterface(@interface.Name))
                     {
                         foreach (var addressInfo in props.UnicastAddresses)
                         {
@@ -73,7 +73,7 @@ public class InetUtils
                                 && !IsLoopbackAddress(address)
                                 && IsPreferredAddress(address))
                             {
-                                _logger?.LogTrace("Found non-loopback interface: {name}", iface.Name);
+                                _logger?.LogTrace("Found non-loopback interface: {name}", @interface.Name);
                                 result = address;
                             }
                         }
@@ -194,11 +194,11 @@ public class InetUtils
             var results = Dns.GetHostAddresses(hostName);
             if (results != null && results.Length > 0)
             {
-                foreach (var addr in results)
+                foreach (var address in results)
                 {
-                    if (addr.AddressFamily.Equals(AddressFamily.InterNetwork))
+                    if (address.AddressFamily.Equals(AddressFamily.InterNetwork))
                     {
-                        result = addr;
+                        result = address;
                         break;
                     }
                 }
@@ -253,9 +253,9 @@ public class InetUtils
 
     internal bool IsSiteLocalAddress(IPAddress address)
     {
-        var addr = address.ToString();
-        return addr.StartsWith("10.") ||
-               addr.StartsWith("172.16.") ||
-               addr.StartsWith("192.168.");
+        var text = address.ToString();
+        return text.StartsWith("10.") ||
+               text.StartsWith("172.16.") ||
+               text.StartsWith("192.168.");
     }
 }

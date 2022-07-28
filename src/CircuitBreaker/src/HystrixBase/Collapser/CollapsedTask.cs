@@ -7,11 +7,11 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
-internal sealed class CollapsedTask<BatchReturnType, ResponseType, RequestArgumentType> : ITimerListener
+internal sealed class CollapsedTask<TBatchReturn, TResponse, TRequestArgument> : ITimerListener
 {
-    private readonly RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> _rq;
+    private readonly RequestCollapser<TBatchReturn, TResponse, TRequestArgument> _rq;
 
-    public CollapsedTask(RequestCollapser<BatchReturnType, ResponseType, RequestArgumentType> rq)
+    public CollapsedTask(RequestCollapser<TBatchReturn, TResponse, TRequestArgument> rq)
     {
         _rq = rq;
     }

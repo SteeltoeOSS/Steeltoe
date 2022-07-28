@@ -15,10 +15,10 @@ public class PostgresProviderConnectorFactory
     private readonly PostgresProviderConfigurer _configurer = new ();
     private readonly Type _type;
 
-    public PostgresProviderConnectorFactory(PostgresServiceInfo sinfo, PostgresProviderConnectorOptions config, Type type)
+    public PostgresProviderConnectorFactory(PostgresServiceInfo serviceInfo, PostgresProviderConnectorOptions options, Type type)
     {
-        _info = sinfo;
-        _config = config ?? throw new ArgumentNullException(nameof(config));
+        _info = serviceInfo;
+        _config = options ?? throw new ArgumentNullException(nameof(options));
         _type = type;
     }
 

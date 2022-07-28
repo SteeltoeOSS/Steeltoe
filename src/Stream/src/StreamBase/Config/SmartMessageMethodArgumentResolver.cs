@@ -59,13 +59,13 @@ public class SmartMessageMethodArgumentResolver : MessageMethodArgumentResolver
     private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
     {
         object result = null;
-        if (_converter is ISmartMessageConverter smartConverter)
+        if (Converter is ISmartMessageConverter smartConverter)
         {
             result = smartConverter.FromMessage(message, targetPayloadType, parameter);
         }
-        else if (_converter != null)
+        else if (Converter != null)
         {
-            result = _converter.FromMessage(message, targetPayloadType);
+            result = Converter.FromMessage(message, targetPayloadType);
         }
 
         if (result == null)

@@ -104,7 +104,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
                         ]
                     }]
                 }";
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
         var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
         var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
@@ -124,7 +124,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     }
 
     [Fact]
-    public void ApplyServicesDoesntOverrideUserPathSettings()
+    public void ApplyServicesDoesNotOverrideUserPathSettings()
     {
         var appSettings = new Dictionary<string, string>
         {

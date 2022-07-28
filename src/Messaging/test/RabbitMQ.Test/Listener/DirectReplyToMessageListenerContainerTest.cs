@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 {
-    private const string TEST_RELEASE_CONSUMER_Q = "test.release.consumer";
+    private const string TestReleaseConsumerQ = "test.release.consumer";
     private readonly CachingConnectionFactory _adminCf;
     private readonly RabbitAdmin _admin;
 
@@ -25,12 +25,12 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
     {
         _adminCf = new CachingConnectionFactory("localhost");
         _admin = new RabbitAdmin(_adminCf);
-        _admin.DeclareQueue(new Config.Queue(TEST_RELEASE_CONSUMER_Q));
+        _admin.DeclareQueue(new Config.Queue(TestReleaseConsumerQ));
     }
 
     public void Dispose()
     {
-        _admin.DeleteQueue(TEST_RELEASE_CONSUMER_Q);
+        _admin.DeleteQueue(TestReleaseConsumerQ);
         _adminCf.Dispose();
     }
 
@@ -45,34 +45,34 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         var mockMessageListener = new MockChannelAwareMessageListener(container.MessageListener, latch);
         container.SetChannelAwareMessageListener(mockMessageListener);
 
-        var foobytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var barbytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
+        var fooBytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        var barBytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         var channel1 = container.GetChannelHolder();
         var props = channel1.Channel.CreateBasicProperties();
-        props.ReplyTo = Address.AMQ_RABBITMQ_REPLY_TO;
-        RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TEST_RELEASE_CONSUMER_Q, props, foobytes);
+        props.ReplyTo = Address.AmqRabbitMQReplyTo;
+        RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TestReleaseConsumerQ, props, fooBytes);
         var replyChannel = connectionFactory.CreateConnection().CreateChannel();
-        var request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
+        var request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
         var n = 0;
         while (n++ < 100 && request == null)
         {
             Thread.Sleep(100);
-            request = replyChannel.BasicGet(TEST_RELEASE_CONSUMER_Q, true);
+            request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
         }
 
         Assert.NotNull(request);
         props = channel1.Channel.CreateBasicProperties();
-        RC.IModelExensions.BasicPublish(replyChannel, string.Empty, request.BasicProperties.ReplyTo, props, barbytes);
+        RC.IModelExensions.BasicPublish(replyChannel, string.Empty, request.BasicProperties.ReplyTo, props, barBytes);
         replyChannel.Close();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
         var channel2 = container.GetChannelHolder();
         Assert.Same(channel1.Channel, channel2.Channel);
         container.ReleaseConsumerFor(channel1, false, null); // simulate race for future timeout/cancel and onMessage()
-        var inUse = container._inUseConsumerChannels;
+        var inUse = container.InUseConsumerChannels;
         Assert.Single(inUse);
         container.ReleaseConsumerFor(channel2, false, null);
         Assert.Empty(inUse);
@@ -87,8 +87,8 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 
         public MockChannelAwareMessageListener(IMessageListener messageListener, CountdownEvent latch)
         {
-            MessageListener = messageListener as IChannelAwareMessageListener;
-            Latch = latch;
+            this.MessageListener = messageListener as IChannelAwareMessageListener;
+            this.Latch = latch;
         }
 
         public AcknowledgeMode ContainerAckMode { get; set; }

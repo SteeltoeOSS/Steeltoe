@@ -14,7 +14,7 @@ using Xunit;
 namespace Steeltoe.Connector.PostgreSql.Test;
 
 /// <summary>
-/// Tests for the extension method that adds both the DbConnection and the health check
+/// Tests for the extension method that adds both the DbConnection and the health check.
 /// </summary>
 public class PostgresProviderServiceCollectionExtensionsTest
 {
@@ -87,8 +87,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_MultiplePostgresServices_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVCAP_EDB);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVcapEdb);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
@@ -103,8 +103,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_EDB);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         var config = builder.Build();
@@ -126,8 +126,8 @@ public class PostgresProviderServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Azure);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapAzure);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -148,12 +148,12 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPostgresConnection_WithCruncyVCAPs_AddsPostgresConnection()
+    public void AddPostgresConnection_WithCrunchyVCAPs_AddsPostgresConnection()
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVCAP_Crunchy);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapCrunchy);
         var appsettings = new Dictionary<string, string>();
 
         var builder = new ConfigurationBuilder();
@@ -176,7 +176,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_AddsRelationalHealthContributor()
+    public void AddPostgreSqlConnection_AddsRelationalHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
@@ -190,7 +190,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_DoesntAddRelationalHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddPostgreSqlConnection_DoesNotAddRelationalHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
@@ -208,7 +208,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddPosgreSqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
+    public void AddPostgreSqlConnection_AddsRelationalHealthContributor_WhenCommunityHealthCheckExistsAndForced()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

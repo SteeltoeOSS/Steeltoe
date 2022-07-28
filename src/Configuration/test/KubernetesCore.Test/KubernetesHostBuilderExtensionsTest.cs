@@ -81,7 +81,6 @@ public class KubernetesHostBuilderExtensionsTest
         Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddKubernetesConfiguration_WebApplicationBuilder_AddsConfig()
     {
@@ -97,7 +96,6 @@ public class KubernetesHostBuilderExtensionsTest
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
         Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
     }
-#endif
 
     private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host) =>
         fakeClient =>

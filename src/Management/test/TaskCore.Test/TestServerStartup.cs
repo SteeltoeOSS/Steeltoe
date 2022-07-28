@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace Steeltoe.Management.TaskCore.Test;
 
@@ -26,8 +25,4 @@ public class TestServerStartup
     public void Configure(IApplicationBuilder app)
     {
     }
-}
-
-public class PassException : Exception
-{
 }

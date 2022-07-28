@@ -6,12 +6,6 @@ using System;
 
 namespace Steeltoe.Messaging.Converter;
 
-public enum TypePrecedence
-{
-    INFERRED,
-    TYPE_ID
-}
-
 public interface ITypeMapper
 {
     void FromType(Type type, IMessageHeaders headers);

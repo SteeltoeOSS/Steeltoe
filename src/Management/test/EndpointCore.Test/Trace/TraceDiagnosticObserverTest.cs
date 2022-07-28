@@ -47,11 +47,11 @@ public class TraceDiagnosticObserverTest : BaseTest
         var context = CreateRequest();
 
         var session = new TestSession();
-        ISessionFeature sessFeature = new SessionFeature
+        ISessionFeature sessionFeature = new SessionFeature
         {
             Session = session
         };
-        context.Features.Set(sessFeature);
+        context.Features.Set(sessionFeature);
 
         var result = obs.GetSessionId(context);
         Assert.Equal("TestSessionId", result);
@@ -240,7 +240,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         // Activity current, event is stop event, no context in event value, event it ignored
         obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new object());
 
-        Assert.Empty(obs._queue);
+        Assert.Empty(obs.Queue);
         current.Stop();
     }
 
@@ -259,8 +259,8 @@ public class TraceDiagnosticObserverTest : BaseTest
         Thread.Sleep(1000);
         listener.StopActivity(current, new { HttpContext = context });
 
-        Assert.Single(obs._queue);
-        Assert.True(obs._queue.TryPeek(out var result));
+        Assert.Single(obs.Queue);
+        Assert.True(obs.Queue.TryPeek(out var result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -294,9 +294,9 @@ public class TraceDiagnosticObserverTest : BaseTest
 
         obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
 
-        Assert.Single(obs._queue);
+        Assert.Single(obs.Queue);
 
-        Assert.True(obs._queue.TryPeek(out var result));
+        Assert.True(obs.Queue.TryPeek(out var result));
         Assert.NotNull(result.Info);
         Assert.NotEqual(0, result.TimeStamp);
         Assert.True(result.Info.ContainsKey("method"));
@@ -331,7 +331,7 @@ public class TraceDiagnosticObserverTest : BaseTest
             obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
         }
 
-        Assert.Equal(option.Capacity, obs._queue.Count);
+        Assert.Equal(option.Capacity, obs.Queue.Count);
     }
 
     [Fact]
@@ -350,10 +350,10 @@ public class TraceDiagnosticObserverTest : BaseTest
             obs.ProcessEvent("Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop", new { HttpContext = context });
         }
 
-        Assert.Equal(option.Capacity, obs._queue.Count);
+        Assert.Equal(option.Capacity, obs.Queue.Count);
         var traces = obs.GetTraces();
         Assert.Equal(option.Capacity, traces.Count);
-        Assert.Equal(option.Capacity, obs._queue.Count);
+        Assert.Equal(option.Capacity, obs.Queue.Count);
 
         listener.Dispose();
     }

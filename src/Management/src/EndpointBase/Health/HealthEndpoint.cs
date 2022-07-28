@@ -39,7 +39,7 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
 
     public int GetStatusCode(HealthCheckResult health)
     {
-        return health.Status == HealthStatus.DOWN || health.Status == HealthStatus.OUT_OF_SERVICE
+        return health.Status == HealthStatus.Down || health.Status == HealthStatus.OutOfService
             ? 503
             : 200;
     }
@@ -65,9 +65,9 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
     }
 
     /// <summary>
-    /// Returns the last value returned by <see cref="ISecurityContext.GetRequestComponents()"/>, expected to be the name of a configured health group
+    /// Returns the last value returned by <see cref="ISecurityContext.GetRequestComponents()"/>, expected to be the name of a configured health group.
     /// </summary>
-    /// <param name="securityContext">Last value of <see cref="ISecurityContext.GetRequestComponents()"/> is used as group name</param>
+    /// <param name="securityContext">Last value of <see cref="ISecurityContext.GetRequestComponents()"/> is used as group name.</param>
     protected string GetRequestedHealthGroup(ISecurityContext securityContext)
     {
         var requestComponents = securityContext?.GetRequestComponents();
@@ -84,10 +84,10 @@ public class HealthEndpoint : AbstractEndpoint<HealthEndpointResponse, ISecurity
     }
 
     /// <summary>
-    /// Filter out health contributors that do not belong to the requested group
+    /// Filter out health contributors that do not belong to the requested group.
     /// </summary>
-    /// <param name="requestedGroup">Name of group from request</param>
-    /// <param name="contributors">Full list of <see cref="IHealthContributor"/>s</param>
+    /// <param name="requestedGroup">Name of group from request.</param>
+    /// <param name="contributors">Full list of <see cref="IHealthContributor"/>s.</param>
     /// <returns>
     ///     If the group is configured, returns health contributors that belong to the group. <para />
     ///     If group can't be parsed or is not configured, returns all health contributors.

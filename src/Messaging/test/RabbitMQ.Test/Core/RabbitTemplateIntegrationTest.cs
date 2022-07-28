@@ -32,8 +32,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 [Trait("Category", "Integration")]
 public abstract class RabbitTemplateIntegrationTest : IDisposable
 {
-    public const string ROUTE = "test.queue.RabbitTemplateIntegrationTests";
-    public const string REPLY_QUEUE_NAME = "test.reply.queue.RabbitTemplateIntegrationTests";
+    public const string Route = "test.queue.RabbitTemplateIntegrationTests";
+    public const string ReplyQueueName = "test.reply.queue.RabbitTemplateIntegrationTests";
 
     protected RabbitTemplate template;
     protected RabbitTemplate routingTemplate;
@@ -58,8 +58,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         // template.SetSendConnectionFactorySelectorExpression(new LiteralExpression("foo"));
         var adminCf = new CachingConnectionFactory("localhost");
         admin = new RabbitAdmin(adminCf);
-        admin.DeclareQueue(new Queue(ROUTE));
-        admin.DeclareQueue(new Queue(REPLY_QUEUE_NAME));
+        admin.DeclareQueue(new Queue(Route));
+        admin.DeclareQueue(new Queue(ReplyQueueName));
 
         routingTemplate = new RabbitTemplate();
 
@@ -84,8 +84,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         if (disposing)
         {
-            admin.DeleteQueue(ROUTE);
-            admin.DeleteQueue(REPLY_QUEUE_NAME);
+            admin.DeleteQueue(Route);
+            admin.DeleteQueue(ReplyQueueName);
             admin.ConnectionFactory.Dispose();
             template.Dispose();
             _connectionFactory.Dispose();
@@ -102,8 +102,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         try
         {
             template.IsChannelTransacted = true;
-            template.ConvertAndSend(ROUTE, "foo");
-            template.ConvertAndSend(Guid.NewGuid().ToString(), ROUTE, "xxx");
+            template.ConvertAndSend(Route, "foo");
+            template.ConvertAndSend(Guid.NewGuid().ToString(), Route, "xxx");
             var n = 0;
             while (n++ < 100 && channel.IsOpen)
             {
@@ -114,7 +114,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
             try
             {
-                template.ConvertAndSend(ROUTE, "bar");
+                template.ConvertAndSend(Route, "bar");
                 throw new Exception("Expected exception");
             }
             catch (RabbitUncategorizedException e)
@@ -146,21 +146,21 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         _connectionFactory.Destroy();
         template.UsePublisherConnection = true;
         template.ConvertAndSend("dummy", "foo");
-        Assert.Null(_connectionFactory._connection.Target);
-        Assert.NotNull(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory)._connection.Target);
+        Assert.Null(_connectionFactory.Connection.Target);
+        Assert.NotNull(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory).Connection.Target);
         _connectionFactory.Destroy();
-        Assert.Null(_connectionFactory._connection.Target);
-        Assert.Null(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory)._connection.Target);
+        Assert.Null(_connectionFactory.Connection.Target);
+        Assert.Null(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory).Connection.Target);
         var channel = _connectionFactory.CreateConnection().CreateChannel(true);
-        Assert.NotNull(_connectionFactory._connection.Target);
+        Assert.NotNull(_connectionFactory.Connection.Target);
         var holder = new RabbitResourceHolder(channel, true);
         TransactionSynchronizationManager.BindResource(_connectionFactory, holder);
         try
         {
             template.IsChannelTransacted = true;
             template.ConvertAndSend("dummy", "foo");
-            Assert.NotNull(_connectionFactory._connection.Target);
-            Assert.Null(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory)._connection.Target);
+            Assert.NotNull(_connectionFactory.Connection.Target);
+            Assert.Null(((CachingConnectionFactory)_connectionFactory.PublisherConnectionFactory).Connection.Target);
         }
         finally
         {
@@ -172,18 +172,18 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     [Fact]
     public void TestReceiveNonBlocking()
     {
-        template.ConvertAndSend(ROUTE, "nonblock");
+        template.ConvertAndSend(Route, "nonblock");
         var n = 0;
-        var o = template.ReceiveAndConvert<string>(ROUTE);
+        var o = template.ReceiveAndConvert<string>(Route);
         while (n++ < 100 && o == null)
         {
             Thread.Sleep(100);
-            o = template.ReceiveAndConvert<string>(ROUTE);
+            o = template.ReceiveAndConvert<string>(Route);
         }
 
         Assert.NotNull(o);
         Assert.Equal("nonblock", o);
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
@@ -194,34 +194,34 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             ReceiveTimeout = 10000
         };
-        Assert.Throws<ConsumerCancelledException>(() => template.Receive(ROUTE));
+        Assert.Throws<ConsumerCancelledException>(() => template.Receive(Route));
     }
 
     [Fact]
     public void TestReceiveBlocking()
     {
         // TODO: this.template.setUserIdExpressionString("@cf.username");
-        template.ConvertAndSend(ROUTE, "block");
-        var received = template.Receive(ROUTE, 10000);
+        template.ConvertAndSend(Route, "block");
+        var received = template.Receive(Route, 10000);
         Assert.NotNull(received);
         Assert.Equal("block", EncodingUtils.Utf8.GetString((byte[])received.Payload));
 
         // TODO: assertThat(received.getMessageProperties().getReceivedUserId()).isEqualTo("guest");
         template.ReceiveTimeout = 0;
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
     public void TestReceiveBlockingNoTimeout()
     {
-        template.ConvertAndSend(ROUTE, "blockNoTO");
-        var o = template.ReceiveAndConvert<string>(ROUTE, -1);
+        template.ConvertAndSend(Route, "blockNoTO");
+        var o = template.ReceiveAndConvert<string>(Route, -1);
         Assert.NotNull(o);
         Assert.Equal("blockNoTO", o);
         template.ReceiveTimeout = 1; // test the no message after timeout path
         try
         {
-            Assert.Null(template.Receive(ROUTE));
+            Assert.Null(template.Receive(Route));
         }
         catch (ConsumeOkNotReceivedException)
         {
@@ -234,47 +234,47 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         try
         {
-            Assert.Null(template.ReceiveAndConvert<string>(ROUTE, 10));
+            Assert.Null(template.ReceiveAndConvert<string>(Route, 10));
         }
         catch (ConsumeOkNotReceivedException)
         {
             // empty - race for consumeOk
         }
 
-        Assert.Empty(_connectionFactory._cachedChannelsNonTransactional);
+        Assert.Empty(_connectionFactory.CachedChannelsNonTransactional);
     }
 
     [Fact]
     public void TestReceiveBlockingTx()
     {
-        template.ConvertAndSend(ROUTE, "blockTX");
+        template.ConvertAndSend(Route, "blockTX");
         template.IsChannelTransacted = true;
         template.ReceiveTimeout = 10000;
-        var o = template.ReceiveAndConvert<string>(ROUTE);
+        var o = template.ReceiveAndConvert<string>(Route);
         Assert.NotNull(o);
         Assert.Equal("blockTX", o);
         template.ReceiveTimeout = 0;
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
     public void TestReceiveBlockingGlobalTx()
     {
-        template.ConvertAndSend(ROUTE, "blockGTXNoTO");
+        template.ConvertAndSend(Route, "blockGTXNoTO");
         var resourceHolder = ConnectionFactoryUtils
             .GetTransactionalResourceHolder(template.ConnectionFactory, true);
         TransactionSynchronizationManager.SetActualTransactionActive(true);
         ConnectionFactoryUtils.BindResourceToTransaction(resourceHolder, template.ConnectionFactory, true);
         template.ReceiveTimeout = -1;
         template.IsChannelTransacted = true;
-        var o = template.ReceiveAndConvert<string>(ROUTE);
+        var o = template.ReceiveAndConvert<string>(Route);
         resourceHolder.CommitAll();
         resourceHolder.CloseAll();
         Assert.Same(resourceHolder, TransactionSynchronizationManager.UnbindResource(template.ConnectionFactory));
         Assert.NotNull(o);
         Assert.Equal("blockGTXNoTO", o);
         template.ReceiveTimeout = 0;
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
@@ -294,31 +294,31 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
 
         // Now send the real message, and all should be well...
-        template.ConvertAndSend(ROUTE, "message");
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        template.ConvertAndSend(Route, "message");
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
     [Fact]
     public void TestSendAndReceiveWithPostProcessor()
     {
-        template.ConvertAndSend(ROUTE, (object)"message", new PostProccessor1());
+        template.ConvertAndSend(Route, (object)"message", new PostProcessor1());
         template.SetAfterReceivePostProcessors(new PostProcessor2());
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
     [Fact]
     public void TestSendAndReceive()
     {
-        template.ConvertAndSend(ROUTE, "message");
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        template.ConvertAndSend(Route, "message");
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -326,22 +326,22 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     public void TestSendAndReceiveUndeliverable()
     {
         template.Mandatory = true;
-        var ex = Assert.Throws<RabbitMessageReturnedException>(() => template.ConvertSendAndReceive<string>($"{ROUTE}xxxxxx", "undeliverable"));
+        var ex = Assert.Throws<RabbitMessageReturnedException>(() => template.ConvertSendAndReceive<string>($"{Route}xxxxxx", "undeliverable"));
         var body = ex.ReturnedMessage.Payload as byte[];
         Assert.NotNull(body);
         Assert.Equal("undeliverable", EncodingUtils.Utf8.GetString(body));
         Assert.Contains(ex.ReplyText, "NO_ROUTE");
-        Assert.Empty(template._replyHolder);
+        Assert.Empty(template.ReplyHolder);
     }
 
     [Fact]
     public void TestSendAndReceiveTransacted()
     {
         template.IsChannelTransacted = true;
-        template.ConvertAndSend(ROUTE, "message");
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        template.ConvertAndSend(Route, "message");
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -353,10 +353,10 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             IsChannelTransacted = true
         };
-        rabbitTemplate.ConvertAndSend(ROUTE, "message");
-        var result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        rabbitTemplate.ConvertAndSend(Route, "message");
+        var result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
         singleConnectionFactory.Destroy();
     }
@@ -365,31 +365,31 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     public void TestSendAndReceiveTransactedWithImplicitRollback()
     {
         template.IsChannelTransacted = true;
-        template.ConvertAndSend(ROUTE, "message");
+        template.ConvertAndSend(Route, "message");
 
         // Rollback of manual receive is implicit because the channel is
         // closed...
         var ex = Assert.Throws<RabbitUncategorizedException>(() => template.Execute(c =>
         {
-            c.BasicGet(ROUTE, false);
+            c.BasicGet(Route, false);
             c.BasicRecover(true);
             throw new PlannedException();
         }));
         Assert.IsType<PlannedException>(ex.InnerException);
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
     [Fact]
     public void TestSendAndReceiveInCallback()
     {
-        template.ConvertAndSend(ROUTE, "message");
+        template.ConvertAndSend(Route, "message");
         var messagePropertiesConverter = new DefaultMessageHeadersConverter();
         var result = template.Execute(c =>
         {
-            var response = c.BasicGet(ROUTE, false);
+            var response = c.BasicGet(Route, false);
             var props = messagePropertiesConverter.ToMessageHeaders(
                 response.BasicProperties,
                 new Envelope(response.DeliveryTag, response.Redelivered, response.Exchange, response.RoutingKey),
@@ -399,19 +399,19 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         });
 
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
     [Fact]
     public void TestReceiveInExternalTransaction()
     {
-        template.ConvertAndSend(ROUTE, "message");
+        template.ConvertAndSend(Route, "message");
         template.IsChannelTransacted = true;
         var result = new TransactionTemplate(new TestTransactionManager())
-            .Execute(_ => template.ReceiveAndConvert<string>(ROUTE));
+            .Execute(_ => template.ReceiveAndConvert<string>(Route));
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -420,21 +420,21 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         // Makes receive (and send in principle) transactional
         template.IsChannelTransacted = true;
-        template.ConvertAndSend(ROUTE, "message");
+        template.ConvertAndSend(Route, "message");
         Assert.Throws<PlannedException>(() =>
         {
             new TransactionTemplate(new TestTransactionManager()).Execute(
                 _ =>
                 {
-                    var result = template.ReceiveAndConvert<string>(ROUTE);
+                    var result = template.ReceiveAndConvert<string>(Route);
                     Assert.NotNull(result);
                     throw new PlannedException();
                 });
         });
 
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -443,19 +443,19 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         // Makes receive non-transactional
         template.IsChannelTransacted = false;
-        template.ConvertAndSend(ROUTE, "message");
+        template.ConvertAndSend(Route, "message");
         Assert.Throws<PlannedException>(() =>
         {
             new TransactionTemplate(new TestTransactionManager()).Execute(
                 _ =>
                 {
-                    template.ReceiveAndConvert<string>(ROUTE);
+                    template.ReceiveAndConvert<string>(Route);
                     throw new PlannedException();
                 });
         });
 
         // No rollback
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -465,11 +465,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         template.IsChannelTransacted = true;
         new TransactionTemplate(new TestTransactionManager()).Execute(_ =>
         {
-            template.ConvertAndSend(ROUTE, "message");
+            template.ConvertAndSend(Route, "message");
         });
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        result = template.ReceiveAndConvert<string>(ROUTE);
+        result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -483,13 +483,13 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             new TransactionTemplate(new TestTransactionManager()).Execute(
                 _ =>
                 {
-                    template.ConvertAndSend(ROUTE, "message");
+                    template.ConvertAndSend(Route, "message");
                     throw new PlannedException();
                 });
         });
 
         // No rollback
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
     }
 
@@ -498,8 +498,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
-        rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
-        rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(ROUTE);
+        rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, Route);
+        rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(Route);
         var task = Task.Run(() =>
         {
             IMessage message = null;
@@ -530,8 +530,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
-        rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, ROUTE);
-        rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(ROUTE);
+        rabbitTemplate.DefaultSendDestination = new RabbitDestination(string.Empty, Route);
+        rabbitTemplate.DefaultReceiveDestination = new RabbitDestination(Route);
         var remoteCorrelationId = new AtomicReference<string>();
         var received = Task.Run(() =>
         {
@@ -578,7 +578,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = rabbitTemplate.Receive(ROUTE);
+                message = rabbitTemplate.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -592,12 +592,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return message;
         });
         var message = Message.Create(Encoding.UTF8.GetBytes("test-message"), new MessageHeaders());
-        var reply = rabbitTemplate.SendAndReceive(ROUTE, message);
+        var reply = rabbitTemplate.SendAndReceive(Route, message);
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])received.Result.Payload));
         Assert.NotNull(reply);
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
-        reply = rabbitTemplate.Receive(ROUTE);
+        reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
         rabbitTemplate.Stop().Wait();
         cachingConnectionFactory.Destroy();
@@ -615,7 +615,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = rabbitTemplate.Receive(ROUTE);
+                message = rabbitTemplate.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -629,12 +629,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return message;
         });
         var message = Message.Create(Encoding.UTF8.GetBytes("test-message"), new MessageHeaders());
-        var reply = rabbitTemplate.SendAndReceive(string.Empty, ROUTE, message);
+        var reply = rabbitTemplate.SendAndReceive(string.Empty, Route, message);
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])received.Result.Payload));
         Assert.NotNull(reply);
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
-        reply = rabbitTemplate.Receive(ROUTE);
+        reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
         rabbitTemplate.Stop().Wait();
         cachingConnectionFactory.Destroy();
@@ -645,8 +645,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
-        rabbitTemplate.RoutingKey = ROUTE;
-        rabbitTemplate.DefaultReceiveQueue = ROUTE;
+        rabbitTemplate.RoutingKey = Route;
+        rabbitTemplate.DefaultReceiveQueue = Route;
 
         // Set up a consumer to respond to our producer
         var received = Task.Run(() =>
@@ -654,7 +654,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = rabbitTemplate.Receive(ROUTE);
+                message = rabbitTemplate.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -685,7 +685,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = this.template.Receive(ROUTE);
+                message = this.template.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -699,12 +699,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return this.template.MessageConverter.FromMessage<string>(message);
         });
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
-        var result = rabbitTemplate.ConvertSendAndReceive<string>(ROUTE, "message");
+        var result = rabbitTemplate.ConvertSendAndReceive<string>(Route, "message");
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("message", received.Result);
         Assert.Equal("message", result);
 
-        result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
         rabbitTemplate.Stop().Wait();
     }
@@ -718,7 +718,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = this.template.Receive(ROUTE);
+                message = this.template.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -732,12 +732,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return this.template.MessageConverter.FromMessage<string>(message);
         });
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
-        var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, ROUTE, "message");
+        var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, Route, "message");
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("message", received.Result);
         Assert.Equal("message", result);
 
-        result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
         rabbitTemplate.Stop().Wait();
     }
@@ -747,8 +747,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         using var cachingConnectionFactory = new CachingConnectionFactory("localhost");
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(cachingConnectionFactory);
-        rabbitTemplate.RoutingKey = ROUTE;
-        rabbitTemplate.DefaultReceiveQueue = ROUTE;
+        rabbitTemplate.RoutingKey = Route;
+        rabbitTemplate.DefaultReceiveQueue = Route;
 
         // Set up a consumer to respond to our producer
         var received = Task.Run(() =>
@@ -789,7 +789,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = this.template.Receive(ROUTE);
+                message = this.template.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -803,12 +803,12 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return this.template.MessageConverter.FromMessage<string>(message);
         });
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
-        var result = rabbitTemplate.ConvertSendAndReceive<string>(ROUTE, (object)"message", new PostProcessor3());
+        var result = rabbitTemplate.ConvertSendAndReceive<string>(Route, (object)"message", new PostProcessor3());
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("MESSAGE", received.Result);
         Assert.Equal("MESSAGE", result);
 
-        result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
         rabbitTemplate.Stop().Wait();
     }
@@ -822,7 +822,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             IMessage message = null;
             for (var i = 0; i < 10; i++)
             {
-                message = this.template.Receive(ROUTE);
+                message = this.template.Receive(Route);
                 if (message != null)
                 {
                     break;
@@ -836,24 +836,24 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             return this.template.MessageConverter.FromMessage<string>(message);
         });
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
-        var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, ROUTE, "message", new PostProcessor3());
+        var result = rabbitTemplate.ConvertSendAndReceive<string>(string.Empty, Route, "message", new PostProcessor3());
         Assert.True(received.Wait(TimeSpan.FromSeconds(1)));
         Assert.Equal("MESSAGE", received.Result);
         Assert.Equal("MESSAGE", result);
 
-        result = rabbitTemplate.ReceiveAndConvert<string>(ROUTE);
+        result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
         rabbitTemplate.Stop().Wait();
     }
 
     [Fact]
-    public void TtestReceiveAndReplyNonStandardCorrelationNotBytes()
+    public void TestReceiveAndReplyNonStandardCorrelationNotBytes()
     {
-        template.DefaultReceiveQueue = ROUTE;
-        template.RoutingKey = ROUTE;
+        template.DefaultReceiveQueue = Route;
+        template.RoutingKey = Route;
         var headers = new MessageHeaders(new Dictionary<string, object> { { "baz", "bar" } });
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), headers);
-        template.Send(ROUTE, message);
+        template.Send(Route, message);
         template.CorrelationKey = "baz";
         var received = template.ReceiveAndReply<IMessage, IMessage>(_ => Message.Create(Encoding.UTF8.GetBytes("fuz"), new MessageHeaders()));
         Assert.True(received);
@@ -878,15 +878,15 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     public void TestSymmetricalReceiveAndReply()
     {
         using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(_connectionFactory);
-        rabbitTemplate.DefaultReceiveQueue = ROUTE;
-        rabbitTemplate.RoutingKey = ROUTE;
-        rabbitTemplate.ReplyAddress = REPLY_QUEUE_NAME;
+        rabbitTemplate.DefaultReceiveQueue = Route;
+        rabbitTemplate.RoutingKey = Route;
+        rabbitTemplate.ReplyAddress = ReplyQueueName;
         rabbitTemplate.ReplyTimeout = 20000;
         rabbitTemplate.ReceiveTimeout = 20000;
 
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = rabbitTemplate.ConnectionFactory;
-        container.SetQueueNames(REPLY_QUEUE_NAME);
+        container.SetQueueNames(ReplyQueueName);
         container.MessageListener = rabbitTemplate;
         container.Start().Wait();
 
@@ -911,7 +911,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             {
                 var random = new Random();
                 var request = random.NextDouble() * 100;
-                var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders()) { ContentType = MessageHeaders.CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT };
+                var messageHeaders = new RabbitHeaderAccessor(new MessageHeaders()) { ContentType = MessageHeaders.ContentTypeDotnetSerializedObject };
                 var formatter = new BinaryFormatter();
                 var stream = new MemoryStream(512);
 
@@ -956,14 +956,14 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         var messageProperties = new RabbitHeaderAccessor
         {
             MessageId = messageId,
-            ContentType = MessageHeaders.CONTENT_TYPE_TEXT_PLAIN,
-            ReplyTo = REPLY_QUEUE_NAME
+            ContentType = MessageHeaders.ContentTypeTextPlain,
+            ReplyTo = ReplyQueueName
         };
         rabbitTemplate.Send(Message.Create(Encoding.UTF8.GetBytes("test"), messageProperties.MessageHeaders));
         rabbitTemplate.ReceiveAndReply<string, string>(str => str.ToUpper());
 
         this.template.ReceiveTimeout = 20000;
-        var result = this.template.Receive(REPLY_QUEUE_NAME);
+        var result = this.template.Receive(ReplyQueueName);
         Assert.NotNull(result);
         Assert.Equal("TEST", Encoding.UTF8.GetString((byte[])result.Payload));
         Assert.Equal(messageId, result.Headers.CorrelationId());
@@ -999,7 +999,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     {
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = this.template.ConnectionFactory;
-        container.SetQueueNames(ROUTE);
+        container.SetQueueNames(Route);
         var messageListener = new MessageListenerAdapter(null, new TestMessageHandlerString());
         messageListener.SetBeforeSendReplyPostProcessors(new GZipPostProcessor());
         container.MessageListener = messageListener;
@@ -1010,7 +1010,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             var props = new RabbitHeaderAccessor { ContentType = "text/plain" };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props.MessageHeaders);
-            var reply = rabbitTemplate.SendAndReceive(string.Empty, ROUTE, message);
+            var reply = rabbitTemplate.SendAndReceive(string.Empty, Route, message);
             Assert.NotNull(reply);
             Assert.Equal("gzip:utf-8", reply.Headers.ContentEncoding());
             var unzipper = new GUnzipPostProcessor();
@@ -1034,8 +1034,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         connection1.Setup(c => c.IsOpen).Returns(true);
         channel1.Setup(c => c.IsOpen).Returns(true);
 
-        var testPP = new TestPostProcessor("foo");
-        routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPP);
+        var testPp = new TestPostProcessor("foo");
+        routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPp);
         channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
 
         var connection2 = new Mock<IConnection>();
@@ -1044,8 +1044,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         connection2.Setup(c => c.CreateChannel(false)).Returns(channel2.Object);
         connection2.Setup(c => c.IsOpen).Returns(true);
         channel2.Setup(c => c.IsOpen).Returns(true);
-        var testPP2 = new TestPostProcessor("bar");
-        routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPP2);
+        var testPp2 = new TestPostProcessor("bar");
+        routingTemplate.ConvertAndSend("exchange", "routingKey", "xyz", testPp2);
         channel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()));
     }
 
@@ -1053,16 +1053,16 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
     public void TestSendInGlobalTransactionCommit()
     {
         TestSendInGlobalTransactionGuts(false);
-        var result = template.ReceiveAndConvert<string>(ROUTE);
+        var result = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("message", result);
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
     public void TestSendInGlobalTransactionRollback()
     {
         TestSendInGlobalTransactionGuts(true);
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
     }
 
     [Fact]
@@ -1119,17 +1119,17 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             });
             return null;
         });
-        Assert.Null(template._dedicatedChannels.Value);
+        Assert.Null(template.DedicatedChannels.Value);
     }
 
     [Fact]
     public void WaitForConfirms()
     {
-        _connectionFactory.PublisherConfirmType = CachingConnectionFactory.ConfirmType.CORRELATED;
+        _connectionFactory.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated;
         var messages = new List<string> { "foo", "bar" };
         var result = template.Invoke(t =>
         {
-            messages.ForEach(m => t.ConvertAndSend(string.Empty, ROUTE, m));
+            messages.ForEach(m => t.ConvertAndSend(string.Empty, Route, m));
             t.WaitForConfirmsOrDie(10_000);
             return true;
         });
@@ -1151,7 +1151,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         var tt = new TransactionTemplate(new TestTransactionManager());
         tt.Execute(_ =>
         {
-            template.ConvertAndSend(ROUTE, "message");
+            template.ConvertAndSend(Route, "message");
             if (rollback)
             {
                 var adapter = new TestTransactionSynchronizationAdapter();
@@ -1167,35 +1167,35 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         {
             rabbitTemplate.Execute(channel =>
             {
-                channel.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO);
+                channel.QueueDeclarePassive(Address.AmqRabbitMQReplyTo);
             });
 
             rabbitTemplate.UseTemporaryReplyQueues = tempQueue;
             if (setDirectReplyToExplicitly)
             {
-                rabbitTemplate.ReplyAddress = Address.AMQ_RABBITMQ_REPLY_TO;
+                rabbitTemplate.ReplyAddress = Address.AmqRabbitMQReplyTo;
             }
 
             var container = new DirectMessageListenerContainer();
             container.ConnectionFactory = rabbitTemplate.ConnectionFactory;
-            container.SetQueueNames(ROUTE);
+            container.SetQueueNames(Route);
             var replyToWas = new AtomicReference<string>();
-            var delgate = new TestMessageHandler(replyToWas);
-            var messageListenerAdapter = new MessageListenerAdapter(null, delgate) { MessageConverter = null };
+            var handler = new TestMessageHandler(replyToWas);
+            var messageListenerAdapter = new MessageListenerAdapter(null, handler) { MessageConverter = null };
             container.MessageListener = messageListenerAdapter;
             container.Start().Wait();
-            rabbitTemplate.DefaultReceiveQueue = ROUTE;
-            rabbitTemplate.RoutingKey = ROUTE;
+            rabbitTemplate.DefaultReceiveQueue = Route;
+            rabbitTemplate.RoutingKey = Route;
             var result = rabbitTemplate.ConvertSendAndReceive<string>("foo");
             container.Stop().Wait();
             Assert.Equal("FOO", result);
             if (expectUsedTemp)
             {
-                Assert.False(replyToWas.Value.StartsWith(Address.AMQ_RABBITMQ_REPLY_TO));
+                Assert.False(replyToWas.Value.StartsWith(Address.AmqRabbitMQReplyTo));
             }
             else
             {
-                Assert.StartsWith(Address.AMQ_RABBITMQ_REPLY_TO, replyToWas.Value);
+                Assert.StartsWith(Address.AmqRabbitMQReplyTo, replyToWas.Value);
             }
         }
         catch (Exception e)
@@ -1210,9 +1210,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private void TestReceiveAndReply(int timeout)
     {
-        template.DefaultReceiveQueue = ROUTE;
-        template.RoutingKey = ROUTE;
-        template.ConvertAndSend(ROUTE, "test");
+        template.DefaultReceiveQueue = Route;
+        template.RoutingKey = Route;
+        template.ConvertAndSend(Route, "test");
         template.ReceiveTimeout = timeout;
 
         var received = ReceiveAndReply();
@@ -1229,18 +1229,18 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.NotNull(receive);
         Assert.Equal("bar", receive.Headers.Get<string>("foo"));
 
-        template.ConvertAndSend(ROUTE, 1);
-        received = template.ReceiveAndReply<int, int>(ROUTE, payload => payload + 1);
+        template.ConvertAndSend(Route, 1);
+        received = template.ReceiveAndReply<int, int>(Route, payload => payload + 1);
         Assert.True(received);
 
-        var result = template.ReceiveAndConvert<int>(ROUTE);
+        var result = template.ReceiveAndConvert<int>(Route);
         Assert.Equal(2, result);
 
-        template.ConvertAndSend(ROUTE, 2);
-        received = template.ReceiveAndReply<int, int>(ROUTE, payload => payload * 2);
+        template.ConvertAndSend(Route, 2);
+        received = template.ReceiveAndReply<int, int>(Route, payload => payload * 2);
         Assert.True(received);
 
-        result = template.ReceiveAndConvert<int>(ROUTE);
+        result = template.ReceiveAndConvert<int>(Route);
         Assert.Equal(4, result);
 
         received = false;
@@ -1260,7 +1260,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         Assert.False(received);
 
-        template.ConvertAndSend(ROUTE, "test");
+        template.ConvertAndSend(Route, "test");
         template.ReceiveTimeout = timeout;
         received = template.ReceiveAndReply<IMessage, IMessage>(_ => null);
         Assert.True(received);
@@ -1269,31 +1269,31 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         var result2 = template.Receive();
         Assert.Null(result2);
 
-        template.ConvertAndSend(ROUTE, "TEST");
+        template.ConvertAndSend(Route, "TEST");
         template.ReceiveTimeout = timeout;
         received = template.ReceiveAndReply<IMessage, IMessage>(
             message =>
             {
                 var messageProperties = new RabbitHeaderAccessor(new MessageHeaders()) { ContentType = message.Headers.ContentType() };
-                messageProperties.SetHeader("testReplyTo", new Address(string.Empty, ROUTE));
+                messageProperties.SetHeader("testReplyTo", new Address(string.Empty, Route));
                 return Message.Create(message.Payload, messageProperties.MessageHeaders, message.Payload.GetType());
             },
             (_, reply) => reply.Headers.Get<Address>("testReplyTo"));
 
         Assert.True(received);
-        var result3 = template.ReceiveAndConvert<string>(ROUTE);
+        var result3 = template.ReceiveAndConvert<string>(Route);
         Assert.Equal("TEST", result3);
 
         template.ReceiveTimeout = 0;
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
 
         template.IsChannelTransacted = true;
 
-        template.ConvertAndSend(ROUTE, "TEST");
+        template.ConvertAndSend(Route, "TEST");
         template.ReceiveTimeout = timeout;
         var payloadReference = new AtomicReference<string>();
-        var ttemplate = new TransactionTemplate(new TestTransactionManager());
-        var result4 = ttemplate.Execute(_ =>
+        var transactionTemplate = new TransactionTemplate(new TestTransactionManager());
+        var result4 = transactionTemplate.Execute(_ =>
         {
             var received1 = template.ReceiveAndReply<string, object>(
                 payload =>
@@ -1307,15 +1307,15 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         Assert.Equal("TEST", result4);
         template.ReceiveTimeout = 0;
-        Assert.Null(template.Receive(ROUTE));
+        Assert.Null(template.Receive(Route));
 
-        template.ConvertAndSend(ROUTE, "TEST");
+        template.ConvertAndSend(Route, "TEST");
         template.ReceiveTimeout = timeout;
 
         try
         {
-            ttemplate = new TransactionTemplate(new TestTransactionManager());
-            ttemplate.Execute(_ =>
+            transactionTemplate = new TransactionTemplate(new TestTransactionManager());
+            transactionTemplate.Execute(_ =>
             {
                 template.ReceiveAndReply<IMessage, IMessage>(
                     message => message,
@@ -1327,9 +1327,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             Assert.IsType<PlannedException>(e.InnerException);
         }
 
-        Assert.Equal("TEST", template.ReceiveAndConvert<string>(ROUTE));
+        Assert.Equal("TEST", template.ReceiveAndConvert<string>(Route));
         template.ReceiveTimeout = 0;
-        Assert.Null(template.ReceiveAndConvert<string>(ROUTE));
+        Assert.Null(template.ReceiveAndConvert<string>(Route));
 
         template.ConvertAndSend("test");
         template.ReceiveTimeout = timeout;
@@ -1406,7 +1406,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         public void AfterCommit()
         {
             TransactionSynchronizationUtils
-                .TriggerAfterCompletion(AbstractTransactionSynchronization.STATUS_ROLLED_BACK);
+                .TriggerAfterCompletion(AbstractTransactionSynchronization.StatusRolledBack);
         }
 
         public void AfterCompletion(int status)
@@ -1565,7 +1565,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
     }
 
-    private sealed class PostProccessor1 : IMessagePostProcessor
+    private sealed class PostProcessor1 : IMessagePostProcessor
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -1592,16 +1592,16 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         public override IConnection CreateConnection()
         {
-            var dele = base.CreateConnection();
-            return new MockConnection(dele);
+            var connection = base.CreateConnection();
+            return new MockConnection(connection);
         }
     }
 
     private sealed class MockConnection : IConnection
     {
-        public MockConnection(IConnection deleg)
+        public MockConnection(IConnection connection)
         {
-            Delegate = deleg;
+            Delegate = connection;
         }
 
         public IConnection Delegate { get; }
@@ -1641,9 +1641,9 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
     private sealed class MockConsumer : RC.IBasicConsumer
     {
-        public MockConsumer(RC.IBasicConsumer deleg)
+        public MockConsumer(RC.IBasicConsumer consumer)
         {
-            Delegate = deleg;
+            Delegate = consumer;
         }
 
         public RC.IBasicConsumer Delegate { get; }

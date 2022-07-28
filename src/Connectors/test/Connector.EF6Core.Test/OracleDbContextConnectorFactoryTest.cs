@@ -47,7 +47,7 @@ public class OracleDbContextConnectorFactoryTest
         var factory = new OracleDbContextConnectorFactory(si, config, typeof(GoodOracleDbContext));
         var context = factory.Create(null);
         Assert.NotNull(context);
-        var gcontext = context as GoodOracleDbContext;
-        Assert.NotNull(gcontext);
+        var goodOracleDbContext = context as GoodOracleDbContext;
+        Assert.NotNull(goodOracleDbContext);
     }
 }

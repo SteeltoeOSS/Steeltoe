@@ -14,14 +14,14 @@ namespace Steeltoe.Messaging.RabbitMQ.Retry;
 
 public class RepublishMessageRecoverer : IMessageRecoverer
 {
-    public const string X_EXCEPTION_STACKTRACE = "x-exception-stacktrace";
-    public const string X_EXCEPTION_MESSAGE = "x-exception-message";
-    public const string X_ORIGINAL_EXCHANGE = "x-original-exchange";
-    public const string X_ORIGINAL_ROUTING_KEY = "x-original-routingKey";
-    public const int DEFAULT_FRAME_MAX_HEADROOM = 20_000;
+    public const string XExceptionStacktrace = "x-exception-stacktrace";
+    public const string XExceptionMessage = "x-exception-message";
+    public const string XOriginalExchange = "x-original-exchange";
+    public const string XOriginalRoutingKey = "x-original-routingKey";
+    public const int DefaultFrameMaxHeadroom = 20_000;
 
-    private const int ELLIPSIS_LENGTH = 3;
-    private const int MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE = 100 - ELLIPSIS_LENGTH;
+    private const int EllipsisLength = 3;
+    private const int MaxExceptionMessageSizeInTrace = 100 - EllipsisLength;
 
     private readonly ILogger _logger;
 
@@ -56,7 +56,7 @@ public class RepublishMessageRecoverer : IMessageRecoverer
 
     public MessageDeliveryMode DeliveryMode { get; set; }
 
-    public int FrameMaxHeadroom { get; set; } = DEFAULT_FRAME_MAX_HEADROOM;
+    public int FrameMaxHeadroom { get; set; } = DefaultFrameMaxHeadroom;
 
     public void Recover(IMessage message, Exception exception)
     {
@@ -71,10 +71,10 @@ public class RepublishMessageRecoverer : IMessageRecoverer
             exceptionMessage = truncatedExceptionMessage;
         }
 
-        headers.SetHeader(X_EXCEPTION_STACKTRACE, stackTraceAsString);
-        headers.SetHeader(X_EXCEPTION_MESSAGE, exceptionMessage);
-        headers.SetHeader(X_ORIGINAL_EXCHANGE, headers.ReceivedExchange);
-        headers.SetHeader(X_ORIGINAL_ROUTING_KEY, headers.ReceivedRoutingKey);
+        headers.SetHeader(XExceptionStacktrace, stackTraceAsString);
+        headers.SetHeader(XExceptionMessage, exceptionMessage);
+        headers.SetHeader(XOriginalExchange, headers.ReceivedExchange);
+        headers.SetHeader(XOriginalRoutingKey, headers.ReceivedRoutingKey);
         var additionalHeaders = AddAdditionalHeaders(message, exception);
 
         if (additionalHeaders != null)
@@ -128,7 +128,7 @@ public class RepublishMessageRecoverer : IMessageRecoverer
         var truncated = false;
         var stackTraceAsString = stackTrace;
         var exceptionMessage = exception;
-        var truncatedExceptionMessage = exceptionMessage.Length <= MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE ? exceptionMessage : exceptionMessage.Substring(0, MAX_EXCEPTION_MESSAGE_SIZE_IN_TRACE) + "...";
+        var truncatedExceptionMessage = exceptionMessage.Length <= MaxExceptionMessageSizeInTrace ? exceptionMessage : exceptionMessage.Substring(0, MaxExceptionMessageSizeInTrace) + "...";
         if (MaxStackTraceLength > 0 && stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
         {
             if (!exceptionMessage.Equals(truncatedExceptionMessage))
@@ -151,7 +151,7 @@ public class RepublishMessageRecoverer : IMessageRecoverer
                 else if (stackTraceAsString.Length + exceptionMessage.Length > MaxStackTraceLength)
                 {
                     _logger?.LogWarning(cause, "Exception message in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the exception message size");
-                    truncatedExceptionMessage = $"{exceptionMessage.Substring(0, MaxStackTraceLength - stackTraceAsString.Length - ELLIPSIS_LENGTH)}...";
+                    truncatedExceptionMessage = $"{exceptionMessage.Substring(0, MaxStackTraceLength - stackTraceAsString.Length - EllipsisLength)}...";
                     truncated = true;
                 }
             }

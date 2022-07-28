@@ -10,9 +10,9 @@ namespace Steeltoe.Connector.Oracle;
 
 public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Server = "localhost";
-    public const int Default_Port = 1521;
-    private const string ORACLE_CLIENT_SECTION_PREFIX = "oracle:client";
+    public const string DefaultServer = "localhost";
+    public const int DefaultPort = 1521;
+    private const string OracleClientSectionPrefix = "oracle:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public OracleProviderConnectorOptions()
@@ -26,7 +26,7 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(ORACLE_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(OracleClientSectionPrefix);
 
         section.Bind(this);
 
@@ -35,9 +35,9 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 

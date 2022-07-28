@@ -14,17 +14,17 @@ namespace Steeltoe.Common.Retry;
 public interface IRetryContext : IAttributeAccessor
 {
     /// <summary>
-    /// Gets the last exception that caused the retry
+    /// Gets the last exception that caused the retry.
     /// </summary>
     Exception LastException { get; }
 
     /// <summary>
-    /// Gets the number of retry attempts
+    /// Gets the number of retry attempts.
     /// </summary>
     int RetryCount { get; }
 
     /// <summary>
-    /// Gets the parent context if present
+    /// Gets the parent context if present.
     /// </summary>
     IRetryContext Parent { get; }
 }

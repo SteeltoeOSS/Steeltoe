@@ -26,7 +26,7 @@ public class MessageConverterTest
     public void SupportsMimeType()
     {
         var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new TestMessageConverter();
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
     }
@@ -35,7 +35,7 @@ public class MessageConverterTest
     public void SupportsMimeTypeNotSupported()
     {
         var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON).Build();
+            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
         var converter = new TestMessageConverter();
         Assert.Null(converter.FromMessage(message, typeof(string)));
     }
@@ -52,7 +52,7 @@ public class MessageConverterTest
     public void SupportsMimeTypeNoneConfigured()
     {
         var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.APPLICATION_JSON).Build();
+            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
         var converter = new TestMessageConverter(new List<MimeType>());
 
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
@@ -61,7 +61,7 @@ public class MessageConverterTest
     [Fact]
     public void CanConvertFromStrictContentTypeMatch()
     {
-        var converter = new TestMessageConverter(new List<MimeType> { MimeTypeUtils.TEXT_PLAIN })
+        var converter = new TestMessageConverter(new List<MimeType> { MimeTypeUtils.TextPlain })
         {
             StrictContentTypeMatch = true
         };
@@ -70,7 +70,7 @@ public class MessageConverterTest
         Assert.False(converter.CanConvertFrom(message, typeof(string)));
 
         message = MessageBuilder.WithPayload("ABC")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN).Build();
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         Assert.True(converter.CanConvertFrom(message, typeof(string)));
     }
 
@@ -94,7 +94,7 @@ public class MessageConverterTest
 
         Assert.NotNull(message.Headers.Id);
         Assert.NotNull(message.Headers.Timestamp);
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(MimeTypeUtils.TextPlain, message.Headers[MessageHeaders.ContentType]);
         Assert.Equal("bar", message.Headers["foo"]);
     }
 
@@ -112,7 +112,7 @@ public class MessageConverterTest
         Assert.Same(headers, message.Headers);
         Assert.Null(message.Headers.Id);
         Assert.Null(message.Headers.Timestamp);
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(MimeTypeUtils.TextPlain, message.Headers[MessageHeaders.ContentType]);
     }
 
     [Fact]
@@ -120,7 +120,7 @@ public class MessageConverterTest
     {
         var converter = new TestMessageConverter();
         var message = converter.ToMessage("ABC", null);
-        Assert.Equal(MimeTypeUtils.TEXT_PLAIN, message.Headers[MessageHeaders.CONTENT_TYPE]);
+        Assert.Equal(MimeTypeUtils.TextPlain, message.Headers[MessageHeaders.ContentType]);
     }
 
     private sealed class TestMessageConverter : AbstractMessageConverter
@@ -128,7 +128,7 @@ public class MessageConverterTest
         public override string ServiceName { get; set; } = nameof(TestMessageConverter);
 
         public TestMessageConverter()
-            : base(MimeTypeUtils.TEXT_PLAIN)
+            : base(MimeTypeUtils.TextPlain)
         {
         }
 

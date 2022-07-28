@@ -42,8 +42,8 @@ public class JsonMessageConverterTest
     public void SimpleTrade()
     {
         var message = _converter.ToMessage(_trade, new MessageHeaders());
-        var marshalledTrade = _converter.FromMessage<SimpleTrade>(message);
-        Assert.Equal(_trade, marshalledTrade);
+        var marshaledTrade = _converter.FromMessage<SimpleTrade>(message);
+        Assert.Equal(_trade, marshaledTrade);
     }
 
     [Fact]
@@ -53,8 +53,8 @@ public class JsonMessageConverterTest
 
         var message = _converter.ToMessage(bar, new MessageHeaders());
 
-        var marshalled = _converter.FromMessage<Bar>(message);
-        Assert.Equal(bar, marshalled);
+        var marshaled = _converter.FromMessage<Bar>(message);
+        Assert.Equal(bar, marshaled);
     }
 
     [Fact]
@@ -67,10 +67,10 @@ public class JsonMessageConverterTest
         };
 
         var message = _converter.ToMessage(hashtable, new MessageHeaders());
-        var marhsalledHashtable = _converter.FromMessage<Dictionary<string, string>>(message);
+        var marshaledHashtable = _converter.FromMessage<Dictionary<string, string>>(message);
 
-        Assert.Equal("VMW", marhsalledHashtable["TICKER"]);
-        Assert.Equal("103.2", marhsalledHashtable["PRICE"]);
+        Assert.Equal("VMW", marshaledHashtable["TICKER"]);
+        Assert.Equal("103.2", marshaledHashtable["PRICE"]);
     }
 
     [Fact]

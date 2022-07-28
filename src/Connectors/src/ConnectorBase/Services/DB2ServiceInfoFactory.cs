@@ -4,17 +4,17 @@
 
 namespace Steeltoe.Connector.Services;
 
-public class DB2ServiceInfoFactory : RelationalServiceInfoFactory
+public class Db2ServiceInfoFactory : RelationalServiceInfoFactory
 {
-    private static readonly Tags _db2tags = new (new[] { "sqldb", "dashDB", "db2" });
+    private static readonly Tags Db2Tags = new (new[] { "sqldb", "dashDB", "db2" });
 
-    public DB2ServiceInfoFactory()
-        : base(_db2tags, DB2ServiceInfo.DB2_SCHEME)
+    public Db2ServiceInfoFactory()
+        : base(Db2Tags, Db2ServiceInfo.Db2Scheme)
     {
     }
 
     public override IServiceInfo Create(string id, string url)
     {
-        return new DB2ServiceInfo(id, url);
+        return new Db2ServiceInfo(id, url);
     }
 }

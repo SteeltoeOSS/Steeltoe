@@ -5,29 +5,29 @@
 namespace Steeltoe.Messaging;
 
 /// <summary>
-/// A generic message representation with headers and a body
+/// A generic message representation with headers and a body.
 /// </summary>
 public interface IMessage
 {
     /// <summary>
-    /// Gets the body of the message
+    /// Gets the body of the message.
     /// </summary>
     object Payload { get; }
 
     /// <summary>
-    /// Gets the headers for the message
+    /// Gets the headers for the message.
     /// </summary>
     IMessageHeaders Headers { get; }
 }
 
 /// <summary>
-/// A generic message representation with headers and a body
+/// A generic message representation with headers and a body.
 /// </summary>
-/// <typeparam name="T">the type of the payload</typeparam>
+/// <typeparam name="T">the type of the payload.</typeparam>
 public interface IMessage<out T> : IMessage
 {
     /// <summary>
-    /// Gets the body of the message
+    /// Gets the body of the message.
     /// </summary>
     new T Payload { get; }
 }

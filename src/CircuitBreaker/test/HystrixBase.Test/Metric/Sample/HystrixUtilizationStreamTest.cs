@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
@@ -17,7 +16,7 @@ using Xunit.Abstractions;
 
 #pragma warning disable S3966 // Objects should not be disposed more than once
 
-namespace Steeltoe.CircuitBreaker.Hystrix.Metrix.Sample.Test;
+namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Sample.Test;
 
 public class HystrixUtilizationStreamTest : CommandStreamTest
 {
@@ -43,7 +42,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
 
         for (var i = 0; i < 2; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Observe();
         }
 
@@ -137,7 +136,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
         // execute 1 command, then unsubscribe from first stream. then execute the rest
         for (var i = 0; i < 50; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
             if (i == 1)
             {
@@ -212,7 +211,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
         // execute 2 commands, then unsubscribe from both streams, then execute the rest
         for (var i = 0; i < 10; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
             if (i == 2)
             {
@@ -279,7 +278,7 @@ public class HystrixUtilizationStreamTest : CommandStreamTest
 
         for (var i = 0; i < 50; i++)
         {
-            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.SUCCESS, 50);
+            HystrixCommand<int> cmd = Command.From(GroupKey, CommandKey, HystrixEventType.Success, 50);
             cmd.Execute();
         }
 

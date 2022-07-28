@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// Common consumer configuration options
+/// Common consumer configuration options.
 /// </summary>
 public interface IConsumerOptions
 {

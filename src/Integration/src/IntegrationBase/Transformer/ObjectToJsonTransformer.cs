@@ -45,7 +45,7 @@ public class ObjectToJsonTransformer : AbstractTransformer
 
         ResultType = resultType ?? typeof(string);
         DefaultCharset = EncodingUtils.Utf8;
-        ContentType = MessageHeaders.CONTENT_TYPE_JSON;
+        ContentType = MessageHeaders.ContentTypeJson;
     }
 
     protected override object DoTransform(IMessage message)

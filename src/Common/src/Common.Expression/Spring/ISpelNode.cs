@@ -25,7 +25,7 @@ public interface ISpelNode
 
     void SetValue(ExpressionState state, object newValue);
 
-    string ToStringAST();
+    string ToStringAst();
 
     ISpelNode GetChild(int index);
 

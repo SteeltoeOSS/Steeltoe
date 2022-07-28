@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Base64UrlNamingStrategy : INamingStrategy
 {
-    public static readonly Base64UrlNamingStrategy DEFAULT = new ();
+    public static readonly Base64UrlNamingStrategy Default = new ();
 
     public Base64UrlNamingStrategy()
         : this("spring.gen-")

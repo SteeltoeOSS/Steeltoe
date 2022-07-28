@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 namespace Steeltoe.Messaging;
 
 /// <summary>
-/// Simple contract for handling a Message
+/// Simple contract for handling a Message.
 /// </summary>
 public interface IAsyncMessageHandler
 {
     /// <summary>
-    /// Handle the given method
+    /// Handle the given method.
     /// </summary>
-    /// <param name="message">the message to process</param>
-    /// <param name="cancellationToken">token used to signal cancelation</param>
-    /// <returns>a task to signal completion</returns>
+    /// <param name="message">the message to process.</param>
+    /// <param name="cancellationToken">token used to signal cancellation.</param>
+    /// <returns>a task to signal completion.</returns>
     Task HandleMessage(IMessage message, CancellationToken cancellationToken = default);
 }

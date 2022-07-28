@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// Common producer configuration options
+/// Common producer configuration options.
 /// </summary>
 public interface IProducerOptions
 {

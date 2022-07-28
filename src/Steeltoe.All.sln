@@ -321,7 +321,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase.Test", "Configuration\test\SpringBootBase.Test\Steeltoe.Extensions.Configuration.SpringBootBase.Test.csproj", "{BA38127A-DA5A-437F-9C84-5997FBE0B6A0}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Boostrap", "Boostrap", "{EA9C3A73-3F31-4DC9-982C-963CE613E119}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bootstrap", "Bootstrap", "{EA9C3A73-3F31-4DC9-982C-963CE613E119}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Bootstrap.Autoconfig", "Bootstrap\src\Autoconfig\Steeltoe.Bootstrap.Autoconfig.csproj", "{38EFC635-0C56-442D-8CA3-20AEC1930D7B}"
 EndProject

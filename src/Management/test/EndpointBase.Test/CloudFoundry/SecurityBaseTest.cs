@@ -17,9 +17,9 @@ public class SecurityBaseTest : BaseTest
     public void IsCloudFoundryRequest_ReturnsExpected()
     {
         var cloudOpts = new CloudFoundryEndpointOptions();
-        var mgmtOpts = new CloudFoundryManagementOptions();
-        mgmtOpts.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(cloudOpts);
+        var securityBase = new SecurityBase(cloudOpts, managementOptions);
 
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication"));
         Assert.True(securityBase.IsCloudFoundryRequest("/cloudfoundryapplication/badpath"));
@@ -29,9 +29,9 @@ public class SecurityBaseTest : BaseTest
     public async Task GetPermissionsAsyncTest()
     {
         var cloudOpts = new CloudFoundryEndpointOptions();
-        var mgmtOpts = new CloudFoundryManagementOptions();
-        mgmtOpts.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(cloudOpts);
+        var securityBase = new SecurityBase(cloudOpts, managementOptions);
         var result = await securityBase.GetPermissionsAsync("testToken");
         Assert.NotNull(result);
     }
@@ -40,14 +40,14 @@ public class SecurityBaseTest : BaseTest
     public async Task GetPermissionsTest()
     {
         var cloudOpts = new CloudFoundryEndpointOptions();
-        var mgmtOpts = new CloudFoundryManagementOptions();
-        mgmtOpts.EndpointOptions.Add(cloudOpts);
-        var securityBase = new SecurityBase(cloudOpts, mgmtOpts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(cloudOpts);
+        var securityBase = new SecurityBase(cloudOpts, managementOptions);
         var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
         var perms = new Dictionary<string, object> { { "read_sensitive_data", true } };
 
         response.Content = JsonContent.Create(perms);
         var result = await securityBase.GetPermissions(response);
-        Assert.Equal(Permissions.FULL, result);
+        Assert.Equal(Permissions.Full, result);
     }
 }

@@ -47,7 +47,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         var dict = ConversionUtils.CreateCompatDictionaryFor(targetType);
         if (dict == null)
         {
-            throw new InvalidOperationException("Unable to create compatable dictionary");
+            throw new InvalidOperationException("Unable to create compatible dictionary");
         }
 
         if (!targetType.IsGenericType)
@@ -87,7 +87,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         return ConversionUtils.CanConvertElements(
             ConversionUtils.GetDictionaryKeyType(sourceType),
             ConversionUtils.GetDictionaryKeyType(targetType),
-            _conversionService);
+            ConversionService);
     }
 
     private bool CanConvertValue(Type sourceType, Type targetType)
@@ -95,7 +95,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         return ConversionUtils.CanConvertElements(
             ConversionUtils.GetDictionaryValueType(sourceType),
             ConversionUtils.GetDictionaryValueType(targetType),
-            _conversionService);
+            ConversionService);
     }
 
     private object ConvertKey(object sourceKey, Type sourceType, Type targetType)
@@ -105,7 +105,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
             return sourceKey;
         }
 
-        return _conversionService.Convert(sourceKey, sourceKey.GetType(), targetType);
+        return ConversionService.Convert(sourceKey, sourceKey.GetType(), targetType);
     }
 
     private object ConvertValue(object sourceValue, Type sourceType, Type targetType)
@@ -115,6 +115,6 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
             return sourceValue;
         }
 
-        return _conversionService.Convert(sourceValue, sourceValue != null ? sourceValue.GetType() : sourceType, targetType);
+        return ConversionService.Convert(sourceValue, sourceValue != null ? sourceValue.GetType() : sourceType, targetType);
     }
 }

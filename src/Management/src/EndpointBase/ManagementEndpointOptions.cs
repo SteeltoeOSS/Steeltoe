@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint;
 
 public class ManagementEndpointOptions : IManagementOptions
 {
-    private const string DEFAULT_PATH = "/actuator";
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints";
+    private const string DefaultPath = "/actuator";
+    private const string ManagementInfoPrefix = "management:endpoints";
 
     public ManagementEndpointOptions()
     {
-        Path = DEFAULT_PATH;
+        Path = DefaultPath;
         EndpointOptions = new List<IEndpointOptions>();
     }
 
@@ -29,7 +29,7 @@ public class ManagementEndpointOptions : IManagementOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MANAGEMENT_INFO_PREFIX);
+        var section = config.GetSection(ManagementInfoPrefix);
         if (section != null)
         {
             section.Bind(this);
@@ -58,7 +58,7 @@ public class ManagementEndpointOptions : IManagementOptions
     public JsonSerializerOptions SerializerOptions { get; set; } = new () { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
     /// <summary>
-    /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonCoverters
+    /// Gets or sets a list of <see href="https://docs.microsoft.com/dotnet/api/system.type.assemblyqualifiedname">assembly-qualified</see> custom JsonConverters.
     /// </summary>
     public string[] CustomJsonConverters { get; set; }
 }

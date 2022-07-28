@@ -11,9 +11,9 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicLoggerConfiguration"/> class.
     /// </summary>
-    /// <param name="name">Namespace</param>
-    /// <param name="configured">Original log level</param>
-    /// <param name="effective">Currently effective log level</param>
+    /// <param name="name">Namespace.</param>
+    /// <param name="configured">Original log level.</param>
+    /// <param name="effective">Currently effective log level.</param>
     public DynamicLoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
     {
         Name = name;
@@ -22,17 +22,17 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
     }
 
     /// <summary>
-    /// Gets namespace this configuration is applied to
+    /// Gets namespace this configuration is applied to.
     /// </summary>
     public string Name { get; }
 
     /// <summary>
-    /// Gets level from base app configuration (if present)
+    /// Gets level from base app configuration (if present).
     /// </summary>
     public LogLevel? ConfiguredLevel { get; }
 
     /// <summary>
-    /// Gets running level of the logger
+    /// Gets running level of the logger.
     /// </summary>
     public LogLevel EffectiveLevel { get; }
 

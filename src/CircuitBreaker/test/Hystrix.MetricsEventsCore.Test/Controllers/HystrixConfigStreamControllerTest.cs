@@ -22,7 +22,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
 public class HystrixConfigStreamControllerTest : HystrixTestBase
 {
     [Fact]
-    public void Constructor_SetsupStream()
+    public void Constructor_SetsUpStream()
     {
         var stream = HystrixConfigurationStream.GetInstance();
         var controller = new HystrixConfigStreamController(stream);
@@ -82,7 +82,7 @@ public class HystrixConfigStreamControllerTest : HystrixTestBase
         Assert.Equal("HystrixConfig", dict["type"]);
         Assert.NotNull(dict["commands"]);
         Assert.NotNull(dict["threadpools"]);
-        var cmds = (JObject)dict["commands"];
-        Assert.NotNull(cmds["MyCommand"]);
+        var commands = (JObject)dict["commands"];
+        Assert.NotNull(commands["MyCommand"]);
     }
 }

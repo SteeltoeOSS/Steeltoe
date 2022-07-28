@@ -4,9 +4,9 @@
 
 namespace Steeltoe.Stream.Tck;
 
-public class Employee<P>
+public class Employee<TPerson>
 {
     public int Id { get; set; }
 
-    public P Person { get; set; }
+    public TPerson Person { get; set; }
 }

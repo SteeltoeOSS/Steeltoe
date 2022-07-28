@@ -40,14 +40,20 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using Xunit.Abstractions;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RabbitBinding = Steeltoe.Messaging.RabbitMQ.Config.Binding;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 
 [Trait("Category", "Integration")]
-public partial class RabbitBinderTests
+public sealed class RabbitBinderTests : RabbitBinderTestBase
 {
+    public RabbitBinderTests(ITestOutputHelper output) 
+        : base(output)
+    {
+    }
+
     [Fact]
     public void TestSendAndReceiveBad()
     {
@@ -57,25 +63,25 @@ public partial class RabbitBinderTests
         var moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
         var producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, GetProducerOptions("output", bindingsOptions));
 
-        var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "_lifecycle");
+        var endpoint = GetFieldValue<RabbitOutboundEndpoint>(producerBinding, "Lifecycle");
 
         Assert.True(endpoint.HeadersMappedLast);
-        Assert.Contains("Passthrough", endpoint.Template.MessageConverter.GetType().Name);
+        Assert.Contains("PassThrough", endpoint.Template.MessageConverter.GetType().Name);
 
         var consumerProps = GetConsumerOptions("input", bindingsOptions);
         var rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumerOptions.ContainerType = ContainerType.DIRECT;
+        rabbitConsumerOptions.ContainerType = ContainerType.Direct;
 
         var consumerBinding = binder.BindConsumer("bad.0", "test", moduleInputChannel, consumerProps);
 
-        var inbound = GetFieldValue<RabbitInboundChannelAdapter>(consumerBinding, "_lifecycle");
-        Assert.Contains("Passthrough", inbound.MessageConverter.GetType().Name);
+        var inbound = GetFieldValue<RabbitInboundChannelAdapter>(consumerBinding, "Lifecycle");
+        Assert.Contains("PassThrough", inbound.MessageConverter.GetType().Name);
         var container = GetPropertyValue<DirectMessageListenerContainer>(inbound, "MessageListenerContainer");
         Assert.NotNull(container);
 
         var message = MessageBuilder.WithPayload("bad".GetBytes())
-            .SetHeader(MessageHeaders.CONTENT_TYPE, "foo/bar")
+            .SetHeader(MessageHeaders.ContentType, "foo/bar")
             .Build();
 
         var latch = new CountdownEvent(3);
@@ -100,7 +106,7 @@ public partial class RabbitBinderTests
     {
         var ccf = GetResource();
         ccf.IsPublisherConfirms = true;
-        ccf.PublisherConfirmType = ConfirmType.CORRELATED;
+        ccf.PublisherConfirmType = ConfirmType.Correlated;
         ccf.ResetConnection();
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
@@ -114,7 +120,7 @@ public partial class RabbitBinderTests
         var producerBinding = binder.BindProducer("ec.0", moduleOutputChannel, producerOptions);
 
         var message = MessageBuilder.WithPayload("bad".GetBytes())
-            .SetHeader(MessageHeaders.CONTENT_TYPE, "foo/bar")
+            .SetHeader(MessageHeaders.ContentType, "foo/bar")
             .Build();
 
         var ec = binder.ApplicationContext.GetService<PublishSubscribeChannel>("ec.0.errors");
@@ -131,7 +137,7 @@ public partial class RabbitBinderTests
             }
         });
 
-        var globalEc = binder.ApplicationContext.GetService<ISubscribableChannel>(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+        var globalEc = binder.ApplicationContext.GetService<ISubscribableChannel>(IntegrationContextUtils.ErrorChannelBeanName);
 
         globalEc.Subscribe(new TestMessageHandler
         {
@@ -180,7 +186,7 @@ public partial class RabbitBinderTests
         var binder = GetBinder(bindingsOptions);
         var ccf = GetResource();
         ccf.IsPublisherReturns = true;
-        ccf.PublisherConfirmType = ConfirmType.CORRELATED;
+        ccf.PublisherConfirmType = ConfirmType.Correlated;
         ccf.ResetConnection();
 
         var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
@@ -218,7 +224,7 @@ public partial class RabbitBinderTests
 
         var ccf = GetResource();
         ccf.IsPublisherReturns = true;
-        ccf.PublisherConfirmType = ConfirmType.CORRELATED;
+        ccf.PublisherConfirmType = ConfirmType.Correlated;
         ccf.ResetConnection();
 
         var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
@@ -231,7 +237,7 @@ public partial class RabbitBinderTests
 
         var correlation = new CorrelationData("testConfirm");
         var message = MessageBuilder.WithPayload("confirmsMessage".GetBytes())
-            .SetHeader(RabbitMessageHeaders.PUBLISH_CONFIRM_CORRELATION, correlation)
+            .SetHeader(RabbitMessageHeaders.PublishConfirmCorrelation, correlation)
             .Build();
         moduleOutputChannel.Send(message);
         var confirm = correlation.Future.Result;
@@ -265,7 +271,7 @@ public partial class RabbitBinderTests
         Assert.NotNull(endpoint);
         var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
         Assert.NotNull(container);
-        Assert.Equal(AcknowledgeMode.AUTO, container.AcknowledgeMode);
+        Assert.Equal(AcknowledgeMode.Auto, container.AcknowledgeMode);
         Assert.StartsWith(rabbitConsumerOptions.Prefix, container.GetQueueNames()[0]);
         Assert.True(container.Exclusive);
         Assert.True(container.IsChannelTransacted);
@@ -288,7 +294,7 @@ public partial class RabbitBinderTests
 
         properties = GetConsumerOptions("input", bindingsOptions);
         rabbitConsumerOptions = bindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.NONE;
+        rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.None;
         properties.BackOffInitialInterval = 2000;
         properties.BackOffMaxInterval = 20000;
         properties.BackOffMultiplier = 5.0;
@@ -409,9 +415,9 @@ public partial class RabbitBinderTests
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.DeclareExchange = false;
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.DeclareExchange = false;
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
 
         var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         var endpoint = ExtractEndpoint(consumerBinding);
@@ -432,10 +438,10 @@ public partial class RabbitBinderTests
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.DeclareExchange = false;
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
-        rabbitConsumeroptions.AnonymousGroupPrefix = "customPrefix.";
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.DeclareExchange = false;
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
+        rabbitConsumerOptions.AnonymousGroupPrefix = "customPrefix.";
 
         var consumerBinding = binder.BindConsumer("amq.topic", null, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         var endpoint = ExtractEndpoint(consumerBinding);
@@ -450,17 +456,17 @@ public partial class RabbitBinderTests
     }
 
     [Fact]
-    public async Task TestConsumerPropertiesWithUserInfrastructureCustomExchangeAndRK()
+    public async Task TestConsumerPropertiesWithUserInfrastructureCustomExchangeAndRk()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumeroptions.ExchangeType = ExchangeType.DIRECT;
-        rabbitConsumeroptions.BindingRoutingKey = "foo,bar";
-        rabbitConsumeroptions.BindingRoutingKeyDelimiter = ",";
-        rabbitConsumeroptions.QueueNameGroupOnly = true;
+        rabbitConsumerOptions.ExchangeType = ExchangeType.Direct;
+        rabbitConsumerOptions.BindingRoutingKey = "foo,bar";
+        rabbitConsumerOptions.BindingRoutingKeyDelimiter = ",";
+        rabbitConsumerOptions.QueueNameGroupOnly = true;
 
         // properties.Extension.DelayedExchange = true; // requires delayed message
 
@@ -516,7 +522,7 @@ public partial class RabbitBinderTests
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
         var extProps = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        extProps.ExchangeType = ExchangeType.DIRECT;
+        extProps.ExchangeType = ExchangeType.Direct;
         extProps.ExchangeDurable = false;
         extProps.ExchangeAutoDelete = true;
         extProps.BindingRoutingKey = "foo";
@@ -530,7 +536,7 @@ public partial class RabbitBinderTests
         extProps.AutoBindDlq = true;
         extProps.DeadLetterQueueName = "customDLQ";
         extProps.DeadLetterExchange = "customDLX";
-        extProps.DeadLetterExchangeType = ExchangeType.TOPIC;
+        extProps.DeadLetterExchangeType = ExchangeType.Topic;
         extProps.DeadLetterRoutingKey = "customDLRK";
         extProps.DlqDeadLetterExchange = "propsUser3";
 
@@ -659,19 +665,19 @@ public partial class RabbitBinderTests
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var properties = GetConsumerOptions("input", rabbitBindingsOptions);
-        var rabbitConsumeroptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumeroptions.ExchangeType = ExchangeType.HEADERS;
-        rabbitConsumeroptions.AutoBindDlq = true;
-        rabbitConsumeroptions.DeadLetterExchange = ExchangeType.HEADERS;
-        rabbitConsumeroptions.DeadLetterExchange = "propsHeader.dlx";
+        var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
+        rabbitConsumerOptions.ExchangeType = ExchangeType.Headers;
+        rabbitConsumerOptions.AutoBindDlq = true;
+        rabbitConsumerOptions.DeadLetterExchange = ExchangeType.Headers;
+        rabbitConsumerOptions.DeadLetterExchange = "propsHeader.dlx";
 
         var queueBindingArguments = new Dictionary<string, string>
         {
             { "x-match", "any" },
             { "foo", "bar" }
         };
-        rabbitConsumeroptions.QueueBindingArguments = queueBindingArguments;
-        rabbitConsumeroptions.DlqBindingArguments = queueBindingArguments;
+        rabbitConsumerOptions.QueueBindingArguments = queueBindingArguments;
+        rabbitConsumerOptions.DlqBindingArguments = queueBindingArguments;
 
         var group = "bindingArgs";
         var consumerBinding = binder.BindConsumer("propsHeader", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
@@ -728,7 +734,7 @@ public partial class RabbitBinderTests
         var producerBinding = binder.BindProducer("props.0", CreateBindableChannel("input", bindingOptions), producerOptions);
 
         var endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
-        Assert.Equal(MessageDeliveryMode.PERSISTENT, endpoint.DefaultDeliveryMode);
+        Assert.Equal(MessageDeliveryMode.Persistent, endpoint.DefaultDeliveryMode);
 
         var mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
         Assert.NotNull(mapper);
@@ -751,7 +757,7 @@ public partial class RabbitBinderTests
         producerProperties.PartitionKeyExtractorName = "pkExtractor";
         producerProperties.PartitionSelectorName = "pkSelector";
         producerRabbitOptions.Prefix = "foo.";
-        producerRabbitOptions.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+        producerRabbitOptions.DeliveryMode = MessageDeliveryMode.NonPersistent;
         producerRabbitOptions.HeaderPatterns = new[] { "foo" }.ToList();
         producerProperties.PartitionKeyExpression = "'foo'";
         producerProperties.PartitionSelectorExpression = "0";
@@ -768,9 +774,9 @@ public partial class RabbitBinderTests
         endpoint = ExtractEndpoint(producerBinding) as RabbitOutboundEndpoint;
         Assert.Same(GetResource(), endpoint.Template.ConnectionFactory);
 
-        Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PARTITION_HEADER}']", endpoint.RoutingKeyExpression.ExpressionString);
+        Assert.Equal($"'props.0-' + Headers['{BinderHeaders.PartitionHeader}']", endpoint.RoutingKeyExpression.ExpressionString);
         Assert.Equal("42", endpoint.DelayExpression.ExpressionString);
-        Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, endpoint.DefaultDeliveryMode);
+        Assert.Equal(MessageDeliveryMode.NonPersistent, endpoint.DefaultDeliveryMode);
         Assert.True(endpoint.Template.IsChannelTransacted);
 
         mapper = GetPropertyValue<DefaultRabbitHeaderMapper>(endpoint, "HeaderMapper");
@@ -786,13 +792,13 @@ public partial class RabbitBinderTests
         var received = new RabbitTemplate(GetResource()).Receive("foo.props.0.prodPropsRequired-0", 10_000);
         Assert.NotNull(received);
 
-        Assert.Equal(42, received.Headers[RabbitMessageHeaders.RECEIVED_DELAY]);
+        Assert.Equal(42, received.Headers[RabbitMessageHeaders.ReceivedDelay]);
         producerBinding.Unbind();
         Assert.False(endpoint.IsRunning);
     }
 
     [Fact]
-    public void TestDurablePubSubWithAutoBindDLQ()
+    public void TestDurablePubSubWithAutoBindDlq()
     {
         var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
         var admin = new RabbitAdmin(GetResource(), logger);
@@ -801,7 +807,7 @@ public partial class RabbitBinderTests
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
         var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumerOptions.Prefix = TEST_PREFIX;
+        rabbitConsumerOptions.Prefix = TestPrefix;
         rabbitConsumerOptions.AutoBindDlq = true;
         rabbitConsumerOptions.DurableSubscription = true;
         consumerProperties.MaxAttempts = 1; // disable retry
@@ -816,12 +822,12 @@ public partial class RabbitBinderTests
         var consumerBinding = binder.BindConsumer("durabletest.0", "tgroup", moduleInputChannel, consumerProperties);
 
         var template = new RabbitTemplate(GetResource());
-        template.ConvertAndSend($"{TEST_PREFIX}durabletest.0", string.Empty, "foo");
+        template.ConvertAndSend($"{TestPrefix}durabletest.0", string.Empty, "foo");
 
         var n = 0;
         while (n++ < 100)
         {
-            var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}durabletest.0.tgroup.dlq");
+            var deadLetter = template.ReceiveAndConvert<string>($"{TestPrefix}durabletest.0.tgroup.dlq");
             if (deadLetter != null)
             {
                 Assert.Equal("foo", deadLetter);
@@ -834,11 +840,11 @@ public partial class RabbitBinderTests
         Assert.InRange(n, 0, 150);
 
         consumerBinding.Unbind();
-        Assert.NotNull(admin.GetQueueProperties($"{TEST_PREFIX}durabletest.0.tgroup.dlq"));
+        Assert.NotNull(admin.GetQueueProperties($"{TestPrefix}durabletest.0.tgroup.dlq"));
     }
 
     [Fact]
-    public void TestNonDurablePubSubWithAutoBindDLQ()
+    public void TestNonDurablePubSubWithAutoBindDlq()
     {
         var logger = LoggerFactory.CreateLogger<RabbitAdmin>();
         var admin = new RabbitAdmin(GetResource(), logger);
@@ -848,7 +854,7 @@ public partial class RabbitBinderTests
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
         var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumerOptions.Prefix = TEST_PREFIX;
+        rabbitConsumerOptions.Prefix = TestPrefix;
         rabbitConsumerOptions.AutoBindDlq = true;
         rabbitConsumerOptions.DurableSubscription = false;
         consumerProperties.MaxAttempts = 1; // disable retry
@@ -864,18 +870,18 @@ public partial class RabbitBinderTests
         var consumerBinding = binder.BindConsumer("nondurabletest.0", "tgroup", moduleInputChannel, consumerProperties);
 
         consumerBinding.Unbind();
-        Assert.Null(admin.GetQueueProperties($"{TEST_PREFIX}nondurabletest.0.dlq"));
+        Assert.Null(admin.GetQueueProperties($"{TestPrefix}nondurabletest.0.dlq"));
     }
 
     [Fact]
-    public void TestAutoBindDLQ()
+    public void TestAutoBindDlq()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
         var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumerOptions.Prefix = TEST_PREFIX;
+        rabbitConsumerOptions.Prefix = TestPrefix;
         rabbitConsumerOptions.AutoBindDlq = true;
         consumerProperties.MaxAttempts = 1; // disable retry
         rabbitConsumerOptions.DurableSubscription = true;
@@ -894,12 +900,12 @@ public partial class RabbitBinderTests
         Assert.Equal(2, container.GetQueueNames().Length);
 
         var template = new RabbitTemplate(GetResource());
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqtest.default", "foo");
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}dlqtest.default", "foo");
 
         var n = 0;
         while (n++ < 100)
         {
-            var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqtest.default.dlq");
+            var deadLetter = template.ReceiveAndConvert<string>($"{TestPrefix}dlqtest.default.dlq");
             if (deadLetter != null)
             {
                 Assert.Equal("foo", deadLetter);
@@ -911,12 +917,12 @@ public partial class RabbitBinderTests
 
         Assert.InRange(n, 0, 99);
 
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqtest2.default", "bar");
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}dlqtest2.default", "bar");
 
         n = 0;
         while (n++ < 100)
         {
-            var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqtest2.default.dlq");
+            var deadLetter = template.ReceiveAndConvert<string>($"{TestPrefix}dlqtest2.default.dlq");
             if (deadLetter != null)
             {
                 Assert.Equal("bar", deadLetter);
@@ -932,24 +938,24 @@ public partial class RabbitBinderTests
         var provider = GetPropertyValue<RabbitExchangeQueueProvisioner>(binder.Binder, "ProvisioningProvider");
         var context = GetFieldValue<GenericApplicationContext>(provider, "_autoDeclareContext");
 
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.binding"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.dlq.binding"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqtest.default.dlq"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqtest.default.binding"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqtest.default"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqtest.default.dlq.binding"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqtest.default.dlq"));
     }
 
     [Fact]
-    public async Task TestAutoBindDLQManualAcks()
+    public async Task TestAutoBindDlqManualAcks()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
         var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
-        rabbitConsumerOptions.Prefix = TEST_PREFIX;
+        rabbitConsumerOptions.Prefix = TestPrefix;
         rabbitConsumerOptions.AutoBindDlq = true;
         consumerProperties.MaxAttempts = 2;
         rabbitConsumerOptions.DurableSubscription = true;
-        rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.MANUAL;
+        rabbitConsumerOptions.AcknowledgeMode = AcknowledgeMode.Manual;
         var bindingProperties = CreateConsumerBindingOptions(consumerProperties);
 
         var moduleInputChannel = CreateBindableChannel("input", bindingProperties);
@@ -963,12 +969,12 @@ public partial class RabbitBinderTests
             // Wait until unacked state is reflected in the admin
             OnHandleMessage = _ =>
             {
-                var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
+                var info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
                 var n = 0;
                 while (n++ < 100 && info.MessagesUnacknowledged < 1L)
                 {
                     Thread.Sleep(100);
-                    info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
+                    info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
                 }
 
                 throw new Exception("foo");
@@ -977,12 +983,12 @@ public partial class RabbitBinderTests
         var consumerBinding = binder.BindConsumer("dlqTestManual", "default", moduleInputChannel, consumerProperties);
 
         var template = new RabbitTemplate(GetResource());
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}dlqTestManual.default", "foo");
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}dlqTestManual.default", "foo");
 
         var n = 0;
         while (n++ < 100)
         {
-            var deadLetter = template.ReceiveAndConvert<string>($"{TEST_PREFIX}dlqTestManual.default.dlq");
+            var deadLetter = template.ReceiveAndConvert<string>($"{TestPrefix}dlqTestManual.default.dlq");
             if (deadLetter != null)
             {
                 Assert.Equal("foo", deadLetter);
@@ -995,11 +1001,11 @@ public partial class RabbitBinderTests
         Assert.InRange(n, 1, 100);
 
         n = 0;
-        var info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
+        var info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
         while (n++ < 100 && info.MessagesUnacknowledged > 0L)
         {
             Thread.Sleep(200);
-            info = client.GetQueue($"{TEST_PREFIX}dlqTestManual.default", vhost);
+            info = client.GetQueue($"{TestPrefix}dlqTestManual.default", vhost);
         }
 
         Assert.Equal(0, info.MessagesUnacknowledged);
@@ -1009,10 +1015,10 @@ public partial class RabbitBinderTests
         var provider = GetPropertyValue<RabbitExchangeQueueProvisioner>(binder.Binder, "ProvisioningProvider");
         var context = GetFieldValue<GenericApplicationContext>(provider, "_autoDeclareContext");
 
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.binding"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.dlq.binding"));
-        Assert.False(context.ContainsService($"{TEST_PREFIX}dlqTestManual.default.dlq"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqTestManual.default.binding"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqTestManual.default"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqTestManual.default.dlq.binding"));
+        Assert.False(context.ContainsService($"{TestPrefix}dlqTestManual.default.dlq"));
     }
 
     [Fact]
@@ -1020,15 +1026,15 @@ public partial class RabbitBinderTests
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
 
-        var rabbitprod = rabbitBindingsOptions.GetRabbitProducerOptions("test");
-        rabbitprod.Prefix = "rets";
-        var rabbitprod2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+        var producerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("test");
+        producerOptions.Prefix = "rets";
+        var producerOptions2 = rabbitBindingsOptions.GetRabbitProducerOptions("test");
 
-        Assert.Equal(rabbitprod.Prefix, rabbitprod2.Prefix);
+        Assert.Equal(producerOptions.Prefix, producerOptions2.Prefix);
     }
 
     [Fact]
-    public void TestAutoBindDLQPartionedConsumerFirst()
+    public void TestAutoBindDlqPartionedConsumerFirst()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
@@ -1111,19 +1117,19 @@ public partial class RabbitBinderTests
         var template = new RabbitTemplate(GetResource());
         template.ReceiveTimeout = 10000;
 
-        var streamDLQName = "bindertest.partDLQ.0.dlqPartGrp.dlq";
+        var streamDlqName = "bindertest.partDLQ.0.dlqPartGrp.dlq";
 
-        var received = template.Receive(streamDLQName);
+        var received = template.Receive(streamDlqName);
         Assert.NotNull(received);
 
         Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-1", received.Headers.ReceivedRoutingKey());
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers.Select(h => h.Key));
 
         output.Send(Message.Create(0));
-        received = template.Receive(streamDLQName);
+        received = template.Receive(streamDlqName);
         Assert.NotNull(received);
         Assert.Equal("bindertest.partDLQ.0.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers.Select(h => h.Key));
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers.Select(h => h.Key));
 
         input0Binding.Unbind();
         input1Binding.Unbind();
@@ -1133,19 +1139,19 @@ public partial class RabbitBinderTests
     }
 
     [Fact]
-    public void TestAutoBindDLQPartitionedConsumerFirstWithRepublishNoRetry()
+    public void TestAutoBindDlqPartitionedConsumerFirstWithRepublishNoRetry()
     {
-        TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(false);
+        TestAutoBindDlqPartionedConsumerFirstWithRepublishGuts(false);
     }
 
     [Fact]
-    public void TestAutoBindDLQPartitionedConsumerFirstWithRepublishWithRetry()
+    public void TestAutoBindDlqPartitionedConsumerFirstWithRepublishWithRetry()
     {
-        TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(true);
+        TestAutoBindDlqPartionedConsumerFirstWithRepublishGuts(true);
     }
 
     [Fact]
-    public void TestAutoBindDLQPartitionedProducerFirst()
+    public void TestAutoBindDlqPartitionedProducerFirst()
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
@@ -1218,21 +1224,21 @@ public partial class RabbitBinderTests
         var template = new RabbitTemplate(GetResource());
         template.ReceiveTimeout = 10000;
 
-        var streamDLQName = "bindertest.partDLQ.1.dlqPartGrp.dlq";
+        var streamDlqName = "bindertest.partDLQ.1.dlqPartGrp.dlq";
 
-        var received = template.Receive(streamDLQName);
+        var received = template.Receive(streamDlqName);
         Assert.NotNull(received);
         Assert.Equal("bindertest.partDLQ.1.dlqPartGrp-1", received.Headers.ReceivedRoutingKey());
-        Assert.Equal(MessageDeliveryMode.PERSISTENT, received.Headers.ReceivedDeliveryMode());
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
+        Assert.Equal(MessageDeliveryMode.Persistent, received.Headers.ReceivedDeliveryMode());
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
 
         output.Send(Message.Create(0));
-        received = template.Receive(streamDLQName);
+        received = template.Receive(streamDlqName);
         Assert.NotNull(received);
 
         Assert.Equal("bindertest.partDLQ.1.dlqPartGrp-0", received.Headers.ReceivedRoutingKey());
 
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
 
         input0Binding.Unbind();
         input1Binding.Unbind();
@@ -1242,17 +1248,17 @@ public partial class RabbitBinderTests
     }
 
     [Fact]
-    public void TestAutoBindDLQwithRepublish()
+    public void TestAutoBindDlQWithRepublish()
     {
-        _maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
-        Assert.True(_maxStackTraceSize > 0);
+        maxStackTraceSize = RabbitUtils.GetMaxFrame(GetResource()) - 20_000;
+        Assert.True(maxStackTraceSize > 0);
 
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
         var consumerProperties = GetConsumerOptions("input", rabbitBindingsOptions);
         var rabbitConsumerOptions = rabbitBindingsOptions.GetRabbitConsumerOptions("input");
 
-        rabbitConsumerOptions.Prefix = TEST_PREFIX;
+        rabbitConsumerOptions.Prefix = TestPrefix;
         rabbitConsumerOptions.AutoBindDlq = true;
         rabbitConsumerOptions.RepublishToDlq = true;
         consumerProperties.MaxAttempts = 1; // disable retry
@@ -1261,15 +1267,15 @@ public partial class RabbitBinderTests
         moduleInputChannel.ComponentName = "dlqPubTest";
         var exception = BigCause();
 
-        Assert.True(exception.StackTrace.Length > _maxStackTraceSize);
-        var dontRepublish = new AtomicBoolean();
+        Assert.True(exception.StackTrace.Length > maxStackTraceSize);
+        var noNotRepublish = new AtomicBoolean();
         moduleInputChannel.Subscribe(new TestMessageHandler
         {
             OnHandleMessage = _ =>
             {
-                if (dontRepublish.Value)
+                if (noNotRepublish.Value)
                 {
-                    throw new ImmediateAcknowledgeException("testDontRepublish");
+                    throw new ImmediateAcknowledgeException("testDoNotRepublish");
                 }
 
                 ExceptionDispatchInfo.Capture(exception).Throw();
@@ -1280,28 +1286,28 @@ public partial class RabbitBinderTests
         var consumerBinding = binder.BindConsumer("foo.dlqpubtest,foo.dlqpubtest2", "foo", moduleInputChannel, consumerProperties);
 
         var template = new RabbitTemplate(GetResource());
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest.foo", "foo");
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}foo.dlqpubtest.foo", "foo");
 
         template.ReceiveTimeout = 10_000;
 
-        var deadLetter = template.Receive($"{TEST_PREFIX}foo.dlqpubtest.foo.dlq");
+        var deadLetter = template.Receive($"{TestPrefix}foo.dlqpubtest.foo.dlq");
         Assert.NotNull(deadLetter);
         Assert.Equal("foo", ((byte[])deadLetter.Payload).GetString());
-        Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
+        Assert.Contains(RepublishMessageRecoverer.XExceptionStacktrace, deadLetter.Headers);
 
-        // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesnt contain propogate stack trace
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest2.foo", "bar");
+        // Assert.Equal(maxStackTraceSize, ((string)deadLetter.Headers[RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE]).Length); TODO: Wrapped exception doesn't contain propagated stack trace
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}foo.dlqpubtest2.foo", "bar");
 
-        deadLetter = template.Receive($"{TEST_PREFIX}foo.dlqpubtest2.foo.dlq");
+        deadLetter = template.Receive($"{TestPrefix}foo.dlqpubtest2.foo.dlq");
         Assert.NotNull(deadLetter);
 
         Assert.Equal("bar", ((byte[])deadLetter.Payload).GetString());
-        Assert.Contains(RepublishMessageRecoverer.X_EXCEPTION_STACKTRACE, deadLetter.Headers);
+        Assert.Contains(RepublishMessageRecoverer.XExceptionStacktrace, deadLetter.Headers);
 
-        dontRepublish.GetAndSet(true);
-        template.ConvertAndSend(string.Empty, $"{TEST_PREFIX}foo.dlqpubtest2.foo", "baz");
+        noNotRepublish.GetAndSet(true);
+        template.ConvertAndSend(string.Empty, $"{TestPrefix}foo.dlqpubtest2.foo", "baz");
         template.ReceiveTimeout = 500;
-        Assert.Null(template.Receive($"{TEST_PREFIX}foo.dlqpubtest2.foo.dlq"));
+        Assert.Null(template.Receive($"{TestPrefix}foo.dlqpubtest2.foo.dlq"));
 
         consumerBinding.Unbind();
     }
@@ -1315,7 +1321,7 @@ public partial class RabbitBinderTests
         var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
 
         rabbitProducerOptions
-            .DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            .DeliveryMode = MessageDeliveryMode.NonPersistent;
         rabbitProducerOptions.BatchingEnabled = true;
         rabbitProducerOptions.BatchSize = 2;
         rabbitProducerOptions.BatchBufferLimit = 100000;
@@ -1358,7 +1364,7 @@ public partial class RabbitBinderTests
 
         Assert.NotNull(inMessage);
         Assert.Equal("bar", inMessage.Payload.GetString());
-        Assert.Null(inMessage.Headers[RabbitMessageHeaders.DELIVERY_MODE]);
+        Assert.Null(inMessage.Headers[RabbitMessageHeaders.DeliveryMode]);
 
         producerBinding.Unbind();
         consumerBinding.Unbind();
@@ -1373,7 +1379,7 @@ public partial class RabbitBinderTests
         var producerProperties = GetProducerOptions("output", rabbitBindingsOptions);
         var rabbitProducerOptions = rabbitBindingsOptions.GetRabbitProducerOptions("output");
 
-        rabbitProducerOptions.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+        rabbitProducerOptions.DeliveryMode = MessageDeliveryMode.NonPersistent;
 
         var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
         output.ComponentName = "propagate.out";
@@ -1388,7 +1394,7 @@ public partial class RabbitBinderTests
         var admin = new RabbitAdmin(GetResource(), logger);
 
         admin.DeclareQueue(new Queue("propagate"));
-        admin.DeclareBinding(new RabbitBinding("propagate_binding", "propagate", RabbitBinding.DestinationType.QUEUE, "propagate.1", "#", null));
+        admin.DeclareBinding(new RabbitBinding("propagate_binding", "propagate", RabbitBinding.DestinationType.Queue, "propagate.1", "#", null));
         var template = new RabbitTemplate(GetResource());
 
         template.ConvertAndSend("propagate.0.propagate", "foo");
@@ -1399,8 +1405,8 @@ public partial class RabbitBinderTests
         Assert.NotNull(received);
 
         Assert.Equal("foo".GetBytes(), received.Payload);
-        Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.SOURCE_DATA]);
-        Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.DELIVERY_ATTEMPT]);
+        Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.SourceData]);
+        Assert.Null(received.Headers[Integration.IntegrationMessageHeaderAccessor.DeliveryAttempt]);
 
         producerBinding.Unbind();
         consumerBinding.Unbind();
@@ -1426,7 +1432,7 @@ public partial class RabbitBinderTests
         var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(new RabbitBinderOptions());
         var rabbitBinder = new RabbitMessageChannelBinder(context, LoggerFactory.CreateLogger<RabbitMessageChannelBinder>(), cf, rabbitOptions, binderOptions, rabbitBindingsOptions, provisioner);
         var binder = new RabbitTestBinder(cf, rabbitBinder, LoggerFactory.CreateLogger<RabbitTestBinder>());
-        _testBinder = binder;
+        testBinder = binder;
 
         var producerProperties = GetProducerOptions("output", currentRabbitBindings);
         var rabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("output");
@@ -1465,14 +1471,14 @@ public partial class RabbitBinderTests
         var noDlqProducerProperties = GetProducerOptions("noDlq", currentRabbitBindings);
         var noDlqRabbitProducerOptions = currentRabbitBindings.GetRabbitProducerOptions("noDlq");
         noDlqRabbitProducerOptions.Prefix = "latebinder.";
-        var noDLQOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
-        var noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDLQOutputChannel, noDlqProducerProperties);
+        var noDlqOutputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
+        var noDlqProducerBinding = binder.BindProducer("lateNoDLQ.0", noDlqOutputChannel, noDlqProducerProperties);
 
-        var noDLQInputChannel = new QueueChannel();
+        var noDlqInputChannel = new QueueChannel();
         var noDlqConsumerProperties = GetConsumerOptions("noDlqConsumer", currentRabbitBindings);
         var noDlqRabbitConsumerOptions = currentRabbitBindings.GetRabbitConsumerOptions("noDlqConsumer");
         noDlqRabbitConsumerOptions.Prefix = "latebinder.";
-        var noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDLQInputChannel, noDlqConsumerProperties);
+        var noDlqConsumerBinding = binder.BindConsumer("lateNoDLQ.0", "test", noDlqInputChannel, noDlqConsumerProperties);
 
         var outputChannel = CreateBindableChannel("output", CreateProducerBindingOptions(noDlqProducerProperties));
         var pubSubProducerBinding = binder.BindProducer("latePubSub", outputChannel, noDlqProducerProperties);
@@ -1489,23 +1495,23 @@ public partial class RabbitBinderTests
         Thread.Sleep(5000);
 
         moduleOutputChannel.Send(MessageBuilder.WithPayload("foo")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
         var message = moduleInputChannel.Receive(20000);
         Assert.NotNull(message);
         Assert.NotNull(message.Payload);
 
-        noDLQOutputChannel.Send(MessageBuilder.WithPayload("bar")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+        noDlqOutputChannel.Send(MessageBuilder.WithPayload("bar")
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
-        message = noDLQInputChannel.Receive(10000);
+        message = noDlqInputChannel.Receive(10000);
         Assert.NotNull(message);
         Assert.Equal("bar".GetBytes(), message.Payload);
 
         outputChannel.Send(MessageBuilder.WithPayload("baz")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
         message = pubSubInputChannel.Receive(10000);
         Assert.NotNull(message);
@@ -1515,10 +1521,10 @@ public partial class RabbitBinderTests
         Assert.Equal("baz".GetBytes(), message.Payload);
 
         partOutputChannel.Send(MessageBuilder.WithPayload("0")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
         partOutputChannel.Send(MessageBuilder.WithPayload("1")
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build());
 
         message = partInputChannel0.Receive(10000);
@@ -1541,7 +1547,7 @@ public partial class RabbitBinderTests
         durableConsumerBinding.Unbind();
 
         // Reset timeouts so cleanup happens
-        _testBinder.ResetConnectionFactoryTimeout();
+        testBinder.ResetConnectionFactoryTimeout();
 
         Cleanup();
 
@@ -1616,9 +1622,9 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, _) =>
+            PreSendHandler = (message, _) =>
             {
-                Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
+                Assert.Equal("rkeTest", message.Headers[RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader]);
                 return message;
             }
         });
@@ -1661,11 +1667,11 @@ public partial class RabbitBinderTests
 
         output.AddInterceptor(new TestChannelInterceptor
         {
-            PresendHandler = (message, _) =>
+            PreSendHandler = (message, _) =>
             {
-                Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.ROUTING_KEY_HEADER]);
+                Assert.Equal("rkepTest", message.Headers[RabbitExpressionEvaluatingInterceptor.RoutingKeyHeader]);
 
-                Assert.Equal(1000, message.Headers[RabbitExpressionEvaluatingInterceptor.DELAY_HEADER]);
+                Assert.Equal(1000, message.Headers[RabbitExpressionEvaluatingInterceptor.DelayHeader]);
                 return message;
             }
         });
@@ -1892,11 +1898,11 @@ public partial class RabbitBinderTests
         return spelExp.ExpressionString;
     }
 
-    protected override void CheckRkExpressionForPartitionedModuleSpEL(object endpoint)
+    protected override void CheckRkExpressionForPartitionedModuleSpel(object endpoint)
     {
         var routingExpression = GetEndpointRouting(endpoint);
         var delimiter = GetDestinationNameDelimiter();
-        var dest = $"{GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test")} + '-' + Headers['{BinderHeaders.PARTITION_HEADER}']";
+        var dest = $"{GetExpectedRoutingBaseDestination($"'part{delimiter}0'", "test")} + '-' + Headers['{BinderHeaders.PartitionHeader}']";
 
         Assert.Contains(dest, routingExpression);
     }
@@ -1905,7 +1911,7 @@ public partial class RabbitBinderTests
 
     protected override bool UsesExplicitRouting() => true;
 
-    private void TestAutoBindDLQPartionedConsumerFirstWithRepublishGuts(bool withRetry)
+    private void TestAutoBindDlqPartionedConsumerFirstWithRepublishGuts(bool withRetry)
     {
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(rabbitBindingsOptions);
@@ -1917,7 +1923,7 @@ public partial class RabbitBinderTests
         rabbitConsumerOptions.Prefix = "bindertest.";
         rabbitConsumerOptions.AutoBindDlq = true;
         rabbitConsumerOptions.RepublishToDlq = true;
-        rabbitConsumerOptions.RepublishDeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+        rabbitConsumerOptions.RepublishDeliveryMode = MessageDeliveryMode.NonPersistent;
         consumerProperties.MaxAttempts = withRetry ? 2 : 1;
         consumerProperties.Partitioned = true;
         consumerProperties.InstanceIndex = 0;
@@ -2015,19 +2021,19 @@ public partial class RabbitBinderTests
 
         template.ReceiveTimeout = 10000;
 
-        var streamDLQName = "bindertest.partPubDLQ.0.dlqPartGrp.dlq";
+        var streamDlqName = "bindertest.partPubDLQ.0.dlqPartGrp.dlq";
 
-        var received = template.Receive(streamDLQName);
+        var received = template.Receive(streamDlqName);
         Assert.NotNull(received);
         Assert.Equal("partPubDLQ.0-1", received.Headers["x-original-routingKey"]);
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
-        Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, received.Headers.ReceivedDeliveryMode().Value);
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
+        Assert.Equal(MessageDeliveryMode.NonPersistent, received.Headers.ReceivedDeliveryMode().Value);
 
         output.Send(Message.Create(0));
-        received = template.Receive(streamDLQName);
+        received = template.Receive(streamDlqName);
         Assert.NotNull(received);
         Assert.Equal("partPubDLQ.0-0", received.Headers["x-original-routingKey"]);
-        Assert.DoesNotContain(BinderHeaders.PARTITION_HEADER, received.Headers);
+        Assert.DoesNotContain(BinderHeaders.PartitionHeader, received.Headers);
 
         // verify we got a message on the dedicated error channel and the global (via bridge)
         Thread.Sleep(2000);
@@ -2045,8 +2051,8 @@ public partial class RabbitBinderTests
 
     private void RegisterGlobalErrorChannel(RabbitTestBinder binder)
     {
-        var appcontext = binder.ApplicationContext;
-        var errorChannel = new BinderErrorChannel(appcontext, IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, LoggerFactory.CreateLogger<BinderErrorChannel>());
-        appcontext.Register(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, errorChannel);
+        var applicationContext = binder.ApplicationContext;
+        var errorChannel = new BinderErrorChannel(applicationContext, IntegrationContextUtils.ErrorChannelBeanName, LoggerFactory.CreateLogger<BinderErrorChannel>());
+        applicationContext.Register(IntegrationContextUtils.ErrorChannelBeanName, errorChannel);
     }
 }

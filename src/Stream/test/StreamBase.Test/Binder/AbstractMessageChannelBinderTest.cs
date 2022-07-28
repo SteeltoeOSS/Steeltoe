@@ -51,7 +51,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.True(defaultBinding.Endpoint.IsRunning);
         Assert.NotNull(messageProducer.OutputChannel);
 
-        // lifecycle.errorchannel
+        // lifecycle.ErrorChannel
         Assert.NotNull(messageProducer.ErrorChannel);
         var errorChannel = messageProducer.ErrorChannel as PublishSubscribeChannel;
         Assert.NotNull(errorChannel.Dispatcher);
@@ -108,7 +108,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         var messageProducer = defaultBinding.Endpoint as TestChannelBinder.TestMessageProducerSupportEndpoint;
         Assert.NotNull(messageProducer);
 
-        // lifecycle.errorchannel
+        // lifecycle.ErrorChannel
         Assert.Null(messageProducer.ErrorChannel);
 
         var callback = messageProducer.RecoveryCallback as ErrorMessagePublisher;

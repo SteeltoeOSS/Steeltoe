@@ -12,11 +12,11 @@ namespace Steeltoe.Stream.Tck;
 
 public class PojoMessageToStringMessageServiceActivator
 {
-    [ServiceActivator(InputChannel = ISink.INPUT, OutputChannel = ISource.OUTPUT)]
+    [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<Person> value)
     {
         return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString())
-            .SetHeader(MessageHeaders.CONTENT_TYPE, MimeTypeUtils.TEXT_PLAIN)
+            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
             .Build();
     }
 }

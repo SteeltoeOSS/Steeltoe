@@ -6,8 +6,8 @@ namespace Steeltoe.Connector.Services;
 
 public class RedisServiceInfo : UriServiceInfo
 {
-    public const string REDIS_SCHEME = "redis";
-    public const string REDIS_SECURE_SCHEME = "rediss";
+    public const string RedisScheme = "redis";
+    public const string RedisSecureScheme = "rediss";
 
     public RedisServiceInfo(string id, string scheme, string host, int port, string password)
         : base(id, scheme, host, port, null, password, null)

@@ -3,14 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Concurrent;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 
 /// <summary>
-/// Enables us to write logging messages to XUnit output
+/// Enables us to write logging messages to XUnit output.
 /// </summary>
 internal sealed class TestOutputLoggerProvider : ILoggerProvider
 {
@@ -30,38 +29,5 @@ internal sealed class TestOutputLoggerProvider : ILoggerProvider
     public void Dispose()
     {
         _loggers.Clear();
-    }
-}
-
-internal sealed class TestOutputLogger : ILogger
-{
-    private readonly ITestOutputHelper _output;
-    private readonly string _category;
-
-    public TestOutputLogger(ITestOutputHelper output, string category)
-    {
-        _output = output;
-        _category = category;
-    }
-
-    public IDisposable BeginScope<TState>(TState state)
-    {
-        return null;
-    }
-
-    public bool IsEnabled(LogLevel logLevel)
-    {
-        return true;
-    }
-
-    public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-    {
-        var formattetMessage = formatter(state, exception);
-
-        _output?.WriteLine(formattetMessage);
-        if (exception != null)
-        {
-            _output?.WriteLine(exception.StackTrace);
-        }
     }
 }

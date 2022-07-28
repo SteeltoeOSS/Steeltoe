@@ -12,7 +12,7 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
 {
     private static readonly ConcurrentDictionary<string, RollingThreadPoolEventCounterStream> Streams = new ();
 
-    private static readonly int ALL_EVENT_TYPES_SIZE = ThreadPoolEventTypeHelper.Values.Count;
+    private static readonly int AllEventTypesSize = ThreadPoolEventTypeHelper.Values.Count;
 
     public static RollingThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
     {
@@ -52,12 +52,12 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
 
     public override long[] EmptyBucketSummary
     {
-        get { return new long[ALL_EVENT_TYPES_SIZE]; }
+        get { return new long[AllEventTypesSize]; }
     }
 
     public override long[] EmptyOutputValue
     {
-        get { return new long[ALL_EVENT_TYPES_SIZE]; }
+        get { return new long[AllEventTypesSize]; }
     }
 
     public long GetLatestCount(ThreadPoolEventType eventType)

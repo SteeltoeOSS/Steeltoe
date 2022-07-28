@@ -32,9 +32,9 @@ public class KubernetesInfoContributorTest
     public void ReturnsNoPodInfoOutsideCluster()
     {
         var builder = new InfoBuilder();
-        var contributer = new KubernetesInfoContributor(new FakePodUtilities(null));
+        var contributor = new KubernetesInfoContributor(new FakePodUtilities(null));
 
-        contributer.Contribute(builder);
+        contributor.Contribute(builder);
         var info = builder.Build()["kubernetes"] as Dictionary<string, object>;
 
         Assert.True(info.ContainsKey("inside"));

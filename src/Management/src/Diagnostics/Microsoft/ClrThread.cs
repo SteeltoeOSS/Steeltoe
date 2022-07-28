@@ -120,7 +120,7 @@ internal abstract class ClrThread
     public abstract bool IsFinalizer { get; }
 
     /// <summary>
-    /// The address of the underlying datastructure which makes up the Thread object.  This
+    /// The address of the underlying data structure which makes up the Thread object.  This
     /// serves as a unique identifier.
     /// </summary>
     public abstract ulong Address { get; }
@@ -191,7 +191,7 @@ internal abstract class ClrThread
     /// Note: This property uses a heuristic to attempt to detect bad unwinds to stop enumerating
     /// frames by inspecting the stack pointer and instruction pointer of each frame to ensure the stack
     /// walk is "making progress".  Additionally we cap the number of frames returned by this method
-    /// as another safegaurd.  This means we may not have all frames even if the stack walk was making
+    /// as another safeguard.  This means we may not have all frames even if the stack walk was making
     /// progress.
     /// 
     /// If you want to ensure that you receive an un-clipped stack trace, you should use EnumerateStackTrace
@@ -320,7 +320,7 @@ internal abstract class ClrThread
     public abstract bool IsUnstarted { get; }
 
     /// <summary>
-    /// Returns true if the Clr runtime called CoIntialize for this thread.
+    /// Returns true if the Clr runtime called CoInitialize for this thread.
     /// </summary>
     public abstract bool IsCoInitialized { get; }
 
@@ -330,7 +330,7 @@ internal abstract class ClrThread
     public abstract bool IsSTA { get; }
 
     /// <summary>
-    /// Returns true if the thread is a COM multithreaded apartment.
+    /// Returns true if the thread is a COM multi-threaded apartment.
     /// </summary>
     public abstract bool IsMTA { get; }
 

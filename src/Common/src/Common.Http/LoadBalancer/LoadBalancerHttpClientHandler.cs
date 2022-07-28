@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Common.Http.LoadBalancer;
 
 /// <summary>
-/// Same as <see cref="LoadBalancerDelegatingHandler"/> except is an <see cref="HttpClientHandler"/>, for non-HttpClientFactory use
+/// Same as <see cref="LoadBalancerDelegatingHandler"/> except is an <see cref="HttpClientHandler"/>, for non-HttpClientFactory use.
 /// </summary>
 public class LoadBalancerHttpClientHandler : HttpClientHandler
 {
@@ -20,9 +20,9 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
-    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>
+    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use</param>
+    /// <param name="loadBalancer">Load balancer to use.</param>
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer)
     {
         _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
@@ -30,10 +30,10 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
-    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>
+    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use</param>
-    /// <param name="logger">For logging</param>
+    /// <param name="loadBalancer">Load balancer to use.</param>
+    /// <param name="logger">For logging.</param>
     [Obsolete("Please remove ILogger parameter")]
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer, ILogger logger)
     {

@@ -35,7 +35,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         HystrixCommand<bool> cmd3 = new SuccessCommand(key, 0);
         HystrixCommand<bool> cmd4 = new SuccessCommand(key, 0);
 
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         _ = await cmd1.ExecuteAsync();
@@ -66,7 +66,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -77,7 +77,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var key = "cmd-B";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -106,7 +106,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
     }
@@ -117,7 +117,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var key = "cmd-C";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -146,7 +146,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Current CircuitBreaker Status : " + cmd1.Metrics.HealthCounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected!");
         Assert.False(cb.IsOpen, "Circuit breaker is open when it should be closed!");
     }
@@ -157,7 +157,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var key = "cmd-D";
 
         HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         HealthCountsStream.GetInstance(HystrixCommandKeyDefault.AsKey(key), cmd1.CommandOptions);
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
@@ -188,7 +188,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var key = "cmd-E";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -233,7 +233,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var key = "cmd-F";
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -275,7 +275,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         var sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
-        var cb = (HystrixCircuitBreakerImpl)cmd1._circuitBreaker;
+        var cb = (HystrixCircuitBreakerImpl)cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -295,7 +295,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
         _output.WriteLine("ReqLog : " + Time.CurrentTimeMillis + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        _output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("CircuitBreaker state 1 : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         Assert.False(cb.AllowRequest, "Request allowed when NOT expected!");
         Assert.True(cb.IsOpen, "Circuit is closed when it should be open!");
 
@@ -307,14 +307,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         // we should now allow 1 request, and upon success, should cause the circuit to be closed
         HystrixCommand<bool> cmd5 = new SuccessCommand(key, 10, sleepWindow);
-        _output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("Starting test cmd : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         _ = await cmd5.Observe();
 
         // Allow window to pass, all requests should be open again
         // Time.Wait(200);
         Assert.True(WaitForHealthCountToUpdate(key, 250, _output), "Health count stream failed to update");
 
-        _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.Healthcounts);
+        _output.WriteLine("CircuitBreaker state 2 : " + Time.CurrentTimeMillis + cmd1.Metrics.HealthCounts);
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (1)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (2)!");
         Assert.True(cb.AllowRequest, "Request NOT allowed when expected (3)!");
@@ -330,7 +330,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         var sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -436,7 +436,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         var lowVolume = 5;
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
-        var cb = cmd1._circuitBreaker;
+        var cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
 
         // this should start as allowing requests
@@ -461,12 +461,12 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
     internal static HystrixCommandMetrics GetMetrics(HystrixCommandOptions properties)
     {
-        return HystrixCommandMetrics.GetInstance(CommandKeyForUnitTest.KEY_ONE, CommandOwnerForUnitTest.OWNER_ONE, ThreadPoolKeyForUnitTest.THREAD_POOL_ONE, properties);
+        return HystrixCommandMetrics.GetInstance(CommandKeyForUnitTest.KeyOne, CommandOwnerForUnitTest.OwnerOne, ThreadPoolKeyForUnitTest.ThreadPoolOne, properties);
     }
 
     internal static HystrixCommandMetrics GetMetrics(IHystrixCommandKey commandKey, HystrixCommandOptions properties)
     {
-        return HystrixCommandMetrics.GetInstance(commandKey, CommandOwnerForUnitTest.OWNER_ONE, ThreadPoolKeyForUnitTest.THREAD_POOL_ONE, properties);
+        return HystrixCommandMetrics.GetInstance(commandKey, CommandOwnerForUnitTest.OwnerOne, ThreadPoolKeyForUnitTest.ThreadPoolOne, properties);
     }
 
     private void Init()
@@ -504,14 +504,14 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         {
             get
             {
-                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.Healthcounts);
+                // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
                 if (_forceShortCircuit)
                 {
                     return true;
                 }
                 else
                 {
-                    return _metrics.Healthcounts.ErrorCount >= 3;
+                    return _metrics.HealthCounts.ErrorCount >= 3;
                 }
             }
         }
@@ -526,9 +526,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
     private abstract class Command : HystrixCommand<bool>
     {
-        protected readonly bool shouldFail;
-        protected readonly bool shouldFailWithBadRequest;
-        protected readonly int latencyToAdd;
+        protected readonly bool ShouldFail;
+        protected readonly bool ShouldFailWithBadRequest;
+        protected readonly int LatencyToAdd;
 
         protected Command(string commandKey, bool shouldFail, int latencyToAdd)
             : this(commandKey, shouldFail, false, latencyToAdd, 400, 1)
@@ -538,9 +538,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
         protected Command(string commandKey, bool shouldFail, bool shouldFailWithBadRequest, int latencyToAdd, int sleepWindow, int requestVolumeThreshold)
             : base(Options("Command", commandKey, requestVolumeThreshold, sleepWindow))
         {
-            this.shouldFail = shouldFail;
-            this.shouldFailWithBadRequest = shouldFailWithBadRequest;
-            this.latencyToAdd = latencyToAdd;
+            this.ShouldFail = shouldFail;
+            this.ShouldFailWithBadRequest = shouldFailWithBadRequest;
+            this.LatencyToAdd = latencyToAdd;
         }
 
         protected static HystrixCommandOptions Options(string groupKey, string commandKey, int requestVolumeThreshold, int sleepWindow)
@@ -556,15 +556,15 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
 
         protected override bool Run()
         {
-            Time.WaitUntil(() => _token.IsCancellationRequested, latencyToAdd);
-            _token.ThrowIfCancellationRequested();
+            Time.WaitUntil(() => Token.IsCancellationRequested, LatencyToAdd);
+            Token.ThrowIfCancellationRequested();
 
-            if (shouldFail)
+            if (ShouldFail)
             {
                 throw new Exception("induced failure");
             }
 
-            if (shouldFailWithBadRequest)
+            if (ShouldFailWithBadRequest)
             {
                 throw new HystrixBadRequestException("bad request");
             }

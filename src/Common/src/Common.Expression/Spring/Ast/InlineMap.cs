@@ -29,8 +29,8 @@ public class InlineMap : SpelNode
         else
         {
             var returnValue = new Dictionary<object, object>();
-            var childcount = ChildCount;
-            for (var c = 0; c < childcount; c++)
+            var childCount = ChildCount;
+            for (var c = 0; c < childCount; c++)
             {
                 // Allow for key being PropertyOrFieldReference like Indexer on maps
                 var keyChild = GetChild(c++);
@@ -52,7 +52,7 @@ public class InlineMap : SpelNode
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder("{");
         var count = ChildCount;
@@ -63,9 +63,9 @@ public class InlineMap : SpelNode
                 sb.Append(',');
             }
 
-            sb.Append(GetChild(c++).ToStringAST());
+            sb.Append(GetChild(c++).ToStringAst());
             sb.Append(':');
-            sb.Append(GetChild(c).ToStringAST());
+            sb.Append(GetChild(c).ToStringAst());
         }
 
         sb.Append('}');

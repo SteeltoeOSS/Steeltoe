@@ -116,7 +116,7 @@ public class MethodInvokingMessageProcessor<T> : AbstractMessageProcessor<T>, IL
     {
         var factory = new DefaultMessageHandlerMethodFactory(ConversionService, ApplicationContext);
 
-        var messageConverter = ApplicationContext?.GetService<IMessageConverter>(IntegrationContextUtils.ARGUMENT_RESOLVER_MESSAGE_CONVERTER_BEAN_NAME);
+        var messageConverter = ApplicationContext?.GetService<IMessageConverter>(IntegrationContextUtils.ArgumentResolverMessageConverterBeanName);
         if (messageConverter != null)
         {
             factory.MessageConverter = messageConverter;

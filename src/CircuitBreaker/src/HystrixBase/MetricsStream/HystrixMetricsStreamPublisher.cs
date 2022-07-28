@@ -16,15 +16,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
 public class HystrixMetricsStreamPublisher : IDisposable
 {
-    protected const string SPRING_CLOUD_HYSTRIX_STREAM_EXCHANGE = "spring.cloud.hystrix.stream";
+    protected const string SpringCloudHystrixStreamExchange = "spring.cloud.hystrix.stream";
 
-    protected IDisposable sampleSubscription;
     protected IObservable<List<string>> observable;
     protected IDiscoveryClient discoveryClient;
     protected ILogger logger;
     protected HystrixMetricsStreamOptions options;
 
-    protected internal IDisposable SampleSubscription { get => sampleSubscription; set => sampleSubscription = value; }
+    protected internal IDisposable SampleSubscription { get; set; }
 
     public HystrixMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, ILogger logger = null, IDiscoveryClient discoveryClient = null)
     {

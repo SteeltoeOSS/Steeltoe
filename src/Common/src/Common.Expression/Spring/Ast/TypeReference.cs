@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class TypeReference : SpelNode
 {
-    private static readonly MethodInfo _getTypeFromHandle = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), BindingFlags.Static | BindingFlags.Public);
+    private static readonly MethodInfo GetTypeFromHandle = typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), BindingFlags.Static | BindingFlags.Public);
     private readonly int _dimensions;
     private Type _type;
 
@@ -29,7 +29,7 @@ public class TypeReference : SpelNode
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         // Possible optimization here if we cache the discovered type reference, but can we do that?
-        var typeName = (string)_children[0].GetValueInternal(state).Value;
+        var typeName = (string)children[0].GetValueInternal(state).Value;
         if (typeName == null)
         {
             throw new InvalidOperationException("No type name");
@@ -38,27 +38,27 @@ public class TypeReference : SpelNode
         if (!typeName.Contains(".") && char.IsLower(typeName[0]))
         {
             var tc = SpelTypeCode.ForName(typeName.ToUpper());
-            if (tc != SpelTypeCode.OBJECT)
+            if (tc != SpelTypeCode.Object)
             {
                 // It is a primitive type
-                var atype = MakeArrayIfNecessary(tc.Type);
-                _exitTypeDescriptor = TypeDescriptor.TYPE;
-                _type = atype;
-                return new TypedValue(atype);
+                var type = MakeArrayIfNecessary(tc.Type);
+                exitTypeDescriptor = TypeDescriptor.Type;
+                _type = type;
+                return new TypedValue(type);
             }
         }
 
         var clazz = state.FindType(typeName);
         clazz = MakeArrayIfNecessary(clazz);
-        _exitTypeDescriptor = TypeDescriptor.TYPE;
+        exitTypeDescriptor = TypeDescriptor.Type;
         _type = clazz;
         return new TypedValue(clazz);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder("T(");
-        sb.Append(GetChild(0).ToStringAST());
+        sb.Append(GetChild(0).ToStringAst());
         for (var d = 0; d < _dimensions; d++)
         {
             sb.Append("[]");
@@ -70,7 +70,7 @@ public class TypeReference : SpelNode
 
     public override bool IsCompilable()
     {
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
@@ -81,8 +81,8 @@ public class TypeReference : SpelNode
         }
 
         gen.Emit(OpCodes.Ldtoken, _type);
-        gen.Emit(OpCodes.Call, _getTypeFromHandle);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        gen.Emit(OpCodes.Call, GetTypeFromHandle);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private Type MakeArrayIfNecessary(Type clazz)

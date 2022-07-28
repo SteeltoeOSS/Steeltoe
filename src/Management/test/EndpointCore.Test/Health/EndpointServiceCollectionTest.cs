@@ -57,10 +57,10 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
-        var contribs = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contribs);
-        var contribsList = contribs.ToList();
-        Assert.Single(contribsList);
+        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        Assert.NotNull(contributors);
+        var contributorList = contributors.ToList();
+        Assert.Single(contributorList);
     }
 
     [Fact]
@@ -87,10 +87,10 @@ public class EndpointServiceCollectionTest : BaseTest
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
-        var contribs = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contribs);
-        var contribsList = contribs.ToList();
-        Assert.Equal(3, contribsList.Count);
+        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        Assert.NotNull(contributors);
+        var contributorsList = contributors.ToList();
+        Assert.Equal(3, contributorsList.Count);
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);
     }
@@ -101,9 +101,9 @@ public class EndpointServiceCollectionTest : BaseTest
         var services = new ServiceCollection();
         EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
         var serviceProvider = services.BuildServiceProvider();
-        var contribs = serviceProvider.GetServices<IHealthContributor>();
-        Assert.NotNull(contribs);
-        var contribsList = contribs.ToList();
-        Assert.Single(contribsList);
+        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        Assert.NotNull(contributors);
+        var contributorsList = contributors.ToList();
+        Assert.Single(contributorsList);
     }
 }

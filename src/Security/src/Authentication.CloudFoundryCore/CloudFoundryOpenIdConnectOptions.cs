@@ -32,17 +32,17 @@ public class CloudFoundryOpenIdConnectOptions : OpenIdConnectOptions
     }
 
     /// <summary>
-    /// Gets or sets additional scopes beyond openid and profile when requesting tokens
+    /// Gets or sets additional scopes beyond openid and profile when requesting tokens.
     /// </summary>
     public string AdditionalScopes { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether to validate auth server certificate
+    /// Gets or sets a value indicating whether to validate auth server certificate.
     /// </summary>
     public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets the timeout (in ms) for calls to the auth server
+    /// Gets or sets the timeout (in ms) for calls to the auth server.
     /// </summary>
     public int Timeout { get; set; } = 100000;
 

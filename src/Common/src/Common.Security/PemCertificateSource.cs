@@ -54,38 +54,3 @@ public class PemCertificateSource : ICertificateSource
         return new PemCertificateProvider(certProvider, keyProvider);
     }
 }
-
-internal sealed class FileSource : FileConfigurationSource
-{
-    internal string BasePath { get; set; }
-
-    internal string Key { get; }
-
-    public FileSource(string key)
-    {
-        Key = key;
-    }
-
-    public override IConfigurationProvider Build(IConfigurationBuilder builder)
-    {
-        EnsureDefaults(builder);
-        return new FileProvider(this);
-    }
-}
-
-internal sealed class FileProvider : FileConfigurationProvider
-{
-    public FileProvider(FileConfigurationSource source)
-        : base(source)
-    {
-    }
-
-    public override void Load(Stream stream)
-    {
-        var source = Source as FileSource;
-        var key = source.Key;
-        using var reader = new StreamReader(stream);
-        var value = reader.ReadToEnd();
-        Data[key] = value;
-    }
-}

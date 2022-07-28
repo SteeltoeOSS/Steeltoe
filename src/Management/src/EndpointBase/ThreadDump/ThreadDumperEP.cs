@@ -17,37 +17,37 @@ using System.Threading.Tasks;
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
 /// <summary>
-/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads
+/// Thread dumper that uses the EventPipe to acquire the call stacks of all the running Threads.
 /// </summary>
-public class ThreadDumperEP : IThreadDumper
+public class ThreadDumperEp : IThreadDumper
 {
-    private static readonly StackTraceElement _unknownStackTraceElement = new ()
+    private static readonly StackTraceElement UnknownStackTraceElement = new ()
     {
         ClassName = "[UnknownClass]",
         MethodName = "[UnknownMethod]",
         IsNativeMethod = true
     };
 
-    private static readonly StackTraceElement _nativeStackTraceElement = new ()
+    private static readonly StackTraceElement NativeStackTraceElement = new ()
     {
         ClassName = "[NativeClasses]",
         MethodName = "[NativeMethods]",
         IsNativeMethod = true
     };
 
-    private readonly ILogger<ThreadDumperEP> _logger;
+    private readonly ILogger<ThreadDumperEp> _logger;
     private readonly IThreadDumpOptions _options;
 
-    public ThreadDumperEP(IThreadDumpOptions options, ILogger<ThreadDumperEP> logger = null)
+    public ThreadDumperEp(IThreadDumpOptions options, ILogger<ThreadDumperEp> logger = null)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
     }
 
     /// <summary>
-    /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace
+    /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace.
     /// </summary>
-    /// <returns>the list of threads with stack trace information</returns>
+    /// <returns>the list of threads with stack trace information.</returns>
     public List<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();
@@ -127,7 +127,7 @@ public class ThreadDumperEP : IThreadDumper
                     {
                         ThreadId = threadId,
                         ThreadName = $"Thread-{threadId}",
-                        ThreadState = TState.RUNNABLE,
+                        ThreadState = State.Runnable,
                         IsInNative = false,
                         IsSuspended = false,
                         LockedMonitors = new List<MonitorInfo>(),
@@ -160,20 +160,20 @@ public class ThreadDumperEP : IThreadDumper
     {
         if (frames.Count > 0)
         {
-            return frames[0] == _nativeStackTraceElement;
+            return frames[0] == NativeStackTraceElement;
         }
 
         return false;
     }
 
-    private TState GetThreadState(List<StackTraceElement> frames)
+    private State GetThreadState(List<StackTraceElement> frames)
     {
         if (IsThreadInNative(frames) && frames.Count > 1 && frames[1].MethodName.Contains("Wait", StringComparison.OrdinalIgnoreCase))
         {
-            return TState.WAITING;
+            return State.Waiting;
         }
 
-        return TState.RUNNABLE;
+        return State.Runnable;
     }
 
     private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource, SymbolReader symbolReader)
@@ -204,13 +204,13 @@ public class ThreadDumperEP : IThreadDumper
     {
         if (string.IsNullOrEmpty(frameName))
         {
-            return _unknownStackTraceElement;
+            return UnknownStackTraceElement;
         }
 
         if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase) ||
             frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
         {
-            return _nativeStackTraceElement;
+            return NativeStackTraceElement;
         }
 
         var result = new StackTraceElement

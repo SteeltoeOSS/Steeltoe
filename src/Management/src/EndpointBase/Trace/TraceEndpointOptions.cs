@@ -8,17 +8,17 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:trace";
-    private const int DEFAULT_CAPACITY = 100;
+    private const string ManagementInfoPrefix = "management:endpoints:trace";
+    private const int DefaultCapacity = 100;
 
     public TraceEndpointOptions()
     {
         Id = "trace";
-        Capacity = DEFAULT_CAPACITY;
+        Capacity = DefaultCapacity;
     }
 
     public TraceEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
@@ -27,7 +27,7 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 
         if (Capacity == -1)
         {
-            Capacity = DEFAULT_CAPACITY;
+            Capacity = DefaultCapacity;
         }
     }
 

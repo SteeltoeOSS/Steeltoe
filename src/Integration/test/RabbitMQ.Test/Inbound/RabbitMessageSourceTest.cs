@@ -42,18 +42,18 @@ public class RabbitMessageSourceTest
         var ccf = new CachingConnectionFactory(connectionFactory.Object);
         var source = new RabbitMessageSource(context, ccf, "foo") { RawMessageHeader = true };
         var received = source.Receive();
-        var rawMessage = received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AMQP_RAW_MESSAGE);
-        var sourceData = received.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SOURCE_DATA);
+        var rawMessage = received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage);
+        var sourceData = received.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SourceData);
         Assert.NotNull(rawMessage);
         Assert.Same(rawMessage, sourceData);
-        Assert.Equal("foo", received.Headers.Get<string>(RabbitMessageHeaders.CONSUMER_QUEUE));
+        Assert.Equal("foo", received.Headers.Get<string>(RabbitMessageHeaders.ConsumerQueue));
 
         // make sure channel is not cached
         var conn = ccf.CreateConnection();
         var notCached = conn.CreateChannel();
         connection.Verify(c => c.CreateModel(), Times.Exactly(2));
-        var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK);
-        callback.Acknowledge(Status.ACCEPT);
+        var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.AcknowledgmentCallback);
+        callback.Acknowledge(Status.Accept);
         channel.Verify(c => c.BasicAck(123ul, false));
         var cached = conn.CreateChannel(); // should have been "closed"
         connection.Verify(c => c.CreateModel(), Times.Exactly(2));
@@ -138,8 +138,8 @@ public class RabbitMessageSourceTest
         var source = new RabbitMessageSource(context, ccf, "foo");
         var received = source.Receive();
         connection.Verify(c => c.CreateModel());
-        var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.ACKNOWLEDGMENT_CALLBACK);
-        callback.Acknowledge(requeue ? Status.REQUEUE : Status.REJECT);
+        var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.AcknowledgmentCallback);
+        callback.Acknowledge(requeue ? Status.Requeue : Status.Reject);
 
         channel.Verify(c => c.BasicReject(123ul, requeue));
         connection.Verify(c => c.CreateModel());

@@ -7,7 +7,7 @@ namespace Steeltoe.Discovery.Consul.Registry;
 public interface IConsulServiceRegistrar : IServiceRegistrar
 {
     /// <summary>
-    /// Gets the registration that the registrar is to register with Consul
+    /// Gets the registration that the registrar is to register with Consul.
     /// </summary>
     IConsulRegistration Registration { get; }
 }

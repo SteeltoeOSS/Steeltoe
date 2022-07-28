@@ -14,7 +14,7 @@ public class RealLiteral : Literal
         : base(payload, startPos, endPos)
     {
         _value = new TypedValue(value);
-        _exitTypeDescriptor = TypeDescriptor.D;
+        exitTypeDescriptor = TypeDescriptor.D;
     }
 
     public override ITypedValue GetLiteralValue()
@@ -30,6 +30,6 @@ public class RealLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         gen.Emit(OpCodes.Ldc_R8, (double)_value.Value);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

@@ -41,7 +41,7 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
 
     public virtual string ComponentName { get; set; }
 
-    public int Order => AbstractOrdered.LOWEST_PRECEDENCE - 1;
+    public int Order => AbstractOrdered.LowestPrecedence - 1;
 
     public virtual void HandleMessage(IMessage message)
     {

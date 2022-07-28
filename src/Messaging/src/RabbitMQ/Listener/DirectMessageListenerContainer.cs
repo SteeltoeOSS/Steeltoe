@@ -27,24 +27,24 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 {
-    internal CountdownEvent _startedLatch = new (1);
+    internal CountdownEvent StartedLatch = new (1);
 
-    protected internal readonly List<SimpleConsumer> _consumers = new ();
-    protected internal readonly Dictionary<string, List<SimpleConsumer>> _consumersByQueue = new ();
-    protected internal readonly ActiveObjectCounter<SimpleConsumer> _cancellationLock = new ();
-    protected internal readonly List<SimpleConsumer> _consumersToRestart = new ();
-    protected const int START_WAIT_TIME = 60;
-    protected const int DEFAULT_MONITOR_INTERVAL = 10_000;
-    protected const int DEFAULT_ACK_TIMEOUT = 20_000;
+    protected internal readonly List<SimpleConsumer> Consumers = new ();
+    protected internal readonly Dictionary<string, List<SimpleConsumer>> ConsumersByQueue = new ();
+    protected internal readonly ActiveObjectCounter<SimpleConsumer> CancellationLock = new ();
+    protected internal readonly List<SimpleConsumer> ConsumersToRestart = new ();
+    protected const int StartWaitTime = 60;
+    protected const int DefaultMonitorInterval = 10_000;
+    protected const int DefaultAckTimeout = 20_000;
 
     private int _consumersPerQueue = 1;
-    private long _monitorInterval = DEFAULT_MONITOR_INTERVAL;
+    private long _monitorInterval = DefaultMonitorInterval;
     private volatile bool _started;
     private volatile bool _aborted;
     private volatile bool _hasStopped;
     private long _lastAlertAt;
     private Task _consumerMonitorTask;
-    private CancellationTokenSource _consumerMonitorCancelationToken;
+    private CancellationTokenSource _consumerMonitorCancellationToken;
 
     public DirectMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
         : this(null, null, name, loggerFactory)
@@ -106,7 +106,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     public virtual int MessagesPerAck { get; set; }
 
-    public virtual long AckTimeout { get; set; } = DEFAULT_ACK_TIMEOUT;
+    public virtual long AckTimeout { get; set; } = DefaultAckTimeout;
 
     public virtual long LastRestartAttempt { get; private set; }
 
@@ -132,7 +132,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to add queue names");
+            Logger?.LogError(e, "Failed to add queue names");
             throw;
         }
 
@@ -153,7 +153,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to add queues");
+            Logger?.LogError(e, "Failed to add queues");
             throw;
         }
 
@@ -228,10 +228,10 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         else
         {
             _started = true;
-            _startedLatch.Signal();
+            StartedLatch.Signal();
         }
 
-        _logger?.LogInformation("Container initialized for queues: {queues}", string.Join(',', queueNames));
+        Logger?.LogInformation("Container initialized for queues: {queues}", string.Join(',', queueNames));
     }
 
     protected virtual void DoRedeclareElementsIfNecessary()
@@ -248,12 +248,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (FatalListenerStartupException fe)
         {
-            _logger?.LogError(fe, "Fatal exception while reclare elements");
+            Logger?.LogError(fe, "Fatal exception while redeclare elements");
             throw;
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to redeclare elements");
+            Logger?.LogError(e, "Failed to redeclare elements");
         }
         finally
         {
@@ -269,13 +269,13 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         List<SimpleConsumer> canceledConsumers = null;
         var waitForConsumers = false;
 
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             if (_started || _aborted)
             {
                 // Copy in the same order to avoid ConcurrentModificationException during remove in the
                 // cancelConsumer().
-                canceledConsumers = new List<SimpleConsumer>(_consumers);
+                canceledConsumers = new List<SimpleConsumer>(Consumers);
                 ActualShutDown(canceledConsumers);
                 waitForConsumers = true;
             }
@@ -285,19 +285,19 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         {
             try
             {
-                if (_cancellationLock.Wait(TimeSpan.FromMilliseconds(ShutdownTimeout)))
+                if (CancellationLock.Wait(TimeSpan.FromMilliseconds(ShutdownTimeout)))
                 {
-                    _logger?.LogInformation("Successfully waited for consumers to finish.");
+                    Logger?.LogInformation("Successfully waited for consumers to finish.");
                 }
                 else
                 {
-                    _logger?.LogInformation("Consumers not finished.");
+                    Logger?.LogInformation("Consumers not finished.");
                     if (ForceCloseChannel)
                     {
                         canceledConsumers.ForEach(consumer =>
                         {
                             var eventMessage = $"Closing channel for unresponsive consumer: {consumer} ";
-                            _logger?.LogWarning(eventMessage);
+                            Logger?.LogWarning(eventMessage);
                             consumer.CancelConsumer(eventMessage);
                         });
                     }
@@ -306,11 +306,11 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             catch (Exception e)
             {
                 // Thread.currentThread().interrupt();
-                _logger?.LogWarning(e, "Interrupted waiting for consumers. Continuing with shutdown.");
+                Logger?.LogWarning(e, "Interrupted waiting for consumers. Continuing with shutdown.");
             }
             finally
             {
-                _startedLatch = new CountdownEvent(1);
+                StartedLatch = new CountdownEvent(1);
                 _started = false;
                 _aborted = false;
                 _hasStopped = true;
@@ -353,7 +353,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             var checkAdmin = RabbitAdmin;
             if (checkAdmin == null)
             {
-                checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, _loggerFactory?.CreateLogger<RabbitAdmin>());
+                checkAdmin = new RabbitAdmin(ApplicationContext, ConnectionFactory, LoggerFactory?.CreateLogger<RabbitAdmin>());
                 RabbitAdmin = checkAdmin;
             }
 
@@ -371,21 +371,21 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     private void ActualShutDown(List<SimpleConsumer> consumers)
     {
         // Assert.state(getTaskExecutor() != null, "Cannot shut down if not initialized");
-        _logger?.LogDebug("Shutting down");
+        Logger?.LogDebug("Shutting down");
         consumers.ForEach(CancelConsumer);
-        _consumers.Clear();
-        _consumersByQueue.Clear();
-        _logger?.LogDebug("All consumers canceled");
+        Consumers.Clear();
+        ConsumersByQueue.Clear();
+        Logger?.LogDebug("All consumers canceled");
         if (_consumerMonitorTask != null)
         {
-            _consumerMonitorCancelationToken.Cancel();
+            _consumerMonitorCancellationToken.Cancel();
             _consumerMonitorTask = null;
         }
     }
 
     private void ConsumeFromQueue(string queue)
     {
-        _consumersByQueue.TryGetValue(queue, out var list);
+        ConsumersByQueue.TryGetValue(queue, out var list);
 
         // Possible race with setConsumersPerQueue and the task launched by start()
         if (list == null || list.Count == 0)
@@ -401,7 +401,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (!IsActive)
         {
-            _logger?.LogDebug("Consume from queue {queueName} ignore, container stopping", queue);
+            Logger?.LogDebug("Consume from queue {queueName} ignore, container stopping", queue);
             return;
         }
 
@@ -419,8 +419,8 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         catch (Exception e)
         {
             // publishConsumerFailedEvent(e.getMessage(), false, e);
-            _logger?.LogError(e, "Exception while CreateConnection");
-            AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, _loggerFactory?.CreateLogger<SimpleConsumer>()));
+            Logger?.LogError(e, "Exception while CreateConnection");
+            AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, LoggerFactory?.CreateLogger<SimpleConsumer>()));
             throw;
 
             // throw e instanceof AmqpConnectException
@@ -436,21 +436,21 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
 
         var consumer = Consume(queue, connection);
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             if (consumer != null)
             {
-                _cancellationLock.Add(consumer);
-                _consumers.Add(consumer);
-                _consumersByQueue.TryGetValue(queue, out var list);
+                CancellationLock.Add(consumer);
+                Consumers.Add(consumer);
+                ConsumersByQueue.TryGetValue(queue, out var list);
                 if (list == null)
                 {
                     list = new List<SimpleConsumer>();
-                    _consumersByQueue.Add(queue, list);
+                    ConsumersByQueue.Add(queue, list);
                 }
 
                 list.Add(consumer);
-                _logger?.LogInformation("{consumer} started",  consumer);
+                Logger?.LogInformation("{consumer} started",  consumer);
 
                 // if (getApplicationEventPublisher() != null)
                 // {
@@ -468,7 +468,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         {
             channel = connection.CreateChannel(IsChannelTransacted);
             channel.BasicQos(0, (ushort)PrefetchCount, false);
-            consumer = new SimpleConsumer(this, connection, channel, queue, _loggerFactory?.CreateLogger<SimpleConsumer>());
+            consumer = new SimpleConsumer(this, connection, channel, queue, LoggerFactory?.CreateLogger<SimpleConsumer>());
             channel.QueueDeclarePassive(queue);
             consumer.ConsumerTag = channel.BasicConsume(
                 queue,
@@ -481,8 +481,8 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (Exception e)
         {
-            RabbitUtils.CloseChannel(channel, _logger);
-            RabbitUtils.CloseConnection(connection, _logger);
+            RabbitUtils.CloseChannel(channel, Logger);
+            RabbitUtils.CloseConnection(connection, Logger);
 
             consumer = HandleConsumeException(queue, consumer, e);
         }
@@ -494,11 +494,11 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         var consumer = consumerArg;
 
-        _logger?.LogWarning(e, $"basicConsume failed, scheduling consumer {consumer?.ToString() ?? $"for queue {queue}"} for restart");
+        Logger?.LogWarning(e, $"basicConsume failed, scheduling consumer {consumer?.ToString() ?? $"for queue {queue}"} for restart");
 
         if (consumer == null)
         {
-            AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, _loggerFactory?.CreateLogger<SimpleConsumer>()));
+            AddConsumerToRestart(new SimpleConsumer(this, null, null, queue, LoggerFactory?.CreateLogger<SimpleConsumer>()));
         }
         else
         {
@@ -511,12 +511,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     private void StartMonitor(long idleEventInterval, Dictionary<string, IQueue> namesToQueues)
     {
-        _consumerMonitorCancelationToken = new CancellationTokenSource();
+        _consumerMonitorCancellationToken = new CancellationTokenSource();
         _consumerMonitorTask = Task.Run(
             async () =>
             {
                 var shouldShutdown = false;
-                while (!_consumerMonitorCancelationToken.Token.IsCancellationRequested && !shouldShutdown)
+                while (!_consumerMonitorCancellationToken.Token.IsCancellationRequested && !shouldShutdown)
                 {
                     var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
                     CheckIdle(idleEventInterval, now);
@@ -524,10 +524,10 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
                     if (LastRestartAttempt + FailedDeclarationRetryInterval < now)
                     {
-                        lock (_consumersMonitor)
+                        lock (ConsumersMonitor)
                         {
-                            var restartableConsumers = new List<SimpleConsumer>(_consumersToRestart);
-                            _consumersToRestart.Clear();
+                            var restartableConsumers = new List<SimpleConsumer>(ConsumersToRestart);
+                            ConsumersToRestart.Clear();
                             if (_started)
                             {
                                 if (restartableConsumers.Count > 0)
@@ -546,13 +546,13 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                                 {
                                     foreach (var consumer in restartableConsumers)
                                     {
-                                        if (!_consumersByQueue.ContainsKey(consumer.Queue))
+                                        if (!ConsumersByQueue.ContainsKey(consumer.Queue))
                                         {
-                                            _logger?.LogDebug("Skipping restart of consumer {consumer} ", consumer);
+                                            Logger?.LogDebug("Skipping restart of consumer {consumer} ", consumer);
                                             continue;
                                         }
 
-                                        _logger?.LogDebug("Attempting to restart consumer {consumer}", consumer);
+                                        Logger?.LogDebug("Attempting to restart consumer {consumer}", consumer);
                                         if (!RestartConsumer(namesToQueues, restartableConsumers, consumer))
                                         {
                                             break;
@@ -573,10 +573,10 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     }
                     else
                     {
-                        await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancelationToken.Token);
+                        await Task.Delay(TimeSpan.FromMilliseconds(MonitorInterval), _consumerMonitorCancellationToken.Token);
                     }
                 }
-            }, _consumerMonitorCancelationToken.Token);
+            }, _consumerMonitorCancellationToken.Token);
     }
 
     private void CheckIdle(long idleEventInterval, long now)
@@ -592,7 +592,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         try
         {
-            _logger?.LogDebug("Canceling {consumer}", consumer);
+            Logger?.LogDebug("Canceling {consumer}", consumer);
             lock (consumer)
             {
                 consumer.Canceled = true;
@@ -604,16 +604,16 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, "Exception while sending delayed ack");
+                        Logger?.LogError(e, "Exception while sending delayed ack");
                     }
                 }
             }
 
-            RabbitUtils.Cancel(consumer.Model, consumer.ConsumerTag, _logger);
+            RabbitUtils.Cancel(consumer.Model, consumer.ConsumerTag, Logger);
         }
         finally
         {
-            _consumers.Remove(consumer);
+            Consumers.Remove(consumer);
             ConsumerRemoved(consumer);
         }
     }
@@ -621,9 +621,9 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     private void CheckConsumers(long now)
     {
         List<SimpleConsumer> consumersToCancel;
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
-            consumersToCancel = _consumers
+            consumersToCancel = Consumers
                 .Where(consumer =>
                 {
                     var open = consumer.Model.IsOpen && !consumer.AckFailed && !consumer.TargetChanged;
@@ -635,7 +635,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         }
                         catch (Exception e)
                         {
-                            _logger?.LogError(e, "Exception while sending delayed ack");
+                            Logger?.LogError(e, "Exception while sending delayed ack");
                         }
                     }
 
@@ -654,14 +654,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             {
                 try
                 {
-                    RabbitUtils.CloseMessageConsumer(consumer.Model, new List<string> { consumer.ConsumerTag }, IsChannelTransacted, _logger);
+                    RabbitUtils.CloseMessageConsumer(consumer.Model, new List<string> { consumer.ConsumerTag }, IsChannelTransacted, Logger);
                 }
                 catch (Exception e)
                 {
-                    _logger?.LogDebug(e, "Error closing consumer {consumer} ", consumer);
+                    Logger?.LogDebug(e, "Error closing consumer {consumer} ", consumer);
                 }
 
-                _logger?.LogError("Consumer {consumer} canceled - channel closed ", consumer);
+                Logger?.LogError("Consumer {consumer} canceled - channel closed ", consumer);
                 consumer.CancelConsumer($"Consumer {consumer} channel closed");
             });
     }
@@ -678,7 +678,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             {
                 namesToQueues.Remove(consumer.Queue);
                 namesToQueues[actualName] = queue;
-                consumer = new SimpleConsumer(this, null, null, actualName, _loggerFactory?.CreateLogger<SimpleConsumer>());
+                consumer = new SimpleConsumer(this, null, null, actualName, LoggerFactory?.CreateLogger<SimpleConsumer>());
             }
         }
 
@@ -689,33 +689,33 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Cannot connect to server");
+            Logger?.LogError(e, "Cannot connect to server");
 
             // if (e.getCause() instanceof AmqpApplicationContextClosedException) {
             //    this.logger.error("Application context is closed, terminating");
             //    this.taskScheduler.schedule(this::stop, new Date());
             // }
-            _consumersToRestart.AddRange(restartableConsumers);
-            _logger?.LogTrace("After restart exception, consumers to restart now: {consumersToRestart}", _consumersToRestart.Count);
+            ConsumersToRestart.AddRange(restartableConsumers);
+            Logger?.LogTrace("After restart exception, consumers to restart now: {consumersToRestart}", ConsumersToRestart.Count);
             return false;
         }
     }
 
     private void StartConsumers(string[] queueNames)
     {
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             if (_hasStopped)
             {
                 // container stopped before we got the lock
-                _logger?.LogDebug("Consumer start aborted - container stopping");
+                Logger?.LogDebug("Consumer start aborted - container stopping");
             }
             else
             {
                 var backOffExecution = RecoveryBackOff.Start();
                 while (!_started && IsRunning)
                 {
-                    _cancellationLock.Reset();
+                    CancellationLock.Reset();
                     try
                     {
                         foreach (var queue in queueNames)
@@ -730,14 +730,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         {
                             _aborted = true;
                             Shutdown();
-                            _logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
+                            Logger?.LogError(e, "Failed to start container - fatal error or backOffs exhausted");
                             Task.Run(Stop);
 
                             // this.taskScheduler.schedule(this::stop, new Date());
                             break;
                         }
 
-                        _logger?.LogError(e, "Error creating consumer; retrying in {nextBackOff}", nextBackOff);
+                        Logger?.LogError(e, "Error creating consumer; retrying in {nextBackOff}", nextBackOff);
                         DoShutdown();
                         try
                         {
@@ -745,7 +745,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                         }
                         catch (Exception e1)
                         {
-                            _logger?.LogError(e1, "Exception while in backoff, {nextBackOff}", nextBackOff);
+                            Logger?.LogError(e1, "Exception while in backoff, {nextBackOff}", nextBackOff);
 
                             // Thread.currentThread().interrupt();
                         }
@@ -755,7 +755,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                     }
 
                     _started = true;
-                    _startedLatch.Signal();
+                    StartedLatch.Signal();
                 }
             }
         }
@@ -767,14 +767,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
         {
             try
             {
-                if (!_startedLatch.Wait(TimeSpan.FromSeconds(START_WAIT_TIME)))
+                if (!StartedLatch.Wait(TimeSpan.FromSeconds(StartWaitTime)))
                 {
                     throw new InvalidOperationException("Container is not started - cannot adjust queues");
                 }
             }
             catch (Exception e)
             {
-                _logger?.LogError(e, "Exception thrown while waiting for container start");
+                Logger?.LogError(e, "Exception thrown while waiting for container start");
                 throw;
             }
         }
@@ -784,7 +784,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (IsRunning)
         {
-            lock (_consumersMonitor)
+            lock (ConsumersMonitor)
             {
                 CheckStartState();
                 var current = GetQueueNamesAsSet();
@@ -800,7 +800,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (IsRunning)
         {
-            lock (_consumersMonitor)
+            lock (ConsumersMonitor)
             {
                 CheckStartState();
                 var current = GetQueueNamesAsSet();
@@ -808,7 +808,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
                 {
                     if (current.Contains(name))
                     {
-                        _logger?.LogWarning("Queue " + name + " is already configured for this container: " + this + ", ignoring add");
+                        Logger?.LogWarning("Queue " + name + " is already configured for this container: " + this + ", ignoring add");
                     }
                     else
                     {
@@ -823,12 +823,12 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (IsRunning)
         {
-            lock (_consumersMonitor)
+            lock (ConsumersMonitor)
             {
                 CheckStartState();
                 foreach (var name in queueNames)
                 {
-                    if (name != null && _consumersByQueue.TryGetValue(name, out var consumers))
+                    if (name != null && ConsumersByQueue.TryGetValue(name, out var consumers))
                     {
                         foreach (var consumer in consumers)
                         {
@@ -842,17 +842,17 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
     private void AdjustConsumers(int newCount)
     {
-        lock (_consumersMonitor)
+        lock (ConsumersMonitor)
         {
             CheckStartState();
-            _consumersToRestart.Clear();
+            ConsumersToRestart.Clear();
             foreach (var queue in GetQueueNames())
             {
-                _consumersByQueue.TryGetValue(queue, out var consumers);
+                ConsumersByQueue.TryGetValue(queue, out var consumers);
                 while (consumers == null || consumers.Count < newCount)
                 {
                     DoConsumeFromQueue(queue);
-                    _consumersByQueue.TryGetValue(queue, out consumers);
+                    ConsumersByQueue.TryGetValue(queue, out consumers);
                 }
 
                 if (consumers.Count > newCount)
@@ -880,8 +880,8 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
     {
         if (_started)
         {
-            _consumersToRestart.Add(consumer);
-            _logger?.LogTrace("Consumers to restart now: {count}", _consumersToRestart.Count);
+            ConsumersToRestart.Add(consumer);
+            Logger?.LogTrace("Consumers to restart now: {count}", ConsumersToRestart.Count);
         }
     }
 
@@ -1021,14 +1021,14 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
 
         internal void CancelConsumer(string eventMessage)
         {
-            lock (_container._consumersMonitor)
+            lock (_container.ConsumersMonitor)
             {
-                if (_container._consumersByQueue.TryGetValue(Queue, out var list))
+                if (_container.ConsumersByQueue.TryGetValue(Queue, out var list))
                 {
                     list.Remove(this);
                 }
 
-                _container._consumers.Remove(this);
+                _container.Consumers.Remove(this);
                 _container.AddConsumerToRestart(this);
             }
 
@@ -1068,7 +1068,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             TransactionTemplate.Execute<object>(_ =>
             {
                 var resourceHolder = ConnectionFactoryUtils.BindResourceToTransaction(
-                    new RabbitResourceHolder(Model, false, _container._loggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);
+                    new RabbitResourceHolder(Model, false, _container.LoggerFactory?.CreateLogger<RabbitResourceHolder>()), ConnectionFactory, true);
                 if (resourceHolder != null)
                 {
                     resourceHolder.AddDeliveryTag(Model, deliveryTag);
@@ -1226,7 +1226,7 @@ public class DirectMessageListenerContainer : AbstractMessageListenerContainer
             RabbitUtils.SetPhysicalCloseRequired(Model, true);
             RabbitUtils.CloseChannel(Model);
             RabbitUtils.CloseConnection(_connection);
-            _container._cancellationLock.Release(this);
+            _container.CancellationLock.Release(this);
             _container.ConsumerRemoved(this);
         }
     }

@@ -44,6 +44,6 @@ public class OrderComparer : IComparer<IOrdered>
             return o1.Order;
         }
 
-        return AbstractOrdered.LOWEST_PRECEDENCE;
+        return AbstractOrdered.LowestPrecedence;
     }
 }

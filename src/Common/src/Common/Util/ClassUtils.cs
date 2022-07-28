@@ -75,8 +75,8 @@ public static class ClassUtils
         var current = method.DeclaringType;
         while (current != null && current != typeof(object))
         {
-            var ifcs = current.GetInterfaces();
-            foreach (var ifc in ifcs)
+            var interfaces = current.GetInterfaces();
+            foreach (var ifc in interfaces)
             {
                 try
                 {

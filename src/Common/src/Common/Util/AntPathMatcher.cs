@@ -12,13 +12,13 @@ namespace Steeltoe.Common.Util;
 
 public class AntPathMatcher : IPathMatcher
 {
-    public const string DEFAULT_PATH_SEPARATOR = "/";
+    public const string DefaultPathSeparator = "/";
 
-    private const int CACHE_TURNOFF_THRESHOLD = 65536;
+    private const int CacheTurnoffThreshold = 65536;
 
-    private static readonly Regex VARIABLE_PATTERN = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
+    private static readonly Regex VariablePattern = new ("\\{[^/]+?\\}", RegexOptions.Compiled);
 
-    private static readonly char[] WILDCARD_CHARS = { '*', '?', '{' };
+    private static readonly char[] WildcardChars = { '*', '?', '{' };
 
     private readonly ConcurrentDictionary<string, string[]> _tokenizedPatternCache = new ();
 
@@ -30,8 +30,8 @@ public class AntPathMatcher : IPathMatcher
 
     public AntPathMatcher()
     {
-        _pathSeparator = DEFAULT_PATH_SEPARATOR;
-        _pathSeparatorPatternCache = new PathSeparatorPatternCache(DEFAULT_PATH_SEPARATOR);
+        _pathSeparator = DefaultPathSeparator;
+        _pathSeparatorPatternCache = new PathSeparatorPatternCache(DefaultPathSeparator);
     }
 
     public AntPathMatcher(string pathSeparator)
@@ -54,7 +54,7 @@ public class AntPathMatcher : IPathMatcher
 
         set
         {
-            _pathSeparator = value ?? DEFAULT_PATH_SEPARATOR;
+            _pathSeparator = value ?? DefaultPathSeparator;
             _pathSeparatorPatternCache = new PathSeparatorPatternCache(_pathSeparator);
         }
     }
@@ -214,41 +214,41 @@ public class AntPathMatcher : IPathMatcher
             return false;
         }
 
-        var pattDirs = TokenizePattern(pattern);
-        if (fullMatch && CaseSensitive && !IsPotentialMatch(path, pattDirs))
+        var patternDirs = TokenizePattern(pattern);
+        if (fullMatch && CaseSensitive && !IsPotentialMatch(path, patternDirs))
         {
             return false;
         }
 
         var pathDirs = TokenizePath(path);
 
-        var pattIdxStart = 0;
-        var pattIdxEnd = pattDirs.Length - 1;
+        var patternIdxStart = 0;
+        var patternIdxEnd = patternDirs.Length - 1;
         var pathIdxStart = 0;
         var pathIdxEnd = pathDirs.Length - 1;
 
         // Match all elements up to the first **
-        while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd)
+        while (patternIdxStart <= patternIdxEnd && pathIdxStart <= pathIdxEnd)
         {
-            var pattDir = pattDirs[pattIdxStart];
-            if ("**".Equals(pattDir))
+            var patternDir = patternDirs[patternIdxStart];
+            if ("**".Equals(patternDir))
             {
                 break;
             }
 
-            if (!MatchStrings(pattDir, pathDirs[pathIdxStart], uriTemplateVariables))
+            if (!MatchStrings(patternDir, pathDirs[pathIdxStart], uriTemplateVariables))
             {
                 return false;
             }
 
-            pattIdxStart++;
+            patternIdxStart++;
             pathIdxStart++;
         }
 
         if (pathIdxStart > pathIdxEnd)
         {
             // Path is exhausted, only match if rest of pattern is * or **'s
-            if (pattIdxStart > pattIdxEnd)
+            if (patternIdxStart > patternIdxEnd)
             {
                 return pattern.EndsWith(_pathSeparator) == path.EndsWith(_pathSeparator);
             }
@@ -258,14 +258,14 @@ public class AntPathMatcher : IPathMatcher
                 return true;
             }
 
-            if (pattIdxStart == pattIdxEnd && pattDirs[pattIdxStart].Equals("*") && path.EndsWith(_pathSeparator))
+            if (patternIdxStart == patternIdxEnd && patternDirs[patternIdxStart].Equals("*") && path.EndsWith(_pathSeparator))
             {
                 return true;
             }
 
-            for (var i = pattIdxStart; i <= pattIdxEnd; i++)
+            for (var i = patternIdxStart; i <= patternIdxEnd; i++)
             {
-                if (!pattDirs[i].Equals("**"))
+                if (!patternDirs[i].Equals("**"))
                 {
                     return false;
                 }
@@ -273,41 +273,41 @@ public class AntPathMatcher : IPathMatcher
 
             return true;
         }
-        else if (pattIdxStart > pattIdxEnd)
+        else if (patternIdxStart > patternIdxEnd)
         {
             // String not exhausted, but pattern is. Failure.
             return false;
         }
-        else if (!fullMatch && "**".Equals(pattDirs[pattIdxStart]))
+        else if (!fullMatch && "**".Equals(patternDirs[patternIdxStart]))
         {
             // Path start definitely matches due to "**" part in pattern.
             return true;
         }
 
         // up to last '**'
-        while (pattIdxStart <= pattIdxEnd && pathIdxStart <= pathIdxEnd)
+        while (patternIdxStart <= patternIdxEnd && pathIdxStart <= pathIdxEnd)
         {
-            var pattDir = pattDirs[pattIdxEnd];
-            if (pattDir.Equals("**"))
+            var patternDir = patternDirs[patternIdxEnd];
+            if (patternDir.Equals("**"))
             {
                 break;
             }
 
-            if (!MatchStrings(pattDir, pathDirs[pathIdxEnd], uriTemplateVariables))
+            if (!MatchStrings(patternDir, pathDirs[pathIdxEnd], uriTemplateVariables))
             {
                 return false;
             }
 
-            pattIdxEnd--;
+            patternIdxEnd--;
             pathIdxEnd--;
         }
 
         if (pathIdxStart > pathIdxEnd)
         {
             // String is exhausted
-            for (var i = pattIdxStart; i <= pattIdxEnd; i++)
+            for (var i = patternIdxStart; i <= patternIdxEnd; i++)
             {
-                if (!pattDirs[i].Equals("**"))
+                if (!patternDirs[i].Equals("**"))
                 {
                     return false;
                 }
@@ -316,28 +316,28 @@ public class AntPathMatcher : IPathMatcher
             return true;
         }
 
-        while (pattIdxStart != pattIdxEnd && pathIdxStart <= pathIdxEnd)
+        while (patternIdxStart != patternIdxEnd && pathIdxStart <= pathIdxEnd)
         {
             var patIdxTmp = -1;
-            for (var i = pattIdxStart + 1; i <= pattIdxEnd; i++)
+            for (var i = patternIdxStart + 1; i <= patternIdxEnd; i++)
             {
-                if (pattDirs[i].Equals("**"))
+                if (patternDirs[i].Equals("**"))
                 {
                     patIdxTmp = i;
                     break;
                 }
             }
 
-            if (patIdxTmp == pattIdxStart + 1)
+            if (patIdxTmp == patternIdxStart + 1)
             {
                 // '**/**' situation, so skip one
-                pattIdxStart++;
+                patternIdxStart++;
                 continue;
             }
 
             // Find the pattern between padIdxStart & padIdxTmp in str between
             // strIdxStart & strIdxEnd
-            var patLength = patIdxTmp - pattIdxStart - 1;
+            var patLength = patIdxTmp - patternIdxStart - 1;
             var strLength = pathIdxEnd - pathIdxStart + 1;
             var foundIdx = -1;
 
@@ -346,7 +346,7 @@ public class AntPathMatcher : IPathMatcher
                 var failedMatch = false;
                 for (var j = 0; j < patLength; j++)
                 {
-                    var subPat = pattDirs[pattIdxStart + j + 1];
+                    var subPat = patternDirs[patternIdxStart + j + 1];
                     var subStr = pathDirs[pathIdxStart + i + j];
                     if (!MatchStrings(subPat, subStr, uriTemplateVariables))
                     {
@@ -369,13 +369,13 @@ public class AntPathMatcher : IPathMatcher
                 return false;
             }
 
-            pattIdxStart = patIdxTmp;
+            patternIdxStart = patIdxTmp;
             pathIdxStart = foundIdx + patLength;
         }
 
-        for (var i = pattIdxStart; i <= pattIdxEnd; i++)
+        for (var i = patternIdxStart; i <= patternIdxEnd; i++)
         {
-            if (!pattDirs[i].Equals("**"))
+            if (!patternDirs[i].Equals("**"))
             {
                 return false;
             }
@@ -395,7 +395,7 @@ public class AntPathMatcher : IPathMatcher
         if (tokenized == null)
         {
             tokenized = TokenizePath(pattern);
-            if (CachePatterns == null && _tokenizedPatternCache.Count >= CACHE_TURNOFF_THRESHOLD)
+            if (CachePatterns == null && _tokenizedPatternCache.Count >= CacheTurnoffThreshold)
             {
                 // Try to adapt to the runtime situation that we're encountering:
                 // There are obviously too many different patterns coming in here...
@@ -443,7 +443,7 @@ public class AntPathMatcher : IPathMatcher
         if (matcher == null)
         {
             matcher = new AntPathStringMatcher(pattern, CaseSensitive);
-            if (CachePatterns == null && _stringMatcherCache.Count >= CACHE_TURNOFF_THRESHOLD)
+            if (CachePatterns == null && _stringMatcherCache.Count >= CacheTurnoffThreshold)
             {
                 // Try to adapt to the runtime situation that we're encountering:
                 // There are obviously too many different patterns coming in here...
@@ -485,19 +485,19 @@ public class AntPathMatcher : IPathMatcher
         return GetStringMatcher(pattern).MatchStrings(str, uriTemplateVariables);
     }
 
-    private bool IsPotentialMatch(string path, string[] pattDirs)
+    private bool IsPotentialMatch(string path, string[] patternDirs)
     {
         if (!TrimTokens)
         {
             var pos = 0;
-            foreach (var pattDir in pattDirs)
+            foreach (var patternDir in patternDirs)
             {
                 var skipped = SkipSeparator(path, pos, _pathSeparator);
                 pos += skipped;
-                skipped = SkipSegment(path, pos, pattDir);
-                if (skipped < pattDir.Length)
+                skipped = SkipSegment(path, pos, patternDir);
+                if (skipped < patternDir.Length)
                 {
-                    return skipped > 0 || (pattDir.Length > 0 && IsWildcardChar(pattDir[0]));
+                    return skipped > 0 || (patternDir.Length > 0 && IsWildcardChar(patternDir[0]));
                 }
 
                 pos += skipped;
@@ -517,13 +517,13 @@ public class AntPathMatcher : IPathMatcher
                 return skipped;
             }
 
-            var currPos = pos + skipped;
-            if (currPos >= path.Length)
+            var currentPos = pos + skipped;
+            if (currentPos >= path.Length)
             {
                 return 0;
             }
 
-            if (c == path[currPos])
+            if (c == path[currentPos])
             {
                 skipped++;
             }
@@ -547,7 +547,7 @@ public class AntPathMatcher : IPathMatcher
 
     private bool IsWildcardChar(char c)
     {
-        foreach (var candidate in WILDCARD_CHARS)
+        foreach (var candidate in WildcardChars)
         {
             if (c == candidate)
             {
@@ -722,7 +722,7 @@ public class AntPathMatcher : IPathMatcher
             {
                 get
                 {
-                    _length ??= _pattern != null ? VARIABLE_PATTERN.Replace(_pattern, "#").Length : 0;
+                    _length ??= _pattern != null ? VariablePattern.Replace(_pattern, "#").Length : 0;
 
                     return _length.Value;
                 }
@@ -732,8 +732,8 @@ public class AntPathMatcher : IPathMatcher
 
     protected class AntPathStringMatcher
     {
-        private const string DEFAULT_VARIABLE_PATTERN = "(.*)";
-        private static readonly Regex GLOB_PATTERN = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
+        private const string DefaultVariablePattern = "(.*)";
+        private static readonly Regex GlobPattern = new ("\\?|\\*|\\{((?:\\{[^/]+?\\}|[^/{}]|\\\\[{}])+?)\\}", RegexOptions.Compiled);
         private readonly List<string> _variableNames = new ();
         private readonly Regex _pattern;
 
@@ -745,7 +745,7 @@ public class AntPathMatcher : IPathMatcher
         public AntPathStringMatcher(string pattern, bool caseSensitive)
         {
             var patternBuilder = new StringBuilder();
-            var matcher = GLOB_PATTERN.Match(pattern);
+            var matcher = GlobPattern.Match(pattern);
             var end = 0;
             while (matcher.Success)
             {
@@ -764,7 +764,7 @@ public class AntPathMatcher : IPathMatcher
                     var colonIdx = match.IndexOf(':');
                     if (colonIdx == -1)
                     {
-                        patternBuilder.Append(DEFAULT_VARIABLE_PATTERN);
+                        patternBuilder.Append(DefaultVariablePattern);
                         var group = matcher.Groups[1];
                         _variableNames.Add(group.Value);
                     }

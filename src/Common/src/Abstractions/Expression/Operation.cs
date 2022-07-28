@@ -6,10 +6,10 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public enum Operation
 {
-    ADD,
-    SUBTRACT,
-    DIVIDE,
-    MULTIPLY,
-    MODULUS,
-    POWER
+    Add,
+    Subtract,
+    Divide,
+    Multiply,
+    Modulus,
+    Power
 }

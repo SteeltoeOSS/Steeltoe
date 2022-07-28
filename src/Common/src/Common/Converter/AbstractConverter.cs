@@ -7,22 +7,22 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Common.Converter;
 
-public abstract class AbstractConverter<S, T> : AbstractGenericConditionalConverter, IConverter<S, T>
+public abstract class AbstractConverter<TSource, TTarget> : AbstractGenericConditionalConverter, IConverter<TSource, TTarget>
 {
     protected AbstractConverter()
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(S), typeof(T)) })
+        : base(new HashSet<(Type Source, Type Target)> { (typeof(TSource), typeof(TTarget)) })
     {
     }
 
-    public override bool Matches(Type sourceType, Type targetType) => typeof(T) == targetType;
+    public override bool Matches(Type sourceType, Type targetType) => typeof(TTarget) == targetType;
 
-    public abstract T Convert(S source);
+    public abstract TTarget Convert(TSource source);
 
     public override object Convert(object source, Type sourceType, Type targetType)
         => source switch
         {
             null => null,
-            not S => throw new ArgumentException("'source' type invalid"),
-            _ => Convert((S)source)
+            not TSource => throw new ArgumentException("'source' type invalid"),
+            _ => Convert((TSource)source)
         };
 }

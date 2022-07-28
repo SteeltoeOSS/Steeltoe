@@ -25,7 +25,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class CloudFoundryHostBuilderExtensionsTest
         var instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
     [Fact]
@@ -52,10 +52,9 @@ public class CloudFoundryHostBuilderExtensionsTest
         var host = hostbuilder.Build();
 
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(cfg.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void WebApplicationAddCloudFoundryConfiguration_Adds()
     {
@@ -64,7 +63,6 @@ public class CloudFoundryHostBuilderExtensionsTest
         var host = hostbuilder.Build();
 
         var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
-        Assert.Contains(config.Providers, ctype => ctype is CloudFoundryConfigurationProvider);
+        Assert.Contains(config.Providers, provider => provider is CloudFoundryConfigurationProvider);
     }
-#endif
 }

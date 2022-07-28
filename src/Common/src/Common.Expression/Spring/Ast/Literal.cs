@@ -24,14 +24,14 @@ public abstract class Literal : SpelNode
             var value = int.Parse(numberToken, radix);
             if (radix == NumberStyles.HexNumber && value < 0)
             {
-                throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NOT_AN_INTEGER, numberToken));
+                throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NotAnInteger, numberToken));
             }
 
             return new IntLiteral(numberToken, startPos, endPos, value);
         }
         catch (FormatException ex)
         {
-            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NOT_AN_INTEGER, numberToken));
+            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NotAnInteger, numberToken));
         }
     }
 
@@ -42,14 +42,14 @@ public abstract class Literal : SpelNode
             var value = long.Parse(numberToken, radix);
             if (radix == NumberStyles.HexNumber && value < 0)
             {
-                throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NOT_A_LONG, numberToken));
+                throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NotALong, numberToken));
             }
 
             return new LongLiteral(numberToken, startPos, endPos, value);
         }
         catch (FormatException ex)
         {
-            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NOT_A_LONG, numberToken));
+            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NotALong, numberToken));
         }
     }
 
@@ -71,7 +71,7 @@ public abstract class Literal : SpelNode
         }
         catch (FormatException ex)
         {
-            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NOT_A_REAL, numberToken));
+            throw new InternalParseException(new SpelParseException(startPos, ex, SpelMessage.NotAReal, numberToken));
         }
     }
 
@@ -98,7 +98,7 @@ public abstract class Literal : SpelNode
         return GetLiteralValue().Value.ToString();
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         return ToString();
     }

@@ -16,7 +16,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class CloudFoundryExtensionsTest
 {
-    private readonly string _vcap_application = @"
+    private readonly string _vcapApplication = @"
             {
                 ""cf_api"": ""https://api.system.testcloud.com"",
                 ""limits"": { ""fds"": 16384, ""mem"": 512, ""disk"": 1024 },
@@ -32,7 +32,7 @@ public class CloudFoundryExtensionsTest
                 ""application_version"": ""d2911a1c-c81a-47aa-be81-d820a6700d2b""
             }";
 
-    private readonly string _vcap_services = @"
+    private readonly string _vcapServices = @"
             {
                 ""user-provided"": [{
                     ""credentials"": {
@@ -97,8 +97,8 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcapServices);
 
         var builder = GetHostBuilder<TestServerStartup>();
         using (var server = new TestServer(builder))
@@ -142,8 +142,8 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOpenId_AddsIntoPipeline_UsesSSOInfo()
     {
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcap_application);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcapServices);
         Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
         Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
 

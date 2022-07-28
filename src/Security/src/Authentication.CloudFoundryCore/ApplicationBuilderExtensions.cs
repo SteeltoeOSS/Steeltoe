@@ -12,9 +12,9 @@ namespace Steeltoe.Security.Authentication.CloudFoundry;
 public static class ApplicationBuilderExtensions
 {
     /// <summary>
-    /// Enable certificate rotation and forwarding
+    /// Enable certificate rotation and forwarding.
     /// </summary>
-    /// <param name="app">The <see cref="IApplicationBuilder"/></param>
+    /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
     [Obsolete("Certificate rotation should be activated by CertificateRotationService and UseCertificateForwarding can be called directly instead of using this method.")]
     public static IApplicationBuilder UseCloudFoundryContainerIdentity(this IApplicationBuilder app)
     {
@@ -30,10 +30,10 @@ public static class ApplicationBuilderExtensions
 
     /// <summary>
     /// Enable identity certificate rotation, certificate and header forwarding, authentication and authorization
-    /// Default ForwardedHeadersOptions only includes <see cref="ForwardedHeaders.XForwardedProto"/>
+    /// Default ForwardedHeadersOptions only includes <see cref="ForwardedHeaders.XForwardedProto"/>.
     /// </summary>
-    /// <param name="app">The <see cref="IApplicationBuilder"/></param>
-    /// <param name="forwardedHeaders">Custom header forwarding policy</param>
+    /// <param name="app">The <see cref="IApplicationBuilder"/>.</param>
+    /// <param name="forwardedHeaders">Custom header forwarding policy.</param>
     public static IApplicationBuilder UseCloudFoundryCertificateAuth(this IApplicationBuilder app, ForwardedHeadersOptions forwardedHeaders = null)
     {
         app.UseForwardedHeaders(forwardedHeaders ?? new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.XForwardedProto });

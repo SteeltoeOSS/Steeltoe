@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Redis.Test;
 
 public static class RedisCacheTestHelpers
 {
-    public static string SingleServerVCAP = @"
+    public static string SingleServerVcap = @"
             {
                 ""p-redis"": [{
                         ""credentials"": {
@@ -26,7 +26,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static string SingleServerEnterpriseVCAP = @"
+    public static string SingleServerEnterpriseVcap = @"
             {
                 ""redislabs"": [{
                     ""label"": ""redislabs"",
@@ -53,7 +53,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static string SingleServerVCAP_AzureBroker = @"
+    public static string SingleServerVcapAzureBroker = @"
             {
                 ""azure-rediscache"": [{
                     ""name"": ""azure-redis"",
@@ -79,7 +79,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static string SingleServerVCAP_AzureBrokerSecure = @"
+    public static string SingleServerVcapAzureBrokerSecure = @"
             {
                 ""azure-rediscache"": [{
                     ""name"": ""redis"",
@@ -105,7 +105,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static string TwoServerVCAP = @"
+    public static string TwoServerVcap = @"
             {
                 ""p-redis"": [{
                     ""credentials"": {

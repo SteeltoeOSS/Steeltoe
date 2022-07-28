@@ -21,7 +21,7 @@ public static class CertificateAuthenticationBuilderExtensions
     /// Adds certificate authentication.
     /// </summary>
     /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-    /// <param name="authenticationScheme">Scheme identifier</param>
+    /// <param name="authenticationScheme">Scheme identifier.</param>
     public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, string authenticationScheme)
         => builder.AddMutualTls(authenticationScheme, configureOptions: null);
 
@@ -29,7 +29,7 @@ public static class CertificateAuthenticationBuilderExtensions
     /// Adds certificate authentication.
     /// </summary>
     /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-    /// <param name="configureOptions">Additional options configuration</param>
+    /// <param name="configureOptions">Additional options configuration.</param>
     public static AuthenticationBuilder AddMutualTls(this AuthenticationBuilder builder, Action<MutualTlsAuthenticationOptions> configureOptions)
         => builder.AddMutualTls(CertificateAuthenticationDefaults.AuthenticationScheme, configureOptions);
 
@@ -37,8 +37,8 @@ public static class CertificateAuthenticationBuilderExtensions
     /// Adds certificate authentication.
     /// </summary>
     /// <param name="builder">The <see cref="AuthenticationBuilder"/>.</param>
-    /// <param name="authenticationScheme">Scheme identifier</param>
-    /// <param name="configureOptions">Additional options configuration</param>
+    /// <param name="authenticationScheme">Scheme identifier.</param>
+    /// <param name="configureOptions">Additional options configuration.</param>
     public static AuthenticationBuilder AddMutualTls(
         this AuthenticationBuilder builder,
         string authenticationScheme,

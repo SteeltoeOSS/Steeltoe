@@ -20,11 +20,11 @@ public class HystrixRequestEventsStream
         _readOnlyRequestEvents = _writeOnlyRequestEventsSubject.AsObservable();
     }
 
-    private static readonly HystrixRequestEventsStream INSTANCE = new ();
+    private static readonly HystrixRequestEventsStream Instance = new ();
 
     public static HystrixRequestEventsStream GetInstance()
     {
-        return INSTANCE;
+        return Instance;
     }
 
     public void Shutdown()

@@ -29,8 +29,8 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
     {
         var result = RabbitMessageBuilder.WithPayload("Response")
             .SetHeader("foo", "bar")
-            .SetHeader(RabbitMessageHeaders.TYPE, "msg_type")
-            .SetHeader(RabbitMessageHeaders.REPLY_TO, "reply")
+            .SetHeader(RabbitMessageHeaders.Type, "msg_type")
+            .SetHeader(RabbitMessageHeaders.ReplyTo, "reply")
             .Build();
         var session = new Mock<RC.IModel>();
         var listener = GetSimpleInstance(nameof(SampleBean.Echo), typeof(IMessage<string>));
@@ -164,7 +164,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageObjectType), typeof(IMessage<object>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessage(message, mockChannel.Object);
         Assert.IsType<string>(_sample.Payload);
     }
@@ -178,7 +178,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageFooType), typeof(IMessage<Foo>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessage(message, mockChannel.Object);
         Assert.IsType<Foo>(_sample.Payload);
     }
@@ -192,7 +192,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetSimpleInstance(nameof(SampleBean.WithNonGenericMessage), typeof(IMessage));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessage(message, mockChannel.Object);
         Assert.IsType<string>(_sample.Payload);
     }
@@ -206,7 +206,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetSimpleInstance(nameof(SampleBean.WithGenericMessageDictionaryType), typeof(IMessage<Dictionary<string, string>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessage(message, mockChannel.Object);
         Assert.IsType<Dictionary<string, string>>(_sample.Payload);
     }
@@ -220,7 +220,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetBatchInstance(nameof(SampleBean.WithMessageBatch), typeof(List<IMessage<byte[]>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
         Assert.IsType<string>(_sample.BatchPayloads[0]);
     }
@@ -234,7 +234,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetBatchInstance(nameof(SampleBean.WithTypedMessageBatch), typeof(List<IMessage<Foo>>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
         Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
@@ -248,7 +248,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         var listener = GetBatchInstance(nameof(SampleBean.WithFooBatch), typeof(List<Foo>));
         listener.MessageConverter = new RabbitMQ.Support.Converter.JsonMessageConverter();
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        accessor.ContentType = MimeTypeUtils.APPLICATION_JSON_VALUE;
+        accessor.ContentType = MimeTypeUtils.ApplicationJsonValue;
         listener.OnMessageBatch(new List<IMessage> { message }, mockChannel.Object);
         Assert.IsType<Foo>(_sample.BatchPayloads[0]);
     }
@@ -317,7 +317,7 @@ public class MessagingMessageListenerAdapterTest : AbstractTest
         public IMessage<string> Echo(IMessage<string> input)
         {
             return (IMessage<string>)RabbitMessageBuilder.WithPayload(input.Payload)
-                .SetHeader(RabbitMessageHeaders.TYPE, "reply")
+                .SetHeader(RabbitMessageHeaders.Type, "reply")
                 .Build();
         }
 

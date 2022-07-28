@@ -17,8 +17,8 @@ public interface IBinderFactory // : IDisposable
     /// caching is a requirement, and implementations must return the same instance on
     /// subsequent invocations with the same arguments.
     /// </summary>
-    /// <param name="name">the name of the binder in configuration</param>
-    /// <returns>the binder</returns>
+    /// <param name="name">the name of the binder in configuration.</param>
+    /// <returns>the binder.</returns>
     IBinder GetBinder(string name);
 
     /// <summary>
@@ -26,8 +26,8 @@ public interface IBinderFactory // : IDisposable
     /// caching is a requirement, and implementations must return the same instance on
     /// subsequent invocations with the same arguments.
     /// </summary>
-    /// <param name="name">the name of the binder in configuration</param>
-    /// <param name="bindableType">the binding target type</param>
-    /// <returns>the binder</returns>
+    /// <param name="name">the name of the binder in configuration.</param>
+    /// <param name="bindableType">the binding target type.</param>
+    /// <returns>the binder.</returns>
     IBinder GetBinder(string name, Type bindableType);
 }

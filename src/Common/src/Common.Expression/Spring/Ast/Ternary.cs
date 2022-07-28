@@ -19,27 +19,27 @@ public class Ternary : SpelNode
     {
         try
         {
-            var value = _children[0].GetValue<bool>(state);
-            var result = _children[value ? 1 : 2].GetValueInternal(state);
+            var value = children[0].GetValue<bool>(state);
+            var result = children[value ? 1 : 2].GetValueInternal(state);
             ComputeExitTypeDescriptor();
             return result;
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(GetChild(0).StartPosition, ex, SpelMessage.TYPE_CONVERSION_ERROR, "null", "System.Boolean");
+            throw new SpelEvaluationException(GetChild(0).StartPosition, ex, SpelMessage.TypeConversionError, "null", "System.Boolean");
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"{GetChild(0).ToStringAST()} ? {GetChild(1).ToStringAST()} : {GetChild(2).ToStringAST()}";
+        return $"{GetChild(0).ToStringAst()} ? {GetChild(1).ToStringAst()} : {GetChild(2).ToStringAst()}";
     }
 
     public override bool IsCompilable()
     {
-        var condition = _children[0];
-        var left = _children[1];
-        var right = _children[2];
+        var condition = children[0];
+        var left = children[1];
+        var right = children[2];
         return condition.IsCompilable() && left.IsCompilable() && right.IsCompilable() &&
                CodeFlow.IsBooleanCompatible(condition.ExitDescriptor) &&
                left.ExitDescriptor != null && right.ExitDescriptor != null;
@@ -51,7 +51,7 @@ public class Ternary : SpelNode
         ComputeExitTypeDescriptor();
 
         cf.EnterCompilationScope();
-        _children[0].GenerateCode(gen, cf);
+        children[0].GenerateCode(gen, cf);
         var lastDesc = cf.LastDescriptor() ?? throw new InvalidOperationException("No last descriptor");
 
         if (!CodeFlow.IsValueType(lastDesc))
@@ -66,8 +66,8 @@ public class Ternary : SpelNode
 
         gen.Emit(OpCodes.Brfalse, elseTarget);
         cf.EnterCompilationScope();
-        _children[1].GenerateCode(gen, cf);
-        if (!CodeFlow.IsValueType(_exitTypeDescriptor))
+        children[1].GenerateCode(gen, cf);
+        if (!CodeFlow.IsValueType(exitTypeDescriptor))
         {
             lastDesc = cf.LastDescriptor();
             if (lastDesc == null)
@@ -83,8 +83,8 @@ public class Ternary : SpelNode
 
         gen.MarkLabel(elseTarget);
         cf.EnterCompilationScope();
-        _children[2].GenerateCode(gen, cf);
-        if (!CodeFlow.IsValueType(_exitTypeDescriptor))
+        children[2].GenerateCode(gen, cf);
+        if (!CodeFlow.IsValueType(exitTypeDescriptor))
         {
             lastDesc = cf.LastDescriptor();
             if (lastDesc == null)
@@ -97,23 +97,23 @@ public class Ternary : SpelNode
 
         cf.ExitCompilationScope();
         gen.MarkLabel(endOfIfTarget);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private void ComputeExitTypeDescriptor()
     {
-        if (_exitTypeDescriptor == null && _children[1].ExitDescriptor != null && _children[2].ExitDescriptor != null)
+        if (exitTypeDescriptor == null && children[1].ExitDescriptor != null && children[2].ExitDescriptor != null)
         {
-            var leftDescriptor = _children[1].ExitDescriptor;
-            var rightDescriptor = _children[2].ExitDescriptor;
+            var leftDescriptor = children[1].ExitDescriptor;
+            var rightDescriptor = children[2].ExitDescriptor;
             if (ObjectUtils.NullSafeEquals(leftDescriptor, rightDescriptor))
             {
-                _exitTypeDescriptor = leftDescriptor;
+                exitTypeDescriptor = leftDescriptor;
             }
             else
             {
                 // Use the easiest to compute common super type
-                _exitTypeDescriptor = TypeDescriptor.OBJECT;
+                exitTypeDescriptor = TypeDescriptor.Object;
             }
         }
     }

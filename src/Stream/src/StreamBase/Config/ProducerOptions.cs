@@ -9,10 +9,10 @@ namespace Steeltoe.Stream.Config;
 
 public class ProducerOptions : IProducerOptions
 {
-    private const bool AutoStartup_Default = true;
-    private const int PartitionCount_Default = 1;
-    private const bool UseNativeEncoding_Default = false;
-    private const bool IsErrorChannelEnabled_Default = false;
+    private const bool AutoStartupDefault = true;
+    private const int PartitionCountDefault = 1;
+    private const bool UseNativeEncodingDefault = false;
+    private const bool IsErrorChannelEnabledDefault = false;
 
     public ProducerOptions()
     {
@@ -73,20 +73,20 @@ public class ProducerOptions : IProducerOptions
     internal void PostProcess(string name, ProducerOptions @default = null)
     {
         BindingName = name;
-        ErrorChannelEnabled ??= @default != null ? @default.ErrorChannelEnabled : IsErrorChannelEnabled_Default;
-        UseNativeEncoding ??= @default != null ? @default.UseNativeEncoding : UseNativeEncoding_Default;
+        ErrorChannelEnabled ??= @default != null ? @default.ErrorChannelEnabled : IsErrorChannelEnabledDefault;
+        UseNativeEncoding ??= @default != null ? @default.UseNativeEncoding : UseNativeEncodingDefault;
         HeaderMode ??= @default != null ? @default.HeaderMode : Config.HeaderMode.None;
         RequiredGroups ??= @default != null ? @default.RequiredGroups : new List<string>();
 
         if (PartitionCount == int.MinValue)
         {
-            PartitionCount = @default?.PartitionCount ?? PartitionCount_Default;
+            PartitionCount = @default?.PartitionCount ?? PartitionCountDefault;
         }
 
         PartitionSelectorExpression ??= @default?.PartitionSelectorExpression;
         PartitionSelectorName ??= @default?.PartitionSelectorName;
         PartitionKeyExtractorName ??= @default?.PartitionKeyExtractorName;
         PartitionKeyExpression ??= @default?.PartitionKeyExpression;
-        AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartup_Default;
+        AutoStartup ??= @default != null ? @default.AutoStartup : AutoStartupDefault;
     }
 }

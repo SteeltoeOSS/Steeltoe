@@ -28,7 +28,7 @@ public abstract class ResourceHolderSupport : IResourceHolder
 
     public bool IsVoid { get; private set; }
 
-    public int GetTimetoLiveInSeconds()
+    public int GetTimeToLiveInSeconds()
     {
         var diff = (double)GetTimeToLiveInMillis() / 1000;
         var secs = (int)Math.Ceiling(diff);
@@ -53,9 +53,9 @@ public abstract class ResourceHolderSupport : IResourceHolder
         Deadline = DateTime.Now + TimeSpan.FromSeconds(seconds);
     }
 
-    public void SetTimeoutInMillis(long milliSeconds)
+    public void SetTimeoutInMillis(long milliseconds)
     {
-        Deadline = DateTime.Now + TimeSpan.FromMilliseconds(milliSeconds);
+        Deadline = DateTime.Now + TimeSpan.FromMilliseconds(milliseconds);
     }
 
     public void Requested()

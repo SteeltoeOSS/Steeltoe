@@ -10,8 +10,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 public abstract class AbstractCommandBase
 {
     // we can return a static version since it's immutable
-    internal static readonly ExecutionResult EMPTY = ExecutionResult.From();
+    internal static readonly ExecutionResult Empty = ExecutionResult.From();
 
-    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _executionSemaphorePerCircuit = new ();
-    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> _fallbackSemaphorePerCircuit = new ();
+    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> ExecutionSemaphorePerCircuit = new ();
+    protected static readonly ConcurrentDictionary<string, SemaphoreSlim> FallbackSemaphorePerCircuit = new ();
 }

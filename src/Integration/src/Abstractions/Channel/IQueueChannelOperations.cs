@@ -8,30 +8,30 @@ using System.Collections.Generic;
 namespace Steeltoe.Integration.Channel;
 
 /// <summary>
-/// Operations available on a channel that has queuing semantics
+/// Operations available on a channel that has queuing semantics.
 /// </summary>
 public interface IQueueChannelOperations
 {
     /// <summary>
-    /// Gets the size of the queue
+    /// Gets the size of the queue.
     /// </summary>
     int QueueSize { get; }
 
     /// <summary>
-    /// Gets the remaining capacity of the queue
+    /// Gets the remaining capacity of the queue.
     /// </summary>
     int RemainingCapacity { get; }
 
     /// <summary>
-    /// Clear all items off the quewue
+    /// Clear all items off the queue.
     /// </summary>
-    /// <returns>list of removed messages</returns>
+    /// <returns>list of removed messages.</returns>
     IList<IMessage> Clear();
 
     /// <summary>
     /// Remove any Messages that are not accepted by the provided selector.
     /// </summary>
-    /// <param name="messageSelector">the selector to apply</param>
-    /// <returns>list of purged messages</returns>
+    /// <param name="messageSelector">the selector to apply.</param>
+    /// <returns>list of purged messages.</returns>
     IList<IMessage> Purge(IMessageSelector messageSelector);
 }

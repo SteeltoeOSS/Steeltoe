@@ -43,7 +43,7 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
         Assert.NotNull(options);
         var opts = options.Value;
         Assert.NotNull(opts);
-        Assert.False(opts.Validate_Certificates);
+        Assert.False(opts.ValidateCertificates);
         Assert.Equal(500, opts.SendRate);
         Assert.Equal(500, opts.GatherRate);
     }

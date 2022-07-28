@@ -15,15 +15,15 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
 {
     private readonly RequestDelegate _next;
 
-    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public DbMigrationsEndpointMiddleware(RequestDelegate next, DbMigrationsEndpoint endpoint, IManagementOptions managementOptions, ILogger<DbMigrationsEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleEntityFrameworkRequestAsync(context);
         }
@@ -34,9 +34,9 @@ public class DbMigrationsEndpointMiddleware : EndpointMiddleware<Dictionary<stri
     protected internal Task HandleEntityFrameworkRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

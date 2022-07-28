@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.MySql.Test;
 /// These tests can be found in Base, EF6 Autofac, EF6 Core and EF Core, for testing different nuget packages.
 /// This version should be testing v6 of the Oracle driver
 /// Don't remove it unless you've got a better idea for making sure we work with multiple assemblies
-/// with conflicting names/types
+/// with conflicting names/types.
 /// </summary>
 public class MySqlTypeLocatorTest
 {

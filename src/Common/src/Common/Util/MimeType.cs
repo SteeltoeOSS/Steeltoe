@@ -12,11 +12,11 @@ namespace Steeltoe.Common.Util;
 public class MimeType : IComparable<MimeType>
 #pragma warning restore S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
 {
-    public const string WILDCARD_TYPE = "*";
+    public const string WildcardType = "*";
 
-    private const string PARAM_CHARSET = "charset";
+    private const string ParamCharset = "charset";
 
-    private static readonly BitArray TOKEN = new (128);
+    private static readonly BitArray Token = new (128);
 
     static MimeType()
     {
@@ -52,17 +52,17 @@ public class MimeType : IComparable<MimeType>
 
         for (var i = 0; i < 128; i++)
         {
-            TOKEN.Set(i, true);
+            Token.Set(i, true);
         }
 
-        TOKEN.And(ctl.Not());
-        TOKEN.And(separators.Not());
+        Token.And(ctl.Not());
+        Token.And(separators.Not());
     }
 
     private volatile string _toStringValue;
 
     public MimeType(string type)
-        : this(type, WILDCARD_TYPE)
+        : this(type, WildcardType)
     {
     }
 
@@ -72,7 +72,7 @@ public class MimeType : IComparable<MimeType>
     }
 
     public MimeType(string type, string subtype, Encoding charset)
-        : this(type, subtype, new Dictionary<string, string> { { PARAM_CHARSET, charset.BodyName } })
+        : this(type, subtype, new Dictionary<string, string> { { ParamCharset, charset.BodyName } })
     {
     }
 
@@ -137,7 +137,7 @@ public class MimeType : IComparable<MimeType>
         }
 
         CheckToken(attribute);
-        if (PARAM_CHARSET.Equals(attribute))
+        if (ParamCharset.Equals(attribute))
         {
             value = Unquote(value);
             _ = Encoding.GetEncoding(value);
@@ -150,9 +150,9 @@ public class MimeType : IComparable<MimeType>
 
     protected string Unquote(string s) => IsQuotedString(s) ? s.Substring(1, s.Length - 1 - 1) : s;
 
-    public bool IsWildcardType => WILDCARD_TYPE.Equals(Type);
+    public bool IsWildcardType => WildcardType.Equals(Type);
 
-    public bool IsWildcardSubtype => WILDCARD_TYPE.Equals(Subtype) || Subtype.StartsWith("*+");
+    public bool IsWildcardSubtype => WildcardType.Equals(Subtype) || Subtype.StartsWith("*+");
 
     public bool IsConcrete => !IsWildcardType && !IsWildcardSubtype;
 
@@ -164,7 +164,7 @@ public class MimeType : IComparable<MimeType>
     {
         get
         {
-            var charset = GetParameter(PARAM_CHARSET);
+            var charset = GetParameter(ParamCharset);
             return charset != null ? GetEncoding(Unquote(charset)) : null;
         }
     }
@@ -217,7 +217,7 @@ public class MimeType : IComparable<MimeType>
                         var thisSubtypeNoSuffix = Subtype.Substring(0, thisPlusIdx);
                         var thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
                         var otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
-                        if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) && WILDCARD_TYPE.Equals(thisSubtypeNoSuffix))
+                        if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) && WildcardType.Equals(thisSubtypeNoSuffix))
                         {
                             return true;
                         }
@@ -263,7 +263,7 @@ public class MimeType : IComparable<MimeType>
                     var thisSubtypeSuffix = Subtype.Substring(thisPlusIdx + 1);
                     var otherSubtypeSuffix = other.Subtype.Substring(otherPlusIdx + 1);
                     if (thisSubtypeSuffix.Equals(otherSubtypeSuffix) &&
-                        (WILDCARD_TYPE.Equals(thisSubtypeNoSuffix) || WILDCARD_TYPE.Equals(otherSubtypeNoSuffix)))
+                        (WildcardType.Equals(thisSubtypeNoSuffix) || WildcardType.Equals(otherSubtypeNoSuffix)))
                     {
                         return true;
                     }
@@ -374,7 +374,7 @@ public class MimeType : IComparable<MimeType>
                 return comp;
             }
 
-            if (PARAM_CHARSET.Equals(thisAttribute))
+            if (ParamCharset.Equals(thisAttribute))
             {
                 var thisCharset = Encoding;
                 var otherCharset = other.Encoding;
@@ -425,7 +425,7 @@ public class MimeType : IComparable<MimeType>
     {
         IDictionary<string, string> map = new Dictionary<string, string>(parameters)
         {
-            [PARAM_CHARSET] = charset.BodyName
+            [ParamCharset] = charset.BodyName
         };
         return map;
     }
@@ -457,7 +457,7 @@ public class MimeType : IComparable<MimeType>
                 return false;
             }
 
-            if (PARAM_CHARSET.Equals(key))
+            if (ParamCharset.Equals(key))
             {
                 if (!ObjectUtils.NullSafeEquals(Encoding, other.Encoding))
                 {
@@ -477,7 +477,7 @@ public class MimeType : IComparable<MimeType>
     {
         foreach (var ch in token)
         {
-            if (!TOKEN.Get(ch))
+            if (!Token.Get(ch))
             {
                 throw new ArgumentException($"Invalid token character '{ch}' in token \"{token}\"");
             }
@@ -492,7 +492,7 @@ public class MimeType : IComparable<MimeType>
         }
         else if (name.Equals("utf-16be", StringComparison.InvariantCultureIgnoreCase))
         {
-            return EncodingUtils.Utf16be;
+            return EncodingUtils.Utf16BigEndian;
         }
         else if (name.Equals("utf-7", StringComparison.InvariantCultureIgnoreCase))
         {
@@ -508,7 +508,7 @@ public class MimeType : IComparable<MimeType>
         }
         else if (name.Equals("utf-32BE", StringComparison.InvariantCultureIgnoreCase))
         {
-            return EncodingUtils.Utf32be;
+            return EncodingUtils.Utf32BigEndian;
         }
 
         return Encoding.GetEncoding(name);

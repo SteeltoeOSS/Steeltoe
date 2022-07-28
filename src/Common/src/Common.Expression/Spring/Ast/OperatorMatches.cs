@@ -27,12 +27,12 @@ public class OperatorMatches : Operator
 
         if (left == null)
         {
-            throw new SpelEvaluationException(leftOp.StartPosition, SpelMessage.INVALID_FIRST_OPERAND_FOR_MATCHES_OPERATOR, (object)null);
+            throw new SpelEvaluationException(leftOp.StartPosition, SpelMessage.InvalidFirstOperandForMatchesOperator, (object)null);
         }
 
         if (right is not string rightString)
         {
-            throw new SpelEvaluationException(rightOp.StartPosition, SpelMessage.INVALID_SECOND_OPERAND_FOR_MATCHES_OPERATOR, right);
+            throw new SpelEvaluationException(rightOp.StartPosition, SpelMessage.InvalidSecondOperandForMatchesOperator, right);
         }
 
         try
@@ -48,11 +48,11 @@ public class OperatorMatches : Operator
         }
         catch (ArgumentException ex)
         {
-            throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.INVALID_PATTERN, rightString);
+            throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.InvalidPattern, rightString);
         }
         catch (RegexMatchTimeoutException ex)
         {
-            throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.FLAWED_PATTERN, rightString);
+            throw new SpelEvaluationException(rightOp.StartPosition, ex, SpelMessage.FlawedPattern, rightString);
         }
     }
 }

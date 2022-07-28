@@ -12,12 +12,12 @@ using System.Threading.Tasks;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// An implementation of a Consul service registry
+/// An implementation of a Consul service registry.
 /// </summary>
 public class ConsulServiceRegistry : IConsulServiceRegistry
 {
-    private const string UP = "UP";
-    private const string OUT_OF_SERVICE = "OUT_OF_SERVICE";
+    private const string Up = "UP";
+    private const string OutOfService = "OUT_OF_SERVICE";
 
     private readonly IConsulClient _client;
     private readonly IScheduler _scheduler;
@@ -42,10 +42,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
     /// </summary>
-    /// <param name="client">the Consul client to use</param>
-    /// <param name="options">the configuration options</param>
-    /// <param name="scheduler">a scheduler to use for heart beats</param>
-    /// <param name="logger">an optional logger</param>
+    /// <param name="client">the Consul client to use.</param>
+    /// <param name="options">the configuration options.</param>
+    /// <param name="scheduler">a scheduler to use for heart beats.</param>
+    /// <param name="logger">an optional logger.</param>
     public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -57,10 +57,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
     /// </summary>
-    /// <param name="client">the Consul client to use</param>
-    /// <param name="optionsMonitor">the configuration options</param>
-    /// <param name="scheduler">a scheduler to use for heart beats</param>
-    /// <param name="logger">an optional logger</param>
+    /// <param name="client">the Consul client to use.</param>
+    /// <param name="optionsMonitor">the configuration options.</param>
+    /// <param name="scheduler">a scheduler to use for heart beats.</param>
+    /// <param name="logger">an optional logger.</param>
     public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -140,12 +140,12 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
     private Task SetStatusAsyncInternal(IConsulRegistration registration, string status)
     {
-        if (OUT_OF_SERVICE.Equals(status, StringComparison.OrdinalIgnoreCase))
+        if (OutOfService.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
-            return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OUT_OF_SERVICE);
+            return _client.Agent.EnableServiceMaintenance(registration.InstanceId, OutOfService);
         }
 
-        if (UP.Equals(status, StringComparison.OrdinalIgnoreCase))
+        if (Up.Equals(status, StringComparison.OrdinalIgnoreCase))
         {
             return _client.Agent.DisableServiceMaintenance(registration.InstanceId);
         }
@@ -173,11 +173,11 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         {
             if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
-                return OUT_OF_SERVICE;
+                return OutOfService;
             }
         }
 
-        return UP;
+        return Up;
     }
 
     /// <inheritdoc/>
@@ -199,12 +199,12 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <inheritdoc/>
-    public S GetStatus<S>(IConsulRegistration registration)
-        where S : class
+    public TStatus GetStatus<TStatus>(IConsulRegistration registration)
+        where TStatus : class
     {
         var result = GetStatusAsync(registration).GetAwaiter().GetResult();
 
-        return (S)result;
+        return (TStatus)result;
     }
 
     /// <inheritdoc/>

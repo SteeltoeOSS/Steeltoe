@@ -6,8 +6,8 @@ using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
-public interface IHystrixEventStream<out E>
-    where E : IHystrixEvent
+public interface IHystrixEventStream<out TEvent>
+    where TEvent : IHystrixEvent
 {
-    IObservable<E> Observe();
+    IObservable<TEvent> Observe();
 }

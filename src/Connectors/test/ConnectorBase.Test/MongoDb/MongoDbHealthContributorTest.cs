@@ -32,7 +32,7 @@ public class MongoDbHealthContributorTest
         var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
         Assert.NotNull(contrib);
         var status = contrib.Health();
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
     }
 
     [Fact]
@@ -40,13 +40,13 @@ public class MongoDbHealthContributorTest
     {
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27018");
-        var logrFactory = new LoggerFactory();
+        var loggerFactory = new LoggerFactory();
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>(), 1);
+        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.DOWN, status.Status);
+        Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Equal("Failed to open MongoDb connection!", status.Description);
     }
 
@@ -55,12 +55,12 @@ public class MongoDbHealthContributorTest
     {
         var mongoDbConfig = new MongoDbConnectorOptions();
         var sInfo = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
-        var logrFactory = new LoggerFactory();
+        var loggerFactory = new LoggerFactory();
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
-        var h = new MongoDbHealthContributor(connFactory, logrFactory.CreateLogger<MongoDbHealthContributor>());
+        var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>());
 
         var status = h.Health();
 
-        Assert.Equal(HealthStatus.UP, status.Status);
+        Assert.Equal(HealthStatus.Up, status.Status);
     }
 }

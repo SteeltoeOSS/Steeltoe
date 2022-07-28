@@ -5,7 +5,7 @@
 namespace Steeltoe.Stream.Config;
 
 /// <summary>
-/// Contains the configuration options for a binding
+/// Contains the configuration options for a binding.
 /// </summary>
 public interface IBindingOptions
 {

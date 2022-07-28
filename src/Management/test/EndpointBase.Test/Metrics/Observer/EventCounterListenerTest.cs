@@ -15,7 +15,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
 public class EventCounterListenerTest : BaseTest
 {
-    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
 
     private readonly string[] _metrics =
     {
@@ -47,7 +47,7 @@ public class EventCounterListenerTest : BaseTest
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(null, exporter, null);
+        using var metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
@@ -66,7 +66,7 @@ public class EventCounterListenerTest : BaseTest
         var exclusions = new List<string> { "alloc-rate", "threadpool-completed-items-count", "gen-1-gc-count", "gen-1-size" };
         using var listener = new EventCounterListener(new MetricsObserverOptions { ExcludedMetrics = exclusions });
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(null, exporter, null);
+        using var metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;

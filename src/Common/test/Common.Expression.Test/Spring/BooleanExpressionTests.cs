@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -70,12 +68,12 @@ public class BooleanExpressionTests : AbstractExpressionTests
     [Fact]
     public void TestBooleanErrors01()
     {
-        EvaluateAndCheckError("1.0 or false", SpelMessage.TYPE_CONVERSION_ERROR, 0);
-        EvaluateAndCheckError("false or 39.4", SpelMessage.TYPE_CONVERSION_ERROR, 9);
-        EvaluateAndCheckError("true and 'hello'", SpelMessage.TYPE_CONVERSION_ERROR, 9);
-        EvaluateAndCheckError(" 'hello' and 'goodbye'", SpelMessage.TYPE_CONVERSION_ERROR, 1);
-        EvaluateAndCheckError("!35.2", SpelMessage.TYPE_CONVERSION_ERROR, 1);
-        EvaluateAndCheckError("! 'foob'", SpelMessage.TYPE_CONVERSION_ERROR, 2);
+        EvaluateAndCheckError("1.0 or false", SpelMessage.TypeConversionError, 0);
+        EvaluateAndCheckError("false or 39.4", SpelMessage.TypeConversionError, 9);
+        EvaluateAndCheckError("true and 'hello'", SpelMessage.TypeConversionError, 9);
+        EvaluateAndCheckError(" 'hello' and 'goodbye'", SpelMessage.TypeConversionError, 1);
+        EvaluateAndCheckError("!35.2", SpelMessage.TypeConversionError, 1);
+        EvaluateAndCheckError("! 'foob'", SpelMessage.TypeConversionError, 2);
     }
 
     [Fact]
@@ -83,44 +81,16 @@ public class BooleanExpressionTests : AbstractExpressionTests
     {
         // SPR-9445
         // without null conversion
-        EvaluateAndCheckError("null or true", SpelMessage.TYPE_CONVERSION_ERROR, 0, "null", "System.Boolean");
-        EvaluateAndCheckError("null and true", SpelMessage.TYPE_CONVERSION_ERROR, 0, "null", "System.Boolean");
-        EvaluateAndCheckError("!null", SpelMessage.TYPE_CONVERSION_ERROR, 1, "null", "System.Boolean");
-        EvaluateAndCheckError("null ? 'foo' : 'bar'", SpelMessage.TYPE_CONVERSION_ERROR, 0, "null", "System.Boolean");
+        EvaluateAndCheckError("null or true", SpelMessage.TypeConversionError, 0, "null", "System.Boolean");
+        EvaluateAndCheckError("null and true", SpelMessage.TypeConversionError, 0, "null", "System.Boolean");
+        EvaluateAndCheckError("!null", SpelMessage.TypeConversionError, 1, "null", "System.Boolean");
+        EvaluateAndCheckError("null ? 'foo' : 'bar'", SpelMessage.TypeConversionError, 0, "null", "System.Boolean");
 
-        _context.TypeConverter = new StandardTypeConverter(new TestGenericConversionService());
+        Context.TypeConverter = new StandardTypeConverter(new TestGenericConversionService());
 
         Evaluate("null or true", true, typeof(bool), false);
         Evaluate("null and true", false, typeof(bool), false);
         Evaluate("!null", true, typeof(bool), false);
         Evaluate("null ? 'foo' : 'bar'", "bar", typeof(string), false);
-    }
-}
-
-public class TestGenericConversionService : IConversionService
-{
-    public bool CanBypassConvert(Type sourceType, Type targetType)
-    {
-        return false;
-    }
-
-    public bool CanConvert(Type sourceType, Type targetType)
-    {
-        return true;
-    }
-
-    public T Convert<T>(object source)
-    {
-        return (T)Convert(source, source?.GetType(), typeof(T));
-    }
-
-    public object Convert(object source, Type sourceType, Type targetType)
-    {
-        if (source == null)
-        {
-            return targetType == typeof(bool) ? false : null;
-        }
-
-        return source;
     }
 }

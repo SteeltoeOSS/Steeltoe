@@ -10,8 +10,8 @@ namespace Steeltoe.Connector.MySql.EF6;
 
 public class MySqlDbContextConnectorFactory : MySqlProviderConnectorFactory
 {
-    public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions config, Type dbContextType)
-        : base(info, config, dbContextType)
+    public MySqlDbContextConnectorFactory(MySqlServiceInfo info, MySqlProviderConnectorOptions options, Type dbContextType)
+        : base(info, options, dbContextType)
     {
         if (dbContextType == null)
         {

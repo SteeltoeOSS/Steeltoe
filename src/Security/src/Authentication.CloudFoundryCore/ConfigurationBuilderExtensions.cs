@@ -16,9 +16,9 @@ public static class ConfigurationBuilderExtensions
     /// Adds PEM files representing application identity to application configuration.
     /// When running outside Pivotal Platform, will create certificates resembling those found on the platform.
     /// </summary>
-    /// <param name="builder">Your <see cref="IConfigurationBuilder"/></param>
-    /// <param name="orgId">(Optional) A GUID representing an organization, for use with <see cref="CloudFoundryDefaults.SameOrganizationAuthorizationPolicy"/> authorization policy</param>
-    /// <param name="spaceId">(Optional) A GUID representing a space, for use with <see cref="CloudFoundryDefaults.SameSpaceAuthorizationPolicy"/> authorization policy</param>
+    /// <param name="builder">Your <see cref="IConfigurationBuilder"/>.</param>
+    /// <param name="orgId">(Optional) A GUID representing an organization, for use with <see cref="CloudFoundryDefaults.SameOrganizationAuthorizationPolicy"/> authorization policy.</param>
+    /// <param name="spaceId">(Optional) A GUID representing a space, for use with <see cref="CloudFoundryDefaults.SameSpaceAuthorizationPolicy"/> authorization policy.</param>
     public static IConfigurationBuilder AddCloudFoundryContainerIdentity(this IConfigurationBuilder builder, string orgId = null, string spaceId = null)
     {
         if (!Platform.IsCloudFoundry)

@@ -8,7 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestCommandBuilder
 {
-    public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OWNER_ONE;
+    public IHystrixCommandGroupKey Owner = CommandGroupForUnitTest.OwnerOne;
     public IHystrixCommandKey DependencyKey;
     public IHystrixThreadPoolKey ThreadPoolKey;
     public ICircuitBreaker CircuitBreaker;
@@ -27,25 +27,25 @@ public class TestCommandBuilder
 
     public TestCommandBuilder SetOwner(IHystrixCommandGroupKey owner)
     {
-        Owner = owner;
+        this.Owner = owner;
         return this;
     }
 
     public TestCommandBuilder SetCommandKey(IHystrixCommandKey dependencyKey)
     {
-        DependencyKey = dependencyKey;
+        this.DependencyKey = dependencyKey;
         return this;
     }
 
     public TestCommandBuilder SetThreadPoolKey(IHystrixThreadPoolKey threadPoolKey)
     {
-        ThreadPoolKey = threadPoolKey;
+        this.ThreadPoolKey = threadPoolKey;
         return this;
     }
 
     public TestCommandBuilder SetCircuitBreaker(TestCircuitBreaker circuitBreaker)
     {
-        CircuitBreaker = circuitBreaker;
+        this.CircuitBreaker = circuitBreaker;
         if (circuitBreaker != null)
         {
             Metrics = circuitBreaker.Metrics;
@@ -56,67 +56,43 @@ public class TestCommandBuilder
 
     public TestCommandBuilder SetThreadPool(IHystrixThreadPool threadPool)
     {
-        ThreadPool = threadPool;
+        this.ThreadPool = threadPool;
         return this;
     }
 
     public TestCommandBuilder SetCommandOptionDefaults(IHystrixCommandOptions commandPropertiesDefaults)
     {
-        CommandPropertiesDefaults = commandPropertiesDefaults;
+        this.CommandPropertiesDefaults = commandPropertiesDefaults;
         return this;
     }
 
     public TestCommandBuilder SetThreadPoolPropertiesDefaults(IHystrixThreadPoolOptions threadPoolPropertiesDefaults)
     {
-        ThreadPoolPropertiesDefaults = threadPoolPropertiesDefaults;
+        this.ThreadPoolPropertiesDefaults = threadPoolPropertiesDefaults;
         return this;
     }
 
     public TestCommandBuilder SetMetrics(HystrixCommandMetrics metrics)
     {
-        Metrics = metrics;
+        this.Metrics = metrics;
         return this;
     }
 
     public TestCommandBuilder SetFallbackSemaphore(SemaphoreSlim fallbackSemaphore)
     {
-        FallbackSemaphore = fallbackSemaphore;
+        this.FallbackSemaphore = fallbackSemaphore;
         return this;
     }
 
     public TestCommandBuilder SetExecutionSemaphore(SemaphoreSlim executionSemaphore)
     {
-        ExecutionSemaphore = executionSemaphore;
+        this.ExecutionSemaphore = executionSemaphore;
         return this;
     }
 
     public TestCommandBuilder SetExecutionHook(TestableExecutionHook executionHook)
     {
-        ExecutionHook = executionHook;
+        this.ExecutionHook = executionHook;
         return this;
     }
-}
-
-public static class CommandKeyForUnitTest
-{
-    public static IHystrixCommandKey KEY_ONE = new HystrixCommandKeyDefault("KEY_ONE");
-    public static IHystrixCommandKey KEY_TWO = new HystrixCommandKeyDefault("KEY_TWO");
-}
-
-public static class CommandGroupForUnitTest
-{
-    public static IHystrixCommandGroupKey OWNER_ONE = new HystrixCommandGroupKeyDefault("OWNER_ONE");
-    public static IHystrixCommandGroupKey OWNER_TWO = new HystrixCommandGroupKeyDefault("OWNER_TWO");
-}
-
-public static class CommandOwnerForUnitTest
-{
-    public static IHystrixCommandGroupKey OWNER_ONE = new HystrixCommandGroupKeyDefault("OWNER_ONE");
-    public static IHystrixCommandGroupKey OWNER_TWO = new HystrixCommandGroupKeyDefault("OWNER_TWO");
-}
-
-public static class ThreadPoolKeyForUnitTest
-{
-    public static IHystrixThreadPoolKey THREAD_POOL_ONE = new HystrixThreadPoolKeyDefault("THREAD_POOL_ONE");
-    public static IHystrixThreadPoolKey THREAD_POOL_TWO = new HystrixThreadPoolKeyDefault("THREAD_POOL_TWO");
 }

@@ -21,9 +21,7 @@ public class SetRequestJsonConverter : JsonConverter<CredentialSetRequest>
         writer.WriteStartObject("value");
         foreach (var prop in value.Value.GetType().GetProperties())
         {
-#pragma warning disable SYSLIB0020 // Type or member is obsolete
-            if (prop.GetValue(value.Value) != null || !options.IgnoreNullValues)
-#pragma warning restore SYSLIB0020 // Type or member is obsolete
+            if (prop.GetValue(value.Value) != null || options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
             {
                 writer.WriteString(prop.Name.ToLower(), prop.GetValue(value.Value)?.ToString());
             }

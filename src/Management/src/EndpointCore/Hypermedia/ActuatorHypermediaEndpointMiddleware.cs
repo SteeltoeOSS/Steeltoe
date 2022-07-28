@@ -16,22 +16,22 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 {
     private readonly RequestDelegate _next;
 
-    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions mgmtOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        _logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
+        logger?.LogDebug("Invoke({0} {1})", context.Request.Method, context.Request.Path.Value);
 
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
-            var serialInfo = HandleRequest(_endpoint, GetRequestUri(context.Request), _logger);
-            _logger?.LogDebug("Returning: {0}", serialInfo);
+            var serialInfo = HandleRequest(endpoint, GetRequestUri(context.Request), logger);
+            logger?.LogDebug("Returning: {0}", serialInfo);
 
-            context.HandleContentNegotiation(_logger);
+            context.HandleContentNegotiation(logger);
             return context.Response.WriteAsync(serialInfo);
         }
 

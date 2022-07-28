@@ -17,7 +17,7 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
     protected BlockingCollection<Task> workQueue;
 
     [ThreadStatic]
-    private static bool isHystrixThreadPoolThread;
+    private static bool _isHystrixThreadPoolThread;
 
     private readonly object _lock = new ();
 
@@ -40,7 +40,6 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
         runningThreads = 1;
     }
 
-    #region IHystrixTaskScheduler
     public override int CurrentQueueSize
     {
         get
@@ -53,8 +52,6 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
     {
         get { return workQueue.Count < queueSizeRejectionThreshold; }
     }
-
-    #endregion IHystrixTaskScheduler
 
     protected override IEnumerable<Task> GetScheduledTasks()
     {
@@ -110,7 +107,7 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
             _ =>
             {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
-                isHystrixThreadPoolThread = true;
+                _isHystrixThreadPoolThread = true;
 #pragma warning restore S2696 // Instance members should not write to "static" fields
                 try
                 {
@@ -140,14 +137,14 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
                 finally
                 {
                     Interlocked.Decrement(ref runningThreads);
-                    isHystrixThreadPoolThread = false;
+                    _isHystrixThreadPoolThread = false;
                 }
             }, null);
     }
 
     protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
     {
-        if (!isHystrixThreadPoolThread)
+        if (!_isHystrixThreadPoolThread)
         {
             return false;
         }

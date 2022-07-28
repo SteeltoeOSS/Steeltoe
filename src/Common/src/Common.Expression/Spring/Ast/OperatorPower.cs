@@ -62,6 +62,6 @@ public class OperatorPower : Operator
             }
         }
 
-        return state.Operate(Operation.POWER, leftOperand, rightOperand);
+        return state.Operate(Operation.Power, leftOperand, rightOperand);
     }
 }

@@ -90,7 +90,7 @@ public class HystrixQueuedTaskSchedulerTest
 
         public TaskActionClass(ITestOutputHelper output, int val)
         {
-            Output = output;
+            this.Output = output;
             Value = val;
         }
 

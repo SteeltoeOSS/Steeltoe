@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:loggers";
+    private const string ManagementInfoPrefix = "management:endpoints:loggers";
 
     public LoggersEndpointOptions()
     {
@@ -19,7 +19,7 @@ public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
     }
 
     public LoggersEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {

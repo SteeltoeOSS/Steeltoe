@@ -55,7 +55,6 @@ public class ConfigServerHostBuilderExtensionsTest
         Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
     {
@@ -67,5 +66,4 @@ public class ConfigServerHostBuilderExtensionsTest
         Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
         Assert.Single(config.Providers.OfType<ConfigServerConfigurationProvider>());
     }
-#endif
 }

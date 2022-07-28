@@ -83,10 +83,10 @@ public static class EndpointServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Adds the services used by the Wavefront exporter
+    /// Adds the services used by the Wavefront exporter.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {
         if (services == null)
@@ -139,7 +139,7 @@ public static class EndpointServiceCollectionExtensions
 
         if (observerOptions.GCEvents || observerOptions.ThreadPoolEvents)
         {
-            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, CLRRuntimeObserver>());
+            services.TryAddEnumerable(ServiceDescriptor.Singleton<IRuntimeDiagnosticSource, ClrRuntimeObserver>());
         }
 
         if (observerOptions.EventCounterEvents)

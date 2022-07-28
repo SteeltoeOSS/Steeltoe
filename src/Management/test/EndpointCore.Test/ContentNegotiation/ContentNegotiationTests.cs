@@ -21,7 +21,7 @@ public class ContentNegotiationTests
         ["management:endpoints:actuator:exposure:include:0"] = "*"
     };
 
-    public static IEnumerable<object[]> EndpointMiddleware_ContentNegotiation_TestCases
+    public static IEnumerable<object[]> EndpointMiddlewareContentNegotiationTestCases
     {
         get
         {
@@ -39,38 +39,38 @@ public class ContentNegotiationTests
                 new { epName = EndpointNames.Refresh, epPath = "http://localhost/actuator/refresh" }
             };
 
-            var negotations = new[]
+            var negotiations = new[]
             {
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptAppJson_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptInvalid_RetrunsAppJson" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1_JSON }, contentType = ActuatorMediaTypes.APP_JSON, name = "AcceptV1_RetrunsAppJson_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptV2_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.ANY }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptANY_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.APP_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.V2_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleAscOrdered_RetrunsV2_WhenV2Configured" },
-                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2_JSON, ActuatorMediaTypes.V1_JSON, ActuatorMediaTypes.APP_JSON }, contentType = ActuatorMediaTypes.V2_JSON, name = "AcceptAllPossibleDescOrdered_RetrunsV2_WhenV2Configured" }
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptAppJson_ReturnsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { "foo" }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptInvalid_ReturnsAppJson" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V1Json }, contentType = ActuatorMediaTypes.AppJson, name = "AcceptV1_ReturnsAppJson_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptV2_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.Any }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptANY_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.AppJson, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.V2Json }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleAscOrdered_ReturnsV2_WhenV2Configured" },
+                new { version = MediaTypeVersion.V2, accepts = new[] { ActuatorMediaTypes.V2Json, ActuatorMediaTypes.V1Json, ActuatorMediaTypes.AppJson }, contentType = ActuatorMediaTypes.V2Json, name = "AcceptAllPossibleDescOrdered_ReturnsV2_WhenV2Configured" }
             };
 
             foreach (var endpoint in endpoints)
             {
-                foreach (var negotation in negotations)
+                foreach (var negotiation in negotiations)
                 {
-                    yield return new object[] { endpoint.epName, endpoint.epPath, negotation.accepts, negotation.contentType };
+                    yield return new object[] { endpoint.epName, endpoint.epPath, negotiation.accepts, negotiation.contentType };
                 }
             }
         }
     }
 
     [Theory]
-    [MemberData(nameof(EndpointMiddleware_ContentNegotiation_TestCases))]
+    [MemberData(nameof(EndpointMiddlewareContentNegotiationTestCases))]
     public async Task EndpointMiddleware_ContentNegotiation(EndpointNames epName, string epPath, string[] accepts, string contentType)
     {
         // arrange a server and client
         var builder = new WebHostBuilder()
             .StartupByEpName(epName)
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
 

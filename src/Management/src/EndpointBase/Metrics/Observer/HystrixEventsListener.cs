@@ -13,7 +13,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 public class HystrixEventsListener : EventSourceListener
 {
     private const string EventSourceName = "Steeltoe.Hystrix.Events";
-    private static readonly string[] _allowedEvents =
+    private static readonly string[] AllowedEvents =
     {
         "CommandMetrics",
         "ThreadPoolMetrics",
@@ -38,7 +38,7 @@ public class HystrixEventsListener : EventSourceListener
 
         try
         {
-            if (_allowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
+            if (AllowedEvents.Any(e => e.Equals(eventData.EventName, StringComparison.InvariantCulture)))
             {
                 ExtractAndRecordMetric(EventSourceName, eventData, _cktBreakerLabels);
             }

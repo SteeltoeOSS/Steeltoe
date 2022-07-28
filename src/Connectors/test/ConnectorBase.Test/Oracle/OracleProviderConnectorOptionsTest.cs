@@ -35,12 +35,12 @@ public class OracleProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new OracleProviderConnectorOptions(config);
-        Assert.Equal("localhost", sconfig.Server);
-        Assert.Equal(1234, sconfig.Port);
-        Assert.Equal("password", sconfig.Password);
-        Assert.Equal("username", sconfig.Username);
-        Assert.Null(sconfig.ConnectionString);
+        var options = new OracleProviderConnectorOptions(config);
+        Assert.Equal("localhost", options.Server);
+        Assert.Equal(1234, options.Port);
+        Assert.Equal("password", options.Password);
+        Assert.Equal("username", options.Username);
+        Assert.Null(options.ConnectionString);
     }
 
     [Fact]
@@ -54,8 +54,8 @@ public class OracleProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new OracleProviderConnectorOptions(config);
+        var options = new OracleProviderConnectorOptions(config);
 
-        Assert.Equal(appsettings["oracle:client:ConnectionString"], sconfig.ToString());
+        Assert.Equal(appsettings["oracle:client:ConnectionString"], options.ToString());
     }
 }

@@ -10,9 +10,9 @@ namespace Steeltoe.Messaging.Converter;
 
 public class SimpleMessageConverter : IMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(SimpleMessageConverter);
+    public const string DefaultServiceName = nameof(SimpleMessageConverter);
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public virtual object FromMessage(IMessage message, Type targetClass)
     {

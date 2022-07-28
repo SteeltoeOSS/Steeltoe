@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Steeltoe.Common.Options;
 
 /// <summary>
-/// Options for use with platform-provided certificates
+/// Options for use with platform-provided certificates.
 /// </summary>
 public class CertificateOptions
 {

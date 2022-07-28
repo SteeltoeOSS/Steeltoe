@@ -14,69 +14,64 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy;
 
 public static class HystrixPlugins
 {
-    private static readonly AtomicReference<HystrixEventNotifier> _notifier = new ();
-    private static readonly AtomicReference<HystrixConcurrencyStrategy> _concurrencyStrategy = new ();
-    private static readonly AtomicReference<HystrixMetricsPublisher> _metricsPublisher = new ();
-    private static readonly AtomicReference<HystrixCommandExecutionHook> _commandExecutionHook = new ();
-    private static readonly AtomicReference<HystrixOptionsStrategy> _options = new ();
+    private static readonly AtomicReference<HystrixEventNotifier> AtomicNotifier = new ();
+    private static readonly AtomicReference<HystrixConcurrencyStrategy> AtomicConcurrencyStrategy = new ();
+    private static readonly AtomicReference<HystrixMetricsPublisher> AtomicMetricsPublisher = new ();
+    private static readonly AtomicReference<HystrixCommandExecutionHook> AtomicCommandExecutionHook = new ();
+    private static readonly AtomicReference<HystrixOptionsStrategy> AtomicOptions = new ();
 
-    #region EventNotifier
     public static HystrixEventNotifier EventNotifier
     {
         get
         {
-            if (_notifier.Value == null)
+            if (AtomicNotifier.Value == null)
             {
-                _notifier.CompareAndSet(null, HystrixEventNotifierDefault.GetInstance());
+                AtomicNotifier.CompareAndSet(null, HystrixEventNotifierDefault.GetInstance());
             }
 
-            return _notifier.Value;
+            return AtomicNotifier.Value;
         }
     }
 
     public static void RegisterEventNotifier(HystrixEventNotifier impl)
     {
-        if (!_notifier.CompareAndSet(null, impl))
+        if (!AtomicNotifier.CompareAndSet(null, impl))
         {
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion EventNotifier
 
-    #region  ConcurrencyStrategy
     public static HystrixConcurrencyStrategy ConcurrencyStrategy
     {
         get
         {
-            if (_concurrencyStrategy.Value == null)
+            if (AtomicConcurrencyStrategy.Value == null)
             {
-                _concurrencyStrategy.CompareAndSet(null, HystrixConcurrencyStrategyDefault.GetInstance());
+                AtomicConcurrencyStrategy.CompareAndSet(null, HystrixConcurrencyStrategyDefault.GetInstance());
             }
 
-            return _concurrencyStrategy.Value;
+            return AtomicConcurrencyStrategy.Value;
         }
     }
 
     public static void RegisterConcurrencyStrategy(HystrixConcurrencyStrategy impl)
     {
-        if (!_concurrencyStrategy.CompareAndSet(null, impl))
+        if (!AtomicConcurrencyStrategy.CompareAndSet(null, impl))
         {
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  ConcurrencyStrategy
 
-    #region  MetricsPublisher
     public static HystrixMetricsPublisher MetricsPublisher
     {
         get
         {
-            if (_metricsPublisher.Value == null)
+            if (AtomicMetricsPublisher.Value == null)
             {
-                _metricsPublisher.CompareAndSet(null, HystrixMetricsPublisherDefault.GetInstance());
+                AtomicMetricsPublisher.CompareAndSet(null, HystrixMetricsPublisherDefault.GetInstance());
             }
 
-            return _metricsPublisher.Value;
+            return AtomicMetricsPublisher.Value;
         }
     }
 
@@ -84,66 +79,61 @@ public static class HystrixPlugins
     public static void RegisterMetricsPublisher(HystrixMetricsPublisher impl)
 #pragma warning restore S4136 // Method overloads should be grouped together
     {
-        if (!_metricsPublisher.CompareAndSet(null, impl))
+        if (!AtomicMetricsPublisher.CompareAndSet(null, impl))
         {
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  MetricsPublisher
 
-    #region  CommandExecutionHook
     public static HystrixCommandExecutionHook CommandExecutionHook
     {
         get
         {
-            if (_commandExecutionHook.Value == null)
+            if (AtomicCommandExecutionHook.Value == null)
             {
-                _commandExecutionHook.CompareAndSet(null, HystrixCommandExecutionHookDefault.GetInstance());
+                AtomicCommandExecutionHook.CompareAndSet(null, HystrixCommandExecutionHookDefault.GetInstance());
             }
 
-            return _commandExecutionHook.Value;
+            return AtomicCommandExecutionHook.Value;
         }
     }
 
     public static void RegisterMetricsPublisher(HystrixCommandExecutionHook impl)
     {
-        if (!_commandExecutionHook.CompareAndSet(null, impl))
+        if (!AtomicCommandExecutionHook.CompareAndSet(null, impl))
         {
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  CommandExecutionHook
 
-    #region  OptionsStrategy
     public static HystrixOptionsStrategy OptionsStrategy
     {
         get
         {
-            if (_options.Value == null)
+            if (AtomicOptions.Value == null)
             {
-                _options.CompareAndSet(null, HystrixOptionsStrategyDefault.GetInstance());
+                AtomicOptions.CompareAndSet(null, HystrixOptionsStrategyDefault.GetInstance());
             }
 
-            return _options.Value;
+            return AtomicOptions.Value;
         }
     }
 
     public static void RegisterOptionsStrategy(HystrixOptionsStrategy impl)
     {
-        if (!_options.CompareAndSet(null, impl))
+        if (!AtomicOptions.CompareAndSet(null, impl))
         {
             throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
-    #endregion  OptionsStrategy
 
     public static void Reset()
     {
-        _notifier.Value = null;
-        _concurrencyStrategy.Value = null;
-        _metricsPublisher.Value = null;
-        _commandExecutionHook.Value = null;
-        _options.Value = null;
+        AtomicNotifier.Value = null;
+        AtomicConcurrencyStrategy.Value = null;
+        AtomicMetricsPublisher.Value = null;
+        AtomicCommandExecutionHook.Value = null;
+        AtomicOptions.Value = null;
         HystrixMetricsPublisherFactory.Reset();
     }
 }

@@ -12,29 +12,29 @@ namespace Steeltoe.Integration;
 
 public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 {
-    public const string CORRELATION_ID = "correlationId";
+    public const string CorrelationId = "correlationId";
 
-    public const string EXPIRATION_DATE = "expirationDate";
+    public const string ExpirationDate = "expirationDate";
 
-    public const string PRIORITY = "priority";
+    public const string Priority = "priority";
 
-    public const string SEQUENCE_NUMBER = "sequenceNumber";
+    public const string SequenceNumber = "sequenceNumber";
 
-    public const string SEQUENCE_SIZE = "sequenceSize";
+    public const string SequenceSize = "sequenceSize";
 
-    public const string SEQUENCE_DETAILS = "sequenceDetails";
+    public const string SequenceDetails = "sequenceDetails";
 
-    public const string ROUTING_SLIP = "routingSlip";
+    public const string RoutingSlip = "routingSlip";
 
-    public const string DUPLICATE_MESSAGE = "duplicateMessage";
+    public const string DuplicateMessage = "duplicateMessage";
 
-    public const string CLOSEABLE_RESOURCE = "closeableResource";
+    public const string CloseableResource = "closeableResource";
 
-    public const string DELIVERY_ATTEMPT = "deliveryAttempt";
+    public const string DeliveryAttempt = "deliveryAttempt";
 
-    public const string ACKNOWLEDGMENT_CALLBACK = "acknowledgmentCallback";
+    public const string AcknowledgmentCallback = "acknowledgmentCallback";
 
-    public const string SOURCE_DATA = "sourceData";
+    public const string SourceData = "sourceData";
 
     private ISet<string> _readOnlyHeaders = new HashSet<string>();
 
@@ -61,39 +61,39 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
     public long? GetExpirationDate()
     {
-        return (long?)GetHeader(EXPIRATION_DATE);
+        return (long?)GetHeader(ExpirationDate);
     }
 
     public object GetCorrelationId()
     {
-        return GetHeader(CORRELATION_ID);
+        return GetHeader(CorrelationId);
     }
 
     public int GetSequenceNumber()
     {
-        var sequenceNumber = (int?)GetHeader(SEQUENCE_NUMBER);
+        var sequenceNumber = (int?)GetHeader(SequenceNumber);
         return sequenceNumber ?? 0;
     }
 
     public int GetSequenceSize()
     {
-        var sequenceSize = (int?)GetHeader(SEQUENCE_SIZE);
+        var sequenceSize = (int?)GetHeader(SequenceSize);
         return sequenceSize ?? 0;
     }
 
     public int? GetPriority()
     {
-        return (int?)GetHeader(PRIORITY);
+        return (int?)GetHeader(Priority);
     }
 
     public IAcknowledgmentCallback GetAcknowledgmentCallback()
     {
-        return (IAcknowledgmentCallback)GetHeader(ACKNOWLEDGMENT_CALLBACK);
+        return (IAcknowledgmentCallback)GetHeader(AcknowledgmentCallback);
     }
 
     public int? GetDeliveryAttempt()
     {
-        return (int?)GetHeader(DELIVERY_ATTEMPT);
+        return (int?)GetHeader(DeliveryAttempt);
     }
 
     public T GetHeader<T>(string key)
@@ -141,30 +141,30 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
         if (headerName != null && headerValue != null)
         {
             base.VerifyType(headerName, headerValue);
-            if (EXPIRATION_DATE.Equals(headerName))
+            if (ExpirationDate.Equals(headerName))
             {
                 if (!(headerValue is DateTime || headerValue is long))
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a Date or Long.");
                 }
             }
-            else if (SEQUENCE_NUMBER.Equals(headerName)
-                     || SEQUENCE_SIZE.Equals(headerName)
-                     || PRIORITY.Equals(headerName))
+            else if (SequenceNumber.Equals(headerName)
+                     || SequenceSize.Equals(headerName)
+                     || Priority.Equals(headerName))
             {
                 if (headerValue is not int)
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a integer.");
                 }
             }
-            else if (ROUTING_SLIP.Equals(headerName))
+            else if (RoutingSlip.Equals(headerName))
             {
                 if (headerValue is not IDictionary<string, object>)
                 {
                     throw new ArgumentException($"The '{headerName}' header value must be a IDictionary<string,object>.");
                 }
             }
-            else if (DUPLICATE_MESSAGE.Equals(headerName) && headerValue is not bool)
+            else if (DuplicateMessage.Equals(headerName) && headerValue is not bool)
             {
                 throw new ArgumentException($"The '{headerName}' header value must be a boolean.");
             }

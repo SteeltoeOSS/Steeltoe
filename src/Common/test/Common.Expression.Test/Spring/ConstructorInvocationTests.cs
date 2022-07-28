@@ -22,7 +22,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
     [Fact]
     public void TestNonExistentType()
     {
-        EvaluateAndCheckError("new FooBar()", SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM);
+        EvaluateAndCheckError("new FooBar()", SpelMessage.ConstructorInvocationProblem);
     }
 
     [Fact]
@@ -202,7 +202,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
                 throw new TestException();
             }
 
-            I = i;
+            this.I = i;
         }
 
         public Tester(PlaceOfBirth pob)

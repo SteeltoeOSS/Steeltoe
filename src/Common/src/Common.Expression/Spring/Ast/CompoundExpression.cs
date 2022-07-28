@@ -23,7 +23,7 @@ public class CompoundExpression : SpelNode
     {
         var valueRef = GetValueRef(state);
         var result = valueRef.GetValue();
-        _exitTypeDescriptor = _children[_children.Length - 1].ExitDescriptor;
+        exitTypeDescriptor = children[children.Length - 1].ExitDescriptor;
         return result;
     }
 
@@ -37,12 +37,12 @@ public class CompoundExpression : SpelNode
         return GetValueRef(state).IsWritable;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var strings = new List<string>();
         for (var i = 0; i < ChildCount; i++)
         {
-            strings.Add(GetChild(i).ToStringAST());
+            strings.Add(GetChild(i).ToStringAst());
         }
 
         return string.Join(".", strings);
@@ -50,7 +50,7 @@ public class CompoundExpression : SpelNode
 
     public override bool IsCompilable()
     {
-        foreach (var child in _children)
+        foreach (var child in children)
         {
             if (!child.IsCompilable())
             {
@@ -63,22 +63,22 @@ public class CompoundExpression : SpelNode
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        foreach (var child in _children)
+        foreach (var child in children)
         {
             child.GenerateCode(gen, cf);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
         if (ChildCount == 1)
         {
-            return _children[0].GetValueRef(state);
+            return children[0].GetValueRef(state);
         }
 
-        var nextNode = _children[0];
+        var nextNode = children[0];
         try
         {
             var result = nextNode.GetValueInternal(state);
@@ -88,7 +88,7 @@ public class CompoundExpression : SpelNode
                 try
                 {
                     state.PushActiveContextObject(result);
-                    nextNode = _children[i];
+                    nextNode = children[i];
 
                     result = nextNode.GetValueInternal(state);
                 }
@@ -101,7 +101,7 @@ public class CompoundExpression : SpelNode
             try
             {
                 state.PushActiveContextObject(result);
-                nextNode = _children[cc - 1];
+                nextNode = children[cc - 1];
                 return nextNode.GetValueRef(state);
             }
             finally

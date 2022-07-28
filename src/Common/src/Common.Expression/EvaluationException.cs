@@ -23,8 +23,8 @@ public class EvaluationException : ExpressionException
     {
     }
 
-    public EvaluationException(string expressionstring, string message)
-        : base(expressionstring, message)
+    public EvaluationException(string expressionString, string message)
+        : base(expressionString, message)
     {
     }
 

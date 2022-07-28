@@ -12,7 +12,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class PropertiesConversionSpelTests
 {
-    private static readonly SpelExpressionParser _parser = new ();
+    private static readonly SpelExpressionParser Parser = new ();
 
     [Fact]
     public void Props()
@@ -23,7 +23,7 @@ public class PropertiesConversionSpelTests
             { "y", "2" },
             { "z", "3" }
         };
-        var expression = _parser.ParseExpression("Foo(#props)");
+        var expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", props);
         var result = expression.GetValue<string>(context, new TestBean());
@@ -39,7 +39,7 @@ public class PropertiesConversionSpelTests
             { "y", "2" },
             { "z", "3" }
         };
-        var expression = _parser.ParseExpression("Foo(#props)");
+        var expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
         var result = expression.GetValue<string>(context, new TestBean());
@@ -56,7 +56,7 @@ public class PropertiesConversionSpelTests
             { "z", "3" },
             { "a", Guid.NewGuid() }
         };
-        var expression = _parser.ParseExpression("Foo(#props)");
+        var expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
         var result = expression.GetValue<string>(context, new TestBean());
@@ -72,7 +72,7 @@ public class PropertiesConversionSpelTests
             { "y", 2 },
             { "z", "3" }
         };
-        var expression = _parser.ParseExpression("Foo(#props)");
+        var expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
         var result = expression.GetValue<string>(context, new TestBean());

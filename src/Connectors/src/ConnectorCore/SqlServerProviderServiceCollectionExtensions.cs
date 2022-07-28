@@ -17,13 +17,13 @@ namespace Steeltoe.Connector.SqlServer;
 public static class SqlServerProviderServiceCollectionExtensions
 {
     /// <summary>
-    /// Add SQL Server to a ServiceCollection
+    /// Add SQL Server to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -43,14 +43,14 @@ public static class SqlServerProviderServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add SQL Server to a ServiceCollection
+    /// Add SQL Server to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">cloud foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">cloud foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
     public static IServiceCollection AddSqlServerConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)

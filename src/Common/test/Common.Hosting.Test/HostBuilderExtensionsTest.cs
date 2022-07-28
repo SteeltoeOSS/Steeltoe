@@ -164,9 +164,7 @@ public class HostBuilderExtensionsTest
 
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
     [Fact]
-#if NET6_0_OR_GREATER
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
-#endif
 #pragma warning disable S2699 // Tests should include assertions
     public void UseCloudHosting_GenericHost_UsesLocalPortSettings()
 #pragma warning restore S2699 // Tests should include assertions
@@ -185,7 +183,6 @@ public class HostBuilderExtensionsTest
         host.Start();
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     [Trait("Category", "SkipOnMacOS")] // for .NET 5+, this test produces an admin prompt on OSX
     public async Task UseCloudHosting_WebApplication_UsesLocalPortSettings()
@@ -236,5 +233,4 @@ public class HostBuilderExtensionsTest
         Assert.Single(addressFeature.Addresses);
         Assert.Equal("http://[::]:5042", addressFeature.Addresses.First());
     }
-#endif
 }

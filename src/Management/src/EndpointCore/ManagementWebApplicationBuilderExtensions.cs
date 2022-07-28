@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Logging;
@@ -27,9 +26,9 @@ namespace Steeltoe.Management.Endpoint;
 public static class ManagementWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Adds the Database Migrations actuator to the application
+    /// Adds the Database Migrations actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddDbMigrationsActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddDbMigrationsActuator(applicationBuilder.Configuration);
@@ -38,9 +37,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Environment actuator to the application
+    /// Adds the Environment actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddEnvActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddEnvActuator(applicationBuilder.Configuration);
@@ -49,9 +48,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration);
@@ -60,10 +59,10 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="contributors">Types that contribute to the overall health of the app</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="contributors">Types that contribute to the overall health of the app.</param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, Type[] contributors)
     {
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, contributors);
@@ -72,11 +71,11 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Health actuator to the application
+    /// Adds the Health actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="aggregator">Custom health aggregator</param>
-    /// <param name="contributors">Types that contribute to the overall health of the app</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="aggregator">Custom health aggregator.</param>
+    /// <param name="contributors">Types that contribute to the overall health of the app.</param>
     public static WebApplicationBuilder AddHealthActuator(this WebApplicationBuilder applicationBuilder, IHealthAggregator aggregator, Type[] contributors)
     {
         applicationBuilder.Services.AddHealthActuator(applicationBuilder.Configuration, aggregator, contributors);
@@ -85,9 +84,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the HeapDump actuator to the application
+    /// Adds the HeapDump actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddHeapDumpActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddHeapDumpActuator(applicationBuilder.Configuration);
@@ -96,9 +95,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Hypermedia actuator to the application
+    /// Adds the Hypermedia actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddHypermediaActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddHypermediaActuator(applicationBuilder.Configuration);
@@ -107,9 +106,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration);
@@ -118,10 +117,10 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Info actuator to the application
+    /// Adds the Info actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="contributors">Contributors to application information</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="contributors">Contributors to application information.</param>
     public static WebApplicationBuilder AddInfoActuator(this WebApplicationBuilder applicationBuilder, IInfoContributor[] contributors)
     {
         applicationBuilder.Services.AddInfoActuator(applicationBuilder.Configuration, contributors);
@@ -130,9 +129,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Loggers actuator to the application
+    /// Adds the Loggers actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddLoggersActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Logging.AddDynamicConsole();
@@ -142,9 +141,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Mappings actuator to the application
+    /// Adds the Mappings actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddMappingsActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddMappingsActuator(applicationBuilder.Configuration);
@@ -153,9 +152,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Metrics actuator to the application
+    /// Adds the Metrics actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddMetricsActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddMetricsActuator(applicationBuilder.Configuration);
@@ -164,9 +163,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Refresh actuator to the application
+    /// Adds the Refresh actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddRefreshActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddRefreshActuator(applicationBuilder.Configuration);
@@ -175,10 +174,10 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the ThreadDump actuator to the application
+    /// Adds the ThreadDump actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static WebApplicationBuilder AddThreadDumpActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Services.AddThreadDumpActuator(applicationBuilder.Configuration, mediaTypeVersion);
@@ -187,10 +186,10 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Trace actuator to the application
+    /// Adds the Trace actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static WebApplicationBuilder AddTraceActuator(this WebApplicationBuilder applicationBuilder, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Services.AddTraceActuator(applicationBuilder.Configuration, mediaTypeVersion);
@@ -199,9 +198,9 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds the Cloud Foundry actuator to the application
+    /// Adds the Cloud Foundry actuator to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddCloudFoundryActuator(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddCloudFoundryActuator(applicationBuilder.Configuration);
@@ -210,11 +209,11 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Adds all Steeltoe Actuators to the application
+    /// Adds all Steeltoe Actuators to the application.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
-    /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" /></param>
-    /// <param name="mediaTypeVersion">Specify the media type version to use in the response</param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
+    /// <param name="configureEndpoints"><see cref="IEndpointConventionBuilder" />.</param>
+    /// <param name="mediaTypeVersion">Specify the media type version to use in the response.</param>
     public static WebApplicationBuilder AddAllActuators(this WebApplicationBuilder applicationBuilder, Action<IEndpointConventionBuilder> configureEndpoints = null, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         applicationBuilder.Logging.AddDynamicConsole();
@@ -224,13 +223,12 @@ public static class ManagementWebApplicationBuilderExtensions
     }
 
     /// <summary>
-    /// Add Wavefront Metrics Exporter
+    /// Add Wavefront Metrics Exporter.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" /></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
     public static WebApplicationBuilder AddWavefrontMetrics(this WebApplicationBuilder applicationBuilder)
     {
         applicationBuilder.Services.AddWavefrontMetrics();
         return applicationBuilder;
     }
 }
-#endif

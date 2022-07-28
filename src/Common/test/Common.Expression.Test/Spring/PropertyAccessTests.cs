@@ -35,10 +35,10 @@ public class PropertyAccessTests : AbstractExpressionTests
     public void TestNonExistentPropertiesAndMethods()
     {
         // madeup does not exist as a property
-        EvaluateAndCheckError("madeup", SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, 0);
+        EvaluateAndCheckError("madeup", SpelMessage.PropertyOrFieldNotReadable, 0);
 
         // name is ok but foobar does not exist:
-        EvaluateAndCheckError("Name.foobar", SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE, 5);
+        EvaluateAndCheckError("Name.foobar", SpelMessage.PropertyOrFieldNotReadable, 5);
     }
 
     /**
@@ -48,13 +48,13 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void TestAccessingOnNullObject()
     {
-        var expr = (SpelExpression)_parser.ParseExpression("madeup");
+        var expr = (SpelExpression)Parser.ParseExpression("madeup");
         var context = new StandardEvaluationContext(null);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue(context));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_READABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotReadableOnNull, ex.MessageCode);
         Assert.False(expr.IsWritable(context));
         ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(context, "abc"));
-        Assert.Equal(SpelMessage.PROPERTY_OR_FIELD_NOT_WRITABLE_ON_NULL, ex.MessageCode);
+        Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
     // Adding a new property accessor just for a particular type
@@ -77,13 +77,13 @@ public class PropertyAccessTests : AbstractExpressionTests
         var o = expr.GetValue(ctx);
         Assert.NotNull(o);
 
-        var flibbleexpr = parser.ParseRaw("new String('hello').flibbles");
-        flibbleexpr.SetValue(ctx, 99);
-        i = flibbleexpr.GetValue(ctx, typeof(int));
+        var expression = parser.ParseRaw("new String('hello').flibbles");
+        expression.SetValue(ctx, 99);
+        i = expression.GetValue(ctx, typeof(int));
         Assert.Equal(99, (int)i);
 
         // Cannot set it to a string value
-        Assert.Throws<SpelEvaluationException>(() => flibbleexpr.SetValue(ctx, "not allowed"));
+        Assert.Throws<SpelEvaluationException>(() => expression.SetValue(ctx, "not allowed"));
 
         // message will be: EL1063E:(pos 20): A problem occurred whilst attempting to set the property
         // 'flibbles': 'Cannot set flibbles to an object of type 'class java.lang.String''
@@ -115,7 +115,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void TestAccessingPropertyOfClass()
     {
-        var expression = _parser.ParseExpression("FullName");
+        var expression = Parser.ParseExpression("FullName");
         var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
         Assert.Equal("System.String", value);
     }
@@ -138,14 +138,14 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void StandardGetClassAccess()
     {
-        Assert.Equal(typeof(string).FullName, _parser.ParseExpression("'a'.GetType().FullName").GetValue());
+        Assert.Equal(typeof(string).FullName, Parser.ParseExpression("'a'.GetType().FullName").GetValue());
     }
 
     [Fact]
     public void NoGetClassAccess()
     {
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
-        Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("'a'.GetType().Name").GetValue(context));
+        Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("'a'.GetType().Name").GetValue(context));
     }
 
     [Fact]
@@ -153,13 +153,13 @@ public class PropertyAccessTests : AbstractExpressionTests
     {
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
 
-        var expr = _parser.ParseExpression("Name");
+        var expr = Parser.ParseExpression("Name");
         var target = new Person("p1");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
         Assert.Equal("p2", expr.GetValue(context, target));
 
-        Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("Name='p3'").GetValue(context, target));
+        Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("Name='p3'").GetValue(context, target));
     }
 
     [Fact]
@@ -167,13 +167,13 @@ public class PropertyAccessTests : AbstractExpressionTests
     {
         var context = SimpleEvaluationContext.ForReadWriteDataBinding().Build();
 
-        var expr = _parser.ParseExpression("Name");
+        var expr = Parser.ParseExpression("Name");
         var target = new Person("p1");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
         Assert.Equal("p2", expr.GetValue(context, target));
 
-        _parser.ParseExpression("Name='p3'").GetValue(context, target);
+        Parser.ParseExpression("Name='p3'").GetValue(context, target);
         Assert.Equal("p3", target.Name);
         Assert.Equal("p3", expr.GetValue(context, target));
 
@@ -189,12 +189,12 @@ public class PropertyAccessTests : AbstractExpressionTests
         var context = SimpleEvaluationContext.ForReadWriteDataBinding().WithRootObject(target).Build();
         Assert.Same(target, context.RootObject.Value);
 
-        var expr = _parser.ParseExpression("Name");
+        var expr = Parser.ParseExpression("Name");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
         Assert.Equal("p2", expr.GetValue(context, target));
 
-        _parser.ParseExpression("Name='p3'").GetValue(context, target);
+        Parser.ParseExpression("Name='p3'").GetValue(context, target);
         Assert.Equal("p3", target.Name);
         Assert.Equal("p3", expr.GetValue(context, target));
 
@@ -208,7 +208,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     {
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
         var target = new Person("p1");
-        Assert.Throws<SpelEvaluationException>(() => _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+        Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
     }
 
     [Fact]
@@ -216,7 +216,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     {
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().WithInstanceMethods().Build();
         var target = new Person("p1");
-        Assert.Equal("1", _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+        Assert.Equal("1", Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
     }
 
     [Fact]
@@ -226,7 +226,7 @@ public class PropertyAccessTests : AbstractExpressionTests
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().
             WithInstanceMethods().WithTypedRootObject(target, typeof(object)).Build();
 
-        Assert.Equal("1", _parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
+        Assert.Equal("1", Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
         Assert.Same(target, context.RootObject.Value);
         Assert.Equal(typeof(object), context.RootObject.TypeDescriptor);
     }
@@ -235,9 +235,9 @@ public class PropertyAccessTests : AbstractExpressionTests
     public void PropertyAccessWithArrayIndexOutOfBounds()
     {
         var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
-        var expression = _parser.ParseExpression("StringArrayOfThreeItems[3]");
+        var expression = Parser.ParseExpression("StringArrayOfThreeItems[3]");
         var ex = Assert.Throws<SpelEvaluationException>(() => expression.GetValue(context, new Inventor()));
-        Assert.Equal(SpelMessage.ARRAY_INDEX_OUT_OF_BOUNDS, ex.MessageCode);
+        Assert.Equal(SpelMessage.ArrayIndexOutOfBounds, ex.MessageCode);
     }
 
     private sealed class StringyPropertyAccessor : IPropertyAccessor

@@ -10,7 +10,7 @@ namespace Steeltoe.Messaging.Converter;
 
 public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 {
-    public TypePrecedence Precedence { get; set; } = TypePrecedence.INFERRED;
+    public TypePrecedence Precedence { get; set; } = TypePrecedence.Inferred;
 
     public Type DefaultType { get; set; } = typeof(object);
 
@@ -55,7 +55,7 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 
     public Type GetInferredType(IMessageHeaders headers)
     {
-        if (HasInferredTypeHeader(headers) && Precedence.Equals(TypePrecedence.INFERRED))
+        if (HasInferredTypeHeader(headers) && Precedence.Equals(TypePrecedence.Inferred))
         {
             return FromInferredTypeHeader(headers);
         }

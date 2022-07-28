@@ -20,7 +20,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 [Obsolete("To be removed in the next major version.")]
 public class HttpClientCoreObserverTest : BaseTest
 {
-    private readonly PullmetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
 
     [Fact]
     public void Constructor_RegistersExpectedViews()
@@ -58,12 +58,12 @@ public class HttpClientCoreObserverTest : BaseTest
         var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
         obs.ProcessEvent("foobar", null);
-        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
+        obs.ProcessEvent(HttpClientCoreObserver.StopEvent, null);
 
         var act = new Activity("Test");
         act.Start();
-        obs.ProcessEvent(HttpClientCoreObserver.STOP_EVENT, null);
-        obs.ProcessEvent(HttpClientCoreObserver.EXCEPTION_EVENT, null);
+        obs.ProcessEvent(HttpClientCoreObserver.StopEvent, null);
+        obs.ProcessEvent(HttpClientCoreObserver.ExceptionEvent, null);
         act.Stop();
     }
 
@@ -116,7 +116,7 @@ public class HttpClientCoreObserverTest : BaseTest
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
         var req = GetHttpRequestMessage();
@@ -144,7 +144,7 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         Assert.Equal(2, countSummary.Value);
 
         act.Stop();
@@ -161,7 +161,7 @@ public class HttpClientCoreObserverTest : BaseTest
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var otelMetrics = GetTestMetrics(viewRegistry, exporter, null);
+        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
 
         var req = GetHttpRequestMessage();
 
@@ -186,7 +186,7 @@ public class HttpClientCoreObserverTest : BaseTest
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);
-        // TODO: Readd when aggregations are available
+        // TODO: Read when aggregations are available
         Assert.Equal(2, countSummary.Value);
 
         act.Stop();

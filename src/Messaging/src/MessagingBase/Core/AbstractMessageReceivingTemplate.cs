@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Core;
 
-public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendingTemplate<D>, IMessageReceivingOperations<D>
+public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractMessageSendingTemplate<TDestination>, IMessageReceivingOperations<TDestination>
 {
-    private D _defaultReceiveDestination;
+    private TDestination _defaultReceiveDestination;
 
-    public virtual D DefaultReceiveDestination
+    public virtual TDestination DefaultReceiveDestination
     {
         get
         {
@@ -33,7 +33,7 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         return DoReceiveAsync(RequiredDefaultReceiveDestination, cancellationToken);
     }
 
-    public virtual Task<IMessage> ReceiveAsync(D destination, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> ReceiveAsync(TDestination destination, CancellationToken cancellationToken = default)
     {
         return DoReceiveAsync(destination, cancellationToken);
     }
@@ -43,7 +43,7 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         return ReceiveAndConvertAsync<T>(RequiredDefaultReceiveDestination);
     }
 
-    public virtual async Task<T> ReceiveAndConvertAsync<T>(D destination, CancellationToken cancellationToken = default)
+    public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken = default)
     {
         var message = await DoReceiveAsync(destination, cancellationToken);
         if (message != null)
@@ -61,7 +61,7 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         return DoReceive(RequiredDefaultReceiveDestination);
     }
 
-    public virtual IMessage Receive(D destination)
+    public virtual IMessage Receive(TDestination destination)
     {
         return DoReceive(destination);
     }
@@ -71,7 +71,7 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         return ReceiveAndConvert<T>(RequiredDefaultReceiveDestination);
     }
 
-    public virtual T ReceiveAndConvert<T>(D destination)
+    public virtual T ReceiveAndConvert<T>(TDestination destination)
     {
         var message = DoReceive(destination);
         if (message != null)
@@ -84,7 +84,7 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         }
     }
 
-    protected virtual D RequiredDefaultReceiveDestination
+    protected virtual TDestination RequiredDefaultReceiveDestination
     {
         get
         {
@@ -97,9 +97,9 @@ public abstract class AbstractMessageReceivingTemplate<D> : AbstractMessageSendi
         }
     }
 
-    protected abstract Task<IMessage> DoReceiveAsync(D destination, CancellationToken cancellationToken);
+    protected abstract Task<IMessage> DoReceiveAsync(TDestination destination, CancellationToken cancellationToken);
 
-    protected abstract IMessage DoReceive(D destination);
+    protected abstract IMessage DoReceive(TDestination destination);
 
     protected virtual T DoConvert<T>(IMessage message)
     {

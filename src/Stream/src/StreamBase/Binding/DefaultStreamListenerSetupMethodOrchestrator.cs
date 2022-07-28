@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
-public partial class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListenerSetupMethodOrchestrator
+public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListenerSetupMethodOrchestrator
 {
     private readonly List<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
     private readonly List<IStreamListenerResultAdapter> _streamListenerResultAdapters;
@@ -34,7 +34,7 @@ public partial class DefaultStreamListenerSetupMethodOrchestrator : AbstractStre
     {
         var methodAnnotatedInboundName = streamListener.Target;
 
-        var streamListenerMethod = new StreamListenerMethodValidator(method, _context, _streamListenerParameterAdapters);
+        var streamListenerMethod = new StreamListenerMethodValidator(method, Context, _streamListenerParameterAdapters);
         streamListenerMethod.Validate(methodAnnotatedInboundName, streamListener.Condition);
 
         var isDeclarative = streamListenerMethod.CheckDeclarativeMethod(methodAnnotatedInboundName);
@@ -57,7 +57,7 @@ public partial class DefaultStreamListenerSetupMethodOrchestrator : AbstractStre
 
     private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementation, string outboundName, params object[] arguments)
     {
-        var bean = ActivatorUtilities.CreateInstance(_context.ServiceProvider, implementation);
+        var bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementation);
         if (typeof(void).Equals(method.ReturnType))
         {
             method.Invoke(bean, arguments);
@@ -78,7 +78,7 @@ public partial class DefaultStreamListenerSetupMethodOrchestrator : AbstractStre
                 }
             }
 
-            var targetBean = BindingHelpers.GetBindableTarget(_context, outboundName);
+            var targetBean = BindingHelpers.GetBindableTarget(Context, outboundName);
             foreach (var streamListenerResultAdapter in _streamListenerResultAdapters)
             {
                 if (streamListenerResultAdapter.Supports(result.GetType(), targetBean.GetType()))

@@ -13,7 +13,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContainerFactory<DirectMessageListenerContainer>
 {
-    public const string DEFAULT_SERVICE_NAME = "rabbitListenerContainerFactory";
+    public const string DefaultServiceName = "rabbitListenerContainerFactory";
 
     public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
         : base(applicationContext, loggerFactory)
@@ -42,7 +42,7 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 
     protected override DirectMessageListenerContainer CreateContainerInstance()
     {
-        return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, _loggerFactory);
+        return new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory, null, LoggerFactory);
     }
 
     protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
@@ -91,8 +91,8 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         DefaultRequeueRejected = containerOptions.DefaultRequeueRejected;
         if (containerOptions.IdleEventInterval.HasValue)
         {
-            var asMilli = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
-            IdleEventInterval = asMilli;
+            var asMilliseconds = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
+            IdleEventInterval = asMilliseconds;
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
@@ -107,7 +107,7 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
             //                RabbitRetryTemplateCustomizer.Target.LISTENER);
             // builder.retryOperations(retryTemplate);
             // MessageRecoverer recoverer = (this.messageRecoverer != null)
-            //        ? this.messageRecoverer : new RejectAndDontRequeueRecoverer();
+            //        ? this.messageRecoverer : new RejectAndDoNotRequeueRecoverer();
             // builder.recoverer(recoverer);
             // factory.setAdviceChain(builder.build());
         }

@@ -10,14 +10,14 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsObserverOptions : IMetricsObserverOptions
 {
-    internal const string MANAGEMENT_METRICS_PREFIX = "management:metrics:observer";
-    internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
-    internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
+    internal const string ManagementMetricsPrefix = "management:metrics:observer";
+    internal const string DefaultIngressIgnorePattern = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+    internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 
     public MetricsObserverOptions()
     {
-        IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
-        EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+        IngressIgnorePattern = DefaultIngressIgnorePattern;
+        EgressIgnorePattern = DefaultEgressIgnorePattern;
     }
 
     public MetricsObserverOptions(IConfiguration config)
@@ -27,7 +27,7 @@ public class MetricsObserverOptions : IMetricsObserverOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(MANAGEMENT_METRICS_PREFIX);
+        var section = config.GetSection(ManagementMetricsPrefix);
         if (section != null)
         {
             section.Bind(this);
@@ -35,12 +35,12 @@ public class MetricsObserverOptions : IMetricsObserverOptions
 
         if (string.IsNullOrEmpty(IngressIgnorePattern))
         {
-            IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
+            IngressIgnorePattern = DefaultIngressIgnorePattern;
         }
 
         if (string.IsNullOrEmpty(EgressIgnorePattern))
         {
-            EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+            EgressIgnorePattern = DefaultEgressIgnorePattern;
         }
     }
 

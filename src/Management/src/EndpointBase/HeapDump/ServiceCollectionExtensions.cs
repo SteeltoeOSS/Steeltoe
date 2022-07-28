@@ -11,16 +11,16 @@ using System;
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>
-/// Add services used by the HeapDump actuator
+/// Add services used by the HeapDump actuator.
 /// </summary>
 public static partial class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the services used by the Heap Dump actuator
+    /// Adds the services used by the Heap Dump actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection</param>
-    /// <param name="configuration">Reference to the configuration system</param>
-    /// <returns>A reference to the service collection</returns>
+    /// <param name="services">Reference to the service collection.</param>
+    /// <param name="configuration">Reference to the configuration system.</param>
+    /// <returns>A reference to the service collection.</returns>
     public static IServiceCollection AddHeapDumpActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)

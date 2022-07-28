@@ -15,7 +15,7 @@ public static class ConfigServerConfigurationBuilderExtensions
 {
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, ILoggerFactory logFactory = null)
     {
-        return configurationBuilder.AddConfigServer(ConfigServerClientSettings.DEFAULT_ENVIRONMENT, Assembly.GetEntryAssembly()?.GetName().Name, logFactory);
+        return configurationBuilder.AddConfigServer(ConfigServerClientSettings.DefaultEnvironment, Assembly.GetEntryAssembly()?.GetName().Name, logFactory);
     }
 
     public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, string environment, ILoggerFactory logFactory = null)
@@ -34,7 +34,7 @@ public static class ConfigServerConfigurationBuilderExtensions
         {
             Name = applicationName ?? Assembly.GetEntryAssembly()?.GetName().Name,
 
-            Environment = environment ?? ConfigServerClientSettings.DEFAULT_ENVIRONMENT
+            Environment = environment ?? ConfigServerClientSettings.DefaultEnvironment
         };
 
         return configurationBuilder.AddConfigServer(settings, logFactory);

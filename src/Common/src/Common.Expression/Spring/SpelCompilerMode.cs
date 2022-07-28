@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public enum SpelCompilerMode
 {
-    OFF,
-    IMMEDIATE,
-    MIXED
+    Off,
+    Immediate,
+    Mixed
 }

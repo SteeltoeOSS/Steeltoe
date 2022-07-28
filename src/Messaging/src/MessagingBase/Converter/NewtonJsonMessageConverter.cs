@@ -15,11 +15,11 @@ namespace Steeltoe.Messaging.Converter;
 
 public class NewtonJsonMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(NewtonJsonMessageConverter);
+    public const string DefaultServiceName = nameof(NewtonJsonMessageConverter);
 
     public JsonSerializerSettings Settings { get; }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public NewtonJsonMessageConverter()
         : base(new MimeType("application", "json", Encoding.UTF8))

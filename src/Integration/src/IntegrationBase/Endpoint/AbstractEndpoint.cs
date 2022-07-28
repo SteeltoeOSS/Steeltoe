@@ -13,7 +13,7 @@ namespace Steeltoe.Integration.Endpoint;
 
 public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
 {
-    private readonly object _lifecyclelock = new ();
+    private readonly object _lifecycleLock = new ();
     private IIntegrationServices _integrationServices;
 
     protected AbstractEndpoint(IApplicationContext context)
@@ -48,7 +48,7 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
     public Task Start()
     {
         var doTheStart = false;
-        lock (_lifecyclelock)
+        lock (_lifecycleLock)
         {
             if (!IsRunning)
             {
@@ -69,7 +69,7 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
     {
         var doTheStop = false;
 
-        lock (_lifecyclelock)
+        lock (_lifecycleLock)
         {
             if (IsRunning)
             {
@@ -90,7 +90,7 @@ public abstract class AbstractEndpoint : ISmartLifecycle, IServiceNameAware
     public Task Stop()
     {
         var doTheStop = false;
-        lock (_lifecyclelock)
+        lock (_lifecycleLock)
         {
             if (IsRunning)
             {

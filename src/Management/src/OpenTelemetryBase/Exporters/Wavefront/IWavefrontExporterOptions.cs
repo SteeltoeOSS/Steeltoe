@@ -4,9 +4,6 @@
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
-// TODO: [BREAKING] Rename type or change to interface and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public class IWavefrontExporterOptions
-#pragma warning restore S101 // Types should be named in PascalCase
+public interface IWavefrontExporterOptions
 {
 }

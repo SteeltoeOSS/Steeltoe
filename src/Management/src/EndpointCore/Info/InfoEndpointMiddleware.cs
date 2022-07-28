@@ -15,17 +15,17 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 {
     private readonly RequestDelegate _next;
 
-    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions mgmtOptions, ILogger<InfoEndpointMiddleware> logger = null)
-        : base(endpoint, mgmtOptions, logger: logger)
+    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger: logger)
     {
         _next = next;
     }
 
     public Task Invoke(HttpContext context)
     {
-        _logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
+        logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
 
-        if (_endpoint.ShouldInvoke(_mgmtOptions, _logger))
+        if (endpoint.ShouldInvoke(managementOptions, logger))
         {
             return HandleInfoRequestAsync(context);
         }
@@ -36,9 +36,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
     protected internal Task HandleInfoRequestAsync(HttpContext context)
     {
         var serialInfo = HandleRequest();
-        _logger?.LogDebug("Returning: {0}", serialInfo);
+        logger?.LogDebug("Returning: {0}", serialInfo);
 
-        context.HandleContentNegotiation(_logger);
+        context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
     }
 }

@@ -18,14 +18,14 @@ namespace Steeltoe.Connector.Oracle;
 public static class OracleProviderServiceCollectionExtensions
 {
     /// <summary>
-    /// Add Oracle and its IHealthContributor to a ServiceCollection
+    /// Add Oracle and its IHealthContributor to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection.</remarks>
     public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -47,13 +47,13 @@ public static class OracleProviderServiceCollectionExtensions
     /// <summary>
     /// Add Oracle and its IHealthContributor to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">cloud foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">cloud foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add steeltoeHealth checks even if community health checks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>OracleConnection is retrievable as both OracleConnection and IDbConnection.</remarks>
     public static IServiceCollection AddOracleConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)

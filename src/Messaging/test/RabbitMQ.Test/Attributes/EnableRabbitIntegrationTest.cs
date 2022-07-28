@@ -115,7 +115,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void AutoDeclareFanout()
+    public void AutoDeclareFanOut()
     {
         var template = _context.GetRabbitTemplate();
         var reply = template.ConvertSendAndReceive<string>("auto.exch.fanout", string.Empty, "foo");
@@ -123,7 +123,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void AutoDeclareAnonWitAtts()
+    public void AutoDeclareAnonWitAttributes()
     {
         var template = _context.GetRabbitTemplate();
         var received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
@@ -403,7 +403,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.True(_fixture.ErrorHandlerLatch.Wait(TimeSpan.FromSeconds(10)));
         var exception = _fixture.ErrorHandlerError.Value;
         Assert.NotNull(exception);
-        Assert.IsType<RabbitRejectAndDontRequeueException>(exception);
+        Assert.IsType<RabbitRejectAndDoNotRequeueException>(exception);
         var cause = exception.InnerException;
         Assert.IsType<ListenerExecutionFailedException>(cause);
         var cause2 = cause.InnerException;
@@ -458,11 +458,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestFanout()
+    public void TestFanOut()
     {
         var template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.metaFanout", string.Empty, "foo");
-        var service = _context.GetService<FanoutListener>();
+        var service = _context.GetService<FanOutListener>();
         Assert.True(service.Latch.Wait(TimeSpan.FromSeconds(10)));
     }
 
@@ -565,7 +565,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     public void MessagingMessageReturned()
     {
         var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("\"messaging\""))
-            .SetHeader(MessageHeaders.CONTENT_TYPE, "application/json")
+            .SetHeader(MessageHeaders.ContentType, "application/json")
             .Build();
         var template = _context.GetRabbitTemplate();
         message = template.SendAndReceive("test.messaging.message", message);
@@ -579,7 +579,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     public void ByteArrayMessageReturned()
     {
         var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("amqp"))
-            .SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain")
+            .SetHeader(MessageHeaders.ContentType, "text/plain")
             .Build();
         var template = _context.GetRabbitTemplate();
         message = template.SendAndReceive("test.amqp.message", message);
@@ -606,9 +606,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("manual.acks.1") as DirectMessageListenerContainer;
-        Assert.Equal(AcknowledgeMode.MANUAL, container.AcknowledgeMode);
+        Assert.Equal(AcknowledgeMode.Manual, container.AcknowledgeMode);
         var container2 = registry.GetListenerContainer("manual.acks.2") as DirectMessageListenerContainer;
-        Assert.Equal(AcknowledgeMode.MANUAL, container2.AcknowledgeMode);
+        Assert.Equal(AcknowledgeMode.Manual, container2.AcknowledgeMode);
     }
 
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
@@ -746,7 +746,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             {
                 var context = p.GetRequiredService<IApplicationContext>();
                 var loggerFactory = p.GetService<ILoggerFactory>();
-                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME) as DirectRabbitListenerContainerFactory;
+                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName) as DirectRabbitListenerContainerFactory;
                 var listener = new TestManualContainerListener(ManualContainerLatch, Message);
                 var endpoint = new SimpleRabbitListenerEndpoint(context, listener, loggerFactory);
                 endpoint.SetQueueNames("test.manual.container");
@@ -760,7 +760,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddSingleton<ISmartLifecycle>(p =>
             {
                 var context = p.GetRequiredService<IApplicationContext>();
-                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DEFAULT_SERVICE_NAME); // as DirectRabbitListenerContainerFactory;
+                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName); // as DirectRabbitListenerContainerFactory;
                 var container = defFactory.CreateListenerContainer() as DirectMessageListenerContainer;
                 container.ServiceName = "factoryCreatedContainerNoListener";
                 container.SetQueueNames("test.no.listener.yet");
@@ -856,7 +856,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddSingleton<ITxClassLevel, TxClassLevel>();
             services.AddSingleton<MultiListenerService>();
             services.AddSingleton<MultiListenerJsonService>();
-            services.AddSingleton<FanoutListener>();
+            services.AddSingleton<FanOutListener>();
 
             services.AddRabbitListeners<MyService>(config);
             services.AddRabbitListeners<IMyServiceInterface>(config);
@@ -864,7 +864,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListeners<MultiListenerService>(config);
             services.AddRabbitListeners<MultiListenerJsonService>(config);
             services.AddRabbitListeners<ITxClassLevel>(config);
-            services.AddRabbitListeners<FanoutListener>(config);
+            services.AddRabbitListeners<FanOutListener>(config);
 
             services.AddRabbitQueue(new Queue("sendTo.replies", false, false, false));
             services.AddRabbitQueue(new Queue("sendTo.replies.spel", false, false, false));
@@ -906,7 +906,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 return result;
             });
 
-            services.AddRabbitListenerErrorHandler<UpcaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
+            services.AddRabbitListenerErrorHandler<UpperCaseAndRepeatListenerErrorHandler>("upcaseAndRepeatErrorHandler");
             services.AddRabbitListenerErrorHandler<AlwaysBarListenerErrorHandler>("alwaysBARHandler");
             services.AddRabbitListenerErrorHandler("throwANewException", _ => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
             return services;
@@ -933,8 +933,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         };
     }
 
-    [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FANOUT)]
-    public class FanoutListener
+    [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
+    public class FanOutListener
     {
         public CountdownEvent Latch { get; } = new (2);
 
@@ -1002,10 +1002,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
 
         [DeclareQueue(Name = "auto.declare.fanout", AutoDelete = "True")]
-        [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.FANOUT)]
+        [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
         [DeclareQueueBinding(Name = "auto.fanout.binding", QueueName = "auto.declare.fanout", ExchangeName = "auto.exch.fanout")]
         [RabbitListener(Binding = "auto.fanout.binding")]
-        public string HandleWithFanout(string foo) => foo.ToUpper() + foo.ToUpper();
+        public string HandleWithFanOut(string foo) => foo.ToUpper() + foo.ToUpper();
 
         [DeclareAnonymousQueue("anon2")]
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
@@ -1017,7 +1017,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
         [DeclareQueueBinding(Name = "auto.exch.anon.atts.rk", QueueName = "#{@anon3}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.atts.rk")]
         [RabbitListener(Binding = "auto.exch.anon.atts.rk")]
-        public string HandleWithDeclareAnonQueueWithAtts(string foo, [Header(RabbitMessageHeaders.CONSUMER_QUEUE)] string queue) =>
+        public string HandleWithDeclareAnonQueueWithAttributes(string foo, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue) =>
             $"{foo}:{queue}";
 
         [RabbitListener("test.simple", Group = "testGroup")]
@@ -1039,7 +1039,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public string CapitalizeWithMessage(IMessage<string> message) => message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
 
         [RabbitListener("test.reply")]
-        public IMessage Reply(string payload, [Header] string foo, [Header(RabbitMessageHeaders.CONSUMER_TAG)] string tag)
+        public IMessage Reply(string payload, [Header] string foo, [Header(RabbitMessageHeaders.ConsumerTag)] string tag)
             => RabbitMessageBuilder.WithPayload(payload).SetHeader("foo", foo).SetHeader("bar", tag).Build();
 
         [RabbitListener("test.sendTo")]
@@ -1094,7 +1094,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public string HandleWithHeadersExchange(string foo) => foo.ToUpper();
 
         [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]
-        public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDontRequeueException("dlq");
+        public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDoNotRequeueException("dlq");
 
         [RabbitListener("test.return.exceptions", ReturnExceptions = "${some:prop?True}")]
         public string AlwaysFails(string data) => throw new InvalidOperationException("return this");
@@ -1126,19 +1126,19 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         [RabbitListener("test.amqp.message")]
         public IMessage<byte[]> AmqpMessage(string input)
-            => (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.CONTENT_TYPE, "text/plain").SetHeader("foo", "bar").Build();
+            => (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.ContentType, "text/plain").SetHeader("foo", "bar").Build();
 
         [RabbitListener("test.bytes.to.string")]
         public string BytesToString(string input) => input.ToUpper();
 
-        [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "MANUAL")]
-        public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
+        [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "Manual")]
+        public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DeliveryTag)] ulong tag)
         {
             return InnerManual(input, channel, tag);
         }
 
-        [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).MANUAL}")]
-        public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DELIVERY_TAG)] ulong tag)
+        [RabbitListener("manual.acks.2", Id = "manual.acks.2", AckMode = "#{T(Steeltoe.Messaging.RabbitMQ.Core.AcknowledgeMode).Manual}")]
+        public string Manual2(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DeliveryTag)] ulong tag)
         {
             return InnerManual(input, channel, tag);
         }
@@ -1203,7 +1203,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         // @Transactional
         [RabbitHandler]
-        string Baz([Payload] Baz baz, [Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk);
+        string Baz([Payload] Baz baz, [Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk);
     }
 
     public class TxClassLevel : ITxClassLevel
@@ -1286,7 +1286,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         }
 
         [RabbitHandler]
-        public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux)
+        public string Qux([Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk, [Payload] Qux qux)
             => $"QUX: {qux.Field}: {rk}";
 
         [RabbitHandler(true)]
@@ -1322,7 +1322,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public string Baz(Baz baz) => $"BAZ: {baz.Field}";
 
         [RabbitHandler]
-        public string Qux([Header(RabbitMessageHeaders.RECEIVED_ROUTING_KEY)] string rk, [Payload] Qux qux) =>
+        public string Qux([Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk, [Payload] Qux qux) =>
             $"QUX: {qux.Field}: {rk}";
     }
 
@@ -1369,9 +1369,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
     }
 
-    public class UpcaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
+    public class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
     {
-        public string ServiceName { get; set; } = nameof(UpcaseAndRepeatListenerErrorHandler);
+        public string ServiceName { get; set; } = nameof(UpperCaseAndRepeatListenerErrorHandler);
 
         public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
         {
@@ -1391,7 +1391,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
         {
-            ErrorHandlerChannel.Value = message.Headers.Get<RC.IModel>(RabbitMessageHeaders.CHANNEL);
+            ErrorHandlerChannel.Value = message.Headers.Get<RC.IModel>(RabbitMessageHeaders.Channel);
             throw new InvalidOperationException("from error handler", exception.InnerException);
         }
     }

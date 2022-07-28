@@ -21,16 +21,16 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [Obsolete("This extension will be removed in a future release, please use SpringBootAdminClientHostedService instead")]
 public static class SpringBootAdminApplicationBuilderExtensions
 {
-    private const int ConnectionTimeoutMs = 100000;
+    private const int _connectionTimeoutMs = 100000;
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
     /// <summary>
-    /// Register the application with a Spring-Boot-Admin server
+    /// Register the application with a Spring-Boot-Admin server.
     /// </summary>
-    /// <param name="builder"><see cref="IApplicationBuilder"/></param>
-    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided</param>
-    /// <param name="httpClient">A customized HttpClient. [Bring your own auth]</param>
+    /// <param name="builder"><see cref="IApplicationBuilder"/>.</param>
+    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided.</param>
+    /// <param name="httpClient">A customized HttpClient. [Bring your own auth].</param>
     public static void RegisterWithSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
     {
         if (builder is null)
@@ -43,16 +43,16 @@ public static class SpringBootAdminApplicationBuilderExtensions
         var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
         var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
         var options = new SpringBootAdminClientOptions(configuration, appInfo);
-        var mgmtOptions = new ManagementEndpointOptions(configuration);
+        var managementOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
         var basePath = options.BasePath.TrimEnd('/');
-        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, ConnectionTimeoutMs);
+        httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, _connectionTimeoutMs);
 
         var app = new Application
         {
             Name = options.ApplicationName ?? "Steeltoe",
-            HealthUrl = new Uri($"{basePath}{mgmtOptions.Path}/{healthOptions.Path}"),
-            ManagementUrl = new Uri($"{basePath}{mgmtOptions.Path}"),
+            HealthUrl = new Uri($"{basePath}{managementOptions.Path}/{healthOptions.Path}"),
+            ManagementUrl = new Uri($"{basePath}{managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
             Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
         };
@@ -64,14 +64,24 @@ public static class SpringBootAdminApplicationBuilderExtensions
         {
             logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
 
-            var result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
-            if (result.IsSuccessStatusCode)
+            HttpResponseMessage result = null;
+            try
+            {
+                result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                logger?.LogError(ex, "Error connecting to SpringBootAdmin: {Message}", ex.Message);
+            }
+
+            if (result is { IsSuccessStatusCode: true })
             {
                 RegistrationResult = result.Content.ReadFromJsonAsync<RegistrationResult>().GetAwaiter().GetResult();
             }
             else
             {
-                logger.LogError($"Error registering with SpringBootAdmin {result}");
+                var errorResponse = result != null ? result.Content.ReadAsStringAsync().Result : string.Empty;
+                logger?.LogError("Error registering with SpringBootAdmin: {Result} \n {Message}", result, errorResponse);
             }
         });
 

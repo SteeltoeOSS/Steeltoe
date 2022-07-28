@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
-public interface IReplyingMessageListener<in T, out R>
+public interface IReplyingMessageListener<in TMessage, out TResult>
 {
-    R HandleMessage(T t);
+    TResult HandleMessage(TMessage t);
 }

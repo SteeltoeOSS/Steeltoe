@@ -26,23 +26,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListener
 {
-    protected readonly ILogger _logger;
+    protected readonly ILogger Logger;
 
-    private const string DEFAULT_ENCODING = "UTF-8";
+    private const string DefaultEncoding = "UTF-8";
 
-    private static readonly SpelExpressionParser PARSER = new ();
-    private static readonly IParserContext PARSER_CONTEXT = new TemplateParserContext("!{", "}");
+    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly IParserContext ParserContext = new TemplateParserContext("!{", "}");
 
     protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
     {
-        _logger = logger;
+        Logger = logger;
         MessageConverter = new RabbitMQ.Support.Converter.SimpleMessageConverter();
         ApplicationContext = context;
     }
 
     public IApplicationContext ApplicationContext { get; set; }
 
-    public virtual string Encoding { get; set; } = DEFAULT_ENCODING;
+    public virtual string Encoding { get; set; } = DefaultEncoding;
 
     public virtual string ResponseRoutingKey { get; set; } = string.Empty;
 
@@ -64,7 +64,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual AcknowledgeMode ContainerAckMode { get; set; }
 
-    public virtual bool IsManualAck => ContainerAckMode == AcknowledgeMode.MANUAL;
+    public virtual bool IsManualAck => ContainerAckMode == AcknowledgeMode.Manual;
 
     public virtual StandardEvaluationContext EvalContext { get; set; } = new ();
 
@@ -76,9 +76,9 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual void SetResponseAddress(string defaultReplyTo)
     {
-        if (defaultReplyTo.StartsWith(PARSER_CONTEXT.ExpressionPrefix))
+        if (defaultReplyTo.StartsWith(ParserContext.ExpressionPrefix))
         {
-            ResponseExpression = PARSER.ParseExpression(defaultReplyTo, PARSER_CONTEXT);
+            ResponseExpression = Parser.ParseExpression(defaultReplyTo, ParserContext);
         }
         else
         {
@@ -146,7 +146,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected virtual void HandleListenerException(Exception exception)
     {
-        _logger?.LogError(exception, "Listener execution failed");
+        Logger?.LogError(exception, "Listener execution failed");
     }
 
     protected virtual object ExtractMessage(IMessage message)
@@ -173,7 +173,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
             {
                 if (!IsManualAck)
                 {
-                    _logger?.LogWarning("Container AcknowledgeMode must be MANUAL for a Future<?> return type; "
+                    Logger?.LogWarning("Container AcknowledgeMode must be MANUAL for a Future<?> return type; "
                                         + "otherwise the container will ack the message immediately");
                 }
 
@@ -198,14 +198,14 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         else
         {
-            _logger?.LogWarning("Listener method returned result [" + resultArg
+            Logger?.LogWarning("Listener method returned result [" + resultArg
                                                                     + "]: not generating response message for it because no Rabbit Channel given");
         }
     }
 
     protected virtual void DoHandleResult(InvocationResult resultArg, IMessage request, RC.IModel channel, object source)
     {
-        _logger?.LogDebug("Listener method returned result [{result}] - generating response message for it", resultArg);
+        Logger?.LogDebug("Listener method returned result [{result}] - generating response message for it", resultArg);
         try
         {
             var response = BuildMessage(channel, resultArg.ReturnValue, resultArg.ReturnType);
@@ -305,7 +305,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
         try
         {
-            _logger?.LogDebug("Publishing response to exchange = [{exchange}], routingKey = [{routingKey}]", replyTo.ExchangeName, replyTo.RoutingKey);
+            Logger?.LogDebug("Publishing response to exchange = [{exchange}], routingKey = [{routingKey}]", replyTo.ExchangeName, replyTo.RoutingKey);
             if (RetryTemplate == null)
             {
                 DoPublish(channel, replyTo, message);
@@ -323,8 +323,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
                     {
                         if (RecoveryCallback != null)
                         {
-                            ctx.SetAttribute(SendRetryContextAccessor.MESSAGE, messageToSend);
-                            ctx.SetAttribute(SendRetryContextAccessor.ADDRESS, replyTo);
+                            ctx.SetAttribute(SendRetryContextAccessor.Message, messageToSend);
+                            ctx.SetAttribute(SendRetryContextAccessor.Address, replyTo);
                             RecoveryCallback.Recover(ctx);
                             return null;
                         }
@@ -380,7 +380,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
     {
         if (deferredResult == null)
         {
-            _logger?.LogDebug("Async result is null, ignoring");
+            Logger?.LogDebug("Async result is null, ignoring");
         }
         else
         {
@@ -415,20 +415,20 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to ack message");
+            Logger?.LogError(e, "Failed to ack message");
         }
     }
 
     private void AsyncFailure(IMessage request, RC.IModel channel, Exception exception)
     {
-        _logger?.LogError(exception, "Async method was completed with an exception for {request} ", request);
+        Logger?.LogError(exception, "Async method was completed with an exception for {request} ", request);
         try
         {
-            channel.BasicNack(request.Headers.DeliveryTag().Value, false, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, _logger));
+            channel.BasicNack(request.Headers.DeliveryTag().Value, false, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, Logger));
         }
         catch (Exception e)
         {
-            _logger?.LogError(e, "Failed to nack message");
+            Logger?.LogError(e, "Failed to nack message");
         }
     }
 

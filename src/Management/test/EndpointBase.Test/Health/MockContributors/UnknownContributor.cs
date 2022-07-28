@@ -14,7 +14,7 @@ public class UnknownContributor : IHealthContributor
     {
         return new HealthCheckResult
         {
-            Status = HealthStatus.UNKNOWN
+            Status = HealthStatus.Unknown
         };
     }
 }

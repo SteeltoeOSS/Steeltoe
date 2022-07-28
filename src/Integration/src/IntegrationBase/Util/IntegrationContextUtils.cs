@@ -11,36 +11,36 @@ namespace Steeltoe.Integration.Util;
 
 public static class IntegrationContextUtils
 {
-    public const string NULL_CHANNEL_BEAN_NAME = "nullChannel";
+    public const string NullChannelBeanName = "nullChannel";
 
-    public const string ERROR_CHANNEL_BEAN_NAME = "errorChannel";
+    public const string ErrorChannelBeanName = "errorChannel";
 
-    public const string INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME = "integrationEvaluationContext";
+    public const string IntegrationEvaluationContextBeanName = "integrationEvaluationContext";
 
-    public const string INTEGRATION_SIMPLE_EVALUATION_CONTEXT_BEAN_NAME = "integrationSimpleEvaluationContext";
+    public const string IntegrationSimpleEvaluationContextBeanName = "integrationSimpleEvaluationContext";
 
-    public const string MESSAGE_HANDLER_FACTORY_BEAN_NAME = "integrationMessageHandlerMethodFactory";
+    public const string MessageHandlerFactoryBeanName = "integrationMessageHandlerMethodFactory";
 
-    public const string ARGUMENT_RESOLVER_MESSAGE_CONVERTER_BEAN_NAME = "integrationArgumentResolverMessageConverter";
+    public const string ArgumentResolverMessageConverterBeanName = "integrationArgumentResolverMessageConverter";
 
     public static IMessageChannel GetErrorChannel(IApplicationContext context)
     {
-        return context.GetService<IMessageChannel>(ERROR_CHANNEL_BEAN_NAME);
+        return context.GetService<IMessageChannel>(ErrorChannelBeanName);
     }
 
     public static IMessageChannel GetNullChannel(IApplicationContext context)
     {
-        return context.GetService<IMessageChannel>(NULL_CHANNEL_BEAN_NAME);
+        return context.GetService<IMessageChannel>(NullChannelBeanName);
     }
 
     public static IEvaluationContext GetEvaluationContext(IApplicationContext context)
     {
-        return context.GetService<IEvaluationContext>(INTEGRATION_EVALUATION_CONTEXT_BEAN_NAME);
+        return context.GetService<IEvaluationContext>(IntegrationEvaluationContextBeanName);
     }
 
     public static IEvaluationContext GetSimpleEvaluationContext(IApplicationContext context)
     {
-        return context.GetService<IEvaluationContext>(INTEGRATION_SIMPLE_EVALUATION_CONTEXT_BEAN_NAME);
+        return context.GetService<IEvaluationContext>(IntegrationSimpleEvaluationContextBeanName);
     }
 
     public static IExpressionParser GetExpressionParser(IApplicationContext context)

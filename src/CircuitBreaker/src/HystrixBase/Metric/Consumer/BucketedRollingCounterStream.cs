@@ -11,23 +11,23 @@ using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
-public abstract class BucketedRollingCounterStream<Event, Bucket, Output> : BucketedCounterStream<Event, Bucket, Output>
-    where Event : IHystrixEvent
+public abstract class BucketedRollingCounterStream<TEvent, TBucket, TOutput> : BucketedCounterStream<TEvent, TBucket, TOutput>
+    where TEvent : IHystrixEvent
 {
-    protected BehaviorSubject<Output> counterSubject;
+    protected BehaviorSubject<TOutput> counterSubject;
     private readonly AtomicBoolean _isSourceCurrentlySubscribed = new (false);
-    private readonly IObservable<Output> _sourceStream;
+    private readonly IObservable<TOutput> _sourceStream;
 
-    protected BucketedRollingCounterStream(IHystrixEventStream<Event> stream, int numBuckets, int bucketSizeInMs, Func<Bucket, Event, Bucket> appendRawEventToBucket, Func<Output, Bucket, Output> reduceBucket)
+    protected BucketedRollingCounterStream(IHystrixEventStream<TEvent> stream, int numBuckets, int bucketSizeInMs, Func<TBucket, TEvent, TBucket> appendRawEventToBucket, Func<TOutput, TBucket, TOutput> reduceBucket)
         : base(stream, numBuckets, bucketSizeInMs, appendRawEventToBucket)
     {
-        Func<IObservable<Bucket>, IObservable<Output>> reduceWindowToSummary = window =>
+        Func<IObservable<TBucket>, IObservable<TOutput>> reduceWindowToSummary = window =>
         {
             var result = window.Aggregate(EmptyOutputValue, reduceBucket).Select(n => n);
             return result;
         };
-        counterSubject = new BehaviorSubject<Output>(EmptyOutputValue);
-        _sourceStream = bucketedStream // stream broken up into buckets
+        counterSubject = new BehaviorSubject<TOutput>(EmptyOutputValue);
+        _sourceStream = BucketedStream // stream broken up into buckets
 
             .Window(numBuckets, 1) // emit overlapping windows of buckets
 
@@ -45,7 +45,7 @@ public abstract class BucketedRollingCounterStream<Event, Bucket, Output> : Buck
             .Publish().RefCount();                // multiple subscribers should get same data
     }
 
-    public override IObservable<Output> Observe()
+    public override IObservable<TOutput> Observe()
     {
         return _sourceStream;
     }
@@ -60,11 +60,11 @@ public abstract class BucketedRollingCounterStream<Event, Bucket, Output> : Buck
 
     public void StartCachingStreamValuesIfUnstarted()
     {
-        if (subscription.Value == null)
+        if (Subscription.Value == null)
         {
             // the stream is not yet started
             var candidateSubscription = Observe().Subscribe(counterSubject);
-            if (!subscription.CompareAndSet(null, candidateSubscription))
+            if (!Subscription.CompareAndSet(null, candidateSubscription))
             {
                 // lost the race to set the subscription, so we need to cancel this one
                 candidateSubscription.Dispose();
@@ -73,7 +73,7 @@ public abstract class BucketedRollingCounterStream<Event, Bucket, Output> : Buck
     }
 
     // Synchronous call to retrieve the last calculated bucket without waiting for any emissions
-    public Output Latest
+    public TOutput Latest
     {
         get
         {

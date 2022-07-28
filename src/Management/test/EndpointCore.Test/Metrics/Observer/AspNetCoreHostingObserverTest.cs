@@ -62,11 +62,11 @@ public class AspNetCoreHostingObserverTest : BaseTest
         var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
         observer.ProcessEvent("foobar", null);
-        observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
+        observer.ProcessEvent(AspNetCoreHostingObserver.StopEvent, null);
 
         var act = new Activity("Test");
         act.Start();
-        observer.ProcessEvent(AspNetCoreHostingObserver.STOP_EVENT, null);
+        observer.ProcessEvent(AspNetCoreHostingObserver.StopEvent, null);
         act.Stop();
     }
 

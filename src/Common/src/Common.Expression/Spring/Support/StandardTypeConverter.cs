@@ -44,7 +44,7 @@ public class StandardTypeConverter : ITypeConverter
                 message = value.GetType().FullName;
             }
 
-            throw new SpelEvaluationException(ex, SpelMessage.TYPE_CONVERSION_ERROR, message, target.ToString());
+            throw new SpelEvaluationException(ex, SpelMessage.TypeConversionError, message, target.ToString());
         }
     }
 }

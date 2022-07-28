@@ -36,7 +36,7 @@ public static class ConfigurationValuesHelper
     /// <param name="config">IConfiguration to search through.</param>
     /// <param name="defaultValue">The default Value if no configuration is found.</param>
     /// <param name="configPrefixes">The prefixes to search for in given order.</param>
-    /// <returns>Config value</returns>
+    /// <returns>Config value.</returns>
     public static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
     {
         foreach (var prefix in configPrefixes)
@@ -58,7 +58,7 @@ public static class ConfigurationValuesHelper
     /// <param name="config">IConfiguration to search through.</param>
     /// <param name="defaultValue">The default Value if no configuration is found.</param>
     /// <param name="configKeys">The fully-qualified keys to search for in given order.</param>
-    /// <returns>Value from config or default (if not found)</returns>
+    /// <returns>Value from config or default (if not found).</returns>
     public static string GetPreferredSetting(IConfiguration config, string defaultValue, params string[] configKeys)
     {
         foreach (var key in configKeys.Where(c => !string.IsNullOrEmpty(c)))

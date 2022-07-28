@@ -20,11 +20,11 @@ public class TracingOptionsTest
         var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
         Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
-        Assert.Equal(TracingOptions.DEFAULT_INGRESS_IGNORE_PATTERN, opts.IngressIgnorePattern);
+        Assert.Equal(TracingOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
         Assert.False(opts.AlwaysSample);
         Assert.False(opts.NeverSample);
         Assert.False(opts.UseShortTraceIds);
-        Assert.Equal(TracingOptions.DEFAULT_EGRESS_IGNORE_PATTERN, opts.EgressIgnorePattern);
+        Assert.Equal(TracingOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
     }
 
     [Fact]

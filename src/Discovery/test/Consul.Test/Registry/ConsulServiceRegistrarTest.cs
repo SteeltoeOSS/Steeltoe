@@ -12,7 +12,7 @@ namespace Steeltoe.Discovery.Consul.Registry.Test;
 public class ConsulServiceRegistrarTest
 {
     [Fact]
-    public void Construtor_ThrowsOnNulls()
+    public void Constructor_ThrowsOnNulls()
     {
         var registry = new Mock<IConsulServiceRegistry>().Object;
         var options = new ConsulDiscoveryOptions();
@@ -88,7 +88,7 @@ public class ConsulServiceRegistrarTest
         var registration = new ConsulRegistration();
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
         reg.Start();
-        Assert.Equal(0, reg._running);
+        Assert.Equal(0, reg.IsRunning);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class ConsulServiceRegistrarTest
         var registration = new ConsulRegistration();
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
         reg.Start();
-        Assert.Equal(1, reg._running);
+        Assert.Equal(1, reg.IsRunning);
         regMoq.Verify(a => a.Register(registration), Times.Once);
     }
 
@@ -111,11 +111,11 @@ public class ConsulServiceRegistrarTest
         var registration = new ConsulRegistration();
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
         reg.Start();
-        Assert.Equal(1, reg._running);
+        Assert.Equal(1, reg.IsRunning);
         regMoq.Verify(a => a.Register(registration), Times.Once);
         reg.Dispose();
         regMoq.Verify(a => a.Deregister(registration), Times.Once);
         regMoq.Verify(a => a.Dispose(), Times.Once);
-        Assert.Equal(0, reg._running);
+        Assert.Equal(0, reg.IsRunning);
     }
 }

@@ -49,7 +49,7 @@ public class ListTests : AbstractExpressionTests
     [Fact]
     public void TestInlineListError()
     {
-        ParseAndCheckError("{'abc'", SpelMessage.OOD);
+        ParseAndCheckError("{'abc'", SpelMessage.Ood);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ListTests : AbstractExpressionTests
     [Fact]
     public void TestRelOperatorsBetweenErrors02()
     {
-        EvaluateAndCheckError("'abc' between {5,7}", SpelMessage.NOT_COMPARABLE, 6);
+        EvaluateAndCheckError("'abc' between {5,7}", SpelMessage.NotComparable, 6);
     }
 
     [Fact]
@@ -139,7 +139,7 @@ public class ListTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var expression = (SpelExpression)parser.ParseExpression(expressionText);
-        var node = expression.AST;
+        var node = expression.Ast;
         var condition = node is InlineList;
         Assert.True(condition);
         var inlineList = (InlineList)node;

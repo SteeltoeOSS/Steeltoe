@@ -14,16 +14,16 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class Indexer : SpelNode
 {
-    private static readonly MethodInfo _listGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");
-    private static readonly MethodInfo _dictionaryGetItemMethod = typeof(IDictionary).GetMethods().Single(m => m.Name == "get_Item");
+    private static readonly MethodInfo ListGetItemMethod = typeof(IList).GetMethods().Single(m => m.Name == "get_Item");
+    private static readonly MethodInfo DictionaryGetItemMethod = typeof(IDictionary).GetMethods().Single(m => m.Name == "get_Item");
 
     private enum IndexedType
     {
-        ARRAY,
-        LIST,
-        MAP,
-        STRING,
-        OBJECT
+        Array,
+        List,
+        Map,
+        String,
+        Object
     }
 
     // These fields are used when the indexer is being used as a property read accessor.
@@ -70,19 +70,19 @@ public class Indexer : SpelNode
 
     public override bool IsCompilable()
     {
-        if (_indexedType == IndexedType.ARRAY)
+        if (_indexedType == IndexedType.Array)
         {
-            return _exitTypeDescriptor != null;
+            return exitTypeDescriptor != null;
         }
-        else if (_indexedType == IndexedType.LIST)
+        else if (_indexedType == IndexedType.List)
         {
-            return _children[0].IsCompilable();
+            return children[0].IsCompilable();
         }
-        else if (_indexedType == IndexedType.MAP)
+        else if (_indexedType == IndexedType.Map)
         {
-            return _children[0] is PropertyOrFieldReference || _children[0].IsCompilable();
+            return children[0] is PropertyOrFieldReference || children[0].IsCompilable();
         }
-        else if (_indexedType == IndexedType.OBJECT)
+        else if (_indexedType == IndexedType.Object)
         {
             // If the string name is changing the accessor is clearly going to change (so no compilation possible)
             return _cachedReadAccessor is ReflectivePropertyAccessor.OptimalPropertyAccessor && GetChild(0) is StringLiteral;
@@ -99,31 +99,31 @@ public class Indexer : SpelNode
             CodeFlow.LoadTarget(gen);
         }
 
-        if (_indexedType == IndexedType.ARRAY)
+        if (_indexedType == IndexedType.Array)
         {
-            var arrayType = _exitTypeDescriptor.Value.MakeArrayType();
+            var arrayType = exitTypeDescriptor.Value.MakeArrayType();
             gen.Emit(OpCodes.Castclass, arrayType);
-            var child = _children[0];
+            var child = children[0];
             cf.EnterCompilationScope();
             child.GenerateCode(gen, cf);
             cf.ExitCompilationScope();
-            gen.Emit(GetLdElemInsn(_exitTypeDescriptor.Value));
+            gen.Emit(GetLdElemInsn(exitTypeDescriptor.Value));
         }
-        else if (_indexedType == IndexedType.LIST)
+        else if (_indexedType == IndexedType.List)
         {
             gen.Emit(OpCodes.Castclass, typeof(IList));
             cf.EnterCompilationScope();
-            _children[0].GenerateCode(gen, cf);
+            children[0].GenerateCode(gen, cf);
             cf.ExitCompilationScope();
-            gen.Emit(OpCodes.Callvirt, _listGetItemMethod);
+            gen.Emit(OpCodes.Callvirt, ListGetItemMethod);
         }
-        else if (_indexedType == IndexedType.MAP)
+        else if (_indexedType == IndexedType.Map)
         {
             gen.Emit(OpCodes.Castclass, typeof(IDictionary));
 
             // Special case when the key is an unquoted string literal that will be parsed as
             // a property/field reference
-            if (_children[0] is PropertyOrFieldReference reference)
+            if (children[0] is PropertyOrFieldReference reference)
             {
                 var mapKeyName = reference.Name;
                 gen.Emit(OpCodes.Ldstr, mapKeyName);
@@ -131,13 +131,13 @@ public class Indexer : SpelNode
             else
             {
                 cf.EnterCompilationScope();
-                _children[0].GenerateCode(gen, cf);
+                children[0].GenerateCode(gen, cf);
                 cf.ExitCompilationScope();
             }
 
-            gen.Emit(OpCodes.Callvirt, _dictionaryGetItemMethod);
+            gen.Emit(OpCodes.Callvirt, DictionaryGetItemMethod);
         }
-        else if (_indexedType == IndexedType.OBJECT)
+        else if (_indexedType == IndexedType.Object)
         {
             if (_cachedReadAccessor is not ReflectivePropertyAccessor.OptimalPropertyAccessor accessor)
             {
@@ -164,15 +164,15 @@ public class Indexer : SpelNode
             }
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sj = new List<string>();
         for (var i = 0; i < ChildCount; i++)
         {
-            sj.Add(GetChild(i).ToStringAST());
+            sj.Add(GetChild(i).ToStringAst());
         }
 
         return $"[{string.Join(",", sj)}]";
@@ -187,7 +187,7 @@ public class Indexer : SpelNode
         object index;
 
         // This first part of the if clause prevents a 'double dereference' of the property (SPR-5847)
-        if (target is IDictionary && _children[0] is PropertyOrFieldReference reference1)
+        if (target is IDictionary && children[0] is PropertyOrFieldReference reference1)
         {
             var reference = reference1;
             index = reference.Name;
@@ -200,7 +200,7 @@ public class Indexer : SpelNode
             try
             {
                 state.PushActiveContextObject(state.RootContextObject);
-                indexValue = _children[0].GetValueInternal(state);
+                indexValue = children[0].GetValueInternal(state);
                 index = indexValue.Value;
                 if (index == null)
                 {
@@ -216,7 +216,7 @@ public class Indexer : SpelNode
         // Raise a proper exception in case of a null target
         if (target == null)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.CANNOT_INDEX_INTO_NULL_VALUE);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.CannotIndexIntoNullValue);
         }
 
         // At this point, we need a TypeDescriptor for a non-null target object
@@ -229,13 +229,13 @@ public class Indexer : SpelNode
         if (target is IDictionary dictionary)
         {
             var key = index;
-            var mapkeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);
-            if (mapkeyType != null)
+            var mapKeyType = ReflectionHelper.GetMapKeyTypeDescriptor(targetDescriptor);
+            if (mapKeyType != null)
             {
-                key = state.ConvertValue(key, mapkeyType);
+                key = state.ConvertValue(key, mapKeyType);
             }
 
-            _indexedType = IndexedType.MAP;
+            _indexedType = IndexedType.Map;
             return new MapIndexingValueRef(this, state.TypeConverter, dictionary, key, targetDescriptor);
         }
 
@@ -246,18 +246,18 @@ public class Indexer : SpelNode
             var idx = (int)state.ConvertValue(index, typeof(int));
             if (target is Array)
             {
-                _indexedType = IndexedType.ARRAY;
+                _indexedType = IndexedType.Array;
                 return new ArrayIndexingValueRef(this, state.TypeConverter, target, idx, targetDescriptor);
             }
             else if (target is IList list)
             {
-                _indexedType = IndexedType.LIST;
+                _indexedType = IndexedType.List;
 
                 return new CollectionIndexingValueRef(this, list, idx, targetDescriptor, state.TypeConverter, state.Configuration.AutoGrowCollections, state.Configuration.MaximumAutoGrowSize);
             }
             else
             {
-                _indexedType = IndexedType.STRING;
+                _indexedType = IndexedType.String;
                 return new StringIndexingLValue(this, (string)target, idx, targetDescriptor);
             }
         }
@@ -267,18 +267,18 @@ public class Indexer : SpelNode
         var valueType = indexValue.TypeDescriptor;
         if (valueType != null && typeof(string) == valueType)
         {
-            _indexedType = IndexedType.OBJECT;
+            _indexedType = IndexedType.Object;
             return new PropertyIndexingValueRef(this, target, (string)index, state.EvaluationContext, targetDescriptor);
         }
 
-        throw new SpelEvaluationException(StartPosition, SpelMessage.INDEXING_NOT_SUPPORTED_FOR_TYPE, targetDescriptor);
+        throw new SpelEvaluationException(StartPosition, SpelMessage.IndexingNotSupportedForType, targetDescriptor);
     }
 
     private void CheckAccess(int arrayLength, int index)
     {
         if (index >= arrayLength)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.ARRAY_INDEX_OUT_OF_BOUNDS, arrayLength, index);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.ArrayIndexOutOfBounds, arrayLength, index);
         }
     }
 
@@ -301,7 +301,7 @@ public class Indexer : SpelNode
         {
             var array = (bool[])ctx;
             CheckAccess(array.Length, idx);
-            _exitTypeDescriptor = TypeDescriptor.Z;
+            exitTypeDescriptor = TypeDescriptor.Z;
             return array[idx];
         }
         else if (arrayComponentType == typeof(byte))
@@ -309,7 +309,7 @@ public class Indexer : SpelNode
             var array = (byte[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.B;
+            exitTypeDescriptor = TypeDescriptor.B;
             return array[idx];
         }
         else if (arrayComponentType == typeof(char))
@@ -317,7 +317,7 @@ public class Indexer : SpelNode
             var array = (char[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.C;
+            exitTypeDescriptor = TypeDescriptor.C;
             return array[idx];
         }
         else if (arrayComponentType == typeof(double))
@@ -325,7 +325,7 @@ public class Indexer : SpelNode
             var array = (double[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.D;
+            exitTypeDescriptor = TypeDescriptor.D;
             return array[idx];
         }
         else if (arrayComponentType == typeof(float))
@@ -333,7 +333,7 @@ public class Indexer : SpelNode
             var array = (float[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.F;
+            exitTypeDescriptor = TypeDescriptor.F;
             return array[idx];
         }
         else if (arrayComponentType == typeof(int))
@@ -341,7 +341,7 @@ public class Indexer : SpelNode
             var array = (int[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.I;
+            exitTypeDescriptor = TypeDescriptor.I;
             return array[idx];
         }
         else if (arrayComponentType == typeof(long))
@@ -349,7 +349,7 @@ public class Indexer : SpelNode
             var array = (long[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.J;
+            exitTypeDescriptor = TypeDescriptor.J;
             return array[idx];
         }
         else if (arrayComponentType == typeof(short))
@@ -357,7 +357,7 @@ public class Indexer : SpelNode
             var array = (short[])ctx;
             CheckAccess(array.Length, idx);
 
-            _exitTypeDescriptor = TypeDescriptor.S;
+            exitTypeDescriptor = TypeDescriptor.S;
             return array[idx];
         }
         else
@@ -366,7 +366,7 @@ public class Indexer : SpelNode
             CheckAccess(array.Length, idx);
             var retValue = array[idx];
 
-            _exitTypeDescriptor = CodeFlow.ToDescriptor(arrayComponentType);
+            exitTypeDescriptor = CodeFlow.ToDescriptor(arrayComponentType);
             return retValue;
         }
     }
@@ -491,7 +491,7 @@ public class Indexer : SpelNode
         public ITypedValue GetValue()
         {
             var value = _map[_key];
-            _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
+            _indexer.exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
             return new TypedValue(value, ReflectionHelper.GetMapValueTypeDescriptor(_mapEntryDescriptor, value));
         }
 
@@ -563,7 +563,7 @@ public class Indexer : SpelNode
                         if (accessor is ReflectivePropertyAccessor.OptimalPropertyAccessor optimalAccessor)
                         {
                             var member = optimalAccessor.Member;
-                            _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(member is MethodInfo info ? info.ReturnType : ((FieldInfo)member).FieldType);
+                            _indexer.exitTypeDescriptor = CodeFlow.ToDescriptor(member is MethodInfo info ? info.ReturnType : ((FieldInfo)member).FieldType);
                         }
 
                         return accessor.Read(_evaluationContext, _targetObject, _name);
@@ -572,10 +572,10 @@ public class Indexer : SpelNode
             }
             catch (AccessException ex)
             {
-                throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.INDEXING_NOT_SUPPORTED_FOR_TYPE, _targetObjectTypeDescriptor.ToString());
+                throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.IndexingNotSupportedForType, _targetObjectTypeDescriptor.ToString());
             }
 
-            throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.INDEXING_NOT_SUPPORTED_FOR_TYPE, _targetObjectTypeDescriptor.ToString());
+            throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.IndexingNotSupportedForType, _targetObjectTypeDescriptor.ToString());
         }
 
         public void SetValue(object newValue)
@@ -612,7 +612,7 @@ public class Indexer : SpelNode
             }
             catch (AccessException ex)
             {
-                throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.EXCEPTION_DURING_PROPERTY_WRITE, _name, ex.Message);
+                throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.ExceptionDuringPropertyWrite, _name, ex.Message);
             }
         }
 
@@ -646,7 +646,7 @@ public class Indexer : SpelNode
             if (_collection != null)
             {
                 var o = _collection[_index];
-                _indexer._exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
+                _indexer.exitTypeDescriptor = CodeFlow.ToDescriptor(typeof(object));
                 return new TypedValue(o, ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor, o));
             }
 
@@ -669,7 +669,7 @@ public class Indexer : SpelNode
             }
             else
             {
-                throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.INDEXING_NOT_SUPPORTED_FOR_TYPE, _collectionEntryDescriptor.ToString());
+                throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.IndexingNotSupportedForType, _collectionEntryDescriptor.ToString());
             }
         }
 
@@ -679,18 +679,18 @@ public class Indexer : SpelNode
             {
                 if (!_growCollection)
                 {
-                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.COLLECTION_INDEX_OUT_OF_BOUNDS, _collection.Count, _index);
+                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.CollectionIndexOutOfBounds, _collection.Count, _index);
                 }
 
                 if (_index >= _maximumSize)
                 {
-                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.UNABLE_TO_GROW_COLLECTION);
+                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.UnableToGrowCollection);
                 }
 
                 var elemTypeDesc = ReflectionHelper.GetElementTypeDescriptor(_collectionEntryDescriptor);
                 if (elemTypeDesc == null)
                 {
-                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.UNABLE_TO_GROW_COLLECTION_UNKNOWN_ELEMENT_TYPE);
+                    throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.UnableToGrowCollectionUnknownElementType);
                 }
 
                 try
@@ -705,7 +705,7 @@ public class Indexer : SpelNode
                 }
                 catch (Exception ex)
                 {
-                    throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.UNABLE_TO_GROW_COLLECTION);
+                    throw new SpelEvaluationException(_indexer.StartPosition, ex, SpelMessage.UnableToGrowCollection);
                 }
             }
         }
@@ -789,7 +789,7 @@ public class Indexer : SpelNode
         {
             if (_index >= _target.Length)
             {
-                throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.STRING_INDEX_OUT_OF_BOUNDS, _target.Length, _index);
+                throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.StringIndexOutOfBounds, _target.Length, _index);
             }
 
             return new TypedValue(_target[_index].ToString());
@@ -797,7 +797,7 @@ public class Indexer : SpelNode
 
         public void SetValue(object newValue)
         {
-            throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.INDEXING_NOT_SUPPORTED_FOR_TYPE, _typeDescriptor.ToString());
+            throw new SpelEvaluationException(_indexer.StartPosition, SpelMessage.IndexingNotSupportedForType, _typeDescriptor.ToString());
         }
 
         public bool IsWritable => true;

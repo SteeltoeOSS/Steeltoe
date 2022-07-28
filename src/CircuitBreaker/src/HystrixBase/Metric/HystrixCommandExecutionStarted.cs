@@ -22,7 +22,7 @@ public class HystrixCommandExecutionStarted : HystrixCommandEvent
 
     public override bool IsExecutedInThread
     {
-        get { return _isolationStrategy == ExecutionIsolationStrategy.THREAD; }
+        get { return _isolationStrategy == ExecutionIsolationStrategy.Thread; }
     }
 
     public override bool IsResponseThreadPoolRejected

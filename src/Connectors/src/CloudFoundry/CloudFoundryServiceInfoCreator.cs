@@ -12,7 +12,7 @@ namespace Steeltoe.Connector.CloudFoundry;
 
 public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 {
-    private static readonly object _lock = new ();
+    private static readonly object Lock = new ();
     private static CloudFoundryServiceInfoCreator _me;
 
     private CloudFoundryServiceInfoCreator(IConfiguration configuration)
@@ -31,7 +31,7 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 
         if (configuration != _me?.Configuration)
         {
-            lock (_lock)
+            lock (Lock)
             {
                 if (configuration != _me?.Configuration)
                 {
@@ -50,11 +50,11 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         ServiceInfos.Clear();
 
         var appInfo = new CloudFoundryApplicationOptions(Configuration);
-        var serviceOpts = new CloudFoundryServicesOptions(Configuration);
+        var serviceOptions = new CloudFoundryServicesOptions(Configuration);
 
-        foreach (var serviceopt in serviceOpts.Services)
+        foreach (var serviceOption in serviceOptions.Services)
         {
-            foreach (var s in serviceopt.Value)
+            foreach (var s in serviceOption.Value)
             {
                 var factory = FindFactory(s);
                 if (factory != null && factory.Create(s) is ServiceInfo info)

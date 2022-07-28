@@ -24,7 +24,7 @@ public class OrderCompareTest
     }
 
     [Fact]
-    public void CcompareOrderedInstancesAfter()
+    public void CompareOrderedInstancesAfter()
     {
         Assert.Equal(1, _orderComparer.Compare(new StubOrdered(982300), new StubOrdered(100)));
     }

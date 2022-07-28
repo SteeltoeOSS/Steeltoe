@@ -60,7 +60,7 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     }
 
     [Fact]
-    public void AddBinderTypes_WithBinderAllreadyLoaded_ReturnsBinder()
+    public void AddBinderTypes_WithBinderAlreadyLoaded_ReturnsBinder()
     {
         var isAlreadyLoaded = AppDomain.CurrentDomain
             .GetAssemblies().SingleOrDefault(a => a.FullName == "Steeltoe.Stream.TestBinder") != null;

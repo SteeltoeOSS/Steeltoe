@@ -27,11 +27,11 @@ public class DbMigrationsEndpointTests : BaseTest
     [Fact]
     public void DbMigrationsEndpoint_EfMigrationsReflectionTargets_NotNull()
     {
-        DbMigrationsEndpoint._getDatabase.Should().NotBeNull();
-        DbMigrationsEndpoint._getMigrations.Should().NotBeNull();
-        DbMigrationsEndpoint._dbContextType.Should().NotBeNull();
-        DbMigrationsEndpoint._getAppliedMigrations.Should().NotBeNull();
-        DbMigrationsEndpoint._getPendingMigrations.Should().NotBeNull();
+        DbMigrationsEndpoint.GetDatabase.Should().NotBeNull();
+        DbMigrationsEndpoint.GetMigrationsMethod.Should().NotBeNull();
+        DbMigrationsEndpoint.DbContextType.Should().NotBeNull();
+        DbMigrationsEndpoint.GetAppliedMigrationsMethod.Should().NotBeNull();
+        DbMigrationsEndpoint.GetPendingMigrationsMethod.Should().NotBeNull();
     }
 
     [Fact]

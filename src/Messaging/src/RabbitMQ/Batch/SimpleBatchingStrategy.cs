@@ -30,14 +30,14 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         _timeout = timeout;
     }
 
-    public MessageBatch? AddToBatch(string exch, string routKey, IMessage input)
+    public MessageBatch? AddToBatch(string exchange, string routKey, IMessage input)
     {
-        if (_exchange != null && _exchange != exch)
+        if (_exchange != null && _exchange != exchange)
         {
             throw new ArgumentException("Cannot send to different exchanges in the same batch");
         }
 
-        _exchange = exch;
+        _exchange = exchange;
 
         if (_routingKey != null && _routingKey != routKey)
         {
@@ -56,7 +56,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         if (_messages.Count > 0 && _currentSize + bufferUse > _bufferLimit)
         {
             batch = DoReleaseBatch();
-            _exchange = exch;
+            _exchange = exchange;
             _routingKey = routKey;
         }
 
@@ -102,9 +102,9 @@ public class SimpleBatchingStrategy : IBatchingStrategy
 
     public bool CanDebatch(IMessageHeaders properties)
     {
-        if (properties.TryGetValue(RabbitMessageHeaders.SPRING_BATCH_FORMAT, out var value))
+        if (properties.TryGetValue(RabbitMessageHeaders.SpringBatchFormat, out var value))
         {
-            return value as string == RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4;
+            return value as string == RabbitMessageHeaders.BatchFormatLengthHeader4;
         }
 
         return false;
@@ -119,7 +119,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
 
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         var byteBuffer = new Span<byte>(message.Payload);
-        accessor.RemoveHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT);
+        accessor.RemoveHeader(RabbitMessageHeaders.SpringBatchFormat);
         var bodyLength = message.Payload.Length;
         var index = 0;
         while (index < bodyLength)
@@ -202,8 +202,8 @@ public class SimpleBatchingStrategy : IBatchingStrategy
             index += message.Payload.Length;
         }
 
-        accessor.SetHeader(RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4);
-        accessor.SetHeader(RabbitMessageHeaders.BATCH_SIZE, _messages.Count);
+        accessor.SetHeader(RabbitMessageHeaders.SpringBatchFormat, RabbitMessageHeaders.BatchFormatLengthHeader4);
+        accessor.SetHeader(RabbitMessageHeaders.BatchSize, _messages.Count);
         return Message.Create(body, accessor.MessageHeaders);
     }
 }

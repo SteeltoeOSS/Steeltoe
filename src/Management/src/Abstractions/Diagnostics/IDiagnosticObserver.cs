@@ -16,5 +16,5 @@ public interface IDiagnosticObserver : IObserver<KeyValuePair<string, object>>, 
 
     void Subscribe(DiagnosticListener listener);
 
-    void ProcessEvent(string @event, object value);
+    void ProcessEvent(string eventName, object value);
 }

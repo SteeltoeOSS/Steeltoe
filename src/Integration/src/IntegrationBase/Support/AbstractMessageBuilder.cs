@@ -11,15 +11,15 @@ namespace Steeltoe.Integration.Support;
 
 public abstract class AbstractMessageBuilder : IMessageBuilder
 {
-    protected readonly object _payload;
+    protected readonly object InnerPayload;
 
-    protected readonly IMessage _originalMessage;
+    protected readonly IMessage OriginalMessage;
 
-    protected readonly IntegrationMessageHeaderAccessor _headerAccessor;
+    protected readonly IntegrationMessageHeaderAccessor HeaderAccessor;
 
-    protected volatile bool _modified;
+    protected volatile bool modified;
 
-    protected IList<string> _readOnlyHeaders;
+    protected IList<string> readOnlyHeaders;
 
     protected AbstractMessageBuilder()
     {
@@ -27,18 +27,18 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected AbstractMessageBuilder(object payload, IMessage originalMessage)
     {
-        _payload = payload ?? throw new ArgumentNullException(nameof(payload));
-        _originalMessage = originalMessage;
-        _headerAccessor = new IntegrationMessageHeaderAccessor(originalMessage);
+        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        this.OriginalMessage = originalMessage;
+        HeaderAccessor = new IntegrationMessageHeaderAccessor(originalMessage);
         if (originalMessage != null)
         {
-            _modified = !_payload.Equals(originalMessage.Payload);
+            modified = !this.InnerPayload.Equals(originalMessage.Payload);
         }
     }
 
     public virtual IMessageBuilder SetExpirationDate(long expirationDate)
     {
-        return SetHeader(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, expirationDate);
+        return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, expirationDate);
     }
 
     public virtual IMessageBuilder SetExpirationDate(DateTime? expirationDate)
@@ -46,17 +46,17 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
         if (expirationDate != null)
         {
             var datetime = new DateTimeOffset(expirationDate.Value);
-            return SetHeader(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, datetime.ToUnixTimeMilliseconds());
+            return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, datetime.ToUnixTimeMilliseconds());
         }
         else
         {
-            return SetHeader(IntegrationMessageHeaderAccessor.EXPIRATION_DATE, null);
+            return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, null);
         }
     }
 
     public virtual IMessageBuilder SetCorrelationId(object correlationId)
     {
-        return SetHeader(IntegrationMessageHeaderAccessor.CORRELATION_ID, correlationId);
+        return SetHeader(IntegrationMessageHeaderAccessor.CorrelationId, correlationId);
     }
 
     public virtual IMessageBuilder PushSequenceDetails(object correlationId, int sequenceNumber, int sequenceSize)
@@ -71,7 +71,7 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
         if (incomingSequenceDetails != null)
         {
-            SetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS, incomingSequenceDetails);
+            SetHeader(IntegrationMessageHeaderAccessor.SequenceDetails, incomingSequenceDetails);
         }
 
         return SetCorrelationId(correlationId)
@@ -113,11 +113,11 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
         if (incomingSequenceDetails.Count > 0)
         {
-            SetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS, incomingSequenceDetails);
+            SetHeader(IntegrationMessageHeaderAccessor.SequenceDetails, incomingSequenceDetails);
         }
         else
         {
-            RemoveHeader(IntegrationMessageHeaderAccessor.SEQUENCE_DETAILS);
+            RemoveHeader(IntegrationMessageHeaderAccessor.SequenceDetails);
         }
 
         return this;
@@ -125,37 +125,37 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     public virtual IMessageBuilder SetReplyChannel(IMessageChannel replyChannel)
     {
-        return SetHeader(MessageHeaders.REPLY_CHANNEL, replyChannel);
+        return SetHeader(MessageHeaders.ReplyChannelName, replyChannel);
     }
 
     public virtual IMessageBuilder SetReplyChannelName(string replyChannelName)
     {
-        return SetHeader(MessageHeaders.REPLY_CHANNEL, replyChannelName);
+        return SetHeader(MessageHeaders.ReplyChannelName, replyChannelName);
     }
 
     public virtual IMessageBuilder SetErrorChannel(IMessageChannel errorChannel)
     {
-        return SetHeader(MessageHeaders.ERROR_CHANNEL, errorChannel);
+        return SetHeader(MessageHeaders.ErrorChannelName, errorChannel);
     }
 
     public virtual IMessageBuilder SetErrorChannelName(string errorChannelName)
     {
-        return SetHeader(MessageHeaders.ERROR_CHANNEL, errorChannelName);
+        return SetHeader(MessageHeaders.ErrorChannelName, errorChannelName);
     }
 
     public virtual IMessageBuilder SetSequenceNumber(int sequenceNumber)
     {
-        return SetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_NUMBER, sequenceNumber);
+        return SetHeader(IntegrationMessageHeaderAccessor.SequenceNumber, sequenceNumber);
     }
 
     public virtual IMessageBuilder SetSequenceSize(int sequenceSize)
     {
-        return SetHeader(IntegrationMessageHeaderAccessor.SEQUENCE_SIZE, sequenceSize);
+        return SetHeader(IntegrationMessageHeaderAccessor.SequenceSize, sequenceSize);
     }
 
     public virtual IMessageBuilder SetPriority(int priority)
     {
-        return SetHeader(IntegrationMessageHeaderAccessor.PRIORITY, priority);
+        return SetHeader(IntegrationMessageHeaderAccessor.Priority, priority);
     }
 
     public virtual IMessageBuilder FilterAndCopyHeadersIfAbsent(IDictionary<string, object> headersToCopy, params string[] headerPatternsToFilter)
@@ -204,9 +204,9 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected bool ContainsReadOnly(IMessageHeaders headers)
     {
-        if (_readOnlyHeaders != null)
+        if (readOnlyHeaders != null)
         {
-            foreach (var readOnly in _readOnlyHeaders)
+            foreach (var readOnly in readOnlyHeaders)
             {
                 if (headers.ContainsKey(readOnly))
                 {

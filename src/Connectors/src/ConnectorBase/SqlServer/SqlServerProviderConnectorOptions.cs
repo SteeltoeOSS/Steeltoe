@@ -12,9 +12,9 @@ namespace Steeltoe.Connector.SqlServer;
 
 public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Server = "localhost";
-    public const int Default_Port = 1433;
-    private const string SQL_CLIENT_SECTION_PREFIX = "sqlserver:credentials";
+    public const string DefaultServer = "localhost";
+    public const int DefaultPort = 1433;
+    private const string SqlClientSectionPrefix = "sqlserver:credentials";
     private readonly bool _cloudFoundryConfigFound;
 
     public SqlServerProviderConnectorOptions()
@@ -28,7 +28,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(SQL_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(SqlClientSectionPrefix);
 
         section.Bind(this);
 
@@ -48,14 +48,14 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string ConnectionString { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
     public string InstanceName { get; set; }
 
     /// <summary>
-    /// Gets or sets the port SQL Server is listening on. To exclude from connection string, use a value less than 0
+    /// Gets or sets the port SQL Server is listening on. To exclude from connection string, use a value less than 0.
     /// </summary>
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string Username { get; set; }
 
@@ -76,7 +76,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     /// <summary>
     /// Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
     /// </summary>
-    /// <remarks>Default value is 15</remarks>
+    /// <remarks>Default value is 15.</remarks>
     public int? Timeout { get; set; }
 
     internal Dictionary<string, string> Options { get; set; } = new ();
@@ -110,7 +110,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     private void AddDataSource(StringBuilder sb)
     {
         sb.Append("Data Source");
-        sb.Append(Default_Separator);
+        sb.Append(DefaultSeparator);
         sb.Append(Server);
 
         if (InstanceName != null)
@@ -123,6 +123,6 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
             sb.Append($",{Port}");
         }
 
-        sb.Append(Default_Terminator);
+        sb.Append(DefaultTerminator);
     }
 }

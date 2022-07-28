@@ -18,14 +18,14 @@ namespace Steeltoe.Connector.PostgreSql;
 public static class PostgresProviderServiceCollectionExtensions
 {
     /// <summary>
-    /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
+    /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.</remarks>
     public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -45,15 +45,15 @@ public static class PostgresProviderServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection
+    /// Add NpgsqlConnection and its IHealthContributor to a ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">cloud foundry service name binding</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">cloud foundry service name binding.</param>
+    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe healthChecks.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>NpgsqlConnection is retrievable as both NpgsqlConnection and IDbConnection.</remarks>
     public static IServiceCollection AddPostgresConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)

@@ -88,7 +88,6 @@ public class HostBuilderExtensionsTest
         await AssertActuatorResponses(testClient);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public async Task AddKubernetesActuators_WebApplicationBuilder_AddsAndActivatesActuators()
     {
@@ -156,7 +155,6 @@ public class HostBuilderExtensionsTest
         app.UseRouting().UseAuthentication().UseAuthorization();
         return app;
     }
-#endif
 
     private async Task AssertActuatorResponses(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {

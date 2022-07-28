@@ -41,7 +41,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         {
             if (e.Response.StatusCode == HttpStatusCode.Forbidden)
             {
-                Logger?.LogCritical(e, "Failed to retrieve config map '{configmapName}' in namespace '{configmapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                Logger?.LogCritical(e, "Failed to retrieve config map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
             }
             else if (e.Response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -98,7 +98,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
             Settings.Namespace,
             onEvent: (eventType, item) =>
             {
-                Logger?.LogInformation("Recieved {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                Logger?.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
                 switch (eventType)
                 {
                     case WatchEventType.Added:

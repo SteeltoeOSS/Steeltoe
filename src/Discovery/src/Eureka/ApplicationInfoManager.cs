@@ -14,12 +14,12 @@ public class ApplicationInfoManager
     {
     }
 
-    protected static readonly ApplicationInfoManager _instance = new ();
-    protected ILogger _logger;
+    protected static readonly ApplicationInfoManager InnerInstance = new ();
+    protected ILogger logger;
 
     private readonly object _statusChangedLock = new ();
 
-    public static ApplicationInfoManager Instance => _instance;
+    public static ApplicationInfoManager Instance => InnerInstance;
 
     public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
 
@@ -33,7 +33,7 @@ public class ApplicationInfoManager
         {
             if (InstanceInfo == null)
             {
-                return InstanceStatus.UNKNOWN;
+                return InstanceStatus.Unknown;
             }
 
             return InstanceInfo.Status;
@@ -59,7 +59,7 @@ public class ApplicationInfoManager
                     }
                     catch (Exception e)
                     {
-                        _logger?.LogError(e, "StatusChanged event exception");
+                        logger?.LogError(e, "StatusChanged event exception");
                     }
                 }
             }
@@ -68,7 +68,7 @@ public class ApplicationInfoManager
 
     public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
     {
-        _logger = logFactory?.CreateLogger<ApplicationInfoManager>();
+        logger = logFactory?.CreateLogger<ApplicationInfoManager>();
         InstanceConfig = instanceConfig ?? throw new ArgumentNullException(nameof(instanceConfig));
         InstanceInfo = InstanceInfo.FromInstanceConfig(instanceConfig);
     }

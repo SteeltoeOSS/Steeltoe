@@ -198,7 +198,7 @@ public class TaskSchedulerChannelTest
 
         public TestHandler(CountdownEvent latch)
         {
-            Latch = latch;
+            this.Latch = latch;
         }
 
         public void HandleMessage(IMessage message)

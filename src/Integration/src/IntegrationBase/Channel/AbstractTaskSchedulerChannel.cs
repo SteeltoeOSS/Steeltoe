@@ -17,8 +17,8 @@ namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel, ITaskSchedulerChannelInterceptorAware
 {
-    protected TaskScheduler _executor;
-    protected int _taskSchedulerInterceptorsSize;
+    protected TaskScheduler executor;
+    protected int taskSchedulerInterceptorsSize;
 
     protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, ILogger logger = null)
         : this(context, dispatcher, null, logger)
@@ -33,7 +33,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
     protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, TaskScheduler executor, string name, ILogger logger = null)
         : base(context, dispatcher, name, logger)
     {
-        _executor = executor;
+        this.executor = executor;
     }
 
     public override List<IChannelInterceptor> ChannelInterceptors
@@ -50,7 +50,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
             {
                 if (interceptor is ITaskSchedulerChannelInterceptor)
                 {
-                    _taskSchedulerInterceptorsSize++;
+                    taskSchedulerInterceptorsSize++;
                 }
             }
         }
@@ -61,7 +61,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
         base.AddInterceptor(interceptor);
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
-            _taskSchedulerInterceptorsSize++;
+            taskSchedulerInterceptorsSize++;
         }
     }
 
@@ -70,7 +70,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
         base.AddInterceptor(index, interceptor);
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
-            _taskSchedulerInterceptorsSize++;
+            taskSchedulerInterceptorsSize++;
         }
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
         var removed = base.RemoveInterceptor(interceptor);
         if (removed && interceptor is ITaskSchedulerChannelInterceptor)
         {
-            _taskSchedulerInterceptorsSize--;
+            taskSchedulerInterceptorsSize--;
         }
 
         return removed;
@@ -90,7 +90,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
         var interceptor = base.RemoveInterceptor(index);
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
-            _taskSchedulerInterceptorsSize--;
+            taskSchedulerInterceptorsSize--;
         }
 
         return interceptor;
@@ -98,7 +98,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
     public virtual bool HasTaskSchedulerInterceptors
     {
-        get { return _taskSchedulerInterceptorsSize > 0; }
+        get { return taskSchedulerInterceptorsSize > 0; }
     }
 
     protected class MessageHandlingTask : IMessageHandlingRunnable
@@ -218,7 +218,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
             var runnable = messageHandlingRunnable;
             if (_channel.HasTaskSchedulerInterceptors)
             {
-                runnable = new MessageHandlingTask(_channel, messageHandlingRunnable, _channel.logger);
+                runnable = new MessageHandlingTask(_channel, messageHandlingRunnable, _channel.Logger);
             }
 
             return runnable;

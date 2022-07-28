@@ -71,28 +71,28 @@ public static class CloudFoundryHelper
     }
 
     /// <summary>
-    /// Retrieves the time at which a token was issued
+    /// Retrieves the time at which a token was issued.
     /// </summary>
-    /// <param name="payload">Contents of a JWT</param>
-    /// <returns>The <see cref="DateTime"/> representation of a token's issued-at time</returns>
+    /// <param name="payload">Contents of a JWT.</param>
+    /// <returns>The <see cref="DateTime"/> representation of a token's issued-at time.</returns>
     public static DateTime GetIssueTime(JsonElement payload)
     {
         var time = payload.GetProperty("iat").GetInt64();
-        return ToAbsoluteUTC(time);
+        return ToAbsoluteUtc(time);
     }
 
     /// <summary>
-    /// Retrieves expiration time property (exp) in a <see cref="JsonDocument"/>
+    /// Retrieves expiration time property (exp) in a <see cref="JsonDocument"/>.
     /// </summary>
-    /// <param name="payload">Contents of a JWT</param>
-    /// <returns>The <see cref="DateTime"/> representation of a token's expiration</returns>
+    /// <param name="payload">Contents of a JWT.</param>
+    /// <returns>The <see cref="DateTime"/> representation of a token's expiration.</returns>
     public static DateTime GetExpTime(JsonElement payload)
     {
         var time = payload.GetProperty("exp").GetInt64();
-        return ToAbsoluteUTC(time);
+        return ToAbsoluteUtc(time);
     }
 
-    private static DateTime ToAbsoluteUTC(long secondsPastEpoch)
+    private static DateTime ToAbsoluteUtc(long secondsPastEpoch)
     {
         return BaseTime.AddSeconds(secondsPastEpoch);
     }

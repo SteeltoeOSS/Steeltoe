@@ -82,7 +82,7 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
                 ReturnExceptions,
                 ErrorHandler,
                 BatchingStrategy,
-                _loggerFactory?.CreateLogger(typeof(BatchMessagingMessageListenerAdapter)));
+                LoggerFactory?.CreateLogger(typeof(BatchMessagingMessageListenerAdapter)));
         }
         else
         {
@@ -92,7 +92,7 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
                 Method,
                 ReturnExceptions,
                 ErrorHandler,
-                _loggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
+                LoggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
         }
     }
 

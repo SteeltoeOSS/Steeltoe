@@ -13,9 +13,9 @@ public class RabbitMQTypeLocatorTest
     public void Property_Can_Locate_ConnectionTypes()
     {
         // arrange -- handled by including a compatible RabbitMQ NuGet package
-        var interfaceType = RabbitMQTypeLocator.IConnectionFactory;
+        var interfaceType = RabbitMQTypeLocator.ConnectionFactoryInterface;
         var implementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var connectionType = RabbitMQTypeLocator.IConnection;
+        var connectionType = RabbitMQTypeLocator.ConnectionInterface;
 
         Assert.NotNull(interfaceType);
         Assert.NotNull(implementationType);
@@ -28,7 +28,7 @@ public class RabbitMQTypeLocatorTest
         var types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
         RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new[] { "something-Wrong" };
 
-        var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.IConnectionFactory);
+        var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.ConnectionFactoryInterface);
 
         Assert.Equal("Unable to find IConnectionFactory, are you missing the RabbitMQ.Client assembly?", exception.Message);
 

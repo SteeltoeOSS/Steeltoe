@@ -9,29 +9,29 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 
 public class HystrixMetricsPublisherFactory
 {
-    private static HystrixMetricsPublisherFactory singleton = new ();
+    private static HystrixMetricsPublisherFactory _singleton = new ();
 
     public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
     {
-        return singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
+        return _singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
     }
 
     public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
     {
-        return singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+        return _singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
     }
 
     public static IHystrixMetricsPublisherCollapser CreateOrRetrievePublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
     {
-        return singleton.GetPublisherForCollapser(collapserKey, metrics, properties);
+        return _singleton.GetPublisherForCollapser(collapserKey, metrics, properties);
     }
 
     public static void Reset()
     {
-        singleton = new HystrixMetricsPublisherFactory();
-        singleton.CommandPublishers.Clear();
-        singleton.ThreadPoolPublishers.Clear();
-        singleton.CollapserPublishers.Clear();
+        _singleton = new HystrixMetricsPublisherFactory();
+        _singleton.CommandPublishers.Clear();
+        _singleton.ThreadPoolPublishers.Clear();
+        _singleton.CollapserPublishers.Clear();
     }
 
     internal HystrixMetricsPublisherFactory()

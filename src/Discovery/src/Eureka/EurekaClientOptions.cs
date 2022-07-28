@@ -6,9 +6,9 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
 {
-    public const string EUREKA_CLIENT_CONFIGURATION_PREFIX = "eureka:client";
+    public const string EurekaClientConfigurationPrefix = "eureka:client";
 
-    public new const int Default_InstanceInfoReplicationIntervalSeconds = 30;
+    public new const int DefaultInstanceInfoReplicationIntervalSeconds = 30;
 
     public EurekaClientOptions()
     {
@@ -34,6 +34,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     }
 
     // Configuration property: eureka:client:validate_certificates
+    // ReSharper disable once InconsistentNaming
     public bool Validate_Certificates
     {
         get => ValidateCertificates;
@@ -42,10 +43,10 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     }
 
     /// <summary>
-    /// Gets or sets the time in seconds that service instance cache records should remain active
+    /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
-    /// <remarks>configuration property: eureka:client:cacheTTL</remarks>
-    public int CacheTTL { get; set; } = 15;
+    /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
+    public int CacheTtl { get; set; } = 15;
 
     // Configuration property: eureka:client:eurekaServer
     public EurekaServerConfig EurekaServer { get; set; }
@@ -97,7 +98,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyHost
+        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyHost.
         /// </summary>
         public string ProxyHost
         {
@@ -107,7 +108,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyPort
+        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyPort.
         /// </summary>
         public int ProxyPort
         {
@@ -117,7 +118,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyUserName
+        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyUserName.
         /// </summary>
         public string ProxyUserName
         {
@@ -127,7 +128,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyPassword
+        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyPassword.
         /// </summary>
         public string ProxyPassword
         {
@@ -137,7 +138,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets a value indicating whether configuration property: eureka:client:eurekaServer:shouldGZipContent
+        ///  Gets or sets a value indicating whether configuration property: eureka:client:eurekaServer:shouldGZipContent.
         /// </summary>
         public bool ShouldGZipContent
         {
@@ -147,7 +148,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:connectTimeoutSeconds
+        ///  Gets or sets configuration property: eureka:client:eurekaServer:connectTimeoutSeconds.
         /// </summary>
         public int ConnectTimeoutSeconds
         {
@@ -157,7 +158,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        /// Gets or sets configuration property: eureka:client:eurekaServer:retryCount
+        /// Gets or sets configuration property: eureka:client:eurekaServer:retryCount.
         /// </summary>
         public int RetryCount
         {

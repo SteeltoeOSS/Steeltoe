@@ -15,7 +15,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 {
     private readonly ILogger _logger;
     private readonly IApplicationContext _context;
-    private List<ILifecycle> _lifecyclesServices;
+    private List<ILifecycle> _lifecycleServices;
 
     public DefaultLifecycleProcessor(IApplicationContext context, ILogger logger = null)
     {
@@ -71,7 +71,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     private async Task StartServices(bool autoStartupOnly)
     {
         var phases = new Dictionary<int, LifecycleGroup>();
-        foreach (var service in _lifecyclesServices)
+        foreach (var service in _lifecycleServices)
         {
             if (!autoStartupOnly || (service is ISmartLifecycle lifecycle && lifecycle.IsAutoStartup))
             {
@@ -101,7 +101,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     private async Task StopServices()
     {
         var phases = new Dictionary<int, LifecycleGroup>();
-        foreach (var service in _lifecyclesServices)
+        foreach (var service in _lifecycleServices)
         {
             var phase = GetPhase(service);
             phases.TryGetValue(phase, out var group);
@@ -128,7 +128,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 
     private void BuildServicesList()
     {
-        if (_lifecyclesServices == null)
+        if (_lifecycleServices == null)
         {
             var lifeCycles = _context.GetServices<ILifecycle>().ToList();
             var smartCycles = _context.GetServices<ISmartLifecycle>();
@@ -141,7 +141,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
                 }
             }
 
-            _lifecyclesServices = lifeCycles;
+            _lifecycleServices = lifeCycles;
         }
     }
 

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -18,10 +19,10 @@ public static class HealthCheckExtensions
     {
         return status switch
         {
-            MicrosoftHealthStatus.Healthy => HealthStatus.UP,
-            MicrosoftHealthStatus.Degraded => HealthStatus.WARNING,
-            MicrosoftHealthStatus.Unhealthy => HealthStatus.DOWN,
-            _ => HealthStatus.UNKNOWN,
+            MicrosoftHealthStatus.Healthy => HealthStatus.Up,
+            MicrosoftHealthStatus.Degraded => HealthStatus.Warning,
+            MicrosoftHealthStatus.Unhealthy => HealthStatus.Down,
+            _ => HealthStatus.Unknown,
         };
     }
 
@@ -37,7 +38,7 @@ public static class HealthCheckExtensions
             healthCheckResult.Description = res.Description;
             healthCheckResult.Details = new Dictionary<string, object>(res.Data)
             {
-                { "status", status.ToString() },
+                { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },
                 { "description", res.Description }
             };
 

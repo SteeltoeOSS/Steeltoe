@@ -2,9 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Builder;
-#endif
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -56,7 +54,6 @@ public class DynamicLoggerHostBuilderExtensionsTest
         Assert.Contains(loggerProviders, lp => lp is DynamicConsoleLoggerProvider);
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void AddDynamicLogging_WebApplicationBuilder_AddsDynamicLogging()
     {
@@ -81,5 +78,4 @@ public class DynamicLoggerHostBuilderExtensionsTest
         Assert.DoesNotContain(loggerProviders, lp => lp is ConsoleLoggerProvider);
         Assert.Single(loggerProviders.Where(provider => provider is DynamicConsoleLoggerProvider));
     }
-#endif
 }

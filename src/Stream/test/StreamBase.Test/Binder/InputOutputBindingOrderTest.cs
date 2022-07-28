@@ -44,10 +44,10 @@ public class InputOutputBindingOrderTest : AbstractTest
 
     public class SomeLifecycle : ISmartLifecycle
     {
-        public SomeLifecycle(IBinderFactory factory, IProcessor procesor)
+        public SomeLifecycle(IBinderFactory factory, IProcessor processor)
         {
             Factory = factory;
-            Processor = procesor;
+            Processor = processor;
         }
 
         public Task Start()

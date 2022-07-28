@@ -8,12 +8,12 @@ using System.Collections.Generic;
 namespace Steeltoe.Extensions.Configuration;
 
 /// <summary>
-/// Represents a service instance bound to an application
+/// Represents a service instance bound to an application.
 /// </summary>
 public class Service : AbstractServiceOptions
 {
     /// <summary>
-    /// Gets or sets the connection information and credentials for using the service
+    /// Gets or sets the connection information and credentials for using the service.
     /// </summary>
     public Dictionary<string, Credential> Credentials { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
 }

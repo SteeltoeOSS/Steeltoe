@@ -12,7 +12,7 @@ using Xunit;
 namespace Steeltoe.Connector.MySql.Test;
 
 /// <summary>
-/// Tests for the extension method that adds just the health check
+/// Tests for the extension method that adds just the health check.
 /// </summary>
 public class MySqlServiceCollectionExtensionsTest
 {
@@ -86,8 +86,8 @@ public class MySqlServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVCAP);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();

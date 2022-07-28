@@ -14,11 +14,11 @@ public class PostgresProviderConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const PostgresProviderConnectorOptions config = null;
+        const PostgresProviderConnectorOptions options = null;
         const PostgresServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, config, typeof(NpgsqlConnection)));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new PostgresProviderConnectorFactory(si, options, typeof(NpgsqlConnection)));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]

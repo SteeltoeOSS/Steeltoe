@@ -399,7 +399,7 @@ public class ManagementWebHostBuilderExtensionsTest
             var hostBuilder = new WebHostBuilder().Configure(_ => { });
 
             var host = hostBuilder.AddThreadDumpActuator().Build();
-            var managementEndpoint = host.Services.GetServices<ThreadDumpEndpoint_v2>();
+            var managementEndpoint = host.Services.GetServices<ThreadDumpEndpointV2>();
             var filter = host.Services.GetServices<IStartupFilter>().FirstOrDefault();
 
             Assert.Single(managementEndpoint);
@@ -573,7 +573,7 @@ public class ManagementWebHostBuilderExtensionsTest
             { "management:metrics:export:wavefront:apiToken", "testToken" }
         };
 
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
         var host = hostBuilder.AddWavefrontMetrics().Build();
 
         var diagnosticsManagers = host.Services.GetServices<IDiagnosticsManager>();
@@ -597,7 +597,7 @@ public class ManagementWebHostBuilderExtensionsTest
             { "management:metrics:export:wavefront:apiToken", string.Empty } // Should not throw
         };
 
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cbuilder => cbuilder.AddInMemoryCollection(wfSettings));
+        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(wfSettings));
         var host = hostBuilder.AddWavefrontMetrics().Build();
 
         var exporters = host.Services.GetServices<WavefrontMetricsExporter>();
@@ -605,7 +605,7 @@ public class ManagementWebHostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_Before_SteeltoeExtensions()
+    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_Before_SteeltoeExtensions()
     {
         var hostBuilder = _testServerWithRouting;
 
@@ -641,7 +641,7 @@ public class ManagementWebHostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_With_SteeltoeExtensions()
+    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_With_SteeltoeExtensions()
     {
         var hostBuilder = _testServerWithRouting;
 
@@ -681,7 +681,7 @@ public class ManagementWebHostBuilderExtensionsTest
     }
 
     [Fact]
-    public async Task AddAllActuators_Doesnt_Interfere_With_OpenTelemetryExtensions_Called_After_SteeltoeExtensions()
+    public async Task AddAllActuators_DoesNot_Interfere_With_OpenTelemetryExtensions_Called_After_SteeltoeExtensions()
     {
         var hostBuilder = _testServerWithRouting;
 

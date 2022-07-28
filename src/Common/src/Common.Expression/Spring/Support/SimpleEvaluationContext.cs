@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class SimpleEvaluationContext : IEvaluationContext
 {
-    private static readonly List<IConstructorResolver> _emptyConstrResolver = new ();
+    private static readonly List<IConstructorResolver> EmptyConstructorResolver = new ();
     private readonly Dictionary<string, object> _variables = new ();
 
     private SimpleEvaluationContext(List<IPropertyAccessor> accessors, List<IMethodResolver> resolvers, ITypeConverter converter, ITypedValue rootObject)
@@ -18,14 +18,14 @@ public class SimpleEvaluationContext : IEvaluationContext
         PropertyAccessors = accessors;
         MethodResolvers = resolvers;
         TypeConverter = converter ?? new StandardTypeConverter();
-        RootObject = rootObject ?? TypedValue.NULL;
+        RootObject = rootObject ?? TypedValue.Null;
     }
 
     public ITypedValue RootObject { get; }
 
     public List<IPropertyAccessor> PropertyAccessors { get; }
 
-    public List<IConstructorResolver> ConstructorResolvers => _emptyConstrResolver;
+    public List<IConstructorResolver> ConstructorResolvers => EmptyConstructorResolver;
 
     public List<IMethodResolver> MethodResolvers { get; }
 
@@ -145,7 +145,7 @@ public class SimpleEvaluationContext : IEvaluationContext
     {
         public Type FindType(string typeName)
         {
-            throw new SpelEvaluationException(SpelMessage.TYPE_NOT_FOUND, typeName);
+            throw new SpelEvaluationException(SpelMessage.TypeNotFound, typeName);
         }
     }
 }

@@ -63,7 +63,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     public override void OnMessage(IMessage amqpMessage, RC.IModel channel)
     {
-        PreprocesMessage(amqpMessage);
+        PreProcessMessage(amqpMessage);
         var headers = amqpMessage.Headers;
         var convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
         if (convertedObject == null)
@@ -101,7 +101,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     protected void InvokeHandlerAndProcessResult(IMessage amqpMessage, RC.IModel channel, IMessage message)
     {
-        _logger?.LogDebug("Processing [{message}]", message);
+        Logger?.LogDebug("Processing [{message}]", message);
         InvocationResult result = null;
         try
         {
@@ -118,7 +118,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
             }
             else
             {
-                _logger?.LogTrace("No result object given - no result to handle");
+                Logger?.LogTrace("No result object given - no result to handle");
             }
         }
         catch (ListenerExecutionFailedException e)
@@ -127,7 +127,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
             {
                 try
                 {
-                    var messageWithChannel = RabbitMessageBuilder.FromMessage(message).SetHeader(RabbitMessageHeaders.CHANNEL, channel).Build();
+                    var messageWithChannel = RabbitMessageBuilder.FromMessage(message).SetHeader(RabbitMessageHeaders.Channel, channel).Build();
                     var errorResult = ErrorHandler.HandleError(amqpMessage, messageWithChannel, e);
                     if (errorResult != null)
                     {
@@ -135,7 +135,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
                     }
                     else
                     {
-                        _logger?.LogTrace("Error handler returned no result");
+                        Logger?.LogTrace("Error handler returned no result");
                     }
                 }
                 catch (Exception ex)
@@ -150,7 +150,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         }
     }
 
-    protected void PreprocesMessage(IMessage message)
+    protected void PreProcessMessage(IMessage message)
     {
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         if (Instance != null)
@@ -190,7 +190,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         return $"{description}\nEndpoint handler details:\nMethod [{HandlerAdapter.GetMethodAsString(payload)}]\nBean [{HandlerAdapter.Instance}]";
     }
 
-    private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToRetrun, Exception exceptionToThrow)
+    private void ReturnOrThrow(IMessage amqpMessage, RC.IModel channel, IMessage message, Exception exceptionToReturn, Exception exceptionToThrow)
     {
         if (!ReturnExceptions)
         {
@@ -201,7 +201,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         {
             HandleResult(
                 new InvocationResult(
-                    exceptionToRetrun,
+                    exceptionToReturn,
                     null,
                     HandlerAdapter.GetReturnTypeFor(message.Payload),
                     HandlerAdapter.Instance,
@@ -248,7 +248,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
                 }
                 else
                 {
-                    _logger?.LogDebug("Ambiguous parameters for target payload for method {method}; no inferred type header added", Method);
+                    Logger?.LogDebug("Ambiguous parameters for target payload for method {method}; no inferred type header added", Method);
                     return null;
                 }
             }

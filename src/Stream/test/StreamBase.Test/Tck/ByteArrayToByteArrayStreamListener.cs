@@ -10,8 +10,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class ByteArrayToByteArrayStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public byte[] Echo(byte[] value)
     {
         return value;

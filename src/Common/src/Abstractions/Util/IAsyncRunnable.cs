@@ -14,6 +14,6 @@ public interface IAsyncRunnable
     /// <summary>
     /// Run this component.
     /// </summary>
-    /// <returns>return a task to signal completion</returns>
+    /// <returns>return a task to signal completion.</returns>
     Task<bool> Run();
 }

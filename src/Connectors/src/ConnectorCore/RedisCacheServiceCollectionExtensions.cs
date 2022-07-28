@@ -15,16 +15,14 @@ namespace Steeltoe.Connector.Redis;
 
 public static class RedisCacheServiceCollectionExtensions
 {
-    #region Microsoft.Extensions.Caching.Redis
-
     /// <summary>
-    /// Add IDistributedCache and its IHealthContributor to ServiceCollection
+    /// Add IDistributedCache and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache.</remarks>
     public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -41,14 +39,14 @@ public static class RedisCacheServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add IDistributedCache and its IHealthContributor to ServiceCollection
+    /// Add IDistributedCache and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">Name of service to add</param>
-    /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">Name of service to add.</param>
+    /// <param name="addSteeltoeHealthChecks">Add steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache.</remarks>
     public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration config, string serviceName, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -70,16 +68,16 @@ public static class RedisCacheServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add IDistributedCache and its IHealthContributor to ServiceCollection
+    /// Add IDistributedCache and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="applicationConfiguration">App configuration</param>
-    /// <param name="connectorConfiguration">Connector configuration</param>
-    /// <param name="serviceName">Name of service to add</param>
-    /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="applicationConfiguration">App configuration.</param>
+    /// <param name="connectorConfiguration">Connector configuration.</param>
+    /// <param name="serviceName">Name of service to add.</param>
+    /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>RedisCache is retrievable as both RedisCache and IDistributedCache.</remarks>
     public static IServiceCollection AddDistributedRedisCache(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -102,18 +100,14 @@ public static class RedisCacheServiceCollectionExtensions
         return services;
     }
 
-    #endregion
-
-    #region StackExchange.Redis
-
     /// <summary>
-    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
+    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer.</remarks>
     public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -130,14 +124,14 @@ public static class RedisCacheServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
+    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="config">App configuration</param>
-    /// <param name="serviceName">Name of service to add</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="config">App configuration.</param>
+    /// <param name="serviceName">Name of service to add.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer.</remarks>
     public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration config, string serviceName, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -159,16 +153,16 @@ public static class RedisCacheServiceCollectionExtensions
     }
 
     /// <summary>
-    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection
+    /// Add Redis Connection Multiplexer and its IHealthContributor to ServiceCollection.
     /// </summary>
-    /// <param name="services">Service collection to add to</param>
-    /// <param name="applicationConfiguration">App configuration</param>
-    /// <param name="connectorConfiguration">Connector configuration</param>
-    /// <param name="serviceName">Name of service to add</param>
-    /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject</param>
-    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist</param>
-    /// <returns>IServiceCollection for chaining</returns>
-    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer</remarks>
+    /// <param name="services">Service collection to add to.</param>
+    /// <param name="applicationConfiguration">App configuration.</param>
+    /// <param name="connectorConfiguration">Connector configuration.</param>
+    /// <param name="serviceName">Name of service to add.</param>
+    /// <param name="contextLifetime"><see cref="ServiceLifetime"/> of the service to inject.</param>
+    /// <param name="addSteeltoeHealthChecks">Add Steeltoe health check when community healthchecks exist.</param>
+    /// <returns>IServiceCollection for chaining.</returns>
+    /// <remarks>ConnectionMultiplexer is retrievable as both ConnectionMultiplexer and IConnectionMultiplexer.</remarks>
     public static IServiceCollection AddRedisConnectionMultiplexer(this IServiceCollection services, IConfiguration applicationConfiguration, IConfiguration connectorConfiguration, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton, bool addSteeltoeHealthChecks = false)
     {
         if (services == null)
@@ -186,8 +180,6 @@ public static class RedisCacheServiceCollectionExtensions
         DoAddConnectionMultiplexer(services, info, configToConfigure, contextLifetime, addSteeltoeHealthChecks);
         return services;
     }
-
-    #endregion
 
     private static void DoAddIDistributedCache(IServiceCollection services, RedisServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime, bool addSteeltoeHealthChecks = false)
     {

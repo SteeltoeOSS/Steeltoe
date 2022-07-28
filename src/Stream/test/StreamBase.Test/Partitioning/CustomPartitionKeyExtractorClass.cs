@@ -21,33 +21,3 @@ public class CustomPartitionKeyExtractorClass : IPartitionKeyExtractorStrategy
         return message.Headers.Get<string>("key");
     }
 }
-
-public class CustomPartitionKeyExtractorClassOne : IPartitionKeyExtractorStrategy
-{
-    public CustomPartitionKeyExtractorClassOne()
-    {
-        ServiceName = GetType().Name;
-    }
-
-    public string ServiceName { get; set; }
-
-    public object ExtractKey(IMessage message)
-    {
-        return message.Headers.Get<string>("key");
-    }
-}
-
-public class CustomPartitionKeyExtractorClassTwo : IPartitionKeyExtractorStrategy
-{
-    public CustomPartitionKeyExtractorClassTwo()
-    {
-        ServiceName = GetType().Name;
-    }
-
-    public string ServiceName { get; set; }
-
-    public object ExtractKey(IMessage message)
-    {
-        return message.Headers.Get<string>("key");
-    }
-}

@@ -9,21 +9,21 @@ namespace Steeltoe.Integration.Support;
 
 public static class ErrorMessageUtils
 {
-    public const string FAILED_MESSAGE_CONTEXT_KEY = $"{MessageHeaders.INTERNAL}message";
+    public const string FailedMessageContextKey = $"{MessageHeaders.Internal}message";
 
-    public const string INPUT_MESSAGE_CONTEXT_KEY = $"{MessageHeaders.INTERNAL}inputMessage";
+    public const string InputMessageContextKey = $"{MessageHeaders.Internal}inputMessage";
 
     public static IAttributeAccessor GetAttributeAccessor(IMessage inputMessage, IMessage failedMessage)
     {
         AbstractAttributeAccessor attributes = new ErrorMessageAttributes();
         if (inputMessage != null)
         {
-            attributes.SetAttribute(INPUT_MESSAGE_CONTEXT_KEY, inputMessage);
+            attributes.SetAttribute(InputMessageContextKey, inputMessage);
         }
 
         if (failedMessage != null)
         {
-            attributes.SetAttribute(FAILED_MESSAGE_CONTEXT_KEY, failedMessage);
+            attributes.SetAttribute(FailedMessageContextKey, failedMessage);
         }
 
         return attributes;

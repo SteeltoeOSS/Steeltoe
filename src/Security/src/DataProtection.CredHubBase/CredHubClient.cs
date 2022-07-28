@@ -13,6 +13,7 @@ using System.Net.Http.Json;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
@@ -21,14 +22,12 @@ public class CredHubClient : ICredHubClient
 {
     internal JsonSerializerOptions SerializerOptions { get; set; } = new ()
     {
-#pragma warning disable SYSLIB0020 // Type or member is obsolete
-        IgnoreNullValues = true,
-#pragma warning restore SYSLIB0020 // Type or member is obsolete
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true
     };
 
-    private const int DEFAULT_TIMEOUT = 3000;
+    private const int DefaultTimeout = 3000;
 
     private static HttpClient _httpClient;
     private static ILogger _logger;
@@ -42,13 +41,13 @@ public class CredHubClient : ICredHubClient
     }
 
     /// <summary>
-    /// Initialize a CredHub Client with user credentials for the appropriate UAA server
+    /// Initialize a CredHub Client with user credentials for the appropriate UAA server.
     /// </summary>
-    /// <param name="credHubOptions">CredHub client configuration values</param>
-    /// <param name="logger">Pass in a logger if you want logs</param>
-    /// <param name="httpClient">Primarily for tests, optionally provide your own http client</param>
-    /// <returns>An initialized CredHub client (using UAA OAuth)</returns>
-    public static Task<CredHubClient> CreateUAAClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
+    /// <param name="credHubOptions">CredHub client configuration values.</param>
+    /// <param name="logger">Pass in a logger if you want logs.</param>
+    /// <param name="httpClient">Primarily for tests, optionally provide your own http client.</param>
+    /// <returns>An initialized CredHub client (using UAA OAuth).</returns>
+    public static Task<CredHubClient> CreateUaaClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _logger = logger;
         _baseCredHubUrl = credHubOptions.CredHubUrl;
@@ -60,7 +59,7 @@ public class CredHubClient : ICredHubClient
 
     private HttpClient InitializeHttpClient(HttpClientHandler httpClientHandler)
     {
-        return HttpClientHelper.GetHttpClient(_validateCertificates, httpClientHandler, DEFAULT_TIMEOUT);
+        return HttpClientHelper.GetHttpClient(_validateCertificates, httpClientHandler, DefaultTimeout);
     }
 
     private async Task<CredHubClient> InitializeAsync(CredHubOptions options)

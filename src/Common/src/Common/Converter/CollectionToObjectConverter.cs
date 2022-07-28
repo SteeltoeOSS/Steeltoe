@@ -12,7 +12,7 @@ public class CollectionToObjectConverter : AbstractGenericConditionalConverter
 {
     private readonly IConversionService _conversionService;
 
-    public CollectionToObjectConverter(IConversionService conversionService, ISet<(Type source, Type target)> convertableTypes = null)
+    public CollectionToObjectConverter(IConversionService conversionService, ISet<(Type Source, Type Target)> convertableTypes = null)
         : base(convertableTypes ?? new HashSet<(Type Source, Type Target)> { (typeof(ICollection), typeof(object)) })
     {
         _conversionService = conversionService;

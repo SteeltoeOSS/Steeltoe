@@ -31,7 +31,7 @@ public class StandardEvaluationContext : IEvaluationContext
 
     public StandardEvaluationContext()
     {
-        RootObject = TypedValue.NULL;
+        RootObject = TypedValue.Null;
     }
 
     public StandardEvaluationContext(object rootObject)
@@ -183,7 +183,7 @@ public class StandardEvaluationContext : IEvaluationContext
 
     public void SetRootObject(object rootObject)
     {
-        RootObject = rootObject != null ? new TypedValue(rootObject) : TypedValue.NULL;
+        RootObject = rootObject != null ? new TypedValue(rootObject) : TypedValue.Null;
     }
 
     public void AddPropertyAccessor(IPropertyAccessor accessor)

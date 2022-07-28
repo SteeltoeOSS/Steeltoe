@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
-
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
@@ -24,7 +23,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void ConfigureCloudFoundryOptions_ThrowsIfConfigurtionNull()
+    public void ConfigureCloudFoundryOptions_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;
@@ -62,7 +61,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void ConfigureCloudFoundryService_ThrowsIfConfigurtionNull()
+    public void ConfigureCloudFoundryService_ThrowsIfConfigurationNull()
     {
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;

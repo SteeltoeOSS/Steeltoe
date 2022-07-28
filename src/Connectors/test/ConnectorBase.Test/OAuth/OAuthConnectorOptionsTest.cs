@@ -41,19 +41,19 @@ public class OAuthConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new OAuthConnectorOptions(config);
-        Assert.Equal("accesstokenuri", sconfig.AccessTokenUri);
-        Assert.Equal("clientid", sconfig.ClientId);
-        Assert.Equal("clientsecret", sconfig.ClientSecret);
-        Assert.Equal("jwtkeyuri", sconfig.JwtKeyUri);
-        Assert.Equal("https://foo.bar", sconfig.OAuthServiceUrl);
-        Assert.Equal("tokeninfouri", sconfig.TokenInfoUri);
-        Assert.Equal("userauthorizationuri", sconfig.UserAuthorizationUri);
-        Assert.Equal("userinfouri", sconfig.UserInfoUri);
-        Assert.NotNull(sconfig.Scope);
-        Assert.Equal(2, sconfig.Scope.Count);
-        Assert.True(sconfig.Scope.Contains("foo") && sconfig.Scope.Contains("bar"));
-        Assert.True(sconfig.ValidateCertificates);
+        var options = new OAuthConnectorOptions(config);
+        Assert.Equal("accesstokenuri", options.AccessTokenUri);
+        Assert.Equal("clientid", options.ClientId);
+        Assert.Equal("clientsecret", options.ClientSecret);
+        Assert.Equal("jwtkeyuri", options.JwtKeyUri);
+        Assert.Equal("https://foo.bar", options.OAuthServiceUrl);
+        Assert.Equal("tokeninfouri", options.TokenInfoUri);
+        Assert.Equal("userauthorizationuri", options.UserAuthorizationUri);
+        Assert.Equal("userinfouri", options.UserInfoUri);
+        Assert.NotNull(options.Scope);
+        Assert.Equal(2, options.Scope.Count);
+        Assert.True(options.Scope.Contains("foo") && options.Scope.Contains("bar"));
+        Assert.True(options.ValidateCertificates);
     }
 
     [Fact]
@@ -68,9 +68,9 @@ public class OAuthConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new OAuthConnectorOptions(config);
+        var options = new OAuthConnectorOptions(config);
 
-        Assert.False(sconfig.ValidateCertificates);
+        Assert.False(options.ValidateCertificates);
     }
 
     [Fact]
@@ -85,8 +85,8 @@ public class OAuthConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         var config = configurationBuilder.Build();
 
-        var sconfig = new OAuthConnectorOptions(config);
+        var options = new OAuthConnectorOptions(config);
 
-        Assert.False(sconfig.ValidateCertificates);
+        Assert.False(options.ValidateCertificates);
     }
 }

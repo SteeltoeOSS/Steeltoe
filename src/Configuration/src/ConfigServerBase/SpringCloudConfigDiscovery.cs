@@ -6,7 +6,7 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class SpringCloudConfigDiscovery
 {
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_DISCOVERY_ENABLED;
+    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultDiscoveryEnabled;
 
-    public string ServiceId { get; set; } = ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID;
+    public string ServiceId { get; set; } = ConfigServerClientSettings.DefaultConfigserverServiceId;
 }

@@ -19,11 +19,11 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
-public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListenerContainerFactory<C>
-    where C : AbstractMessageListenerContainer
+public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabbitListenerContainerFactory<TContainer>
+    where TContainer : AbstractMessageListenerContainer
 {
-    protected readonly ILogger _logger;
-    protected readonly ILoggerFactory _loggerFactory;
+    protected readonly ILogger Logger;
+    protected readonly ILoggerFactory LoggerFactory;
     private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
     private ISmartMessageConverter _messageConverter;
@@ -31,20 +31,20 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
     }
 
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
         ConnectionFactory = connectionFactory;
     }
 
     protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
     {
         ApplicationContext = applicationContext;
-        _loggerFactory = loggerFactory;
+        LoggerFactory = loggerFactory;
         ConnectionFactory = connectionFactory;
         _optionsMonitor = optionsMonitor;
     }
@@ -59,7 +59,7 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
     {
         get
         {
-            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(_loggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
+            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(LoggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
             return _messageConverter;
         }
         set => _messageConverter = value;
@@ -101,7 +101,7 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
 
     public IRecoveryCallback ReplyRecoveryCallback { get; set; }
 
-    public Action<C> ContainerCustomizer { get; set; }
+    public Action<TContainer> ContainerCustomizer { get; set; }
 
     public bool BatchListener { get; set; }
 
@@ -162,7 +162,7 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
         BeforeSendReplyPostProcessors = new List<IMessagePostProcessor>(postProcessors);
     }
 
-    public C CreateListenerContainer(IRabbitListenerEndpoint endpoint)
+    public TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
     {
         var instance = CreateContainerInstance();
 
@@ -318,9 +318,9 @@ public abstract class AbstractRabbitListenerContainerFactory<C> : IRabbitListene
         return CreateListenerContainer(endpoint);
     }
 
-    protected abstract C CreateContainerInstance();
+    protected abstract TContainer CreateContainerInstance();
 
-    protected virtual void InitializeContainer(C instance, IRabbitListenerEndpoint endpoint)
+    protected virtual void InitializeContainer(TContainer instance, IRabbitListenerEndpoint endpoint)
     {
     }
 }

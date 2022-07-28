@@ -22,9 +22,9 @@ public class MessageTest
     public void ProperEncoding()
     {
         var message = Message.Create(EncodingUtils.Utf16.GetBytes("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"), new MessageHeaders());
-        var acccessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        acccessor.ContentType = MessageHeaders.CONTENT_TYPE_JSON;
-        acccessor.ContentEncoding = "UTF-16";
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        accessor.ContentType = MessageHeaders.ContentTypeJson;
+        accessor.ContentEncoding = "UTF-16";
         Assert.Contains("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP", message.ToString());
     }
 

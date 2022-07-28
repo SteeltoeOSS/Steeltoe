@@ -68,35 +68,35 @@ public class ApplicationTest : AbstractBaseTest
         var info = new InstanceInfo
         {
             InstanceId = "1",
-            Status = InstanceStatus.DOWN
+            Status = InstanceStatus.Down
         };
 
         app.Add(info);
 
         Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.DOWN, app.GetInstance("1").Status);
+        Assert.Equal(InstanceStatus.Down, app.GetInstance("1").Status);
 
         var info2 = new InstanceInfo
         {
             InstanceId = "1",
-            Status = InstanceStatus.UP
+            Status = InstanceStatus.Up
         };
 
         app.Add(info2);
         Assert.Equal(1, app.Count);
         Assert.NotNull(app.GetInstance("1"));
-        Assert.Equal(InstanceStatus.UP, app.GetInstance("1").Status);
+        Assert.Equal(InstanceStatus.Up, app.GetInstance("1").Status);
     }
 
     [Fact]
     public void FromJsonApplication_Correct()
     {
-        var jinfo = new JsonInstanceInfo
+        var instanceInfo = new JsonInstanceInfo
         {
             InstanceId = "InstanceId",
             AppName = "myApp",
             AppGroupName = "AppGroupName",
-            IpAddr = "IpAddr",
+            IpAddress = "IpAddr",
             Sid = "Sid",
             Port = new JsonInstanceInfo.JsonPortWrapper(true, 100),
             SecurePort = new JsonInstanceInfo.JsonPortWrapper(false, 100),
@@ -109,8 +109,8 @@ public class ApplicationTest : AbstractBaseTest
             CountryId = 1,
             DataCenterInfo = new JsonInstanceInfo.JsonDataCenterInfo(string.Empty, "MyOwn"),
             HostName = "HostName",
-            Status = InstanceStatus.DOWN,
-            OverriddenStatus = InstanceStatus.OUT_OF_SERVICE,
+            Status = InstanceStatus.Down,
+            OverriddenStatus = InstanceStatus.OutOfService,
             LeaseInfo = new JsonLeaseInfo
             {
                 RenewalIntervalInSecs = 1,
@@ -125,17 +125,17 @@ public class ApplicationTest : AbstractBaseTest
             Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
-            Actiontype = ActionType.ADDED,
+            ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
 
-        var japp = new JsonApplication
+        var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { jinfo }
+            Instances = new List<JsonInstanceInfo> { instanceInfo }
         };
 
-        var app = Application.FromJsonApplication(japp);
+        var app = Application.FromJsonApplication(application);
 
         // Verify
         Assert.NotNull(app);
@@ -149,10 +149,10 @@ public class ApplicationTest : AbstractBaseTest
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);
         Assert.Equal("AppGroupName", info.AppGroupName);
-        Assert.Equal("IpAddr", info.IpAddr);
+        Assert.Equal("IpAddr", info.IpAddress);
         Assert.Equal("Sid", info.Sid);
         Assert.Equal(100, info.Port);
-        Assert.True(info.IsUnsecurePortEnabled);
+        Assert.True(info.IsInsecurePortEnabled);
         Assert.Equal(100, info.SecurePort);
         Assert.False(info.IsSecurePortEnabled);
         Assert.Equal("HomePageUrl", info.HomePageUrl);
@@ -164,8 +164,8 @@ public class ApplicationTest : AbstractBaseTest
         Assert.Equal(1, info.CountryId);
         Assert.Equal("MyOwn", info.DataCenterInfo.Name.ToString());
         Assert.Equal("HostName", info.HostName);
-        Assert.Equal(InstanceStatus.DOWN, info.Status);
-        Assert.Equal(InstanceStatus.OUT_OF_SERVICE, info.OverriddenStatus);
+        Assert.Equal(InstanceStatus.Down, info.Status);
+        Assert.Equal(InstanceStatus.OutOfService, info.OverriddenStatus);
         Assert.NotNull(info.LeaseInfo);
         Assert.Equal(1, info.LeaseInfo.RenewalIntervalInSecs);
         Assert.Equal(2, info.LeaseInfo.DurationInSecs);
@@ -179,7 +179,7 @@ public class ApplicationTest : AbstractBaseTest
         Assert.Empty(info.Metadata);
         Assert.Equal(635_935_705_417_080_000L, info.LastUpdatedTimestamp);
         Assert.Equal(635_935_705_417_080_000L, info.LastDirtyTimestamp);
-        Assert.Equal(ActionType.ADDED, info.Actiontype);
+        Assert.Equal(ActionType.Added, info.ActionType);
         Assert.Equal("AsgName", info.AsgName);
     }
 }

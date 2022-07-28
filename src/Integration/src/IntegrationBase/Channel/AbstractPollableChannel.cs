@@ -62,7 +62,7 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
         Stack<IChannelInterceptor> interceptorStack = null;
         try
         {
-            logger?.LogTrace("PreReceive on channel '" + this + "'");
+            Logger?.LogTrace("PreReceive on channel '" + this + "'");
             if (interceptorList.Count > 0)
             {
                 interceptorStack = new Stack<IChannelInterceptor>();
@@ -77,11 +77,11 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
             if (message == null)
             {
-                logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
+                Logger?.LogTrace("PostReceive on channel '" + ServiceName + "', message is null");
             }
             else
             {
-                logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
+                Logger?.LogDebug("PostReceive on channel '" + ServiceName + "', message: " + message);
             }
 
             if (interceptorStack != null && message != null)

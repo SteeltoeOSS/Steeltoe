@@ -8,8 +8,8 @@ namespace Steeltoe.Connector.Services;
 
 public class RabbitMQServiceInfo : UriServiceInfo
 {
-    public const string AMQP_SCHEME = "amqp";
-    public const string AMQPS_SCHEME = "amqps";
+    public const string AmqpScheme = "amqp";
+    public const string AmqpSecureScheme = "amqps";
 
     public RabbitMQServiceInfo(string id, string host, int port, string username, string password, string virtualHost)
         : this(id, host, port, username, password, virtualHost, null)
@@ -17,7 +17,7 @@ public class RabbitMQServiceInfo : UriServiceInfo
     }
 
     public RabbitMQServiceInfo(string id, string host, int port, string username, string password, string virtualHost, string managementUri)
-        : base(id, AMQP_SCHEME, host, port, username, password, virtualHost)
+        : base(id, AmqpScheme, host, port, username, password, virtualHost)
     {
         ManagementUri = managementUri;
     }

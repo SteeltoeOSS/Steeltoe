@@ -14,8 +14,8 @@ public interface ISerilogOptions
     MinimumLevel MinimumLevel { get; set; }
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    IEnumerable<string> SubloggerConfigKeyExclusions { get; set; }
+    IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
 
     [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    IEnumerable<string> FullnameExclusions { get; }
+    IEnumerable<string> FullNameExclusions { get; }
 }

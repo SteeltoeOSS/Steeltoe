@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.Converter;
 
 public class CompositeMessageConverter : ISmartMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(CompositeMessageConverter);
+    public const string DefaultServiceName = nameof(CompositeMessageConverter);
 
     public CompositeMessageConverter(ICollection<IMessageConverter> converters)
     {
@@ -21,7 +21,7 @@ public class CompositeMessageConverter : ISmartMessageConverter
         Converters = new List<IMessageConverter>(converters);
     }
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public object FromMessage(IMessage message, Type targetClass)
     {

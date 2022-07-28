@@ -39,7 +39,7 @@ public class QueueBuilder : AbstractBuilder
         }
     }
 
-    private static readonly INamingStrategy _namingStrategy = Base64UrlNamingStrategy.DEFAULT;
+    private static readonly INamingStrategy NamingStrategy = Base64UrlNamingStrategy.Default;
     private readonly string _name;
     private bool _durable;
     private bool _exclusive;
@@ -47,7 +47,7 @@ public class QueueBuilder : AbstractBuilder
 
     public static QueueBuilder Durable()
     {
-        return Durable(_namingStrategy.GenerateName());
+        return Durable(NamingStrategy.GenerateName());
     }
 
     public static QueueBuilder Durable(string name)
@@ -60,7 +60,7 @@ public class QueueBuilder : AbstractBuilder
 
     public static QueueBuilder NonDurable()
     {
-        return new QueueBuilder(_namingStrategy.GenerateName());
+        return new QueueBuilder(NamingStrategy.GenerateName());
     }
 
     public static QueueBuilder NonDurable(string name)
@@ -102,7 +102,7 @@ public class QueueBuilder : AbstractBuilder
         return this;
     }
 
-    public QueueBuilder TTL(int ttl)
+    public QueueBuilder Ttl(int ttl)
     {
         return WithArgument("x-message-ttl", ttl);
     }
@@ -127,14 +127,14 @@ public class QueueBuilder : AbstractBuilder
         return WithArgument("x-overflow", overflow.Value);
     }
 
-    public QueueBuilder DeadLetterExchange(string dlx)
+    public QueueBuilder DeadLetterExchange(string exchange)
     {
-        return WithArgument("x-dead-letter-exchange", dlx);
+        return WithArgument("x-dead-letter-exchange", exchange);
     }
 
-    public QueueBuilder DeadLetterRoutingKey(string dlrk)
+    public QueueBuilder DeadLetterRoutingKey(string key)
     {
-        return WithArgument("x-dead-letter-routing-key", dlrk);
+        return WithArgument("x-dead-letter-routing-key", key);
     }
 
     public QueueBuilder MaxPriority(int maxPriority)

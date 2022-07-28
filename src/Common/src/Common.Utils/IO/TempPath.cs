@@ -45,6 +45,7 @@ public abstract class TempPath : IDisposable
     /// <summary>
     /// Ensures the temporary path is deleted.
     /// </summary>
+    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
     protected abstract void Dispose(bool disposing);
 
     /// <summary>

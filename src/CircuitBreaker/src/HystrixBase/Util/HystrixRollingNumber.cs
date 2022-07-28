@@ -12,18 +12,18 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 public class HystrixRollingNumber
 {
-    internal readonly int _timeInMilliseconds;
-    internal readonly int _numberOfBuckets;
-    internal readonly int _bucketSizeInMillseconds;
+    internal readonly int TimeInMilliseconds;
+    internal readonly int NumberOfBuckets;
+    internal readonly int BucketSizeInMilliseconds;
 
-    internal readonly BucketCircularArray _buckets;
-    internal readonly CumulativeSum _cumulativeSum = new ();
+    internal readonly BucketCircularArray Buckets;
+    internal readonly CumulativeSum DefaultCumulativeSum = new ();
 
-    private static readonly ITime Actual_time = new ActualTime();
+    private static readonly ITime ActualTime = new ActualTime();
     private readonly ITime _time;
 
     public HystrixRollingNumber(int timeInMilliseconds, int numberOfBuckets)
-        : this(Actual_time, timeInMilliseconds, numberOfBuckets)
+        : this(ActualTime, timeInMilliseconds, numberOfBuckets)
     {
     }
 
@@ -31,17 +31,17 @@ public class HystrixRollingNumber
     internal HystrixRollingNumber(ITime time, int timeInMilliseconds, int numberOfBuckets)
     {
         _time = time;
-        _timeInMilliseconds = timeInMilliseconds;
-        _numberOfBuckets = numberOfBuckets;
+        this.TimeInMilliseconds = timeInMilliseconds;
+        this.NumberOfBuckets = numberOfBuckets;
 
         if (timeInMilliseconds % numberOfBuckets != 0)
         {
             throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
         }
 
-        _bucketSizeInMillseconds = timeInMilliseconds / numberOfBuckets;
+        BucketSizeInMilliseconds = timeInMilliseconds / numberOfBuckets;
 
-        _buckets = new BucketCircularArray(numberOfBuckets);
+        Buckets = new BucketCircularArray(numberOfBuckets);
     }
 
     public void Increment(HystrixRollingNumberEvent type)
@@ -62,14 +62,14 @@ public class HystrixRollingNumber
     public void Reset()
     {
         // if we are resetting, that means the lastBucket won't have a chance to be captured in CumulativeSum, so let's do it here
-        var lastBucket = _buckets.PeekLast;
+        var lastBucket = Buckets.PeekLast;
         if (lastBucket != null)
         {
-            _cumulativeSum.AddBucket(lastBucket);
+            DefaultCumulativeSum.AddBucket(lastBucket);
         }
 
         // clear buckets so we start over again
-        _buckets.Clear();
+        Buckets.Clear();
     }
 
     public long GetCumulativeSum(HystrixRollingNumberEvent type)
@@ -77,7 +77,7 @@ public class HystrixRollingNumber
         // this isn't 100% atomic since multiple threads can be affecting latestBucket & cumulativeSum independently
         // but that's okay since the count is always a moving target and we're accepting a "point in time" best attempt
         // we are however putting 'getValueOfLatestBucket' first since it can have side-affects on cumulativeSum whereas the inverse is not true
-        return GetValueOfLatestBucket(type) + _cumulativeSum.Get(type);
+        return GetValueOfLatestBucket(type) + DefaultCumulativeSum.Get(type);
     }
 
     public long GetRollingSum(HystrixRollingNumberEvent type)
@@ -89,7 +89,7 @@ public class HystrixRollingNumber
         }
 
         long sum = 0;
-        foreach (var b in _buckets)
+        foreach (var b in Buckets)
         {
             sum += b.GetAdder(type).Sum();
         }
@@ -118,7 +118,7 @@ public class HystrixRollingNumber
         }
 
         // get buckets as an array (which is a copy of the current state at this point in time)
-        var bucketArray = _buckets.Array;
+        var bucketArray = Buckets.Array;
 
         // we have bucket data so we'll return an array of values for all buckets
         var values = new long[bucketArray.Length];
@@ -165,8 +165,8 @@ public class HystrixRollingNumber
          * Retrieve the latest bucket if the given time is BEFORE the end of the bucket window, otherwise it returns NULL.
          * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
          */
-        var currentBucket = _buckets.PeekLast;
-        if (currentBucket != null && currentTime < currentBucket._windowStart + _bucketSizeInMillseconds)
+        var currentBucket = Buckets.PeekLast;
+        if (currentBucket != null && currentTime < currentBucket.WindowStart + BucketSizeInMilliseconds)
         {
             // if we're within the bucket 'window of time' return the current one
             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
@@ -201,50 +201,50 @@ public class HystrixRollingNumber
             currentTime = _time.CurrentTimeInMillis;
             try
             {
-                if (_buckets.PeekLast == null)
+                if (Buckets.PeekLast == null)
                 {
                     // the list is empty so create the first bucket
                     var newBucket = new Bucket(currentTime);
-                    _buckets.AddLast(newBucket);
+                    Buckets.AddLast(newBucket);
                     return newBucket;
                 }
                 else
                 {
                     // We go into a loop so that it will create as many buckets as needed to catch up to the current time
                     // as we want the buckets complete even if we don't have transactions during a period of time.
-                    for (var i = 0; i < _numberOfBuckets; i++)
+                    for (var i = 0; i < NumberOfBuckets; i++)
                     {
                         // we have at least 1 bucket so retrieve it
-                        var lastBucket = _buckets.PeekLast;
-                        if (currentTime < lastBucket._windowStart + _bucketSizeInMillseconds)
+                        var lastBucket = Buckets.PeekLast;
+                        if (currentTime < lastBucket.WindowStart + BucketSizeInMilliseconds)
                         {
                             // if we're within the bucket 'window of time' return the current one
                             // NOTE: We do not worry if we are BEFORE the window in a weird case of where thread scheduling causes that to occur,
                             // we'll just use the latest as long as we're not AFTER the window
                             return lastBucket;
                         }
-                        else if (currentTime - (lastBucket._windowStart + _bucketSizeInMillseconds) > _timeInMilliseconds)
+                        else if (currentTime - (lastBucket.WindowStart + BucketSizeInMilliseconds) > TimeInMilliseconds)
                         {
                             // the time passed is greater than the entire rolling counter so we want to clear it all and start from scratch
                             Reset();
 
                             var newBucket = new Bucket(currentTime);
-                            _buckets.AddLast(newBucket);
+                            Buckets.AddLast(newBucket);
                             return newBucket;
                         }
                         else
                         {
                             // we're past the window so we need to create a new bucket
                             // create a new bucket and add it as the new 'last'
-                            _buckets.AddLast(new Bucket(lastBucket._windowStart + _bucketSizeInMillseconds));
+                            Buckets.AddLast(new Bucket(lastBucket.WindowStart + BucketSizeInMilliseconds));
 
                             // add the lastBucket values to the cumulativeSum
-                            _cumulativeSum.AddBucket(lastBucket);
+                            DefaultCumulativeSum.AddBucket(lastBucket);
                         }
                     }
 
                     // we have finished the for-loop and created all of the buckets, so return the lastBucket now
-                    return _buckets.PeekLast;
+                    return Buckets.PeekLast;
                 }
             }
             finally
@@ -254,7 +254,7 @@ public class HystrixRollingNumber
         }
         else
         {
-            currentBucket = _buckets.PeekLast;
+            currentBucket = Buckets.PeekLast;
             if (currentBucket != null)
             {
                 // we didn't get the lock so just return the latest bucket while another thread creates the next one
@@ -264,9 +264,9 @@ public class HystrixRollingNumber
             {
                 // the rare scenario where multiple threads raced to create the very first bucket
                 // wait slightly and then use recursion while the other thread finishes creating a bucket
-                if (Time.WaitUntil(() => _buckets.PeekLast != null, 500))
+                if (Time.WaitUntil(() => Buckets.PeekLast != null, 500))
                 {
-                    return _buckets.PeekLast;
+                    return Buckets.PeekLast;
                 }
                 else
                 {
@@ -278,13 +278,13 @@ public class HystrixRollingNumber
 
     internal sealed class Bucket
     {
-        internal readonly long _windowStart;
-        internal readonly LongAdder[] _adderForCounterType;
-        internal readonly LongMaxUpdater[] _updaterForCounterType;
+        internal readonly long WindowStart;
+        internal readonly LongAdder[] AdderForCounterType;
+        internal readonly LongMaxUpdater[] UpdaterForCounterType;
 
         public Bucket(long startTime)
         {
-            _windowStart = startTime;
+            WindowStart = startTime;
 
             /*
              * We support both LongAdder and LongMaxUpdater in a bucket but don't want the memory allocation
@@ -294,24 +294,24 @@ public class HystrixRollingNumber
              */
 
             // initialize the array of LongAdders
-            _adderForCounterType = new LongAdder[HystrixRollingNumberEventHelper.Values.Count];
+            AdderForCounterType = new LongAdder[HystrixRollingNumberEventHelper.Values.Count];
             foreach (var type in HystrixRollingNumberEventHelper.Values)
             {
                 if (HystrixRollingNumberEventHelper.IsCounter(type))
                 {
-                    _adderForCounterType[(int)type] = new LongAdder();
+                    AdderForCounterType[(int)type] = new LongAdder();
                 }
             }
 
-            _updaterForCounterType = new LongMaxUpdater[HystrixRollingNumberEventHelper.Values.Count];
+            UpdaterForCounterType = new LongMaxUpdater[HystrixRollingNumberEventHelper.Values.Count];
             foreach (var type in HystrixRollingNumberEventHelper.Values)
             {
                 if (HystrixRollingNumberEventHelper.IsMaxUpdater(type))
                 {
-                    _updaterForCounterType[(int)type] = new LongMaxUpdater();
+                    UpdaterForCounterType[(int)type] = new LongMaxUpdater();
 
                     // initialize to 0 otherwise it is Long.MIN_VALUE
-                    _updaterForCounterType[(int)type].Update(0);
+                    UpdaterForCounterType[(int)type].Update(0);
                 }
             }
         }
@@ -320,12 +320,12 @@ public class HystrixRollingNumber
         {
             if (HystrixRollingNumberEventHelper.IsCounter(type))
             {
-                return _adderForCounterType[(int)type].Sum();
+                return AdderForCounterType[(int)type].Sum();
             }
 
             if (HystrixRollingNumberEventHelper.IsMaxUpdater(type))
             {
-                return _updaterForCounterType[(int)type].Max;
+                return UpdaterForCounterType[(int)type].Max;
             }
 
             throw new InvalidOperationException($"Unknown type of event: {type}");
@@ -338,7 +338,7 @@ public class HystrixRollingNumber
                 throw new InvalidOperationException($"Type is not a Counter: {type}");
             }
 
-            return _adderForCounterType[(int)type];
+            return AdderForCounterType[(int)type];
         }
 
         public LongMaxUpdater GetMaxUpdater(HystrixRollingNumberEvent type)
@@ -348,14 +348,14 @@ public class HystrixRollingNumber
                 throw new InvalidOperationException($"Type is not a MaxUpdater: {type}");
             }
 
-            return _updaterForCounterType[(int)type];
+            return UpdaterForCounterType[(int)type];
         }
     }
 
     internal sealed class CumulativeSum
     {
-        internal readonly LongAdder[] _adderForCounterType;
-        internal readonly LongMaxUpdater[] _updaterForCounterType;
+        internal readonly LongAdder[] AdderForCounterType;
+        internal readonly LongMaxUpdater[] UpdaterForCounterType;
 
         public CumulativeSum()
         {
@@ -367,24 +367,24 @@ public class HystrixRollingNumber
              */
 
             // initialize the array of LongAdders
-            _adderForCounterType = new LongAdder[HystrixRollingNumberEventHelper.Values.Count];
+            AdderForCounterType = new LongAdder[HystrixRollingNumberEventHelper.Values.Count];
             foreach (var type in HystrixRollingNumberEventHelper.Values)
             {
                 if (HystrixRollingNumberEventHelper.IsCounter(type))
                 {
-                    _adderForCounterType[(int)type] = new LongAdder();
+                    AdderForCounterType[(int)type] = new LongAdder();
                 }
             }
 
-            _updaterForCounterType = new LongMaxUpdater[HystrixRollingNumberEventHelper.Values.Count];
+            UpdaterForCounterType = new LongMaxUpdater[HystrixRollingNumberEventHelper.Values.Count];
             foreach (var type in HystrixRollingNumberEventHelper.Values)
             {
                 if (HystrixRollingNumberEventHelper.IsMaxUpdater(type))
                 {
-                    _updaterForCounterType[(int)type] = new LongMaxUpdater();
+                    UpdaterForCounterType[(int)type] = new LongMaxUpdater();
 
                     // initialize to 0 otherwise it is Long.MIN_VALUE
-                    _updaterForCounterType[(int)type].Update(0);
+                    UpdaterForCounterType[(int)type].Update(0);
                 }
             }
         }
@@ -409,12 +409,12 @@ public class HystrixRollingNumber
         {
             if (HystrixRollingNumberEventHelper.IsCounter(type))
             {
-                return _adderForCounterType[(int)type].Sum();
+                return AdderForCounterType[(int)type].Sum();
             }
 
             if (HystrixRollingNumberEventHelper.IsMaxUpdater(type))
             {
-                return _updaterForCounterType[(int)type].Max;
+                return UpdaterForCounterType[(int)type].Max;
             }
 
             throw new InvalidOperationException($"Unknown type of event: {type}");
@@ -427,7 +427,7 @@ public class HystrixRollingNumber
                 throw new InvalidOperationException($"Type is not a Counter: {type}");
             }
 
-            return _adderForCounterType[(int)type];
+            return AdderForCounterType[(int)type];
         }
 
         public LongMaxUpdater GetMaxUpdater(HystrixRollingNumberEvent type)
@@ -437,7 +437,7 @@ public class HystrixRollingNumber
                 throw new InvalidOperationException($"Type is not a MaxUpdater: {type}");
             }
 
-            return _updaterForCounterType[(int)type];
+            return UpdaterForCounterType[(int)type];
         }
     }
 
@@ -454,41 +454,41 @@ public class HystrixRollingNumber
                 * between ListState objects and multiple threads could maintain references across these
                 * compound operations so I want the visibility/concurrency guarantees
                 */
-            internal readonly AtomicReferenceArray<Bucket> _data;
-            internal readonly int _size;
-            internal readonly int _listtail;
-            internal readonly int _head;
-            internal readonly BucketCircularArray _ca;
+            internal readonly AtomicReferenceArray<Bucket> Data;
+            internal readonly int Size;
+            internal readonly int ListTail;
+            internal readonly int Head;
+            internal readonly BucketCircularArray Ca;
 
             public ListState(BucketCircularArray ca, AtomicReferenceArray<Bucket> data, int head, int tail)
             {
-                _ca = ca;
-                _head = head;
-                _listtail = tail;
+                this.Ca = ca;
+                this.Head = head;
+                ListTail = tail;
                 if (head == 0 && tail == 0)
                 {
-                    _size = 0;
+                    Size = 0;
                 }
                 else
                 {
-                    _size = (tail + ca._dataLength - head) % ca._dataLength;
+                    Size = (tail + ca._dataLength - head) % ca._dataLength;
                 }
 
-                _data = data;
+                this.Data = data;
             }
 
             public Bucket Tail
             {
                 get
                 {
-                    if (_size == 0)
+                    if (Size == 0)
                     {
                         return null;
                     }
                     else
                     {
                         // we want to get the last item, so size()-1
-                        return _data[Convert(_size - 1)];
+                        return Data[Convert(Size - 1)];
                     }
                 }
             }
@@ -503,9 +503,9 @@ public class HystrixRollingNumber
                      * just potentially return stale data which we are okay with doing
                      */
                     var array = new List<Bucket>();
-                    for (var i = 0; i < _size; i++)
+                    for (var i = 0; i < Size; i++)
                     {
-                        array.Add(_data[Convert(i)]);
+                        array.Add(Data[Convert(i)]);
                     }
 
                     return array.ToArray();
@@ -514,7 +514,7 @@ public class HystrixRollingNumber
 
             public ListState Clear()
             {
-                return new ListState(_ca, new AtomicReferenceArray<Bucket>(_ca._dataLength), 0, 0);
+                return new ListState(Ca, new AtomicReferenceArray<Bucket>(Ca._dataLength), 0, 0);
             }
 
             public ListState AddBucket(Bucket b)
@@ -526,7 +526,7 @@ public class HystrixRollingNumber
                  * In either case, a single Bucket will be returned as "last" and data loss should not occur and everything keeps in sync for head/tail.
                  * Also, it's fine to set it before incrementTail because nothing else should be referencing that index position until incrementTail occurs.
                  */
-                _data[_listtail] = b;
+                Data[ListTail] = b;
                 return IncrementTail();
             }
 
@@ -534,21 +534,21 @@ public class HystrixRollingNumber
             // always 0) and calculates the index within elementData
             private int Convert(int index)
             {
-                return (index + _head) % _ca._dataLength;
+                return (index + Head) % Ca._dataLength;
             }
 
             private ListState IncrementTail()
             {
                 /* if incrementing results in growing larger than 'length' which is the max we should be at, then also increment head (equivalent of removeFirst but done atomically) */
-                if (_size == _ca._numBuckets)
+                if (Size == Ca._numBuckets)
                 {
                     // increment tail and head
-                    return new ListState(_ca, _data, (_head + 1) % _ca._dataLength, (_listtail + 1) % _ca._dataLength);
+                    return new ListState(Ca, Data, (Head + 1) % Ca._dataLength, (ListTail + 1) % Ca._dataLength);
                 }
                 else
                 {
                     // increment only tail
-                    return new ListState(_ca, _data, _head, (_listtail + 1) % _ca._dataLength);
+                    return new ListState(Ca, Data, Head, (ListTail + 1) % Ca._dataLength);
                 }
             }
         }
@@ -619,7 +619,7 @@ public class HystrixRollingNumber
         {
             // the size can also be worked out each time as:
             // return (tail + data.length() - head) % data.length();
-            get { return _state.Value._size; }
+            get { return _state.Value.Size; }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

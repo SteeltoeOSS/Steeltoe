@@ -14,7 +14,7 @@ public class DownContributor : IHealthContributor
     {
         return new HealthCheckResult
         {
-            Status = HealthStatus.DOWN
+            Status = HealthStatus.Down
         };
     }
 }

@@ -12,8 +12,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 [Trait("Category", "Integration")]
 public class RabbitTemplateSimpleRoutingConnectionFactoryTest
 {
-    protected const string CONNECTION_FACTORY_1 = "foo";
-    protected const string CONNECTION_FACTORY_2 = "bar";
+    protected const string ConnectionFactory1 = "foo";
+    protected const string ConnectionFactory2 = "bar";
 
     protected RabbitTemplate routingTemplate;
 
@@ -30,8 +30,8 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
         cf1 = new Mock<IConnectionFactory>();
         cf2 = new Mock<IConnectionFactory>();
         defaultCF = new Mock<IConnectionFactory>();
-        routingConnFactory.AddTargetConnectionFactory(CONNECTION_FACTORY_1, cf1.Object);
-        routingConnFactory.AddTargetConnectionFactory(CONNECTION_FACTORY_2, cf2.Object);
+        routingConnFactory.AddTargetConnectionFactory(ConnectionFactory1, cf1.Object);
+        routingConnFactory.AddTargetConnectionFactory(ConnectionFactory2, cf2.Object);
 
         routingTemplate.ConnectionFactory = routingConnFactory;
     }
@@ -48,8 +48,8 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
             connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            channel.Setup(c => c.QueueDeclarePassive(Address.AMQ_RABBITMQ_REPLY_TO))
-                .Returns(() => new RC.QueueDeclareOk(Address.AMQ_RABBITMQ_REPLY_TO, 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo))
+                .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
             return channel;
         }
 
@@ -57,12 +57,12 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
         var channel2 = SetupMocks(cf2);
 
         // act(a): send message using connection factory 1
-        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, CONNECTION_FACTORY_1);
+        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, ConnectionFactory1);
         routingTemplate.ConvertSendAndReceive<string>("exchFoo", "rkFoo", "msgFoo");
         SimpleResourceHolder.UnbindIfPossible(routingTemplate.ConnectionFactory);
 
         // act(b): send message using connection factory 2
-        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, CONNECTION_FACTORY_2);
+        SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, ConnectionFactory2);
         routingTemplate.ConvertSendAndReceive<string>("exchBar", "rkBar", "msgBar");
         SimpleResourceHolder.UnbindIfPossible(routingTemplate.ConnectionFactory);
 

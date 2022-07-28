@@ -11,7 +11,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using System.Linq;
-
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;
@@ -23,15 +22,9 @@ public class SpringBootHostBuilderExtensionsTest
     {
         const IHostBuilder builder = null;
         const IWebHostBuilder webHostBuilder = null;
-#if NET6_0_OR_GREATER
-        const WebApplicationBuilder webAppBuilder = null;
-#endif
 
         Assert.Throws<ArgumentNullException>(() => builder.AddSpringBootConfiguration());
         Assert.Throws<ArgumentNullException>(() => webHostBuilder.AddSpringBootConfiguration());
-#if NET6_0_OR_GREATER
-        Assert.Throws<ArgumentNullException>(() => webAppBuilder.AddSpringBootConfiguration());
-#endif
     }
 
     [Fact]
@@ -104,7 +97,14 @@ public class SpringBootHostBuilderExtensionsTest
         Assert.Equal("testGroup", config["spring:cloud:stream:bindings:input:group"]);
     }
 
-#if NET6_0_OR_GREATER
+    [Fact]
+    public void ConfigureSpringBoot_WebApplicationBuilder_ThrowsIfNulls()
+    {
+        const WebApplicationBuilder webAppBuilder = null;
+
+        Assert.Throws<ArgumentNullException>(() => webAppBuilder.AddSpringBootConfiguration());
+    }
+
     [Fact]
     public void WebApplicationConfiguresIConfiguration_Spring_Application_Json()
     {
@@ -137,5 +137,4 @@ public class SpringBootHostBuilderExtensionsTest
         Assert.NotNull(config["spring:cloud:stream:bindings:input:group"]);
         Assert.Equal("testGroup", config["spring:cloud:stream:bindings:input:group"]);
     }
-#endif
 }

@@ -18,7 +18,7 @@ public class LivenessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.UNKNOWN, result.Status);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public class LivenessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
     }
 
     [Fact]
@@ -40,6 +40,6 @@ public class LivenessHealthContributorTest
 
         var result = contributor.Health();
 
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
     }
 }

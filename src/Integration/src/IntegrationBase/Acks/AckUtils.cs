@@ -10,7 +10,7 @@ public static class AckUtils
     {
         if (ackCallback != null && ackCallback.IsAutoAck && !ackCallback.IsAcknowledged)
         {
-            ackCallback.Acknowledge(Status.ACCEPT);
+            ackCallback.Acknowledge(Status.Accept);
         }
     }
 
@@ -18,7 +18,7 @@ public static class AckUtils
     {
         if (ackCallback != null && ackCallback.IsAutoAck && !ackCallback.IsAcknowledged)
         {
-            ackCallback.Acknowledge(Status.REJECT);
+            ackCallback.Acknowledge(Status.Reject);
         }
     }
 
@@ -26,7 +26,7 @@ public static class AckUtils
     {
         if (ackCallback != null)
         {
-            ackCallback.Acknowledge(Status.ACCEPT);
+            ackCallback.Acknowledge(Status.Accept);
         }
     }
 
@@ -34,7 +34,7 @@ public static class AckUtils
     {
         if (ackCallback != null)
         {
-            ackCallback.Acknowledge(Status.REJECT);
+            ackCallback.Acknowledge(Status.Reject);
         }
     }
 
@@ -42,7 +42,7 @@ public static class AckUtils
     {
         if (ackCallback != null)
         {
-            ackCallback.Acknowledge(Status.REQUEUE);
+            ackCallback.Acknowledge(Status.Requeue);
         }
     }
 }

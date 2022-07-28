@@ -7,29 +7,29 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.Common.Util;
 
-public class SubclassClassifier<T, C> : IClassifier<T, C>
+public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget>
 {
-    public C DefaultValue { get; set; }
+    public TTarget DefaultValue { get; set; }
 
-    protected ConcurrentDictionary<Type, C> TypeMap { get; set; }
+    protected ConcurrentDictionary<Type, TTarget> TypeMap { get; set; }
 
     public SubclassClassifier()
         : this(default)
     {
     }
 
-    public SubclassClassifier(C defaultValue)
-        : this(new ConcurrentDictionary<Type, C>(), defaultValue)
+    public SubclassClassifier(TTarget defaultValue)
+        : this(new ConcurrentDictionary<Type, TTarget>(), defaultValue)
     {
     }
 
-    public SubclassClassifier(ConcurrentDictionary<Type, C> typeMap, C defaultValue)
+    public SubclassClassifier(ConcurrentDictionary<Type, TTarget> typeMap, TTarget defaultValue)
     {
-        TypeMap = new ConcurrentDictionary<Type, C>(typeMap);
+        TypeMap = new ConcurrentDictionary<Type, TTarget>(typeMap);
         DefaultValue = defaultValue;
     }
 
-    public virtual C Classify(T classifiable)
+    public virtual TTarget Classify(TSource classifiable)
     {
         if (classifiable == null)
         {
@@ -45,7 +45,7 @@ public class SubclassClassifier<T, C> : IClassifier<T, C>
 
         // check for subclasses
         var foundValue = false;
-        var value = default(C);
+        var value = default(TTarget);
         for (var cls = clazz; !cls.Equals(typeof(object)); cls = cls.BaseType)
         {
             if (TypeMap.TryGetValue(cls, out value))

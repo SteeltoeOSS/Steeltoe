@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.MySql.EF6.Test;
 
 public static class MySqlTestHelpers
 {
-    public static string SingleServerVCAP = @"
+    public static string SingleServerVcap = @"
             {
                 ""p-mysql"": [{
                     ""credentials"": {
@@ -30,7 +30,7 @@ public static class MySqlTestHelpers
                 }]
             }";
 
-    public static string TwoServerVCAP = @"
+    public static string TwoServerVcap = @"
             {
                 ""p-mysql"": [{
                     ""credentials"": {

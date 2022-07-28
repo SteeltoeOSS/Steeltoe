@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;netcoreapp3.1</TargetFrameworks>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <RootNamespace>Steeltoe.Extensions.Configuration.Kubernetes</RootNamespace>
     <Description>Package for adding Kubernetes environment variables, ConfigMaps and Secrets to .NET applications</Description>
     <PackageTags>Kubernetes;Spring;Spring Cloud;configuration;configmap</PackageTags>

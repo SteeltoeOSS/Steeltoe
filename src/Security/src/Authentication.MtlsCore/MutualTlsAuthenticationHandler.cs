@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace Steeltoe.Security.Authentication.Mtls;
 
 /// <summary>
-/// This class is based on <see cref="CertificateAuthenticationHandler" />, but allows side-loading a root CA
+/// This class is based on <see cref="CertificateAuthenticationHandler" />, but allows side-loading a root CA.
 /// </summary>
 internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
 {
@@ -154,11 +154,11 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     }
 
     /// <summary>
-    /// Call chain.Build first, if !isValid then compares root with issuer chain known to this app
+    /// Call chain.Build first, if !isValid then compares root with issuer chain known to this app.
     /// </summary>
-    /// <param name="chain">Certificate chain to validate against</param>
-    /// <param name="certificate">Certificate to validate</param>
-    /// <returns>Indication of chain validity</returns>
+    /// <param name="chain">Certificate chain to validate against.</param>
+    /// <param name="certificate">Certificate to validate.</param>
+    /// <returns>Indication of chain validity.</returns>
     private bool IsChainValid(X509Chain chain, X509Certificate2 certificate)
     {
         var isValid = chain.Build(certificate);
@@ -169,10 +169,15 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
                 x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
-            isValid = Options.IssuerChain.Intersect(chain.ChainElements.Cast<X509ChainElement>().Select(c => c.Certificate)).Any();
+            isValid = Options.IssuerChain.Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
         }
 
         return isValid;
+    }
+
+    private static IEnumerable<X509ChainElement> ToGenericEnumerable(X509ChainElementCollection collection)
+    {
+        return collection;
     }
 
     private X509ChainPolicy BuildChainPolicy(X509Certificate2 certificate)

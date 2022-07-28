@@ -19,7 +19,7 @@ public class OpMinus : Operator
     {
         var leftOp = LeftOperand;
 
-        if (_children.Length < 2)
+        if (children.Length < 2)
         {
             // if only one operand, then this is unary minus
             var operand = leftOp.GetValueInternal(state).Value;
@@ -29,16 +29,16 @@ public class OpMinus : Operator
                 {
                     case decimal val: return new TypedValue(0M - val);
                     case double val:
-                        _exitTypeDescriptor = TypeDescriptor.D;
+                        exitTypeDescriptor = TypeDescriptor.D;
                         return new TypedValue(0d - val);
                     case float val:
-                        _exitTypeDescriptor = TypeDescriptor.F;
+                        exitTypeDescriptor = TypeDescriptor.F;
                         return new TypedValue(0f - val);
                     case long val:
-                        _exitTypeDescriptor = TypeDescriptor.J;
+                        exitTypeDescriptor = TypeDescriptor.J;
                         return new TypedValue(0L - val);
                     case int val:
-                        _exitTypeDescriptor = TypeDescriptor.I;
+                        exitTypeDescriptor = TypeDescriptor.I;
                         return new TypedValue(0 - val);
                     case short val: return new TypedValue(0 - val);
                     case byte val: return new TypedValue(0 - val);
@@ -46,11 +46,11 @@ public class OpMinus : Operator
                     case uint val: return new TypedValue(0U - val);
                     case ushort val: return new TypedValue(0 - val);
                     case sbyte val: return new TypedValue(0 - val);
-                    default: return state.Operate(Operation.SUBTRACT, operand, null);
+                    default: return state.Operate(Operation.Subtract, operand, null);
                 }
             }
 
-            return state.Operate(Operation.SUBTRACT, operand, null);
+            return state.Operate(Operation.Subtract, operand, null);
         }
 
         var left = leftOp.GetValueInternal(state).Value;
@@ -69,28 +69,28 @@ public class OpMinus : Operator
             }
             else if (leftNumber is double || rightNumber is double)
             {
-                _exitTypeDescriptor = TypeDescriptor.D;
+                exitTypeDescriptor = TypeDescriptor.D;
                 var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal - rightVal);
             }
             else if (leftNumber is float || rightNumber is float)
             {
-                _exitTypeDescriptor = TypeDescriptor.F;
+                exitTypeDescriptor = TypeDescriptor.F;
                 var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal - rightVal);
             }
             else if (leftNumber is long || rightNumber is long)
             {
-                _exitTypeDescriptor = TypeDescriptor.J;
+                exitTypeDescriptor = TypeDescriptor.J;
                 var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal - rightVal);
             }
             else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
             {
-                _exitTypeDescriptor = TypeDescriptor.I;
+                exitTypeDescriptor = TypeDescriptor.I;
                 var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
                 var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal - rightVal);
@@ -113,30 +113,30 @@ public class OpMinus : Operator
             return new TypedValue(((char)(theString[0] - theInteger)).ToString());
         }
 
-        return state.Operate(Operation.SUBTRACT, left, right);
+        return state.Operate(Operation.Subtract, left, right);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        if (_children.Length < 2)
+        if (children.Length < 2)
         {
             // unary minus
-            return $"-{LeftOperand.ToStringAST()}";
+            return $"-{LeftOperand.ToStringAst()}";
         }
 
-        return base.ToStringAST();
+        return base.ToStringAst();
     }
 
     public override SpelNode RightOperand
     {
         get
         {
-            if (_children.Length < 2)
+            if (children.Length < 2)
             {
                 throw new InvalidOperationException("No right operand");
             }
 
-            return _children[1];
+            return children[1];
         }
     }
 
@@ -147,26 +147,26 @@ public class OpMinus : Operator
             return false;
         }
 
-        if (_children.Length > 1 && !RightOperand.IsCompilable())
+        if (children.Length > 1 && !RightOperand.IsCompilable())
         {
             return false;
         }
 
-        return _exitTypeDescriptor != null;
+        return exitTypeDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         LeftOperand.GenerateCode(gen, cf);
         var leftDesc = LeftOperand.ExitDescriptor;
-        var exitDesc = _exitTypeDescriptor;
+        var exitDesc = exitTypeDescriptor;
         if (exitDesc == null)
         {
             throw new InvalidOperationException("No exit type descriptor");
         }
 
         CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
-        if (_children.Length > 1)
+        if (children.Length > 1)
         {
             cf.EnterCompilationScope();
             RightOperand.GenerateCode(gen, cf);
@@ -180,6 +180,6 @@ public class OpMinus : Operator
             gen.Emit(OpCodes.Neg);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

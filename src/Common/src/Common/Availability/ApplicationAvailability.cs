@@ -38,11 +38,11 @@ public class ApplicationAvailability
     }
 
     /// <summary>
-    /// Set the availability state for a given availability type
+    /// Set the availability state for a given availability type.
     /// </summary>
-    /// <param name="stateKey">String name for the type of state to set. See <see cref="LivenessKey" /> or <see cref="ReadinessKey" /> for convenience</param>
-    /// <param name="newState">The new <see cref="IAvailabilityState"/></param>
-    /// <param name="caller">Logged at trace level for tracking origin of state change</param>
+    /// <param name="stateKey">String name for the type of state to set. See <see cref="LivenessKey" /> or <see cref="ReadinessKey" /> for convenience.</param>
+    /// <param name="newState">The new <see cref="IAvailabilityState"/>.</param>
+    /// <param name="caller">Logged at trace level for tracking origin of state change.</param>
     public void SetAvailabilityState(string stateKey, IAvailabilityState newState, string caller)
     {
         if ((stateKey.Equals(LivenessKey) && newState is not LivenessState) || (stateKey.Equals(ReadinessKey) && newState is not ReadinessState))

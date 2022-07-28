@@ -16,14 +16,14 @@ public class SendToAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="SendToAttribute"/> class.
     /// </summary>
-    /// <param name="destinations">the destinations for the message created</param>
+    /// <param name="destinations">the destinations for the message created.</param>
     public SendToAttribute(params string[] destinations)
     {
         Destinations = destinations;
     }
 
     /// <summary>
-    /// Gets the destinations for any messages created by the method
+    /// Gets the destinations for any messages created by the method.
     /// </summary>
     public virtual string[] Destinations { get; }
 }

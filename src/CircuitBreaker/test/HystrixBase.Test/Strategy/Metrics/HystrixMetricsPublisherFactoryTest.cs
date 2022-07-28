@@ -33,9 +33,9 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
             threads.Add(new Task(
                 () =>
                 {
-                    factory.GetPublisherForCommand(TestCommandKey.TEST_A, null, null, null, null);
-                    factory.GetPublisherForCommand(TestCommandKey.TEST_B, null, null, null, null);
-                    factory.GetPublisherForThreadPool(TestThreadPoolKey.TEST_A, null, null);
+                    factory.GetPublisherForCommand(TestCommandKey.TestA, null, null, null, null);
+                    factory.GetPublisherForCommand(TestCommandKey.TestB, null, null, null, null);
+                    factory.GetPublisherForThreadPool(TestThreadPoolKey.TestA, null, null);
                 },
                 CancellationToken.None,
                 TaskCreationOptions.LongRunning));
@@ -53,7 +53,7 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
         Assert.Equal(2, factory.CommandPublishers.Count);
         Assert.Single(factory.ThreadPoolPublishers);
 
-        // we should see 2 commands and 1 threadPool publisher created
+        // we should see 2 commands and 1 thread-pool publisher created
         Assert.Equal(2, publisher.CommandCounter.Value);
         Assert.Equal(1, publisher.ThreadCounter.Value);
     }
@@ -133,8 +133,8 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestCommandKey : HystrixCommandKeyDefault
     {
-        public static TestCommandKey TEST_A = new ("TEST_A");
-        public static TestCommandKey TEST_B = new ("TEST_B");
+        public static TestCommandKey TestA = new ("TEST_A");
+        public static TestCommandKey TestB = new ("TEST_B");
 
         public TestCommandKey(string name)
             : base(name)
@@ -144,7 +144,7 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestThreadPoolKey : HystrixThreadPoolKeyDefault
     {
-        public static TestThreadPoolKey TEST_A = new ("TEST_A");
+        public static TestThreadPoolKey TestA = new ("TEST_A");
 
         public TestThreadPoolKey(string name)
             : base(name)

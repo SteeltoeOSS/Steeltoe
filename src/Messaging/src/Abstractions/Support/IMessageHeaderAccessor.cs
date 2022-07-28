@@ -33,7 +33,7 @@ public interface IMessageHeaderAccessor
 
     bool EnableTimestamp { get; set; }
 
-    IIDGenerator IdGenerator { get; set; }
+    IIdGenerator IdGenerator { get; set; }
 
     void SetImmutable();
 

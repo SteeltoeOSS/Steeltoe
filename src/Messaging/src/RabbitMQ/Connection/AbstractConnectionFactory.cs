@@ -18,12 +18,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public abstract class AbstractConnectionFactory : IConnectionFactory
 {
-    public const int DEFAULT_CLOSE_TIMEOUT = 30000;
-    protected readonly ILoggerFactory _loggerFactory;
-    protected readonly ILogger _logger;
-    protected readonly RC.IConnectionFactory _rabbitConnectionFactory;
+    public const int DefaultCloseTimeout = 30000;
+    protected readonly ILoggerFactory LoggerFactory;
+    protected readonly ILogger Logger;
+    protected readonly RC.IConnectionFactory InnerRabbitConnectionFactory;
 
-    private const string PUBLISHER_SUFFIX = ".publisher";
+    private const string PublisherSuffix = ".publisher";
     private readonly CompositeConnectionListener _connectionListener;
     private readonly CompositeChannelListener _channelListener;
     private readonly Random _random = new ();
@@ -41,35 +41,35 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         AbstractConnectionFactory publisherConnectionFactory,
         ILoggerFactory loggerFactory = null)
     {
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory?.CreateLogger(GetType());
-        _rabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
-        _connectionListener = new CompositeConnectionListener(_loggerFactory?.CreateLogger<CompositeConnectionListener>());
-        _channelListener = new CompositeChannelListener(_loggerFactory?.CreateLogger<CompositeConnectionListener>());
+        LoggerFactory = loggerFactory;
+        Logger = LoggerFactory?.CreateLogger(GetType());
+        InnerRabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
+        _connectionListener = new CompositeConnectionListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
+        _channelListener = new CompositeChannelListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
         PublisherConnectionFactory = publisherConnectionFactory;
-        RecoveryListener = new DefaultRecoveryListener(_loggerFactory?.CreateLogger<DefaultRecoveryListener>());
-        BlockedListener = new DefaultBlockedListener(_loggerFactory?.CreateLogger<DefaultBlockedListener>());
+        RecoveryListener = new DefaultRecoveryListener(LoggerFactory?.CreateLogger<DefaultRecoveryListener>());
+        BlockedListener = new DefaultBlockedListener(LoggerFactory?.CreateLogger<DefaultBlockedListener>());
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
     }
 
-    public virtual RC.ConnectionFactory RabbitConnectionFactory => _rabbitConnectionFactory as RC.ConnectionFactory;
+    public virtual RC.ConnectionFactory RabbitConnectionFactory => InnerRabbitConnectionFactory as RC.ConnectionFactory;
 
     public virtual string Username
     {
-        get { return _rabbitConnectionFactory.UserName; }
-        set { _rabbitConnectionFactory.UserName = value; }
+        get { return InnerRabbitConnectionFactory.UserName; }
+        set { InnerRabbitConnectionFactory.UserName = value; }
     }
 
     public virtual string Password
     {
-        get { return _rabbitConnectionFactory.Password; }
-        set { _rabbitConnectionFactory.Password = value; }
+        get { return InnerRabbitConnectionFactory.Password; }
+        set { InnerRabbitConnectionFactory.Password = value; }
     }
 
     public virtual Uri Uri
     {
-        get { return _rabbitConnectionFactory.Uri; }
-        set { _rabbitConnectionFactory.Uri = value; }
+        get { return InnerRabbitConnectionFactory.Uri; }
+        set { InnerRabbitConnectionFactory.Uri = value; }
     }
 
     public virtual string Host
@@ -86,14 +86,14 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual string VirtualHost
     {
-        get { return _rabbitConnectionFactory.VirtualHost; }
-        set { _rabbitConnectionFactory.VirtualHost = value; }
+        get { return InnerRabbitConnectionFactory.VirtualHost; }
+        set { InnerRabbitConnectionFactory.VirtualHost = value; }
     }
 
     public virtual ushort RequestedHeartBeat
     {
-        get { return _rabbitConnectionFactory.RequestedHeartbeat; }
-        set { _rabbitConnectionFactory.RequestedHeartbeat = value; }
+        get { return InnerRabbitConnectionFactory.RequestedHeartbeat; }
+        set { InnerRabbitConnectionFactory.RequestedHeartbeat = value; }
     }
 
     public virtual int ConnectionTimeout
@@ -102,7 +102,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         set { RabbitConnectionFactory.RequestedConnectionTimeout = value; }
     }
 
-    public virtual int CloseTimeout { get; set; } = DEFAULT_CLOSE_TIMEOUT;
+    public virtual int CloseTimeout { get; set; } = DefaultCloseTimeout;
 
     public virtual string ServiceName { get; set; }
 
@@ -215,7 +215,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
             }
         }
 
-        _logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
+        Logger?.LogInformation("SetAddresses() called with an empty value, will be using the host+port properties for connections");
         Addresses = null;
     }
 
@@ -266,9 +266,9 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
             var rabbitConnection = Connect(connectionName);
 
-            var connection = new SimpleConnection(rabbitConnection, CloseTimeout, _loggerFactory?.CreateLogger<SimpleConnection>());
+            var connection = new SimpleConnection(rabbitConnection, CloseTimeout, LoggerFactory?.CreateLogger<SimpleConnection>());
 
-            _logger?.LogInformation("Created new connection: {connectionName}/{connection}", connectionName, connection);
+            Logger?.LogInformation("Created new connection: {connectionName}/{connection}", connectionName, connection);
 
             if (rabbitConnection != null && RecoveryListener != null)
             {
@@ -300,14 +300,14 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         string temp;
         try
         {
-            var inetUtils = new InetUtils(new InetOptions(), _logger);
+            var inetUtils = new InetUtils(new InetOptions(), Logger);
             var hostInfo = inetUtils.FindFirstNonLoopbackHostInfo();
             temp = hostInfo.Hostname;
-            _logger?.LogDebug("Using hostname [{name}] for hostname.", temp);
+            Logger?.LogDebug("Using hostname [{name}] for hostname.", temp);
         }
         catch (Exception e)
         {
-            _logger?.LogWarning("Could not get host name, using 'localhost' as default value", e);
+            Logger?.LogWarning("Could not get host name, using 'localhost' as default value", e);
             temp = "localhost";
         }
 
@@ -316,7 +316,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     protected virtual string ObtainNewConnectionName()
     {
-        return $"{ServiceName}:{Interlocked.Increment(ref _defaultConnectionNameStrategyCounter)}{PUBLISHER_SUFFIX}";
+        return $"{ServiceName}:{Interlocked.Increment(ref _defaultConnectionNameStrategyCounter)}{PublisherSuffix}";
     }
 
     private RC.IConnection Connect(string connectionName)
@@ -332,14 +332,14 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
                 addressesToConnect = list.ToList();
             }
 
-            _logger?.LogInformation("Attempting to connect to: {address} ", addressesToConnect);
+            Logger?.LogInformation("Attempting to connect to: {address} ", addressesToConnect);
 
-            rabbitConnection = _rabbitConnectionFactory.CreateConnection(addressesToConnect);
+            rabbitConnection = InnerRabbitConnectionFactory.CreateConnection(addressesToConnect);
         }
         else
         {
-            _logger?.LogInformation("Attempting to connect to: {host}:{port}", Host, Port);
-            rabbitConnection = _rabbitConnectionFactory.CreateConnection(connectionName);
+            Logger?.LogInformation("Attempting to connect to: {host}:{port}", Host, Port);
+            rabbitConnection = InnerRabbitConnectionFactory.CreateConnection(connectionName);
         }
 
         return rabbitConnection;

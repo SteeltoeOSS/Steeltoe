@@ -1380,7 +1380,7 @@ internal class DesktopHeapType : BaseDesktopHeapType
                 if (_threadStatics == null)
                     _threadStatics = new List<ClrThreadStaticField>((int)fieldInfo.ThreadStaticFields);
 
-                // TODO:  Renable when thread statics are fixed.
+                // TODO:  Re-enable when thread statics are fixed.
                 //m_threadStatics.Add(new RealTimeMemThreadStaticField(m_heap, field, name));
             }
             else if (field.IsStatic)

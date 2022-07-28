@@ -89,18 +89,18 @@ public class MimeTypeTest
     [Fact]
     public void Includes()
     {
-        var textPlain = MimeTypeUtils.TEXT_PLAIN;
+        var textPlain = MimeTypeUtils.TextPlain;
         Assert.True(textPlain.Includes(textPlain));
         var allText = new MimeType("text");
 
         Assert.True(allText.Includes(textPlain));
         Assert.False(textPlain.Includes(allText));
 
-        Assert.True(MimeTypeUtils.ALL.Includes(textPlain));
-        Assert.False(textPlain.Includes(MimeTypeUtils.ALL));
+        Assert.True(MimeTypeUtils.All.Includes(textPlain));
+        Assert.False(textPlain.Includes(MimeTypeUtils.All));
 
-        Assert.True(MimeTypeUtils.ALL.Includes(textPlain));
-        Assert.False(textPlain.Includes(MimeTypeUtils.ALL));
+        Assert.True(MimeTypeUtils.All.Includes(textPlain));
+        Assert.False(textPlain.Includes(MimeTypeUtils.All));
 
         var applicationSoapXml = new MimeType("application", "soap+xml");
         var applicationWildcardXml = new MimeType("application", "*+xml");
@@ -114,24 +114,24 @@ public class MimeTypeTest
         Assert.False(applicationSoapXml.Includes(applicationWildcardXml));
         Assert.False(suffixXml.Includes(applicationWildcardXml));
 
-        Assert.False(applicationWildcardXml.Includes(MimeTypeUtils.APPLICATION_JSON));
+        Assert.False(applicationWildcardXml.Includes(MimeTypeUtils.ApplicationJson));
     }
 
     [Fact]
     public void IsCompatible()
     {
-        var textPlain = MimeTypeUtils.TEXT_PLAIN;
+        var textPlain = MimeTypeUtils.TextPlain;
         Assert.True(textPlain.IsCompatibleWith(textPlain));
         var allText = new MimeType("text");
 
         Assert.True(allText.IsCompatibleWith(textPlain));
         Assert.True(textPlain.IsCompatibleWith(allText));
 
-        Assert.True(MimeTypeUtils.ALL.IsCompatibleWith(textPlain));
-        Assert.True(textPlain.IsCompatibleWith(MimeTypeUtils.ALL));
+        Assert.True(MimeTypeUtils.All.IsCompatibleWith(textPlain));
+        Assert.True(textPlain.IsCompatibleWith(MimeTypeUtils.All));
 
-        Assert.True(MimeTypeUtils.ALL.IsCompatibleWith(textPlain));
-        Assert.True(textPlain.IsCompatibleWith(MimeTypeUtils.ALL));
+        Assert.True(MimeTypeUtils.All.IsCompatibleWith(textPlain));
+        Assert.True(textPlain.IsCompatibleWith(MimeTypeUtils.All));
 
         var applicationSoapXml = new MimeType("application", "soap+xml");
         var applicationWildcardXml = new MimeType("application", "*+xml");
@@ -145,7 +145,7 @@ public class MimeTypeTest
         Assert.True(applicationSoapXml.IsCompatibleWith(applicationWildcardXml));
         Assert.True(suffixXml.IsCompatibleWith(applicationWildcardXml));
 
-        Assert.False(applicationWildcardXml.IsCompatibleWith(MimeTypeUtils.APPLICATION_JSON));
+        Assert.False(applicationWildcardXml.IsCompatibleWith(MimeTypeUtils.ApplicationJson));
     }
 
     [Fact]

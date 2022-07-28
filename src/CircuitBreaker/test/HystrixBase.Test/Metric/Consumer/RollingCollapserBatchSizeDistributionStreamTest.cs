@@ -133,7 +133,7 @@ public class RollingCollapserBatchSizeDistributionStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, 10, 100);
-        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         // First collapser created with key will be used for all command creations

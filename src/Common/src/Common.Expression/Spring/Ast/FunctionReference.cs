@@ -28,20 +28,20 @@ public class FunctionReference : SpelNode
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         var value = state.LookupVariable(_name);
-        if (Equals(value, TypedValue.NULL))
+        if (Equals(value, TypedValue.Null))
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.FUNCTION_NOT_DEFINED, _name);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.FunctionNotDefined, _name);
         }
 
         if (value.Value is not MethodInfo method)
         {
             // Possibly a static method registered as a function
-            throw new SpelEvaluationException(SpelMessage.FUNCTION_REFERENCE_CANNOT_BE_INVOKED, _name, value.GetType());
+            throw new SpelEvaluationException(SpelMessage.FunctionReferenceCannotBeInvoked, _name, value.GetType());
         }
 
         try
         {
-            return ExecuteFunctionJLRMethod(state, method);
+            return ExecuteFunctionJlrMethod(state, method);
         }
         catch (SpelEvaluationException ex)
         {
@@ -50,12 +50,12 @@ public class FunctionReference : SpelNode
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var items = new List<string>();
         for (var i = 0; i < ChildCount; i++)
         {
-            items.Add(GetChild(i).ToStringAST());
+            items.Add(GetChild(i).ToStringAst());
         }
 
         return $"#{_name}({string.Join(",", items)})";
@@ -73,7 +73,7 @@ public class FunctionReference : SpelNode
             return false;
         }
 
-        foreach (var child in _children)
+        foreach (var child in children)
         {
             if (!child.IsCompilable())
             {
@@ -92,9 +92,9 @@ public class FunctionReference : SpelNode
             throw new InvalidOperationException("No method handle");
         }
 
-        GenerateCodeForArguments(gen, cf, method, _children);
+        GenerateCodeForArguments(gen, cf, method, children);
         gen.Emit(OpCodes.Call, method);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     private object[] GetArguments(ExpressionState state)
@@ -103,13 +103,13 @@ public class FunctionReference : SpelNode
         var arguments = new object[ChildCount];
         for (var i = 0; i < arguments.Length; i++)
         {
-            arguments[i] = _children[i].GetValueInternal(state).Value;
+            arguments[i] = children[i].GetValueInternal(state).Value;
         }
 
         return arguments;
     }
 
-    private TypedValue ExecuteFunctionJLRMethod(ExpressionState state, MethodInfo method)
+    private TypedValue ExecuteFunctionJlrMethod(ExpressionState state, MethodInfo method)
     {
         var functionArgs = GetArguments(state);
 
@@ -118,13 +118,13 @@ public class FunctionReference : SpelNode
             var declaredParamCount = method.GetParameters().Length;
             if (declaredParamCount != functionArgs.Length)
             {
-                throw new SpelEvaluationException(SpelMessage.INCORRECT_NUMBER_OF_ARGUMENTS_TO_FUNCTION, functionArgs.Length, declaredParamCount);
+                throw new SpelEvaluationException(SpelMessage.IncorrectNumberOfArgumentsToFunction, functionArgs.Length, declaredParamCount);
             }
         }
 
         if (!method.IsStatic)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.FUNCTION_MUST_BE_STATIC, ClassUtils.GetQualifiedMethodName(method), _name);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.FunctionMustBeStatic, ClassUtils.GetQualifiedMethodName(method), _name);
         }
 
         // Convert arguments if necessary and remap them for varargs if required
@@ -144,18 +144,18 @@ public class FunctionReference : SpelNode
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_FUNCTION_CALL, _name, ex.Message);
+            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.ExceptionDuringFunctionCall, _name, ex.Message);
         }
         finally
         {
             if (compilable)
             {
-                _exitTypeDescriptor = CodeFlow.ToDescriptor(method.ReturnType);
+                exitTypeDescriptor = CodeFlow.ToDescriptor(method.ReturnType);
                 _method = method;
             }
             else
             {
-                _exitTypeDescriptor = null;
+                exitTypeDescriptor = null;
                 _method = null;
             }
         }

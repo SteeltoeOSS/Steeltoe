@@ -14,7 +14,7 @@ public interface IStreamListenerParameterAdapter
     object Adapt(object bindingTarget, ParameterInfo parameter);
 }
 
-public interface IStreamListenerParameterAdapter<out A, in B> : IStreamListenerParameterAdapter
+public interface IStreamListenerParameterAdapter<out TResult, in TTarget> : IStreamListenerParameterAdapter
 {
-    A Adapt(B bindingTarget, ParameterInfo parameter);
+    TResult Adapt(TTarget bindingTarget, ParameterInfo parameter);
 }

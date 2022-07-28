@@ -57,10 +57,10 @@ public class RabbitMQHostTest
 
         var appSettings = new Dictionary<string, string>
         {
-            [$"{RabbitOptions.PREFIX}:host"] = "ThisIsATest",
-            [$"{RabbitOptions.PREFIX}:port"] = "1234",
-            [$"{RabbitOptions.PREFIX}:username"] = "TestUser",
-            [$"{RabbitOptions.PREFIX}:password"] = "TestPassword",
+            [$"{RabbitOptions.Prefix}:host"] = "ThisIsATest",
+            [$"{RabbitOptions.Prefix}:port"] = "1234",
+            [$"{RabbitOptions.Prefix}:username"] = "TestUser",
+            [$"{RabbitOptions.Prefix}:password"] = "TestPassword",
         };
 
         hostBuilder.ConfigureAppConfiguration(configBuilder =>

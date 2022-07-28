@@ -14,21 +14,21 @@ namespace Steeltoe.Management.CloudFoundry;
 public static class CloudFoundryServiceCollectionExtensions
 {
     /// <summary>
-    /// Add Actuators to Microsoft DI
+    /// Add Actuators to Microsoft DI.
     /// </summary>
-    /// <param name="services">Service collection</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided</param>
+    /// <param name="services">Service collection.</param>
+    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IServiceCollection AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config = null, Action<CorsPolicyBuilder> buildCorsPolicy = null)
         => services.AddCloudFoundryActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
 
     /// <summary>
-    /// Add Actuators to Microsoft DI
+    /// Add Actuators to Microsoft DI.
     /// </summary>
-    /// <param name="services">Service collection</param>
-    /// <param name="config">Application Configuration</param>
-    /// <param name="version">Set response type version</param>
+    /// <param name="services">Service collection.</param>
+    /// <param name="config">Application Configuration.</param>
+    /// <param name="version">Set response type version.</param>
     /// <param name="buildCorsPolicy">Customize the CORS policy. </param>
     [Obsolete("Cloud Foundry is now automatically supported, use AddAllActuators() instead")]
     public static IServiceCollection AddCloudFoundryActuators(this IServiceCollection services, IConfiguration config, MediaTypeVersion version, Action<CorsPolicyBuilder> buildCorsPolicy = null)

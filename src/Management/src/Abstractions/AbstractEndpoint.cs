@@ -25,9 +25,9 @@ public abstract class AbstractEndpoint : IEndpoint
 }
 
 /// <summary>
-/// Base class for management endpoints
+/// Base class for management endpoints.
 /// </summary>
-/// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
+/// <typeparam name="TResult">Type of response returned from calls to this endpoint.</typeparam>
 public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TResult>
 {
     protected AbstractEndpoint(IEndpointOptions options)
@@ -42,16 +42,16 @@ public abstract class AbstractEndpoint<TResult> : AbstractEndpoint, IEndpoint<TR
 }
 
 /// <summary>
-/// Base class for endpoints that allow POST requests
+/// Base class for endpoints that allow POST requests.
 /// </summary>
-/// <typeparam name="TResult">Type of response returned from calls to this endpoint</typeparam>
-/// <typeparam name="TRequest">Type of request that can be passed to this endpoint</typeparam>
+/// <typeparam name="TResult">Type of response returned from calls to this endpoint.</typeparam>
+/// <typeparam name="TRequest">Type of request that can be passed to this endpoint.</typeparam>
 public abstract class AbstractEndpoint<TResult, TRequest> : AbstractEndpoint, IEndpoint<TResult, TRequest>
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="AbstractEndpoint{TResult, TRequest}"/> class.
     /// </summary>
-    /// <param name="options">Endpoint configuration options</param>
+    /// <param name="options">Endpoint configuration options.</param>
     protected AbstractEndpoint(IEndpointOptions options)
         : base(options)
     {

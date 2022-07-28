@@ -37,9 +37,9 @@ public class LinuxHeapDumper : IHeapDumper
             new DiagnosticsClient(Process.GetCurrentProcess().Id).WriteDump(DumpType.Full, fileName);
             return fileName;
         }
-        catch (DiagnosticsClientException dcex)
+        catch (DiagnosticsClientException exception)
         {
-            _logger?.LogError($"Could not create core dump to process. Error {dcex}.");
+            _logger?.LogError($"Could not create core dump to process. Error {exception}.");
             return null;
         }
     }

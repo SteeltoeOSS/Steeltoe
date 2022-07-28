@@ -14,11 +14,11 @@ using System.Text;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// The registration to be used when registering with the Consul server
+/// The registration to be used when registering with the Consul server.
 /// </summary>
 public class ConsulRegistration : IConsulRegistration
 {
-    private const char SEPARATOR = '-';
+    private const char Separator = '-';
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
@@ -38,8 +38,8 @@ public class ConsulRegistration : IConsulRegistration
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use</param>
-    /// <param name="options">configuration options</param>
+    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
+    /// <param name="options">configuration options.</param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -51,8 +51,8 @@ public class ConsulRegistration : IConsulRegistration
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use</param>
-    /// <param name="optionsMonitor">configuration options</param>
+    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
+    /// <param name="optionsMonitor">configuration options.</param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -112,11 +112,11 @@ public class ConsulRegistration : IConsulRegistration
     public IDictionary<string, string> Metadata { get; private set; }
 
     /// <summary>
-    /// Create a Consul registration
+    /// Create a Consul registration.
     /// </summary>
-    /// <param name="options">configuration options to use</param>
-    /// <param name="applicationInfo">Info about this app instance</param>
-    /// <returns>a registration</returns>
+    /// <param name="options">configuration options to use.</param>
+    /// <param name="applicationInfo">Info about this app instance.</param>
+    /// <returns>a registration.</returns>
     public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
         if (options == null)
@@ -132,7 +132,7 @@ public class ConsulRegistration : IConsulRegistration
             service.Address = options.HostName;
         }
 
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
+        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
         if (options.Port != 0)
@@ -180,7 +180,7 @@ public class ConsulRegistration : IConsulRegistration
 
     internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.CONSUL_DISCOVERY_CONFIGURATION_PREFIX}:serviceName");
+        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
         var instanceId = applicationInfo.InstanceId;
         if (string.IsNullOrEmpty(instanceId))
         {
@@ -200,16 +200,16 @@ public class ConsulRegistration : IConsulRegistration
 
         var normalized = new StringBuilder();
         char prev = default;
-        foreach (var curr in s)
+        foreach (var ch in s)
         {
             char toAppend = default;
-            if (char.IsLetterOrDigit(curr))
+            if (char.IsLetterOrDigit(ch))
             {
-                toAppend = curr;
+                toAppend = ch;
             }
-            else if (prev == default(char) || prev != SEPARATOR)
+            else if (prev == default(char) || prev != Separator)
             {
-                toAppend = SEPARATOR;
+                toAppend = Separator;
             }
 
             if (toAppend != default(char))

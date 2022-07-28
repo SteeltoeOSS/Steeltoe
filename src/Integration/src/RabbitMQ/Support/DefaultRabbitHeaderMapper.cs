@@ -14,41 +14,41 @@ namespace Steeltoe.Integration.Rabbit.Support;
 
 public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
 {
-    private static readonly List<string> STANDARD_HEADER_NAMES = new ();
+    private static readonly List<string> StandardHeaderNames = new ();
 
     static DefaultRabbitHeaderMapper()
     {
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.APP_ID);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CLUSTER_ID);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CONTENT_ENCODING);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CONTENT_LENGTH);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CONTENT_TYPE);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.CORRELATION_ID);
+        StandardHeaderNames.Add(RabbitMessageHeaders.AppId);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ClusterId);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ContentEncoding);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ContentLength);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ContentType);
+        StandardHeaderNames.Add(RabbitMessageHeaders.CorrelationId);
 
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELAY);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELIVERY_MODE);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.DELIVERY_TAG);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.EXPIRATION);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.MESSAGE_COUNT);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.MESSAGE_ID);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.RECEIVED_DELAY);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.RECEIVED_DELIVERY_MODE);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.RECEIVED_EXCHANGE);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.RECEIVED_ROUTING_KEY);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.REDELIVERED);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.REPLY_TO);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.TIMESTAMP);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.TYPE);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.USER_ID);
-        STANDARD_HEADER_NAMES.Add(MessageHeaders.TYPE_ID);
-        STANDARD_HEADER_NAMES.Add(MessageHeaders.CONTENT_TYPE_ID);
-        STANDARD_HEADER_NAMES.Add(MessageHeaders.KEY_TYPE_ID);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.SPRING_REPLY_CORRELATION);
-        STANDARD_HEADER_NAMES.Add(RabbitMessageHeaders.SPRING_REPLY_TO_STACK);
+        StandardHeaderNames.Add(RabbitMessageHeaders.Delay);
+        StandardHeaderNames.Add(RabbitMessageHeaders.DeliveryMode);
+        StandardHeaderNames.Add(RabbitMessageHeaders.DeliveryTag);
+        StandardHeaderNames.Add(RabbitMessageHeaders.Expiration);
+        StandardHeaderNames.Add(RabbitMessageHeaders.MessageCount);
+        StandardHeaderNames.Add(RabbitMessageHeaders.MessageId);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ReceivedDelay);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ReceivedDeliveryMode);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ReceivedExchange);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ReceivedRoutingKey);
+        StandardHeaderNames.Add(RabbitMessageHeaders.Redelivered);
+        StandardHeaderNames.Add(RabbitMessageHeaders.ReplyTo);
+        StandardHeaderNames.Add(RabbitMessageHeaders.Timestamp);
+        StandardHeaderNames.Add(RabbitMessageHeaders.Type);
+        StandardHeaderNames.Add(RabbitMessageHeaders.UserId);
+        StandardHeaderNames.Add(MessageHeaders.TypeId);
+        StandardHeaderNames.Add(MessageHeaders.ContentTypeId);
+        StandardHeaderNames.Add(MessageHeaders.KeyTypeId);
+        StandardHeaderNames.Add(RabbitMessageHeaders.SpringReplyCorrelation);
+        StandardHeaderNames.Add(RabbitMessageHeaders.SpringReplyToStack);
     }
 
     protected DefaultRabbitHeaderMapper(string[] requestHeaderNames, string[] replyHeaderNames, ILogger logger)
-        : base(RabbitMessageHeaders.PREFIX, STANDARD_HEADER_NAMES, STANDARD_HEADER_NAMES, logger)
+        : base(RabbitMessageHeaders.Prefix, StandardHeaderNames, StandardHeaderNames, logger)
     {
         if (requestHeaderNames != null)
         {
@@ -74,7 +74,7 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
     protected override void PopulateStandardHeaders(IDictionary<string, object> headers, IMessageHeaders target)
     {
         headers
-            .Where(header => STANDARD_HEADER_NAMES.Contains(header.Key) && !string.IsNullOrEmpty(header.Value?.ToString()))
+            .Where(header => StandardHeaderNames.Contains(header.Key) && !string.IsNullOrEmpty(header.Value?.ToString()))
             .ToList()
             .ForEach(header => target.Add(header.Key, header.Value));
     }
@@ -82,7 +82,7 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
     protected override void PopulateUserDefinedHeader(string headerName, object headerValue, IMessageHeaders target)
     {
         if (!target.ContainsKey(headerName)
-            && !RabbitMessageHeaders.CONTENT_TYPE.Equals(headerName)
+            && !RabbitMessageHeaders.ContentType.Equals(headerName)
             && !headerName.StartsWith("json"))
         {
             target.Add(headerName, headerValue);

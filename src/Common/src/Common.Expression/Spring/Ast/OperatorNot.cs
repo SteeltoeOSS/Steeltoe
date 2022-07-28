@@ -13,14 +13,14 @@ public class OperatorNot : SpelNode
     public OperatorNot(int startPos, int endPos, SpelNode operand)
         : base(startPos, endPos, operand)
     {
-        _exitTypeDescriptor = TypeDescriptor.Z;
+        exitTypeDescriptor = TypeDescriptor.Z;
     }
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         try
         {
-            var value = _children[0].GetValue<bool>(state);
+            var value = children[0].GetValue<bool>(state);
             return BooleanTypedValue.ForValue(!value);
         }
         catch (SpelEvaluationException ex)
@@ -30,18 +30,18 @@ public class OperatorNot : SpelNode
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(SpelMessage.TYPE_CONVERSION_ERROR, ex, "null", "System.Boolean");
+            throw new SpelEvaluationException(SpelMessage.TypeConversionError, ex, "null", "System.Boolean");
         }
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
-        return $"!{GetChild(0).ToStringAST()}";
+        return $"!{GetChild(0).ToStringAst()}";
     }
 
     public override bool IsCompilable()
     {
-        var child = _children[0];
+        var child = children[0];
         return child.IsCompilable() && CodeFlow.IsBooleanCompatible(child.ExitDescriptor);
     }
 
@@ -51,7 +51,7 @@ public class OperatorNot : SpelNode
         var endIfTarget = gen.DefineLabel();
         var result = gen.DeclareLocal(typeof(bool));
 
-        var child = _children[0];
+        var child = children[0];
         child.GenerateCode(gen, cf);
         cf.UnboxBooleanIfNecessary(gen);
         gen.Emit(OpCodes.Brtrue, elseTarget);
@@ -63,6 +63,6 @@ public class OperatorNot : SpelNode
         gen.Emit(OpCodes.Stloc, result);
         gen.MarkLabel(endIfTarget);
         gen.Emit(OpCodes.Ldloc, result);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

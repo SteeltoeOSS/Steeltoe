@@ -90,16 +90,16 @@ public class MetricsEndpointTest : BaseTest
         var ep = tc.GetService<IMetricsEndpoint>();
 
         var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
-        long allKeyssum = 0;
-        var labelsKvps = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
+        long allKeysSum = 0;
+        var labels = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
         for (var i = 0; i < 10; i++)
         {
-            allKeyssum += i;
-            testMeasure.Add(i, labelsKvps.AsReadonlySpan());
+            allKeysSum += i;
+            testMeasure.Add(i, labels.AsReadonlySpan());
         }
 
-        var tags = labelsKvps.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+        var tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
         var req = new MetricsRequest("test.test5", tags);
         var resp = ep.Invoke(req) as MetricsResponse;
         Assert.NotNull(resp);
@@ -109,9 +109,9 @@ public class MetricsEndpointTest : BaseTest
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
 
-        var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.TOTAL);
+        var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Total);
         Assert.NotNull(sample);
-        Assert.Equal(allKeyssum, sample.Value);
+        Assert.Equal(allKeysSum, sample.Value);
 
         Assert.NotNull(resp.AvailableTags);
         Assert.Equal(3, resp.AvailableTags.Count);
@@ -171,7 +171,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Single(measurements.Values);
         var sample = measurements.Values.FirstOrDefault()[0];
         Assert.Equal(100, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
     }
 
     // [Fact]
@@ -344,31 +344,31 @@ public class MetricsEndpointTest : BaseTest
             { "c", "v1" },
         };
 
-        long allKeyssum = 0;
+        long allKeysSum = 0;
         for (var i = 0; i < 10; i++)
         {
-            allKeyssum += i;
+            allKeysSum += i;
             testMeasure.Record(i, context1.AsReadonlySpan());
         }
 
-        long asum = 0;
+        long aSum = 0;
         for (var i = 0; i < 10; i++)
         {
-            asum += i;
+            aSum += i;
             testMeasure.Record(i, context2.AsReadonlySpan());
         }
 
-        long bsum = 0;
+        long bSum = 0;
         for (var i = 0; i < 10; i++)
         {
-            bsum += i;
+            bSum += i;
             testMeasure.Record(i, context3.AsReadonlySpan());
         }
 
-        long csum = 0;
+        long cSum = 0;
         for (var i = 0; i < 10; i++)
         {
-            csum += i;
+            cSum += i;
             testMeasure.Record(i, context4.AsReadonlySpan());
         }
 
@@ -380,94 +380,94 @@ public class MetricsEndpointTest : BaseTest
         Assert.Equal(4, measurement.Count);
 
         var sample = measurement[0];
-        Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var atags = new List<KeyValuePair<string, string>>
+        var aTags = new List<KeyValuePair<string, string>>
         {
             new ("a", "v1"),
         };
 
-        var result = ep.GetMetricSamplesByTags(measurements, "test.test1", atags);
+        var result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
-        Assert.Equal(allKeyssum + asum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum + aSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var btags = new List<KeyValuePair<string, string>>
+        var bTags = new List<KeyValuePair<string, string>>
         {
             new ("b", "v1"),
         };
 
-        result = ep.GetMetricSamplesByTags(measurements, "test.test1", btags);
+        result = ep.GetMetricSamplesByTags(measurements, "test.test1", bTags);
 
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
 
-        Assert.Equal(allKeyssum + bsum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum + bSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var ctags = new List<KeyValuePair<string, string>>
+        var cTags = new List<KeyValuePair<string, string>>
         {
             new ("c", "v1"),
         };
 
-        result = ep.GetMetricSamplesByTags(measurements, "test.test1", ctags);
+        result = ep.GetMetricSamplesByTags(measurements, "test.test1", cTags);
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
-        Assert.Equal(allKeyssum + csum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum + cSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var abtags = new List<KeyValuePair<string, string>>
+        var abTags = new List<KeyValuePair<string, string>>
         {
             new ("a", "v1"),
             new ("b", "v1"),
         };
 
-        result = ep.GetMetricSamplesByTags(measurements, "test.test1", abtags);
+        result = ep.GetMetricSamplesByTags(measurements, "test.test1", abTags);
 
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
-        Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var actags = new List<KeyValuePair<string, string>>
+        var acTags = new List<KeyValuePair<string, string>>
         {
             new ("a", "v1"),
             new ("c", "v1"),
         };
-        result = ep.GetMetricSamplesByTags(measurements, "test.test1", actags);
+        result = ep.GetMetricSamplesByTags(measurements, "test.test1", acTags);
 
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
 
-        Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
-        var bctags = new List<KeyValuePair<string, string>>
+        var bcTags = new List<KeyValuePair<string, string>>
         {
             new ("b", "v1"),
             new ("c", "v1"),
         };
-        result = ep.GetMetricSamplesByTags(measurements, "test.test1", bctags);
+        result = ep.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
 
         Assert.NotNull(result);
         Assert.Single(result);
 
         sample = result[0];
 
-        Assert.Equal(allKeyssum, sample.Value);
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
+        Assert.Equal(allKeysSum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
     }
 
     [Fact]
@@ -484,10 +484,10 @@ public class MetricsEndpointTest : BaseTest
         var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
         var labels = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
-        double allKeyssum = 0;
+        double allKeysSum = 0;
         for (double i = 0; i < 10; i++)
         {
-            allKeyssum += i;
+            allKeysSum += i;
             testMeasure.Add(i, labels.AsReadonlySpan());
         }
 
@@ -502,8 +502,8 @@ public class MetricsEndpointTest : BaseTest
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
         var sample = resp.Measurements[0];
-        Assert.Equal(MetricStatistic.TOTAL, sample.Statistic);
-        Assert.Equal(allKeyssum, sample.Value);
+        Assert.Equal(MetricStatistic.Total, sample.Statistic);
+        Assert.Equal(allKeysSum, sample.Value);
 
         Assert.NotNull(resp.AvailableTags);
         Assert.Equal(3, resp.AvailableTags.Count);

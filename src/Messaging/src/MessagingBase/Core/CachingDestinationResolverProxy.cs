@@ -7,18 +7,18 @@ using System.Collections.Concurrent;
 
 namespace Steeltoe.Messaging.Core;
 
-public class CachingDestinationResolverProxy<D> : IDestinationResolver<D>
+public class CachingDestinationResolverProxy<TDestination> : IDestinationResolver<TDestination>
 {
-    private readonly ConcurrentDictionary<string, D> _resolvedDestinationCache = new ();
+    private readonly ConcurrentDictionary<string, TDestination> _resolvedDestinationCache = new ();
 
-    private readonly IDestinationResolver<D> _targetDestinationResolver;
+    private readonly IDestinationResolver<TDestination> _targetDestinationResolver;
 
-    public CachingDestinationResolverProxy(IDestinationResolver<D> targetDestinationResolver)
+    public CachingDestinationResolverProxy(IDestinationResolver<TDestination> targetDestinationResolver)
     {
         _targetDestinationResolver = targetDestinationResolver ?? throw new ArgumentNullException(nameof(targetDestinationResolver));
     }
 
-    public D ResolveDestination(string name)
+    public TDestination ResolveDestination(string name)
     {
         _resolvedDestinationCache.TryGetValue(name, out var destination);
         if (destination == null)

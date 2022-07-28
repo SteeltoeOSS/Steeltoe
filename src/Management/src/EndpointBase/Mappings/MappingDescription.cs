@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class MappingDescription
 {
-    public const string ALL_HTTP_METHODS = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
+    public const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
@@ -84,7 +84,7 @@ public class MappingDescription
     {
         if (IsEmpty(httpMethods))
         {
-            return ALL_HTTP_METHODS;
+            return AllHttpMethods;
         }
 
         return string.Join(" || ", httpMethods);

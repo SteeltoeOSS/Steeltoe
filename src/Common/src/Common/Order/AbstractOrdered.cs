@@ -6,8 +6,8 @@ namespace Steeltoe.Common.Order;
 
 public class AbstractOrdered : IOrdered
 {
-    public const int HIGHEST_PRECEDENCE = int.MinValue;
-    public const int LOWEST_PRECEDENCE = int.MaxValue;
+    public const int HighestPrecedence = int.MinValue;
+    public const int LowestPrecedence = int.MaxValue;
 
     public AbstractOrdered()
     {

@@ -10,14 +10,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class ConfigServerClientSettingsOptions : AbstractOptions
 {
-    public const string CONFIGURATION_PREFIX = "spring:cloud:config";
+    public const string ConfigurationPrefix = "spring:cloud:config";
 
     public ConfigServerClientSettingsOptions()
     {
     }
 
     public ConfigServerClientSettingsOptions(IConfigurationRoot root)
-        : base(root, CONFIGURATION_PREFIX)
+        : base(root, ConfigurationPrefix)
     {
     }
 
@@ -26,9 +26,9 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
     {
     }
 
-    public bool Enabled { get; set; } = ConfigServerClientSettings.DEFAULT_PROVIDER_ENABLED;
+    public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
 
-    public bool FailFast { get; set; } = ConfigServerClientSettings.DEFAULT_FAILFAST;
+    public bool FailFast { get; set; } = ConfigServerClientSettings.DefaultFailFast;
 
     public string Env { get; set; }
 
@@ -44,9 +44,10 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public string Token { get; set; }
 
-    public int Timeout { get; set; } = ConfigServerClientSettings.DEFAULT_TIMEOUT_MILLISECONDS;
+    public int Timeout { get; set; } = ConfigServerClientSettings.DefaultTimeoutMilliseconds;
 
-    public bool Validate_Certificates { get; set; } = ConfigServerClientSettings.DEFAULT_CERTIFICATE_VALIDATION;
+    // ReSharper disable once InconsistentNaming
+    public bool Validate_Certificates { get; set; } = ConfigServerClientSettings.DefaultCertificateValidation;
 
     public SpringCloudConfigRetry Retry { get; set; }
 
@@ -60,33 +61,36 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
     public bool RetryEnabled => Retry != null && Retry.Enabled;
 
-    public int RetryInitialInterval => Retry?.InitialInterval ?? ConfigServerClientSettings.DEFAULT_INITIAL_RETRY_INTERVAL;
+    public int RetryInitialInterval => Retry?.InitialInterval ?? ConfigServerClientSettings.DefaultInitialRetryInterval;
 
-    public int RetryMaxInterval => Retry?.MaxInterval ?? ConfigServerClientSettings.DEFAULT_MAX_RETRY_INTERVAL;
+    public int RetryMaxInterval => Retry?.MaxInterval ?? ConfigServerClientSettings.DefaultMaxRetryInterval;
 
-    public double RetryMultiplier => Retry?.Multiplier ?? ConfigServerClientSettings.DEFAULT_RETRY_MULTIPLIER;
+    public double RetryMultiplier => Retry?.Multiplier ?? ConfigServerClientSettings.DefaultRetryMultiplier;
 
-    public int RetryAttempts => Retry?.MaxAttempts ?? ConfigServerClientSettings.DEFAULT_MAX_RETRY_ATTEMPTS;
+    public int RetryAttempts => Retry?.MaxAttempts ?? ConfigServerClientSettings.DefaultMaxRetryAttempts;
 
     public bool DiscoveryEnabled => Discovery != null && Discovery.Enabled;
 
-    public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DEFAULT_CONFIGSERVER_SERVICEID;
+    public string DiscoveryServiceId => Discovery != null ? Discovery.ServiceId : ConfigServerClientSettings.DefaultConfigserverServiceId;
 
     public bool HealthEnabled => Health == null || Health.Enabled;
 
-    public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DEFAULT_HEALTH_TIMETOLIVE;
+    public long HealthTimeToLive => Health?.TimeToLive ?? ConfigServerClientSettings.DefaultHealthTimeToLive;
 
+    // ReSharper disable once InconsistentNaming
     public string Access_Token_Uri { get; set; }
 
+    // ReSharper disable once InconsistentNaming
     public string Client_Secret { get; set; }
 
+    // ReSharper disable once InconsistentNaming
     public string Client_Id { get; set; }
 
-    public int TokenTtl { get; set; } = ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_TTL;
+    public int TokenTtl { get; set; } = ConfigServerClientSettings.DefaultVaultTokenTtl;
 
-    public int TokenRenewRate { get; set; } = ConfigServerClientSettings.DEFAULT_VAULT_TOKEN_RENEW_RATE;
+    public int TokenRenewRate { get; set; } = ConfigServerClientSettings.DefaultVaultTokenRenewRate;
 
-    public bool DisableTokenRenewal { get; set; } = ConfigServerClientSettings.DEFAULT_DISABLE_TOKEN_RENEWAL;
+    public bool DisableTokenRenewal { get; set; } = ConfigServerClientSettings.DefaultDisableTokenRenewal;
 
     public string AccessTokenUri => Access_Token_Uri;
 

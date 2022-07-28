@@ -8,6 +8,7 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -31,7 +32,7 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
         var result = new HealthCheckResult
         {
-            Status = HealthStatus.UP,
+            Status = HealthStatus.Up,
             Description = "No monitored applications"
         };
 
@@ -43,11 +44,11 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
             AddApplicationHealthStatus(appName, app, result);
         }
 
-        result.Description = result.Status != HealthStatus.UP
+        result.Description = result.Status != HealthStatus.Up
             ? "At least one monitored application has no instances UP"
             : "All monitored applications have at least one instance UP";
 
-        result.Details.Add("status", result.Status.ToString());
+        result.Details.Add("status", result.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
         result.Details.Add("statusDescription", result.Description);
         return result;
     }
@@ -56,17 +57,17 @@ public class EurekaApplicationsHealthContributor : IHealthContributor
     {
         if (app != null && app.Name == appName)
         {
-            var upCount = app.Instances.Count(x => x.Status == InstanceStatus.UP);
+            var upCount = app.Instances.Count(x => x.Status == InstanceStatus.Up);
             if (upCount <= 0)
             {
-                result.Status = HealthStatus.DOWN;
+                result.Status = HealthStatus.Down;
             }
 
             result.Details[appName] = $"{upCount} instances with UP status";
         }
         else
         {
-            result.Status = HealthStatus.DOWN;
+            result.Status = HealthStatus.Down;
             result.Details[appName] = "No instances found";
         }
     }

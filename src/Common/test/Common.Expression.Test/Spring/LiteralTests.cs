@@ -95,7 +95,7 @@ public class LiteralTests : AbstractExpressionTests
         EvaluateAndAskForReturnType("0x20 * 2L", 64, typeof(int));
 
         // ask for the result to be made into an Integer knowing that it will not fit
-        EvaluateAndCheckError("0x1220 * 0xffffffffL", typeof(int), SpelMessage.TYPE_CONVERSION_ERROR, 0);
+        EvaluateAndCheckError("0x1220 * 0xffffffffL", typeof(int), SpelMessage.TypeConversionError, 0);
     }
 
     [Fact]
@@ -146,8 +146,8 @@ public class LiteralTests : AbstractExpressionTests
     [Fact]
     public void TestLiteralReal04_BadExpressions()
     {
-        ParseAndCheckError("6.1e23e22", SpelMessage.MORE_INPUT, 6, "e22");
-        ParseAndCheckError("6.1f23e22", SpelMessage.MORE_INPUT, 4, "23e22");
+        ParseAndCheckError("6.1e23e22", SpelMessage.MoreInput, 6, "e22");
+        ParseAndCheckError("6.1f23e22", SpelMessage.MoreInput, 4, "23e22");
     }
 
     [Fact]
@@ -167,11 +167,11 @@ public class LiteralTests : AbstractExpressionTests
     [Fact]
     public void TestNotWritable()
     {
-        var expr = (SpelExpression)_parser.ParseExpression("37");
+        var expr = (SpelExpression)Parser.ParseExpression("37");
         Assert.False(expr.IsWritable(new StandardEvaluationContext()));
-        expr = (SpelExpression)_parser.ParseExpression("37L");
+        expr = (SpelExpression)Parser.ParseExpression("37L");
         Assert.False(expr.IsWritable(new StandardEvaluationContext()));
-        expr = (SpelExpression)_parser.ParseExpression("true");
+        expr = (SpelExpression)Parser.ParseExpression("true");
         Assert.False(expr.IsWritable(new StandardEvaluationContext()));
     }
 }

@@ -8,10 +8,7 @@ using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
-// TODO: [BREAKING] Rename type and remove suppression
-#pragma warning disable S101 // Types should be named in PascalCase
-public static class CLRRuntimeSource
-#pragma warning restore S101 // Types should be named in PascalCase
+public static class ClrRuntimeSource
 {
     public struct HeapMetrics
     {
@@ -41,9 +38,9 @@ public static class CLRRuntimeSource
         public long MaxThreadCompletionPort;
     }
 
-    public const string DIAGNOSTIC_NAME = "Steeltoe.ClrMetrics";
-    public const string HEAP_EVENT = "Steeltoe.ClrMetrics.Heap";
-    public const string THREADS_EVENT = "Steeltoe.ClrMetrics.Threads";
+    public const string DiagnosticName = "Steeltoe.ClrMetrics";
+    public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
+    public const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
 
     public static HeapMetrics GetHeapMetrics()
     {

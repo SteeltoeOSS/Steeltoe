@@ -15,9 +15,9 @@ public static class ConfigServerHostBuilderExtensions
     /// Add Config Server and Cloud Foundry as application configuration sources.
     /// Add Config Server health check contributor to the service container.
     /// </summary>
-    /// <param name="hostBuilder"><see cref="IWebHostBuilder"/></param>
-    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-    /// <returns><see cref="IWebHostBuilder"/> with config server and Cloud Foundry Config Provider attached</returns>
+    /// <param name="hostBuilder"><see cref="IWebHostBuilder"/>.</param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/>.</param>
+    /// <returns><see cref="IWebHostBuilder"/> with config server and Cloud Foundry Config Provider attached.</returns>
     public static IWebHostBuilder AddConfigServer(this IWebHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
         hostBuilder
             .ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
@@ -27,26 +27,24 @@ public static class ConfigServerHostBuilderExtensions
     /// Add Config Server and Cloud Foundry as application configuration sources.
     /// Add Config Server health check contributor to the service container.
     /// </summary>
-    /// <param name="hostBuilder"><see cref="IHostBuilder"/></param>
-    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
-    /// <returns><see cref="IHostBuilder"/> with config server and Cloud Foundry Config Provider attached</returns>
+    /// <param name="hostBuilder"><see cref="IHostBuilder"/>.</param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/>.</param>
+    /// <returns><see cref="IHostBuilder"/> with config server and Cloud Foundry Config Provider attached.</returns>
     public static IHostBuilder AddConfigServer(this IHostBuilder hostBuilder, ILoggerFactory loggerFactory = null) =>
         hostBuilder
             .ConfigureAppConfiguration((context, config) => config.AddConfigServer(context.HostingEnvironment, loggerFactory))
             .ConfigureServices((_, services) => services.AddConfigServerServices());
 
-#if NET6_0_OR_GREATER
     /// <summary>
     /// Add Config Server and Cloud Foundry as application configuration sources.
     /// Also adds Config Server health check contributor and related services to the service container.
     /// </summary>
-    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder"/></param>
-    /// <param name="loggerFactory"><see cref="ILoggerFactory"/></param>
+    /// <param name="applicationBuilder">Your <see cref="WebApplicationBuilder"/>.</param>
+    /// <param name="loggerFactory"><see cref="ILoggerFactory"/>.</param>
     public static WebApplicationBuilder AddConfigServer(this WebApplicationBuilder applicationBuilder, ILoggerFactory loggerFactory = null)
     {
         applicationBuilder.Configuration.AddConfigServer(applicationBuilder.Environment, loggerFactory);
         applicationBuilder.Services.AddConfigServerServices();
         return applicationBuilder;
     }
-#endif
 }

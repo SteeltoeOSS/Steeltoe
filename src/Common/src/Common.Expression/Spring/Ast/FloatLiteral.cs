@@ -14,7 +14,7 @@ public class FloatLiteral : Literal
         : base(payload, startPos, endPos)
     {
         _value = new TypedValue(value);
-        _exitTypeDescriptor = TypeDescriptor.F;
+        exitTypeDescriptor = TypeDescriptor.F;
     }
 
     public override ITypedValue GetLiteralValue()
@@ -27,6 +27,6 @@ public class FloatLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         gen.Emit(OpCodes.Ldc_R4, (float)_value.Value);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

@@ -11,13 +11,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 public class ContentTypeDelegatingMessageConverter : ISmartMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(ContentTypeDelegatingMessageConverter);
+    public const string DefaultServiceName = nameof(ContentTypeDelegatingMessageConverter);
 
     private readonly Dictionary<string, ISmartMessageConverter> _delegates;
 
     private readonly ISmartMessageConverter _defaultConverter;
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public ContentTypeDelegatingMessageConverter()
         : this(new Dictionary<string, ISmartMessageConverter>(), new SimpleMessageConverter())

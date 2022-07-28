@@ -13,7 +13,7 @@ public interface IStreamListenerResultAdapter
     IDisposable Adapt(object streamListenerResult, object bindingTarget);
 }
 
-public interface IStreamListenerResultAdapter<in R, in B> : IStreamListenerResultAdapter
+public interface IStreamListenerResultAdapter<in TResult, in TTarget> : IStreamListenerResultAdapter
 {
-    IDisposable Adapt(R streamListenerResult, B bindingTarget);
+    IDisposable Adapt(TResult streamListenerResult, TTarget bindingTarget);
 }

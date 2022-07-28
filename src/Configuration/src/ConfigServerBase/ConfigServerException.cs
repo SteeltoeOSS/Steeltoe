@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 /// <summary>
-/// Exception thrown by Config Server client when problems occur
+/// Exception thrown by Config Server client when problems occur.
 /// </summary>
 [Serializable]
 public class ConfigServerException : Exception

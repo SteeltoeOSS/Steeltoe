@@ -117,12 +117,12 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 
                 if (defaultCandidateConfigurations.Count == 1)
                 {
-                    // Single defualt candidate
+                    // Single default candidate
                     configurationName = defaultCandidateConfigurations.Single();
                 }
                 else
                 {
-                    // Multiple defualt candidates, find by target type match
+                    // Multiple default candidates, find by target type match
                     var candidatesForBindableType = new List<string>();
                     foreach (var defaultCandidateConfiguration in defaultCandidateConfigurations)
                     {

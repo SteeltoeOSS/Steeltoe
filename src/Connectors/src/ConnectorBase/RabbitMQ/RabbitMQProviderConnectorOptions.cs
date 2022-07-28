@@ -10,13 +10,13 @@ namespace Steeltoe.Connector.RabbitMQ;
 
 public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 {
-    public const string Default_Scheme = "amqp";
-    public const string Default_SSLScheme = "amqps";
-    public const string Default_Server = "127.0.0.1";
-    public const int Default_Port = 5672;
-    public const int Default_SSLPort = 5671;
-    private const string RABBITMQ_CLIENT_SECTION_PREFIX = "rabbitmq:client";
-    private const string RABBIT_CLIENT_SECTION_PREFIX = "rabbit:client";
+    public const string DefaultScheme = "amqp";
+    public const string DefaultSslScheme = "amqps";
+    public const string DefaultServer = "127.0.0.1";
+    public const int DefaultPort = 5672;
+    public const int DefaultSslPort = 5671;
+    private const string RabbitMQClientSectionPrefix = "rabbitmq:client";
+    private const string RabbitClientSectionPrefix = "rabbit:client";
 
     public RabbitMQProviderConnectorOptions()
     {
@@ -29,10 +29,10 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(RABBIT_CLIENT_SECTION_PREFIX);
+        var section = config.GetSection(RabbitClientSectionPrefix);
         section.Bind(this);
 
-        var sectionMQ = config.GetSection(RABBITMQ_CLIENT_SECTION_PREFIX);
+        var sectionMQ = config.GetSection(RabbitMQClientSectionPrefix);
         sectionMQ.Bind(this);
     }
 
@@ -40,11 +40,11 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string Uri { get; set; }
 
-    public string Server { get; set; } = Default_Server;
+    public string Server { get; set; } = DefaultServer;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
-    public int SslPort { get; set; } = Default_SSLPort;
+    public int SslPort { get; set; } = DefaultSslPort;
 
     public string Username { get; set; }
 
@@ -60,8 +60,8 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
         }
 
         var uri = SslEnabled
-            ? new UriInfo(Default_SSLScheme, Server, SslPort, Username, Password, VirtualHost)
-            : new UriInfo(Default_Scheme, Server, Port, Username, Password, VirtualHost);
+            ? new UriInfo(DefaultSslScheme, Server, SslPort, Username, Password, VirtualHost)
+            : new UriInfo(DefaultScheme, Server, Port, Username, Password, VirtualHost);
 
         return uri.ToString();
     }

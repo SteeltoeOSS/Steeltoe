@@ -47,11 +47,11 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleCloudFoundryRequestAsync_ReturnsExpected()
     {
         var opts = new CloudFoundryEndpointOptions();
-        var mgmtOptions = new CloudFoundryManagementOptions();
-        mgmtOptions.EndpointOptions.Add(opts);
-        var ep = new TestCloudFoundryEndpoint(opts, mgmtOptions);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
+        var ep = new TestCloudFoundryEndpoint(opts, managementOptions);
 
-        var middle = new CloudFoundryEndpointMiddleware(null, ep, mgmtOptions);
+        var middle = new CloudFoundryEndpointMiddleware(null, ep, managementOptions);
 
         var context = CreateRequest("GET", "/");
         await middle.HandleCloudFoundryRequestAsync(context);

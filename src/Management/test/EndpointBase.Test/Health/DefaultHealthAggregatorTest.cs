@@ -18,70 +18,70 @@ public class DefaultHealthAggregatorTest : BaseTest
         var agg = new DefaultHealthAggregator();
         var result = agg.Aggregate(null);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UNKNOWN, result.Status);
+        Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
     public void Aggregate_SingleContributor_ReturnsExpectedHealth()
     {
-        var contribs = new List<IHealthContributor>
+        var contributors = new List<IHealthContributor>
         {
             new UpContributor()
         };
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contribs);
+        var result = agg.Aggregate(contributors);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
     public void Aggregate_MultipleContributor_ReturnsExpectedHealth()
     {
-        var contribs = new List<IHealthContributor>
+        var contributors = new List<IHealthContributor>
         {
             new DownContributor(),
             new UpContributor(),
-            new OutOfSserviceContributor(),
+            new OutOfServiceContributor(),
             new UnknownContributor()
         };
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contribs);
+        var result = agg.Aggregate(contributors);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.DOWN, result.Status);
+        Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
     }
 
     [Fact]
     public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
     {
-        var contribs = new List<IHealthContributor>();
+        var contributors = new List<IHealthContributor>();
         for (var i = 0; i < 10; i++)
         {
-            contribs.Add(new UpContributor());
+            contributors.Add(new UpContributor());
         }
 
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contribs);
+        var result = agg.Aggregate(contributors);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
     }
 
     [Fact]
-    public void Aggregate_MultipleContributor_OrderDoesntMatter_ReturnsExpectedHealth()
+    public void Aggregate_MultipleContributor_OrderDoesNotMatter_ReturnsExpectedHealth()
     {
-        var contribs = new List<IHealthContributor>
+        var contributors = new List<IHealthContributor>
         {
             new UpContributor(),
-            new OutOfSserviceContributor(),
+            new OutOfServiceContributor(),
             new UnknownContributor()
         };
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contribs);
+        var result = agg.Aggregate(contributors);
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.OUT_OF_SERVICE, result.Status);
+        Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
     }
 
@@ -89,7 +89,7 @@ public class DefaultHealthAggregatorTest : BaseTest
     public void AggregatesInParallel()
     {
         var t = new Stopwatch();
-        var contribs = new List<IHealthContributor>
+        var contributors = new List<IHealthContributor>
         {
             new UpContributor(500),
             new UpContributor(500),
@@ -97,10 +97,10 @@ public class DefaultHealthAggregatorTest : BaseTest
         };
         var agg = new DefaultHealthAggregator();
         t.Start();
-        var result = agg.Aggregate(contribs);
+        var result = agg.Aggregate(contributors);
         t.Stop();
         Assert.NotNull(result);
-        Assert.Equal(HealthStatus.UP, result.Status);
+        Assert.Equal(HealthStatus.Up, result.Status);
         Assert.InRange(t.ElapsedMilliseconds, 450, 1200);
     }
 }

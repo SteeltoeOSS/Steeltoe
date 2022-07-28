@@ -13,11 +13,11 @@ public class MongoDbConnectorFactoryTest
     [Fact]
     public void Constructor_ThrowsIfConfigNull()
     {
-        const MongoDbConnectorOptions config = null;
+        const MongoDbConnectorOptions options = null;
         const MongoDbServiceInfo si = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorFactory(si, config, MongoDbTypeLocator.MongoClient));
-        Assert.Contains(nameof(config), ex.Message);
+        var ex = Assert.Throws<ArgumentNullException>(() => new MongoDbConnectorFactory(si, options, MongoDbTypeLocator.MongoClient));
+        Assert.Contains(nameof(options), ex.Message);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class MongoDbConnectorFactoryTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var config = new MongoDbConnectorOptions
         {

@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestHystrixCommand<T> : HystrixCommand<T>
 {
-    public ITestOutputHelper _output;
+    public ITestOutputHelper Output;
 
     public TestHystrixCommand(TestCommandBuilder builder)
         : base(
@@ -56,12 +56,12 @@ public class TestHystrixCommand<T> : HystrixCommand<T>
 
     public static TestCommandBuilder TestPropsBuilder()
     {
-        return new TestCommandBuilder(ExecutionIsolationStrategy.THREAD);
+        return new TestCommandBuilder(ExecutionIsolationStrategy.Thread);
     }
 
     public static TestCommandBuilder TestPropsBuilder(TestCircuitBreaker circuitBreaker)
     {
-        return new TestCommandBuilder(ExecutionIsolationStrategy.THREAD).SetCircuitBreaker(circuitBreaker);
+        return new TestCommandBuilder(ExecutionIsolationStrategy.Thread).SetCircuitBreaker(circuitBreaker);
     }
 
     public static TestCommandBuilder TestPropsBuilder(ExecutionIsolationStrategy isolationStrategy)

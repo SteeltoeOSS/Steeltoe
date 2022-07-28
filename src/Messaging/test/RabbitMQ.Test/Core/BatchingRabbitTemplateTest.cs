@@ -28,7 +28,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 [Trait("Category", "Integration")]
 public sealed class BatchingRabbitTemplateTest : IDisposable
 {
-    public const string ROUTE = "test.queue.BatchingRabbitTemplateTests";
+    public const string Route = "test.queue.BatchingRabbitTemplateTests";
     private readonly CachingConnectionFactory _connectionFactory;
     private readonly ITestOutputHelper _testOutputHelper;
 
@@ -36,7 +36,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
     {
         _connectionFactory = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(_connectionFactory);
-        admin.DeclareQueue(new Queue(ROUTE));
+        admin.DeclareQueue(new Queue(Route));
         _testOutputHelper = testOutputHelper;
     }
 
@@ -56,11 +56,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -72,9 +72,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -86,10 +86,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -101,13 +101,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -119,15 +119,15 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003bar\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003bar\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -139,13 +139,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -157,13 +157,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("f"));
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("f", Encoding.UTF8.GetString((byte[])recv.Payload));
-        recv = Receive(template);
-        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("f", Encoding.UTF8.GetString((byte[])received.Payload));
+        received = Receive(template);
+        Assert.Equal("bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -175,11 +175,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             ConnectionFactory = _connectionFactory
         };
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-        template.Send(string.Empty, ROUTE, message);
-        var recv = Receive(template);
-        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])recv.Payload));
+        template.Send(string.Empty, Route, message);
+        var received = Receive(template);
+        Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])received.Payload));
     }
 
     [Fact]
@@ -192,7 +192,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
-        container.SetQueueNames(ROUTE);
+        container.SetQueueNames(Route);
         var lastInBatch = new List<bool>();
         var batchSize = new AtomicInteger();
         container.MessageListener = new TestDebatchListener(received, lastInBatch, batchSize, latch);
@@ -206,9 +206,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
                 ConnectionFactory = _connectionFactory
             };
             var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
-            template.Send(string.Empty, ROUTE, message);
+            template.Send(string.Empty, Route, message);
             message = Message.Create(Encoding.UTF8.GetBytes("bar"));
-            template.Send(string.Empty, ROUTE, message);
+            template.Send(string.Empty, Route, message);
             Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
             Assert.Equal(2, received.Count);
             Assert.Equal("foo", Encoding.UTF8.GetString((byte[])received[0].Payload));
@@ -238,7 +238,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
-        container.SetQueueNames(ROUTE);
+        container.SetQueueNames(Route);
         container.MessageListener = new TestDebatchListener(received, null, null, latch);
         container.PrefetchCount = 1000;
         container.BatchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
@@ -252,13 +252,13 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
                 ConnectionFactory = _connectionFactory
             };
             var accessor = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders());
-            accessor.DeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+            accessor.DeliveryMode = MessageDeliveryMode.NonPersistent;
             var message = Message.Create(new byte[256], accessor.MessageHeaders);
             var watch = new Stopwatch();
             watch.Start();
             for (var i = 0; i < count; i++)
             {
-                template.Send(string.Empty, ROUTE, message);
+                template.Send(string.Empty, Route, message);
             }
 
             Assert.True(latch.Wait(TimeSpan.FromSeconds(60)));
@@ -281,7 +281,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
         var container = new DirectMessageListenerContainer(context, _connectionFactory);
-        container.SetQueueNames(ROUTE);
+        container.SetQueueNames(Route);
         var listener = new EmptyListener();
         container.MessageListener = listener;
         var errorHandler = new TestConditionalRejectingErrorHandler();
@@ -294,9 +294,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
             {
                 ConnectionFactory = _connectionFactory
             };
-            var headers = new MessageHeaders(new Dictionary<string, object> { { RabbitMessageHeaders.SPRING_BATCH_FORMAT, RabbitMessageHeaders.BATCH_FORMAT_LENGTH_HEADER4 } });
+            var headers = new MessageHeaders(new Dictionary<string, object> { { RabbitMessageHeaders.SpringBatchFormat, RabbitMessageHeaders.BatchFormatLengthHeader4 } });
             var message = Message.Create(Encoding.UTF8.GetBytes("\u0000\u0000\u0000\u0004foo"), headers);
-            template.Send(string.Empty, ROUTE, message);
+            template.Send(string.Empty, Route, message);
             Thread.Sleep(1000);
             Assert.Equal(0, listener.Count);
             Assert.True(errorHandler.HandleErrorCalled);
@@ -321,9 +321,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.SetBeforePublishPostProcessors(gZipPostProcessor);
         var props = new MessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("gzip", result.Headers.ContentEncoding());
         var unzipper = new GUnzipPostProcessor();
@@ -344,9 +344,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.AddBeforePublishPostProcessors(gZipPostProcessor);
         var props = new MessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("gzip", result.Headers.ContentEncoding());
         var unzipper = new GUnzipPostProcessor();
@@ -370,9 +370,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.RemoveBeforePublishPostProcessor(headerPostProcessor);
         var props = new MessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("gzip", result.Headers.ContentEncoding());
         var unzipper = new GUnzipPostProcessor();
@@ -398,9 +398,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.SetAfterReceivePostProcessors(new GUnzipPostProcessor());
         var props = new MessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Null(result.Headers.ContentEncoding());
         Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])result.Payload));
@@ -423,9 +423,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         template.AddAfterReceivePostProcessors(new GUnzipPostProcessor());
         var props = new MessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Null(result.Headers.ContentEncoding());
         Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString((byte[])result.Payload));
@@ -447,9 +447,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         };
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("gzip:foo", result.Headers.ContentEncoding());
         var unzipper = new GUnzipPostProcessor();
@@ -474,11 +474,11 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         };
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         Thread.Sleep(100);
-        var output = template.ReceiveAndConvert<byte[]>(ROUTE);
+        var output = template.ReceiveAndConvert<byte[]>(Route);
         Assert.NotNull(output);
         Assert.Equal("\u0000\u0000\u0000\u0003foo\u0000\u0000\u0000\u0003bar", Encoding.UTF8.GetString(output));
     }
@@ -499,9 +499,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var accessor = new RabbitHeaderAccessor(new MessageHeaders());
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("zip", result.Headers.ContentEncoding());
         var unzipper = new UnzipPostProcessor();
@@ -528,9 +528,9 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         };
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("zip:foo", result.Headers.ContentEncoding());
         var unzipper = new UnzipPostProcessor();
@@ -546,17 +546,17 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Optimal
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders());
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("deflate", result.Headers.ContentEncoding());
         var unzipper = new InflaterPostProcessor();
@@ -572,17 +572,17 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Fastest
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders());
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("deflate", result.Headers.ContentEncoding());
         var unzipper = new InflaterPostProcessor();
@@ -598,20 +598,20 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         {
             ConnectionFactory = _connectionFactory
         };
-        var deflatorPostProcessor = new DeflaterPostProcessor
+        var deflaterPostProcessor = new DeflaterPostProcessor
         {
             Level = CompressionLevel.Fastest
         };
-        template.SetBeforePublishPostProcessors(deflatorPostProcessor);
+        template.SetBeforePublishPostProcessors(deflaterPostProcessor);
         var accessor = new RabbitHeaderAccessor(new MessageHeaders())
         {
             ContentEncoding = "foo"
         };
         var props = accessor.ToMessageHeaders();
         var message = Message.Create(Encoding.UTF8.GetBytes("foo"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         message = Message.Create(Encoding.UTF8.GetBytes("bar"), props);
-        template.Send(string.Empty, ROUTE, message);
+        template.Send(string.Empty, Route, message);
         var result = Receive(template);
         Assert.Equal("deflate:foo", result.Headers.ContentEncoding());
         var unzipper = new InflaterPostProcessor();
@@ -621,12 +621,12 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
     private IMessage Receive(BatchingRabbitTemplate template)
     {
-        var message = template.Receive(ROUTE);
+        var message = template.Receive(Route);
         var n = 0;
         while (n++ < 200 && message == null)
         {
             Thread.Sleep(50);
-            message = template.Receive(ROUTE);
+            message = template.Receive(Route);
         }
 
         Assert.NotNull(message);
@@ -684,10 +684,10 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
         public TestDebatchListener(List<IMessage> received, List<bool> lastInBatch, AtomicInteger batchSize, CountdownEvent latch)
         {
-            Received = received;
-            LastInBatch = lastInBatch;
-            BatchSize = batchSize;
-            Latch = latch;
+            this.Received = received;
+            this.LastInBatch = lastInBatch;
+            this.BatchSize = batchSize;
+            this.Latch = latch;
         }
 
         public AcknowledgeMode ContainerAckMode { get; set; }
@@ -703,7 +703,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
 
             if (BatchSize != null)
             {
-                BatchSize.Value = message.Headers.Get<int>(RabbitMessageHeaders.BATCH_SIZE);
+                BatchSize.Value = message.Headers.Get<int>(RabbitMessageHeaders.BatchSize);
             }
 
             Latch.Signal();

@@ -137,10 +137,10 @@ public class EnvEndpointTest : BaseTest
         Assert.Null(prop.Origin);
 
         var otherProps = otherAppsettingsDesc.Properties;
-        var appsettingsCommonProp = props["common"];
-        var otherAppsettingCommonProp = otherProps["common"];
-        Assert.Equal("appsettings", appsettingsCommonProp.Value);
-        Assert.Equal("otherAppsettings", otherAppsettingCommonProp.Value);
+        var appSettingsCommonProp = props["common"];
+        var otherAppSettingCommonProp = otherProps["common"];
+        Assert.Equal("appsettings", appSettingsCommonProp.Value);
+        Assert.Equal("otherAppsettings", otherAppSettingCommonProp.Value);
     }
 
     [Fact]

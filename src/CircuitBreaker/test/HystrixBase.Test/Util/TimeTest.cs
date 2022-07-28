@@ -10,7 +10,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
 
 public class TimeTest
 {
-    private const int GRACE = 180;
+    private const int Grace = 180;
 
     [Fact]
     [Trait("Category", "FlakyOnHostedAgents")]
@@ -20,7 +20,7 @@ public class TimeTest
         stopWatch.Start();
         Time.WaitUntil(() => false, 1000);
         stopWatch.Stop();
-        Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - GRACE, 1000 + GRACE);
+        Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - Grace, 1000 + Grace);
     }
 
     [Fact]
@@ -31,6 +31,6 @@ public class TimeTest
         stopWatch.Start();
         Time.Wait(1000);
         stopWatch.Stop();
-        Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - GRACE, 1000 + GRACE);
+        Assert.InRange(stopWatch.ElapsedMilliseconds, 1000 - Grace, 1000 + Grace);
     }
 }

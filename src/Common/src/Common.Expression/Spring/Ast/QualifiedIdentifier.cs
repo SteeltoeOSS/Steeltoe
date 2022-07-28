@@ -23,7 +23,7 @@ public class QualifiedIdentifier : SpelNode
             var sb = new StringBuilder();
             for (var i = 0; i < ChildCount; i++)
             {
-                var value = _children[i].GetValueInternal(state).Value;
+                var value = children[i].GetValueInternal(state).Value;
                 if (i > 0 && (value == null || !value.ToString().StartsWith("$")))
                 {
                     sb.Append('.');
@@ -38,7 +38,7 @@ public class QualifiedIdentifier : SpelNode
         return _value;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder();
         if (_value != null)
@@ -54,7 +54,7 @@ public class QualifiedIdentifier : SpelNode
                     sb.Append('.');
                 }
 
-                sb.Append(GetChild(i).ToStringAST());
+                sb.Append(GetChild(i).ToStringAst());
             }
         }
 

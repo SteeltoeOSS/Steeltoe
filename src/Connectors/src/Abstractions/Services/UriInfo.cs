@@ -27,9 +27,9 @@ public class UriInfo
         UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
     }
 
-    public UriInfo(string uristring)
+    public UriInfo(string uriString)
     {
-        var uri = MakeUri(uristring);
+        var uri = MakeUri(uriString);
         if (uri != null)
         {
             Scheme = uri.Scheme;
@@ -39,17 +39,17 @@ public class UriInfo
             Path = GetPath(uri.PathAndQuery);
             Query = GetQuery(uri.PathAndQuery);
 
-            var userinfo = GetUserInfo(uri.UserInfo);
-            UserName = userinfo[0];
-            Password = userinfo[1];
+            var userInfo = GetUserInfo(uri.UserInfo);
+            UserName = userInfo[0];
+            Password = userInfo[1];
         }
 
-        UriString = uristring;
+        UriString = uriString;
     }
 
-    public UriInfo(string uristring, string username, string password)
+    public UriInfo(string uriString, string username, string password)
     {
-        var uri = MakeUri(uristring);
+        var uri = MakeUri(uriString);
         if (uri != null)
         {
             Scheme = uri.Scheme;
@@ -62,7 +62,7 @@ public class UriInfo
 
         UserName = WebUtility.UrlEncode(username);
         Password = WebUtility.UrlEncode(password);
-        UriString = uristring;
+        UriString = uriString;
     }
 
     public string Scheme { get; protected internal set; }
@@ -168,10 +168,10 @@ public class UriInfo
             var firstEquals = uriString.IndexOf("=");
             if (firstEquals > 0 && (firstEquals < firstAmp || firstAmp == -1))
             {
-                var dbnameindex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
-                if (dbnameindex > 0)
+                var dbNameIndex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
+                if (dbNameIndex > 0)
                 {
-                    uriString = uriString.Remove(dbnameindex, 13);
+                    uriString = uriString.Remove(dbNameIndex, 13);
 
                     // recalculate the location of the first '&'
                     firstAmp = uriString.IndexOf("&");

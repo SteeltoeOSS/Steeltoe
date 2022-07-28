@@ -29,7 +29,7 @@ public class RabbitHeaderAccessorTest
         accessor.ContentLength = 200L;
         accessor.ContentType = "text/plain";
         accessor.CorrelationId = correlationId;
-        accessor.ReceivedDeliveryMode = MessageDeliveryMode.NON_PERSISTENT;
+        accessor.ReceivedDeliveryMode = MessageDeliveryMode.NonPersistent;
         accessor.DeliveryTag = 555L;
         accessor.Expiration = "expiration-1234";
         accessor.MessageCount = 42;
@@ -56,7 +56,7 @@ public class RabbitHeaderAccessorTest
         Assert.Equal(200, headerAccessor.ContentLength);
         Assert.Equal("text/plain", headerAccessor.ContentType);
         Assert.Equal(correlationId, headerAccessor.CorrelationId);
-        Assert.Equal(MessageDeliveryMode.NON_PERSISTENT, headerAccessor.ReceivedDeliveryMode);
+        Assert.Equal(MessageDeliveryMode.NonPersistent, headerAccessor.ReceivedDeliveryMode);
         Assert.Equal(555ul, headerAccessor.DeliveryTag.Value);
         Assert.Equal("expiration-1234", headerAccessor.Expiration);
         Assert.Equal(42u, headerAccessor.MessageCount.Value);
@@ -80,7 +80,7 @@ public class RabbitHeaderAccessorTest
     [Fact]
     public void PrioritySet()
     {
-        var message = RabbitMessageBuilder.WithPayload("payload").SetHeader(RabbitMessageHeaders.PRIORITY, 90).Build();
+        var message = RabbitMessageBuilder.WithPayload("payload").SetHeader(RabbitMessageHeaders.Priority, 90).Build();
         var accessor = RabbitHeaderAccessor.GetAccessor(message);
         Assert.Equal(90, accessor.Priority.Value);
     }
@@ -89,6 +89,6 @@ public class RabbitHeaderAccessorTest
     public void PriorityMustBeInteger()
     {
         var accessor = new RabbitHeaderAccessor(RabbitMessageBuilder.WithPayload("foo").Build());
-        Assert.Throws<ArgumentException>(() => accessor.SetHeader(RabbitMessageHeaders.PRIORITY, "foo"));
+        Assert.Throws<ArgumentException>(() => accessor.SetHeader(RabbitMessageHeaders.Priority, "foo"));
     }
 }

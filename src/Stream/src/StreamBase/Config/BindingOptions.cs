@@ -8,7 +8,7 @@ namespace Steeltoe.Stream.Config;
 
 public class BindingOptions : IBindingOptions
 {
-    public static readonly MimeType DEFAULT_CONTENT_TYPE = MimeTypeUtils.APPLICATION_JSON;
+    public static readonly MimeType DefaultContentType = MimeTypeUtils.ApplicationJson;
 
     public string Destination { get; set; }
 
@@ -30,7 +30,7 @@ public class BindingOptions : IBindingOptions
     {
         Destination ??= @default?.Destination;
         Group ??= @default?.Group;
-        ContentType ??= @default != null ? @default.ContentType : DEFAULT_CONTENT_TYPE.ToString();
+        ContentType ??= @default != null ? @default.ContentType : DefaultContentType.ToString();
         Binder ??= @default?.Binder;
 
         Consumer?.PostProcess(name, @default?.Consumer);

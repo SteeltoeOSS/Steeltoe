@@ -47,13 +47,13 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleMappingsRequestAsync_MVCNotUsed_NoRoutes_ReturnsExpected()
     {
         var opts = new MappingsEndpointOptions();
-        var mopts = new CloudFoundryManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new CloudFoundryManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var ep = new MappingsEndpoint(opts);
-        var middle = new MappingsEndpointMiddleware(null, opts, mopts, ep);
+        var middle = new MappingsEndpointMiddleware(null, opts, managementOptions, ep);
 
         var context = CreateRequest("GET", "/cloudfoundryapplication/mappings");
         await middle.HandleMappingsRequestAsync(context);
@@ -70,9 +70,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
         using var server = new TestServer(builder);

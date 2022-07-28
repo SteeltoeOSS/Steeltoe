@@ -21,6 +21,6 @@ internal sealed class TestServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        return new DB2ServiceInfo("test", "test://test/test");
+        return new Db2ServiceInfo("test", "test://test/test");
     }
 }

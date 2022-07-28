@@ -12,7 +12,7 @@ namespace Steeltoe.Common.LoadBalancer;
 
 public class RandomLoadBalancer : ILoadBalancer
 {
-    private static readonly Random _random = new ();
+    private static readonly Random Random = new ();
     private readonly IServiceInstanceProvider _serviceInstanceProvider;
     private readonly IDistributedCache _distributedCache;
     private readonly DistributedCacheEntryOptions _cacheOptions;
@@ -20,12 +20,12 @@ public class RandomLoadBalancer : ILoadBalancer
 
     /// <summary>
     /// Initializes a new instance of the <see cref="RandomLoadBalancer"/> class.
-    /// Returns random service instances, with option caching of service lookups
+    /// Returns random service instances, with option caching of service lookups.
     /// </summary>
-    /// <param name="serviceInstanceProvider">Provider of service instance information</param>
-    /// <param name="distributedCache">For caching service instance data</param>
-    /// <param name="cacheEntryOptions">Configuration for cache entries of service instance data</param>
-    /// <param name="logger">For logging</param>
+    /// <param name="serviceInstanceProvider">Provider of service instance information.</param>
+    /// <param name="distributedCache">For caching service instance data.</param>
+    /// <param name="cacheEntryOptions">Configuration for cache entries of service instance data.</param>
+    /// <param name="logger">For logging.</param>
     public RandomLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
     {
         _serviceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
@@ -41,7 +41,7 @@ public class RandomLoadBalancer : ILoadBalancer
         if (availableServiceInstances.Count > 0)
         {
             // load balancer instance selection predictability is not likely to be a security concern
-            var resolvedUri = availableServiceInstances[_random.Next(availableServiceInstances.Count)].Uri;
+            var resolvedUri = availableServiceInstances[Random.Next(availableServiceInstances.Count)].Uri;
             _logger?.LogDebug("Resolved {url} to {service}", request.Host, resolvedUri.Host);
             return new Uri(resolvedUri, request.PathAndQuery);
         }

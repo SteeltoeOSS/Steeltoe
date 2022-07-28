@@ -19,7 +19,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources;
 public class HystrixEventSourceServiceTests : HystrixTestBase
 {
     [Fact]
-    public void Constructor_SetsupStream()
+    public void Constructor_SetsUpStream()
     {
         var stream = HystrixDashboardStream.GetInstance();
         var service = new HystrixEventSourceService(stream);

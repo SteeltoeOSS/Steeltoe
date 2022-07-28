@@ -13,7 +13,7 @@ namespace Steeltoe.Common.Converter;
 
 public static class ConversionUtils
 {
-    private const string DELIMITER = ",";
+    private const string Delimiter = ",";
 
     public static bool CanConvertElements(Type sourceElementType, Type targetElementType, IConversionService conversionService)
     {
@@ -67,7 +67,7 @@ public static class ConversionUtils
         {
             var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
             sj.Append(targetElement);
-            sj.Append(DELIMITER);
+            sj.Append(Delimiter);
         }
 
         return sj.ToString(0, sj.Length - 1);
@@ -119,8 +119,8 @@ public static class ConversionUtils
 
             if (type.IsGenericType)
             {
-                var defn = type.GetGenericTypeDefinition();
-                if (typeof(IList<>) == defn || typeof(IEnumerator<>) == defn || typeof(ICollection<>) == defn)
+                var definition = type.GetGenericTypeDefinition();
+                if (typeof(IList<>) == definition || typeof(IEnumerator<>) == definition || typeof(ICollection<>) == definition)
                 {
                     return true;
                 }
@@ -155,13 +155,13 @@ public static class ConversionUtils
 
             if (type.IsGenericType)
             {
-                var defn = type.GetGenericTypeDefinition();
-                if (typeof(IDictionary<,>) == defn)
+                var definition = type.GetGenericTypeDefinition();
+                if (typeof(IDictionary<,>) == definition)
                 {
                     return true;
                 }
 
-                if (typeof(IEnumerator<>) == defn)
+                if (typeof(IEnumerator<>) == definition)
                 {
                     return true;
                 }
@@ -206,8 +206,8 @@ public static class ConversionUtils
         {
             if (type.IsGenericType)
             {
-                var defn = type.GetGenericTypeDefinition();
-                if (typeof(IList<>) == defn || typeof(IEnumerable<>) == defn || typeof(ICollection<>) == defn)
+                var definition = type.GetGenericTypeDefinition();
+                if (typeof(IList<>) == definition || typeof(IEnumerable<>) == definition || typeof(ICollection<>) == definition)
                 {
                     return (IList)Activator.CreateInstance(MakeGenericListType(type));
                 }
@@ -242,8 +242,8 @@ public static class ConversionUtils
         {
             if (type.IsGenericType)
             {
-                var defn = type.GetGenericTypeDefinition();
-                if (typeof(IDictionary<,>) == defn)
+                var definition = type.GetGenericTypeDefinition();
+                if (typeof(IDictionary<,>) == definition)
                 {
                     return (IDictionary)Activator.CreateInstance(MakeGenericDictionaryType(type));
                 }

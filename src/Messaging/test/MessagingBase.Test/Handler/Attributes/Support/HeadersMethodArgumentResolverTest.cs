@@ -23,19 +23,19 @@ public class HeadersMethodArgumentResolverTest
     [Fact]
     public void SupportsParameter()
     {
-        Assert.True(_resolver.SupportsParameter(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>))));
+        Assert.True(_resolver.SupportsParameter(_resolvable.AnnotationPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>))));
 
         Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(MessageHeaders))));
         Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(MessageHeaderAccessor))));
         Assert.True(_resolver.SupportsParameter(_resolvable.Arg(typeof(TestMessageHeaderAccessor))));
 
-        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string))));
+        Assert.False(_resolver.SupportsParameter(_resolvable.AnnotationPresent(typeof(HeadersAttribute)).Arg(typeof(string))));
     }
 
     [Fact]
     public void ResolveArgumentAnnotated()
     {
-        var param = _resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>));
+        var param = _resolvable.AnnotationPresent(typeof(HeadersAttribute)).Arg(typeof(IDictionary<string, object>));
         var resolved = _resolver.ResolveArgument(param, _message);
 
         var condition = resolved is IDictionary<string, object>;
@@ -48,7 +48,7 @@ public class HeadersMethodArgumentResolverTest
     [Fact]
     public void ResolveArgumentAnnotatedNotMap()
     {
-        Assert.Throws<InvalidOperationException>(() => _resolver.ResolveArgument(_resolvable.AnnotPresent(typeof(HeadersAttribute)).Arg(typeof(string)), _message));
+        Assert.Throws<InvalidOperationException>(() => _resolver.ResolveArgument(_resolvable.AnnotationPresent(typeof(HeadersAttribute)).Arg(typeof(string)), _message));
     }
 
     [Fact]

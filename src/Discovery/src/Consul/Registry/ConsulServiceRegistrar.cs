@@ -11,14 +11,14 @@ using System.Threading;
 namespace Steeltoe.Discovery.Consul.Registry;
 
 /// <summary>
-/// A registrar used to register a service in a Consul server
+/// A registrar used to register a service in a Consul server.
 /// </summary>
 public class ConsulServiceRegistrar : IConsulServiceRegistrar
 {
-    internal int _running;
+    internal int IsRunning;
 
-    private const int NOT_RUNNING = 0;
-    private const int RUNNING = 1;
+    private const int NotRunning = 0;
+    private const int Running = 1;
 
     private readonly ILogger<ConsulServiceRegistrar> _logger;
     private readonly IConsulServiceRegistry _registry;
@@ -44,10 +44,10 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations</param>
-    /// <param name="optionsMonitor">configuration options to use</param>
-    /// <param name="registration">the registration to register with Consul</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
+    /// <param name="optionsMonitor">configuration options to use.</param>
+    /// <param name="registration">the registration to register with Consul.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -59,10 +59,10 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations</param>
-    /// <param name="options">configuration options to use</param>
-    /// <param name="registration">the registration to register with Consul</param>
-    /// <param name="logger">optional logger</param>
+    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
+    /// <param name="options">configuration options to use.</param>
+    /// <param name="registration">the registration to register with Consul.</param>
+    /// <param name="logger">optional logger.</param>
     public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
@@ -80,7 +80,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
             return;
         }
 
-        if (Interlocked.CompareExchange(ref _running, RUNNING, NOT_RUNNING) == NOT_RUNNING)
+        if (Interlocked.CompareExchange(ref IsRunning, Running, NotRunning) == NotRunning)
         {
             if (Options.IsRetryEnabled && Options.FailFast)
             {
@@ -143,8 +143,8 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
                 {
                     _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
-                    var nextBackoff = (int)(backOff * options.Multiplier);
-                    backOff = Math.Min(nextBackoff, options.MaxInterval);
+                    var nextBackOff = (int)(backOff * options.Multiplier);
+                    backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
                 {
@@ -169,7 +169,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     {
         if (disposing && !_isDisposed)
         {
-            if (Interlocked.CompareExchange(ref _running, NOT_RUNNING, RUNNING) == RUNNING)
+            if (Interlocked.CompareExchange(ref IsRunning, NotRunning, Running) == Running)
             {
                 Deregister();
             }

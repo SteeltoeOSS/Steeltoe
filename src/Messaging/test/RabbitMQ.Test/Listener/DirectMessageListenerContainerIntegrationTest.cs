@@ -17,11 +17,11 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
 {
     public const string Q1 = "testQ1.DirectMessageListenerContainerIntegrationTests";
     public const string Q2 = "testQ2.DirectMessageListenerContainerIntegrationTests";
-    public const string EQ1 = "eventTestQ1.DirectMessageListenerContainerIntegrationTests";
-    public const string EQ2 = "eventTestQ2.DirectMessageListenerContainerIntegrationTests";
-    public const string DLQ1 = "testDLQ1.DirectMessageListenerContainerIntegrationTests";
+    public const string Eq1 = "eventTestQ1.DirectMessageListenerContainerIntegrationTests";
+    public const string Eq2 = "eventTestQ2.DirectMessageListenerContainerIntegrationTests";
+    public const string Dlq1 = "testDLQ1.DirectMessageListenerContainerIntegrationTests";
 
-    private static int testNumber = 1;
+    private static int _testNumber = 1;
 
     private readonly CachingConnectionFactory _adminCf;
 
@@ -37,7 +37,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         _admin = new RabbitAdmin(_adminCf);
         _admin.DeclareQueue(new Config.Queue(Q1));
         _admin.DeclareQueue(new Config.Queue(Q2));
-        _testName = $"DirectMessageListenerContainerIntegrationTest-{testNumber++}";
+        _testName = $"DirectMessageListenerContainerIntegrationTest-{_testNumber++}";
         _output = output;
     }
 
@@ -61,7 +61,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         container.ServiceName = "simple";
         container.ConsumerTagStrategy = new TestConsumerTagStrategy(_testName);
         await container.Start();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
         var template = new RabbitTemplate(cf);
         Assert.Equal("FOO", template.ConvertSendAndReceive<string>(Q1, "foo"));
         Assert.Equal("BAR", template.ConvertSendAndReceive<string>(Q2, "bar"));
@@ -69,7 +69,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         Assert.True(await ConsumersOnQueue(Q1, 0));
         Assert.True(await ConsumersOnQueue(Q2, 0));
         Assert.True(await ActiveConsumerCount(container, 0));
-        Assert.Empty(container._consumersByQueue);
+        Assert.Empty(container.ConsumersByQueue);
         await template.Stop();
         cf.Destroy();
     }
@@ -82,7 +82,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         while (n++ < 600)
         {
             var queueProperties = _admin.GetQueueProperties(queue);
-            if (queueProperties != null && queueProperties.TryGetValue(RabbitAdmin.QUEUE_CONSUMER_COUNT, out var count))
+            if (queueProperties != null && queueProperties.TryGetValue(RabbitAdmin.QueueConsumerCount, out var count))
             {
                 currentQueueCount = (int)(uint)count;
             }
@@ -103,7 +103,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
     private async Task<bool> ActiveConsumerCount(DirectMessageListenerContainer container, int expected)
     {
         var n = 0;
-        var consumers = container._consumers;
+        var consumers = container.Consumers;
         while (n++ < 600 && consumers.Count != expected)
         {
             await Task.Delay(100);

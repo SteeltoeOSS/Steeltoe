@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestableExecutionHook : HystrixCommandExecutionHook
 {
-    public ITestOutputHelper _output;
+    public ITestOutputHelper Output;
 
     public TestableExecutionHook()
     {
@@ -22,7 +22,7 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
     public TestableExecutionHook(ITestOutputHelper output)
     {
-        _output = output;
+        this.Output = output;
     }
 
     private static void RecordHookCall(StringBuilder sequenceRecorder, string methodName)
@@ -173,7 +173,7 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
         if (l.Count != numOnNext + numOnError + numOnCompleted)
         {
-            _output?.WriteLine("Actual : " + l + ", Expected : " + numOnNext + " OnNexts, " + numOnError + " OnErrors, " + numOnCompleted + " OnCompleted");
+            Output?.WriteLine("Actual : " + l + ", Expected : " + numOnNext + " OnNexts, " + numOnError + " OnErrors, " + numOnCompleted + " OnCompleted");
             return false;
         }
 
@@ -218,8 +218,8 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
         if (matchFailed)
         {
-            _output?.WriteLine("Expected : " + numOnNext + " OnNexts, " + numOnError + " OnErrors, and " + numOnCompleted);
-            _output?.WriteLine("Actual : " + actualOnNext + " OnNexts, " + actualOnError + " OnErrors, and " + actualOnCompleted);
+            Output?.WriteLine("Expected : " + numOnNext + " OnNexts, " + numOnError + " OnErrors, and " + numOnCompleted);
+            Output?.WriteLine("Actual : " + actualOnNext + " OnNexts, " + actualOnError + " OnErrors, and " + actualOnCompleted);
         }
 
         return !matchFailed;
@@ -231,7 +231,7 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
         {
             if (n.Kind == NotificationKind.OnError)
             {
-                _output?.WriteLine(n.Exception.ToString());
+                Output?.WriteLine(n.Exception.ToString());
                 return n.Exception;
             }
         }

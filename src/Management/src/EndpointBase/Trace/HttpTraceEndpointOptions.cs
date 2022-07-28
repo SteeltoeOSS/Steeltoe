@@ -8,17 +8,17 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:httptrace";
-    private const int DEFAULT_CAPACITY = 100;
+    private const string ManagementInfoPrefix = "management:endpoints:httptrace";
+    private const int DefaultCapacity = 100;
 
     public HttpTraceEndpointOptions()
     {
         Id = "httptrace";
-        Capacity = DEFAULT_CAPACITY;
+        Capacity = DefaultCapacity;
     }
 
     public HttpTraceEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
@@ -27,7 +27,7 @@ public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
 
         if (Capacity == -1)
         {
-            Capacity = DEFAULT_CAPACITY;
+            Capacity = DefaultCapacity;
         }
     }
 

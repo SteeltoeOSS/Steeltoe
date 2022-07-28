@@ -13,7 +13,7 @@ public interface IMessageListenerContainer : ISmartLifecycle, IDisposable, IServ
     /// <summary>
     /// Setup the message listener to use.
     /// </summary>
-    /// <param name="messageListener">the message listener</param>
+    /// <param name="messageListener">the message listener.</param>
     void SetupMessageListener(IMessageListener messageListener);
 
     /// <summary>

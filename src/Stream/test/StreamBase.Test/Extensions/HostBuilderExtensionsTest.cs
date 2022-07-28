@@ -14,7 +14,7 @@ using Xunit;
 
 namespace Steeltoe.Stream.Extensions;
 
-public class HostBuilderExtensionsTest
+public partial class HostBuilderExtensionsTest
 {
     [Fact]
     public void HostBuilderExtensionTest()
@@ -42,7 +42,6 @@ public class HostBuilderExtensionsTest
         Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
     public void WebApplicationBuilderExtensionTest()
     {
@@ -55,5 +54,4 @@ public class HostBuilderExtensionsTest
         Assert.Single(configRoot.Providers.Where(p => p is SpringBootEnvProvider));
         Assert.Single(configRoot.Providers.Where(p => p is SpringBootCmdProvider));
     }
-#endif
 }

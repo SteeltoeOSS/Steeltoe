@@ -13,22 +13,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public abstract class AbstractExpressionTests
 {
-    protected static readonly bool SHOULD_BE_WRITABLE = true;
-    protected static readonly bool SHOULD_NOT_BE_WRITABLE;
-    protected readonly IExpressionParser _parser = new SpelExpressionParser();
-    protected readonly StandardEvaluationContext _context = TestScenarioCreator.GetTestEvaluationContext();
-    private static readonly bool DEBUG = bool.Parse(bool.FalseString);
+    protected static readonly bool ShouldBeWritable = true;
+    protected static readonly bool ShouldNotBeWritable;
+    protected readonly IExpressionParser Parser = new SpelExpressionParser();
+    protected readonly StandardEvaluationContext Context = TestScenarioCreator.GetTestEvaluationContext();
+    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
 
     public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
     {
-        var expr = _parser.ParseExpression(expression);
+        var expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
-        if (DEBUG)
+        if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(_context, expectedResultType);
+        var value = expr.GetValue(Context, expectedResultType);
         if (value == null)
         {
             if (expectedValue == null)
@@ -46,14 +46,14 @@ public abstract class AbstractExpressionTests
 
     public virtual void Evaluate(string expression, object expectedValue, Type expectedResultType)
     {
-        var expr = _parser.ParseExpression(expression);
+        var expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
-        if (DEBUG)
+        if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(_context);
+        var value = expr.GetValue(Context);
 
         // Check the return value
         if (value == null)
@@ -73,14 +73,14 @@ public abstract class AbstractExpressionTests
 
     public virtual void Evaluate(string expression, object expectedValue, Type expectedClassOfResult, bool shouldBeWritable)
     {
-        var expr = _parser.ParseExpression(expression);
+        var expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
-        if (DEBUG)
+        if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(_context);
+        var value = expr.GetValue(Context);
         if (value == null)
         {
             if (expectedValue == null)
@@ -95,7 +95,7 @@ public abstract class AbstractExpressionTests
         Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
 
         Assert.Equal(expectedClassOfResult, resultType);
-        Assert.Equal(shouldBeWritable, expr.IsWritable(_context));
+        Assert.Equal(shouldBeWritable, expr.IsWritable(Context));
     }
 
     protected static void PrintDimension(StringBuilder sb, Array array, int[] indexes, int dimension)
@@ -219,15 +219,15 @@ public abstract class AbstractExpressionTests
     {
         var ex = Assert.Throws<SpelEvaluationException>(() =>
         {
-            var expr = _parser.ParseExpression(expression);
+            var expr = Parser.ParseExpression(expression);
             Assert.NotNull(expr);
             if (expectedReturnType != null)
             {
-                expr.GetValue(_context, expectedReturnType);
+                expr.GetValue(Context, expectedReturnType);
             }
             else
             {
-                expr.GetValue(_context);
+                expr.GetValue(Context);
             }
         });
         Assert.Equal(expectedMessage, ex.MessageCode);
@@ -256,8 +256,8 @@ public abstract class AbstractExpressionTests
     {
         var ex = Assert.Throws<SpelParseException>(() =>
         {
-            var expr = _parser.ParseExpression(expression);
-            if (DEBUG)
+            var expr = Parser.ParseExpression(expression);
+            if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
             }

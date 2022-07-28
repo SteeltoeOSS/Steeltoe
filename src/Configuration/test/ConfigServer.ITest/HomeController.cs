@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using System.Collections.Generic;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
 
@@ -39,10 +40,10 @@ public class HomeController : Controller
         if (_health != null)
         {
             var health = _health.Health();
-            health.Details.TryGetValue("propertySources", out var sourcelist);
+            health.Details.TryGetValue("propertySources", out var sourceList);
 
-            var nameList = ToCSV(sourcelist as IList<string>);
-            return $"{health.Status},{nameList}";
+            var nameList = ToCSV(sourceList as IList<string>);
+            return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
         }
         else
         {

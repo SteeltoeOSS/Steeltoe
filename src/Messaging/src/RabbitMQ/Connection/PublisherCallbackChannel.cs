@@ -22,9 +22,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class PublisherCallbackChannel : IPublisherCallbackChannel
 {
-    public const string RETURNED_MESSAGE_CORRELATION_KEY = "spring_returned_message_correlation";
-    public const string RETURN_LISTENER_CORRELATION_KEY = "spring_listener_return_correlation";
-    public const string RETURN_LISTENER_ERROR = $"No '{RETURN_LISTENER_CORRELATION_KEY}' header in returned message";
+    public const string ReturnedMessageCorrelationKey = "spring_returned_message_correlation";
+    public const string ReturnListenerCorrelationKey = "spring_listener_return_correlation";
+    public const string ReturnListenerError = $"No '{ReturnListenerCorrelationKey}' header in returned message";
     private readonly List<PendingConfirm> _emptyConfirms = new ();
     private readonly IMessageHeadersConverter _converter = new DefaultMessageHeadersConverter();
     private readonly ILogger _logger;
@@ -41,8 +41,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         _logger = logger;
         channel.ModelShutdown += ShutdownCompleted;
     }
-
-    #region IPublisherCallbackChannel
 
     public virtual RC.IModel Channel { get; }
 
@@ -127,7 +125,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             Channel.BasicReturn += HandleReturn;
         }
 
-        if (_listeners.TryAdd(listener.UUID, listener))
+        if (_listeners.TryAdd(listener.Uuid, listener))
         {
             _pendingConfirms[listener] = new SortedDictionary<ulong, PendingConfirm>();
             _logger?.LogDebug("Added listener {listener}", listener);
@@ -167,9 +165,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             _afterAckCallback = callback;
         }
     }
-    #endregion
-
-    #region IModel
 
     public virtual int ChannelNumber => Channel.ChannelNumber;
 
@@ -394,9 +389,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     public virtual void WaitForConfirmsOrDie() => Channel.WaitForConfirmsOrDie();
 
     public virtual void WaitForConfirmsOrDie(TimeSpan timeout) => Channel.WaitForConfirmsOrDie(timeout);
-    #endregion
-
-    #region IDisposable Support
 
     public void Dispose()
     {
@@ -408,9 +400,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
     }
 
-    #endregion
-
-    #region Private
     private void ShutdownCompleted(object sender, RC.ShutdownEventArgs e)
     {
         ShutdownCompleted(e.ReplyText);
@@ -449,12 +438,12 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
         var properties = args.BasicProperties;
         var messageProperties = _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
-        if (properties.Headers.TryGetValue(RETURNED_MESSAGE_CORRELATION_KEY, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm) && confirm.CorrelationInfo != null)
+        if (properties.Headers.TryGetValue(ReturnedMessageCorrelationKey, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm) && confirm.CorrelationInfo != null)
         {
             confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
         }
 
-        var uuidObject = messageProperties.Get<string>(RETURN_LISTENER_CORRELATION_KEY);
+        var uuidObject = messageProperties.Get<string>(ReturnListenerCorrelationKey);
 
         IListener listener = null;
         if (uuidObject != null)
@@ -463,7 +452,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         }
         else
         {
-            _logger?.LogError(RETURN_LISTENER_ERROR);
+            _logger?.LogError(ReturnListenerError);
         }
 
         if (listener == null || !listener.IsReturnListener)
@@ -606,8 +595,8 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             }
         }
 
-        var seqs = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
-        foreach (var key in seqs)
+        var sequence = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
+        foreach (var key in sequence)
         {
             _listenerForSeq.Remove(key);
         }
@@ -655,6 +644,4 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             }
         });
     }
-
-    #endregion
 }

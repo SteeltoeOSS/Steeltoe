@@ -38,7 +38,7 @@ public class ErrorHandlingTest : AbstractTest
         DoSend(provider, message);
 
         var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
-        Assert.True(config.GlobalErroInvoked);
+        Assert.True(config.GlobalErrorInvoked);
     }
 
     [Fact]
@@ -55,7 +55,7 @@ public class ErrorHandlingTest : AbstractTest
         DoSend(provider, message);
 
         var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();
-        Assert.True(config.GlobalErroInvoked);
+        Assert.True(config.GlobalErrorInvoked);
     }
 
     private void DoSend(ServiceProvider provider, IMessage<byte[]> message)

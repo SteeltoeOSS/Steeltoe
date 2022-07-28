@@ -367,7 +367,7 @@ internal class PdbInfo
     }
 
     /// <summary>
-    /// Override for Equals.  Returns true if the guid, age, and filenames equal.  Note that this compares only the 
+    /// Override for Equals.  Returns true if the guid, age, and file names equal.  Note that this compares only the 
     /// </summary>
     /// <param name="obj"></param>
     /// <returns>True if the objects match, false otherwise.</returns>
@@ -415,7 +415,7 @@ internal class ModuleInfo
     public virtual ulong ImageBase { get; set; }
 
     /// <summary>
-    /// The filesize of the image.
+    /// The file size of the image.
     /// </summary>
     public virtual uint FileSize { get; set; }
 
@@ -598,7 +598,7 @@ internal class DacInfo : ModuleInfo
     }
 
     /// <summary>
-    /// The platform-agnostice filename of the dac dll
+    /// The platform-agnostic filename of the dac dll
     /// </summary>
     public string PlatformAgnosticFileName { get; set; }
 
@@ -976,7 +976,7 @@ internal abstract class DataTarget : IDisposable
     /// Reads memory from the target.
     /// </summary>
     /// <param name="address">The address to read from.</param>
-    /// <param name="buffer">The buffer to store the data in.  Size must be greator or equal to
+    /// <param name="buffer">The buffer to store the data in.  Size must be greater or equal to
     /// bytesRequested.</param>
     /// <param name="bytesRequested">The amount of bytes to read from the target process.</param>
     /// <param name="bytesRead">The actual number of bytes read.</param>
@@ -985,7 +985,7 @@ internal abstract class DataTarget : IDisposable
     public abstract bool ReadProcessMemory(ulong address, byte[] buffer, int bytesRequested, out int bytesRead);
 
     // <summary>
-    // Returns the IDebugClient interface associated with this datatarget.  (Will return null if the
+    // Returns the IDebugClient interface associated with this data target.  (Will return null if the
     // user attached passively.)
     // </summary>
     //public abstract IDebugClient DebuggerInterface { get; }
@@ -1542,7 +1542,7 @@ internal class DacDataTarget : IDacDataTarget //, IMetadataLocator //, ICorDebug
 //        // * false will keep us from *ever* explicitly detaching from any IDebug
 //        // * interface (even ones legitimately attached with other constructors),
 //        // * but this is the best we can do with DbgEng's design.  Better to leak
-//        // * a small amount of memory (and file locks) than detatch someone else's
+//        // * a small amount of memory (and file locks) than detach someone else's
 //        // * IDebug interface unexpectedly.
 //        // 
 //        CreateClient(client);
@@ -1607,7 +1607,7 @@ internal class DacDataTarget : IDacDataTarget //, IMetadataLocator //, ICorDebug
 
 //        int hr = _control.GetExecutingProcessorType(out IMAGE_FILE_MACHINE machineType);
 //        if (0 != hr)
-//            throw new ClrDiagnosticsException(String.Format("Failed to get proessor type, HRESULT: {0:x8}", hr), ClrDiagnosticsException.HR.DebuggerError);
+//            throw new ClrDiagnosticsException(String.Format("Failed to get processor type, HRESULT: {0:x8}", hr), ClrDiagnosticsException.HR.DebuggerError);
 
 //        switch (machineType)
 //        {

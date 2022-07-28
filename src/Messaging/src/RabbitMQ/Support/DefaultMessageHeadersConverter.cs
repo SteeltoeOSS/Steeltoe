@@ -15,13 +15,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 
 public class DefaultMessageHeadersConverter : IMessageHeadersConverter
 {
-    private const int DEFAULT_LONG_STRING_LIMIT = 1024;
+    private const int DefaultLongStringLimit = 1024;
     private readonly ILogger _logger;
     private readonly int _longStringLimit;
     private readonly bool _convertLongLongStrings;
 
     public DefaultMessageHeadersConverter(ILogger logger = null)
-        : this(DEFAULT_LONG_STRING_LIMIT, false)
+        : this(DefaultLongStringLimit, false)
     {
         _logger = logger;
     }
@@ -77,7 +77,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         }
         else
         {
-            target.DeliveryMode = (byte)RabbitHeaderAccessor.DEFAULT_DELIVERY_MODE;
+            target.DeliveryMode = (byte)RabbitHeaderAccessor.DefaultDeliveryMode;
         }
 
         if (source.Expiration() != null)
@@ -122,7 +122,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             foreach (var entry in headers)
             {
                 var key = entry.Key;
-                if (RabbitMessageHeaders.X_DELAY.Equals(key))
+                if (RabbitMessageHeaders.XDelay.Equals(key))
                 {
                     var value = entry.Value;
                     if (value is int intVal)
@@ -186,10 +186,10 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         var writableHeaders = new Dictionary<string, object>();
         foreach (var entry in source)
         {
-            if (!entry.Key.StartsWith(MessageHeaders.INTERNAL) &&
-                !entry.Key.StartsWith(RabbitMessageHeaders.RABBIT_PROPERTY) &&
-                entry.Key != MessageHeaders.ID &&
-                entry.Key != MessageHeaders.TIMESTAMP)
+            if (!entry.Key.StartsWith(MessageHeaders.Internal) &&
+                !entry.Key.StartsWith(RabbitMessageHeaders.RabbitProperty) &&
+                entry.Key != MessageHeaders.IdName &&
+                entry.Key != MessageHeaders.TimestampName)
             {
                 writableHeaders[entry.Key] = ConvertHeaderValueIfNecessary(entry.Value);
             }

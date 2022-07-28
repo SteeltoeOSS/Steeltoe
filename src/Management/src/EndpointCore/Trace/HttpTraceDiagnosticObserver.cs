@@ -16,18 +16,18 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
 {
-    internal ConcurrentQueue<HttpTrace> _queue = new ();
+    internal ConcurrentQueue<HttpTrace> Queue = new ();
 
-    private const string DIAGNOSTIC_NAME = "Microsoft.AspNetCore";
-    private const string OBSERVER_NAME = "HttpTraceDiagnosticObserver";
-    private const string STOP_EVENT = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+    private const string DiagnosticName = "Microsoft.AspNetCore";
+    private const string DefaultObserverName = "HttpTraceDiagnosticObserver";
+    private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     private readonly ITraceOptions _options;
 
     public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
-        : base(OBSERVER_NAME, DIAGNOSTIC_NAME, logger)
+        : base(DefaultObserverName, DiagnosticName, logger)
     {
         _options = options ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
@@ -35,12 +35,12 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     public HttpTraceResult GetTraces()
     {
-        return new HttpTraceResult(_queue.ToList());
+        return new HttpTraceResult(Queue.ToList());
     }
 
-    public override void ProcessEvent(string key, object value)
+    public override void ProcessEvent(string eventName, object value)
     {
-        if (!STOP_EVENT.Equals(key))
+        if (!StopEvent.Equals(eventName))
         {
             return;
         }
@@ -61,9 +61,9 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
         if (context != null)
         {
             var trace = MakeTrace(context, current.Duration);
-            _queue.Enqueue(trace);
+            Queue.Enqueue(trace);
 
-            if (_queue.Count > _options.Capacity && !_queue.TryDequeue(out _))
+            if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
             {
                 _logger?.LogDebug("Stop - Dequeue failed");
             }
@@ -96,8 +96,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal string GetTimeTaken(TimeSpan duration)
     {
-        var timeInMilli = (long)duration.TotalMilliseconds;
-        return timeInMilli.ToString();
+        var timeInMilliseconds = (long)duration.TotalMilliseconds;
+        return timeInMilliseconds.ToString();
     }
 
     protected internal string GetRequestUri(HttpRequest request)

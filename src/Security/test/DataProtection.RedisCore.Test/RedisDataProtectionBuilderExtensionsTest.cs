@@ -11,7 +11,7 @@ namespace Steeltoe.Security.DataProtection.Redis.Test;
 public class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
-    public void PersistKeysToRedis_ThowsForNulls()
+    public void PersistKeysToRedis_ThrowsForNulls()
     {
         const IDataProtectionBuilder builder = null;
 

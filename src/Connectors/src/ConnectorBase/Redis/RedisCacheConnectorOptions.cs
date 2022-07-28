@@ -13,18 +13,18 @@ namespace Steeltoe.Connector.Redis;
 
 public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 {
-    private const string Default_Host = "localhost";
-    private const int Default_Port = 6379;
+    private const string DefaultHost = "localhost";
+    private const int DefaultPort = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
     private readonly bool _cloudFoundryConfigFound;
 
     public RedisCacheConnectorOptions()
-        : base(',', Default_Separator)
+        : base(',', DefaultSeparator)
     {
     }
 
     public RedisCacheConnectorOptions(IConfiguration config)
-        : base(',', Default_Separator)
+        : base(',', DefaultSeparator)
     {
         if (config == null)
         {
@@ -37,11 +37,11 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
     }
 
-    // Configure either a single Host/Port or optionaly provide
+    // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
-    public string Host { get; set; } = Default_Host;
+    public string Host { get; set; } = DefaultHost;
 
-    public int Port { get; set; } = Default_Port;
+    public int Port { get; set; } = DefaultPort;
 
     public string EndPoints { get; set; }
 
@@ -73,12 +73,12 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     public int SyncTimeout { get; set; }
 
-    // You can use this instead of configuring each option seperately
+    // You can use this instead of configuring each option separately
     // If a connection string is provided, the string will be used and
     // the options above will be ignored
     public string ConnectionString { get; set; }
 
-    // This configuration option specfic to https://github.com/aspnet/Caching
+    // This configuration option specific to https://github.com/aspnet/Caching
     public string InstanceName { get; set; }
 
     // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
@@ -148,25 +148,25 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     }
 
     /// <summary>
-    /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis
+    /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions</param>
-    /// <returns>This object typed as RedisCacheOptions</returns>
+    /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions.</param>
+    /// <returns>This object typed as RedisCacheOptions.</returns>
     public object ToMicrosoftExtensionObject(Type optionsType)
     {
-        var msftConnection = Activator.CreateInstance(optionsType);
-        msftConnection.GetType().GetProperty("Configuration").SetValue(msftConnection, ToString());
-        msftConnection.GetType().GetProperty("InstanceName").SetValue(msftConnection, InstanceName);
+        var microsoftConnection = Activator.CreateInstance(optionsType);
+        microsoftConnection.GetType().GetProperty("Configuration").SetValue(microsoftConnection, ToString());
+        microsoftConnection.GetType().GetProperty("InstanceName").SetValue(microsoftConnection, InstanceName);
 
-        return msftConnection;
+        return microsoftConnection;
     }
 
     /// <summary>
-    /// Get a Redis configuration object for use with StackExchange.Redis
+    /// Get a Redis configuration object for use with StackExchange.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions</param>
-    /// <returns>This object typed as ConfigurationOptions</returns>
-    /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10 </remarks>
+    /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions.</param>
+    /// <returns>This object typed as ConfigurationOptions.</returns>
+    /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10. </remarks>
     public object ToStackExchangeObject(Type optionsType)
     {
         var stackObject = Activator.CreateInstance(optionsType);

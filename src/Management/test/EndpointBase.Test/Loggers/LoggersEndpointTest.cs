@@ -37,17 +37,17 @@ public class LoggersEndpointTest : BaseTest
 
         Assert.Single(dict);
         Assert.True(dict.ContainsKey("levels"));
-        var levs = dict["levels"] as List<string>;
-        Assert.NotNull(levs);
-        Assert.Equal(7, levs.Count);
+        var levels = dict["levels"] as List<string>;
+        Assert.NotNull(levels);
+        Assert.Equal(7, levels.Count);
 
-        Assert.Contains("OFF", levs);
-        Assert.Contains("FATAL", levs);
-        Assert.Contains("ERROR", levs);
-        Assert.Contains("WARN", levs);
-        Assert.Contains("INFO", levs);
-        Assert.Contains("DEBUG", levs);
-        Assert.Contains("TRACE", levs);
+        Assert.Contains("OFF", levels);
+        Assert.Contains("FATAL", levels);
+        Assert.Contains("ERROR", levels);
+        Assert.Contains("WARN", levels);
+        Assert.Contains("INFO", levels);
+        Assert.Contains("DEBUG", levels);
+        Assert.Contains("TRACE", levels);
     }
 
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.
@@ -136,9 +136,9 @@ public class LoggersEndpointTest : BaseTest
         var result = ep.Invoke(null);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("levels"));
-        var levs = result["levels"] as List<string>;
-        Assert.NotNull(levs);
-        Assert.Equal(7, levs.Count);
+        var levels = result["levels"] as List<string>;
+        Assert.NotNull(levels);
+        Assert.Equal(7, levels.Count);
 
         Assert.True(result.ContainsKey("loggers"));
         var loggers = result["loggers"] as Dictionary<string, LoggerLevels>;

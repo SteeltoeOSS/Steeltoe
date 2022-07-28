@@ -12,7 +12,7 @@ public class DeclareExchangeAttribute : Attribute
 {
     public string Name { get; set; }
 
-    public string Type { get; set; } = ExchangeType.DIRECT;
+    public string Type { get; set; } = ExchangeType.Direct;
 
     public string Durable { get; set; } = "True";
 

@@ -29,6 +29,6 @@ public class SecurityResult
     {
         Code = code;
         Message = message;
-        Permissions = Permissions.NONE;
+        Permissions = Permissions.None;
     }
 }

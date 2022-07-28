@@ -12,12 +12,12 @@ namespace Steeltoe.Connector.EFCore;
 
 /// <summary>
 /// Applies code first migrations for the specified Entity Framework DB Context
-/// This task name is "migrate"
+/// This task name is "migrate".
 /// </summary>
 /// <example>
-/// dotnet run runtask=migrate
+/// dotnet run runtask=migrate.
 /// </example>
-/// <typeparam name="T">The DBContext which to migrate</typeparam>
+/// <typeparam name="T">The DBContext which to migrate.</typeparam>
 public class MigrateDbContextTask<T> : IApplicationTask
     where T : DbContext
 {

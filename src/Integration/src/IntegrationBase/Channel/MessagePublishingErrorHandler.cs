@@ -15,19 +15,19 @@ namespace Steeltoe.Integration.Channel;
 
 public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandler
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(MessagePublishingErrorHandler);
-    private const int DEFAULT_SEND_TIMEOUT = 1000;
+    public const string DefaultServiceName = nameof(MessagePublishingErrorHandler);
+    private const int DefaultSendTimeout = 1000;
 
-    private static IErrorMessageStrategy DEFAULT_ERROR_MESSAGE_STRATEGY { get; } = new DefaultErrorMessageStrategy();
+    private static IErrorMessageStrategy DefaultErrorMessageStrategyInstance { get; } = new DefaultErrorMessageStrategy();
 
     public MessagePublishingErrorHandler(IApplicationContext context, ILogger logger = null)
         : base(context, logger)
     {
-        ErrorMessageStrategy = DEFAULT_ERROR_MESSAGE_STRATEGY;
-        SendTimeout = DEFAULT_SEND_TIMEOUT;
+        ErrorMessageStrategy = DefaultErrorMessageStrategyInstance;
+        SendTimeout = DefaultSendTimeout;
     }
 
-    public string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public string ServiceName { get; set; } = DefaultServiceName;
 
     public IMessageChannel DefaultErrorChannel
     {
@@ -54,7 +54,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             }
             catch (Exception errorDeliveryError)
             {
-                _logger?.LogWarning("Error message was not delivered.", errorDeliveryError);
+                Logger?.LogWarning("Error message was not delivered.", errorDeliveryError);
             }
         }
 
@@ -63,11 +63,11 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             var failedMessage = exception is MessagingException ex ? ex.FailedMessage : null;
             if (failedMessage != null)
             {
-                _logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
+                Logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
             }
             else
             {
-                _logger?.LogError("failure occurred in messaging task", exception);
+                Logger?.LogError("failure occurred in messaging task", exception);
             }
         }
 
@@ -85,7 +85,7 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
         var failedMessage = actualThrowable is MessagingException ex ? ex.FailedMessage : null;
         if (DefaultErrorChannel == null && ChannelResolver != null)
         {
-            Channel = ChannelResolver.ResolveDestination(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME);
+            Channel = ChannelResolver.ResolveDestination(IntegrationContextUtils.ErrorChannelBeanName);
         }
 
         if (failedMessage == null || failedMessage.Headers.ErrorChannel == null)

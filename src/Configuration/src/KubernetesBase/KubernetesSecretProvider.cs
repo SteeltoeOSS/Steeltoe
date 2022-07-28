@@ -90,7 +90,7 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
             Settings.Namespace,
             onEvent: (eventType, item) =>
             {
-                Logger?.LogInformation("Receved {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
+                Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
                 switch (eventType)
                 {
                     case WatchEventType.Added:

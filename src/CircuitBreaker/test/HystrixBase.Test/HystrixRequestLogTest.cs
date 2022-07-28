@@ -18,7 +18,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixRequestLogTest : HystrixTestBase
 {
-    private const string DIGITS_REGEX = "\\[\\d+";
+    private const string DigitsRegex = "\\[\\d+";
 
     [Fact]
     public void TestSuccess()
@@ -27,7 +27,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("TestCommand[SUCCESS][ms]", log);
     }
 
@@ -45,7 +45,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("TestCommand[SUCCESS][ms], TestCommand[SUCCESS, RESPONSE_FROM_CACHE][ms]x4", log);
     }
 
@@ -63,7 +63,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("TestCommand[FAILURE, FALLBACK_SUCCESS][ms], TestCommand[FAILURE, FALLBACK_SUCCESS, RESPONSE_FROM_CACHE][ms]x4", log);
     }
 
@@ -91,7 +91,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]", log);
     }
 
@@ -124,7 +124,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("TestCommand[TIMEOUT, FALLBACK_MISSING][ms]", log);
     }
 
@@ -174,14 +174,14 @@ public class HystrixRequestLogTest : HystrixTestBase
         var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
-        log = Regex.Replace(log, DIGITS_REGEX, "[");
+        log = Regex.Replace(log, DigitsRegex, "[");
         Assert.Equal("GetData[SUCCESS][ms], PutData[SUCCESS][ms], GetValues[SUCCESS][ms], GetValues[SUCCESS, RESPONSE_FROM_CACHE][ms], TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]", log);
     }
 
     [Fact]
     public void TestMaxLimit()
     {
-        for (var i = 0; i < HystrixRequestLog.MAX_STORAGE; i++)
+        for (var i = 0; i < HystrixRequestLog.MaxStorage; i++)
         {
             new TestCommand("A", false, true).Execute();
         }
@@ -192,7 +192,7 @@ public class HystrixRequestLogTest : HystrixTestBase
             new TestCommand("A", false, true).Execute();
         }
 
-        Assert.Equal(HystrixRequestLog.MAX_STORAGE, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
+        Assert.Equal(HystrixRequestLog.MaxStorage, HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
     }
 
     private sealed class TestCommand : HystrixCommand<string>
@@ -254,8 +254,8 @@ public class HystrixRequestLogTest : HystrixTestBase
             }
             else if (_timeout)
             {
-                Time.WaitUntil(() => _token.IsCancellationRequested, 10000);
-                _token.ThrowIfCancellationRequested();
+                Time.WaitUntil(() => Token.IsCancellationRequested, 10000);
+                Token.ThrowIfCancellationRequested();
 
                 // output.WriteLine("Woke up from sleep!");
                 // token.ThrowIfCancellationRequested();

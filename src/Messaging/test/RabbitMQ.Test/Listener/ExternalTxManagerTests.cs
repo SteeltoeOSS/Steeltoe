@@ -18,7 +18,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 public class ExternalTxManagerTests
 {
     /// <summary>
-    /// Verify that up-stack RabbitTemplate uses listener's channel (MessageListener)
+    /// Verify that up-stack RabbitTemplate uses listener's channel (MessageListener).
     /// </summary>
     // TODO: Test is incomplete
     // TODO: Assert on the expected test outcome and remove suppression. Beyond not crashing, this test ensures nothing about the system under test.

@@ -245,7 +245,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task DoingNothingInTheValidationEventReturnsOK()
+    public async Task DoingNothingInTheValidationEventReturnsOk()
     {
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -287,7 +287,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifySideloadedCASignedCertReturnsOK()
+    public async Task VerifySideLoadedCaSignedCertReturnsOk()
     {
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -370,7 +370,7 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifyNoEventWireupWithAValidCertificateCreatesADefaultUser()
+    public async Task VerifyNoEventWireUpWithAValidCertificateCreatesADefaultUser()
     {
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -475,9 +475,9 @@ public class ClientCertificateAuthenticationTests
     }
 
     [Fact]
-    public async Task VerifyValidationEventPrincipalIsPropogated()
+    public async Task VerifyValidationEventPrincipalIsPropagated()
     {
-        const string Expected = "John Doe";
+        const string expected = "John Doe";
 
         var server = CreateServer(
             new MutualTlsAuthenticationOptions
@@ -491,7 +491,7 @@ public class ClientCertificateAuthenticationTests
                         Assert.NotNull(context.Principal);
                         var claims = new[]
                         {
-                            new Claim(ClaimTypes.Name, Expected, ClaimValueTypes.String, context.Options.ClaimsIssuer)
+                            new Claim(ClaimTypes.Name, expected, ClaimValueTypes.String, context.Options.ClaimsIssuer)
                         };
 
                         context.Principal = new ClaimsPrincipal(new ClaimsIdentity(claims, context.Scheme.Name));
@@ -517,7 +517,7 @@ public class ClientCertificateAuthenticationTests
         Assert.NotNull(responseAsXml);
         var actual = responseAsXml.Elements("claim").Where(claim => claim.Attribute("Type").Value == ClaimTypes.Name);
         Assert.Single(actual);
-        Assert.Equal(Expected, actual.First().Value);
+        Assert.Equal(expected, actual.First().Value);
         Assert.Single(responseAsXml.Elements("claim"));
     }
 

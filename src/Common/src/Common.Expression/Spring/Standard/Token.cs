@@ -31,15 +31,15 @@ public class Token
 
     public bool IsIdentifier
     {
-        get { return Equals(Kind, TokenKind.IDENTIFIER); }
+        get { return Equals(Kind, TokenKind.Identifier); }
     }
 
     public bool IsNumericRelationalOperator
     {
         get
         {
-            return Equals(Kind, TokenKind.GT) || Equals(Kind, TokenKind.GE) || Equals(Kind, TokenKind.LT) ||
-                   Equals(Kind, TokenKind.LE) || Equals(Kind, TokenKind.EQ) || Equals(Kind, TokenKind.NE);
+            return Equals(Kind, TokenKind.Gt) || Equals(Kind, TokenKind.Ge) || Equals(Kind, TokenKind.Lt) ||
+                   Equals(Kind, TokenKind.Le) || Equals(Kind, TokenKind.Eq) || Equals(Kind, TokenKind.Ne);
         }
     }
 
@@ -50,17 +50,17 @@ public class Token
 
     public Token AsInstanceOfToken()
     {
-        return new Token(TokenKind.INSTANCEOF, StartPos, EndPos);
+        return new Token(TokenKind.InstanceOf, StartPos, EndPos);
     }
 
     public Token AsMatchesToken()
     {
-        return new Token(TokenKind.MATCHES, StartPos, EndPos);
+        return new Token(TokenKind.Matches, StartPos, EndPos);
     }
 
     public Token AsBetweenToken()
     {
-        return new Token(TokenKind.BETWEEN, StartPos, EndPos);
+        return new Token(TokenKind.Between, StartPos, EndPos);
     }
 
     public override string ToString()

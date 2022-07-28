@@ -47,10 +47,10 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
             throw new InvalidOperationException(nameof(inboundTarget));
         }
 
-        var destination = _provisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
+        var destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
         if (consumerOptions.HeaderMode == HeaderMode.EmbeddedHeaders)
         {
-            bindingTarget.AddInterceptor(0, _embeddedHeadersChannelInterceptor);
+            bindingTarget.AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
         }
 
         var resources = CreatePolledConsumerResources(name, group, destination, consumerOptions);

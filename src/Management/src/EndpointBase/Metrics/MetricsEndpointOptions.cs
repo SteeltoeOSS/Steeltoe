@@ -8,20 +8,20 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 
 public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointOptions
 {
-    internal const string MANAGEMENT_INFO_PREFIX = "management:endpoints:metrics";
-    internal const string DEFAULT_INGRESS_IGNORE_PATTERN = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
-    internal const string DEFAULT_EGRESS_IGNORE_PATTERN = "/api/v2/spans|/v2/apps/.*/permissions";
+    internal const string ManagementInfoPrefix = "management:endpoints:metrics";
+    internal const string DefaultIngressIgnorePattern = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+    internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 
     public MetricsEndpointOptions()
     {
         Id = "metrics";
-        IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
-        EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+        IngressIgnorePattern = DefaultIngressIgnorePattern;
+        EgressIgnorePattern = DefaultEgressIgnorePattern;
         ExactMatch = false;
     }
 
     public MetricsEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {
@@ -30,12 +30,12 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
 
         if (string.IsNullOrEmpty(IngressIgnorePattern))
         {
-            IngressIgnorePattern = DEFAULT_INGRESS_IGNORE_PATTERN;
+            IngressIgnorePattern = DefaultIngressIgnorePattern;
         }
 
         if (string.IsNullOrEmpty(EgressIgnorePattern))
         {
-            EgressIgnorePattern = DEFAULT_EGRESS_IGNORE_PATTERN;
+            EgressIgnorePattern = DefaultEgressIgnorePattern;
         }
 
         ExactMatch = false;

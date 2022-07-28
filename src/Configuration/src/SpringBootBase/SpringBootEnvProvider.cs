@@ -11,17 +11,17 @@ using System.Linq;
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET compatible form
+/// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET compatible form.
 /// </summary>
 public class SpringBootEnvProvider : JsonStreamConfigurationProvider
 {
-    private const string SPRING_APPLICATION_JSON = "SPRING_APPLICATION_JSON";
+    private const string SpringApplicationJson = "SPRING_APPLICATION_JSON";
     private readonly string _springApplicationJson;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="SpringBootEnvProvider"/> class.
     /// </summary>
-    /// <param name="springApplicationJson"> The Json string to parse </param>
+    /// <param name="springApplicationJson"> The Json string to parse. </param>
     public SpringBootEnvProvider(string springApplicationJson = null)
         : base(new JsonStreamConfigurationSource())
     {
@@ -29,11 +29,11 @@ public class SpringBootEnvProvider : JsonStreamConfigurationProvider
     }
 
     /// <summary>
-    /// Maps SPRING_APPLICATION_JSON into key:value pairs
+    /// Maps SPRING_APPLICATION_JSON into key:value pairs.
     /// </summary>
     public override void Load()
     {
-        var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SPRING_APPLICATION_JSON);
+        var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
         if (!string.IsNullOrEmpty(json))
         {
             Source.Stream = GetMemoryStream(json);

@@ -220,7 +220,7 @@ public static class ConnectionFactoryUtils
 
         public override void AfterCompletion(int status)
         {
-            if (status == AbstractTransactionSynchronization.STATUS_COMMITTED)
+            if (status == AbstractTransactionSynchronization.StatusCommitted)
             {
                 _resourceHolder.CommitAll();
             }

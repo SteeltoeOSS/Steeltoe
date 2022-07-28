@@ -56,7 +56,7 @@ public class RabbitMQConfigurerTest
     }
 
     [Fact]
-    public void UpdateConfiguration_WithRabbitMQSSLServiceInfo_UpdatesConfigurationFromServiceInfo()
+    public void UpdateConfiguration_WithRabbitMQ_SSLServiceInfo_UpdatesConfigurationFromServiceInfo()
     {
         var configurer = new RabbitMQProviderConfigurer();
         var config = new RabbitMQProviderConnectorOptions
@@ -104,7 +104,7 @@ public class RabbitMQConfigurerTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
         var config = new RabbitMQProviderConnectorOptions
         {
@@ -129,7 +129,7 @@ public class RabbitMQConfigurerTest
     }
 
     [Fact]
-    public void Configure_SSLServiceInfoOveridesConfig_ReturnsOverriddenConnectionString()
+    public void Configure_SSLServiceInfoOverridesConfig_ReturnsOverriddenConnectionString()
     {
         var config = new RabbitMQProviderConnectorOptions
         {

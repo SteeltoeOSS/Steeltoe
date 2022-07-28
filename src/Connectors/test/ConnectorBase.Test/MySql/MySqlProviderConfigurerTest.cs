@@ -76,7 +76,7 @@ public class MySqlProviderConfigurerTest
     }
 
     [Fact]
-    public void Configure_ServiceInfoOveridesConfig_ReturnsExpected()
+    public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var config = new MySqlProviderConnectorOptions
         {

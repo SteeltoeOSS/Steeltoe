@@ -134,31 +134,31 @@ public class ParsingTests
 
     // relational operators
     [Fact]
-    public void TestRelOperatorsGT01()
+    public void TestRelOperatorsGt01()
     {
         ParseCheck("3>6", "(3 > 6)");
     }
 
     [Fact]
-    public void TestRelOperatorsLT01()
+    public void TestRelOperatorsLt01()
     {
         ParseCheck("3<6", "(3 < 6)");
     }
 
     [Fact]
-    public void TestRelOperatorsLE01()
+    public void TestRelOperatorsLe01()
     {
         ParseCheck("3<=6", "(3 <= 6)");
     }
 
     [Fact]
-    public void TestRelOperatorsGE01()
+    public void TestRelOperatorsGe01()
     {
         ParseCheck("3>=6", "(3 >= 6)");
     }
 
     [Fact]
-    public void TestRelOperatorsGE02()
+    public void TestRelOperatorsGe02()
     {
         ParseCheck("3>=3", "(3 >= 3)");
     }
@@ -482,10 +482,10 @@ public class ParsingTests
         ParseCheck(expression, expression);
     }
 
-    private void ParseCheck(string expression, string expectedStringFormOfAST)
+    private void ParseCheck(string expression, string expectedStringFormOfAst)
     {
         var e = _parser.ParseRaw(expression) as SpelExpression;
         Assert.NotNull(e);
-        Assert.Equal(expectedStringFormOfAST, e.ToStringAST(), true);
+        Assert.Equal(expectedStringFormOfAst, e.ToStringAst(), true);
     }
 }

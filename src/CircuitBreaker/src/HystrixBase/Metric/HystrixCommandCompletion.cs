@@ -10,10 +10,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixCommandCompletion : HystrixCommandEvent
 {
-    protected readonly ExecutionResult executionResult;
-    protected readonly HystrixRequestContext requestContext;
+    protected readonly ExecutionResult ExecutionResult;
+    protected readonly HystrixRequestContext InnerRequestContext;
 
-    private static readonly IList<HystrixEventType> ALL_EVENT_TYPES = HystrixEventTypeHelper.Values;
+    private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
 
     internal HystrixCommandCompletion(
         ExecutionResult executionResult,
@@ -22,8 +22,8 @@ public class HystrixCommandCompletion : HystrixCommandEvent
         HystrixRequestContext requestContext)
         : base(commandKey, threadPoolKey)
     {
-        this.executionResult = executionResult;
-        this.requestContext = requestContext;
+        this.ExecutionResult = executionResult;
+        this.InnerRequestContext = requestContext;
     }
 
     public static HystrixCommandCompletion From(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
@@ -38,7 +38,7 @@ public class HystrixCommandCompletion : HystrixCommandEvent
 
     public override bool IsResponseThreadPoolRejected
     {
-        get { return executionResult.IsResponseThreadPoolRejected; }
+        get { return ExecutionResult.IsResponseThreadPoolRejected; }
     }
 
     public override bool IsExecutionStart
@@ -48,7 +48,7 @@ public class HystrixCommandCompletion : HystrixCommandEvent
 
     public override bool IsExecutedInThread
     {
-        get { return executionResult.IsExecutedInThread; }
+        get { return ExecutionResult.IsExecutedInThread; }
     }
 
     public override bool IsCommandCompletion
@@ -58,27 +58,27 @@ public class HystrixCommandCompletion : HystrixCommandEvent
 
     public HystrixRequestContext RequestContext
     {
-        get { return requestContext; }
+        get { return InnerRequestContext; }
     }
 
     public ExecutionResult.EventCounts Eventcounts
     {
-        get { return executionResult.Eventcounts; }
+        get { return ExecutionResult.Eventcounts; }
     }
 
     public long ExecutionLatency
     {
-        get { return executionResult.ExecutionLatency; }
+        get { return ExecutionResult.ExecutionLatency; }
     }
 
     public long TotalLatency
     {
-        get { return executionResult.UserThreadLatency; }
+        get { return ExecutionResult.UserThreadLatency; }
     }
 
     public override bool DidCommandExecute
     {
-        get { return executionResult.ExecutionOccurred; }
+        get { return ExecutionResult.ExecutionOccurred; }
     }
 
     public override string ToString()
@@ -87,9 +87,9 @@ public class HystrixCommandCompletion : HystrixCommandEvent
         var foundEventTypes = new List<HystrixEventType>();
 
         sb.Append(CommandKey.Name).Append('[');
-        foreach (var eventType in ALL_EVENT_TYPES)
+        foreach (var eventType in AllEventTypes)
         {
-            if (executionResult.Eventcounts.Contains(eventType))
+            if (ExecutionResult.Eventcounts.Contains(eventType))
             {
                 foundEventTypes.Add(eventType);
             }
@@ -99,7 +99,7 @@ public class HystrixCommandCompletion : HystrixCommandEvent
         foreach (var eventType in foundEventTypes)
         {
             sb.Append(eventType.ToString());
-            var eventCount = executionResult.Eventcounts.GetCount(eventType);
+            var eventCount = ExecutionResult.Eventcounts.GetCount(eventType);
             if (eventCount > 1)
             {
                 sb.Append('x').Append(eventCount);

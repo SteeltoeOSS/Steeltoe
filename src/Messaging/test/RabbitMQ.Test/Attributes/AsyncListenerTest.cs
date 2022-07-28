@@ -46,7 +46,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
 
         var reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply2);
-        var pp = template.AfterReceivePostProcessors[0] as TemplateAfterRecvPostProcessor;
+        var pp = template.AfterReceivePostProcessors[0] as TemplateAfterReceivePostProcessor;
         Assert.Equal("System.String", pp.TypeId);
 
         var queue2 = context.GetService<IQueue>("queue2");
@@ -67,7 +67,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestRouteToDLQ()
+    public void TestRouteToDlq()
     {
         var template = _provider.GetRabbitTemplate();
         var context = _provider.GetApplicationContext();
@@ -83,7 +83,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     }
 
     [Fact]
-    public void TestOverrideDontRequeue()
+    public void TestOverrideDoNotRequeue()
     {
         var template = _provider.GetRabbitTemplate();
         var context = _provider.GetApplicationContext();
@@ -151,11 +151,11 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             services.AddRabbitAdmin();
             services.AddRabbitTemplate((_, t) =>
             {
-                t.SetAfterReceivePostProcessors(new TemplateAfterRecvPostProcessor());
+                t.SetAfterReceivePostProcessors(new TemplateAfterReceivePostProcessor());
             });
 
-            var queue5DLQ = new AnonymousQueue("queue5DLQ");
-            var queue6DLQ = new AnonymousQueue("queue6DLQ");
+            var queue5Dlq = new AnonymousQueue("queue5DLQ");
+            var queue6Dlq = new AnonymousQueue("queue6DLQ");
             var queue1 = new AnonymousQueue("queue1");
             var queue2 = new AnonymousQueue("queue2");
             var queue3 = new AnonymousQueue("queue3");
@@ -163,26 +163,26 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             var queue5 = new AnonymousQueue("queue5");
             var queueAsyncErrorHandler = new AnonymousQueue("queueAsyncErrorHandler");
             queue5.Arguments.Add("x-dead-letter-exchange", string.Empty);
-            queue5.Arguments.Add("x-dead-letter-routing-key", queue5DLQ.QueueName);
+            queue5.Arguments.Add("x-dead-letter-routing-key", queue5Dlq.QueueName);
             var queue6 = new AnonymousQueue("queue6");
             queue6.Arguments.Add("x-dead-letter-exchange", string.Empty);
-            queue6.Arguments.Add("x-dead-letter-routing-key", queue6DLQ.QueueName);
+            queue6.Arguments.Add("x-dead-letter-routing-key", queue6Dlq.QueueName);
             var queue7 = new AnonymousQueue("queue7");
-            services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5DLQ, queue6DLQ, queue7, queueAsyncErrorHandler);
+            services.AddRabbitQueues(queue1, queue2, queue3, queue4, queue5, queue6, queue5Dlq, queue6Dlq, queue7, queueAsyncErrorHandler);
 
             // Add default container factory
             services.AddRabbitListenerContainerFactory((_, f) =>
             {
                 f.MismatchedQueuesFatal = true;
-                f.AcknowledgeMode = AcknowledgeMode.MANUAL;
+                f.AcknowledgeMode = AcknowledgeMode.Manual;
             });
 
-            // Add dontRequeueFactory container factory
+            // Add doNotRequeueFactory container factory
             services.AddRabbitListenerContainerFactory((_, f) =>
             {
-                f.ServiceName = "dontRequeueFactory";
+                f.ServiceName = "doNotRequeueFactory";
                 f.MismatchedQueuesFatal = true;
-                f.AcknowledgeMode = AcknowledgeMode.MANUAL;
+                f.AcknowledgeMode = AcknowledgeMode.Manual;
                 f.DefaultRequeueRejected = false;
             });
 
@@ -255,28 +255,28 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         [RabbitListener("queue5", Id = "fiz")]
         public Task Listen5(string foo)
         {
-            return Task.FromException(new RabbitRejectAndDontRequeueException("asyncToDLQ"));
+            return Task.FromException(new RabbitRejectAndDoNotRequeueException("asyncToDLQ"));
         }
 
         [RabbitListener("queue5DLQ", Id = "buz")]
-        public void Listen5DLQ(string foo)
+        public void Listen5Dlq(string foo)
         {
             Latch5.Signal();
         }
 
-        [RabbitListener("queue6", Id = "fix", ContainerFactory = "dontRequeueFactory")]
+        [RabbitListener("queue6", Id = "fix", ContainerFactory = "doNotRequeueFactory")]
         public Task Listen6(string foo)
         {
             return Task.FromException(new InvalidOperationException("asyncDefaultToDLQ"));
         }
 
         [RabbitListener("queue6DLQ", Id = "fox")]
-        public void Listen6DLQ(string foo)
+        public void Listen6Dlq(string foo)
         {
             Latch6.Signal();
         }
 
-        [RabbitListener("queue7", Id = "overrideFactoryRequeue", ContainerFactory = "dontRequeueFactory")]
+        [RabbitListener("queue7", Id = "overrideFactoryRequeue", ContainerFactory = "doNotRequeueFactory")]
         public Task<string> Listen7(string foo)
         {
             if (First7.CompareAndSet(true, false))
@@ -289,7 +289,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             }
         }
 
-        [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asycErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
+        [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asyncErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]
         public async Task<string> HandleMessage(string msg)
         {
             await Task.Run(() => Console.WriteLine("Running Listener"));
@@ -298,7 +298,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         }
     }
 
-    public class TemplateAfterRecvPostProcessor : IMessagePostProcessor
+    public class TemplateAfterReceivePostProcessor : IMessagePostProcessor
     {
         public object TypeId { get; set; }
 

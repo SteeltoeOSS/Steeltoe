@@ -7,32 +7,32 @@ using System;
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 /// <summary>
-/// Configured CredHub client
+/// Configured CredHub client.
 /// </summary>
 public class CredHubOptions
 {
     /// <summary>
-    /// Gets or sets routable address of CredHub server
+    /// Gets or sets routable address of CredHub server.
     /// </summary>
     public string CredHubUrl { get; set; } = "https://credhub.service.cf.internal:8844/api";
 
     /// <summary>
-    /// Gets or sets Client Id for interactions with UAA
+    /// Gets or sets Client Id for interactions with UAA.
     /// </summary>
     public string ClientId { get; set; }
 
     /// <summary>
-    /// Gets or sets Client Secret for interactions with UAA
+    /// Gets or sets Client Secret for interactions with UAA.
     /// </summary>
     public string ClientSecret { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether validate server certificates for UAA and CredHub servers
+    /// Gets or sets a value indicating whether validate server certificates for UAA and CredHub servers.
     /// </summary>
     public bool ValidateCertificates { get; set; } = true;
 
     /// <summary>
-    /// Perform basic validation to make sure a Client Id and Secret have been provided
+    /// Perform basic validation to make sure a Client Id and Secret have been provided.
     /// </summary>
     public void Validate()
     {

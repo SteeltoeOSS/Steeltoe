@@ -25,10 +25,10 @@ public class IntegrationServicesExtensionsTest
         container.AddIntegrationServices();
         var serviceProvider = container.BuildServiceProvider();
 
-        Assert.NotNull(serviceProvider.GetService<DefaultDatatypeChannelMessageConverter>());
+        Assert.NotNull(serviceProvider.GetService<DefaultDataTypeChannelMessageConverter>());
         Assert.NotNull(serviceProvider.GetService<IMessageBuilderFactory>());
 
-        var chans = serviceProvider.GetServices<IMessageChannel>();
-        Assert.Equal(2, chans.Count());
+        var channels = serviceProvider.GetServices<IMessageChannel>();
+        Assert.Equal(2, channels.Count());
     }
 }

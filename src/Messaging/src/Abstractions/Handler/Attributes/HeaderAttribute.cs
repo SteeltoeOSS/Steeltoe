@@ -15,9 +15,9 @@ public class HeaderAttribute : Attribute
     /// <summary>
     /// Initializes a new instance of the <see cref="HeaderAttribute"/> class.
     /// </summary>
-    /// <param name="name">the name of the request header to bind to</param>
-    /// <param name="defaultValue">the default value to use as a fallback</param>
-    /// <param name="required">is the header required</param>
+    /// <param name="name">the name of the request header to bind to.</param>
+    /// <param name="defaultValue">the default value to use as a fallback.</param>
+    /// <param name="required">is the header required.</param>
     public HeaderAttribute(string name = null, string defaultValue = null, bool required = true)
     {
         Name = name ?? string.Empty;
@@ -26,17 +26,17 @@ public class HeaderAttribute : Attribute
     }
 
     /// <summary>
-    /// Gets or sets the name of the header to bind to
+    /// Gets or sets the name of the header to bind to.
     /// </summary>
     public virtual string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether the header binding is required
+    /// Gets or sets a value indicating whether the header binding is required.
     /// </summary>
     public virtual bool Required { get; set; }
 
     /// <summary>
-    /// Gets or sets the default value to use if header is missing
+    /// Gets or sets the default value to use if header is missing.
     /// </summary>
     public virtual string DefaultValue { get; set; }
 }

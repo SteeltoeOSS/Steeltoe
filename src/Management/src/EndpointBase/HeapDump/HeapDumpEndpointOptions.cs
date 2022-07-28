@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.HeapDump;
 
 public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:heapdump";
+    private const string ManagementInfoPrefix = "management:endpoints:heapdump";
 
     public HeapDumpEndpointOptions()
     {
@@ -17,7 +17,7 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
     }
 
     public HeapDumpEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         if (string.IsNullOrEmpty(Id))
         {

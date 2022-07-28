@@ -649,7 +649,7 @@ internal class NativeMethods
     public enum LoadLibraryFlags : uint
     {
         NoFlags = 0x00000000,
-        DontResolveDllReferences = 0x00000001,
+        DoNotResolveDllReferences = 0x00000001,
         LoadIgnoreCodeAuthzLevel = 0x00000010,
         LoadLibraryAsDatafile = 0x00000002,
         LoadLibraryAsDatafileExclusive = 0x00000040,

@@ -113,7 +113,7 @@ public class OAuthServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -146,7 +146,7 @@ public class OAuthServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -163,11 +163,11 @@ public class OAuthServiceCollectionExtensionsTest
 
         Assert.Equal("cb3efc76-bd22-46b3-a5ca-3aaa21c96073", opts.ClientId);
         Assert.Equal("92b5ebf0-c67b-4671-98d3-8e316fb11e30", opts.ClientSecret);
-        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.Default_AccessTokenUri}", opts.AccessTokenUrl);
-        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.Default_JwtTokenKey}", opts.JwtKeyUrl);
-        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.Default_CheckTokenUri}", opts.TokenInfoUrl);
-        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.Default_AuthorizationUri}", opts.UserAuthorizationUrl);
-        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.Default_UserInfoUri}", opts.UserInfoUrl);
+        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.DefaultAccessTokenUri}", opts.AccessTokenUrl);
+        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.DefaultJwtTokenKey}", opts.JwtKeyUrl);
+        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.DefaultCheckTokenUri}", opts.TokenInfoUrl);
+        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.DefaultAuthorizationUri}", opts.UserAuthorizationUrl);
+        Assert.Equal($"https://sso.login.system.testcloud.com{OAuthConnectorDefaults.DefaultUserInfoUri}", opts.UserInfoUrl);
         Assert.NotNull(opts.Scope);
         Assert.Equal(0, opts.Scope.Count);
     }

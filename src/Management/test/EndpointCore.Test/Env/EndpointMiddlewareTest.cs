@@ -44,10 +44,10 @@ public class EndpointMiddlewareTest : BaseTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var config = configurationBuilder.Build();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var options = new ActuatorManagementOptions();
+        options.EndpointOptions.Add(opts);
         var ep = new EnvEndpoint(opts, config, _host);
-        var middle = new EnvEndpointMiddleware(null, ep, mopts);
+        var middle = new EnvEndpointMiddleware(null, ep, options);
 
         var context = CreateRequest("GET", "/env");
         await middle.HandleEnvRequestAsync(context);
@@ -67,9 +67,9 @@ public class EndpointMiddlewareTest : BaseTest
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
         using (var server = new TestServer(builder))

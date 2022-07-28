@@ -10,13 +10,13 @@ namespace Steeltoe.Management.Endpoint.Hypermedia;
 
 public class ActuatorManagementOptions : ManagementEndpointOptions
 {
-    private const string DEFAULT_ACTUATOR_PATH = "/actuator";
+    private const string DefaultActuatorPath = "/actuator";
 
     public Exposure Exposure { get; set; }
 
     public ActuatorManagementOptions()
     {
-        Path = DEFAULT_ACTUATOR_PATH;
+        Path = DefaultActuatorPath;
         Exposure = new Exposure();
     }
 
@@ -25,12 +25,12 @@ public class ActuatorManagementOptions : ManagementEndpointOptions
     {
         if (string.IsNullOrEmpty(Path))
         {
-            Path = DEFAULT_ACTUATOR_PATH;
+            Path = DefaultActuatorPath;
         }
 
         if (Platform.IsCloudFoundry && Path.StartsWith("/cloudfoundryapplication", StringComparison.OrdinalIgnoreCase))
         {
-            Path = DEFAULT_ACTUATOR_PATH; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
+            Path = DefaultActuatorPath; // Override path set to /cloudfoundryapplication since it will be hidden by the cloudfoundry context actuators
         }
 
         Exposure = new Exposure(config);

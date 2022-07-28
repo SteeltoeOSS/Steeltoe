@@ -11,7 +11,7 @@ public class Inventor
 {
     public List<int> ListOfInteger = new ();
     public List<bool> BoolList = new ();
-    public Dictionary<string, bool> MapOfstringToBoolean = new ();
+    public Dictionary<string, bool> MapOfStringToBoolean = new ();
     public Dictionary<int, string> MapOfNumbersUpToTen = new ();
     public List<int> ListOfNumbersUpToTen = new ();
     public List<int> ListOneFive = new ();

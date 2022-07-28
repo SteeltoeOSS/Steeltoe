@@ -78,8 +78,8 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Timeout); // latency = 600
         await cmd1.Observe();
         await cmd2.Observe();
 
@@ -110,10 +110,10 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.TIMEOUT); // latency = 600
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 30);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.BAD_REQUEST, 40);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Timeout); // latency = 600
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Failure, 30);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.BadRequest, 40);
 
         await cmd1.Observe();
         await cmd3.Observe();
@@ -142,10 +142,10 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         var commands = new List<Command>();
         for (var i = 0; i < 3; i++)
         {
-            commands.Add(Command.From(GroupKey, key, HystrixEventType.FAILURE, 0));
+            commands.Add(Command.From(GroupKey, key, HystrixEventType.Failure, 0));
         }
 
-        var shortCircuit = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+        var shortCircuit = Command.From(GroupKey, key, HystrixEventType.Success);
 
         foreach (var cmd in commands)
         {
@@ -182,15 +182,15 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        // 10 commands with latency should occupy the entire threadpool.  execute those, then wait for bucket to roll
+        // 10 commands with latency should occupy the entire thread-pool.  execute those, then wait for bucket to roll
         // next command should be a thread-pool rejection
         var commands = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500));
+            commands.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500));
         }
 
-        var threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS);
+        var threadPoolRejected = Command.From(GroupKey, key, HystrixEventType.Success);
 
         var satTasks = new List<Task>();
         foreach (var cmd in commands)
@@ -224,10 +224,10 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         var commands = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            commands.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+            commands.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE);
+        var semaphoreRejected = Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore);
         var satTasks = new List<Task>();
         foreach (var saturator in commands)
         {
@@ -283,12 +283,12 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Failure, 100);
 
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-        var cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 60);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 60);
+        var cmd5 = Command.From(GroupKey, key, HystrixEventType.Success, 70);
 
         await cmd1.Observe();
         await cmd2.Observe();
@@ -313,15 +313,15 @@ public class RollingCommandLatencyDistributionStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = RollingCommandLatencyDistributionStream.GetInstance(key, 10, 100);
-        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.FAILURE, 100);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Failure, 100);
 
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 60);
-        var cmd5 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 70);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 60);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 60);
+        var cmd5 = Command.From(GroupKey, key, HystrixEventType.Success, 70);
 
         await cmd1.Observe();
         await cmd2.Observe();

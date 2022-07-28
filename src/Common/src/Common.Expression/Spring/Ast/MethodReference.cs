@@ -39,12 +39,12 @@ public class MethodReference : SpelNode
         return result;
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sj = new List<string>();
         for (var i = 0; i < ChildCount; i++)
         {
-            sj.Add(GetChild(i).ToStringAST());
+            sj.Add(GetChild(i).ToStringAst());
         }
 
         return $"{Name}({string.Join(",", sj)})";
@@ -58,7 +58,7 @@ public class MethodReference : SpelNode
             return false;
         }
 
-        foreach (var child in _children)
+        foreach (var child in children)
         {
             if (!child.IsCompilable())
             {
@@ -93,7 +93,7 @@ public class MethodReference : SpelNode
             GenerateInstanceMethodCode(gen, cf, method, classType);
         }
 
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
@@ -102,7 +102,7 @@ public class MethodReference : SpelNode
         if (state.GetActiveContextObject().Value == null)
         {
             ThrowIfNotNullSafe(GetArgumentTypes(arguments));
-            return NullValueRef.INSTANCE;
+            return NullValueRef.Instance;
         }
 
         return new MethodValueRef(this, state, arguments);
@@ -133,7 +133,7 @@ public class MethodReference : SpelNode
             gen.Emit(OpCodes.Pop);
         }
 
-        GenerateCodeForArguments(gen, cf, method, _children);
+        GenerateCodeForArguments(gen, cf, method, children);
         gen.Emit(OpCodes.Call, method);
 
         if (_originalPrimitiveExitTypeDescriptor != null)
@@ -156,7 +156,7 @@ public class MethodReference : SpelNode
         {
             // Nothing on the stack but something is needed
             CodeFlow.LoadTarget(gen);
-            stackDescriptor = TypeDescriptor.OBJECT;
+            stackDescriptor = TypeDescriptor.Object;
         }
 
         Label? skipIfNullTarget = null;
@@ -184,7 +184,7 @@ public class MethodReference : SpelNode
             }
         }
 
-        GenerateCodeForArguments(gen, cf, targetMethod, _children);
+        GenerateCodeForArguments(gen, cf, targetMethod, children);
         gen.Emit(targetType.IsValueType ? OpCodes.Call : OpCodes.Callvirt, targetMethod);
 
         if (_originalPrimitiveExitTypeDescriptor != null)
@@ -210,7 +210,7 @@ public class MethodReference : SpelNode
         gen.Emit(OpCodes.Brtrue, continueTarget);
 
         // cast null on stack to result type
-        CodeFlow.InsertCastClass(gen, _exitTypeDescriptor);
+        CodeFlow.InsertCastClass(gen, exitTypeDescriptor);
         gen.Emit(OpCodes.Br, skipIfNullTarget);
         gen.MarkLabel(continueTarget);
         return skipIfNullTarget;
@@ -222,7 +222,7 @@ public class MethodReference : SpelNode
         if (value == null)
         {
             ThrowIfNotNullSafe(argumentTypes);
-            return TypedValue.NULL;
+            return TypedValue.Null;
         }
 
         var executorToUse = GetCachedExecutor(evaluationContext, value, targetType, argumentTypes);
@@ -264,7 +264,7 @@ public class MethodReference : SpelNode
         {
             // Same unwrapping exception handling as above in above catch block
             ThrowSimpleExceptionIfPossible(value, ex);
-            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.EXCEPTION_DURING_METHOD_INVOCATION, Name, value.GetType().FullName, ex.Message);
+            throw new SpelEvaluationException(StartPosition, ex, SpelMessage.ExceptionDuringMethodInvocation, Name, value.GetType().FullName, ex.Message);
         }
     }
 
@@ -272,7 +272,7 @@ public class MethodReference : SpelNode
     {
         if (!_nullSafe)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.METHOD_CALL_ON_NULL_OBJECT_NOT_ALLOWED, FormatHelper.FormatMethodForMessage(Name, argumentTypes));
+            throw new SpelEvaluationException(StartPosition, SpelMessage.MethodCallOnNullObjectNotAllowed, FormatHelper.FormatMethodForMessage(Name, argumentTypes));
         }
     }
 
@@ -302,7 +302,7 @@ public class MethodReference : SpelNode
             try
             {
                 state.PushActiveContextObject(state.GetScopeRootContextObject());
-                arguments[i] = _children[i].GetValueInternal(state).Value;
+                arguments[i] = children[i].GetValueInternal(state).Value;
             }
             finally
             {
@@ -368,11 +368,11 @@ public class MethodReference : SpelNode
         var className = FormatHelper.FormatClassNameForMessage(targetObject as Type ?? targetObject.GetType());
         if (accessException != null)
         {
-            throw new SpelEvaluationException(StartPosition, accessException, SpelMessage.PROBLEM_LOCATING_METHOD, method, className);
+            throw new SpelEvaluationException(StartPosition, accessException, SpelMessage.ProblemLocatingMethod, method, className);
         }
         else
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.METHOD_NOT_FOUND, method, className);
+            throw new SpelEvaluationException(StartPosition, SpelMessage.MethodNotFound, method, className);
         }
     }
 
@@ -386,11 +386,11 @@ public class MethodReference : SpelNode
             if (_nullSafe && CodeFlow.IsValueType(descriptor))
             {
                 _originalPrimitiveExitTypeDescriptor = descriptor;
-                _exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
+                exitTypeDescriptor = CodeFlow.ToBoxedDescriptor(descriptor);
             }
             else
             {
-                _exitTypeDescriptor = descriptor;
+                exitTypeDescriptor = descriptor;
             }
         }
     }
@@ -426,11 +426,11 @@ public class MethodReference : SpelNode
         private readonly object _value;
         private readonly Type _targetType;
         private readonly object[] _arguments;
-        private readonly MethodReference _mref;
+        private readonly MethodReference _methodReference;
 
-        public MethodValueRef(MethodReference mref, ExpressionState state, object[] arguments)
+        public MethodValueRef(MethodReference methodReference, ExpressionState state, object[] arguments)
         {
-            _mref = mref;
+            _methodReference = methodReference;
             _evaluationContext = state.EvaluationContext;
             _value = state.GetActiveContextObject().Value;
             _targetType = state.GetActiveContextObject().TypeDescriptor;
@@ -439,8 +439,8 @@ public class MethodReference : SpelNode
 
         public ITypedValue GetValue()
         {
-            var result = _mref.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
-            _mref.UpdateExitTypeDescriptor(result.Value);
+            var result = _methodReference.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
+            _methodReference.UpdateExitTypeDescriptor(result.Value);
             return result;
         }
 

@@ -11,10 +11,10 @@ public static class SpringBootConfigurationBuilderExtensions
 {
     /// <summary>
     /// Add a configuration source to the <see cref="ConfigurationBuilder"/> that reads SPRING_BOOT_APPLICATION from the environment and expands the child keys found within.
-    /// Configuration keys in '.' delimited style are also converted to a format understood by .NET
+    /// Configuration keys in '.' delimited style are also converted to a format understood by .NET.
     /// </summary>
-    /// <param name="builder">the configuration builder</param>
-    /// <returns>builder</returns>
+    /// <param name="builder">the configuration builder.</param>
+    /// <returns>builder.</returns>
     public static IConfigurationBuilder AddSpringBootEnv(this IConfigurationBuilder builder)
     {
         if (builder == null)

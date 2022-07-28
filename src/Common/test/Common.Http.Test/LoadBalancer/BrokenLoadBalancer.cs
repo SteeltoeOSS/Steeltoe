@@ -14,7 +14,7 @@ internal sealed class BrokenLoadBalancer : ILoadBalancer
     internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
 
     /// <summary>
-    /// Throws exceptions when you try to resolve services
+    /// Throws exceptions when you try to resolve services.
     /// </summary>
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {

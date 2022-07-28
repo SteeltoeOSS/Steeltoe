@@ -31,11 +31,11 @@ public class HealthCounts
         var updatedTotalCount = TotalRequests;
         var updatedErrorCount = ErrorCount;
 
-        var successCount = eventTypeCounts[(int)HystrixEventType.SUCCESS];
-        var failureCount = eventTypeCounts[(int)HystrixEventType.FAILURE];
-        var timeoutCount = eventTypeCounts[(int)HystrixEventType.TIMEOUT];
-        var threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.THREAD_POOL_REJECTED];
-        var semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SEMAPHORE_REJECTED];
+        var successCount = eventTypeCounts[(int)HystrixEventType.Success];
+        var failureCount = eventTypeCounts[(int)HystrixEventType.Failure];
+        var timeoutCount = eventTypeCounts[(int)HystrixEventType.Timeout];
+        var threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.ThreadPoolRejected];
+        var semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SemaphoreRejected];
 
         updatedTotalCount += successCount + failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;
         updatedErrorCount += failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;

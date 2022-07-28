@@ -36,15 +36,15 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task HandleRefreshRequestAsync_ReturnsExpected()
     {
         var opts = new RefreshEndpointOptions();
-        var mopts = new ActuatorManagementOptions();
-        mopts.EndpointOptions.Add(opts);
+        var managementOptions = new ActuatorManagementOptions();
+        managementOptions.EndpointOptions.Add(opts);
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
         var config = configurationBuilder.Build();
 
         var ep = new RefreshEndpoint(opts, config);
-        var middle = new RefreshEndpointMiddleware(null, ep, mopts);
+        var middle = new RefreshEndpointMiddleware(null, ep, managementOptions);
 
         var context = CreateRequest("GET", "/refresh");
         await middle.HandleRefreshRequestAsync(context);
@@ -58,14 +58,14 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task RefreshActuator_ReturnsExpectedData()
     {
-        var anc_env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        var ancEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
         var builder = new WebHostBuilder()
             .UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
-            .ConfigureLogging((webhostContext, loggingBuilder) =>
+            .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
-                loggingBuilder.AddConfiguration(webhostContext.Configuration);
+                loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
         using (var server = new TestServer(builder))
@@ -78,7 +78,7 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(expected, json);
         }
 
-        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", anc_env);
+        Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", ancEnv);
     }
 
     [Fact]

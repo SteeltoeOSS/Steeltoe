@@ -24,8 +24,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public sealed class ContainerInitializationTest : AbstractTest, IDisposable
 {
-    public const string TEST_MISMATCH = "test.mismatch";
-    public const string TEST_MISMATCH2 = "test.mismatch2";
+    public const string TestMismatch = "test.mismatch";
+    public const string TestMismatch2 = "test.mismatch2";
 
     private ServiceProvider _provider;
 
@@ -33,8 +33,8 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
     public async Task TestNoAdmin()
     {
         var services = CreateServiceCollection();
-        services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
-        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
+        services.AddRabbitQueue(new Queue(TestMismatch, false, false, true));
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TestMismatch));
 
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
 
@@ -54,10 +54,10 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
     public async Task TestMismatchedQueue()
     {
         var services = CreateServiceCollection();
-        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TestMismatch));
 
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-        services.AddRabbitQueue(new Queue(TEST_MISMATCH, false, false, true));
+        services.AddRabbitQueue(new Queue(TestMismatch, false, false, true));
         services.AddRabbitAdmin();
 
         _provider = services.BuildServiceProvider();
@@ -76,23 +76,23 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
     public async Task TestMismatchedQueueDuringRestart()
     {
         var services = CreateServiceCollection();
-        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH));
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TestMismatch));
 
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-        services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
+        services.AddRabbitQueue(new Queue(TestMismatch, true, false, false));
         services.AddRabbitAdmin();
         _provider = services.BuildServiceProvider();
 
         var latches = SetUpChannelLatches(_provider);
         await _provider.GetRequiredService<IHostedService>().StartAsync(default);
         var container = _provider.GetService<DirectMessageListenerContainer>();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         var admin = _provider.GetRabbitAdmin();
         admin.RetryTemplate = null;
-        admin.DeleteQueue(TEST_MISMATCH);
+        admin.DeleteQueue(TestMismatch);
         Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-        admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
+        admin.DeclareQueue(new Queue(TestMismatch, false, false, true));
         latches[2].Signal();
         Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
 
@@ -109,24 +109,24 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
     public async Task TestMismatchedQueueDuringRestartMultiQueue()
     {
         var services = CreateServiceCollection();
-        services.AddSingleton(p => CreateMessageListenerContainer(p, TEST_MISMATCH, TEST_MISMATCH2));
+        services.AddSingleton(p => CreateMessageListenerContainer(p, TestMismatch, TestMismatch2));
 
         services.AddSingleton<ILifecycle>(p => p.GetService<DirectMessageListenerContainer>());
-        services.AddRabbitQueue(new Queue(TEST_MISMATCH, true, false, false));
-        services.AddRabbitQueue(new Queue(TEST_MISMATCH2, true, false, false));
+        services.AddRabbitQueue(new Queue(TestMismatch, true, false, false));
+        services.AddRabbitQueue(new Queue(TestMismatch2, true, false, false));
         services.AddRabbitAdmin();
         _provider = services.BuildServiceProvider();
 
         var latches = SetUpChannelLatches(_provider);
         await _provider.GetRequiredService<IHostedService>().StartAsync(default);
         var container = _provider.GetService<DirectMessageListenerContainer>();
-        Assert.True(container._startedLatch.Wait(TimeSpan.FromSeconds(10)));
+        Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         var admin = _provider.GetRabbitAdmin();
         admin.RetryTemplate = null;
-        admin.DeleteQueue(TEST_MISMATCH);
+        admin.DeleteQueue(TestMismatch);
         Assert.True(latches[0].Wait(TimeSpan.FromSeconds(100)));
-        admin.DeclareQueue(new Queue(TEST_MISMATCH, false, false, true));
+        admin.DeclareQueue(new Queue(TestMismatch, false, false, true));
         latches[2].Signal();
         Assert.True(latches[1].Wait(TimeSpan.FromSeconds(10)));
 
@@ -146,8 +146,8 @@ public sealed class ContainerInitializationTest : AbstractTest, IDisposable
             admin.IgnoreDeclarationExceptions = true;
             try
             {
-                admin.DeleteQueue(TEST_MISMATCH);
-                admin.DeleteQueue(TEST_MISMATCH2);
+                admin.DeleteQueue(TestMismatch);
+                admin.DeleteQueue(TestMismatch2);
             }
             catch (Exception)
             {

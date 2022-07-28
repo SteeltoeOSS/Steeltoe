@@ -5,7 +5,7 @@
 namespace Steeltoe.Extensions.Logging;
 
 /// <summary>
-/// Provides the ability to process each log message before it is sent to the Console
+/// Provides the ability to process each log message before it is sent to the Console.
 /// </summary>
 public interface IDynamicMessageProcessor
 {
@@ -13,7 +13,7 @@ public interface IDynamicMessageProcessor
     /// Called for each log message just after the parameters have been formatted into the log string
     /// but before the time stamp, category, and level have been applied.
     /// </summary>
-    /// <param name="inputLogMessage">The incoming log message</param>
-    /// <returns>The updated log message</returns>
+    /// <param name="inputLogMessage">The incoming log message.</param>
+    /// <returns>The updated log message.</returns>
     string Process(string inputLogMessage);
 }

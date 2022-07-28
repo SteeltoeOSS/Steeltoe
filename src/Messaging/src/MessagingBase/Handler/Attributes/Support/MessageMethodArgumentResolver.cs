@@ -12,14 +12,14 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
 public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
 {
-    protected readonly IMessageConverter _converter;
+    protected readonly IMessageConverter Converter;
 
     public MessageMethodArgumentResolver()
         : this(null)
     {
     }
 
-    public MessageMethodArgumentResolver(IMessageConverter converter) => _converter = converter;
+    public MessageMethodArgumentResolver(IMessageConverter converter) => Converter = converter;
 
     public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
@@ -89,13 +89,13 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
     private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
     {
         object result = null;
-        if (_converter is ISmartMessageConverter smartConverter)
+        if (Converter is ISmartMessageConverter smartConverter)
         {
             result = smartConverter.FromMessage(message, targetPayloadType, parameter);
         }
-        else if (_converter != null)
+        else if (Converter != null)
         {
-            result = _converter.FromMessage(message, targetPayloadType);
+            result = Converter.FromMessage(message, targetPayloadType);
         }
 
         if (result == null)

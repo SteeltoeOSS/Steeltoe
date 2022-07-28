@@ -49,7 +49,7 @@ public class ConstructorReference : SpelNode
 
     public override bool IsCompilable()
     {
-        if (_cachedExecutor is not ReflectiveConstructorExecutor executor || _exitTypeDescriptor == null)
+        if (_cachedExecutor is not ReflectiveConstructorExecutor executor || exitTypeDescriptor == null)
         {
             return false;
         }
@@ -58,7 +58,7 @@ public class ConstructorReference : SpelNode
         {
             for (int c = 1, max = ChildCount; c < max; c++)
             {
-                if (!_children[c].IsCompilable())
+                if (!children[c].IsCompilable())
                 {
                     return false;
                 }
@@ -85,18 +85,18 @@ public class ConstructorReference : SpelNode
         var constructor = executor.Constructor;
 
         // children[0] is the type of the constructor, don't want to include that in argument processing
-        var arguments = new SpelNode[_children.Length - 1];
-        Array.Copy(_children, 1, arguments, 0, _children.Length - 1);
+        var arguments = new SpelNode[children.Length - 1];
+        Array.Copy(children, 1, arguments, 0, children.Length - 1);
         GenerateCodeForArguments(gen, cf, constructor, arguments);
         gen.Emit(OpCodes.Newobj, constructor);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 
-    public override string ToStringAST()
+    public override string ToStringAst()
     {
         var sb = new StringBuilder("new ");
         var index = 0;
-        sb.Append(GetChild(index++).ToStringAST());
+        sb.Append(GetChild(index++).ToStringAst());
         sb.Append('(');
         for (var i = index; i < ChildCount; i++)
         {
@@ -105,7 +105,7 @@ public class ConstructorReference : SpelNode
                 sb.Append(',');
             }
 
-            sb.Append(GetChild(i).ToStringAST());
+            sb.Append(GetChild(i).ToStringAst());
         }
 
         sb.Append(')');
@@ -120,7 +120,7 @@ public class ConstructorReference : SpelNode
         var argumentTypes = new List<Type>(ChildCount - 1);
         for (var i = 0; i < arguments.Length; i++)
         {
-            var childValue = _children[i + 1].GetValueInternal(state);
+            var childValue = children[i + 1].GetValueInternal(state);
             var value = childValue.Value;
             arguments[i] = value;
             var valueType = value?.GetType();
@@ -155,11 +155,11 @@ public class ConstructorReference : SpelNode
                         throw rootCause;
                     }
 
-                    var name = (string)_children[0].GetValueInternal(state).Value;
+                    var name = (string)children[0].GetValueInternal(state).Value;
                     throw new SpelEvaluationException(
                         StartPosition,
                         rootCause,
-                        SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM,
+                        SpelMessage.ConstructorInvocationProblem,
                         name,
                         FormatHelper.FormatMethodForMessage(string.Empty, argumentTypes));
                 }
@@ -170,7 +170,7 @@ public class ConstructorReference : SpelNode
         }
 
         // Either there was no accessor or it no longer exists
-        var typeName = (string)_children[0].GetValueInternal(state).Value;
+        var typeName = (string)children[0].GetValueInternal(state).Value;
         if (typeName == null)
         {
             throw new InvalidOperationException("No type name");
@@ -182,7 +182,7 @@ public class ConstructorReference : SpelNode
             _cachedExecutor = executorToUse;
             if (executorToUse is ReflectiveConstructorExecutor executor)
             {
-                _exitTypeDescriptor = CodeFlow.ToDescriptor(executor.Constructor.DeclaringType);
+                exitTypeDescriptor = CodeFlow.ToDescriptor(executor.Constructor.DeclaringType);
             }
 
             return executorToUse.Execute(state.EvaluationContext, arguments);
@@ -192,7 +192,7 @@ public class ConstructorReference : SpelNode
             throw new SpelEvaluationException(
                 StartPosition,
                 ex,
-                SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM,
+                SpelMessage.ConstructorInvocationProblem,
                 typeName,
                 FormatHelper.FormatMethodForMessage(string.Empty, argumentTypes));
         }
@@ -217,7 +217,7 @@ public class ConstructorReference : SpelNode
                 throw new SpelEvaluationException(
                     StartPosition,
                     ex,
-                    SpelMessage.CONSTRUCTOR_INVOCATION_PROBLEM,
+                    SpelMessage.ConstructorInvocationProblem,
                     typeName,
                     FormatHelper.FormatMethodForMessage(string.Empty, argumentTypes));
             }
@@ -225,7 +225,7 @@ public class ConstructorReference : SpelNode
 
         throw new SpelEvaluationException(
             StartPosition,
-            SpelMessage.CONSTRUCTOR_NOT_FOUND,
+            SpelMessage.ConstructorNotFound,
             typeName,
             FormatHelper.FormatMethodForMessage(string.Empty, argumentTypes));
     }
@@ -238,12 +238,12 @@ public class ConstructorReference : SpelNode
         {
             throw new SpelEvaluationException(
                 GetChild(0).StartPosition,
-                SpelMessage.TYPE_NAME_EXPECTED_FOR_ARRAY_CONSTRUCTION,
+                SpelMessage.TypeNameExpectedForArrayConstruction,
                 FormatHelper.FormatClassNameForMessage(intendedArrayType?.GetType()));
         }
 
         var arrayTypeCode = SpelTypeCode.ForName(type);
-        var componentType = arrayTypeCode == SpelTypeCode.OBJECT ? state.FindType(type) : arrayTypeCode.Type;
+        var componentType = arrayTypeCode == SpelTypeCode.Object ? state.FindType(type) : arrayTypeCode.Type;
 
         object newArray;
         if (!HasInitializer)
@@ -255,13 +255,13 @@ public class ConstructorReference : SpelNode
                 {
                     if (dimension == null)
                     {
-                        throw new SpelEvaluationException(StartPosition, SpelMessage.MISSING_ARRAY_DIMENSION);
+                        throw new SpelEvaluationException(StartPosition, SpelMessage.MissingArrayDimension);
                     }
                 }
             }
             else
             {
-                throw new SpelEvaluationException(StartPosition, SpelMessage.MISSING_ARRAY_DIMENSION);
+                throw new SpelEvaluationException(StartPosition, SpelMessage.MissingArrayDimension);
             }
 
             var typeConverter = state.EvaluationContext.TypeConverter;
@@ -293,7 +293,7 @@ public class ConstructorReference : SpelNode
             {
                 // There is an initializer but this is a multi-dimensional array (e.g. new int[][]{{1,2},{3,4}}) - this
                 // is not currently supported
-                throw new SpelEvaluationException(StartPosition, SpelMessage.MULTIDIM_ARRAY_INITIALIZER_NOT_SUPPORTED);
+                throw new SpelEvaluationException(StartPosition, SpelMessage.MultidimensionalArrayInitializerNotSupported);
             }
 
             var typeConverter = state.EvaluationContext.TypeConverter;
@@ -306,62 +306,62 @@ public class ConstructorReference : SpelNode
                 var i = ExpressionUtils.ToInt(typeConverter, dValue);
                 if (i != initializer.ChildCount)
                 {
-                    throw new SpelEvaluationException(StartPosition, SpelMessage.INITIALIZER_LENGTH_INCORRECT);
+                    throw new SpelEvaluationException(StartPosition, SpelMessage.InitializerLengthIncorrect);
                 }
             }
 
             // Build the array and populate it
             var arraySize = initializer.ChildCount;
             newArray = Array.CreateInstance(componentType, arraySize);
-            if (arrayTypeCode == SpelTypeCode.OBJECT)
+            if (arrayTypeCode == SpelTypeCode.Object)
             {
                 PopulateReferenceTypeArray(state, newArray, typeConverter, initializer, componentType);
             }
-            else if (arrayTypeCode == SpelTypeCode.BOOLEAN)
+            else if (arrayTypeCode == SpelTypeCode.Boolean)
             {
                 PopulateBooleanArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.BYTE)
+            else if (arrayTypeCode == SpelTypeCode.Byte)
             {
                 PopulateByteArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.SBYTE)
+            else if (arrayTypeCode == SpelTypeCode.Sbyte)
             {
                 PopulateSByteArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.CHAR)
+            else if (arrayTypeCode == SpelTypeCode.Char)
             {
                 PopulateCharArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.DOUBLE)
+            else if (arrayTypeCode == SpelTypeCode.Double)
             {
                 PopulateDoubleArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.FLOAT)
+            else if (arrayTypeCode == SpelTypeCode.Float)
             {
                 PopulateFloatArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.INT)
+            else if (arrayTypeCode == SpelTypeCode.Int)
             {
                 PopulateIntArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.UINT)
+            else if (arrayTypeCode == SpelTypeCode.Uint)
             {
                 PopulateUIntArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.LONG)
+            else if (arrayTypeCode == SpelTypeCode.Long)
             {
                 PopulateLongArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.ULONG)
+            else if (arrayTypeCode == SpelTypeCode.Ulong)
             {
                 PopulateULongArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.SHORT)
+            else if (arrayTypeCode == SpelTypeCode.Short)
             {
                 PopulateShortArray(state, newArray, typeConverter, initializer);
             }
-            else if (arrayTypeCode == SpelTypeCode.USHORT)
+            else if (arrayTypeCode == SpelTypeCode.Ushort)
             {
                 PopulateUShortArray(state, newArray, typeConverter, initializer);
             }

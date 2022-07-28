@@ -17,7 +17,7 @@ public class StringLiteral : Literal
         valueWithinQuotes = valueWithinQuotes.Replace("''", "'");
         valueWithinQuotes = valueWithinQuotes.Replace("\"\"", "\"");
         _value = new TypedValue(valueWithinQuotes);
-        _exitTypeDescriptor = TypeDescriptor.STRING;
+        exitTypeDescriptor = TypeDescriptor.String;
     }
 
     public override ITypedValue GetLiteralValue()
@@ -38,6 +38,6 @@ public class StringLiteral : Literal
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         gen.Emit(OpCodes.Ldstr, (string)_value.Value);
-        cf.PushDescriptor(_exitTypeDescriptor);
+        cf.PushDescriptor(exitTypeDescriptor);
     }
 }

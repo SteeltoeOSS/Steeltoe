@@ -11,18 +11,18 @@ using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Binder;
 
-public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
-    where C : AbstractBinder<IMessageChannel>
+public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
+    where TBinder : AbstractBinder<IMessageChannel>
 {
-    protected HashSet<string> _queues = new ();
+    protected HashSet<string> queues = new ();
 
-    protected HashSet<string> _exchanges = new ();
+    protected HashSet<string> exchanges = new ();
 
     public Type TargetType => typeof(IMessageChannel);
 
-    public C CoreBinder { get; private set; }
+    public TBinder CoreBinder { get; private set; }
 
-    public C Binder
+    public TBinder Binder
     {
         get => CoreBinder;
         set
@@ -47,7 +47,7 @@ public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
 
     public virtual IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
     {
-        _queues.Add(name);
+        queues.Add(name);
         return CoreBinder.BindConsumer(name, group, inboundTarget, consumerOptions);
     }
 
@@ -58,7 +58,7 @@ public abstract class AbstractTestBinder<C> : IBinder<IMessageChannel>
 
     public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
     {
-        _queues.Add(name);
+        queues.Add(name);
         return CoreBinder.BindProducer(name, outboundTarget, producerOptions);
     }
 

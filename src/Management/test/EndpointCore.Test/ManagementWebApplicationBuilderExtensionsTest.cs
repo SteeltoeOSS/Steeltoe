@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-#if NET6_0_OR_GREATER
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -267,7 +266,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
 
-            Assert.Single(host.Services.GetServices<ThreadDumpEndpoint_v2>());
+            Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
             var response = await host.GetTestClient().GetAsync("/actuator/threaddump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -417,7 +416,7 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
         await Task.Delay(3000);
 
-        // Excercise the deferred builder logic by starting the test host.
+        // Exercise the deferred builder logic by starting the test host.
         // Validate the exporter got actually added
         var exporter = host.Services.GetService<WavefrontMetricsExporter>();
         Assert.NotNull(exporter);
@@ -446,4 +445,3 @@ public class ManagementWebApplicationBuilderExtensionsTest
         return app;
     }
 }
-#endif

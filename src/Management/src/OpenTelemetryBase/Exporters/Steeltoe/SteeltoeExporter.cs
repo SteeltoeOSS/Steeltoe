@@ -15,9 +15,9 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 /// Exporter of OpenTelemetry metrics to Steeltoe Format.
 /// </summary>
 [ExportModes(ExportModes.Pull)]
-public class SteeltoeExporter : IMetricsExporter
+public class SteeltoeExporter : MetricsExporter
 {
-    internal PullmetricsCollectionManager CollectionManager { get; }
+    internal PullMetricsCollectionManager CollectionManager { get; }
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
@@ -27,10 +27,10 @@ public class SteeltoeExporter : IMetricsExporter
     /// Initializes a new instance of the <see cref="SteeltoeExporter"/> class.
     /// </summary>
     /// <param name="options">Options for the exporter.</param>
-    internal SteeltoeExporter(IPullmetricsExporterOptions options)
+    internal SteeltoeExporter(IPullMetricsExporterOptions options)
     {
         ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
-        CollectionManager = new PullmetricsCollectionManager(this);
+        CollectionManager = new PullMetricsCollectionManager(this);
     }
 
     public override Func<int, bool> Collect { get; set; }
@@ -86,25 +86,25 @@ public class SteeltoeExporter : IMetricsExporter
                     var sum = metricPoint.GetHistogramSum();
                     if (metric.Unit == "s")
                     {
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL_TIME, sum, tags));
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.MAX, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.Max, sum, tags));
                     }
                     else
                     {
-                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TOTAL, sum, tags));
+                        metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.Total, sum, tags));
                     }
                 }
                 else if (((int)metric.MetricType & 0b_0000_1111) == 0x0a /* I8 */)
                 {
                     metricSamples[metric.Name].Add(metric.MetricType.IsSum()
-                        ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumLong(), tags)
-                        : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueLong(), tags));
+                        ? new MetricSample(MetricStatistic.Total, metricPoint.GetSumLong(), tags)
+                        : new MetricSample(MetricStatistic.Value, metricPoint.GetGaugeLastValueLong(), tags));
                 }
                 else
                 {
                     metricSamples[metric.Name].Add(metric.MetricType.IsSum()
-                        ? new MetricSample(MetricStatistic.TOTAL, metricPoint.GetSumDouble(), tags)
-                        : new MetricSample(MetricStatistic.VALUE, metricPoint.GetGaugeLastValueDouble(), tags));
+                        ? new MetricSample(MetricStatistic.Total, metricPoint.GetSumDouble(), tags)
+                        : new MetricSample(MetricStatistic.Value, metricPoint.GetGaugeLastValueDouble(), tags));
                 }
             }
         }

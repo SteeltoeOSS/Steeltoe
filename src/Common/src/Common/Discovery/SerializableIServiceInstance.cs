@@ -12,7 +12,7 @@ public class SerializableIServiceInstance : IServiceInstance
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="SerializableIServiceInstance"/> class.
-    /// For use with JsonSerializer
+    /// For use with JsonSerializer.
     /// </summary>
     public SerializableIServiceInstance()
     {

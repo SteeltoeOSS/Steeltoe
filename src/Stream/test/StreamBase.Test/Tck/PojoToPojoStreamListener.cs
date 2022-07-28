@@ -10,8 +10,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class PojoToPojoStreamListener
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public Person Echo(Person value)
     {
         return value;

@@ -28,7 +28,7 @@ public class ThreadDumpStartupFilter : IStartupFilter
                 switch (MediaTypeVersion)
                 {
                     case MediaTypeVersion.V1: endpoints.Map<ThreadDumpEndpoint>(); break;
-                    case MediaTypeVersion.V2: endpoints.Map<ThreadDumpEndpoint_v2>(); break;
+                    case MediaTypeVersion.V2: endpoints.Map<ThreadDumpEndpointV2>(); break;
                 }
             });
         };

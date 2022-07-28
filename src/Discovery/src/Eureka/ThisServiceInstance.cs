@@ -35,9 +35,9 @@ public class ThisServiceInstance : IServiceInstance
 
     public IDictionary<string, string> Metadata => InstConfig.MetadataMap;
 
-    public int Port => InstConfig.NonSecurePort == -1 ? EurekaInstanceConfig.Default_NonSecurePort : InstConfig.NonSecurePort;
+    public int Port => InstConfig.NonSecurePort == -1 ? EurekaInstanceConfig.DefaultNonSecurePort : InstConfig.NonSecurePort;
 
-    public int SecurePort => InstConfig.SecurePort == -1 ? EurekaInstanceConfig.Default_SecurePort : InstConfig.SecurePort;
+    public int SecurePort => InstConfig.SecurePort == -1 ? EurekaInstanceConfig.DefaultSecurePort : InstConfig.SecurePort;
 
     public string ServiceId => InstConfig.AppName;
 

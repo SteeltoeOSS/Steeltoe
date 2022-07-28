@@ -20,15 +20,15 @@ public class MutableMessageTest
         var payload = new object();
         var headerDictionary = new Dictionary<string, object>
         {
-            { MessageHeaders.ID, uuid },
-            { MessageHeaders.TIMESTAMP, timestamp }
+            { MessageHeaders.IdName, uuid },
+            { MessageHeaders.TimestampName, timestamp }
         };
 
         var mutableMessage = new MutableMessage<object>(payload, headerDictionary);
         var headers = mutableMessage.Headers as MutableMessageHeaders;
 
-        Assert.Equal(uuid.ToString(), headers.RawHeaders[MessageHeaders.ID]);
-        Assert.Equal(timestamp, headers.RawHeaders[MessageHeaders.TIMESTAMP]);
+        Assert.Equal(uuid.ToString(), headers.RawHeaders[MessageHeaders.IdName]);
+        Assert.Equal(timestamp, headers.RawHeaders[MessageHeaders.TimestampName]);
     }
 
     [Fact]
@@ -59,21 +59,21 @@ public class MutableMessageTest
         var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         // UUID as string; timestamp as string
-        var headerDictionarystrings = new Dictionary<string, object>
+        var headerDictionaryStrings = new Dictionary<string, object>
         {
-            { MessageHeaders.ID, uuid.ToString() },
-            { MessageHeaders.TIMESTAMP, timestamp.ToString() }
+            { MessageHeaders.IdName, uuid.ToString() },
+            { MessageHeaders.TimestampName, timestamp.ToString() }
         };
-        var mutableMessagestrings = new MutableMessage<object>(payload, headerDictionarystrings);
-        Assert.Equal(uuid.ToString(), mutableMessagestrings.Headers.Id);
-        Assert.Equal(timestamp, mutableMessagestrings.Headers.Timestamp);
+        var mutableMessageStrings = new MutableMessage<object>(payload, headerDictionaryStrings);
+        Assert.Equal(uuid.ToString(), mutableMessageStrings.Headers.Id);
+        Assert.Equal(timestamp, mutableMessageStrings.Headers.Timestamp);
 
         // UUID as byte[]; timestamp as Long
         var headerDictionaryByte = new Dictionary<string, object>();
         var uuidAsBytes = uuid.ToByteArray();
 
-        headerDictionaryByte.Add(MessageHeaders.ID, uuidAsBytes);
-        headerDictionaryByte.Add(MessageHeaders.TIMESTAMP, timestamp);
+        headerDictionaryByte.Add(MessageHeaders.IdName, uuidAsBytes);
+        headerDictionaryByte.Add(MessageHeaders.TimestampName, timestamp);
         var mutableMessageBytes = new MutableMessage<object>(payload, headerDictionaryByte);
         Assert.Equal(uuid.ToString(), mutableMessageBytes.Headers.Id);
         Assert.Equal(timestamp, mutableMessageBytes.Headers.Timestamp);

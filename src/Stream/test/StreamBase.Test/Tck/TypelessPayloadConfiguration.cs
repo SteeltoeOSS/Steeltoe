@@ -10,8 +10,8 @@ namespace Steeltoe.Stream.Tck;
 
 public class TypelessPayloadConfiguration
 {
-    [StreamListener(ISink.INPUT)]
-    [SendTo(ISource.OUTPUT)]
+    [StreamListener(ISink.InputName)]
+    [SendTo(ISource.OutputName)]
     public object Echo(object value)
     {
         return value;

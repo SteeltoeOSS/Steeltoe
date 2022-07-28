@@ -16,14 +16,14 @@ public class RandomValueSourceTest
         ILoggerFactory factory = new LoggerFactory();
 
         var source = new RandomValueSource(factory);
-        Assert.Equal(factory, source._loggerFactory);
-        Assert.NotNull(source._prefix);
-        Assert.Equal(RandomValueSource.PREFIX, source._prefix);
+        Assert.Equal(factory, source.LoggerFactory);
+        Assert.NotNull(source.Prefix);
+        Assert.Equal(RandomValueSource.RandomPrefix, source.Prefix);
 
         source = new RandomValueSource("foobar:", factory);
-        Assert.Equal(factory, source._loggerFactory);
-        Assert.NotNull(source._prefix);
-        Assert.Equal("foobar:", source._prefix);
+        Assert.Equal(factory, source.LoggerFactory);
+        Assert.NotNull(source.Prefix);
+        Assert.Equal("foobar:", source.Prefix);
     }
 
     [Fact]

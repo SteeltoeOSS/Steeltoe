@@ -37,9 +37,9 @@ public class CompositeMessageChannelConfigurer : IMessageChannelAndSourceConfigu
 
     public void ConfigurePolledMessageSource(IPollableMessageSource binding, string name)
     {
-        foreach (var cconfigurer in _messageChannelConfigurers)
+        foreach (var channelConfigurer in _messageChannelConfigurers)
         {
-            if (cconfigurer is IMessageChannelAndSourceConfigurer configurer)
+            if (channelConfigurer is IMessageChannelAndSourceConfigurer configurer)
             {
                 configurer.ConfigurePolledMessageSource(binding, name);
             }

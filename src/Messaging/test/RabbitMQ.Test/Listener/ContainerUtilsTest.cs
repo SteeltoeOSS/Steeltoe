@@ -24,6 +24,6 @@ public class ContainerUtilsTest
     {
         Assert.False(ContainerUtils.ShouldRequeue(
             true,
-            new ListenerExecutionFailedException(string.Empty, new RabbitRejectAndDontRequeueException("no requeue"))));
+            new ListenerExecutionFailedException(string.Empty, new RabbitRejectAndDoNotRequeueException("no requeue"))));
     }
 }

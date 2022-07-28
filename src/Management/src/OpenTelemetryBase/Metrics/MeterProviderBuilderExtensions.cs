@@ -24,7 +24,7 @@ public static class MeterProviderBuilderExtensions
         return builder;
     }
 
-    public static MeterProviderBuilder AddExporters(this MeterProviderBuilder builder, IEnumerable<IMetricsExporter> exporters)
+    public static MeterProviderBuilder AddExporters(this MeterProviderBuilder builder, IEnumerable<MetricsExporter> exporters)
     {
         var steeltoeExporter = exporters.OfType<SteeltoeExporter>().FirstOrDefault();
         if (steeltoeExporter != null)

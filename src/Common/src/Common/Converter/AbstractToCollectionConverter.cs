@@ -9,17 +9,17 @@ namespace Steeltoe.Common.Converter;
 
 public abstract class AbstractToCollectionConverter : AbstractGenericConditionalConverter
 {
-    protected readonly IConversionService _conversionService;
+    protected readonly IConversionService ConversionService;
 
     protected AbstractToCollectionConverter(IConversionService conversionService)
         : base(null)
     {
-        _conversionService = conversionService;
+        this.ConversionService = conversionService;
     }
 
     protected AbstractToCollectionConverter(ISet<(Type Source, Type Target)> convertableTypes, IConversionService conversionService)
         : base(convertableTypes)
     {
-        _conversionService = conversionService;
+        this.ConversionService = conversionService;
     }
 }

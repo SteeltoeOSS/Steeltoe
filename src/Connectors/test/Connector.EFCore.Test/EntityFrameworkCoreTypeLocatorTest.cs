@@ -9,41 +9,28 @@ namespace Steeltoe.Connector.EFCore.Test;
 public class EntityFrameworkCoreTypeLocatorTest
 {
     [Fact]
-    public void Property_Can_Locate_MySqlDbContextOptionsType()
+    public void Property_Can_Locate_MySqlDbContextOptionsType_MySql()
     {
-        // arrange -- handled by including a compatible EF Core NuGet package
+        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "MySql.EntityFrameworkCore" };
+
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
     }
 
-#if NET6_0_OR_GREATER
     [Fact]
-    public void Options_Found_In_Pomelo_Assembly()
+    public void Property_Can_Locate_MySqlDbContextOptionsType_Pomelo()
     {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "Pomelo.EntityFrameworkCore.MySql" };
+        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "Pomelo.EntityFrameworkCore.MySql" };
 
         var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
     }
-#else
-    [Fact]
-    public void Options_Found_In_MySql_Assembly()
-    {
-        // arrange ~ narrow the assembly list to one specific nuget package
-        var types = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[] { "MySql.EntityFrameworkCore" };
-
-        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
-
-        Assert.NotNull(type);
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = types;
-    }
-#endif
 
     [Fact]
     public void Property_Can_Locate_PostgreSqlDbContextOptionsType()

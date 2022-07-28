@@ -28,14 +28,14 @@ public static class TracingBaseServiceCollectionExtensions
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient Instrumentation.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection" /></param>
+    /// <param name="services"><see cref="IServiceCollection" />.</param>
     /// <returns><see cref="IServiceCollection"/> configured for distributed tracing.</returns>
     public static IServiceCollection AddDistributedTracing(this IServiceCollection services) => services.AddDistributedTracing(null);
 
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient Instrumentation.
     /// </summary>
-    /// <param name="services"><see cref="IServiceCollection" /></param>
+    /// <param name="services"><see cref="IServiceCollection" />.</param>
     /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
     /// <returns><see cref="IServiceCollection"/> configured for distributed tracing.</returns>
     public static IServiceCollection AddDistributedTracing(this IServiceCollection services, Action<TracerProviderBuilder> action)
@@ -52,7 +52,7 @@ public static class TracingBaseServiceCollectionExtensions
 
         var exportToZipkin = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Zipkin");
         var exportToJaeger = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.Jaeger");
-        var exportToOtlp = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
+        var exportToOpenTelemetryProtocol = ReflectionHelpers.IsAssemblyLoaded("OpenTelemetry.Exporter.OpenTelemetryProtocol");
 
         if (exportToZipkin)
         {
@@ -64,19 +64,19 @@ public static class TracingBaseServiceCollectionExtensions
             ConfigureJaegerOptions(services);
         }
 
-        if (exportToOtlp)
+        if (exportToOpenTelemetryProtocol)
         {
-            ConfigureOtlpOptions(services);
+            ConfigureOpenTelemetryProtocolOptions(services);
         }
 
         services.AddOpenTelemetryTracing(builder =>
         {
             builder.Configure((serviceProvider, deferredBuilder) =>
             {
-                var appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>().ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.CONFIG_PREFIX}:name");
+                var appName = serviceProvider.GetRequiredService<IApplicationInstanceInfo>().ApplicationNameInContext(SteeltoeComponent.Management, $"{TracingOptions.ConfigPrefix}:name");
                 var traceOpts = serviceProvider.GetRequiredService<ITracingOptions>();
                 var logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Management.Tracing.Setup");
-                logger?.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.", exportToZipkin, exportToJaeger, exportToOtlp);
+                logger?.LogTrace("Found Zipkin exporter: {exportToZipkin}. Found Jaeger exporter: {exportToJaeger}. Found OTLP exporter: {exportToOtlp}.", exportToZipkin, exportToJaeger, exportToOpenTelemetryProtocol);
                 deferredBuilder.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(appName));
                 deferredBuilder.AddHttpClientInstrumentation(options =>
                 {
@@ -113,9 +113,9 @@ public static class TracingBaseServiceCollectionExtensions
                 AddJaegerExporter(builder);
             }
 
-            if (exportToOtlp)
+            if (exportToOpenTelemetryProtocol)
             {
-                AddOtlpExporter(builder);
+                AddOpenTelemetryProtocolExporter(builder);
             }
 
             AddWavefrontExporter(builder);
@@ -158,7 +158,7 @@ public static class TracingBaseServiceCollectionExtensions
 
     private static void AddJaegerExporter(TracerProviderBuilder builder) => builder.AddJaegerExporter();
 
-    private static void ConfigureOtlpOptions(IServiceCollection services)
+    private static void ConfigureOpenTelemetryProtocolOptions(IServiceCollection services)
     {
         services.AddOptions<OtlpExporterOptions>().PostConfigure<ITracingOptions>((options, traceOpts) =>
         {
@@ -169,7 +169,7 @@ public static class TracingBaseServiceCollectionExtensions
         });
     }
 
-    private static void AddOtlpExporter(TracerProviderBuilder builder) => builder.AddOtlpExporter();
+    private static void AddOpenTelemetryProtocolExporter(TracerProviderBuilder builder) => builder.AddOtlpExporter();
 
     private static void AddWavefrontExporter(TracerProviderBuilder builder)
     {

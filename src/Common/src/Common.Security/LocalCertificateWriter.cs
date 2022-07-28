@@ -1,4 +1,4 @@
-// Licensed to the .NET Foundation under one or more agreements.
+﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
@@ -16,7 +16,7 @@ public class LocalCertificateWriter
     public static readonly string AppBasePath = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf(
         $"{Path.DirectorySeparatorChar}bin"));
 
-    public string RootCAPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
+    public string RootCaPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
 
     public string IntermediatePfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
 
@@ -37,14 +37,14 @@ public class LocalCertificateWriter
             Directory.CreateDirectory(Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates"));
         }
 
-        if (!File.Exists(RootCAPfxPath))
+        if (!File.Exists(RootCaPfxPath))
         {
             caCertificate = CreateRoot("CN=SteeltoeGeneratedCA");
-            File.WriteAllBytes(RootCAPfxPath, caCertificate.Export(X509ContentType.Pfx));
+            File.WriteAllBytes(RootCaPfxPath, caCertificate.Export(X509ContentType.Pfx));
         }
         else
         {
-            caCertificate = new X509Certificate2(RootCAPfxPath);
+            caCertificate = new X509Certificate2(RootCaPfxPath);
         }
 
         X509Certificate2 intermediateCertificate;
@@ -117,7 +117,12 @@ public class LocalCertificateWriter
 
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
-        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection { new ("1.3.6.1.5.5.7.3.2") }, false));
+        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
+            new OidCollection
+            {
+                new ("1.3.6.1.5.5.7.3.1"), // serverAuth
+                new ("1.3.6.1.5.5.7.3.2") // clientAuth
+            }, false));
 
         if (altNames != null)
         {

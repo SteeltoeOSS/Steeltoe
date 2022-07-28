@@ -16,15 +16,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 public class JsonMessageConverter : AbstractMessageConverter
 {
-    public const string DEFAULT_SERVICE_NAME = nameof(JsonMessageConverter);
+    public const string DefaultServiceName = nameof(JsonMessageConverter);
 
-    public const string DEFAULT_CLASSID_FIELD_NAME = "__TypeId__";
-    public const string DEFAULT_CONTENT_CLASSID_FIELD_NAME = "__ContentTypeId__";
-    public const string DEFAULT_KEY_CLASSID_FIELD_NAME = "__KeyTypeId__";
+    public const string DefaultClassIdFieldName = "__TypeId__";
+    public const string DefaultContentClassIdFieldName = "__ContentTypeId__";
+    public const string DefaultKeyClassIdFieldName = "__KeyTypeId__";
 
     public JsonSerializerSettings Settings { get; set; }
 
-    public override string ServiceName { get; set; } = DEFAULT_SERVICE_NAME;
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public JsonMessageConverter(ILogger<JsonMessageConverter> logger = null)
         : base(logger)
@@ -46,7 +46,7 @@ public class JsonMessageConverter : AbstractMessageConverter
 
     public bool AssumeSupportedContentType { get; set; } = true;
 
-    public MimeType SupportedContentType { get; set; } = MimeTypeUtils.APPLICATION_JSON;
+    public MimeType SupportedContentType { get; set; } = MimeTypeUtils.ApplicationJson;
 
     public Encoding DefaultCharset { get; set; } = EncodingUtils.Utf8;
 
@@ -66,7 +66,7 @@ public class JsonMessageConverter : AbstractMessageConverter
         {
             var contentType = properties.ContentType();
             if ((AssumeSupportedContentType
-                 && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DEFAULT_CONTENT_TYPE)))
+                 && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DefaultContentType)))
                 || (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
             {
                 var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding()) ?? DefaultCharset;
@@ -75,7 +75,7 @@ public class JsonMessageConverter : AbstractMessageConverter
             }
             else
             {
-                _logger?.LogWarning("Could not convert incoming message with content-type ["
+                Logger?.LogWarning("Could not convert incoming message with content-type ["
                                     + contentType + "], '" + SupportedContentType.Subtype + "' keyword missing.");
             }
         }
@@ -84,7 +84,7 @@ public class JsonMessageConverter : AbstractMessageConverter
         return content;
     }
 
-    protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object convertionHint)
+    protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes;
         try
@@ -117,9 +117,9 @@ public class JsonMessageConverter : AbstractMessageConverter
         object content;
         try
         {
-            if (conversionHint is ParameterInfo pinfo)
+            if (conversionHint is ParameterInfo parameterInfo)
             {
-                content = ConvertBytesToObject(message.Payload, encoding, pinfo.ParameterType);
+                content = ConvertBytesToObject(message.Payload, encoding, parameterInfo.ParameterType);
             }
             else if (targetType != null)
             {

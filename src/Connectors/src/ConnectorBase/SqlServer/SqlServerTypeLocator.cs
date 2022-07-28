@@ -8,23 +8,23 @@ using System;
 namespace Steeltoe.Connector.SqlServer;
 
 /// <summary>
-/// Assemblies and types used for interacting with Microsoft SQL Server
+/// Assemblies and types used for interacting with Microsoft SQL Server.
 /// </summary>
 public static class SqlServerTypeLocator
 {
     /// <summary>
-    /// Gets SqlConnection from a SQL Server Library
+    /// Gets SqlConnection from a SQL Server Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found</exception>
+    /// <exception cref="ConnectorException">When type is not found.</exception>
     public static Type SqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
 
     /// <summary>
-    /// Gets the list of supported SQL Server Client assemblies
+    /// Gets the list of supported SQL Server Client assemblies.
     /// </summary>
     public static string[] Assemblies { get; internal set; } = { "System.Data.SqlClient" };
 
     /// <summary>
-    /// Gets the list of SQL Server types that implement IDbConnection
+    /// Gets the list of SQL Server types that implement IDbConnection.
     /// </summary>
     public static string[] ConnectionTypeNames { get; internal set; } = { "System.Data.SqlClient.SqlConnection" };
 }

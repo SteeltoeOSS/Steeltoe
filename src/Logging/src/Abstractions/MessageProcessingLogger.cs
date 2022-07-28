@@ -14,10 +14,10 @@ public class MessageProcessingLogger : ILogger
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MessageProcessingLogger"/> class.
-    /// Wraps an ILogger and decorates log messages via <see cref="IDynamicMessageProcessor"/>
+    /// Wraps an ILogger and decorates log messages via <see cref="IDynamicMessageProcessor"/>.
     /// </summary>
-    /// <param name="iLogger">The <see cref="ILogger"/> being wrapped</param>
-    /// <param name="messageProcessors">The list of <see cref="IDynamicMessageProcessor"/>s</param>
+    /// <param name="iLogger">The <see cref="ILogger"/> being wrapped.</param>
+    /// <param name="messageProcessors">The list of <see cref="IDynamicMessageProcessor"/>s.</param>
     public MessageProcessingLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
     {
         _messageProcessors = messageProcessors;

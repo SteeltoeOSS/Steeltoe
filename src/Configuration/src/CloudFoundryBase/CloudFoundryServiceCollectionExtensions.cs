@@ -10,7 +10,7 @@ using System;
 namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
 /// <summary>
-/// Extension methods for adding services related to CloudFoundry
+/// Extension methods for adding services related to CloudFoundry.
 /// </summary>
 public static class CloudFoundryServiceCollectionExtensions
 {
@@ -19,9 +19,9 @@ public static class CloudFoundryServiceCollectionExtensions
     /// and add both to the provided service container as configured TOptions.  You can then inject both options using the normal
     /// Options pattern.
     /// </summary>
-    /// <param name="services">the service container</param>
-    /// <param name="config">the applications configuration</param>
-    /// <returns>service container</returns>
+    /// <param name="services">the service container.</param>
+    /// <param name="config">the applications configuration.</param>
+    /// <returns>service container.</returns>
     public static IServiceCollection ConfigureCloudFoundryOptions(this IServiceCollection services, IConfiguration config)
     {
         if (services == null)
@@ -50,11 +50,11 @@ public static class CloudFoundryServiceCollectionExtensions
     /// the provided <paramref name="config"/> into the options type and add it to the provided service container as a configured named TOption.
     /// The name of the TOption will be the <paramref name="serviceName"/>. You can then inject the option using the normal Options pattern.
     /// </summary>
-    /// <typeparam name="TOption">the options type</typeparam>
-    /// <param name="services">the service container</param>
-    /// <param name="config">the applications configuration</param>
-    /// <param name="serviceName">the Cloud Foundry service name to bind to the options type</param>
-    /// <returns>service container</returns>
+    /// <typeparam name="TOption">the options type.</typeparam>
+    /// <param name="services">the service container.</param>
+    /// <param name="config">the applications configuration.</param>
+    /// <param name="serviceName">the Cloud Foundry service name to bind to the options type.</param>
+    /// <returns>service container.</returns>
     public static IServiceCollection ConfigureCloudFoundryService<TOption>(this IServiceCollection services, IConfiguration config, string serviceName)
         where TOption : CloudFoundryServicesOptions
     {
@@ -86,11 +86,11 @@ public static class CloudFoundryServiceCollectionExtensions
     /// the provided <paramref name="config"/> into the options type and add them all to the provided service container as a configured named TOptions.
     /// The name of each TOption will be the the name of the Cloud Foundry service binding. You can then inject all the options using the normal Options pattern.
     /// </summary>
-    /// <typeparam name="TOption">the options type</typeparam>
-    /// <param name="services">the service container</param>
-    /// <param name="config">the applications configuration</param>
-    /// <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type</param>
-    /// <returns>serice container</returns>
+    /// <typeparam name="TOption">the options type.</typeparam>
+    /// <param name="services">the service container.</param>
+    /// <param name="config">the applications configuration.</param>
+    /// <param name="serviceLabel">the Cloud Foundry service label to use to bind to the options type.</param>
+    /// <returns>service container.</returns>
     public static IServiceCollection ConfigureCloudFoundryServices<TOption>(this IServiceCollection services, IConfiguration config, string serviceLabel)
         where TOption : CloudFoundryServicesOptions
     {

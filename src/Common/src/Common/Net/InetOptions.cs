@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Net;
 
 public class InetOptions
 {
-    public const string PREFIX = "spring:cloud:inet";
+    public const string Prefix = "spring:cloud:inet";
 
     public string DefaultHostname { get; set; } = "localhost";
 

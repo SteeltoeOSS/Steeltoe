@@ -81,7 +81,7 @@ namespace Graphs
         /// Given an arbitrary code:NodeIndex that identifies the node, Get a code:Node object.  
         /// 
         /// This routine does not allocated but uses the space passed in by 'storage.  
-        /// 'storage' should be allocated with coode:AllocNodeStorage, and should be agressively reused.  
+        /// 'storage' should be allocated with code:AllocNodeStorage, and should be aggressively reused.  
         /// </summary>
         public Node GetNode(NodeIndex nodeIndex, Node storage)
         {
@@ -98,7 +98,7 @@ namespace Graphs
         /// Given an arbitrary code:NodeTypeIndex that identifies the nodeId of the node, Get a code:NodeType object.  
         /// 
         /// This routine does not allocated but overwrites the space passed in by 'storage'.  
-        /// 'storage' should be allocated with coode:AllocNodeTypeStorage, and should be agressively reused.  
+        /// 'storage' should be allocated with code:AllocNodeTypeStorage, and should be aggressively reused.  
         /// 
         /// Note that this routine does not get used much, instead Node.GetType is normal way of getting the nodeId.  
         /// </summary>
@@ -486,7 +486,7 @@ namespace Graphs
             m_nodes.Count = 0;
         }
 
-        // To support very space efficient encodings, and to allow for easy serialiation (persistence to file)
+        // To support very space efficient encodings, and to allow for easy serialization (persistence to file)
         // Types are given an index and their data is stored in a m_types array.  TypeInfo is the data in this
         // array.  
         internal struct TypeInfo
@@ -839,7 +839,7 @@ namespace Graphs
             m_index = NodeIndex.Invalid;
         }
 
-        // Node information is stored in a compressed form because we have alot of them. 
+        // Node information is stored in a compressed form because we have a lot of them. 
         internal static int ReadCompressedInt(SegmentedMemoryStreamReader reader)
         {
             int ret = 0;
@@ -1058,15 +1058,15 @@ namespace Graphs
         /// </summary>
         public int Size;
         /// <summary>
-        /// The time when this image was built (There is a field in the PE header).   May be MinimumValue if unknonwn. 
+        /// The time when this image was built (There is a field in the PE header).   May be MinimumValue if unknown. 
         /// </summary>
         public DateTime BuildTime;      // From in the PE header
         /// <summary>
-        /// The name of hte PDB file assoicated with this module.   Ma bye null if unknown
+        /// The name of hte PDB file associated with this module.   Ma bye null if unknown
         /// </summary>
         public string PdbName;
         /// <summary>
-        /// The GUID that uniquely identfies this PDB for symbol server lookup.  May be Guid.Empty it not known.  
+        /// The GUID that uniquely identifies this PDB for symbol server lookup.  May be Guid.Empty it not known.  
         /// </summary>
         public Guid PdbGuid;            // PDB Guid 
         /// <summary>
@@ -1166,7 +1166,7 @@ namespace Graphs
         {
             return graph.PrintChildren((NodeIndex)nodeIndex);
         }
-        // Debuggging. 
+        // Debugging. 
         /// <summary>
         /// Writes the graph as XML to 'writer'.  Don't use on big graphs.  
         /// </summary>
@@ -1337,7 +1337,7 @@ namespace Graphs
 /// a refGraph it is easy to answer the question 'who points at me' of the original graph.  
 /// 
 /// When create the RefGraph the whole reference graph is generated on the spot (thus it must traverse
-/// the whole of the orignal graph) and the size of the resulting RefGraph is  about the same size as the  
+/// the whole of the original graph) and the size of the resulting RefGraph is  about the same size as the  
 /// original graph. 
 /// 
 /// Thus this is a fairly expensive thing to create.  
@@ -1348,7 +1348,7 @@ internal sealed class RefGraph
     public RefGraph(Graph graph)
     {
         m_refsForNodes = new NodeListIndex[(int)graph.NodeIndexLimit];
-        // We guess that we need about 1.5X as many slots as there are nodes.   This seems a concervative estimate. 
+        // We guess that we need about 1.5X as many slots as there are nodes.   This seems a conservative estimate. 
         m_links = new GrowableArray<RefElem>((int)graph.NodeIndexLimit * 3 / 2);
 
         var nodeStorage = graph.AllocNodeStorage();
@@ -1375,7 +1375,7 @@ internal sealed class RefGraph
     /// Given an arbitrary code:NodeIndex that identifies the node, Get a code:Node object.  
     /// 
     /// This routine does not allocated but uses the space passed in by 'storage.  
-    /// 'storage' should be allocated with coode:AllocNodeStorage, and should be agressively reused.  
+    /// 'storage' should be allocated with code:AllocNodeStorage, and should be aggressively reused.  
     /// </summary>
     public RefNode GetNode(NodeIndex nodeIndex, RefNode storage)
     {
@@ -1470,12 +1470,12 @@ internal sealed class RefGraph
     /// <summary>
     ///  Logically a NodeListIndex represents a list of node indexes.   However it is heavily optimized
     ///  to avoid overhead.   0 means empty, a positive number is the NodeIndex+1 and a negative number 
-    ///  is index in m_links - 1;.  
+    ///  is index in m_links - 1.  
     /// </summary>
     internal enum NodeListIndex { Empty = 0 };
 
     /// <summary>
-    /// RefElem is a linked list cell that is used to store lists of childrens that are larger than 1.
+    /// RefElem is a linked list cell that is used to store lists of children that are larger than 1.
     /// </summary>
     internal struct RefElem
     {
@@ -1485,7 +1485,7 @@ internal sealed class RefGraph
     }
 
     /// <summary>
-    /// m_refsForNodes maps the NodeIndexs of the reference graph to the children information.   However unlike
+    /// m_refsForNodes maps the NodeIndexes of the reference graph to the children information.   However unlike
     /// a normal Graph RefGraph needs to support incremental addition of children.  Thus we can't use the normal
     /// compression (which assumed you know all the children when you define the node).  
     /// 
@@ -1665,7 +1665,7 @@ internal sealed class SpanningTree
     /// A node's priority is defined to be the priority of the type of the node
     /// (as given by PriorityRegExs), plus 1/10 the priority of its parent.  
     /// 
-    /// Thus priorities 'decay' by 1/10 through pointers IF the prioirty of the node's
+    /// Thus priorities 'decay' by 1/10 through pointers IF the priority of the node's
     /// type is 0 (the default).   
     ///
     /// By default the framework has a priority of -1 which means that you explore all
@@ -1830,8 +1830,8 @@ internal sealed class SpanningTree
     /// <summary>
     /// A helper for AddOrphansToQueue, so we only add orphans that are not reachable from other orphans.  
     /// 
-    /// Mark all decendents (but not nodeIndex itself) as being visited.    Any arcs that form
-    /// cycles are ignored, so nodeIndex is guarenteed to NOT be marked.     
+    /// Mark all descendants (but not nodeIndex itself) as being visited.    Any arcs that form
+    /// cycles are ignored, so nodeIndex is guaranteed to NOT be marked.     
     /// </summary>
     private void MarkDecendentsIgnoringCycles(NodeIndex nodeIndex, int recursionCount)
     {
@@ -1844,10 +1844,10 @@ internal sealed class SpanningTree
 
         Debug.Assert(m_parent[(int)nodeIndex] == NodeIndex.Invalid);
 
-        // This marks that there is a path from another ophan to this one (thus it is not a good root)
+        // This marks that there is a path from another orphan to this one (thus it is not a good root)
         NodeIndex orphanVisitedMarker = NodeIndex.Invalid - 1;
 
-        // To detect cycles we mark all nodes we not commmited to (we are visiting, rather than visited)
+        // To detect cycles we mark all nodes we not committed to (we are visiting, rather than visited)
         // If we detect this mark we understand it is a loop and ignore the arc.  
         NodeIndex orphanVisitingMarker = NodeIndex.Invalid - 2;
         m_parent[(int)nodeIndex] = orphanVisitingMarker;        // We are now visitING
@@ -1914,7 +1914,7 @@ internal sealed class SpanningTree
         str = Regex.Escape(str);                // Assume everything is ordinary
         str = str.Replace(@"%", @"[.\w\d?]*");  // % means any number of alpha-numeric chars. 
         str = str.Replace(@"\*", @".*");        // * means any number of any characters.  
-        str = str.Replace(@"\^", @"^");         // ^ means anchor at the begining.  
+        str = str.Replace(@"\^", @"^");         // ^ means anchor at the beginning.  
         str = str.Replace(@"\|", @"|");         // | means is the or operator  
         str = str.Replace(@"\{", "(");
         str = str.Replace("}", ")");
@@ -2355,7 +2355,7 @@ internal sealed class GraphSampler
     /// you should add this node to the graph being built.   If 'mustAdd' is true or
     /// if we need samples it keep the right sample/total ratio, then add the sample.  
     /// </summary>
-    private void VisitNode(NodeIndex nodeIdx, bool mustAdd, bool dontAddAncestors)
+    private void VisitNode(NodeIndex nodeIdx, bool mustAdd, bool doNotAddAncestors)
     {
         var newNodeIdx = m_newIndex[(int)nodeIdx];
         // If this node has been selected already, there is nothing to do.    
@@ -2363,7 +2363,7 @@ internal sealed class GraphSampler
         {
             return;
         }
-        // If we have visted this node and reject it and we are not forced to add it, we are done.
+        // If we have visited this node and reject it and we are not forced to add it, we are done.
         if (newNodeIdx == RejectedNode && !mustAdd)
         {
             return;
@@ -2446,7 +2446,7 @@ internal sealed class GraphSampler
             }
 
             // For all ancestors, require them to be in the list
-            if (!dontAddAncestors)
+            if (!doNotAddAncestors)
             {
                 for (; ; )
                 {
@@ -2513,7 +2513,7 @@ internal sealed class GraphSampler
 
             if (newNodeIdx == NodeIndex.Invalid)
             {
-                // We should have visted every node, so there should be no Invalid nodes. 
+                // We should have visited every node, so there should be no Invalid nodes. 
                 Debug.Assert(!allNodesVisited);
             }
             else
@@ -2618,7 +2618,7 @@ internal sealed class GraphSampler
 
     /// <summary>
     /// This value goes in the m_newIndex[].   If we accept the node into the sampled graph, we put the node
-    /// index in the NET graph in m_newIndex.   If we reject the node we use the special RegjectedNode value
+    /// index in the NET graph in m_newIndex.   If we reject the node we use the special RejectedNode value
     /// below
     /// </summary>
     private const NodeIndex RejectedNode = (NodeIndex)(-2);

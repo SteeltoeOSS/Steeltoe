@@ -82,8 +82,8 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 100);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 100);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
 
         Task t1 = cmd1.ExecuteAsync();
         Task t2 = cmd2.ExecuteAsync();
@@ -109,9 +109,9 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 250);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 250);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
 
@@ -145,10 +145,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 300);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 300);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
         WaitForLatchedObserverToUpdate(observer, 1, 100, 125, _output);
@@ -179,13 +179,13 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         var observer = new LatchedObserver(_output, latch);
 
         _stream = RollingCommandMaxConcurrencyStream.GetInstance(key, 10, 100);
-        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.STABLE_TICK_COUNT).Subscribe(observer);
+        _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 300);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 300);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 10);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
         WaitForLatchedObserverToUpdate(observer, 1, 100, 125, _output);
@@ -214,10 +214,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.SUCCESS, 40);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.RESPONSE_FROM_CACHE);
+        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 40);
+        var cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        var cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        var cmd4 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
 
         Task t1 = cmd1.ExecuteAsync();
         Time.Wait(5);
@@ -245,15 +245,15 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         // after 3 failures, next command should short-circuit.
         // to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
         // then when circuit is open, execute 20 concurrent commands.  they should all get short-circuited, and max concurrency should be 1
-        var failure1 = Command.From(GroupKey, key, HystrixEventType.FAILURE);
-        var failure2 = Command.From(GroupKey, key, HystrixEventType.FAILURE);
-        var failure3 = Command.From(GroupKey, key, HystrixEventType.FAILURE);
+        var failure1 = Command.From(GroupKey, key, HystrixEventType.Failure);
+        var failure2 = Command.From(GroupKey, key, HystrixEventType.Failure);
+        var failure3 = Command.From(GroupKey, key, HystrixEventType.Failure);
 
         var shortCircuited = new List<Command>();
 
         for (var i = 0; i < 20; i++)
         {
-            shortCircuited.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0));
+            shortCircuited.Add(Command.From(GroupKey, key, HystrixEventType.Success, 0));
         }
 
         failure1.Execute();
@@ -292,19 +292,19 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         var saturators = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 500, ExecutionIsolationStrategy.SEMAPHORE));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
         var rejected = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            rejected.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 0, ExecutionIsolationStrategy.SEMAPHORE));
+            rejected.Add(Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore));
         }
 
-        var sattasks = new List<Task>();
+        var tasks = new List<Task>();
         foreach (var saturatingCmd in saturators)
         {
-            sattasks.Add(Task.Run(() => saturatingCmd.Execute()));
+            tasks.Add(Task.Run(() => saturatingCmd.Execute()));
         }
 
         await Task.Delay(50);
@@ -314,7 +314,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
             await Task.Run(() => rejectedCmd.Execute());
         }
 
-        Task.WaitAll(sattasks.ToArray());
+        Task.WaitAll(tasks.ToArray());
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
         Assert.Equal(10, _stream.LatestRollingMax);
     }
@@ -337,13 +337,13 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         var saturators = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            saturators.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 400));
+            saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 400));
         }
 
         var rejected = new List<Command>();
         for (var i = 0; i < 10; i++)
         {
-            rejected.Add(Command.From(GroupKey, key, HystrixEventType.SUCCESS, 100));
+            rejected.Add(Command.From(GroupKey, key, HystrixEventType.Success, 100));
         }
 
         var tasks = new List<Task>();

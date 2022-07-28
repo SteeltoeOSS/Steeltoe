@@ -13,7 +13,7 @@ public class DefaultErrorMessageStrategy : IErrorMessageStrategy
 {
     public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributes)
     {
-        var inputMessage = attributes?.GetAttribute(ErrorMessageUtils.INPUT_MESSAGE_CONTEXT_KEY);
+        var inputMessage = attributes?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
         return inputMessage switch
         {
             IMessage iMessage => new ErrorMessage(exception, iMessage),

@@ -10,12 +10,12 @@ namespace Steeltoe.Connector;
 
 public abstract class AbstractServiceConnectorOptions
 {
-    protected const char Default_Terminator = ';';
-    protected const char Default_Separator = '=';
+    protected const char DefaultTerminator = ';';
+    protected const char DefaultSeparator = '=';
     private readonly char _keyValueTerm;
     private readonly char _keyValueSep;
 
-    protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = Default_Terminator, char separator = Default_Separator)
+    protected AbstractServiceConnectorOptions(IConfiguration config, char terminator = DefaultTerminator, char separator = DefaultSeparator)
         : this(terminator, separator)
     {
         if (config == null)
@@ -27,7 +27,7 @@ public abstract class AbstractServiceConnectorOptions
     }
 
     protected AbstractServiceConnectorOptions()
-        : this(Default_Terminator, Default_Separator)
+        : this(DefaultTerminator, DefaultSeparator)
     {
     }
 
@@ -48,11 +48,11 @@ public abstract class AbstractServiceConnectorOptions
     }
 
     /// <summary>
-    /// Add a Key/Value pair to a <see cref="StringBuilder"/> if the value isn't null or empty
+    /// Add a Key/Value pair to a <see cref="StringBuilder"/> if the value isn't null or empty.
     /// </summary>
-    /// <param name="sb">Your stringbuilder</param>
-    /// <param name="key">Identifier for the value to be added</param>
-    /// <param name="value">Value to be added</param>
+    /// <param name="sb">Your string builder.</param>
+    /// <param name="key">Identifier for the value to be added.</param>
+    /// <param name="value">Value to be added.</param>
     protected internal void AddKeyValue(StringBuilder sb, string key, string value)
     {
         if (!string.IsNullOrEmpty(value))
@@ -65,13 +65,13 @@ public abstract class AbstractServiceConnectorOptions
     }
 
     /// <summary>
-    /// Add colon delimited pairs like user:password or host:port to a <see cref="StringBuilder"/>
+    /// Add colon delimited pairs like user:password or host:port to a <see cref="StringBuilder"/>.
     /// </summary>
-    /// <param name="sb">Your stringbuilder</param>
-    /// <param name="part1">First item in the pair</param>
-    /// <param name="part2">Second item in the pair</param>
-    /// <param name="terminator">Character to denote the end of the pair</param>
-    /// <remarks>Only adds colon if second item is NOT null or empty</remarks>
+    /// <param name="sb">Your string builder.</param>
+    /// <param name="part1">First item in the pair.</param>
+    /// <param name="part2">Second item in the pair.</param>
+    /// <param name="terminator">Character to denote the end of the pair.</param>
+    /// <remarks>Only adds colon if second item is NOT null or empty.</remarks>
     protected internal void AddColonDelimitedPair(StringBuilder sb, string part1, string part2, char? terminator = null)
     {
         sb.Append(part1);

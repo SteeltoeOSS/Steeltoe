@@ -30,8 +30,8 @@ public static class StreamServicesExtensions
 {
     public static void AddStreamConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<SpringIntegrationOptions>(configuration.GetSection(SpringIntegrationOptions.PREFIX));
-        services.Configure<BindingServiceOptions>(configuration.GetSection(BindingServiceOptions.PREFIX));
+        services.Configure<SpringIntegrationOptions>(configuration.GetSection(SpringIntegrationOptions.Prefix));
+        services.Configure<BindingServiceOptions>(configuration.GetSection(BindingServiceOptions.Prefix));
         services.PostConfigure<BindingServiceOptions>(o => o.PostProcess());
     }
 

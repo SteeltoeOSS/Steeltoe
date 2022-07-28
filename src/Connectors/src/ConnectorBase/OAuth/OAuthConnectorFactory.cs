@@ -11,18 +11,18 @@ namespace Steeltoe.Connector.OAuth;
 public class OAuthConnectorFactory
 {
     private readonly SsoServiceInfo _info;
-    private readonly OAuthConnectorOptions _config;
+    private readonly OAuthConnectorOptions _options;
     private readonly OAuthConfigurer _configurer = new ();
 
-    public OAuthConnectorFactory(SsoServiceInfo sinfo, OAuthConnectorOptions config)
+    public OAuthConnectorFactory(SsoServiceInfo serviceInfo, OAuthConnectorOptions options)
     {
-        _info = sinfo;
-        _config = config;
+        _info = serviceInfo;
+        _options = options;
     }
 
     public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
     {
-        var opts = _configurer.Configure(_info, _config);
+        var opts = _configurer.Configure(_info, _options);
         return opts;
     }
 }

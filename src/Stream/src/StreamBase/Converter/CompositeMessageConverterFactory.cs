@@ -22,7 +22,7 @@ public class CompositeMessageConverterFactory : IMessageConverterFactory
 
         InitDefaultConverters();
 
-        var resolver = new DefaultContentTypeResolver { DefaultMimeType = BindingOptions.DEFAULT_CONTENT_TYPE };
+        var resolver = new DefaultContentTypeResolver { DefaultMimeType = BindingOptions.DefaultContentType };
         foreach (var mc in AllRegistered)
         {
             if (mc is AbstractMessageConverter converter)

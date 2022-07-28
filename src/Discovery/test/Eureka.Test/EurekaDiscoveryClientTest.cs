@@ -18,13 +18,13 @@ public class EurekaDiscoveryClientTest : AbstractBaseTest
             ShouldFetchRegistry = false
         };
 
-        var cwrapper = new TestOptionMonitorWrapper<EurekaClientOptions>(clientConfig);
+        var clientWrapper = new TestOptionMonitorWrapper<EurekaClientOptions>(clientConfig);
 
-        var instConfig = new EurekaInstanceOptions();
-        var iwrapper = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instConfig);
+        var instanceConfig = new EurekaInstanceOptions();
+        var instanceWrapper = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instanceConfig);
 
-        var appMgr = new EurekaApplicationInfoManager(iwrapper);
-        var client = new EurekaDiscoveryClient(cwrapper, iwrapper, appMgr);
+        var appMgr = new EurekaApplicationInfoManager(instanceWrapper);
+        var client = new EurekaDiscoveryClient(clientWrapper, instanceWrapper, appMgr);
 
         Assert.NotNull(client.ClientConfig);
         Assert.Equal(clientConfig, client.ClientConfig);
@@ -35,15 +35,15 @@ public class EurekaDiscoveryClientTest : AbstractBaseTest
 
         var thisService = client.GetLocalServiceInstance();
         Assert.NotNull(thisService);
-        Assert.Equal(instConfig.GetHostName(false), thisService.Host);
-        Assert.Equal(instConfig.SecurePortEnabled, thisService.IsSecure);
+        Assert.Equal(instanceConfig.GetHostName(false), thisService.Host);
+        Assert.Equal(instanceConfig.SecurePortEnabled, thisService.IsSecure);
         Assert.NotNull(thisService.Metadata);
-        Assert.Equal(instConfig.NonSecurePort, thisService.Port);
-        Assert.Equal(instConfig.AppName, thisService.ServiceId);
+        Assert.Equal(instanceConfig.NonSecurePort, thisService.Port);
+        Assert.Equal(instanceConfig.AppName, thisService.ServiceId);
         Assert.NotNull(thisService.Uri);
-        var scheme = instConfig.SecurePortEnabled ? "https" : "http";
-        var uriPort = instConfig.SecurePortEnabled ? instConfig.SecurePort : instConfig.NonSecurePort;
-        var uri = new Uri($"{scheme}://{instConfig.GetHostName(false)}:{uriPort}");
+        var scheme = instanceConfig.SecurePortEnabled ? "https" : "http";
+        var uriPort = instanceConfig.SecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
+        var uri = new Uri($"{scheme}://{instanceConfig.GetHostName(false)}:{uriPort}");
         Assert.Equal(uri, thisService.Uri);
     }
 }

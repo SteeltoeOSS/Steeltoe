@@ -8,7 +8,7 @@ using Steeltoe.Connector.Services;
 namespace Steeltoe.Connector;
 
 /// <summary>
-/// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />
+/// Identifies an assembly that contains one or more <see cref="IServiceInfoFactory" />.
 /// </summary>
 public sealed class ServiceInfoFactoryAssemblyAttribute : AssemblyContainsTypeAttribute
 {

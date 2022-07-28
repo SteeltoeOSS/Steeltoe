@@ -11,7 +11,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class CredentialSetRequest : CredHubBaseObject
 {
     /// <summary>
-    /// Gets or sets value of the credential to be set
+    /// Gets or sets value of the credential to be set.
     /// </summary>
     public ICredentialValue Value { get; set; }
 }

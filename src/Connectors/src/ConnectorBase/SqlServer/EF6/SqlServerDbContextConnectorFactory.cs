@@ -10,8 +10,8 @@ namespace Steeltoe.Connector.SqlServer.EF6;
 
 public class SqlServerDbContextConnectorFactory : SqlServerProviderConnectorFactory
 {
-    public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions config, Type dbContextType)
-        : base(info, config, dbContextType)
+    public SqlServerDbContextConnectorFactory(SqlServerServiceInfo info, SqlServerProviderConnectorOptions options, Type dbContextType)
+        : base(info, options, dbContextType)
     {
         if (dbContextType == null)
         {

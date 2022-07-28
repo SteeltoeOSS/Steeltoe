@@ -30,12 +30,12 @@ public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
         var path = sandbox.CreateFile("appsettings.json", appsettings);
         var directory = Path.GetDirectoryName(path);
         var fileName = Path.GetFileName(path);
-        var cbuilder = new ConfigurationBuilder();
-        cbuilder.SetBasePath(directory);
-        cbuilder.AddJsonFile(fileName);
+        var builder = new ConfigurationBuilder();
+        builder.SetBasePath(directory);
+        builder.AddJsonFile(fileName);
         var services = new ServiceCollection();
 
-        services.AddConfigurationDiscoveryClient(cbuilder.Build());
+        services.AddConfigurationDiscoveryClient(builder.Build());
         var serviceProvider = services.BuildServiceProvider();
 
         // by getting the provider, we're confirming that the options are also available in the container

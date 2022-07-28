@@ -25,10 +25,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-#if !NET6_0_OR_GREATER
-        AppContext.SetSwitch(
-            "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-#endif
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
         var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
@@ -41,10 +37,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-#if !NET6_0_OR_GREATER
-        AppContext.SetSwitch(
-            "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-#endif
         var services = new ServiceCollection().AddSingleton(GetConfiguration());
 
         var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
@@ -59,10 +51,6 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-#if !NET6_0_OR_GREATER
-        AppContext.SetSwitch(
-            "System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport", true);
-#endif
         var services = new ServiceCollection()
             .AddSingleton(GetConfiguration(new Dictionary<string, string>
             {

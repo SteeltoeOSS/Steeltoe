@@ -11,32 +11,32 @@ namespace Steeltoe.Messaging;
 
 public class MessageHeaders : IMessageHeaders
 {
-    public const string INTERNAL = "internal_";
+    public const string Internal = "internal_";
 
-    public const string ID = "id";
-    public const string TIMESTAMP = "timestamp";
-    public const string CONTENT_TYPE = "contentType";
-    public const string REPLY_CHANNEL = "replyChannel";
-    public const string ERROR_CHANNEL = "errorChannel";
-    public const string INFERRED_ARGUMENT_TYPE = $"{INTERNAL}InferredArgumentType";
+    public const string IdName = "id";
+    public const string TimestampName = "timestamp";
+    public const string ContentType = "contentType";
+    public const string ReplyChannelName = "replyChannel";
+    public const string ErrorChannelName = "errorChannel";
+    public const string InferredArgumentType = $"{Internal}InferredArgumentType";
 
-    public const string CONTENT_TYPE_JSON = "application/json";
-    public const string CONTENT_TYPE_TEXT_PLAIN = "text/plain";
-    public const string CONTENT_TYPE_BYTES = "application/octet-stream";
-    public const string CONTENT_TYPE_JSON_ALT = "text/x-json";
-    public const string CONTENT_TYPE_XML = "application/xml";
-    public const string CONTENT_TYPE_JAVA_SERIALIZED_OBJECT = "application/x-java-serialized-object";
-    public const string CONTENT_TYPE_DOTNET_SERIALIZED_OBJECT = "application/x-dotnet-serialized-object";
+    public const string ContentTypeJson = "application/json";
+    public const string ContentTypeTextPlain = "text/plain";
+    public const string ContentTypeBytes = "application/octet-stream";
+    public const string ContentTypeJsonAlt = "text/x-json";
+    public const string ContentTypeXml = "application/xml";
+    public const string ContentTypeJavaSerializedObject = "application/x-java-serialized-object";
+    public const string ContentTypeDotnetSerializedObject = "application/x-dotnet-serialized-object";
 
-    public const string TYPE_ID = "__TypeId__";
-    public const string CONTENT_TYPE_ID = "__ContentTypeId__";
-    public const string KEY_TYPE_ID = "__KeyTypeId__";
+    public const string TypeId = "__TypeId__";
+    public const string ContentTypeId = "__ContentTypeId__";
+    public const string KeyTypeId = "__KeyTypeId__";
 
-    public static readonly string ID_VALUE_NONE = string.Empty;
+    public static readonly string IdValueNone = string.Empty;
 
-    protected readonly IDictionary<string, object> headers;
-    private static readonly IIDGenerator _defaultIdGenerator = new DefaultIdGenerator();
-    private static volatile IIDGenerator _idGenerator;
+    protected readonly IDictionary<string, object> Headers;
+    private static readonly IIdGenerator DefaultIdGenerator = new DefaultIdGenerator();
+    private static volatile IIdGenerator _idGenerator;
 
     public MessageHeaders(IDictionary<string, object> headers = null)
         : this(headers, null, null)
@@ -45,7 +45,7 @@ public class MessageHeaders : IMessageHeaders
 
     public MessageHeaders(IDictionary<string, object> headers, string id, long? timestamp)
     {
-        this.headers = headers != null ? new Dictionary<string, object>(headers) : new Dictionary<string, object>();
+        this.Headers = headers != null ? new Dictionary<string, object>(headers) : new Dictionary<string, object>();
         UpdateHeaders(id, timestamp);
     }
 
@@ -56,14 +56,14 @@ public class MessageHeaders : IMessageHeaders
 
     protected MessageHeaders(MessageHeaders other)
     {
-        headers = other.RawHeaders;
+        Headers = other.RawHeaders;
     }
 
     public virtual string Id
     {
         get
         {
-            if (!headers.TryGetValue(ID, out var result))
+            if (!Headers.TryGetValue(IdName, out var result))
             {
                 return null;
             }
@@ -76,7 +76,7 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            if (!headers.TryGetValue(TIMESTAMP, out var result))
+            if (!Headers.TryGetValue(TimestampName, out var result))
             {
                 return null;
             }
@@ -89,7 +89,7 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            headers.TryGetValue(REPLY_CHANNEL, out var chan);
+            Headers.TryGetValue(ReplyChannelName, out var chan);
             return chan;
         }
     }
@@ -98,7 +98,7 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            headers.TryGetValue(ERROR_CHANNEL, out var chan);
+            Headers.TryGetValue(ErrorChannelName, out var chan);
             return chan;
         }
     }
@@ -115,32 +115,32 @@ public class MessageHeaders : IMessageHeaders
             return false;
         }
 
-        return ContentsEqual(other.headers);
+        return ContentsEqual(other.Headers);
     }
 
     public override int GetHashCode()
     {
-        return headers.GetHashCode();
+        return Headers.GetHashCode();
     }
 
     public override string ToString()
     {
-        return headers.ToString();
+        return Headers.ToString();
     }
 
     public virtual bool ContainsKey(string key)
     {
-        return headers.ContainsKey(key);
+        return Headers.ContainsKey(key);
     }
 
     public virtual bool TryGetValue(string key, out object value)
     {
-        return headers.TryGetValue(key, out value);
+        return Headers.TryGetValue(key, out value);
     }
 
     public virtual void Add(string key, object value)
     {
-        headers.Add(key, value);
+        Headers.Add(key, value);
     }
 
     public virtual void Add(object key, object value)
@@ -150,17 +150,17 @@ public class MessageHeaders : IMessageHeaders
 
     public virtual void Add(KeyValuePair<string, object> item)
     {
-        headers.Add(item);
+        Headers.Add(item);
     }
 
     public virtual void Clear()
     {
-        headers.Clear();
+        Headers.Clear();
     }
 
     public virtual bool Contains(KeyValuePair<string, object> item)
     {
-        return headers.Contains(item);
+        return Headers.Contains(item);
     }
 
     public virtual bool Contains(object key)
@@ -175,7 +175,7 @@ public class MessageHeaders : IMessageHeaders
 
     public virtual void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
     {
-        headers.CopyTo(array, arrayIndex);
+        Headers.CopyTo(array, arrayIndex);
     }
 
     public virtual void CopyTo(Array array, int index)
@@ -190,24 +190,24 @@ public class MessageHeaders : IMessageHeaders
 
     public virtual bool Remove(string key)
     {
-        return headers.Remove(key);
+        return Headers.Remove(key);
     }
 
     public virtual bool Remove(KeyValuePair<string, object> item)
     {
-        return headers.Remove(item);
+        return Headers.Remove(item);
     }
 
     public virtual IEnumerator<KeyValuePair<string, object>> GetEnumerator()
     {
-        return headers.GetEnumerator();
+        return Headers.GetEnumerator();
     }
 
-    public virtual ICollection<string> Keys => headers.Keys;
+    public virtual ICollection<string> Keys => Headers.Keys;
 
-    public virtual ICollection<object> Values => headers.Values;
+    public virtual ICollection<object> Values => Headers.Values;
 
-    public virtual int Count => headers.Count;
+    public virtual int Count => Headers.Count;
 
     public virtual bool IsReadOnly => true;
 
@@ -253,30 +253,30 @@ public class MessageHeaders : IMessageHeaders
 
     IDictionaryEnumerator IDictionary.GetEnumerator()
     {
-        return (IDictionaryEnumerator)headers.GetEnumerator();
+        return (IDictionaryEnumerator)Headers.GetEnumerator();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
-        return ((IEnumerable)headers).GetEnumerator();
+        return ((IEnumerable)Headers).GetEnumerator();
     }
 
     void IDictionary.Add(object key, object value) => Add((string)key, value);
 
     bool IDictionary.Contains(object key)
     {
-        return headers.ContainsKey((string)key);
+        return Headers.ContainsKey((string)key);
     }
 
     void IDictionary.Remove(object key)
     {
-        headers.Remove((string)key);
+        Headers.Remove((string)key);
     }
 
     void ICollection.CopyTo(Array array, int index)
     {
         var collection = new KeyValuePair<string, object>[array.Length];
-        headers.CopyTo(collection, index);
+        Headers.CopyTo(collection, index);
         collection.CopyTo(array, 0);
     }
 
@@ -295,12 +295,12 @@ public class MessageHeaders : IMessageHeaders
             return false;
         }
 
-        if (headers.Count != other.Count)
+        if (Headers.Count != other.Count)
         {
             return false;
         }
 
-        foreach (var pair in headers)
+        foreach (var pair in Headers)
         {
             if (!other.TryGetValue(pair.Key, out var otherValue))
             {
@@ -316,11 +316,11 @@ public class MessageHeaders : IMessageHeaders
         return true;
     }
 
-    internal static IIDGenerator IdGenerator
+    internal static IIdGenerator IdGenerator
     {
         get
         {
-            return _idGenerator ?? _defaultIdGenerator;
+            return _idGenerator ?? DefaultIdGenerator;
         }
 
         set
@@ -333,33 +333,33 @@ public class MessageHeaders : IMessageHeaders
     {
         if (id == null)
         {
-            headers[ID] = IdGenerator.GenerateId();
+            Headers[IdName] = IdGenerator.GenerateId();
         }
-        else if (id == ID_VALUE_NONE)
+        else if (id == IdValueNone)
         {
-            headers.Remove(ID);
+            Headers.Remove(IdName);
         }
         else
         {
-            headers[ID] = id;
+            Headers[IdName] = id;
         }
 
         if (timestamp == null)
         {
-            headers[TIMESTAMP] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            Headers[TimestampName] = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
         else if (timestamp.Value < 0)
         {
-            headers.Remove(TIMESTAMP);
+            Headers.Remove(TimestampName);
         }
         else
         {
-            headers[TIMESTAMP] = timestamp.Value;
+            Headers[TimestampName] = timestamp.Value;
         }
     }
 
     protected internal virtual IDictionary<string, object> RawHeaders
     {
-        get { return headers; }
+        get { return Headers; }
     }
 }

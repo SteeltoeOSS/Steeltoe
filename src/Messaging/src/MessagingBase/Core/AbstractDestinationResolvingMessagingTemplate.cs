@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Core;
 
-public abstract class AbstractDestinationResolvingMessagingTemplate<D>
-    : AbstractMessagingTemplate<D>,
-        IDestinationResolvingMessageSendingOperations<D>,
-        IDestinationResolvingMessageReceivingOperations<D>,
-        IDestinationResolvingMessageRequestReplyOperations<D>
+public abstract class AbstractDestinationResolvingMessagingTemplate<TDestination>
+    : AbstractMessagingTemplate<TDestination>,
+        IDestinationResolvingMessageSendingOperations<TDestination>,
+        IDestinationResolvingMessageReceivingOperations<TDestination>,
+        IDestinationResolvingMessageRequestReplyOperations<TDestination>
 {
-    private IDestinationResolver<D> _destinationResolver;
+    private IDestinationResolver<TDestination> _destinationResolver;
 
     protected AbstractDestinationResolvingMessagingTemplate(IApplicationContext context)
     {
@@ -25,11 +25,11 @@ public abstract class AbstractDestinationResolvingMessagingTemplate<D>
 
     public virtual IApplicationContext ApplicationContext { get; }
 
-    public IDestinationResolver<D> DestinationResolver
+    public IDestinationResolver<TDestination> DestinationResolver
     {
         get
         {
-            _destinationResolver ??= (IDestinationResolver<D>)ApplicationContext?.GetService(typeof(IDestinationResolver<D>));
+            _destinationResolver ??= (IDestinationResolver<TDestination>)ApplicationContext?.GetService(typeof(IDestinationResolver<TDestination>));
             return _destinationResolver;
         }
 
@@ -177,7 +177,7 @@ public abstract class AbstractDestinationResolvingMessagingTemplate<D>
         return SendAndReceive(destination, requestMessage);
     }
 
-    protected D ResolveDestination(string destinationName)
+    protected TDestination ResolveDestination(string destinationName)
     {
         if (DestinationResolver == null)
         {

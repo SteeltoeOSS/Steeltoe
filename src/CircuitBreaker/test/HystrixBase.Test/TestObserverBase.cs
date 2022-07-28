@@ -14,7 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestObserverBase<T> : ObserverBase<T>
 {
-    public const int STABLE_TICK_COUNT = 2;
+    public const int StableTickCount = 2;
 
     public volatile int TickCount;
 
@@ -44,7 +44,7 @@ public class TestObserverBase<T> : ObserverBase<T>
     protected override void OnNextCore(T value)
     {
         TickCount++;
-        if (TickCount >= STABLE_TICK_COUNT)
+        if (TickCount >= StableTickCount)
         {
             StreamRunning = true;
         }

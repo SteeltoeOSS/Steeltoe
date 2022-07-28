@@ -22,7 +22,7 @@ public class CloudFoundryOAuthBuilderTest
         var location = result.Headers.Location.ToString();
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-        Assert.StartsWith(expectedAuthoricationUrl, location, StringComparison.OrdinalIgnoreCase);
+        Assert.StartsWith(expectedAuthorizationUrl, location, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

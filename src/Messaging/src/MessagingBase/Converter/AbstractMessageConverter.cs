@@ -150,7 +150,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
             {
                 if (mimeType != null)
                 {
-                    accessor.SetHeaderIfAbsent(MessageHeaders.CONTENT_TYPE, mimeType);
+                    accessor.SetHeaderIfAbsent(MessageHeaders.ContentType, mimeType);
                 }
 
                 return MessageBuilder.CreateMessage(payloadToUse, accessor.MessageHeaders);
@@ -165,7 +165,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
         if (mimeType != null)
         {
-            builder.SetHeaderIfAbsent(MessageHeaders.CONTENT_TYPE, mimeType);
+            builder.SetHeaderIfAbsent(MessageHeaders.ContentType, mimeType);
         }
 
         return builder.Build();

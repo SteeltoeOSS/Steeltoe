@@ -63,8 +63,8 @@ public class ServiceCollectionExtensionsTest
         services.AddKubernetesActuators(null, utils);
         var provider = services.BuildServiceProvider();
 
-        var infocontributors = provider.GetServices<IInfoContributor>();
-        Assert.Equal(4, infocontributors.Count());
-        Assert.Equal(1, infocontributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
+        var contributors = provider.GetServices<IInfoContributor>();
+        Assert.Equal(4, contributors.Count());
+        Assert.Equal(1, contributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
     }
 }

@@ -29,44 +29,44 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         var exception = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);
         rabbitTemplate.ReplyErrorHandler = new TestErrorHandler(exception, latch);
-        var reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        var reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
         Assert.Null(reply);
-        var directReplyToContainers = rabbitTemplate._directReplyToContainers;
-        using var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
-        Assert.Empty(container._inUseConsumerChannels);
+        var directReplyToContainers = rabbitTemplate.DirectReplyToContainers;
+        var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
+        Assert.Empty(container.InUseConsumerChannels);
         Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
         var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
 
-        var ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        var ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
         Assert.Contains("No correlation header in reply", ex.Message);
 
         var accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
         accessor.CorrelationId = "foo";
 
-        ex = Assert.Throws<RabbitRejectAndDontRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
+        ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
         Assert.Contains("Reply received after timeout", ex.Message);
 
         _ = Task.Run(() =>
         {
-            var message = rabbitTemplate.Receive(ROUTE, 10000);
+            var message = rabbitTemplate.Receive(Route, 10000);
             Assert.NotNull(message);
             rabbitTemplate.Send(message.Headers.ReplyTo(), replyMessage);
             return message;
         });
 
-        while (rabbitTemplate.Receive(ROUTE, 100) != null)
+        while (rabbitTemplate.Receive(Route, 100) != null)
         {
             // Intentionally left empty.
         }
 
-        reply = rabbitTemplate.ConvertSendAndReceive<object>(ROUTE, "foo");
+        reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
         Assert.Null(reply);
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
         Assert.IsType<ListenerExecutionFailedException>(exception.Value);
         var listException = exception.Value as ListenerExecutionFailedException;
         Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
         Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
-        Assert.Empty(container._inUseConsumerChannels);
+        Assert.Empty(container.InUseConsumerChannels);
     }
 
     protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)

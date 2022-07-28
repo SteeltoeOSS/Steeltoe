@@ -16,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.Integration.Channel.Test;
 
-public class DatatypeChannelTest
+public class DataTypeChannelTest
 {
     [Fact]
     public void SupportedType()
@@ -37,7 +37,7 @@ public class DatatypeChannelTest
     {
         var channel = CreateChannel(typeof(int));
         IConversionService conversionService = new DefaultConversionService();
-        var converter = new DefaultDatatypeChannelMessageConverter(conversionService);
+        var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
         Assert.True(channel.Send(Message.Create("123")));
     }
@@ -47,7 +47,7 @@ public class DatatypeChannelTest
     {
         var channel = CreateChannel(typeof(int));
         IConversionService conversionService = new DefaultConversionService();
-        var converter = new DefaultDatatypeChannelMessageConverter(conversionService);
+        var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
         Assert.Throws<MessageDeliveryException>(() => channel.Send(Message.Create(true)));
     }
@@ -58,7 +58,7 @@ public class DatatypeChannelTest
         var channel = CreateChannel(typeof(int));
         GenericConversionService conversionService = new DefaultConversionService();
         conversionService.AddConverter(new BoolToIntConverter());
-        var converter = new DefaultDatatypeChannelMessageConverter(conversionService);
+        var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
         Assert.True(channel.Send(Message.Create(true)));
         Assert.Equal(1, channel.Receive().Payload);
@@ -77,7 +77,7 @@ public class DatatypeChannelTest
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IConversionService>(convService);
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        services.AddSingleton<DefaultDatatypeChannelMessageConverter>();
+        services.AddSingleton<DefaultDataTypeChannelMessageConverter>();
         var provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {
@@ -127,17 +127,17 @@ public class DatatypeChannelTest
         var conversionService = new DefaultConversionService();
         conversionService.AddConverter(new StringToBarConverter());
         conversionService.AddConverter(new IntegerToBazConverter());
-        var converter = new DefaultDatatypeChannelMessageConverter(conversionService);
+        var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
         Assert.True(channel.Send(Message.Create("foo")));
-        var outmessage = channel.Receive(0);
-        Assert.IsType<Bar>(outmessage.Payload);
+        var outMessage = channel.Receive(0);
+        Assert.IsType<Bar>(outMessage.Payload);
         Assert.True(channel.Send(Message.Create(42)));
-        outmessage = channel.Receive(0);
-        Assert.IsType<Baz>(outmessage.Payload);
+        outMessage = channel.Receive(0);
+        Assert.IsType<Baz>(outMessage.Payload);
     }
 
-    private static QueueChannel CreateChannel(params Type[] datatypes)
+    private static QueueChannel CreateChannel(params Type[] dataTypes)
     {
         var services = new ServiceCollection();
         var config = new ConfigurationBuilder().Build();
@@ -148,7 +148,7 @@ public class DatatypeChannelTest
         var provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {
-            DataTypes = new List<Type>(datatypes)
+            DataTypes = new List<Type>(dataTypes)
         };
         return channel;
     }

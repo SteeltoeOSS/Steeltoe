@@ -10,8 +10,8 @@ namespace Steeltoe.Common.Util;
 public interface IRunnable
 {
     /// <summary>
-    /// Run this object
+    /// Run this object.
     /// </summary>
-    /// <returns>returns success or failure</returns>
+    /// <returns>returns success or failure.</returns>
     bool Run();
 }

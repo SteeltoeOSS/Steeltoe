@@ -128,7 +128,7 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -142,7 +142,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesntThrow_IfNameUsed()
+    public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesNotThrow_IfNameUsed()
     {
         var env2 = @"
                 {
@@ -178,7 +178,7 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -218,7 +218,7 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         IServiceCollection services = new ServiceCollection();
 
-        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VCAP_APPLICATION);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", env2);
 
         var builder = new ConfigurationBuilder();
@@ -251,7 +251,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     }
 
     [Fact]
-    public void AddRabbitMQConnection_DoesntAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
+    public void AddRabbitMQConnection_DoesNotAddsRabbitMQHealthContributor_WhenCommunityHealthCheckExists()
     {
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();

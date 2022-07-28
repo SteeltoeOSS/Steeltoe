@@ -26,7 +26,7 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
         if (sourceType.IsArray && ConversionUtils.CanCreateCompatListFor(targetType))
         {
             return ConversionUtils.CanConvertElements(
-                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
+                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), ConversionService);
         }
 
         return false;
@@ -61,7 +61,7 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
             for (var i = 0; i < len; i++)
             {
                 var sourceElement = asArray.GetValue(i);
-                var targetElement = _conversionService.Convert(sourceElement, arrayElementType, targetElementType);
+                var targetElement = ConversionService.Convert(sourceElement, arrayElementType, targetElementType);
                 list.Add(targetElement);
             }
         }

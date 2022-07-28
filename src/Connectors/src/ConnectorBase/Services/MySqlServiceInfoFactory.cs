@@ -7,7 +7,7 @@ namespace Steeltoe.Connector.Services;
 public class MySqlServiceInfoFactory : RelationalServiceInfoFactory
 {
     public MySqlServiceInfoFactory()
-        : base(new Tags("mysql"), MySqlServiceInfo.MYSQL_SCHEME)
+        : base(new Tags("mysql"), MySqlServiceInfo.MysqlScheme)
     {
     }
 

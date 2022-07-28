@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Converter;
 
 public class ObjectToObjectConverter : AbstractGenericConditionalConverter
 {
-    private static readonly ConcurrentDictionary<Type, MemberInfo> _conversionMemberCache = new ();
+    private static readonly ConcurrentDictionary<Type, MemberInfo> ConversionMemberCache = new ();
 
     public ObjectToObjectConverter()
         : base(GetConvertiblePairs())
@@ -66,7 +66,7 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
 
     private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)
     {
-        if (_conversionMemberCache.TryGetValue(targetClass, out var member) && IsApplicable(member, sourceClass))
+        if (ConversionMemberCache.TryGetValue(targetClass, out var member) && IsApplicable(member, sourceClass))
         {
             return member;
         }
@@ -85,7 +85,7 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             }
         }
 
-        _conversionMemberCache.TryAdd(targetClass, member);
+        ConversionMemberCache.TryAdd(targetClass, member);
         return member;
     }
 

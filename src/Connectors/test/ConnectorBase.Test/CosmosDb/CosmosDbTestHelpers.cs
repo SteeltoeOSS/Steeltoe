@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.CosmosDb.Test;
 
 public static class CosmosDbTestHelpers
 {
-    public static string SingleVCAPBinding = @"
+    public static string SingleVcapBinding = @"
             {
                 ""azure-cosmosdb"": [
                 {

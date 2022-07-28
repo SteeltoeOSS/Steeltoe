@@ -37,7 +37,7 @@ public class MessageHeadersTest
     [Fact]
     public void TestTimestampProvidedNullValue()
     {
-        var input = new Dictionary<string, object> { { MessageHeaders.TIMESTAMP, 1L } };
+        var input = new Dictionary<string, object> { { MessageHeaders.TimestampName, 1L } };
         var headers = new MessageHeaders(input, null, null);
         Assert.NotNull(headers.Timestamp);
     }
@@ -76,7 +76,7 @@ public class MessageHeadersTest
     public void TestIdProvidedNullValue()
     {
         var id = Guid.NewGuid();
-        var input = new Dictionary<string, object> { { MessageHeaders.ID, id } };
+        var input = new Dictionary<string, object> { { MessageHeaders.IdName, id } };
         var headers = new MessageHeaders(input, null, null);
         Assert.NotNull(headers.Id);
     }
@@ -84,7 +84,7 @@ public class MessageHeadersTest
     [Fact]
     public void TestIdNone()
     {
-        var headers = new MessageHeaders(null, MessageHeaders.ID_VALUE_NONE, null);
+        var headers = new MessageHeaders(null, MessageHeaders.IdValueNone, null);
         Assert.Null(headers.Id);
     }
 
@@ -156,14 +156,14 @@ public class MessageHeadersTest
     public void SubclassWithCustomIdAndNoTimestamp()
     {
         var id = Guid.NewGuid();
-        MessageHeaders headers = new MyMH(id);
+        MessageHeaders headers = new MyMessageHeaders(id);
         Assert.Equal(id.ToString(), headers.Id);
         Assert.Single(headers);
     }
 
-    private sealed class MyMH : MessageHeaders
+    private sealed class MyMessageHeaders : MessageHeaders
     {
-        public MyMH(Guid id)
+        public MyMessageHeaders(Guid id)
             : base(null, id.ToString(), -1L)
         {
         }

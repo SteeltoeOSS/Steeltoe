@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 // Used as root context with StandardServiceExpressionResolver
 public class ServiceExpressionContext : IServiceExpressionContext
 {
-    private const string _environmentName = "configuration";
+    private const string EnvironmentName = "configuration";
 
     public ServiceExpressionContext(IApplicationContext applicationContext)
     {
@@ -21,7 +21,7 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public bool ContainsService(string serviceName, Type serviceType)
     {
-        if (serviceName == _environmentName)
+        if (serviceName == EnvironmentName)
         {
             return true;
         }
@@ -31,7 +31,7 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public bool ContainsService(string serviceName)
     {
-        if (serviceName == _environmentName)
+        if (serviceName == EnvironmentName)
         {
             return true;
         }
@@ -41,7 +41,7 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public object GetService(string serviceName)
     {
-        if (serviceName == _environmentName)
+        if (serviceName == EnvironmentName)
         {
             return ApplicationContext.Configuration;
         }
@@ -56,7 +56,7 @@ public class ServiceExpressionContext : IServiceExpressionContext
 
     public object GetService(string serviceName, Type serviceType)
     {
-        if (serviceName == _environmentName)
+        if (serviceName == EnvironmentName)
         {
             return ApplicationContext.Configuration;
         }

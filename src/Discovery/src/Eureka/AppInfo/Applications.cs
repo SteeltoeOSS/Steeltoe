@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
@@ -156,14 +157,14 @@ public class Applications
     {
         lock (_addRemoveInstanceLock)
         {
-            var addressUppper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUppper, out var instances);
+            var addressUpper = address.ToUpperInvariant();
+            dict.TryGetValue(addressUpper, out var instances);
             if (instances != null)
             {
                 instances.TryRemove(info.InstanceId, out _);
                 if (instances.Count <= 0)
                 {
-                    _ = dict.TryRemove(addressUppper, out _);
+                    _ = dict.TryRemove(addressUpper, out _);
                 }
             }
         }
@@ -182,15 +183,15 @@ public class Applications
                     existingApp = GetRegisteredApplication(instance.AppName);
                 }
 
-                switch (instance.Actiontype)
+                switch (instance.ActionType)
                 {
-                    case ActionType.ADDED:
-                    case ActionType.MODIFIED:
+                    case ActionType.Added:
+                    case ActionType.Modified:
                         // logger.debug("Added instance {} to the existing apps in region {}", instance.getId(), instanceRegion);
                         existingApp.Add(instance);
                         AddInstanceToVip(instance);
                         break;
-                    case ActionType.DELETED:
+                    case ActionType.Deleted:
                         // logger.debug("Deleted instance {} to the existing apps ", instance.getId());
                         existingApp.Remove(instance);
                         RemoveInstanceFromVip(instance);
@@ -213,13 +214,15 @@ public class Applications
         {
             foreach (var inst in app.Instances)
             {
-                if (!statusMap.TryGetValue(inst.Status.ToString(), out var count))
+                string instanceStatus = inst.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+
+                if (!statusMap.TryGetValue(instanceStatus, out var count))
                 {
-                    statusMap.Add(inst.Status.ToString(), 1);
+                    statusMap.Add(instanceStatus, 1);
                 }
                 else
                 {
-                    statusMap[inst.Status.ToString()] = count + 1;
+                    statusMap[instanceStatus] = count + 1;
                 }
             }
         }
@@ -240,19 +243,19 @@ public class Applications
 
     internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ();
 
-    internal static Applications FromJsonApplications(JsonApplications japps)
+    internal static Applications FromJsonApplications(JsonApplications applications)
     {
         var apps = new Applications();
-        if (japps != null)
+        if (applications != null)
         {
-            apps.Version = japps.VersionDelta;
-            apps.AppsHashCode = japps.AppsHashCode;
+            apps.Version = applications.VersionDelta;
+            apps.AppsHashCode = applications.AppsHashCode;
 
-            if (japps.Applications != null)
+            if (applications.Applications != null)
             {
-                foreach (var japp in japps.Applications)
+                foreach (var application in applications.Applications)
                 {
-                    var app = Application.FromJsonApplication(japp);
+                    var app = Application.FromJsonApplication(application);
                     apps.Add(app);
                 }
             }
@@ -271,7 +274,7 @@ public class Applications
                 var inst = kvp.Value;
                 if (ReturnUpInstancesOnly)
                 {
-                    if (inst.Status == InstanceStatus.UP)
+                    if (inst.Status == InstanceStatus.Up)
                     {
                         result.Add(inst);
                     }

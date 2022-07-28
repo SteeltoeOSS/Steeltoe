@@ -14,7 +14,7 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 {
     public RabbitTransactionManager()
     {
-        TransactionSynchronization = SYNCHRONIZATION_NEVER;
+        TransactionSynchronization = SynchronizationNever;
     }
 
     public RabbitTransactionManager(IConnectionFactory connectionFactory, ILogger logger = null)
@@ -41,7 +41,7 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 
     protected override void DoBegin(object transaction, ITransactionDefinition definition)
     {
-        if (definition.IsolationLevel != AbstractTransactionDefinition.ISOLATION_DEFAULT)
+        if (definition.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
         {
             throw new InvalidIsolationLevelException("AMQP does not support an isolation level concept");
         }
@@ -51,12 +51,12 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
         try
         {
             resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, true);
-            _logger?.LogDebug("Created AMQP transaction on channel [{channel}]", resourceHolder.GetChannel());
+            Logger?.LogDebug("Created AMQP transaction on channel [{channel}]", resourceHolder.GetChannel());
 
             txObject.ResourceHolder = resourceHolder;
             txObject.ResourceHolder.SynchronizedWithTransaction = true;
             var timeout = DetermineTimeout(definition);
-            if (timeout != AbstractTransactionDefinition.TIMEOUT_DEFAULT)
+            if (timeout != AbstractTransactionDefinition.TimeoutDefault)
             {
                 txObject.ResourceHolder.SetTimeoutInSeconds(timeout);
             }

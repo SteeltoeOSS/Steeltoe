@@ -8,10 +8,10 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundryOptions
 {
-    private const string MANAGEMENT_INFO_PREFIX = "management:endpoints:cloudfoundry";
-    private const string VCAP_APPLICATION_ID_KEY = "vcap:application:application_id";
-    private const string VCAP_APPLICATION_CLOUDFOUNDRY_API_KEY = "vcap:application:cf_api";
-    private const bool Default_ValidateCertificates = true;
+    private const string ManagementInfoPrefix = "management:endpoints:cloudfoundry";
+    private const string VcapApplicationIdKey = "vcap:application:application_id";
+    private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
+    private const bool DefaultValidateCertificates = true;
 
     public CloudFoundryEndpointOptions()
     {
@@ -19,14 +19,14 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
     }
 
     public CloudFoundryEndpointOptions(IConfiguration config)
-        : base(MANAGEMENT_INFO_PREFIX, config)
+        : base(ManagementInfoPrefix, config)
     {
         Id = string.Empty;
-        ApplicationId = config[VCAP_APPLICATION_ID_KEY];
-        CloudFoundryApi = config[VCAP_APPLICATION_CLOUDFOUNDRY_API_KEY];
+        ApplicationId = config[VcapApplicationIdKey];
+        CloudFoundryApi = config[VcapApplicationCloudfoundryApiKey];
     }
 
-    public bool ValidateCertificates { get; set; } = Default_ValidateCertificates;
+    public bool ValidateCertificates { get; set; } = DefaultValidateCertificates;
 
     public string ApplicationId { get; set; }
 
