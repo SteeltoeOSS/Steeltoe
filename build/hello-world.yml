@@ -19,7 +19,36 @@ jobs:
         Write-Host "Hello world"
   - task: GitHubComment@0
     displayName: Add GitHub comment
+    continueOnError: true
     inputs:
       gitHubConnection: 'SteeltoeOSS'
       repositoryName: '$(Build.Repository.Name)'
       comment: 'Example comment'
+  - task: GitHubComment@0
+    displayName: Add GitHub comment 1
+    continueOnError: true
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (1)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Example comment 1'
+  - task: GitHubComment@0
+    displayName: Add GitHub comment 2
+    continueOnError: true
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (2)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Example comment 2'
+  - task: GitHubComment@0
+    displayName: Add GitHub comment 3
+    continueOnError: true
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (3)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Example comment 3'
+  - task: GitHubComment@0
+    displayName: Add GitHub comment 4
+    continueOnError: true
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (4)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Example comment 4'
