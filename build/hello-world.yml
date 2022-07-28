@@ -24,6 +24,7 @@ jobs:
       gitHubConnection: 'SteeltoeOSS'
       repositoryName: '$(Build.Repository.Name)'
       comment: 'Example comment'
+      # https://stackoverflow.com/questions/66802587/create-github-pr-comment-from-azure-pipeline
   - task: GitHubComment@0
     displayName: Add GitHub comment 1
     continueOnError: true
