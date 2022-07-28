@@ -12,33 +12,14 @@ jobs:
   - checkout: self
     persistCredentials: true
   - task: PowerShell@2
-    displayName: Restore tools
+    displayName: Hello world
     inputs:
       targetType: 'inline'
       script: |
-        dotnet tool restore
-  - task: PowerShell@2
-    displayName: Restore packages
+        Write-Host "Hello world"
+  - task: GitHubComment@0
+    displayName: Add GitHub comment
     inputs:
-      targetType: 'inline'
-      script: |
-        dotnet restore src
-  - task: PowerShell@2
-    displayName: Verify code style
-    inputs:
-      targetType: 'inline'
-      script: |
-        if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
-          dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
-        }
-        else {
-          # We are in detached head (the merge result), so there's no need to account for an out-of-date PR.
-          $baseCommitHash = git rev-parse origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
-          if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (1)' failed with exit code $LastExitCode." }
-  
-          $headCommitHash = git rev-parse HEAD
-          if ($LastExitCode -ne 0) { throw "Command 'git rev-parse (2)' failed with exit code $LastExitCode." }
-  
-          echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
-          dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff -f commits -a $headCommitHash -b $baseCommitHash
-        }
+      gitHubConnection: 'SteeltoeOSS'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Example comment'
