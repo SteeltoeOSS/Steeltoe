@@ -17,10 +17,6 @@ jobs:
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
           throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup" in a GitHub PR comment.'
         }
-
-        # test failure
-        throw "example error"
-
   - checkout: self
     persistCredentials: true
   - task: PowerShell@2
@@ -107,10 +103,8 @@ jobs:
           $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><p>View details [here]($url).</p>"
         }
         else {
-          $statusMessage = "<samp>Code cleanup successfully reformatted files, no changes to push.</samp>"
+          $statusMessage = "<samp>Code cleanup successfully reformatted files, but there were no changes to push.</samp>"
         }
-
-        throw "Test failure when no status composed."
 
         echo "Status: $statusMessage"
         echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
