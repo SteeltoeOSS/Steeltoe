@@ -90,7 +90,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $hasFailed = $(failed())
+        $hasFailed = $[failed()]
         Write-Host "hasFailed = $hasFailed"
 
         $hasChangesToCommit = $(hasChangesToCommit)
@@ -107,7 +107,7 @@ jobs:
           $statusMessage = "<samp>Code cleanup successfully reformatted files, no changes to push.</samp>"
         }
 
-        echo "##vso[task.setvariable variable=statusMessage]<samp>$statusMessage</samp>"
+        echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
         exit 0
   - task: GitHubComment@0
     displayName: Notify status in PR comment
@@ -115,4 +115,4 @@ jobs:
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
-      comment: $(statusMessage)
+      comment: "$(statusMessage)"
