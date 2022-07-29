@@ -79,9 +79,6 @@ jobs:
         echo "Committing changes."
         git commit -m "Automated code cleanup from Steeltoe cibuild"
 
-        // test: simulate failure
-        throw "Something failed unexpectedly..."
-
         echo "Pushing changes."
         git push origin
   - task: PowerShell@2
@@ -100,7 +97,7 @@ jobs:
           $statusMessage = "Code cleanup successfully reformatted files, no changes to push."
         }
 
-        echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
+        echo "##vso[task.setvariable variable=statusMessage]<samp>$statusMessage</samp>"
         exit 0
   - task: GitHubComment@0
     displayName: Notify status in PR comment
