@@ -77,31 +77,35 @@ jobs:
         git config --global user.name "steeltoe-cibuild"
 
         echo "Committing changes."
-        git commit -m "Automated code cleanup from cibuild"
+        git commit -m "Automated code cleanup from Steeltoe cibuild"
 
         // test: simulate failure
         throw "Something failed unexpectedly..."
 
         echo "Pushing changes."
         git push origin
+  - task: PowerShell@2
+    displayName: Compose status message
+    condition: succeededOrFailed()
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ($(failed())) {
+          $statusMessage = "Code cleanup failed to reformat and push changes."
+        }
+        else if ($($hasChangesToCommit)) {
+          $statusMessage = "Code cleanup successfully reformatted files and pushed changes."
+        }
+        else {
+          $statusMessage = "Code cleanup successfully reformatted files, no changes to push."
+        }
+
+        echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
+        exit 0
   - task: GitHubComment@0
-    displayName: Notify changes pushed
-    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
+    displayName: Notify status in PR comment
+    condition: succeededOrFailed()
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
-      comment: 'Code cleanup successfully reformatted files and pushed changes.'
-  - task: GitHubComment@0
-    displayName: Notify nothing to push
-    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'False'))
-    inputs:
-      gitHubConnection: 'SteeltoeOSS (1)'
-      repositoryName: '$(Build.Repository.Name)'
-      comment: 'Code cleanup successfully reformatted files, no changes to push.'
-  - task: GitHubComment@0
-    displayName: Notify failure
-    condition: failed()
-    inputs:
-      gitHubConnection: 'SteeltoeOSS (1)'
-      repositoryName: '$(Build.Repository.Name)'
-      comment: 'Code cleanup failed to reformat and push changes.'
+      comment: $(statusMessage)
