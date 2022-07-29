@@ -110,6 +110,8 @@ jobs:
           $statusMessage = "<samp>Code cleanup successfully reformatted files, no changes to push.</samp>"
         }
 
+        throw "Test failure when no status composed."
+
         echo "Status: $statusMessage"
         echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
         exit 0
