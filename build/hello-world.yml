@@ -82,9 +82,23 @@ jobs:
         echo "Pushing changes."
         git push origin
   - task: GitHubComment@0
-    displayName: Comment on PR
+    displayName: Notify changes pushed
     condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
       comment: 'Code cleanup successfully reformatted files and pushed changes.'
+  - task: GitHubComment@0
+    displayName: Notify nothing to push
+    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'False'))
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (1)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Code cleanup successfully reformatted files, no changes to push.'
+  - task: GitHubComment@0
+    displayName: Notify failure
+    condition: failed()
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (1)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Code cleanup failed to reformat and push changes.'
