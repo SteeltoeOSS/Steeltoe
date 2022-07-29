@@ -88,7 +88,7 @@ jobs:
       targetType: 'inline'
       script: |
         Write-Host "HASCHANGESTOCOMMIT = $env:HASCHANGESTOCOMMIT"
-        $hasChanges = $env:HASCHANGESTOCOMMIT" -eq $true
+        $hasChanges = $env:HASCHANGESTOCOMMIT -eq $true
         Write-Host "hasChanges = $hasChanges"
 
         if ($env:AGENT_JOBSTATUS -eq "Failed") {
