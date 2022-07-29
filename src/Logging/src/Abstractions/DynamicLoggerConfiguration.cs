@@ -22,7 +22,7 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
     }
 
 
-
+	// conflicting comment!
 
 
     /// <summary>
