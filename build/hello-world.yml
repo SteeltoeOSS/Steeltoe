@@ -19,7 +19,7 @@ jobs:
         }
 
         # test: fail
-        echo "##vso[task.setvariable variable=hasChangesToCommit]True"
+        #echo "##vso[task.setvariable variable=hasChangesToCommit]True"
         throw "Something failed..."
   - checkout: self
     persistCredentials: true
@@ -99,7 +99,7 @@ jobs:
 
         if ($hasFailed) {
           $buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
-          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp>Details at $buildUrl."
+          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><P>View details [here]($buildUrl)."
         }
         elseif ($hasChangesToCommit) {
           $statusMessage = "<samp>Code cleanup successfully reformatted files and pushed changes.</samp>"
