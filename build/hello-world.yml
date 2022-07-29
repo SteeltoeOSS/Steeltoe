@@ -79,6 +79,9 @@ jobs:
         echo "Committing changes."
         git commit -m "Automated code cleanup from cibuild"
 
+        // test: simulate failure
+        throw "Something failed unexpectedly..."
+
         echo "Pushing changes."
         git push origin
   - task: GitHubComment@0
