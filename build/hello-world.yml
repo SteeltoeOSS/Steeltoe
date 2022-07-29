@@ -17,6 +17,8 @@ jobs:
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
           throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup" in a GitHub PR comment.'
         }
+
+        throw "Simulating an unexpected error..."
   - checkout: self
     persistCredentials: true
   - task: PowerShell@2
@@ -54,10 +56,7 @@ jobs:
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
 
         echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
-        #dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
-
-        Write-Host "Testing full run..."
-        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN
+        dotnet regitlint -s Steeltoe.All.sln --print-command --skip-tool-check --disable-jb-path-hack --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
   - task: PowerShell@2
     displayName: Detect changes
     inputs:
