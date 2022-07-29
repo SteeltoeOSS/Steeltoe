@@ -79,5 +79,12 @@ jobs:
         echo "Committing changes."
         git commit -m "Automated code cleanup from cibuild"
 
-        ###echo "Pushing changes."
-        ###git push origin
+        echo "Pushing changes."
+        git push origin
+  - task: GitHubComment@0
+    displayName: Comment on PR
+    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
+    inputs:
+      gitHubConnection: 'SteeltoeOSS (1)'
+      repositoryName: '$(Build.Repository.Name)'
+      comment: 'Code cleanup successfully reformatted files and pushed changes.'
