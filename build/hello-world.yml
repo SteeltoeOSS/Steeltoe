@@ -90,7 +90,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $hasFailed = $[failed()]
+        $hasFailed = "$env:AGENT_JOBSTATUS" -eq "Failed"
         Write-Host "hasFailed = $hasFailed"
 
         $hasChangesToCommit = $(hasChangesToCommit)
