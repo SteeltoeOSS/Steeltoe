@@ -19,6 +19,7 @@ jobs:
         }
 
         # test: fail
+        echo "##vso[task.setvariable variable=hasChangesToCommit]True"
         throw "Something failed..."
   - checkout: self
     persistCredentials: true
@@ -93,7 +94,7 @@ jobs:
         $hasFailed = "$env:AGENT_JOBSTATUS" -eq "Failed"
         Write-Host "hasFailed = $hasFailed"
 
-        $hasChangesToCommit = $(hasChangesToCommit)
+        $hasChangesToCommit = $env:HASCHANGESTOCOMMIT
         Write-Host "hasChangesToCommit = $hasChangesToCommit"
 
         if ($hasFailed) {
