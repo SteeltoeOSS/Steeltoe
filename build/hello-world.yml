@@ -100,7 +100,7 @@ jobs:
           $buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
           $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp>Details at $buildUrl."
         }
-        else if ($hasChangesToCommit) {
+        elseif ($hasChangesToCommit) {
           $statusMessage = "<samp>Code cleanup successfully reformatted files and pushed changes.</samp>"
         }
         else {
