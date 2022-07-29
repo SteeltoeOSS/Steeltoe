@@ -115,7 +115,7 @@ jobs:
         exit 0
   - task: GitHubComment@0
     displayName: Notify status in PR comment
-    condition: and(always(), not(eq(statusMessage, '')))
+    condition: and(always(), not(eq(variables['statusMessage'], '')))
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
