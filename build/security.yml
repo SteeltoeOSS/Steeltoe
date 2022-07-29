@@ -1,7 +1,4 @@
 pr:
-  branches:
-    include:
-    - main
   paths:
     exclude:
     - /
