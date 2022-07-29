@@ -77,14 +77,36 @@ jobs:
         git config --global user.name "steeltoe-cibuild"
 
         echo "Committing changes."
-        git commit -m "Automated code cleanup from cibuild"
+        git commit -m "Automated code cleanup from Steeltoe cibuild"
+        if ($LastExitCode -ne 0) { throw "Command 'git commit' failed with exit code $LastExitCode." }
 
         echo "Pushing changes."
         git push origin
+        if ($LastExitCode -ne 0) { throw "Command 'git push' failed with exit code $LastExitCode." }
+        echo "##vso[task.setvariable variable=hasCommitted]True"
+        exit 0
+  - task: PowerShell@2
+    displayName: Compose status message
+    condition: always()
+    inputs:
+      targetType: 'inline'
+      script: |
+        if ($env:HASCOMMITTED -eq 'True') {
+          $statusMessage = "<samp>Code cleanup successfully reformatted files and pushed changes.</samp>"
+        elseif ($env:AGENT_JOBSTATUS -eq "Canceled") {
+          $statusMessage = "<samp>Code cleanup was canceled, no changes were pushed.</samp>"
+        elseif ($env:AGENT_JOBSTATUS -eq "Failed") {
+          $url = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
+          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><p>View details [here]($url).</p>"
+        else {
+          $statusMessage = "<samp>Code cleanup successfully reformatted files, but there were no changes to push.</samp>"
+        echo "Status: $statusMessage"
+        echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
+        exit 0
   - task: GitHubComment@0
-    displayName: Comment on PR
-    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
+    displayName: Notify status in PR comment
+    condition: and(always(), not(eq(variables['statusMessage'], '')))
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
-      comment: 'Code cleanup successfully reformatted files and pushed changes.'
+      comment: $(statusMessage)
