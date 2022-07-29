@@ -91,17 +91,11 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        $hasFailed = "$env:AGENT_JOBSTATUS" -eq "Failed"
-        Write-Host "hasFailed = $hasFailed"
-
-        $hasChangesToCommit = $env:HASCHANGESTOCOMMIT
-        Write-Host "hasChangesToCommit = $hasChangesToCommit"
-
-        if ($hasFailed) {
-          $buildUrl="$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
-          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><br><br>View details [here]($buildUrl)."
+        if ($env:AGENT_JOBSTATUS -eq "Failed") {
+          $url = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
+          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><p>View details [here]($url).</p>"
         }
-        elseif ($hasChangesToCommit) {
+        elseif ($env:HASCHANGESTOCOMMIT) {
           $statusMessage = "<samp>Code cleanup successfully reformatted files and pushed changes.</samp>"
         }
         else {
@@ -116,4 +110,4 @@ jobs:
     inputs:
       gitHubConnection: 'SteeltoeOSS (1)'
       repositoryName: '$(Build.Repository.Name)'
-      comment: "$(statusMessage)"
+      comment: $(statusMessage)
