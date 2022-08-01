@@ -620,7 +620,7 @@ public class OperatorTests : AbstractExpressionTests
 
     public class BaseComparable : IComparable
     {
-        public int CompareTo(object other)
+        public int CompareTo(object obj)
         {
             return 0;
         }

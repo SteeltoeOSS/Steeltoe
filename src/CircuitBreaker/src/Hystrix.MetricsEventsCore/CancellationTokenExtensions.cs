@@ -37,9 +37,9 @@ public static class CancellationTokenExtensions
             }
         }
 
-        public void OnCompleted(Action action)
+        public void OnCompleted(Action continuation)
         {
-            _cancellationToken.Register(action);
+            _cancellationToken.Register(continuation);
         }
     }
 }

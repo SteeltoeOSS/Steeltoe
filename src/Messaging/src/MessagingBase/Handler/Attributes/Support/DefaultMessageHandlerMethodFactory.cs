@@ -79,9 +79,9 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         ArgumentResolvers.AddResolvers(argumentResolvers);
     }
 
-    public virtual IInvocableHandlerMethod CreateInvocableHandlerMethod(object bean, MethodInfo method)
+    public virtual IInvocableHandlerMethod CreateInvocableHandlerMethod(object instance, MethodInfo method)
     {
-        var handlerMethod = new InvocableHandlerMethod(bean, method)
+        var handlerMethod = new InvocableHandlerMethod(instance, method)
         {
             MessageMethodArgumentResolvers = ArgumentResolvers
         };

@@ -2383,10 +2383,10 @@ public class HystrixCollapserTest : HystrixTestBase
 
         public override string RequestArgument => _arg;
 
-        protected override HystrixCommand<List<Pair<string, int>>> CreateCommand(ICollection<ICollapsedRequest<int, string>> collapsedRequests)
+        protected override HystrixCommand<List<Pair<string, int>>> CreateCommand(ICollection<ICollapsedRequest<int, string>> requests)
         {
-            var args = new List<string>(collapsedRequests.Count);
-            foreach (var req in collapsedRequests)
+            var args = new List<string>(requests.Count);
+            foreach (var req in requests)
             {
                 args.Add(req.Argument);
             }
@@ -2394,11 +2394,11 @@ public class HystrixCollapserTest : HystrixTestBase
             return new MyCommand(_output, args);
         }
 
-        protected override void MapResponseToRequests(List<Pair<string, int>> batchResponse, ICollection<ICollapsedRequest<int, string>> collapsedRequests)
+        protected override void MapResponseToRequests(List<Pair<string, int>> batchResponse, ICollection<ICollapsedRequest<int, string>> requests)
         {
             foreach (var pair in batchResponse)
             {
-                foreach (var collapsedReq in collapsedRequests)
+                foreach (var collapsedReq in requests)
                 {
                     if (collapsedReq.Argument.Equals(pair.Aa))
                     {

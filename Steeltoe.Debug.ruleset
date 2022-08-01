@@ -67,7 +67,6 @@
     <Rule Id="S4583" Action="None" />
     <Rule Id="S5773" Action="None" />
     <Rule Id="S881" Action="Warning" />
-    <Rule Id="S927" Action="Info" />
   </Rules>
   <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
     <Rule Id="SA1000" Action="None" />

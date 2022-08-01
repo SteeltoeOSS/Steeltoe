@@ -291,7 +291,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             }
         }
 
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> arguments)
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
         {
             if (name.Equals("HasRole"))
             {

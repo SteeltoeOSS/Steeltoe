@@ -16,8 +16,8 @@ public interface IErrorMessageStrategy
     /// <summary>
     /// Build the error message.
     /// </summary>
-    /// <param name="payload">the payload of the error message.</param>
-    /// <param name="attributes">the context to use.</param>
+    /// <param name="exception">the payload of the error message.</param>
+    /// <param name="attributeAccessor">the context to use.</param>
     /// <returns>the error message.</returns>
-    ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes);
+    ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor);
 }

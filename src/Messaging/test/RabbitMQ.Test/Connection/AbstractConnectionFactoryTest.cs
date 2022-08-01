@@ -103,7 +103,7 @@ public abstract class AbstractConnectionFactoryTest
         mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Never);
     }
 
-    protected abstract AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory = null);
+    protected abstract AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null);
 
     protected class IncrementConnectionListener : IConnectionListener
     {

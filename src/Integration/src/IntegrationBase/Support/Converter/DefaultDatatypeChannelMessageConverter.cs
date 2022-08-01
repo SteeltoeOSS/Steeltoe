@@ -22,11 +22,11 @@ public class DefaultDataTypeChannelMessageConverter : IMessageConverter
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
-    public object FromMessage(IMessage message, Type targetClass)
+    public object FromMessage(IMessage message, Type targetType)
     {
-        if (_conversionService.CanConvert(message.Payload.GetType(), targetClass))
+        if (_conversionService.CanConvert(message.Payload.GetType(), targetType))
         {
-            return _conversionService.Convert(message.Payload, message.Payload.GetType(), targetClass);
+            return _conversionService.Convert(message.Payload, message.Payload.GetType(), targetType);
         }
         else
         {

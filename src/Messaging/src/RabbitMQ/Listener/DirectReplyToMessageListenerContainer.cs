@@ -68,17 +68,17 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         }
     }
 
-    public override void SetQueueNames(params string[] queueName)
+    public override void SetQueueNames(params string[] queueNames)
     {
         throw new NotSupportedException();
     }
 
-    public override void AddQueueNames(params string[] queueName)
+    public override void AddQueueNames(params string[] queueNames)
     {
         throw new NotSupportedException();
     }
 
-    public override bool RemoveQueueNames(params string[] queueName)
+    public override bool RemoveQueueNames(params string[] queueNames)
     {
         throw new NotSupportedException();
     }

@@ -19,9 +19,9 @@ public class UnzipPostProcessor : AbstractDecompressingPostProcessor
     {
     }
 
-    protected override Stream GetDeCompressorStream(Stream zipped)
+    protected override Stream GetDeCompressorStream(Stream stream)
     {
-        var zipper = new ZipArchive(zipped, ZipArchiveMode.Read);
+        var zipper = new ZipArchive(stream, ZipArchiveMode.Read);
         var entry = zipper.GetEntry("amqp");
         if (entry == null)
         {

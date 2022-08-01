@@ -120,7 +120,7 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
         public AtomicInteger CommandCounter = new ();
         public AtomicInteger ThreadCounter = new ();
 
-        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
             return new MyHystrixMetricsPublisherCommand(CommandCounter);
         }

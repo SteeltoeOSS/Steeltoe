@@ -17,9 +17,9 @@ public interface IMessageConverter : IServiceNameAware
     /// Convert the payload of a message to a typed object.
     /// </summary>
     /// <param name="message">the input message.</param>
-    /// <param name="targetClass">the target type for the conversion.</param>
+    /// <param name="targetType">the target type for the conversion.</param>
     /// <returns>the result of the conversion.</returns>
-    object FromMessage(IMessage message, Type targetClass);
+    object FromMessage(IMessage message, Type targetType);
 
     /// <summary>
     /// Convert the payload of a message to a typed object.

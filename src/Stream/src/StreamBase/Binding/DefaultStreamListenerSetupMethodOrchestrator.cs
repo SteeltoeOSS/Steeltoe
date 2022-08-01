@@ -30,7 +30,7 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         _processor = processor;
     }
 
-    public override void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementation)
+    public override void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementationType)
     {
         var methodAnnotatedInboundName = streamListener.Target;
 
@@ -42,11 +42,11 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         {
             var methodAnnotatedOutboundName = streamListenerMethod.GetOutboundBindingTargetName();
             var adaptedInboundArguments = AdaptAndRetrieveInboundArguments(method, methodAnnotatedInboundName, _streamListenerParameterAdapters.ToArray());
-            InvokeStreamListenerResultAdapter(method, implementation, methodAnnotatedOutboundName, adaptedInboundArguments);
+            InvokeStreamListenerResultAdapter(method, implementationType, methodAnnotatedOutboundName, adaptedInboundArguments);
         }
         else
         {
-            RegisterHandlerMethodOnListenedChannel(streamListenerMethod, streamListener, implementation);
+            RegisterHandlerMethodOnListenedChannel(streamListenerMethod, streamListener, implementationType);
         }
     }
 

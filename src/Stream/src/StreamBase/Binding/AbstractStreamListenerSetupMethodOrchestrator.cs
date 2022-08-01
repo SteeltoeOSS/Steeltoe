@@ -74,7 +74,7 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
         return arguments;
     }
 
-    public abstract void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type bean);
+    public abstract void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementationType);
 
     public abstract bool Supports(MethodInfo method);
 }

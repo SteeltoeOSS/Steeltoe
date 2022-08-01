@@ -34,7 +34,7 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         return new SpringIntegrationProducerDestination(name, destination);
     }
 
-    public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions properties)
+    public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
     {
         var destination = ProvisionDestination(name, false);
         if (InputDestination != null)

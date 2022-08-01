@@ -8,7 +8,7 @@ public class TestDynamicMessageProcessor : IDynamicMessageProcessor
 {
     public bool ProcessCalled { get; set; }
 
-    public string Process(string input)
+    public string Process(string inputLogMessage)
     {
         ProcessCalled = true;
         return string.Empty;

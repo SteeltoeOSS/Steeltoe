@@ -84,12 +84,12 @@ public class JsonMessageConverter : AbstractMessageConverter
         return content;
     }
 
-    protected override IMessage CreateMessage(object objectToConvert, IMessageHeaders headers, object conversionHint)
+    protected override IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes;
         try
         {
-            var jsonString = JsonConvert.SerializeObject(objectToConvert, Settings);
+            var jsonString = JsonConvert.SerializeObject(payload, Settings);
             bytes = DefaultCharset.GetBytes(jsonString);
         }
         catch (Exception e)
@@ -101,7 +101,7 @@ public class JsonMessageConverter : AbstractMessageConverter
         accessor.ContentType = SupportedContentType.ToString();
         accessor.ContentEncoding = EncodingUtils.GetEncoding(DefaultCharset);
         accessor.ContentLength = bytes.Length;
-        TypeMapper.FromType(objectToConvert.GetType(), accessor.MessageHeaders);
+        TypeMapper.FromType(payload.GetType(), accessor.MessageHeaders);
 
         var message = Message.Create(bytes, headers);
         return message;

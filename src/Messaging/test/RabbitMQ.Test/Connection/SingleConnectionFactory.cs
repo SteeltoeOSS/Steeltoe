@@ -70,14 +70,14 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         }
     }
 
-    public override void AddConnectionListener(IConnectionListener listener)
+    public override void AddConnectionListener(IConnectionListener connectionListener)
     {
-        base.AddConnectionListener(listener);
+        base.AddConnectionListener(connectionListener);
 
         // If the connection is already alive we assume that the new listener wants to be notified
         if (Connection != null)
         {
-            listener.OnCreate(Connection);
+            connectionListener.OnCreate(Connection);
         }
     }
 

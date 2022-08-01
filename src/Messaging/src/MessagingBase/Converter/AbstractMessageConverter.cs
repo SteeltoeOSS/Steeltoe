@@ -109,19 +109,19 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
         return (T)FromMessage(message, typeof(T), null);
     }
 
-    public virtual object FromMessage(IMessage message, Type targetClass)
+    public virtual object FromMessage(IMessage message, Type targetType)
     {
-        return FromMessage(message, targetClass, null);
+        return FromMessage(message, targetType, null);
     }
 
-    public virtual object FromMessage(IMessage message, Type targetClass, object conversionHint)
+    public virtual object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
-        if (!CanConvertFrom(message, targetClass))
+        if (!CanConvertFrom(message, targetType))
         {
             return null;
         }
 
-        return ConvertFromInternal(message, targetClass, conversionHint);
+        return ConvertFromInternal(message, targetType, conversionHint);
     }
 
     public virtual IMessage ToMessage(object payload, IMessageHeaders headers)

@@ -16,7 +16,7 @@ public interface ITypeConverter
 {
     public IConversionService ConversionService { get; set; }
 
-    bool CanConvert(Type source, Type target);
+    bool CanConvert(Type sourceType, Type targetType);
 
-    object ConvertValue(object value, Type source, Type target);
+    object ConvertValue(object value, Type sourceType, Type targetType);
 }
