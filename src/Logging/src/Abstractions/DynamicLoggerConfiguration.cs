@@ -2,13 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Extensions.Logging;
 
 public class DynamicLoggerConfiguration : ILoggerConfiguration
 {
-    // conflicting comment!
+    /// <summary>
+    /// Initializes a new instance of the <see cref="DynamicLoggerConfiguration"/> class.
+    /// </summary>
+    /// <param name="name">Namespace.</param>
+    /// <param name="configured">Original log level.</param>
+    /// <param name="effective">Currently effective log level.</param>
+    public DynamicLoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
+    {
+        Name = name;
+        ConfiguredLevel = configured;
+        EffectiveLevel = effective;
+    }
+
+
+	// conflicting comment!
+
 
     /// <summary>
     /// Gets namespace this configuration is applied to.
@@ -24,25 +39,6 @@ public class DynamicLoggerConfiguration : ILoggerConfiguration
     /// Gets running level of the logger.
     /// </summary>
     public LogLevel EffectiveLevel { get; }
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="DynamicLoggerConfiguration" /> class.
-    /// </summary>
-    /// <param name="name">
-    /// Namespace.
-    /// </param>
-    /// <param name="configured">
-    /// Original log level.
-    /// </param>
-    /// <param name="effective">
-    /// Currently effective log level.
-    /// </param>
-    public DynamicLoggerConfiguration(string name, LogLevel? configured, LogLevel effective)
-    {
-        Name = name;
-        ConfiguredLevel = configured;
-        EffectiveLevel = effective;
-    }
 
     public override int GetHashCode()
     {
