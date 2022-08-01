@@ -75,7 +75,7 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        git config --global user.email "cibuild@steeltoe.com"
+        git config --global user.email "cibuild@steeltoe.io"
         git config --global user.name "steeltoe-cibuild"
 
         Write-Output "Committing changes."
