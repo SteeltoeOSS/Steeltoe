@@ -16,7 +16,7 @@ function VerifySuccessExitCode {
 dotnet tool restore
 VerifySuccessExitCode
 
-dotnet restore
+dotnet restore src
 VerifySuccessExitCode
 
 if ($revision) {
