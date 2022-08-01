@@ -26,7 +26,7 @@ jobs:
       script: |
         # We're going to push changes, so we need to be on the PR branch
         # instead of the detached head that contains the merge result.
-        echo "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
+        Write-Output "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
         git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
   - task: PowerShell@2
     displayName: Restore tools
@@ -54,7 +54,7 @@ jobs:
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
 
         if ($baseCommitHash -ne $headCommitHash) {
-          echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+          Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
           dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
         }
   - task: PowerShell@2
@@ -65,7 +65,7 @@ jobs:
         git add -A
         git diff-index --quiet HEAD --
         $hasChangesToCommit = $LastExitCode -ne 0
-        echo "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
+        Write-Output "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
         exit 0
   - task: PowerShell@2
     displayName: Push changes
@@ -78,15 +78,15 @@ jobs:
         git config --global user.email "cibuild@steeltoe.com"
         git config --global user.name "steeltoe-cibuild"
 
-        echo "Committing changes."
+        Write-Output "Committing changes."
         git commit -m "Automated code cleanup from Steeltoe cibuild"
         if ($LastExitCode -ne 0) { throw "Command 'git commit' failed with exit code $LastExitCode." }
 
-        echo "Pushing changes."
+        Write-Output "Pushing changes."
         git push origin
         if ($LastExitCode -ne 0) { throw "Command 'git push' failed with exit code $LastExitCode." }
 
-        echo "##vso[task.setvariable variable=hasCommitted]True"
+        Write-Output "##vso[task.setvariable variable=hasCommitted]True"
         exit 0
   - task: PowerShell@2
     displayName: Compose status message
@@ -108,8 +108,8 @@ jobs:
           $statusMessage = "<samp>Code cleanup successfully reformatted files, but there were no changes to push.</samp>"
         }
 
-        echo "Status: $statusMessage"
-        echo "##vso[task.setvariable variable=statusMessage]$statusMessage"
+        Write-Output "Status: $statusMessage"
+        Write-Output "##vso[task.setvariable variable=statusMessage]$statusMessage"
         exit 0
   - task: GitHubComment@0
     displayName: Notify status in PR comment
