@@ -235,7 +235,7 @@ public class TaskSchedulerChannelTest
             return MessageToReturn ?? message;
         }
 
-        public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
+        public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception exception)
         {
             AfterHandledInvoked = true;
             _latch?.Signal();

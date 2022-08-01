@@ -8,7 +8,7 @@ public interface IRouteMatcher
 {
     IRoute ParseRoute(string routeValue);
 
-    bool IsPattern(string route);
+    bool IsPattern(string routeValue);
 
     string Combine(string pattern1, string pattern2);
 

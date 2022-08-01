@@ -210,7 +210,7 @@ public class InboundEndpointTest
     {
         public string ServiceName { get; set; }
 
-        public object FromMessage(IMessage message, Type targetClass)
+        public object FromMessage(IMessage message, Type targetType)
         {
             throw new MessageConversionException("intended");
         }
@@ -220,7 +220,7 @@ public class InboundEndpointTest
             throw new MessageConversionException("intended");
         }
 
-        public object FromMessage(IMessage message, Type targetClass, object conversionHint)
+        public object FromMessage(IMessage message, Type targetType, object conversionHint)
         {
             throw new MessageConversionException("intended");
         }

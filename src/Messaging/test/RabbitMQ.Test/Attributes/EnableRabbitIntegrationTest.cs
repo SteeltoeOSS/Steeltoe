@@ -1361,14 +1361,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public string ServiceName { get; set; } = nameof(AlwaysBarListenerErrorHandler);
 
-        public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
+        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
     }
 
     public class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
     {
         public string ServiceName { get; set; } = nameof(UpperCaseAndRepeatListenerErrorHandler);
 
-        public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
+        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
             var barPayload = message.Payload as Bar;
             var upperPayload = barPayload.Field.ToUpper();
@@ -1384,7 +1384,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public AtomicReference<RC.IModel> ErrorHandlerChannel { get; }
 
-        public object HandleError(IMessage amqpMessage, IMessage message, ListenerExecutionFailedException exception)
+        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
             ErrorHandlerChannel.Value = message.Headers.Get<RC.IModel>(RabbitMessageHeaders.Channel);
             throw new InvalidOperationException("from error handler", exception.InnerException);

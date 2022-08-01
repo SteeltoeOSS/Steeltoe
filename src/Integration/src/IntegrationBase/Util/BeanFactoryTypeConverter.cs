@@ -21,16 +21,16 @@ public class BeanFactoryTypeConverter : ITypeConverter
 
     public IConversionService ConversionService { get; set; }
 
-    public bool CanConvert(Type source, Type target)
+    public bool CanConvert(Type sourceType, Type targetType)
     {
-        return ConversionService.CanConvert(source, target);
+        return ConversionService.CanConvert(sourceType, targetType);
     }
 
-    public object ConvertValue(object value, Type source, Type target)
+    public object ConvertValue(object value, Type sourceType, Type targetType)
     {
-        if (CanConvert(source, target))
+        if (CanConvert(sourceType, targetType))
         {
-            return ConversionService.Convert(value, source, target);
+            return ConversionService.Convert(value, sourceType, targetType);
         }
         else
         {

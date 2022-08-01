@@ -265,7 +265,7 @@ public class ChannelInterceptorTest
                 .Build();
         }
 
-        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
             AfterCompletionInvoked = true;
         }
@@ -301,7 +301,7 @@ public class ChannelInterceptorTest
             return message;
         }
 
-        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
             AfterCompletionInvoked = true;
         }
@@ -324,7 +324,7 @@ public class ChannelInterceptorTest
             return true;
         }
 
-        public override void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception ex)
+        public override void AfterReceiveCompletion(IMessage message, IMessageChannel channel, Exception exception)
         {
             AfterCompletionInvoked = true;
         }

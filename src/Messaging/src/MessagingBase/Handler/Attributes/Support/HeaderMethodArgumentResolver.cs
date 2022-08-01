@@ -50,9 +50,9 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
         return headerValue ?? nativeHeaderValue;
     }
 
-    protected override void HandleMissingValue(string headerName, ParameterInfo parameter, IMessage message)
+    protected override void HandleMissingValue(string name, ParameterInfo parameter, IMessage message)
     {
-        throw new MessageHandlingException(message, $"Missing header '{headerName}' for method parameter type [{parameter.ParameterType}]");
+        throw new MessageHandlingException(message, $"Missing header '{name}' for method parameter type [{parameter.ParameterType}]");
     }
 
     private object GetNativeHeaderValue(IMessage message, string name)

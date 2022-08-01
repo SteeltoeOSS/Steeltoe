@@ -56,9 +56,9 @@ public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodRetur
         handler.HandleReturnValue(returnValue, returnType, message);
     }
 
-    public bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
-        => GetReturnValueHandler(returnType) is IAsyncHandlerMethodReturnValueHandler handler1 &&
-           handler1.IsAsyncReturnValue(returnValue, returnType);
+    public bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo)
+        => GetReturnValueHandler(parameterInfo) is IAsyncHandlerMethodReturnValueHandler handler1 &&
+           handler1.IsAsyncReturnValue(returnValue, parameterInfo);
 
     private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
     {

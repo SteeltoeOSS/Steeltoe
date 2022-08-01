@@ -68,14 +68,14 @@ public class ServiceExpressionContext : IServiceExpressionContext
         return null;
     }
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (ReferenceEquals(this, other))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (other is not ServiceExpressionContext otherContext)
+        if (obj is not ServiceExpressionContext otherContext)
         {
             return false;
         }

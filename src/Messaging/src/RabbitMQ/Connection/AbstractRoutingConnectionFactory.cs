@@ -90,27 +90,27 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
         return DetermineTargetConnectionFactory().CreateConnection();
     }
 
-    public virtual void AddConnectionListener(IConnectionListener listener)
+    public virtual void AddConnectionListener(IConnectionListener connectionListener)
     {
         foreach (var connectionFactory in _targetConnectionFactories.Values)
         {
-            connectionFactory.AddConnectionListener(listener);
+            connectionFactory.AddConnectionListener(connectionListener);
         }
 
         if (DefaultTargetConnectionFactory != null)
         {
-            DefaultTargetConnectionFactory.AddConnectionListener(listener);
+            DefaultTargetConnectionFactory.AddConnectionListener(connectionListener);
         }
 
-        _connectionListeners.Add(listener);
+        _connectionListeners.Add(connectionListener);
     }
 
-    public virtual bool RemoveConnectionListener(IConnectionListener listener)
+    public virtual bool RemoveConnectionListener(IConnectionListener connectionListener)
     {
         var removed = false;
         foreach (var connectionFactory in _targetConnectionFactories.Values)
         {
-            var listenerRemoved = connectionFactory.RemoveConnectionListener(listener);
+            var listenerRemoved = connectionFactory.RemoveConnectionListener(connectionListener);
             if (!removed)
             {
                 removed = listenerRemoved;
@@ -119,14 +119,14 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
         if (DefaultTargetConnectionFactory != null)
         {
-            var listenerRemoved = DefaultTargetConnectionFactory.RemoveConnectionListener(listener);
+            var listenerRemoved = DefaultTargetConnectionFactory.RemoveConnectionListener(connectionListener);
             if (!removed)
             {
                 removed = listenerRemoved;
             }
         }
 
-        _connectionListeners.Remove(listener);
+        _connectionListeners.Remove(connectionListener);
         return removed;
     }
 

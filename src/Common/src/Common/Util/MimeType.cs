@@ -296,14 +296,14 @@ public class MimeType : IComparable<MimeType>
         return false;
     }
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (ReferenceEquals(this, other))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (other is not MimeType otherType)
+        if (obj is not MimeType otherType)
         {
             return false;
         }
@@ -526,19 +526,19 @@ public class MimeType : IComparable<MimeType>
     public class SpecificityComparator<T> : IComparer<T>
         where T : MimeType
     {
-        public int Compare(T mimeType1, T mimeType2)
+        public int Compare(T x, T y)
         {
-            if (mimeType1.IsWildcardType && !mimeType2.IsWildcardType)
+            if (x.IsWildcardType && !y.IsWildcardType)
             {
                 // */* < audio/*
                 return 1;
             }
-            else if (mimeType2.IsWildcardType && !mimeType1.IsWildcardType)
+            else if (y.IsWildcardType && !x.IsWildcardType)
             {
                 // audio/* > */*
                 return -1;
             }
-            else if (!mimeType1.Type.Equals(mimeType2.Type))
+            else if (!x.Type.Equals(y.Type))
             {
                 // audio/basic == text/html
                 return 0;
@@ -546,17 +546,17 @@ public class MimeType : IComparable<MimeType>
             else
             {
                 // mediaType1.getType().Equals(mediaType2.getType())
-                if (mimeType1.IsWildcardSubtype && !mimeType2.IsWildcardSubtype)
+                if (x.IsWildcardSubtype && !y.IsWildcardSubtype)
                 {
                     // audio/* < audio/basic
                     return 1;
                 }
-                else if (mimeType2.IsWildcardSubtype && !mimeType1.IsWildcardSubtype)
+                else if (y.IsWildcardSubtype && !x.IsWildcardSubtype)
                 {
                     // audio/basic > audio/*
                     return -1;
                 }
-                else if (!mimeType1.Subtype.Equals(mimeType2.Subtype))
+                else if (!x.Subtype.Equals(y.Subtype))
                 {
                     // audio/basic == audio/wave
                     return 0;
@@ -564,7 +564,7 @@ public class MimeType : IComparable<MimeType>
                 else
                 {
                     // mediaType2.Subtype.Equals(mediaType2.Subtype)
-                    return CompareParameters(mimeType1, mimeType2);
+                    return CompareParameters(x, y);
                 }
             }
         }

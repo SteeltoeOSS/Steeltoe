@@ -44,10 +44,10 @@ public class ContentTypeDelegatingMessageConverter : ISmartMessageConverter
         return removed;
     }
 
-    public object FromMessage(IMessage message, Type targetClass, object conversionHint)
+    public object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
         var contentType = message.Headers.ContentType();
-        return GetConverterForContentType(contentType).FromMessage(message, targetClass, conversionHint);
+        return GetConverterForContentType(contentType).FromMessage(message, targetType, conversionHint);
     }
 
     public T FromMessage<T>(IMessage message, object conversionHint)
@@ -55,9 +55,9 @@ public class ContentTypeDelegatingMessageConverter : ISmartMessageConverter
         return (T)FromMessage(message, typeof(T), null);
     }
 
-    public object FromMessage(IMessage message, Type targetClass)
+    public object FromMessage(IMessage message, Type targetType)
     {
-        return FromMessage(message, targetClass, null);
+        return FromMessage(message, targetType, null);
     }
 
     public T FromMessage<T>(IMessage message)

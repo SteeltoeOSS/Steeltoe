@@ -71,14 +71,14 @@ public class TransactionTemplate : DefaultTransactionDefinition
         }
     }
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (ReferenceEquals(this, other))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        return base.Equals(other) && (other is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager);
+        return base.Equals(obj) && (obj is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager);
     }
 
     public override int GetHashCode() => base.GetHashCode();

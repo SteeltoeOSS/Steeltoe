@@ -10,9 +10,9 @@ namespace Steeltoe.Integration.Support;
 
 public class DefaultErrorMessageStrategy : IErrorMessageStrategy
 {
-    public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributes)
+    public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
     {
-        var inputMessage = attributes?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
+        var inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
         return inputMessage switch
         {
             IMessage iMessage => new ErrorMessage(exception, iMessage),

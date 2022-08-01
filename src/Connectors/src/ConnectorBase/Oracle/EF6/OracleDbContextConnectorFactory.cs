@@ -22,7 +22,7 @@ public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
     {
     }
 
-    public override object Create(IServiceProvider arg)
+    public override object Create(IServiceProvider provider)
     {
         var connectionString = CreateConnectionString();
         object result = null;

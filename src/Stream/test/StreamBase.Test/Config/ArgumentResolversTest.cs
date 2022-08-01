@@ -60,7 +60,7 @@ public class ArgumentResolversTest
 
         public string ServiceName { get; set; } = DefaultServiceName;
 
-        public object FromMessage(IMessage message, Type targetClass)
+        public object FromMessage(IMessage message, Type targetType)
         {
             return message;
         }

@@ -11,7 +11,7 @@ public interface IStreamListenerSetupMethodOrchestrator
 {
     bool Supports(MethodInfo method);
 
-    void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementation);
+    void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementationType);
 
     object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters);
 }

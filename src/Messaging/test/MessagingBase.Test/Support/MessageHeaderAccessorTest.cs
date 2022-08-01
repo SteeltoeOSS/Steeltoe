@@ -361,9 +361,9 @@ public class MessageHeaderAccessorTest
             return new TestMessageHeaderAccessor(message);
         }
 
-        protected override MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders headers)
+        protected override MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
         {
-            return new TestMessageHeaderAccessor((MessageHeaders)headers);
+            return new TestMessageHeaderAccessor((MessageHeaders)messageHeaders);
         }
     }
 }

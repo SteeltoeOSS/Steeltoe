@@ -21,16 +21,16 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     public abstract string ServiceName { get; set; }
 
-    public abstract object FromMessage(IMessage message, Type targetClass, object conversionHint);
+    public abstract object FromMessage(IMessage message, Type targetType, object conversionHint);
 
     public T FromMessage<T>(IMessage message, object conversionHint)
     {
         return (T)FromMessage(message, typeof(T), conversionHint);
     }
 
-    public object FromMessage(IMessage message, Type targetClass)
+    public object FromMessage(IMessage message, Type targetType)
     {
-        return FromMessage(message, targetClass, null);
+        return FromMessage(message, targetType, null);
     }
 
     public T FromMessage<T>(IMessage message)
@@ -38,9 +38,9 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
         return (T)FromMessage(message, typeof(T), null);
     }
 
-    public IMessage ToMessage(object payload, IMessageHeaders messageProperties)
+    public IMessage ToMessage(object payload, IMessageHeaders headers)
     {
-        return ToMessage(payload, messageProperties, null);
+        return ToMessage(payload, headers, null);
     }
 
     public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
@@ -58,10 +58,10 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
         return message;
     }
 
-    protected abstract IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint);
+    protected abstract IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint);
 
-    protected virtual IMessage CreateMessage(object payload, IMessageHeaders messageProperties)
+    protected virtual IMessage CreateMessage(object payload, IMessageHeaders headers)
     {
-        return CreateMessage(payload, messageProperties, null);
+        return CreateMessage(payload, headers, null);
     }
 }

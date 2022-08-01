@@ -137,14 +137,14 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
             }, null);
     }
 
-    protected override bool TryExecuteTaskInline(Task task, bool prevQueued)
+    protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)
     {
         if (!_isHystrixThreadPoolThread)
         {
             return false;
         }
 
-        if (prevQueued)
+        if (taskWasPreviouslyQueued)
         {
             return false;
         }

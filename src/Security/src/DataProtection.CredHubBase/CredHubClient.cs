@@ -341,14 +341,14 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    public Task<List<CredentialPermission>> GetPermissionsAsync(string name)
+    public Task<List<CredentialPermission>> GetPermissionsAsync(string credentialName)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(credentialName))
         {
             throw new ArgumentException("Name is required");
         }
 
-        return GetPermissionsInternalAsync(name);
+        return GetPermissionsInternalAsync(credentialName);
     }
 
     private async Task<List<CredentialPermission>> GetPermissionsInternalAsync(string name)
@@ -366,9 +366,9 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    public Task<List<CredentialPermission>> AddPermissionsAsync(string name, List<CredentialPermission> permissions)
+    public Task<List<CredentialPermission>> AddPermissionsAsync(string credentialName, List<CredentialPermission> permissions)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(credentialName))
         {
             throw new ArgumentException("Name is required");
         }
@@ -378,7 +378,7 @@ public class CredHubClient : ICredHubClient
             throw new ArgumentException("At least one permission is required");
         }
 
-        return AddPermissionsInternalAsync(name, permissions);
+        return AddPermissionsInternalAsync(credentialName, permissions);
     }
 
     private async Task<List<CredentialPermission>> AddPermissionsInternalAsync(string name, List<CredentialPermission> permissions)
@@ -398,9 +398,9 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    public Task<bool> DeletePermissionAsync(string name, string actor)
+    public Task<bool> DeletePermissionAsync(string credentialName, string actor)
     {
-        if (string.IsNullOrEmpty(name))
+        if (string.IsNullOrEmpty(credentialName))
         {
             throw new ArgumentException("Name is required");
         }
@@ -410,7 +410,7 @@ public class CredHubClient : ICredHubClient
             throw new ArgumentException("Actor is required");
         }
 
-        return DeletePermissionInternalAsync(name, actor);
+        return DeletePermissionInternalAsync(credentialName, actor);
     }
 
     private async Task<bool> DeletePermissionInternalAsync(string name, string actor)

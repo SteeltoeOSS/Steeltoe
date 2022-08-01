@@ -20,11 +20,11 @@ public class CompositeMessageConverter : ISmartMessageConverter
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
-    public object FromMessage(IMessage message, Type targetClass)
+    public object FromMessage(IMessage message, Type targetType)
     {
         foreach (var converter in Converters)
         {
-            var result = converter.FromMessage(message, targetClass);
+            var result = converter.FromMessage(message, targetType);
             if (result != null)
             {
                 return result;
@@ -34,13 +34,13 @@ public class CompositeMessageConverter : ISmartMessageConverter
         return null;
     }
 
-    public object FromMessage(IMessage message, Type targetClass, object conversionHint)
+    public object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
         foreach (var converter in Converters)
         {
             var result = converter is ISmartMessageConverter smartConverter
-                ? smartConverter.FromMessage(message, targetClass, conversionHint)
-                : converter.FromMessage(message, targetClass);
+                ? smartConverter.FromMessage(message, targetType, conversionHint)
+                : converter.FromMessage(message, targetType);
             if (result != null)
             {
                 return result;

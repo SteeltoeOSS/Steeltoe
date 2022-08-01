@@ -254,9 +254,9 @@ public class MethodInvocationTests : AbstractExpressionTests
     {
         public BytesService Service => new ();
 
-        public object Resolve(IEvaluationContext context, string beanName)
+        public object Resolve(IEvaluationContext context, string serviceName)
         {
-            return "service".Equals(beanName) ? Service : null;
+            return "service".Equals(serviceName) ? Service : null;
         }
     }
 

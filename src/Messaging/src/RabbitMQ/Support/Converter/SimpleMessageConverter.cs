@@ -23,15 +23,15 @@ public class SimpleMessageConverter : AbstractMessageConverter
     {
     }
 
-    public override object FromMessage(IMessage from, Type targetType, object conversionHint)
+    public override object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
-        if (from is not IMessage<byte[]> message)
+        if (message is not IMessage<byte[]> bytesMessage)
         {
-            throw new MessageConversionException($"Failed to convert non byte[] Message content{from.GetType()}");
+            throw new MessageConversionException($"Failed to convert non byte[] Message content{message.GetType()}");
         }
 
         object content = null;
-        var properties = message.Headers;
+        var properties = bytesMessage.Headers;
         if (properties != null)
         {
             var contentType = properties.ContentType();
@@ -42,7 +42,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 try
                 {
                     var enc = EncodingUtils.GetEncoding(encoding);
-                    content = enc.GetString(message.Payload);
+                    content = enc.GetString(bytesMessage.Payload);
                 }
                 catch (Exception e)
                 {
@@ -56,7 +56,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                 try
                 {
                     var formatter = new BinaryFormatter();
-                    var stream = new MemoryStream(message.Payload);
+                    var stream = new MemoryStream(bytesMessage.Payload);
 
                     // TODO: [BREAKING] Don't use binary serialization, it's insecure! https://aka.ms/binaryformatter
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
@@ -78,16 +78,16 @@ public class SimpleMessageConverter : AbstractMessageConverter
         if (content == null)
         {
             Logger?.LogDebug("FromMessage() returning message payload unchanged");
-            content = message.Payload;
+            content = bytesMessage.Payload;
         }
 
         return content;
     }
 
-    protected override IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint)
+    protected override IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes = null;
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
         switch (payload)
         {
             case byte[] v:
@@ -126,7 +126,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
             throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
         }
 
-        var message = Message.Create(bytes, messageProperties);
+        var message = Message.Create(bytes, headers);
         accessor.ContentLength = bytes.Length;
         return message;
     }

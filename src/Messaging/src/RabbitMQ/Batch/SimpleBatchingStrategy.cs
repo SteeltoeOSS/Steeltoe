@@ -28,7 +28,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         _timeout = timeout;
     }
 
-    public MessageBatch? AddToBatch(string exchange, string routKey, IMessage input)
+    public MessageBatch? AddToBatch(string exchange, string routingKey, IMessage message)
     {
         if (_exchange != null && _exchange != exchange)
         {
@@ -37,29 +37,29 @@ public class SimpleBatchingStrategy : IBatchingStrategy
 
         _exchange = exchange;
 
-        if (_routingKey != null && _routingKey != routKey)
+        if (_routingKey != null && _routingKey != routingKey)
         {
             throw new ArgumentException("Cannot send with different routing keys in the same batch");
         }
 
-        if (input is not IMessage<byte[]> message)
+        if (message is not IMessage<byte[]> bytesMessage)
         {
             throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
         }
 
-        _routingKey = routKey;
+        _routingKey = routingKey;
 
-        var bufferUse = 4 + message.Payload.Length;
+        var bufferUse = 4 + bytesMessage.Payload.Length;
         MessageBatch? batch = null;
         if (_messages.Count > 0 && _currentSize + bufferUse > _bufferLimit)
         {
             batch = DoReleaseBatch();
             _exchange = exchange;
-            _routingKey = routKey;
+            _routingKey = routingKey;
         }
 
         _currentSize += bufferUse;
-        _messages.Add(message);
+        _messages.Add(bytesMessage);
         if (batch == null && (_messages.Count >= _batchSize || _currentSize >= _bufferLimit))
         {
             batch = DoReleaseBatch();
@@ -108,21 +108,21 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         return false;
     }
 
-    public void DeBatch(IMessage input, Action<IMessage> fragmentConsumer)
+    public void DeBatch(IMessage message, Action<IMessage> fragmentConsumer)
     {
-        if (input is not IMessage<byte[]> message)
+        if (message is not IMessage<byte[]> bytesMessage)
         {
             throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        var byteBuffer = new Span<byte>(message.Payload);
+        var accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);
+        var byteBuffer = new Span<byte>(bytesMessage.Payload);
         accessor.RemoveHeader(RabbitMessageHeaders.SpringBatchFormat);
-        var bodyLength = message.Payload.Length;
+        var bodyLength = bytesMessage.Payload.Length;
         var index = 0;
         while (index < bodyLength)
         {
-            accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);
             var slice = byteBuffer.Slice(index);
             var length = BinaryPrimitives.ReadInt32BigEndian(slice);
             index += 4;
@@ -131,7 +131,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
                 throw new ListenerExecutionFailedException(
                     "Bad batched message received",
                     new MessageConversionException($"Insufficient batch data at offset {index}"),
-                    message);
+                    bytesMessage);
             }
 
             var body = new byte[length];

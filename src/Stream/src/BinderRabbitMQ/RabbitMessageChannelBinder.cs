@@ -691,21 +691,21 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
         public override string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
-        public override object FromMessage(IMessage message, Type targetClass, object conversionHint)
+        public override object FromMessage(IMessage message, Type targetType, object conversionHint)
         {
             return message.Payload;
         }
 
-        protected override IMessage CreateMessage(object payload, IMessageHeaders messageProperties, object conversionHint)
+        protected override IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint)
         {
             if (payload is byte[] payloadBytes)
             {
-                return Message.Create(payloadBytes, messageProperties);
+                return Message.Create(payloadBytes, headers);
             }
             else
             {
                 // just for safety (backwards compatibility)
-                return _converter.ToMessage(payload, messageProperties);
+                return _converter.ToMessage(payload, headers);
             }
         }
     }

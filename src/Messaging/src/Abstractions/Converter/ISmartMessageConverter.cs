@@ -13,10 +13,10 @@ public interface ISmartMessageConverter : IMessageConverter
     /// Convert the payload of a message to a typed object.
     /// </summary>
     /// <param name="message">the input message.</param>
-    /// <param name="targetClass">the target type of the conversion.</param>
+    /// <param name="targetType">the target type of the conversion.</param>
     /// <param name="conversionHint">an extra object passed to the converter which may used for handling the conversion.</param>
     /// <returns>the result of the conversion.</returns>
-    object FromMessage(IMessage message, Type targetClass, object conversionHint);
+    object FromMessage(IMessage message, Type targetType, object conversionHint);
 
     /// <summary>
     /// Convert the payload of a message to a typed object.

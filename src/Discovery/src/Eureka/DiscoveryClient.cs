@@ -180,14 +180,14 @@ public class DiscoveryClient : IEurekaClient
         return result;
     }
 
-    public InstanceInfo GetNextServerFromEureka(string vipAddress, bool secure)
+    public InstanceInfo GetNextServerFromEureka(string virtualHostname, bool secure)
     {
-        if (string.IsNullOrEmpty(vipAddress))
+        if (string.IsNullOrEmpty(virtualHostname))
         {
-            throw new ArgumentException(nameof(vipAddress));
+            throw new ArgumentException(nameof(virtualHostname));
         }
 
-        var results = GetInstancesByVipAddress(vipAddress, secure);
+        var results = GetInstancesByVipAddress(virtualHostname, secure);
         if (results.Count == 0)
         {
             return null;

@@ -1714,21 +1714,21 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class MyBeanResolver : IServiceResolver
     {
-        public object Resolve(IEvaluationContext context, string beanName)
+        public object Resolve(IEvaluationContext context, string serviceName)
         {
-            if (beanName.Equals("foo"))
+            if (serviceName.Equals("foo"))
             {
                 return "custard";
             }
-            else if (beanName.Equals("foo.bar"))
+            else if (serviceName.Equals("foo.bar"))
             {
                 return "trouble";
             }
-            else if (beanName.Equals("&foo"))
+            else if (serviceName.Equals("&foo"))
             {
                 return "foo factory";
             }
-            else if (beanName.Equals("goo"))
+            else if (serviceName.Equals("goo"))
             {
                 throw new AccessException("DONT ASK ME ABOUT GOO");
             }
@@ -2062,7 +2062,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         public int Parameter() => _counter.IncrementAndGet();
 
-        public object Resolve(IEvaluationContext context, string beanName) => beanName.Equals("bean") ? this : null;
+        public object Resolve(IEvaluationContext context, string serviceName) => serviceName.Equals("bean") ? this : null;
     }
 
     public class MapWithConstant : Hashtable

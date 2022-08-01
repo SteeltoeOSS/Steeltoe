@@ -29,13 +29,13 @@ public class CompositeChannelListener : IChannelListener
         }
     }
 
-    public void OnShutDown(RC.ShutdownEventArgs @event)
+    public void OnShutDown(RC.ShutdownEventArgs args)
     {
         _logger?.LogDebug("OnShutDown");
         var listeners = _channelListeners;
         foreach (var listener in listeners)
         {
-            listener.OnShutDown(@event);
+            listener.OnShutDown(args);
         }
     }
 

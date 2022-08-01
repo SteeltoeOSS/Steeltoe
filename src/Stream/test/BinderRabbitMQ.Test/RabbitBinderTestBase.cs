@@ -79,7 +79,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
         }
     }
 
-    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions rabbitBindingsOptions = null)
+    protected override RabbitTestBinder GetBinder(RabbitBindingsOptions bindingsOptions = null)
     {
         if (testBinder == null)
         {
@@ -90,9 +90,9 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             var ccf = GetResource();
             var rabbitOptions = new TestOptionsMonitor<RabbitOptions>(options);
             var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(null);
-            var bindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions ?? new RabbitBindingsOptions());
+            var rabbitBindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(bindingsOptions ?? new RabbitBindingsOptions());
 
-            testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, bindingsOptions, LoggerFactory);
+            testBinder = new RabbitTestBinder(ccf, rabbitOptions, binderOptions, rabbitBindingsOptions, LoggerFactory);
         }
 
         return testBinder;

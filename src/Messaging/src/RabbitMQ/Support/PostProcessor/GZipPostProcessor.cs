@@ -17,9 +17,9 @@ public class GZipPostProcessor : AbstractDeflaterPostProcessor
     {
     }
 
-    protected override Stream GetCompressorStream(Stream zipped)
+    protected override Stream GetCompressorStream(Stream stream)
     {
-        return new GZipStream(zipped, Level);
+        return new GZipStream(stream, Level);
     }
 
     protected override string GetEncoding()

@@ -431,7 +431,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         };
         var client = new DiscoveryClient(config);
         var ex = Assert.Throws<ArgumentException>(() => client.GetNextServerFromEureka(null, false));
-        Assert.Contains("vipAddress", ex.Message);
+        Assert.Contains("virtualHostname", ex.Message);
     }
 
     [Fact]

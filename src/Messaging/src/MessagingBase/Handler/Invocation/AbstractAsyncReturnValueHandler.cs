@@ -13,7 +13,7 @@ public abstract class AbstractAsyncReturnValueHandler : IAsyncHandlerMethodRetur
         throw new InvalidOperationException("Unexpected invocation");
     }
 
-    public virtual bool IsAsyncReturnValue(object returnValue, ParameterInfo returnType)
+    public virtual bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo)
     {
         return true;
     }

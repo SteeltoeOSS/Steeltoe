@@ -60,11 +60,11 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
         BindingsOptions = binder.BindingsOptions;
     }
 
-    public override IBinding BindConsumer(string name, string group, IMessageChannel moduleInputChannel, IConsumerOptions consumerOptions)
+    public override IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
     {
         CaptureConsumerResources(name, group, consumerOptions);
 
-        return base.BindConsumer(name, group, moduleInputChannel, consumerOptions);
+        return base.BindConsumer(name, group, inboundTarget, consumerOptions);
     }
 
     public IBinding BindPollableConsumer(string name, string group, IPollableSource<IMessageHandler> inboundBindTarget, IConsumerOptions consumerOptions)

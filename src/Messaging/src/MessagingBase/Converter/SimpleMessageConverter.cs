@@ -13,10 +13,10 @@ public class SimpleMessageConverter : IMessageConverter
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
-    public virtual object FromMessage(IMessage message, Type targetClass)
+    public virtual object FromMessage(IMessage message, Type targetType)
     {
         var payload = message.Payload;
-        return ClassUtils.IsAssignableValue(targetClass, payload) ? payload : null;
+        return ClassUtils.IsAssignableValue(targetType, payload) ? payload : null;
     }
 
     public virtual T FromMessage<T>(IMessage message)

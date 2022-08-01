@@ -65,9 +65,9 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         }
     }
 
-    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory mockConnectionFactory, ILoggerFactory loggerFactory = null)
+    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
     {
-        var scf = new SingleConnectionFactory(mockConnectionFactory, loggerFactory);
+        var scf = new SingleConnectionFactory(connectionFactory, loggerFactory);
         return scf;
     }
 }

@@ -22,9 +22,9 @@ public interface IRabbitTemplate : IServiceNameAware
 
     T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks);
 
-    bool WaitForConfirms(int timeout);
+    bool WaitForConfirms(int timeoutInMilliseconds);
 
-    void WaitForConfirmsOrDie(int timeout);
+    void WaitForConfirmsOrDie(int timeoutInMilliseconds);
 
     void Send(string exchange, string routingKey, IMessage message);
 
@@ -54,13 +54,13 @@ public interface IRabbitTemplate : IServiceNameAware
 
     T ConvertSendAndReceive<T>(string exchange, string routingKey, object message);
 
-    IMessage Receive(int timeoutMillis);
+    IMessage Receive(int timeoutInMilliseconds);
 
-    IMessage Receive(string queueName, int timeoutMillis);
+    IMessage Receive(string queueName, int timeoutInMilliseconds);
 
     T ReceiveAndConvert<T>(int timeoutMillis);
 
-    T ReceiveAndConvert<T>(string queueName, int timeoutMillis);
+    T ReceiveAndConvert<T>(string queueName, int timeoutInMilliseconds);
 
     bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback);
 

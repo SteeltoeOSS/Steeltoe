@@ -44,7 +44,7 @@ public class ZipPostProcessor : AbstractDeflaterPostProcessor
         }
     }
 
-    protected override Stream GetCompressorStream(Stream zipped)
+    protected override Stream GetCompressorStream(Stream stream)
     {
         throw new NotImplementedException("GetCompressorStream should not be called");
     }

@@ -17,9 +17,9 @@ public class GUnzipPostProcessor : AbstractDecompressingPostProcessor
     {
     }
 
-    protected override Stream GetDeCompressorStream(Stream zipped)
+    protected override Stream GetDeCompressorStream(Stream stream)
     {
-        return new GZipStream(zipped, CompressionMode.Decompress);
+        return new GZipStream(stream, CompressionMode.Decompress);
     }
 
     protected override string GetEncoding()

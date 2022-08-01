@@ -668,9 +668,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return Task.Run(() => DoReceive(queueName, timeoutMillis, cancellationToken), cancellationToken);
     }
 
-    public virtual IMessage Receive(int timeoutMillis)
+    public virtual IMessage Receive(int timeoutInMilliseconds)
     {
-        return Receive(GetRequiredQueue(), timeoutMillis);
+        return Receive(GetRequiredQueue(), timeoutInMilliseconds);
     }
 
     public virtual IMessage Receive(string queueName)
@@ -678,15 +678,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return Receive(queueName, ReceiveTimeout);
     }
 
-    public virtual IMessage Receive(string queueName, int timeoutMillis)
+    public virtual IMessage Receive(string queueName, int timeoutInMilliseconds)
     {
-        if (timeoutMillis == 0)
+        if (timeoutInMilliseconds == 0)
         {
             return DoReceiveNoWait(queueName);
         }
         else
         {
-            return DoReceive(queueName, timeoutMillis, default);
+            return DoReceive(queueName, timeoutInMilliseconds, default);
         }
     }
 
@@ -700,9 +700,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return (T)ReceiveAndConvert(queueName, ReceiveTimeout, typeof(T));
     }
 
-    public virtual T ReceiveAndConvert<T>(string queueName, int timeoutMillis)
+    public virtual T ReceiveAndConvert<T>(string queueName, int timeoutInMilliseconds)
     {
-        return (T)ReceiveAndConvert(queueName, timeoutMillis, typeof(T));
+        return (T)ReceiveAndConvert(queueName, timeoutInMilliseconds, typeof(T));
     }
 
     public virtual object ReceiveAndConvert(Type type)
@@ -720,9 +720,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ReceiveAndConvert(GetRequiredQueue(), timeoutMillis, type);
     }
 
-    public virtual object ReceiveAndConvert(string queueName, int timeoutMillis, Type type)
+    public virtual object ReceiveAndConvert(string queueName, int timeoutInMilliseconds, Type type)
     {
-        return DoReceiveAndConvert(queueName, timeoutMillis, type);
+        return DoReceiveAndConvert(queueName, timeoutInMilliseconds, type);
     }
 
     public virtual Task<T> ReceiveAndConvertAsync<T>(int timeoutMillis, CancellationToken cancellationToken = default)
@@ -770,9 +770,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ReceiveAndReply(queueName, callback, (request, _) => GetReplyToAddress(request));
     }
 
-    public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, string exchange, string routingKey)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(Func<TReceive, TReply> callback, string replyExchange, string replyRoutingKey)
     {
-        return ReceiveAndReply(GetRequiredQueue(), callback, exchange, routingKey);
+        return ReceiveAndReply(GetRequiredQueue(), callback, replyExchange, replyRoutingKey);
     }
 
     public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, string replyExchange, string replyRoutingKey)
@@ -1146,9 +1146,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }, ConnectionFactory);
     }
 
-    public virtual T Execute<T>(Func<RC.IModel, T> action)
+    public virtual T Execute<T>(Func<RC.IModel, T> channelCallback)
     {
-        return Execute(action, ConnectionFactory);
+        return Execute(channelCallback, ConnectionFactory);
     }
 
     public virtual void AddListener(RC.IModel channel)
@@ -1170,12 +1170,12 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
-    public virtual T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations)
+    public virtual T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback)
     {
-        return Invoke(rabbitOperations, null, null);
+        return Invoke(operationsCallback, null, null);
     }
 
-    public virtual T Invoke<T>(Func<IRabbitTemplate, T> rabbitOperations, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)
+    public virtual T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)
     {
         var currentChannel = DedicatedChannels.Value;
         if (currentChannel != null)
@@ -1237,7 +1237,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         var listener = AddConfirmListener(acks, nacks, channel);
         try
         {
-            return rabbitOperations(this);
+            return operationsCallback(this);
         }
         finally
         {

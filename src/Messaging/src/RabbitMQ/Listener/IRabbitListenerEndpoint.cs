@@ -20,7 +20,7 @@ public interface IRabbitListenerEndpoint
 
     IApplicationContext ApplicationContext { get; set; }
 
-    void SetupListenerContainer(IMessageListenerContainer messageListenerContainer);
+    void SetupListenerContainer(IMessageListenerContainer listenerContainer);
 
     ISmartMessageConverter MessageConverter { get; set; }
 
