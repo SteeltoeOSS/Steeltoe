@@ -8,9 +8,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using T = System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka;

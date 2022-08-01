@@ -4,8 +4,6 @@
 
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics;
 

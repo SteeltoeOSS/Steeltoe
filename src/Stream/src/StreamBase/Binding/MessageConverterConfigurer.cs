@@ -9,9 +9,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Stream.Binding;
 

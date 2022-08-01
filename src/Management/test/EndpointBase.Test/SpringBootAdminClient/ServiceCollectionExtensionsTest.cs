@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;

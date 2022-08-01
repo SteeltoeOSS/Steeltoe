@@ -5,14 +5,9 @@
 using k8s;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
-using Moq;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Kubernetes;
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;

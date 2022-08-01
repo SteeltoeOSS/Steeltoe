@@ -5,7 +5,6 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;
 

@@ -4,7 +4,6 @@
 
 using Consul;
 using Steeltoe.Discovery.Consul.Util;
-using System;
 using System.Net;
 
 namespace Steeltoe.Discovery.Consul;

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;

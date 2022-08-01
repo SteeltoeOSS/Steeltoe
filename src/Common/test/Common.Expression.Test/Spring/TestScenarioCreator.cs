@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System;
 using System.Globalization;
 using System.Text;
 

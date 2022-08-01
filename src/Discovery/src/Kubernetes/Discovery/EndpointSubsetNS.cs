@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using k8s.Models;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Kubernetes.Discovery;
 

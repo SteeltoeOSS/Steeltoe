@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Messaging.Support.Test.TaskSchedulerSubscribableChannelTest;
 

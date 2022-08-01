@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 

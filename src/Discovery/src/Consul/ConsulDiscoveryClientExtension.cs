@@ -14,8 +14,6 @@ using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Discovery.Consul;
 

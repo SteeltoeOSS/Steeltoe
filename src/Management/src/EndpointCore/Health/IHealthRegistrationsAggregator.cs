@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health;
 

@@ -4,7 +4,6 @@
 
 using Microsoft.Azure.Cosmos;
 using Steeltoe.Connector.Services;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.CosmosDb.Test;

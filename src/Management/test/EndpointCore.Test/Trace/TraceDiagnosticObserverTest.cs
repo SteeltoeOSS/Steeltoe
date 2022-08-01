@@ -6,12 +6,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Security.Claims;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;

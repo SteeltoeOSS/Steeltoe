@@ -18,8 +18,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Xunit;

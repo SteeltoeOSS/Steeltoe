@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Connector.PostgreSql;
 

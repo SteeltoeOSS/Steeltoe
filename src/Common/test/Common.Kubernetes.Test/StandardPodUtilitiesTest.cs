@@ -6,10 +6,7 @@ using k8s;
 using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
 using Steeltoe.Extensions.Configuration.Kubernetes;
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;

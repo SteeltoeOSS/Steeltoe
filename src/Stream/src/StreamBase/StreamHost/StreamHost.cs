@@ -6,9 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Stream.Binding;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.StreamHost;
 

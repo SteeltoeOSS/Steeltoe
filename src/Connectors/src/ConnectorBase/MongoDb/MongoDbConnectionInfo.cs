@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
-using System;
 
 namespace Steeltoe.Connector.MongoDb;
 

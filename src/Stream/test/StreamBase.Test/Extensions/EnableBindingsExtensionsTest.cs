@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Messaging;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Stream.Extensions;

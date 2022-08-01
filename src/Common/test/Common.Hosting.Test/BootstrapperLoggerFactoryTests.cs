@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Logging;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;

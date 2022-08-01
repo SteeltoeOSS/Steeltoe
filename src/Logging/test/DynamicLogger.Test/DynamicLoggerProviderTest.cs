@@ -5,11 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Configuration;
-using Microsoft.Extensions.Logging.Console;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.Test;

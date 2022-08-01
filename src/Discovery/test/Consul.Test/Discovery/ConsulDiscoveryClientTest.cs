@@ -5,9 +5,6 @@
 using Consul;
 using Moq;
 using Steeltoe.Common.Discovery;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test;

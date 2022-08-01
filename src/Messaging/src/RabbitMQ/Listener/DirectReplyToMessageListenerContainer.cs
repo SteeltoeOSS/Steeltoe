@@ -5,9 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using RC=RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;

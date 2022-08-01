@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.SpringBoot.Test;

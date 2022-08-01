@@ -13,8 +13,6 @@ using Steeltoe.Common.Kubernetes;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Discovery.Kubernetes;
 

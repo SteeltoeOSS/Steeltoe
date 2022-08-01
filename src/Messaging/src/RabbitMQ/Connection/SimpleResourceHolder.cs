@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 

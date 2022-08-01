@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.Test;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Task.Test;

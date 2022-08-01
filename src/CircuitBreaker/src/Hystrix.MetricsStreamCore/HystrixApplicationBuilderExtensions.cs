@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

@@ -15,11 +15,7 @@ using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using System.Security;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

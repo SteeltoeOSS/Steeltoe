@@ -8,8 +8,6 @@ using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test;

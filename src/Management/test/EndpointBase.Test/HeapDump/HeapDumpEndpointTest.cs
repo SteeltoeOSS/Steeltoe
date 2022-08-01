@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;

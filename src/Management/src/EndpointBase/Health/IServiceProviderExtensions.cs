@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Availability;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Health;
 

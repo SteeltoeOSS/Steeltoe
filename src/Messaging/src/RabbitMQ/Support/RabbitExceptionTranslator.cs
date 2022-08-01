@@ -5,8 +5,6 @@
 using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System;
-using System.IO;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 

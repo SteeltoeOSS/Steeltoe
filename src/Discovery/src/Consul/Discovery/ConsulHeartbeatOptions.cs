@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Consul.Util;
-using System;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 

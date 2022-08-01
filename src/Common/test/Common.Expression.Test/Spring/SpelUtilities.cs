@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using System.IO;
 using System.Text;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;

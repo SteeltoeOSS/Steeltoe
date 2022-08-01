@@ -11,11 +11,7 @@ using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading;
 using Xunit;
 using IntChannel = Steeltoe.Integration.Channel;
 

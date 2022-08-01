@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Connector.Services;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

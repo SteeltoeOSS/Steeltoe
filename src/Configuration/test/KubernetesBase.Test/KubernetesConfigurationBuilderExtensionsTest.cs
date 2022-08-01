@@ -4,8 +4,6 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;

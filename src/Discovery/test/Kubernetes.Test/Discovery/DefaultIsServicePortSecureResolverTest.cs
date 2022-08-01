@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;

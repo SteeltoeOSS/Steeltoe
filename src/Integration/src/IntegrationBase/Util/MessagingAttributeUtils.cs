@@ -6,8 +6,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Util;

@@ -3,9 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.LoadBalancer;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http.LoadBalancer.Test;
 

@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Security;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 

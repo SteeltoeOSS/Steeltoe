@@ -7,9 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 

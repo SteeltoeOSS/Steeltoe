@@ -7,7 +7,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

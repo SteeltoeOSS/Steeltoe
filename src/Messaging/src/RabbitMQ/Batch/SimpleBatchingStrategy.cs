@@ -5,9 +5,7 @@
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 using System.Buffers.Binary;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Batch;
 

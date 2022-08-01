@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Net;
-using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 

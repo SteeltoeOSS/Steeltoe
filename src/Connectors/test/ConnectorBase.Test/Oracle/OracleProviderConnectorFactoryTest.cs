@@ -4,7 +4,6 @@
 
 using Oracle.ManagedDataAccess.Client;
 using Steeltoe.Connector.Services;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Oracle.Test;

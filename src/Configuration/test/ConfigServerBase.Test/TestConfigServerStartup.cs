@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 

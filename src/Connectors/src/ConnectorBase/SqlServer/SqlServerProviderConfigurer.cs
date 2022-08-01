@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Extensions;
 using Steeltoe.Connector.Services;
-using System;
 
 namespace Steeltoe.Connector.SqlServer;
 

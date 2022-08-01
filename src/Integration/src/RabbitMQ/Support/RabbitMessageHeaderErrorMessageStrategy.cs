@@ -6,8 +6,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Integration.Rabbit.Support;
 

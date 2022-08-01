@@ -10,8 +10,6 @@ using OfficialMySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 using PomeloMySqlConnection = MySqlConnector.MySqlConnection;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.MySql.EFCore.Test;

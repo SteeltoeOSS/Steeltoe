@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System;
 
 namespace Steeltoe.Management.Tracing;
 

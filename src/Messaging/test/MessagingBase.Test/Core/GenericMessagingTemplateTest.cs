@@ -5,9 +5,6 @@
 using Moq;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Messaging.Test;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Messaging.Core.Test;

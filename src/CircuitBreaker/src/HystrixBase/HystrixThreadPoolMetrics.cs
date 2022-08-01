@@ -8,9 +8,7 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common;
 using Steeltoe.Common.Util;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
-using System;
 
 namespace Steeltoe.Management.Kubernetes;
 

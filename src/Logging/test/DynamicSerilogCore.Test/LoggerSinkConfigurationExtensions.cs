@@ -5,7 +5,6 @@
 using Serilog;
 using Serilog.Configuration;
 using Serilog.Events;
-using System;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
 

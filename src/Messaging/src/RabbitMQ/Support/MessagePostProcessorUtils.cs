@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Order;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 

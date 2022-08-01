@@ -4,10 +4,7 @@
 
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

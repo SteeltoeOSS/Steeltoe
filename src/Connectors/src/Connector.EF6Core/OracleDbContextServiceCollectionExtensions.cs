@@ -9,7 +9,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.Oracle.EF6;
 using Steeltoe.Connector.Services;
-using System;
 using System.Data;
 
 namespace Steeltoe.Connector.EF6Core;

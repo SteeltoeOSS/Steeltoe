@@ -8,10 +8,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Configuration.ConfigServer;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;

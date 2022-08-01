@@ -5,8 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;

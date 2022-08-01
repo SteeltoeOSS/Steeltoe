@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;

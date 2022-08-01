@@ -16,10 +16,7 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Integration.Handler;

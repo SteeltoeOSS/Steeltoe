@@ -7,7 +7,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 

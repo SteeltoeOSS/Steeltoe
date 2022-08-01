@@ -7,7 +7,6 @@ using Newtonsoft.Json.Serialization;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
-using System.IO;
 
 namespace Steeltoe.Stream.Tck;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.Certificate;
-using System.Collections.Generic;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Security.Authentication.Mtls;

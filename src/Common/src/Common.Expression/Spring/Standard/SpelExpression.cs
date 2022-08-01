@@ -6,7 +6,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Expression.Internal.Spring.Common;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
-using System;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 

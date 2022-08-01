@@ -7,7 +7,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System;
 using System.Reflection;
 using System.Text;
 

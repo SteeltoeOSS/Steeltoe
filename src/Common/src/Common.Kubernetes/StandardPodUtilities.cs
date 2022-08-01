@@ -6,9 +6,6 @@ using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Kubernetes;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 

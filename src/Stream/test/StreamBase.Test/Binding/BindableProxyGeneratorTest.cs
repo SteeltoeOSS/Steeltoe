@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Stream.Messaging;
-using System;
 using System.Reflection;
 using Xunit;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal;
-using System;
 using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;

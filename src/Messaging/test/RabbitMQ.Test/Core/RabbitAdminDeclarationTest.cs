@@ -11,8 +11,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
-using System.Collections.Generic;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Core.RabbitAdminDeclarationTest;
 using RC = RabbitMQ.Client;

@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpOverrides;
 using Steeltoe.Security.Authentication.Mtls;
-using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

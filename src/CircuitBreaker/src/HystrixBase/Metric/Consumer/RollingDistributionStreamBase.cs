@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using HdrHistogram;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;

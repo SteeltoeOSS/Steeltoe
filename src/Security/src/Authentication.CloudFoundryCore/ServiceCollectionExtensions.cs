@@ -10,7 +10,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
-using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

@@ -7,8 +7,6 @@ using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
 using Wavefront.SDK.CSharp.DirectIngestion;
 using Wavefront.SDK.CSharp.Entities.Metrics;
 

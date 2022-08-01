@@ -17,8 +17,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Extensions;

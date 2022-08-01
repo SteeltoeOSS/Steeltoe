@@ -4,8 +4,6 @@
 
 using Consul;
 using Moq;
-using System;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test;

@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Handler.Attributes.Support;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 

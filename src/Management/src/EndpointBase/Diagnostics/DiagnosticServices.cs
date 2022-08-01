@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Diagnostics;
 

@@ -9,7 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Configuration.ConfigServer;
 using Steeltoe.Extensions.Configuration.ConfigServer.Test;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;

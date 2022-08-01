@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

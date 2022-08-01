@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.Loggers;

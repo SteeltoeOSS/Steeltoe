@@ -5,7 +5,6 @@
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Stream.Binder;

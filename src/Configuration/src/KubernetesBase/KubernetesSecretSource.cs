@@ -4,7 +4,6 @@
 
 using k8s;
 using Microsoft.Extensions.Configuration;
-using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 

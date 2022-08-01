@@ -10,20 +10,14 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 

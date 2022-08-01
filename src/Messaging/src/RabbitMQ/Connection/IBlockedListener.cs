@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using RabbitMQ.Client.Events;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 

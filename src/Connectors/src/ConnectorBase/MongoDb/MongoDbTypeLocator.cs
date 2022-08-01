@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Reflection;
-using System;
 using System.Reflection;
-using System.Threading;
 
 namespace Steeltoe.Connector.MongoDb;
 

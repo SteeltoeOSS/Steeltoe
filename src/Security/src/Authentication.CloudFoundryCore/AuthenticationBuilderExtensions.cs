@@ -12,7 +12,6 @@ using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Security.Authentication.Mtls;
-using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

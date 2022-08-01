@@ -8,8 +8,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Endpoint;
 

@@ -5,7 +5,6 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using System;
 
 namespace Steeltoe.Stream.Converter;
 

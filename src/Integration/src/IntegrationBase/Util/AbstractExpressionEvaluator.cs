@@ -9,7 +9,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Util;
 

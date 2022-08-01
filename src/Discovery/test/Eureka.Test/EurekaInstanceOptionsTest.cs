@@ -8,9 +8,7 @@ using Steeltoe.Common.Net;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using Xunit;
 

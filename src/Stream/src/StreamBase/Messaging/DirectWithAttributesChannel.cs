@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Messaging;
 

@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.EF6Core;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Oracle.EF6.Test;

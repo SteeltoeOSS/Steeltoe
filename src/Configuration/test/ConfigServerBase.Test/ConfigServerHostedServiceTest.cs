@@ -5,9 +5,6 @@
 using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;

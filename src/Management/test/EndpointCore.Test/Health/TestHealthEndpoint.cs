@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
 

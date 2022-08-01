@@ -7,7 +7,6 @@ using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

@@ -5,8 +5,6 @@
 using Steeltoe.Common.Reflection;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;

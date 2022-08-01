@@ -8,7 +8,6 @@ using Steeltoe.Integration.Expression;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System.Collections.Generic;
 
 namespace Steeltoe.Integration.Endpoint;
 

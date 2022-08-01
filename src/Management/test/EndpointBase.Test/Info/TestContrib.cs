@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Info;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 

@@ -6,9 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Integration.Mapping;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Integration.Rabbit.Support;
 

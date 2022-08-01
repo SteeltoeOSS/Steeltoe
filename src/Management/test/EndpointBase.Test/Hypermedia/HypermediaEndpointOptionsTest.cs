@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia.Test;

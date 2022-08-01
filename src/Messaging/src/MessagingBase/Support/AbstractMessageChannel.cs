@@ -4,11 +4,7 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Order;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.Support;
 

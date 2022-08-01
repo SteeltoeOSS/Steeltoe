@@ -14,9 +14,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using static Steeltoe.Stream.TestBinder.TestChannelBinderProvisioner;
 
 namespace Steeltoe.Stream.TestBinder;

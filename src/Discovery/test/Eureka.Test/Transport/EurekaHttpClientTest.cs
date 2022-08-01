@@ -8,11 +8,7 @@ using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Util;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
 using Xunit;
 

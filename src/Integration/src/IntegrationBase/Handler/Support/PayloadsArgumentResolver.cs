@@ -8,9 +8,6 @@ using Steeltoe.Integration.Attributes;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Invocation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Handler.Support;

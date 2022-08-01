@@ -7,8 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Management.Endpoint.ContentNegotiation.Test.TestStartupExtensions;
 

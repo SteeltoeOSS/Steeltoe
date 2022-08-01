@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
-using System;
 
 namespace Steeltoe.Management.Kubernetes;
 

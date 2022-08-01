@@ -10,8 +10,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Integration.Channel.Test;

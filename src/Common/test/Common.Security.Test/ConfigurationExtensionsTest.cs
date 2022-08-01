@@ -4,10 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Security.Test;

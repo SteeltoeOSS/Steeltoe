@@ -5,9 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 

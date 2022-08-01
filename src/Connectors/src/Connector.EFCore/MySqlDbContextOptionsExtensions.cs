@@ -7,8 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Connector.MySql.EFCore;

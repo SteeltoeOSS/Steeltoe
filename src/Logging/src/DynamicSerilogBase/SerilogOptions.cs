@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Events;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 

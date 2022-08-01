@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System.Collections.Generic;
 
 namespace Steeltoe.Connector;
 

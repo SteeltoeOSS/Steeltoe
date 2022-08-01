@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Discovery;
-using System;
-using System.Collections.Generic;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

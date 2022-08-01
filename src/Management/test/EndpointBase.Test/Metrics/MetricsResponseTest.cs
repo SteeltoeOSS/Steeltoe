@@ -4,7 +4,6 @@
 
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test;

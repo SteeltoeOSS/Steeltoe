@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 

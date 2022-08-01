@@ -15,8 +15,6 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Host;
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using System;
-using System.Linq;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
 using RC = RabbitMQ.Client;
 

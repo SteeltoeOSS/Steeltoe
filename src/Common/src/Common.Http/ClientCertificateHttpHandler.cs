@@ -4,10 +4,7 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Http;
 

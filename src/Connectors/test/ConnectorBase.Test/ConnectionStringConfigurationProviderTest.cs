@@ -5,10 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector.Redis.Test;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

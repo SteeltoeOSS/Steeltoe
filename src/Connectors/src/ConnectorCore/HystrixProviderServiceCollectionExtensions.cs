@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Connector.RabbitMQ;
 using Steeltoe.Connector.Services;
-using System;
 
 namespace Steeltoe.Connector.Hystrix;
 

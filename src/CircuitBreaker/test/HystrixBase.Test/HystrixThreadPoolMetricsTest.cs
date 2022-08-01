@@ -4,9 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Common.Util;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

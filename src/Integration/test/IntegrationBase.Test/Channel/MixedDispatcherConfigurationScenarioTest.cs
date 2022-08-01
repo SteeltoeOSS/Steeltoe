@@ -9,10 +9,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 // TODO: Fix violations and remove the next suppression, by either:

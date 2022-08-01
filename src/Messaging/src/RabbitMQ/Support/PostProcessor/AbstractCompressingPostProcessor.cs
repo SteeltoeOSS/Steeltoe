@@ -8,7 +8,6 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.IO;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 

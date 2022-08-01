@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.SpringBoot;
 using Steeltoe.Stream.StreamHost;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Stream.Extensions;

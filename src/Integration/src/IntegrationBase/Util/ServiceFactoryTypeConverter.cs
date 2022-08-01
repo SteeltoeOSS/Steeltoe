@@ -5,7 +5,6 @@
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Util;
 

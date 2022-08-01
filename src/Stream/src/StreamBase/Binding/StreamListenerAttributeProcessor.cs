@@ -11,9 +11,6 @@ using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Config;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Stream.Binding;
 

@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
-using System;
-using System.Threading;
 
 namespace Steeltoe.Stream.Binder;
 

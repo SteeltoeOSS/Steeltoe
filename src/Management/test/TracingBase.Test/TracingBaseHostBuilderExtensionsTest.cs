@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;

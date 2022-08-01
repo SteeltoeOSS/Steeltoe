@@ -5,9 +5,6 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Discovery;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.LoadBalancer.Test;

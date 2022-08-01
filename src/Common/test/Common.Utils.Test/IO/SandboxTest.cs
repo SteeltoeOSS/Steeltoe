@@ -4,7 +4,6 @@
 
 using FluentAssertions;
 using Steeltoe.Common.Utils.IO;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.Common.Utils.Test.IO;

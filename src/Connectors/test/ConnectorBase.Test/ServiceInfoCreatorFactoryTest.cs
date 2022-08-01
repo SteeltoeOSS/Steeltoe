@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.CloudFoundry;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

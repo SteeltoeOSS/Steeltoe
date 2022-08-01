@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
-using System;
 using System.Globalization;
 using System.Net;
 using System.Text;

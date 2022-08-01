@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Security.DataProtection.Redis;
-using System;
 
 namespace Steeltoe.Security.DataProtection;
 

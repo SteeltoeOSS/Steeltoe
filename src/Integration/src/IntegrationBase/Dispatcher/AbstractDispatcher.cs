@@ -10,10 +10,6 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Dispatcher;
 

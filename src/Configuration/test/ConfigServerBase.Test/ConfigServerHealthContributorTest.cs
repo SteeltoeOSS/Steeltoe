@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;

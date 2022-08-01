@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Config;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;
 

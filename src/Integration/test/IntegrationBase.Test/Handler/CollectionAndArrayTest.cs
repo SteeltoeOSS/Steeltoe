@@ -9,8 +9,6 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Integration.Handler.Test;

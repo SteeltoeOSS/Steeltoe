@@ -9,8 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.Redis.Test;

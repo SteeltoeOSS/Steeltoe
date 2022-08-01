@@ -5,7 +5,6 @@
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
-using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 

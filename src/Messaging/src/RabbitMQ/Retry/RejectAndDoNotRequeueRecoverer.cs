@@ -4,7 +4,6 @@
 
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Retry;
 

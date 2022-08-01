@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
-using System;
 
 namespace Steeltoe.Extensions.Logging;
 

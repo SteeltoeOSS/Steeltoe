@@ -9,9 +9,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Serial;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 

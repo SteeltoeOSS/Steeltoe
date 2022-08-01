@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 

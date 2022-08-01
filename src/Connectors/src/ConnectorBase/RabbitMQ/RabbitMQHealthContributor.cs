@@ -7,8 +7,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Steeltoe.Common.Util;

@@ -7,7 +7,6 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration;
 

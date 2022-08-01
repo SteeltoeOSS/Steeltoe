@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
-using System;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test;

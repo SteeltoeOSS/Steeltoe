@@ -3,11 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Http.Test;
-using System;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Http.LoadBalancer.Test;

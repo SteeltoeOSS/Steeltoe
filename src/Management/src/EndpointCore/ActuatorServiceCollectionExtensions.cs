@@ -19,7 +19,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
-using System;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Management.Endpoint;

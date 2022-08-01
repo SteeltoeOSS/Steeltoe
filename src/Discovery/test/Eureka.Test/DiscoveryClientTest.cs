@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.TestHost;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
-using System;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

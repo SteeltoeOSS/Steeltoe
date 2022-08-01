@@ -5,7 +5,6 @@
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
-using System;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo.Test;

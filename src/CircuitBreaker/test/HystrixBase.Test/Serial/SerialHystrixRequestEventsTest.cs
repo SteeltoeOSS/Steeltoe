@@ -4,8 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial.Test;

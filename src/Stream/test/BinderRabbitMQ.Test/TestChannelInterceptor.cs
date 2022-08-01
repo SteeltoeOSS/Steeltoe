@@ -4,7 +4,6 @@
 
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 

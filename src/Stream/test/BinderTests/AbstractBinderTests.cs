@@ -20,10 +20,7 @@ using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
-using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

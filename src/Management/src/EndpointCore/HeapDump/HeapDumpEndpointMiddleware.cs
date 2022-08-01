@@ -5,8 +5,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 

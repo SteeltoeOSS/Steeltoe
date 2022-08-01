@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security;

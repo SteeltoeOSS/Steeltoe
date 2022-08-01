@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Support;
 

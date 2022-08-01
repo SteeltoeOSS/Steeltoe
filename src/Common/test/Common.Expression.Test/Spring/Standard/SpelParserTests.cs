@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;

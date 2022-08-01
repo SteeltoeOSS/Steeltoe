@@ -22,7 +22,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Converter;
-using System;
 
 namespace Steeltoe.Stream.Extensions;
 

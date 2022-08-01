@@ -8,9 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Eureka;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;

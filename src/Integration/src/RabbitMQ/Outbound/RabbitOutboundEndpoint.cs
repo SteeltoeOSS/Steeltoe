@@ -10,7 +10,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System;
 using static Steeltoe.Messaging.RabbitMQ.Core.RabbitTemplate;
 
 namespace Steeltoe.Integration.Rabbit.Outbound;

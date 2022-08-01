@@ -7,9 +7,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 using RC=RabbitMQ.Client;
 

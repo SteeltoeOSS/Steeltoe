@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.HealthChecks;
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Steeltoe.Common.Util;

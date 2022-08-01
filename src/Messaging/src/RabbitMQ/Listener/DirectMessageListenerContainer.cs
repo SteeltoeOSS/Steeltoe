@@ -16,11 +16,6 @@ using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Util;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;

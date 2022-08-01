@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace External.Connector.Test;

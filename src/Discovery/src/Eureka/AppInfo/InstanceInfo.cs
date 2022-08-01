@@ -4,8 +4,6 @@
 
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
-using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System;
 using System.Collections;
 using Xunit;
 

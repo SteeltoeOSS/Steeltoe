@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System;
-using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;

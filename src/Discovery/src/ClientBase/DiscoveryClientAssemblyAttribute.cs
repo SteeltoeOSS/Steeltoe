@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Attributes;
 using Steeltoe.Discovery.Client;
-using System;
 
 namespace Steeltoe.Discovery;
 

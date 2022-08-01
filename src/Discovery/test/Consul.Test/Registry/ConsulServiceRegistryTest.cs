@@ -7,9 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test;

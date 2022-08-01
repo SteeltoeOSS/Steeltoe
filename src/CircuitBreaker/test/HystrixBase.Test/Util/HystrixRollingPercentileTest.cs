@@ -4,9 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 using static Steeltoe.CircuitBreaker.Hystrix.Util.HystrixRollingPercentile;

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging;
-using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.Stream.TestBinder;

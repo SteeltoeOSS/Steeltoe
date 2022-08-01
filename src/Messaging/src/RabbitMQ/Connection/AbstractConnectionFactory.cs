@@ -6,12 +6,6 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Net;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;

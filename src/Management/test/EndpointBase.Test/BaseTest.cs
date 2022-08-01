@@ -11,7 +11,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

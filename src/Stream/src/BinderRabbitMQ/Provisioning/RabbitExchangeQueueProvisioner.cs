@@ -12,9 +12,6 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 using RabbitConfig = Steeltoe.Messaging.RabbitMQ.Config;
 

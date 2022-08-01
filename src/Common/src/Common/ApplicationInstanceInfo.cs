@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Options;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 

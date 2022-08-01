@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
-using System;
 using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;

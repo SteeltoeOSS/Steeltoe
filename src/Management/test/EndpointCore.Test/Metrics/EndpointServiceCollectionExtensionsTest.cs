@@ -8,8 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Test;

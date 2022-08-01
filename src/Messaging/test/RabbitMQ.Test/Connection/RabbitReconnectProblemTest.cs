@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 using RC = RabbitMQ.Client;

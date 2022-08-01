@@ -10,16 +10,10 @@ using Steeltoe.Common.Http;
 using Steeltoe.Common.Util;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 

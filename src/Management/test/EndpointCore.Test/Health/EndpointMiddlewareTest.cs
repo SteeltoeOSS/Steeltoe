@@ -13,12 +13,8 @@ using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;

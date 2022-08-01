@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System;
-using System.Net.Http;
 
 namespace Steeltoe.Common.Http;
 

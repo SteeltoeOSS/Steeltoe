@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.HystrixBase.Util;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

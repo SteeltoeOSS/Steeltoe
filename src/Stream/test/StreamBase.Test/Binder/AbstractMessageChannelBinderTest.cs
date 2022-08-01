@@ -11,7 +11,6 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.TestBinder;
-using System;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;

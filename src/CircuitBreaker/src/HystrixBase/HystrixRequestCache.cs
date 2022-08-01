@@ -4,7 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common;
-using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;

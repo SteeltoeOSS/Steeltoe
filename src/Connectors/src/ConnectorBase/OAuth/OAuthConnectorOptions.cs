@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Connector.OAuth;
 

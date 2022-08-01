@@ -5,10 +5,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
-using System;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Common.LoadBalancer;
 

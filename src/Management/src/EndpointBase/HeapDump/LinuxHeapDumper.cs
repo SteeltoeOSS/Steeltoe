@@ -4,7 +4,6 @@
 
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;

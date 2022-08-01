@@ -5,7 +5,6 @@
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;

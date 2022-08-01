@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

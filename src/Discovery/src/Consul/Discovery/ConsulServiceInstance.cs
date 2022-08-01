@@ -5,8 +5,6 @@
 using Consul;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Util;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 

@@ -4,7 +4,6 @@
 
 using k8s.Models;
 using Steeltoe.Common.Kubernetes;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Kubernetes.Test;
 

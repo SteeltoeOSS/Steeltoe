@@ -7,7 +7,6 @@ using Steeltoe.Common.Order;
 using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Handler;
 

@@ -7,9 +7,6 @@ using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 using RC = RabbitMQ.Client;
 

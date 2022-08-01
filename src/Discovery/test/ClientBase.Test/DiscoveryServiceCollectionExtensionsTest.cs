@@ -22,11 +22,6 @@ using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Kubernetes;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
 using System.Reflection;
 using Xunit;
 

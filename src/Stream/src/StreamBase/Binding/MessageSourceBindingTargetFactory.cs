@@ -5,7 +5,6 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Stream.Binder;
-using System;
 
 namespace Steeltoe.Stream.Binding;
 
