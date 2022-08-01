@@ -14,9 +14,7 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Stream.Binder.Rabbit.Config;
-using System;
 using System.Runtime.ExceptionServices;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

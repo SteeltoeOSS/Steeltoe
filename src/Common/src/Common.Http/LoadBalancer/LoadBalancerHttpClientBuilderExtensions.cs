@@ -8,8 +8,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Http.LoadBalancer;
 using Steeltoe.Common.LoadBalancer;
 using Steeltoe.Discovery;
-using System;
-using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Eureka;
 

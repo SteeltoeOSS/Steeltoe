@@ -9,8 +9,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.Endpoint.Diagnostics;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 

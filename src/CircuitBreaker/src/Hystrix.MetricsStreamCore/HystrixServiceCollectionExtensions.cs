@@ -12,7 +12,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 using Steeltoe.Connector.Hystrix;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

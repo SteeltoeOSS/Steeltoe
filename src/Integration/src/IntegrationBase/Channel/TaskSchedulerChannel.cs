@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Channel;
 

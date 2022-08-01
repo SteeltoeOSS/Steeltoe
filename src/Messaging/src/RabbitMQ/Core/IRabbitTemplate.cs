@@ -5,9 +5,6 @@
 using RabbitMQ.Client.Events;
 using Steeltoe.Common.Services;
 using Steeltoe.Messaging.RabbitMQ.Connection;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;

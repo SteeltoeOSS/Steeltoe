@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;

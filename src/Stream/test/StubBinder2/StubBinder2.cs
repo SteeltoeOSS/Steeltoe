@@ -4,7 +4,6 @@
 
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
-using System;
 
 namespace Steeltoe.Stream.StubBinder2;
 

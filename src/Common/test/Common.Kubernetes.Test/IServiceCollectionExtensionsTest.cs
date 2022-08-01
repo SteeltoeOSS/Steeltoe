@@ -5,8 +5,6 @@
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 

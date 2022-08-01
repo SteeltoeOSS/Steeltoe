@@ -6,8 +6,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Transformer;
 

@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 using RC = RabbitMQ.Client;
 

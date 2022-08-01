@@ -6,9 +6,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Stream.Binder;
 

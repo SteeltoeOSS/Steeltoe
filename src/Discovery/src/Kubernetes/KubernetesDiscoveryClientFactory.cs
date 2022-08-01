@@ -5,7 +5,6 @@
 using k8s;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using System;
 
 namespace Steeltoe.Discovery.Kubernetes;
 

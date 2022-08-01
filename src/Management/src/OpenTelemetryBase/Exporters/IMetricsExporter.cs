@@ -4,7 +4,6 @@
 
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Utils.IO;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;

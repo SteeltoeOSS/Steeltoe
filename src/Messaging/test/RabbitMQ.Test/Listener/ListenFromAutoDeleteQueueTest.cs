@@ -8,10 +8,7 @@ using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;

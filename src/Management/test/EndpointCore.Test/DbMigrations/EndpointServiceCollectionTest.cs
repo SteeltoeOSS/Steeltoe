@@ -6,8 +6,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.DbMigrations.Test;

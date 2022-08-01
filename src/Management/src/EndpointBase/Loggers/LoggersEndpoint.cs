@@ -5,10 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Loggers;

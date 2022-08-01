@@ -17,10 +17,6 @@ using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Rabbit.Outbound;
 

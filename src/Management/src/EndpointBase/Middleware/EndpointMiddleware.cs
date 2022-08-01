@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
-using System;
-using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

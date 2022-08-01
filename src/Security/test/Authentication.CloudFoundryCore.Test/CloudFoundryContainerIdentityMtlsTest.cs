@@ -6,12 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Security;
-using System;
-using System.IO;
 using System.Net;
-using System.Net.Http;
 using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

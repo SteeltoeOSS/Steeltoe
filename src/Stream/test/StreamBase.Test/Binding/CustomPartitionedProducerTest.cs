@@ -8,8 +8,6 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Messaging;
 using Steeltoe.Stream.Partitioning;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Stream.Binding;

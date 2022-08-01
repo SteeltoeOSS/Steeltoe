@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Diagnostics;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;

@@ -8,7 +8,6 @@ using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Messaging;
-using System.IO;
 
 namespace Steeltoe.Stream.Tck;
 

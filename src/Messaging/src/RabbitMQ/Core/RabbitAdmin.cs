@@ -10,11 +10,6 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RC = RabbitMQ.Client;
 

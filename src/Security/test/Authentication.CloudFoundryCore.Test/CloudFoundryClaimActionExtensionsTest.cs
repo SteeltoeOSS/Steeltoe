@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

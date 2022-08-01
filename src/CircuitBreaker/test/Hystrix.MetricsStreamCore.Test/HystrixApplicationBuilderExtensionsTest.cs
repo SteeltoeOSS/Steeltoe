@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream.Test;

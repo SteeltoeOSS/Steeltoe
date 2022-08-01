@@ -6,7 +6,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging.Handler.Invocation;
-using System;
 using System.Collections.Concurrent;
 using System.Reflection;
 

@@ -7,8 +7,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Steeltoe.Discovery.Consul.Registry;

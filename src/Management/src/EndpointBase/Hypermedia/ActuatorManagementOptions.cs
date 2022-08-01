@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 

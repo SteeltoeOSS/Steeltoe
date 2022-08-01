@@ -5,9 +5,6 @@
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;

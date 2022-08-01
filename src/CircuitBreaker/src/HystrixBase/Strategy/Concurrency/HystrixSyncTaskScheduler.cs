@@ -4,10 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 

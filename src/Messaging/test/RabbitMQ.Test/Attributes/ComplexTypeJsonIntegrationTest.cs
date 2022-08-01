@@ -10,9 +10,6 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.ComplexTypeJsonIntegrationTest;
 

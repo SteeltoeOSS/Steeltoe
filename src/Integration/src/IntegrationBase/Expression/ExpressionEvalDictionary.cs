@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Integration.Expression;

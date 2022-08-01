@@ -6,10 +6,7 @@ using Microsoft.Extensions.Configuration;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Health;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;

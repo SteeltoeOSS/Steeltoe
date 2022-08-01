@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
-using System;
 using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;

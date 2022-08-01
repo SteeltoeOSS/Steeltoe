@@ -8,8 +8,6 @@ using Steeltoe.Common.Kubernetes;
 using Steeltoe.Extensions.Configuration.Kubernetes;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Info;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Management.Kubernetes;
 

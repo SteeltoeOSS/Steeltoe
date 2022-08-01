@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Test;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Mappings.Test;

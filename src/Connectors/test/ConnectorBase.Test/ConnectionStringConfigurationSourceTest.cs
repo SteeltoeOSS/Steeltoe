@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

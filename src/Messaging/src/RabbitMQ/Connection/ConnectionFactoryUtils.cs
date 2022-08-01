@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Transaction;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;

@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Serilog;
-using System;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 

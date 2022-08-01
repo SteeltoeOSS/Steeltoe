@@ -5,10 +5,7 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 

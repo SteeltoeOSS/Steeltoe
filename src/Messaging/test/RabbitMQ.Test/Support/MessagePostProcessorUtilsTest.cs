@@ -5,7 +5,6 @@
 using Steeltoe.Common.Order;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;

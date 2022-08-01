@@ -7,9 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Security.Authentication.Mtls;
-using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

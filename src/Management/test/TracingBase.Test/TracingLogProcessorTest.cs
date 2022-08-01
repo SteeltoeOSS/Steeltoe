@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
 using Steeltoe.Common;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;

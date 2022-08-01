@@ -4,7 +4,6 @@
 
 using RabbitMQ.Client;
 using Steeltoe.Connector.Services;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Hystrix.Test;

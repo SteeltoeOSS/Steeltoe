@@ -14,12 +14,9 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Text;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

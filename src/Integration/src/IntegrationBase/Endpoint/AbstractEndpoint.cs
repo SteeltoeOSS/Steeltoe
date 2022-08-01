@@ -6,8 +6,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Services;
 using Steeltoe.Integration.Util;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Integration.Endpoint;
 

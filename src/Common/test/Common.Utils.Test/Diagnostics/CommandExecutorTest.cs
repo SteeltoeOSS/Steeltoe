@@ -4,8 +4,6 @@
 
 using FluentAssertions;
 using Steeltoe.Common.Utils.Diagnostics;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
 

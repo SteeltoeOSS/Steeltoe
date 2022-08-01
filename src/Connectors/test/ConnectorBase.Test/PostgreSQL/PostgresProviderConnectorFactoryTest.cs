@@ -4,7 +4,6 @@
 
 using Npgsql;
 using Steeltoe.Connector.Services;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.Test;

@@ -7,7 +7,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Stream.Config;
-using System;
 
 namespace Steeltoe.Stream.Binding;
 

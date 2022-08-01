@@ -8,9 +8,6 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 

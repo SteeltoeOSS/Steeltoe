@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
 using System.IO.Compression;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint;
 

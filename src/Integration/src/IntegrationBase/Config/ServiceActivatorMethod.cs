@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Integration.Attributes;
-using System;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Config;

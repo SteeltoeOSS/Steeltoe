@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Services;
-using System;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 

@@ -5,9 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Discovery.Eureka;

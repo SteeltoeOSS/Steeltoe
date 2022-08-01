@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Metrics.Observer;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 

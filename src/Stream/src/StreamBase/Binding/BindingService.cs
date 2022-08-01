@@ -6,9 +6,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Steeltoe.Stream.Binding;
 

@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Http;
-using System.IO;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 

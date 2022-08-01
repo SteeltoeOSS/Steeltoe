@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging;
-using System;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;

@@ -6,12 +6,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;

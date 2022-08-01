@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Configuration;
-using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 

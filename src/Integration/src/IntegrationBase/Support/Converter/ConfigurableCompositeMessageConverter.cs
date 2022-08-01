@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Integration.Support.Converter;
 

@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace Steeltoe.Integration.Dispatcher;
 

@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;

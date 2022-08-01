@@ -8,11 +8,7 @@ using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;

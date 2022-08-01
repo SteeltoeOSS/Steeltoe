@@ -29,9 +29,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Bootstrap.Autoconfig;

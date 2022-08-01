@@ -5,8 +5,6 @@
 using Newtonsoft.Json;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using Xunit;

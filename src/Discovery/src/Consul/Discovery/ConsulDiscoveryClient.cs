@@ -7,10 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 

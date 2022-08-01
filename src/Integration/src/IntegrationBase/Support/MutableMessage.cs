@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Steeltoe.Integration.Support;

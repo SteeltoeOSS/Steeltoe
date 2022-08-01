@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Discovery.Eureka;
 

@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Services;
 using Steeltoe.Stream.Config;
-using System;
 
 namespace Steeltoe.Stream.Binder;
 

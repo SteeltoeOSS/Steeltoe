@@ -5,9 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Channels;
 using Channels = System.Threading.Channels;
 

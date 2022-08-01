@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Eureka;
 

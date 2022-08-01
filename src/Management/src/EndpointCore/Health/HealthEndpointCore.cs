@@ -7,9 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Management.Endpoint.Health;
 

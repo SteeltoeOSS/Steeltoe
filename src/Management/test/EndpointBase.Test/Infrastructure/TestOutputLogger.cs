@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using System;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;

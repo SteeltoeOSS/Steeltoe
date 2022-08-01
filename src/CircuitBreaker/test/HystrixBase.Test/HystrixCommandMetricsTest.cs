@@ -4,10 +4,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

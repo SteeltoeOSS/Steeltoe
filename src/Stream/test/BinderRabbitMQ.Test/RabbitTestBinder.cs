@@ -14,7 +14,6 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Config;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 

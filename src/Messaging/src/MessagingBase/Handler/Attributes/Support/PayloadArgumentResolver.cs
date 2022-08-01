@@ -4,7 +4,6 @@
 
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
-using System;
 using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;

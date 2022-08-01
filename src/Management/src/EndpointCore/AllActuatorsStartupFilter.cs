@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
-using System;
 
 namespace Steeltoe.Management.Endpoint;
 

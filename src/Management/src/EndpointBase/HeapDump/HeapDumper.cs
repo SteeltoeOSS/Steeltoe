@@ -6,10 +6,7 @@ using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 

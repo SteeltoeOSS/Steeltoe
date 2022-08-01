@@ -4,7 +4,6 @@
 
 using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Eureka.Util;
-using System;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 

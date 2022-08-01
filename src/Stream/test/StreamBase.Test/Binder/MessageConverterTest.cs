@@ -4,7 +4,6 @@
 
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using System;
 using System.Text;
 using Xunit;
 

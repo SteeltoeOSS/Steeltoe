@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
-using System;
 
 namespace Steeltoe.Connector.OAuth;
 

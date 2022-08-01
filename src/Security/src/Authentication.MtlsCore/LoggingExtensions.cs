@@ -2,8 +2,6 @@
 // source: https://github.com/dotnet/aspnetcore/blob/master/src/Security/Authentication/Certificate/src/LoggingExtensions.cs
 
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 

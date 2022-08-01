@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Hosting;
 using Serilog;
-using System;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 

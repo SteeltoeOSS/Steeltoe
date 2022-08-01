@@ -4,8 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
-using System;
-using System.Collections.Generic;
 using System.Reactive;
 using System.Text;
 using Xunit.Abstractions;

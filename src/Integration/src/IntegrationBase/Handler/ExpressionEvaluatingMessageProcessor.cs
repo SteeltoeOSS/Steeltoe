@@ -5,7 +5,6 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Handler;
 

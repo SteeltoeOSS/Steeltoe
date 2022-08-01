@@ -14,7 +14,6 @@ using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
 using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics;

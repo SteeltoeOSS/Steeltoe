@@ -4,7 +4,6 @@
 
 using HdrHistogram;
 using Steeltoe.Common;
-using System;
 using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;

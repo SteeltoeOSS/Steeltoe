@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using System;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
 
 namespace Steeltoe.Common.Contexts;

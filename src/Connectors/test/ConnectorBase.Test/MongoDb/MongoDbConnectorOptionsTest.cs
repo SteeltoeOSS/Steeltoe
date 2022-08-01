@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.MongoDb.Test;

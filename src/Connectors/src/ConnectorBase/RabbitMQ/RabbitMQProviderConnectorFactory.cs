@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System;
 using System.Reflection;
 
 namespace Steeltoe.Connector.RabbitMQ;

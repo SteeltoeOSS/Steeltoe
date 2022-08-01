@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint.Loggers;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

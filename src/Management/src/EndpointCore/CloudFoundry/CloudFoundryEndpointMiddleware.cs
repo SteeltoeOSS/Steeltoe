@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 

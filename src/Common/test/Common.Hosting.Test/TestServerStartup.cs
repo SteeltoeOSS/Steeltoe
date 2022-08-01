@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Common.Hosting.Test;

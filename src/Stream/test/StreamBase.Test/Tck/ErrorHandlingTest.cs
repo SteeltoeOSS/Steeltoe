@@ -9,7 +9,6 @@ using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Stream.Tck;

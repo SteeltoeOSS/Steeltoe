@@ -7,8 +7,6 @@ using Steeltoe.Connector.MySql.Test;
 using Steeltoe.Connector.Redis.Test;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Connector.Test;

@@ -7,10 +7,6 @@ using RabbitMQ.Client.Exceptions;
 using RabbitMQ.Client.Impl;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;

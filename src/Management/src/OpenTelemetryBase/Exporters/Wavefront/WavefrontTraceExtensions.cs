@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Trace;
-using System;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 

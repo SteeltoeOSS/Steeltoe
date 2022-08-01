@@ -4,7 +4,6 @@
 
 using Moq;
 using Steeltoe.Discovery.Consul.Discovery;
-using System;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Registry.Test;

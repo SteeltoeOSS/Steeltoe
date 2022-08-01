@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Attributes;
-using System;
 using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;

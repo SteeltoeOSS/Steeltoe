@@ -11,8 +11,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Util;
-using System;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;

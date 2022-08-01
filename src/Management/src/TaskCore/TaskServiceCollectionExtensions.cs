@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common;
-using System;
 
 namespace Steeltoe.Management.TaskCore;
 

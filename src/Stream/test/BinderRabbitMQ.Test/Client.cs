@@ -4,8 +4,6 @@
 
 using EasyNetQ.Management.Client;
 using EasyNetQ.Management.Client.Model;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using EnqBinding = EasyNetQ.Management.Client.Model.Binding;
 
 namespace Steeltoe.Stream.Binder.Rabbit;

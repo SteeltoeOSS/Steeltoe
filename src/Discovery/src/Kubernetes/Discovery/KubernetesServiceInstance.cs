@@ -4,8 +4,6 @@
 
 using k8s.Models;
 using Steeltoe.Common.Discovery;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Kubernetes.Discovery;
 

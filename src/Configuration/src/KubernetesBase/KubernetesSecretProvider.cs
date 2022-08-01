@@ -7,11 +7,8 @@ using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
-using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Text;
-using System.Threading;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 

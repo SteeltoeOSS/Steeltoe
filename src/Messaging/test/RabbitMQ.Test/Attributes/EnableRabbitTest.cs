@@ -16,10 +16,7 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 using RC = RabbitMQ.Client;
 

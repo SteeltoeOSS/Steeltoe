@@ -6,9 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 

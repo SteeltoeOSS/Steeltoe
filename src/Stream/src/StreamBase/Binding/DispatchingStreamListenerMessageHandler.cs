@@ -6,8 +6,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Binding;
 

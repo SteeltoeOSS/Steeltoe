@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
 

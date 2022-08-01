@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
 

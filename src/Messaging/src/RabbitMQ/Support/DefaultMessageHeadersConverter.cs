@@ -5,9 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using RC=RabbitMQ.Client;
 

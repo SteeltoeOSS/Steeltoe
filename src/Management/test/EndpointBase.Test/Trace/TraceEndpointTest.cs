@@ -5,7 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System;
 using Xunit;
 using Xunit.Abstractions;
 

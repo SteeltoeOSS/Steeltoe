@@ -8,8 +8,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using RC=RabbitMQ.Client;

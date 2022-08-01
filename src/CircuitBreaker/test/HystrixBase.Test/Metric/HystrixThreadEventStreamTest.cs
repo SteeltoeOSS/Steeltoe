@@ -3,11 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System;
-using System.Collections.Generic;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
 using Xunit;
 using Xunit.Abstractions;
 

@@ -8,8 +8,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Messaging;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Stream.Extensions;
 

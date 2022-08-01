@@ -8,9 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

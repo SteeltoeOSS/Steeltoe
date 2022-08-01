@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Lifecycle;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Stream.Binder;
 

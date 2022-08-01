@@ -10,10 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.Test;
-using System;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;

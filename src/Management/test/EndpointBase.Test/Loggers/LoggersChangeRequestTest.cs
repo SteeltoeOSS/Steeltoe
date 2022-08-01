@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Management.Endpoint.Test;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test;

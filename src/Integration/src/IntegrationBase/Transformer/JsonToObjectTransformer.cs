@@ -8,7 +8,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using System;
 using System.Text;
 
 namespace Steeltoe.Integration.Transformer;

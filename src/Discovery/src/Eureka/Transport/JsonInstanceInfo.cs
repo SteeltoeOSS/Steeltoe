@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;

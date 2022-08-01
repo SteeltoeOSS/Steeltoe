@@ -5,8 +5,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Connector.EFCore;
 

@@ -10,9 +10,6 @@ using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Health.Contributor;
 using Steeltoe.Management.Endpoint.Security;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using MicrosoftHealth = Microsoft.Extensions.Diagnostics.HealthChecks;
 

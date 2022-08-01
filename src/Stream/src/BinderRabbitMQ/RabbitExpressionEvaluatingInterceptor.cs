@@ -7,7 +7,6 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System;
 
 namespace Steeltoe.Stream.Binder.Rabbit;
 

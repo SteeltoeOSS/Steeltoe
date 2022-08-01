@@ -9,10 +9,6 @@ using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

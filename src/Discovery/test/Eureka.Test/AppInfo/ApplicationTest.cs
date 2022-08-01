@@ -4,7 +4,6 @@
 
 using Steeltoe.Discovery.Eureka.Test;
 using Steeltoe.Discovery.Eureka.Transport;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo.Test;

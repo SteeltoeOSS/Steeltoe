@@ -13,7 +13,6 @@ using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using R = RabbitMQ.Client;

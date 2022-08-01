@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Util;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;

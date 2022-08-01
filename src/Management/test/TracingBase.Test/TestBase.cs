@@ -9,7 +9,6 @@ using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
 

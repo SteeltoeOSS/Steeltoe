@@ -5,8 +5,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;

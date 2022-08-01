@@ -10,10 +10,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;

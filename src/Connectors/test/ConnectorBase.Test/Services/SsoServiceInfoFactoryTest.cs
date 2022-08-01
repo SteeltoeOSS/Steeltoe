@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Extensions.Configuration;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Services.Test;

@@ -13,8 +13,6 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Config;

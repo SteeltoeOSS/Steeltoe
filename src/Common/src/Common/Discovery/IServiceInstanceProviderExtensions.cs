@@ -3,10 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Caching.Distributed;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Common.Discovery;
 

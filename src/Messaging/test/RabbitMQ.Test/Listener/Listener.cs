@@ -4,8 +4,6 @@
 
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 

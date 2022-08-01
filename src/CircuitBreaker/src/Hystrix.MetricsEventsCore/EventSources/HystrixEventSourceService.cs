@@ -5,11 +5,8 @@
 using Microsoft.Extensions.Hosting;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
-using System;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using static Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.HystrixDashboardStream;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;

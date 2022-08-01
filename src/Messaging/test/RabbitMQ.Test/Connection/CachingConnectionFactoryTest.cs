@@ -8,11 +8,6 @@ using RabbitMQ.Client.Events;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using RC = RabbitMQ.Client;
 

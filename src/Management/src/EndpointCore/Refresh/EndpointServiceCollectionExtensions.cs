@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Refresh;
 

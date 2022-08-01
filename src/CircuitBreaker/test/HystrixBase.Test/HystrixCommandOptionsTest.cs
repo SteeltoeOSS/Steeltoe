@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
-using System;
-using System.IO;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;

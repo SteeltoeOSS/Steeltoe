@@ -8,10 +8,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Logging;
 using Steeltoe.Discovery;
 using Steeltoe.Extensions.Configuration.Placeholder;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 

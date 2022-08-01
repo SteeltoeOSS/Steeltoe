@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Xunit;

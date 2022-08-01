@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
 
 namespace Steeltoe.Connector.CloudFoundry;
 

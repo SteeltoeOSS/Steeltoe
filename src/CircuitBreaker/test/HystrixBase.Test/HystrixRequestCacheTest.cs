@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

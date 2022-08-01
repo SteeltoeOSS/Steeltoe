@@ -8,7 +8,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.Common.Util;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy;
 

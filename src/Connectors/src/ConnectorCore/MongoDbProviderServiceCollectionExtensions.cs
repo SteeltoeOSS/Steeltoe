@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Connector.MongoDb;
 

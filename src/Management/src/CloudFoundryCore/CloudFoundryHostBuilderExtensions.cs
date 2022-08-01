@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint;
-using System;
 
 namespace Steeltoe.Management.CloudFoundry;
 

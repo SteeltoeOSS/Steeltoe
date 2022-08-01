@@ -6,9 +6,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Invocation;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Integration.Handler.Support;

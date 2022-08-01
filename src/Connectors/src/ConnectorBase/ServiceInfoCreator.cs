@@ -7,9 +7,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Connector;

@@ -5,13 +5,9 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
-using System.Linq;
-using System.Threading;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 

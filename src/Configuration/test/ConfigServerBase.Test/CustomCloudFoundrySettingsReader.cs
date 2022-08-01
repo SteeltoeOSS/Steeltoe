@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 

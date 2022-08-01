@@ -8,7 +8,6 @@ using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System;
 using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;

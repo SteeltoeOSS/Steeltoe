@@ -17,8 +17,6 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing;

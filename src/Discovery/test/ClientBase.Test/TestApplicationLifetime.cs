@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
 
 namespace Steeltoe.Discovery.Client.Test;
 

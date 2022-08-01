@@ -4,11 +4,7 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

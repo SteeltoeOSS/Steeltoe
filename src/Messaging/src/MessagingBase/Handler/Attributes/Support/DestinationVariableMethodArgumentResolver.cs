@@ -3,8 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Converter;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;

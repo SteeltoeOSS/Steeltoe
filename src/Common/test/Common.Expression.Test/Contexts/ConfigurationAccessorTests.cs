@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;

@@ -6,10 +6,7 @@ using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

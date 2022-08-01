@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Extensions.Configuration.SpringBoot;
 using Steeltoe.Stream.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.StreamHost;
 

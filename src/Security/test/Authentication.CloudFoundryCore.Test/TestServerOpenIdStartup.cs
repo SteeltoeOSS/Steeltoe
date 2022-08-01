@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RichardSzalay.MockHttp;
-using System;
-using System.Net.Http;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 

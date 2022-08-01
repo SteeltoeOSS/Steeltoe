@@ -4,7 +4,6 @@
 
 using Serilog.Core;
 using Serilog.Events;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
 

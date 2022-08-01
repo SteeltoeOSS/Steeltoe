@@ -9,9 +9,6 @@ using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.Placeholder;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using Xunit.Abstractions;
 

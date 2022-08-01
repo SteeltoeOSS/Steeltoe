@@ -7,7 +7,6 @@ using Moq;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Messaging;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;

@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Common.Availability;
 

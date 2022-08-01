@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration.Transformer;
 

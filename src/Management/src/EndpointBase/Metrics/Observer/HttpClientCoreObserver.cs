@@ -8,14 +8,9 @@ using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
-using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 

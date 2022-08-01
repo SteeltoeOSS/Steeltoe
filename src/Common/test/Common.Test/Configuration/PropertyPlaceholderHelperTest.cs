@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Common.Configuration.Test;

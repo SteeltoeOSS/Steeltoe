@@ -4,7 +4,6 @@
 
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
 using System.Text;
 using Xunit;
 

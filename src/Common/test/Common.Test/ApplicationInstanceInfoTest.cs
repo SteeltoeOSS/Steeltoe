@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using Xunit;
 

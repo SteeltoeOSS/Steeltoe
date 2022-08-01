@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;

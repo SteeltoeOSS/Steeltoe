@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;

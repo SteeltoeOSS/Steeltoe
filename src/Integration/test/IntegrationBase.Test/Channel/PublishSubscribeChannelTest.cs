@@ -6,8 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Integration.Channel.Test;

@@ -4,7 +4,6 @@
 
 using k8s.Models;
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;

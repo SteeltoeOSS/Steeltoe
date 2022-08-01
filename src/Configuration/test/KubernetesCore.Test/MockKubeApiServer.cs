@@ -7,10 +7,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 

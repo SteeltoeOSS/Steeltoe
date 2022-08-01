@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.ThreadDump;
-using System;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

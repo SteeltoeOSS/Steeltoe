@@ -4,8 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.Common.Util;
-using System;
-using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 

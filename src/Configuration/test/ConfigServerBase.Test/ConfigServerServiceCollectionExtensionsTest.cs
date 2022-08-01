@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;

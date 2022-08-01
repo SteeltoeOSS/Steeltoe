@@ -7,9 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.IO;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 

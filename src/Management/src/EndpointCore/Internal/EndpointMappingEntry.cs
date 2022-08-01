@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
-using System;
 
 namespace Steeltoe.Management.Endpoint.Internal;
 

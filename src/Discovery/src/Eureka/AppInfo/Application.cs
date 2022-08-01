@@ -4,7 +4,6 @@
 
 using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Text;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;

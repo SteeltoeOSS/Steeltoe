@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using Xunit;
 using RC = RabbitMQ.Client;
 

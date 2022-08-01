@@ -8,8 +8,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;

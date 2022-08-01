@@ -5,8 +5,6 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;

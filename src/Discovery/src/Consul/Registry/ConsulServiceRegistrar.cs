@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Consul.Discovery;
-using System;
-using System.Threading;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 

@@ -7,7 +7,6 @@ using Steeltoe.Common;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Consul.Discovery;
-using System;
 
 namespace Steeltoe.Discovery.Consul;
 

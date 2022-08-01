@@ -4,9 +4,6 @@
 
 using Consul;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 

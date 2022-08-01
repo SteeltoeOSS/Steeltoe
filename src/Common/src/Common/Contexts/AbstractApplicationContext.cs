@@ -7,10 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Services;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Common.Contexts;
 

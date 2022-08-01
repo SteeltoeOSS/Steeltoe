@@ -8,11 +8,7 @@ using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics.Tracing;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 

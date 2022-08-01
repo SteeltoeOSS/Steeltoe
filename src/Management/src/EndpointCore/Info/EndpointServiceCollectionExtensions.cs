@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Info;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Info;
 

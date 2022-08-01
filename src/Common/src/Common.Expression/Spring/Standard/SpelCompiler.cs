@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
-using System;
 using System.Reflection.Emit;
 using static Steeltoe.Common.Expression.Internal.Spring.Standard.SpelCompiledExpression;
 

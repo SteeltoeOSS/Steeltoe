@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;

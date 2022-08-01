@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.AspNetCore;
 using OpenTelemetry.Trace;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System;
 using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Tracing;

@@ -11,8 +11,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Test;
-using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Xunit;
 using RC = RabbitMQ.Client;

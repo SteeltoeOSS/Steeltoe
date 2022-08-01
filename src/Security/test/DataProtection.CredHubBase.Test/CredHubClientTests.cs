@@ -3,13 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using RichardSzalay.MockHttp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.DataProtection.CredHub.Test;

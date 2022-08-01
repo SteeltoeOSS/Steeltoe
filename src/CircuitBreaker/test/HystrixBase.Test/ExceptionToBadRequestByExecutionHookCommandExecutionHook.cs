@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using System;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 

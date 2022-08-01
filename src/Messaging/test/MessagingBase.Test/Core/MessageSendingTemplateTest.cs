@@ -5,11 +5,7 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 

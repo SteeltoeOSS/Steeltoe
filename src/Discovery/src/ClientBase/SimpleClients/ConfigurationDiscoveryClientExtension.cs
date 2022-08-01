@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Connector.Services;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Discovery.Client.SimpleClients;
 

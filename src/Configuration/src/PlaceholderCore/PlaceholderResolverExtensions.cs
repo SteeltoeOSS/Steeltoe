@@ -8,7 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
 using Microsoft.AspNetCore.Builder;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;

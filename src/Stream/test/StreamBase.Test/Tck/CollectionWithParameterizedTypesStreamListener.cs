@@ -5,7 +5,6 @@
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Messaging;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Stream.Tck;

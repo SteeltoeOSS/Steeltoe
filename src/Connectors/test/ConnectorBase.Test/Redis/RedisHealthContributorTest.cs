@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.Redis.Test;

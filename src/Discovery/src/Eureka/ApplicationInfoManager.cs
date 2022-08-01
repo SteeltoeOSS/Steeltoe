@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System;
 
 namespace Steeltoe.Discovery.Eureka;
 

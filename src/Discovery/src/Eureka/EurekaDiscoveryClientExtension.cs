@@ -16,8 +16,6 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client;
 using Steeltoe.Discovery.Eureka.Transport;
-using System;
-using System.Linq;
 using static Steeltoe.Discovery.Client.DiscoveryServiceCollectionExtensions;
 
 namespace Steeltoe.Discovery.Eureka;

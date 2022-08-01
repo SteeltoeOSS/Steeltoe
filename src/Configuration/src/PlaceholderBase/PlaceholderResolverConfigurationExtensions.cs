@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Extensions.Configuration.Placeholder;
 

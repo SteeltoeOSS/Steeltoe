@@ -5,7 +5,6 @@
 using Steeltoe.Common.Expression.Internal.Spring.Common;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
-using System;
 using System.Reflection;
 using System.Reflection.Emit;
 

@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Common.Http.Test;

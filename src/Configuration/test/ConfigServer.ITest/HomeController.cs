@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
-using System.Collections.Generic;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;

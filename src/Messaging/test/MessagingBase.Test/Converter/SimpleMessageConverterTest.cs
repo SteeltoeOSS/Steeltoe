@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Messaging.Support;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Messaging.Converter.Test;

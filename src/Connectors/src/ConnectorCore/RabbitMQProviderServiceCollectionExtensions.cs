@@ -8,8 +8,6 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Connector.RabbitMQ;
 

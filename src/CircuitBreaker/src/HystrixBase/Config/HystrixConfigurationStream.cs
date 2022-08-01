@@ -4,11 +4,8 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
-using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 

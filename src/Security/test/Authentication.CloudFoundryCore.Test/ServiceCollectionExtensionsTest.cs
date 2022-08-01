@@ -9,7 +9,6 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Common.Security;
 using Steeltoe.Security.Authentication.Mtls;
-using System;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

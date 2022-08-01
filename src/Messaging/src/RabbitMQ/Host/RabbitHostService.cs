@@ -8,9 +8,6 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Messaging.RabbitMQ.Host;
 

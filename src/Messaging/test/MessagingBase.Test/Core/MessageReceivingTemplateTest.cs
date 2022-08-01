@@ -4,10 +4,6 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
-using System;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Messaging.Core.Test;

@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Connector;
 

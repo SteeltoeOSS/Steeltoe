@@ -8,11 +8,7 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;

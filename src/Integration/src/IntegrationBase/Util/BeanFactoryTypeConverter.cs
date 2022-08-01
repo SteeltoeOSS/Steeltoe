@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal;
-using System;
 
 namespace Steeltoe.Integration.Util;
 

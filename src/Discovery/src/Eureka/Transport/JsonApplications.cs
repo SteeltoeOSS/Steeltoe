@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Http.Serialization;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;

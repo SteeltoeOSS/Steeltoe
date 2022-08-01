@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
 

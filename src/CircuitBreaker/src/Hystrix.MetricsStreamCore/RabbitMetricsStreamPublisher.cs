@@ -8,8 +8,6 @@ using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Connector.Hystrix;
 using Steeltoe.Discovery;
-using System;
-using System.Collections.Generic;
 using System.Net.Security;
 using System.Security.Authentication;
 using System.Text;

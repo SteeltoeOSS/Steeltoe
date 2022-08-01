@@ -4,8 +4,6 @@
 
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common.Util;
-using System;
-using System.Threading;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 

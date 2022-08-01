@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Options;
-using System;
-using System.IO;
 
 namespace Steeltoe.Common.Security;
 

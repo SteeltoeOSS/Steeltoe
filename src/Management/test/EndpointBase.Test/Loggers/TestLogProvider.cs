@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test;
 

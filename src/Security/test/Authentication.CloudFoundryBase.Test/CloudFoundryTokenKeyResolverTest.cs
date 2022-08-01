@@ -3,10 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;

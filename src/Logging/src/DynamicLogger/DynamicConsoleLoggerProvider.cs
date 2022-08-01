@@ -5,9 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 
 namespace Steeltoe.Extensions.Logging;

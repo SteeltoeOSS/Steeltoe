@@ -6,12 +6,9 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
-using System;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 

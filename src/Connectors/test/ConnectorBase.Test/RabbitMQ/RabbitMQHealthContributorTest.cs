@@ -8,7 +8,6 @@ using Moq;
 using RabbitMQ.Client;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Connector.Services;
-using System.Collections.Generic;
 using System.Text;
 using Xunit;
 

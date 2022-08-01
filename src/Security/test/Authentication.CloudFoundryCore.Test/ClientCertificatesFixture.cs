@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Security;
-using System;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 

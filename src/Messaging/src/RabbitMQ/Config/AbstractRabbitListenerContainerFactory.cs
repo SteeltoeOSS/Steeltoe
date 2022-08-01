@@ -14,8 +14,6 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 

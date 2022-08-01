@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Hypermedia;
-using System;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 

@@ -5,7 +5,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector.EFCore.Test;
-using System;
 using Xunit;
 
 namespace Steeltoe.Connector.Oracle.EFCore.Test;

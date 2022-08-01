@@ -4,7 +4,6 @@
 
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Xunit;
 

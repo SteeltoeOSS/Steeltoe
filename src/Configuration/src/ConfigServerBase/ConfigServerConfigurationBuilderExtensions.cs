@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Linq;
 using System.Reflection;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer;

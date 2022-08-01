@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Connector.Services.Test;

@@ -10,8 +10,6 @@ using Steeltoe.Integration.Extensions;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream;
 

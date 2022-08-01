@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Lifecycle;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;

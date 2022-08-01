@@ -5,7 +5,6 @@
 using Steeltoe.Common.Util;
 using Steeltoe.Integration.Acks;
 using Steeltoe.Messaging;
-using System;
 
 namespace Steeltoe.Integration;
 

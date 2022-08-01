@@ -10,8 +10,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System;
-using System.Linq;
 
 namespace Microsoft.Extensions.DependencyInjection;
 

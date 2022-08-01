@@ -29,12 +29,8 @@ using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Bootstrap.Autoconfig.Test;

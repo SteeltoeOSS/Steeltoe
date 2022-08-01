@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Builder;
 using Steeltoe.Management.Endpoint.Test;
-using System;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;

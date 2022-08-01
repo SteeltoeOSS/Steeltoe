@@ -10,7 +10,6 @@ using Steeltoe.Connector.Oracle;
 using Steeltoe.Connector.PostgreSql;
 using Steeltoe.Connector.Services;
 using Steeltoe.Connector.SqlServer;
-using System.Collections.Generic;
 using System.Data;
 using Xunit;
 

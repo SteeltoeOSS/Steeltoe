@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
-using System;
-using System.Collections.Generic;
 using System.Security.Claims;
 
 namespace Steeltoe.Management.Endpoint.Health;

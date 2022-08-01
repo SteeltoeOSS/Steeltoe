@@ -4,8 +4,6 @@
 
 using Steeltoe.Messaging.Handler.Invocation.Test;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;

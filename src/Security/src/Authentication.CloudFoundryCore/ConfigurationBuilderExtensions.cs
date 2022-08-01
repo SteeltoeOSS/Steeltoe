@@ -5,8 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Security;
-using System;
-using System.IO;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 

@@ -4,8 +4,6 @@
 
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binder;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Steeltoe.Stream.Binding;
 

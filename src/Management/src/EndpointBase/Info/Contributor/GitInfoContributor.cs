@@ -5,10 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Info;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 

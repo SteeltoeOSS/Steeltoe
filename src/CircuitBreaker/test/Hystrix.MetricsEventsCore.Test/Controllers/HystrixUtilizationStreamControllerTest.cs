@@ -8,12 +8,7 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;

@@ -7,7 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
-using System;
 using Xunit;
 
 namespace Steeltoe.Integration.Channel.Test;

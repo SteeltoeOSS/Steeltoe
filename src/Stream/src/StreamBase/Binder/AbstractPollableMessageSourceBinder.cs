@@ -9,7 +9,6 @@ using Steeltoe.Common.Retry;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System;
 
 namespace Steeltoe.Stream.Binder;
 

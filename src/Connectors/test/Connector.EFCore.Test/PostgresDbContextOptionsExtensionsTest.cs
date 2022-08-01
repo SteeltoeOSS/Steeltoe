@@ -8,8 +8,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using Steeltoe.Connector.EFCore.Test;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.EFCore.Test;

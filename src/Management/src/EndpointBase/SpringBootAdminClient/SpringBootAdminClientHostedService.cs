@@ -7,12 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Json;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 

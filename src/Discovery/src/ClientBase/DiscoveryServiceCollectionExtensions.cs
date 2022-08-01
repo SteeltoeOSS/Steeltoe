@@ -13,11 +13,7 @@ using Steeltoe.Common.Reflection;
 using Steeltoe.Connector;
 using Steeltoe.Connector.Services;
 using Steeltoe.Discovery.Client.SimpleClients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading;
 
 namespace Steeltoe.Discovery.Client;
 

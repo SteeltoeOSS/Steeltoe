@@ -4,8 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Stream.Binder;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.Config;
 

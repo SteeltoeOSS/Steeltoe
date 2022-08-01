@@ -4,10 +4,7 @@
 
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
-using System;
 using System.Runtime.CompilerServices;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.OpenTelemetry.Exporters;
 

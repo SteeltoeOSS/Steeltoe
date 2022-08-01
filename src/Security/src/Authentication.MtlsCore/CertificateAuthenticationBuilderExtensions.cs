@@ -4,7 +4,6 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Certificate;
-using System;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 

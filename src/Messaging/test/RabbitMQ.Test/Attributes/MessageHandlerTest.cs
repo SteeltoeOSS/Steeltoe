@@ -8,7 +8,6 @@ using Moq;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System.Collections.Generic;
 using Xunit;
 using RC = RabbitMQ.Client;
 

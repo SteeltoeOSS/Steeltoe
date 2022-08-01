@@ -6,9 +6,6 @@ using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
-using System.IO;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
 

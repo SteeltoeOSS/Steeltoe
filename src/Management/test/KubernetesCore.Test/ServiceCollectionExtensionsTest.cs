@@ -6,9 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Management.Kubernetes.Test;

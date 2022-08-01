@@ -5,7 +5,6 @@
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Messaging;
-using System;
 
 namespace Steeltoe.Stream.Tck;
 

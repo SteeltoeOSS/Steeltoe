@@ -9,8 +9,6 @@ using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Integration.Handler;

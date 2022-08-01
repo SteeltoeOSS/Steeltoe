@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;

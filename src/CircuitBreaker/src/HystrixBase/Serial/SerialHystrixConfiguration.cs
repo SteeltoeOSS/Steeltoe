@@ -4,7 +4,6 @@
 
 using Newtonsoft.Json;
 using Steeltoe.CircuitBreaker.Hystrix.Config;
-using System.IO;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Serial;
 

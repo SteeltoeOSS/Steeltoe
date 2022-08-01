@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Discovery;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 

@@ -9,7 +9,6 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System;
 using System.Text;
 
 namespace Steeltoe.Integration.Transformer;

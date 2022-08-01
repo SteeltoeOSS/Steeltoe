@@ -5,9 +5,7 @@
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;

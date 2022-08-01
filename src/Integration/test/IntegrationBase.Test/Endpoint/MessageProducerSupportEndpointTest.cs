@@ -11,8 +11,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Steeltoe.Integration.Endpoint.Test;

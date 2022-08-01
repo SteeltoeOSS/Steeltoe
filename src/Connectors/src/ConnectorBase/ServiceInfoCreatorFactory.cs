@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
-using System;
 
 namespace Steeltoe.Connector;
 

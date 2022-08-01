@@ -5,7 +5,6 @@
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System;
 
 namespace Steeltoe.Integration.Support.Channel;
 

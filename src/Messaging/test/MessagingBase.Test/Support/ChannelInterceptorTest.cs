@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Messaging.Support.Test;

@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
-using System;
 
 namespace Steeltoe.Connector.OAuth;
 

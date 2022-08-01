@@ -6,9 +6,6 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
 namespace Steeltoe.Discovery.Consul.Discovery;

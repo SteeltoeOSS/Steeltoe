@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 using Steeltoe.Messaging.RabbitMQ.Config;
-using System;
 using Xunit;
 
 namespace Steeltoe.Stream.StreamHost;

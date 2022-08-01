@@ -7,7 +7,6 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System.Collections.Generic;
 
 namespace Steeltoe.Stream.TestBinder;
 

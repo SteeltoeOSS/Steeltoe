@@ -5,10 +5,6 @@
 using Moq;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 using RC = RabbitMQ.Client;
 

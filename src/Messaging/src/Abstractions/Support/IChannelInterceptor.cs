@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Order;
-using System;
 
 namespace Steeltoe.Messaging.Support;
 

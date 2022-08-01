@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Hosting;
 using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Health;
-using System;
 
 namespace Steeltoe.Management.CloudFoundry;
 

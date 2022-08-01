@@ -4,8 +4,6 @@
 
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Consul.Registry;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 

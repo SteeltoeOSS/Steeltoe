@@ -6,8 +6,6 @@ using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Consul.Discovery;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 

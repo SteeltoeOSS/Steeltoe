@@ -9,7 +9,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Sample;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
-using System;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;

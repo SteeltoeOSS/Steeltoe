@@ -10,8 +10,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
-using System;
-using System.Threading;
 using Xunit;
 
 namespace Steeltoe.Integration.Channel.Interceptor.Test;

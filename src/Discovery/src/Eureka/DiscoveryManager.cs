@@ -4,7 +4,6 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Discovery.Eureka.Transport;
-using System;
 
 namespace Steeltoe.Discovery.Eureka;
 

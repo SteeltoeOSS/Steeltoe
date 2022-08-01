@@ -6,8 +6,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
-using System;
-using System.Threading.Tasks;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 

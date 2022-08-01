@@ -3,9 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
-using System;
 using System.Reflection;
-using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 

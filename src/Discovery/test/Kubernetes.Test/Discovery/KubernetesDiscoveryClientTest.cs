@@ -6,11 +6,7 @@ using k8s;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Kubernetes.Discovery;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Http;
 using Xunit;
 
 namespace Steeltoe.Discovery.Kubernetes.Test.Discovery;

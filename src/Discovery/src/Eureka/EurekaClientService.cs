@@ -6,7 +6,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Discovery.Eureka.Transport;
-using System.Collections.Generic;
 
 namespace Steeltoe.Discovery.Eureka;
 

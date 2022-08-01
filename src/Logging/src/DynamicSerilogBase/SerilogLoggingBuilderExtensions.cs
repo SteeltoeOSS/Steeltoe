@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using System;
-using System.Linq;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 

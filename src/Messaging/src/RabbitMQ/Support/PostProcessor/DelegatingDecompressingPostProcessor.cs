@@ -6,7 +6,6 @@ using Steeltoe.Common.Order;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 

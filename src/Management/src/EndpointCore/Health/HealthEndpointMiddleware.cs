@@ -8,7 +8,6 @@ using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Middleware;
 using Steeltoe.Management.Endpoint.Security;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Management.Endpoint.Health;
 

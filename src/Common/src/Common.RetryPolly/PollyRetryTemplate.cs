@@ -6,8 +6,6 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Steeltoe.Common.Util;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Common.Retry;
 

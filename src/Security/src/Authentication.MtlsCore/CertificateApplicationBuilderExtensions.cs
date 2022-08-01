@@ -5,7 +5,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Security;
-using System;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 

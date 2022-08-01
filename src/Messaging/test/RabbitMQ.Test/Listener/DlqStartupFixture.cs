@@ -8,8 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System;
-using System.Collections.Generic;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 

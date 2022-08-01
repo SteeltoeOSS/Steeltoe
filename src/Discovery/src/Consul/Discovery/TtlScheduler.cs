@@ -5,10 +5,7 @@
 using Consul;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Steeltoe.Discovery.Consul.Discovery;
 

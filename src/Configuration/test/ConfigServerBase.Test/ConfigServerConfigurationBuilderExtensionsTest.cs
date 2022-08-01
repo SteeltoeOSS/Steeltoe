@@ -7,9 +7,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Security;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System;
-using System.IO;
-using System.Linq;
 using Xunit;
 
 namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;

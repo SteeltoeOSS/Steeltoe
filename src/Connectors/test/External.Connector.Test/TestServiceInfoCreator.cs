@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector;
 using Steeltoe.Extensions.Configuration;
-using System;
 
 namespace External.Connector.Test;
 

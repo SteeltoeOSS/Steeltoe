@@ -7,8 +7,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
-using System;
-using System.Collections.Generic;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Loggers.Test;
