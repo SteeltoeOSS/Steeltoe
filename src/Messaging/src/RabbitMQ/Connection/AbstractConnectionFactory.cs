@@ -384,12 +384,12 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
             _logger = logger;
         }
 
-        public void HandleConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs error)
+        public void HandleConnectionRecoveryError(object sender, ConnectionRecoveryErrorEventArgs args)
         {
-            _logger?.LogDebug(error.Exception, "Connection recovery failed");
+            _logger?.LogDebug(args.Exception, "Connection recovery failed");
         }
 
-        public void HandleRecoverySucceeded(object sender, EventArgs e)
+        public void HandleRecoverySucceeded(object sender, EventArgs args)
         {
             _logger?.LogDebug("Connection recovery succeed");
         }

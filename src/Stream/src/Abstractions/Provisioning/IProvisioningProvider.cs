@@ -26,7 +26,7 @@ public interface IProvisioningProvider
     /// </summary>
     /// <param name="name">the name of the consumer destination.</param>
     /// <param name="group">the consumer group.</param>
-    /// <param name="properties">the consumer options.</param>
+    /// <param name="options">the consumer options.</param>
     /// <returns>the provisioned destination.</returns>
-    IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions properties);
+    IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options);
 }

@@ -116,11 +116,11 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
     private sealed class DefaultErrorMessageStrategy : IErrorMessageStrategy
     {
-        public ErrorMessage BuildErrorMessage(Exception payload, IAttributeAccessor attributes)
+        public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
         {
-            return payload is MessagingExceptionWrapperException exception
-                ? new ErrorMessage(payload.InnerException, exception.FailedMessage)
-                : new ErrorMessage(payload);
+            return exception is MessagingExceptionWrapperException wrapperException
+                ? new ErrorMessage(exception.InnerException, wrapperException.FailedMessage)
+                : new ErrorMessage(exception);
         }
     }
 }

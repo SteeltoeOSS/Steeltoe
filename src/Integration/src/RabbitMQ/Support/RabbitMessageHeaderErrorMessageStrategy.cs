@@ -15,14 +15,14 @@ public class RabbitMessageHeaderErrorMessageStrategy : IErrorMessageStrategy
 {
     public const string AmqpRawMessage = $"{MessageHeaders.Internal}raw_message";
 
-    public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor context)
+    public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
     {
-        var inputMessage = context?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
+        var inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
         var headers = new Dictionary<string, object>();
-        if (context != null)
+        if (attributeAccessor != null)
         {
-            headers[AmqpRawMessage] = context.GetAttribute(AmqpRawMessage);
-            headers[IntegrationMessageHeaderAccessor.SourceData] = context.GetAttribute(AmqpRawMessage);
+            headers[AmqpRawMessage] = attributeAccessor.GetAttribute(AmqpRawMessage);
+            headers[IntegrationMessageHeaderAccessor.SourceData] = attributeAccessor.GetAttribute(AmqpRawMessage);
         }
 
         return inputMessage is IMessage message

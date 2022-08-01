@@ -8,18 +8,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardTypeComparator : ITypeComparator
 {
-    public bool CanCompare(object left, object right)
+    public bool CanCompare(object firstObject, object secondObject)
     {
-        if (left == null || right == null)
+        if (firstObject == null || secondObject == null)
         {
             return true;
         }
 
-        // if (left is Number && right is Number)
+        // if (firstObject is Number && secondObject is Number)
         // {
         //    return true;
         // }
-        if (left is IComparable)
+        if (firstObject is IComparable)
         {
             return true;
         }
@@ -27,40 +27,40 @@ public class StandardTypeComparator : ITypeComparator
         return false;
     }
 
-    public int Compare(object left, object right)
+    public int Compare(object firstObject, object secondObject)
     {
         // If one is null, check if the other is
-        if (left == null)
+        if (firstObject == null)
         {
-            return right == null ? 0 : -1;
+            return secondObject == null ? 0 : -1;
         }
-        else if (right == null)
+        else if (secondObject == null)
         {
-            return 1;  // left cannot be null at this point
+            return 1;  // firstObject cannot be null at this point
         }
 
-        if (left is decimal || right is decimal)
+        if (firstObject is decimal || secondObject is decimal)
         {
-            var leftNum = Convert.ToDecimal(left);
-            var rightNum = Convert.ToDecimal(right);
+            var leftNum = Convert.ToDecimal(firstObject);
+            var rightNum = Convert.ToDecimal(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (left is double || right is double)
+        else if (firstObject is double || secondObject is double)
         {
-            var leftNum = Convert.ToDouble(left);
-            var rightNum = Convert.ToDouble(right);
+            var leftNum = Convert.ToDouble(firstObject);
+            var rightNum = Convert.ToDouble(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (left is float || right is float)
+        else if (firstObject is float || secondObject is float)
         {
-            var leftNum = Convert.ToSingle(left);
-            var rightNum = Convert.ToSingle(right);
+            var leftNum = Convert.ToSingle(firstObject);
+            var rightNum = Convert.ToSingle(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (left is long || right is long)
+        else if (firstObject is long || secondObject is long)
         {
-            var leftNum = Convert.ToInt64(left);
-            var rightNum = Convert.ToInt64(right);
+            var leftNum = Convert.ToInt64(firstObject);
+            var rightNum = Convert.ToInt64(secondObject);
             return leftNum.CompareTo(rightNum);
         }
 
@@ -87,16 +87,16 @@ public class StandardTypeComparator : ITypeComparator
         // }
         try
         {
-            if (left is IComparable comparable)
+            if (firstObject is IComparable comparable)
             {
-                return comparable.CompareTo(right);
+                return comparable.CompareTo(secondObject);
             }
         }
         catch (Exception ex)
         {
-            throw new SpelEvaluationException(ex, SpelMessage.NotComparable, left.GetType(), right.GetType());
+            throw new SpelEvaluationException(ex, SpelMessage.NotComparable, firstObject.GetType(), secondObject.GetType());
         }
 
-        throw new SpelEvaluationException(SpelMessage.NotComparable, left.GetType(), right.GetType());
+        throw new SpelEvaluationException(SpelMessage.NotComparable, firstObject.GetType(), secondObject.GetType());
     }
 }

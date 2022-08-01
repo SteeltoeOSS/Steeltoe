@@ -212,7 +212,7 @@ public class ChannelInterceptorTest
             PreSendInvoked = true;
         }
 
-        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
             AssertInput(message, channel, sent);
             CompletionInvoked = true;
@@ -244,7 +244,7 @@ public class ChannelInterceptorTest
             PreSendInvoked = true;
         }
 
-        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
             AssertInput(message, channel, sent);
             CompletionInvoked = true;
@@ -294,7 +294,7 @@ public class ChannelInterceptorTest
             return message;
         }
 
-        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception ex)
+        public override void AfterSendCompletion(IMessage message, IMessageChannel channel, bool sent, Exception exception)
         {
             _afterCompletionInvoked = true;
         }

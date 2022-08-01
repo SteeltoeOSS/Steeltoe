@@ -37,10 +37,9 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         _convertLongLongStrings = convertLongLongStrings;
     }
 
-    public virtual void FromMessageHeaders(IMessageHeaders headers, RC.IBasicProperties target, Encoding charset)
+    public virtual void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset)
     {
-        var source = headers;
-        target.Headers = ConvertHeadersIfNecessary(headers);
+        target.Headers = ConvertHeadersIfNecessary(source);
         if (source.Timestamp.HasValue)
         {
             target.Timestamp = new RC.AmqpTimestamp(source.Timestamp.Value);

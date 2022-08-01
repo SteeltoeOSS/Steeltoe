@@ -274,7 +274,7 @@ public class TaskSchedulerSubscribableChannelTest
             return message;
         }
 
-        public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception ex)
+        public override void AfterMessageHandled(IMessage message, IMessageChannel channel, IMessageHandler handler, Exception exception)
         {
             _afterHandledInvoked = true;
         }

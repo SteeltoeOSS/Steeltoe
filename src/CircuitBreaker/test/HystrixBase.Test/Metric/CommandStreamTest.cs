@@ -235,10 +235,10 @@ public abstract class CommandStreamTest : HystrixTestBase
             get { return _arg; }
         }
 
-        protected override HystrixCommand<List<int>> CreateCommand(ICollection<ICollapsedRequest<int, int>> collapsedRequests)
+        protected override HystrixCommand<List<int>> CreateCommand(ICollection<ICollapsedRequest<int, int>> requests)
         {
             var args = new List<int>();
-            foreach (var collapsedReq in collapsedRequests)
+            foreach (var collapsedReq in requests)
             {
                 args.Add(collapsedReq.Argument);
             }
@@ -248,9 +248,9 @@ public abstract class CommandStreamTest : HystrixTestBase
             return new BatchCommand(_output, args);
         }
 
-        protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> collapsedRequests)
+        protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> requests)
         {
-            foreach (var collapsedReq in collapsedRequests)
+            foreach (var collapsedReq in requests)
             {
                 collapsedReq.Response = collapsedReq.Argument;
                 collapsedReq.Complete = true;

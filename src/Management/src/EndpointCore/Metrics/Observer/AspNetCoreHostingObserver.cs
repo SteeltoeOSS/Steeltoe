@@ -63,9 +63,9 @@ public class AspNetCoreHostingObserver : MetricsObserver
         */
     }
 
-    public override void ProcessEvent(string eventName, object arg)
+    public override void ProcessEvent(string eventName, object value)
     {
-        if (arg == null)
+        if (value == null)
         {
             return;
         }
@@ -80,7 +80,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         {
             Logger?.LogTrace("HandleStopEvent start{thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var context = DiagnosticHelpers.GetProperty<HttpContext>(arg, "HttpContext");
+            var context = DiagnosticHelpers.GetProperty<HttpContext>(value, "HttpContext");
 
             if (context != null)
             {

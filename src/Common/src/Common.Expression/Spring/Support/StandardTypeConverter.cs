@@ -21,30 +21,30 @@ public class StandardTypeConverter : ITypeConverter
 
     public IConversionService ConversionService { get; set; }
 
-    public bool CanConvert(Type source, Type target)
+    public bool CanConvert(Type sourceType, Type targetType)
     {
-        return ConversionService.CanConvert(source, target);
+        return ConversionService.CanConvert(sourceType, targetType);
     }
 
-    public object ConvertValue(object value, Type source, Type target)
+    public object ConvertValue(object value, Type sourceType, Type targetType)
     {
         try
         {
-            return ConversionService.Convert(value, source, target);
+            return ConversionService.Convert(value, sourceType, targetType);
         }
         catch (ConversionException ex)
         {
             var message = "null";
-            if (source != null)
+            if (sourceType != null)
             {
-                message = source.ToString();
+                message = sourceType.ToString();
             }
             else if (value != null)
             {
                 message = value.GetType().FullName;
             }
 
-            throw new SpelEvaluationException(ex, SpelMessage.TypeConversionError, message, target.ToString());
+            throw new SpelEvaluationException(ex, SpelMessage.TypeConversionError, message, targetType.ToString());
         }
     }
 }

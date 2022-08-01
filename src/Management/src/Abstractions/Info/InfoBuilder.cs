@@ -25,11 +25,11 @@ public class InfoBuilder : IInfoBuilder
         return this;
     }
 
-    public IInfoBuilder WithInfo(Dictionary<string, object> items)
+    public IInfoBuilder WithInfo(Dictionary<string, object> details)
     {
-        if (items != null)
+        if (details != null)
         {
-            foreach (var pair in items)
+            foreach (var pair in details)
             {
                 _info[pair.Key] = pair.Value;
             }

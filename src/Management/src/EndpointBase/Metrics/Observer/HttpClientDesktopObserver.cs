@@ -62,9 +62,9 @@ public class HttpClientDesktopObserver : MetricsObserver
             });
     }
 
-    public override void ProcessEvent(string eventName, object arg)
+    public override void ProcessEvent(string eventName, object value)
     {
-        if (arg == null)
+        if (value == null)
         {
             return;
         }
@@ -75,7 +75,7 @@ public class HttpClientDesktopObserver : MetricsObserver
             return;
         }
 
-        var request = DiagnosticHelpers.GetProperty<HttpWebRequest>(arg, "Request");
+        var request = DiagnosticHelpers.GetProperty<HttpWebRequest>(value, "Request");
         if (request == null)
         {
             return;
@@ -85,7 +85,7 @@ public class HttpClientDesktopObserver : MetricsObserver
         {
             Logger?.LogTrace("HandleStopEvent start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var response = DiagnosticHelpers.GetProperty<HttpWebResponse>(arg, "Response");
+            var response = DiagnosticHelpers.GetProperty<HttpWebResponse>(value, "Response");
             if (response != null)
             {
                 HandleStopEvent(current, request, response.StatusCode);
@@ -97,7 +97,7 @@ public class HttpClientDesktopObserver : MetricsObserver
         {
             Logger?.LogTrace("HandleStopEventEx start {thread}", Thread.CurrentThread.ManagedThreadId);
 
-            var statusCode = DiagnosticHelpers.GetProperty<HttpStatusCode>(arg, "StatusCode");
+            var statusCode = DiagnosticHelpers.GetProperty<HttpStatusCode>(value, "StatusCode");
 
             HandleStopEvent(current, request, statusCode);
 

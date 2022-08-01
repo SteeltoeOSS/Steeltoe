@@ -61,19 +61,19 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     public HandlerAdapter HandlerAdapter { get; set; }
 
-    public override void OnMessage(IMessage amqpMessage, RC.IModel channel)
+    public override void OnMessage(IMessage message, RC.IModel channel)
     {
-        PreProcessMessage(amqpMessage);
-        var headers = amqpMessage.Headers;
-        var convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
+        PreProcessMessage(message);
+        var headers = message.Headers;
+        var convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
         if (convertedObject == null)
         {
             throw new MessageConversionException("Message converter returned null");
         }
 
         var builder = convertedObject is IMessage message1 ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
-        var message = builder.CopyHeadersIfAbsent(headers).Build();
-        InvokeHandlerAndProcessResult(amqpMessage, channel, message);
+        var newMessage = builder.CopyHeadersIfAbsent(headers).Build();
+        InvokeHandlerAndProcessResult(message, channel, newMessage);
     }
 
     protected internal override IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)

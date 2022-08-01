@@ -28,7 +28,7 @@ public class DynamicDestinationsBindable : AbstractBindable
         _outputBindings.TryAdd(name, binding);
     }
 
-    public override void UnbindOutputs(IBindingService adapter)
+    public override void UnbindOutputs(IBindingService bindingService)
     {
         foreach (var entry in _outputBindings)
         {

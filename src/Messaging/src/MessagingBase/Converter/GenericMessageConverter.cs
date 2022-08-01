@@ -21,21 +21,21 @@ public class GenericMessageConverter : SimpleMessageConverter
         _conversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
     }
 
-    public override object FromMessage(IMessage message, Type targetClass)
+    public override object FromMessage(IMessage message, Type targetType)
     {
         var payload = message.Payload;
-        if (_conversionService.CanConvert(payload.GetType(), targetClass))
+        if (_conversionService.CanConvert(payload.GetType(), targetType))
         {
             try
             {
-                return _conversionService.Convert(payload, payload.GetType(), targetClass);
+                return _conversionService.Convert(payload, payload.GetType(), targetType);
             }
             catch (ConversionException ex)
             {
-                throw new MessageConversionException(message, $"Failed to convert message payload '{payload}' to '{targetClass.Name}'", ex);
+                throw new MessageConversionException(message, $"Failed to convert message payload '{payload}' to '{targetType.Name}'", ex);
             }
         }
 
-        return targetClass.IsInstanceOfType(payload) ? payload : null;
+        return targetType.IsInstanceOfType(payload) ? payload : null;
     }
 }

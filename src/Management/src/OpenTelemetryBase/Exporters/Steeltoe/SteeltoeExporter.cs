@@ -58,10 +58,10 @@ public class SteeltoeExporter : MetricsExporter
         return new SteeltoeCollectionResponse(metricSamples, availTags, DateTime.Now);
     }
 
-    internal override ICollectionResponse GetCollectionResponse(ICollectionResponse steeltoeCollectionResponse, DateTime updatedTime)
+    internal override ICollectionResponse GetCollectionResponse(ICollectionResponse collectionResponse, DateTime updatedTime)
     {
-        var collectionResponse = (SteeltoeCollectionResponse)steeltoeCollectionResponse;
-        return new SteeltoeCollectionResponse(collectionResponse.MetricSamples, collectionResponse.AvailableTags, DateTime.Now);
+        var response = (SteeltoeCollectionResponse)collectionResponse;
+        return new SteeltoeCollectionResponse(response.MetricSamples, response.AvailableTags, DateTime.Now);
     }
 
     private void GetMetricsCollection(Batch<Metric> metrics, out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)

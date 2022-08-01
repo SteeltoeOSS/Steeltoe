@@ -16,14 +16,14 @@ public class SimpleRouteMatcher : IRouteMatcher
 
     public IPathMatcher PathMatcher { get; }
 
-    public IRoute ParseRoute(string route)
+    public IRoute ParseRoute(string routeValue)
     {
-        return new DefaultRoute(route);
+        return new DefaultRoute(routeValue);
     }
 
-    public bool IsPattern(string route)
+    public bool IsPattern(string routeValue)
     {
-        return PathMatcher.IsPattern(route);
+        return PathMatcher.IsPattern(routeValue);
     }
 
     public string Combine(string pattern1, string pattern2)

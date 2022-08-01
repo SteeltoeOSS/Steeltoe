@@ -69,14 +69,14 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
 #pragma warning restore S2365 // Properties should not make collection or array copies
     }
 
-    public override bool Equals(object other)
+    public override bool Equals(object obj)
     {
-        if (ReferenceEquals(this, other))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (other is not AbstractAttributeAccessor accessor)
+        if (obj is not AbstractAttributeAccessor accessor)
         {
             return false;
         }

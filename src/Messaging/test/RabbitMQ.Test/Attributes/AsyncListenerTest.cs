@@ -323,7 +323,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     {
         public string ServiceName { get; set; } = nameof(CustomListenerErrorHandler);
 
-        public object HandleError(IMessage origMessage, IMessage message, ListenerExecutionFailedException exception)
+        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
             return $"{ServiceName} handled/processed";
         }
