@@ -28,7 +28,11 @@ public abstract class HystrixTestBase : IDisposable
     public void Before()
     {
         context = HystrixRequestContext.InitializeContext();
+        ResetAll();
+    }
 
+    public void ResetAll()
+    {
         HystrixCommandMetrics.Reset();
         HystrixThreadPoolMetrics.Reset();
         HystrixCollapserMetrics.Reset();
@@ -75,6 +79,7 @@ public abstract class HystrixTestBase : IDisposable
             context = null;
 
             HystrixThreadPoolFactory.Shutdown();
+            ResetAll();
         }
     }
 

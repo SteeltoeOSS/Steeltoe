@@ -25,5 +25,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Utils\Steeltoe.Common.Utils.csproj" />
     <ProjectReference Include="..\..\src\Hystrix.MetricsStreamCore\Steeltoe.CircuitBreaker.Hystrix.MetricsStreamCore.csproj" />
+    <ProjectReference Include="..\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj" />
   </ItemGroup>
 </Project>

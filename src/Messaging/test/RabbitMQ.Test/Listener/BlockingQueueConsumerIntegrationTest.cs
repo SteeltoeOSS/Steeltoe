@@ -25,7 +25,7 @@ public class BlockingQueueConsumerIntegrationTest
     [Fact]
     public void TestTransactionalLowLevel()
     {
-        var connectionFactory = new CachingConnectionFactory("localhost");
+        using var connectionFactory = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(connectionFactory);
         admin.DeclareQueue(new Queue(Queue1Name));
         admin.DeclareQueue(new Queue(Queue2Name));
@@ -81,7 +81,7 @@ public class BlockingQueueConsumerIntegrationTest
     [Fact]
     public void TestAvoidHangAMQP_508()
     {
-        var connectionFactory = new CachingConnectionFactory("localhost");
+        using var connectionFactory = new CachingConnectionFactory("localhost");
         var longName = new string('x', 300);
         var blockingQueueConsumer = new BlockingQueueConsumer(
             connectionFactory,

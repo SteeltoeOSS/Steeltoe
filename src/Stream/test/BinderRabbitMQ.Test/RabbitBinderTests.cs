@@ -59,7 +59,6 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
     {
         var bindingsOptions = new RabbitBindingsOptions();
         var binder = GetBinder(bindingsOptions);
-
         var moduleOutputChannel = CreateBindableChannel("output", GetDefaultBindingOptions());
         var moduleInputChannel = CreateBindableChannel("input", GetDefaultBindingOptions());
         var producerBinding = binder.BindProducer("bad.0", moduleOutputChannel, GetProducerOptions("output", bindingsOptions));
@@ -330,7 +329,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
         var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
 
-        var ccf = new CachingConnectionFactory("localhost", proxy.Port);
+        using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
 
         var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
         var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
@@ -340,8 +339,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         consumerProperties.InstanceIndexList = new[] { 1, 2, 3 }.ToList();
 
         var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo", "boo", consumerProperties);
-
         Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3", consumerDestination.Name);
+        proxy.Stop();
     }
 
     [Fact]
@@ -350,7 +349,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var rabbitBindingsOptions = new RabbitBindingsOptions();
         var consumerProperties = GetConsumerOptions(string.Empty, rabbitBindingsOptions);
         var proxy = new RabbitProxy(LoggerFactory.CreateLogger<RabbitProxy>());
-        var ccf = new CachingConnectionFactory("localhost", proxy.Port);
+        using var ccf = new CachingConnectionFactory("localhost", proxy.Port);
         var bindingsOptionsMonitor = new TestOptionsMonitor<RabbitBindingsOptions>(rabbitBindingsOptions);
         var rabbitExchangeQueueProvisioner = new RabbitExchangeQueueProvisioner(ccf, bindingsOptionsMonitor, GetBinder(rabbitBindingsOptions).ApplicationContext, LoggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>());
 
@@ -361,6 +360,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var consumerDestination = rabbitExchangeQueueProvisioner.ProvisionConsumerDestination("foo,qaa", "boo", consumerProperties);
 
         Assert.Equal("foo.boo-1,foo.boo-2,foo.boo-3,qaa.boo-1,qaa.boo-2,qaa.boo-3", consumerDestination.Name);
+        proxy.Stop();
     }
 
     [Fact]
@@ -1552,9 +1552,9 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Cleanup();
 
         proxy.Stop();
-        cf.Destroy();
+        cf.Dispose();
 
-        GetResource().Destroy();
+        GetResource().Dispose();
     }
 
     [Fact]

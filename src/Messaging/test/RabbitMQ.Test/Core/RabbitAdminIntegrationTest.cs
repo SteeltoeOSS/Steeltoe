@@ -256,6 +256,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         // https://github.com/rabbitmq/rabbitmq-dotnet-client/issues/432
 
         // Assert.True(exchange2.GetValue<bool>("internal"));
+        rabbitAdmin.DeleteExchange(exchangeName);
     }
 
     [Fact]

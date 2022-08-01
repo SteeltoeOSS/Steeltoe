@@ -3,9 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Tracing;
@@ -14,7 +16,7 @@ using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources;
 
-public class HystrixEventSourceServiceTests
+public class HystrixEventSourceServiceTests : HystrixTestBase
 {
     [Fact]
     public void Constructor_SetsUpStream()

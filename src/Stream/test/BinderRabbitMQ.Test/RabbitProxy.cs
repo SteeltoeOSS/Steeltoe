@@ -24,6 +24,7 @@ public class RabbitProxy
         _listener.Start();
         _logger = logger;
         var listenerThread = new Thread(StartListener);
+        listenerThread.IsBackground = true;
         listenerThread.Start();
     }
 
@@ -56,6 +57,7 @@ public class RabbitProxy
                 {
                     _logger.LogInformation("Connected to client!");
                     var t = new Thread(HandleConnection);
+                    t.IsBackground = true;
                     t.Start(client);
                 }
                 else
@@ -65,9 +67,8 @@ public class RabbitProxy
                 }
             }
         }
-        catch (SocketException e)
+        catch (SocketException)
         {
-            _logger.LogInformation("SocketException: {0}", e);
             _listener.Stop();
         }
     }
@@ -81,6 +82,9 @@ public class RabbitProxy
         rabbitClient.Connect("localhost", 5672);
         var rabbitStream = rabbitClient.GetStream();
 
+        rabbitStream.ReadTimeout = 100;
+        stream.ReadTimeout = 100;
+
         var bytes = new byte[1];
         var serverBytes = new byte[1];
         try
@@ -90,7 +94,7 @@ public class RabbitProxy
 
             var t = Task.Run(() =>
             {
-                while (rabbitStream.CanRead)
+                while (rabbitStream.CanRead && _run)
                 {
                     try
                     {
@@ -102,30 +106,42 @@ public class RabbitProxy
                             stream.Write(serverBytes, 0, serverBytes.Length);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
-                        _logger?.LogInformation(ex.Message + ex.StackTrace);
+                        // Ignore
                     }
                 }
             });
 
-            while (stream.CanRead)
+            while (stream.CanRead && _run)
             {
-                var clientBytesRead = stream.Read(bytes, 0, bytes.Length);
-                totalClientBytes += clientBytesRead;
-                if (clientBytesRead != 0 && rabbitStream.CanWrite)
+                try
                 {
-                    rabbitStream.Write(bytes, 0, bytes.Length);
+                    var clientBytesRead = stream.Read(bytes, 0, bytes.Length);
+                    totalClientBytes += clientBytesRead;
+                    if (clientBytesRead != 0 && rabbitStream.CanWrite)
+                    {
+                        rabbitStream.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                catch (Exception)
+                {
+                   // Ignore
                 }
             }
 
             t.Wait();
         }
-        catch (Exception e)
+        catch (Exception)
         {
-            _logger.LogInformation("Exception: {0}", e.ToString());
+           // Ignore
+        }
+        finally
+        {
             client.Close();
             rabbitClient.Close();
+            client.Dispose();
+            rabbitClient.Dispose();
         }
     }
 }

@@ -16,6 +16,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\..\src\HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj" />
+    <ProjectReference Include="..\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj" />
   </ItemGroup>
   
   <ItemGroup>

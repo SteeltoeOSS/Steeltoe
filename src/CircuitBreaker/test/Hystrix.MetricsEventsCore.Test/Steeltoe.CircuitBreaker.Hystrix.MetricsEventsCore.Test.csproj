@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Hystrix.MetricsEventsCore\Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.csproj" />
     <ProjectReference Include="..\..\src\HystrixCore\Steeltoe.CircuitBreaker.HystrixCore.csproj" />
+    <ProjectReference Include="..\HystrixBase.Test\Steeltoe.CircuitBreaker.HystrixBase.Test.csproj" />
   </ItemGroup>
 
 </Project>

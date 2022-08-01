@@ -40,18 +40,18 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         services.AddSingleton(p => CreateDmlcContainer(p, latch3, latch4, message));
         services.AddRabbitAdmin();
         services.AddRabbitTemplate();
-        var provider = services.BuildServiceProvider();
+        await using var provider = services.BuildServiceProvider();
 
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
 
-        var container = provider.GetRequiredService<DirectMessageListenerContainer>();
-        var cf = provider.GetRequiredService<IConnectionFactory>() as CachingConnectionFactory;
+        using var container = provider.GetRequiredService<DirectMessageListenerContainer>();
+        using var cf = provider.GetRequiredService<IConnectionFactory>() as CachingConnectionFactory;
 
         await container.Start();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
 
         var queue = provider.GetRequiredService<IQueue>();
-        var template = provider.GetRabbitTemplate();
+        using var template = provider.GetRabbitTemplate();
         var firstActualName = queue.ActualName;
         message.Value = null;
         template.ConvertAndSend(firstActualName, "foo");

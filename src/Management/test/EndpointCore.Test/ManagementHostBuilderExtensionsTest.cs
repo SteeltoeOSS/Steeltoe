@@ -58,7 +58,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
+        using var host = await hostBuilder.AddDbMigrationsActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/dbmigrations");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -83,7 +83,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddEnvActuator().StartAsync();
+        using var host = await hostBuilder.AddEnvActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/env");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -136,7 +136,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddHealthActuator().StartAsync();
+        using var host = await hostBuilder.AddHealthActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/health");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -148,7 +148,7 @@ public class ManagementHostBuilderExtensionsTest
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
         // start the server, get a client
-        var host = await hostBuilder.AddHealthActuator().StartAsync();
+        using var host = await hostBuilder.AddHealthActuator().StartAsync();
         var client = host.GetTestClient();
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
@@ -190,7 +190,7 @@ public class ManagementHostBuilderExtensionsTest
         {
             var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-            var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
+            using var host = await hostBuilder.AddHeapDumpActuator().StartAsync();
 
             var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/heapdump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -216,7 +216,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddHypermediaActuator().StartAsync();
+        using var host = await hostBuilder.AddHypermediaActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -255,7 +255,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddInfoActuator().StartAsync();
+        using var host = await hostBuilder.AddInfoActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -280,7 +280,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddLoggersActuator().StartAsync();
+        using var host = await hostBuilder.AddLoggersActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -292,7 +292,7 @@ public class ManagementHostBuilderExtensionsTest
         // Add Serilog + DynamicConsole = runs OK
         var hostBuilder = new HostBuilder().AddDynamicSerilog().AddDynamicLogging().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddLoggersActuator().StartAsync();
+        using var host = await hostBuilder.AddLoggersActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -324,7 +324,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddMappingsActuator().StartAsync();
+        using var host = await hostBuilder.AddMappingsActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/mappings");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -349,7 +349,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddMetricsActuator().StartAsync();
+        using var host = await hostBuilder.AddMetricsActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/metrics");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -374,7 +374,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddRefreshActuator().StartAsync();
+        using var host = await hostBuilder.AddRefreshActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/refresh");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -404,7 +404,7 @@ public class ManagementHostBuilderExtensionsTest
         {
             var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-            var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
+            using var host = await hostBuilder.AddThreadDumpActuator().StartAsync();
 
             var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/threaddump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -430,7 +430,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddTraceActuator().StartAsync();
+        using var host = await hostBuilder.AddTraceActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/actuator/httptrace");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -455,7 +455,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddAllActuators().StartAsync();
+        using var host = await hostBuilder.AddAllActuators().StartAsync();
         var client = host.GetTestServer().CreateClient();
 
         var response = await client.GetAsync("/actuator");
@@ -471,7 +471,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithSecureRouting);
 
-        var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
+        using var host = await hostBuilder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
         var client = host.GetTestServer().CreateClient();
 
         var response = await client.GetAsync("/actuator");
@@ -501,7 +501,7 @@ public class ManagementHostBuilderExtensionsTest
     {
         var hostBuilder = new HostBuilder().ConfigureWebHost(_testServerWithRouting);
 
-        var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
+        using var host = await hostBuilder.AddCloudFoundryActuator().StartAsync();
 
         var response = await host.GetTestServer().CreateClient().GetAsync("/cloudfoundryapplication");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -518,7 +518,7 @@ public class ManagementHostBuilderExtensionsTest
                 .AddHealthActuator()
                 .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
 
-        var host = await hostBuilder.StartAsync();
+        using var host = await hostBuilder.StartAsync();
         var client = host.GetTestServer().CreateClient();
 
         Assert.Single(host.Services.GetServices<IStartupFilter>());
@@ -543,7 +543,7 @@ public class ManagementHostBuilderExtensionsTest
                 .AddInfoActuator()
                 .AddHealthActuator();
 
-        var host = await hostBuilder.StartAsync();
+        using var host = await hostBuilder.StartAsync();
         var client = host.GetTestServer().CreateClient();
 
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used

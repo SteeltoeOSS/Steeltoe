@@ -22,8 +22,8 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
     [Fact]
     public void ChannelReleasedOnTimeout()
     {
-        var connectionFactory = new CachingConnectionFactory("localhost");
-        var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        using var connectionFactory = new CachingConnectionFactory("localhost");
+        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
         rabbitTemplate.ReplyTimeout = 1;
         var exception = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);
@@ -66,8 +66,6 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
         Assert.Contains("Reply received after timeout", exception.Value.InnerException.Message);
         Assert.Equal(replyMessage.Payload, listException.FailedMessage.Payload);
         Assert.Empty(container.InUseConsumerChannels);
-        rabbitTemplate.Stop().Wait();
-        connectionFactory.Destroy();
     }
 
     protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)

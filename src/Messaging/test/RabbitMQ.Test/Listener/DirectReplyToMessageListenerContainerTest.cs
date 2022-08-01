@@ -17,28 +17,28 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 [Trait("Category", "Integration")]
 public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 {
-    public const string TestReleaseConsumerQ = "test.release.consumer";
+    private const string TestReleaseConsumerQ = "test.release.consumer";
+    private readonly CachingConnectionFactory _adminCf;
+    private readonly RabbitAdmin _admin;
 
     public DirectReplyToMessageListenerContainerTest()
     {
-        var adminCf = new CachingConnectionFactory("localhost");
-        var admin = new RabbitAdmin(adminCf);
-        admin.DeclareQueue(new Config.Queue(TestReleaseConsumerQ));
+        _adminCf = new CachingConnectionFactory("localhost");
+        _admin = new RabbitAdmin(_adminCf);
+        _admin.DeclareQueue(new Config.Queue(TestReleaseConsumerQ));
     }
 
     public void Dispose()
     {
-        var adminCf = new CachingConnectionFactory("localhost");
-        var admin = new RabbitAdmin(adminCf);
-        admin.DeleteQueue(TestReleaseConsumerQ);
-        adminCf.Dispose();
+        _admin.DeleteQueue(TestReleaseConsumerQ);
+        _adminCf.Dispose();
     }
 
     [Fact]
     public async Task TestReleaseConsumerRace()
     {
-        var connectionFactory = new CachingConnectionFactory("localhost");
-        var container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
+        using var connectionFactory = new CachingConnectionFactory("localhost");
+        using var container = new DirectReplyToMessageListenerContainer(null, connectionFactory);
 
         var latch = new CountdownEvent(1);
         container.MessageListener = new EmptyListener();

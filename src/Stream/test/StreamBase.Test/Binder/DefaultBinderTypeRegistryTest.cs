@@ -2,9 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using Xunit;
@@ -60,12 +62,12 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
     [Fact]
     public void AddBinderTypes_WithBinderAlreadyLoaded_ReturnsBinder()
     {
+        var isAlreadyLoaded = AppDomain.CurrentDomain
+            .GetAssemblies().SingleOrDefault(a => a.FullName == "Steeltoe.Stream.TestBinder") != null;
         var result = new Dictionary<string, IBinderType>();
 
         DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
-
-        Assert.Single(result, r => r.Key == "testbinder");
-        Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+        CheckExpectedResult(isAlreadyLoaded, result);
     }
 
     [Fact]
@@ -83,22 +85,25 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
         Assert.Null(DefaultBinderTypeRegistry.CheckAssembly(Assembly.GetExecutingAssembly()));
     }
 
-    [Fact(Skip = "TypeRegistryTests")]
+    [Fact]
     public void ParseBinderConfigurations_ReturnsBinder()
     {
+        var binderDir = GetSearchDirectories("TestBinder");
+        var isAlreadyLoaded = AppDomain.CurrentDomain
+            .GetAssemblies().SingleOrDefault(a => a.FullName == "Steeltoe.Stream.TestBinder") != null;
         var result = new Dictionary<string, IBinderType>();
-        DefaultBinderTypeRegistry.AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), result);
-        Assert.Single(result);
-        Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+        DefaultBinderTypeRegistry.ParseBinderConfigurations(binderDir, result, true);
+        CheckExpectedResult(isAlreadyLoaded, result);
     }
 
-    [Fact(Skip = "TypeRegistryTests")]
+    [Fact]
     public void FindBinders_ReturnsLoadedBinder()
     {
+        var isAlreadyLoaded = AppDomain.CurrentDomain
+            .GetAssemblies().SingleOrDefault(a => a.FullName == "Steeltoe.Stream.TestBinder") != null;
         var searchDirectories = new List<string>();
         var result = DefaultBinderTypeRegistry.FindBinders(searchDirectories);
-        Assert.Single(result);
-        Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", result["testbinder"].ConfigureClass);
+        CheckExpectedResult(isAlreadyLoaded, result);
     }
 
     [Fact]
@@ -107,6 +112,16 @@ public class DefaultBinderTypeRegistryTest : AbstractTest
         var registry = new DefaultBinderTypeRegistry();
         Assert.Single(registry.GetAll(), r => r.Key == "testbinder");
         Assert.Matches(@"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null", registry.Get("testbinder").ConfigureClass);
+    }
+
+    private void CheckExpectedResult(bool isAlreadyLoaded, Dictionary<string, IBinderType> results)
+    {
+        if (isAlreadyLoaded)
+        {
+            Assert.Matches(
+                @"Steeltoe.Stream.TestBinder.Startup, Steeltoe.Stream.TestBinder, Version=[\d.]+, Culture=neutral, PublicKeyToken=null",
+                results["testbinder"].ConfigureClass);
+        }
     }
 
     private List<string> BuildPaths(string binderPath)

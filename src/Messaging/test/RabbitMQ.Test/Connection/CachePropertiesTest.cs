@@ -13,13 +13,13 @@ public class CachePropertiesTest
     [Fact]
     public void TestChannelCache()
     {
-        var channelCf = new CachingConnectionFactory("localhost")
+        using var channelCf = new CachingConnectionFactory("localhost")
         {
             ServiceName = "testChannelCache",
             ChannelCacheSize = 4
         };
-        var c1 = channelCf.CreateConnection();
-        var c2 = channelCf.CreateConnection();
+        using var c1 = channelCf.CreateConnection();
+        using var c2 = channelCf.CreateConnection();
         Assert.Same(c1, c2);
         var ch1 = c1.CreateChannel();
         var ch2 = c1.CreateChannel();
@@ -69,15 +69,15 @@ public class CachePropertiesTest
     [Fact]
     public void TestConnectionCache()
     {
-        var connectionCf = new CachingConnectionFactory("localhost")
+        using var connectionCf = new CachingConnectionFactory("localhost")
         {
             ChannelCacheSize = 10,
             ConnectionCacheSize = 5,
             CacheMode = CachingMode.Connection,
             ServiceName = "testConnectionCache"
         };
-        var c1 = connectionCf.CreateConnection();
-        var c2 = connectionCf.CreateConnection();
+        using var c1 = connectionCf.CreateConnection();
+        using var c2 = connectionCf.CreateConnection();
         var ch1 = c1.CreateChannel();
         var ch2 = c1.CreateChannel();
         var ch3 = c2.CreateChannel(true);

@@ -244,6 +244,7 @@ public class RabbitAdminTest : AbstractTest
         var bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
         Assert.Single(bindings);
         Assert.Equal("q4", bindings.Single().Destination);
+        provider.Dispose();
     }
 
     [Fact]

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
+using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Connector.Hystrix;
 using Xunit;
 

@@ -209,7 +209,7 @@ public class TaskSchedulerChannelTest
                 throw new Exception("intentional test failure");
             }
 
-            Count++;
+            Interlocked.Increment(ref Count);
             Latch.Signal();
         }
     }
