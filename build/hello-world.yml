@@ -53,8 +53,10 @@ jobs:
         $headCommitHash = git rev-parse HEAD
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
 
-        echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+        if ($baseCommitHash -ne $headCommitHash) {
+          echo "Using commit range for cleanup: $baseCommitHash..$headCommitHash"
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
+        }
   - task: PowerShell@2
     displayName: Detect changes
     inputs:
