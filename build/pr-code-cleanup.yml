@@ -54,8 +54,8 @@ jobs:
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
 
         if ($baseCommitHash -ne $headCommitHash) {
-          Write-Output "Running code cleanup on all files."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN
+          Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
+          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
         }
   - task: PowerShell@2
     displayName: Detect changes
