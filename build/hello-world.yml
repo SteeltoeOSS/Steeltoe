@@ -19,8 +19,6 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
-  - checkout: self
-    persistCredentials: true
   - task: PowerShell@2
     displayName: HelloWorld
     inputs:
@@ -32,9 +30,3 @@ jobs:
         else {
           Write-Output "Running from PR"
         }
-  - task: PowerShell@2
-    displayName: Verify code style
-    inputs:
-      targetType: 'inline'
-      script: |
-        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
