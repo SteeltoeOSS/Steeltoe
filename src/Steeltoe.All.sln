@@ -109,7 +109,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore.Test", "Configuration\test\CloudFoundryCore.Test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test.csproj", "{EAC8E051-74A8-444C-972A-BA626331FBA6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "Configuration\test\ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.csproj", "{25F1BF2F-1B6A-466A-A3BF-8963B0D040F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.Test", "Configuration\test\ConfigServer.Test\Steeltoe.Extensions.Configuration.ConfigServer.Test.csproj", "{25F1BF2F-1B6A-466A-A3BF-8963B0D040F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerBase.Test", "Configuration\test\ConfigServerBase.Test\Steeltoe.Extensions.Configuration.ConfigServerBase.Test.csproj", "{5802F580-3E70-45F4-AF60-4F4E5F8FAADA}"
 EndProject
@@ -315,7 +315,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Rabbit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.RabbitMQ.Test", "Stream\test\BinderRabbitMQ.Test\Steeltoe.Stream.Binder.RabbitMQ.Test.csproj", "{92671FCC-F03E-40BE-B645-5B59F8F7F4C4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.BinderTests", "Stream\test\BinderTests\Steeltoe.Stream.BinderTests.csproj", "{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.Test", "Stream\test\Binder.Test\Steeltoe.Stream.Binder.Test.csproj", "{FAFA69DA-494E-4FC8-BDD8-78AF2B834592}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.SpringBootBase", "Configuration\src\SpringBootBase\Steeltoe.Extensions.Configuration.SpringBootBase.csproj", "{D94706F7-7622-4D4C-87BD-84FB40D4E6BD}"
 EndProject

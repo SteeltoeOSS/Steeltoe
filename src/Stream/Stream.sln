@@ -52,7 +52,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Integration.Rabbit
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.RabbitMQ.Test", "test\BinderRabbitMQ.Test\Steeltoe.Stream.Binder.RabbitMQ.Test.csproj", "{09CB7BAC-005B-415C-A851-CBFB5BEB4903}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.BinderTests", "test\BinderTests\Steeltoe.Stream.BinderTests.csproj", "{8D70C211-8BAA-4314-8079-046614D56E5C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Stream.Binder.Test", "test\Binder.Test\Steeltoe.Stream.Binder.Test.csproj", "{8D70C211-8BAA-4314-8079-046614D56E5C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Common.Abstractions", "..\Common\src\Abstractions\Steeltoe.Common.Abstractions.csproj", "{4F7A0CF6-82E0-46A2-9CF4-094B8881C1BA}"
 EndProject

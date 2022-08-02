@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BinderTests\Steeltoe.Stream.BinderTests.csproj" />
+    <ProjectReference Include="..\Binder.Test\Steeltoe.Stream.Binder.Test.csproj" />
   </ItemGroup>
 
 </Project>
