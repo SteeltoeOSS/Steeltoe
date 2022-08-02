@@ -1,3 +1,9 @@
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
+
 jobs:
 - job: Verify_Code_Style
   variables:
