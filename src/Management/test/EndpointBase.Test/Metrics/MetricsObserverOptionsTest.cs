@@ -14,8 +14,8 @@ public class MetricsObserverOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaults()
     {
         var opts = new MetricsObserverOptions();
-        Assert.Equal(opts.IngressIgnorePattern, MetricsObserverOptions.DefaultIngressIgnorePattern);
-        Assert.Equal(opts.EgressIgnorePattern, MetricsObserverOptions.DefaultEgressIgnorePattern);
+        Assert.Equal(MetricsObserverOptions.DefaultIngressIgnorePattern, opts.IngressIgnorePattern);
+        Assert.Equal(MetricsObserverOptions.DefaultEgressIgnorePattern, opts.EgressIgnorePattern);
         Assert.True(opts.AspNetCoreHosting);
         Assert.True(opts.GCEvents);
         Assert.False(opts.EventCounterEvents);
