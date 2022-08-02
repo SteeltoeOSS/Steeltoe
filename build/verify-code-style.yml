@@ -4,12 +4,6 @@ trigger:
     - master
     - release/*
 
-pr:
-  branches:
-    include:
-    - main
-    - release/*
-    
 jobs:
 - job: Verify_Code_Style
   variables:
