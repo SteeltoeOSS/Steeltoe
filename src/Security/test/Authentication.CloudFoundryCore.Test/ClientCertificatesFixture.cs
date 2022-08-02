@@ -26,6 +26,7 @@ public sealed class ClientCertificatesFixture : IDisposable
     {
         // TODO: Delete certificates?
     }
+
     // Suppress S4581 to workaround bug at https://github.com/SonarSource/sonar-dotnet/issues/5703.
 #pragma warning disable S4581 // "new Guid()" should not be used
     public readonly Guid ServerOrgId = new("a8fef16f-94c0-49e3-aa0b-ced7c3da6229");

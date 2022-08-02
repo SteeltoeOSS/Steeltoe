@@ -12,6 +12,7 @@ public abstract class DiagnosticObserver : IDiagnosticObserver
     protected ILogger Logger { get; }
 
     protected IDisposable Subscription { get; set; }
+
     public string ListenerName { get; }
 
     public string ObserverName { get; }

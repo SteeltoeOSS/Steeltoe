@@ -16,6 +16,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 public class SerilogOptions : ISerilogOptions
 {
     private LoggerConfiguration _serilogConfiguration;
+
     public string ConfigPath => "Serilog";
 
     /// <summary>
@@ -82,7 +83,7 @@ public class SerilogOptions : ISerilogOptions
 
     public LoggerConfiguration GetSerilogConfiguration()
     {
-        return _serilogConfiguration;
         // Method, so it won't `Bind` to anything
+        return _serilogConfiguration;
     }
 }

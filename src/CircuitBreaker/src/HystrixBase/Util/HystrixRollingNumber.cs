@@ -453,10 +453,9 @@ public class HystrixRollingNumber
 
         public Bucket Last => PeekLast;
 
-        public int Size =>
-            // the size can also be worked out each time as:
-            // return (tail + data.length() - head) % data.length();
-            _state.Value.Size;
+        // the size can also be worked out each time as:
+        // return (tail + data.length() - head) % data.length();
+        public int Size => _state.Value.Size;
 
         public Bucket PeekLast => _state.Value.Tail;
 

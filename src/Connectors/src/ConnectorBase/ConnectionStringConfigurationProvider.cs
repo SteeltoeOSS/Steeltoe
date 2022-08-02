@@ -11,6 +11,7 @@ namespace Steeltoe.Connector;
 internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvider
 {
     internal IList<IConfigurationProvider> Providers;
+
     internal Lazy<IConfiguration> Configuration { get; }
 
     internal Lazy<ConnectionStringManager> ConnectionStringManager { get; set; }

@@ -11,6 +11,7 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 public class SteeltoePrometheusExporter : MetricsExporter
 {
     private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
+
     internal PullMetricsCollectionManager CollectionManager { get; }
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }

@@ -19,6 +19,7 @@ public class CloudFoundryTokenKeyResolver
     private readonly bool _validateCertificates;
     private readonly int _httpClientTimeoutMillis;
     private HttpClient _httpClient;
+
     internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new();
 
     public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)

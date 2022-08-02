@@ -22,6 +22,7 @@ public static class HttpClientHelper
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (_, _, _, _) => true;
+
     public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
     /// <summary>

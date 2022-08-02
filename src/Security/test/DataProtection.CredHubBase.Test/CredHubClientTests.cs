@@ -16,7 +16,6 @@ public class CredHubClientTests
     [Fact]
     public async Task CreateAsync_RequestsToken_Once()
     {
-        const MockedRequest authRequest = null;
         MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
         await InitializeClientAsync(mockHttpMessageHandler);

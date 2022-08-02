@@ -14,6 +14,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Host;
 public class RabbitMQHostBuilder : IHostBuilder
 {
     private readonly IHostBuilder _hostbuilder;
+
     public IDictionary<object, object> Properties => _hostbuilder.Properties;
 
     public RabbitMQHostBuilder(IHostBuilder hostbuilder)

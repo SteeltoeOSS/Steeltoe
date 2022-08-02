@@ -11,6 +11,7 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
 {
     private readonly Dictionary<IAvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
+
     public virtual string Id => throw new NotImplementedException();
 
     protected AvailabilityHealthContributor(Dictionary<IAvailabilityState, HealthStatus> stateMappings, ILogger logger = null)

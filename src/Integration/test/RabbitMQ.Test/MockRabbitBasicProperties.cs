@@ -11,6 +11,7 @@ public class MockRabbitBasicProperties : IBasicProperties
     string IContentHeader.ProtocolClassName => string.Empty;
 
     int IContentHeader.ProtocolClassId => 0;
+
     public string AppId { get; set; }
 
     public string ClusterId { get; set; }

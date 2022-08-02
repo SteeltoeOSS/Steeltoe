@@ -42,6 +42,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
     protected virtual ConfigurationBuilder ConfigBuilder { get; set; }
 
     protected CachingConnectionFactory CachingConnectionFactory { get; set; }
+
     public ILoggerFactory LoggerFactory { get; }
 
     protected AbstractBinderTests(ITestOutputHelper output, ILoggerFactory loggerFactory)

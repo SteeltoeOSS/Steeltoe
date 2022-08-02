@@ -98,17 +98,15 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
             }
         }
 
+        // Create "empty" transaction: no actual transaction, but potentially synchronization.
+        if (def.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
         {
-            // Create "empty" transaction: no actual transaction, but potentially synchronization.
-            if (def.IsolationLevel != AbstractTransactionDefinition.IsolationDefault)
-            {
-                Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " + "isolation level will effectively be ignored: " +
-                    def);
-            }
-
-            bool newSynchronization = TransactionSynchronization == SynchronizationAlways;
-            return PrepareTransactionStatus(def, null, true, newSynchronization, null);
+            Logger?.LogWarning("Custom isolation level specified but no actual transaction initiated; " + "isolation level will effectively be ignored: " +
+                def);
         }
+
+        bool isSynchronizationAlways = TransactionSynchronization == SynchronizationAlways;
+        return PrepareTransactionStatus(def, null, true, isSynchronizationAlways, null);
     }
 
     public virtual void Commit(ITransactionStatus status)

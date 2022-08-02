@@ -9,6 +9,7 @@ namespace Steeltoe.Common.Availability;
 public class LivenessHealthContributor : AvailabilityHealthContributor
 {
     private readonly ApplicationAvailability _availability;
+
     public override string Id => "liveness";
 
     public LivenessHealthContributor(ApplicationAvailability availability)

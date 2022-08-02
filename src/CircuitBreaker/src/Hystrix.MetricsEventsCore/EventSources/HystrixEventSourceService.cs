@@ -14,6 +14,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 public class HystrixEventSourceService : IHostedService
 {
     protected internal IDisposable SampleSubscription { get; set; }
+
     public HystrixDashboardStream Stream { get; }
 
     public HystrixEventSourceService(HystrixDashboardStream stream)

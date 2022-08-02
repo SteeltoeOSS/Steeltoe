@@ -11,6 +11,7 @@ namespace Steeltoe.Bootstrap.Autoconfig;
 internal static class AssemblyExtensions
 {
     private static readonly HashSet<string> MissingAssemblies = new();
+
     internal static IEnumerable<string> ExcludedAssemblies { get; set; }
 
     internal static Assembly LoadAnyVersion(object sender, ResolveEventArgs args)

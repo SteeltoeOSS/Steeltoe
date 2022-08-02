@@ -7,6 +7,7 @@ namespace Steeltoe.Discovery.Eureka.Task;
 internal sealed class TimedTask
 {
     private int _taskRunning;
+
     public string Name { get; }
 
     public Action Task { get; }

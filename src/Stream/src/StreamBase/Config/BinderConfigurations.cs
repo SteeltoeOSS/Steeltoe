@@ -10,6 +10,7 @@ namespace Steeltoe.Stream.Config;
 public class BinderConfigurations : IBinderConfigurations
 {
     private Dictionary<string, BinderConfiguration> _configurations;
+
     private IBinderTypeRegistry Registry { get; }
 
     private BindingServiceOptions Options { get; }

@@ -283,6 +283,7 @@ public class NewtonJsonMessageConverterTest
     public class T2 : IMessage<MyBean>
     {
         object IMessage.Payload => throw new NotImplementedException();
+
         public MyBean Payload => throw new NotImplementedException();
 
         public IMessageHeaders Headers => throw new NotImplementedException();
@@ -291,6 +292,7 @@ public class NewtonJsonMessageConverterTest
     public class T4<T> : IMyInterface<T>
     {
         object IMessage.Payload => throw new NotImplementedException();
+
         public T Payload => throw new NotImplementedException();
 
         public IMessageHeaders Headers => throw new NotImplementedException();
@@ -299,6 +301,7 @@ public class NewtonJsonMessageConverterTest
     public class T3<T> : IMessage<T>
     {
         object IMessage.Payload => throw new NotImplementedException();
+
         public T Payload => throw new NotImplementedException();
 
         public IMessageHeaders Headers => throw new NotImplementedException();

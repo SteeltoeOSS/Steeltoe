@@ -91,6 +91,7 @@ public class DispatchingChannelErrorHandlingTest
     private sealed class ThrowMessageExceptionHandler : IMessageHandler
     {
         public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
+
         public string ServiceName { get; set; } = nameof(ThrowMessageExceptionHandler);
 
         public void HandleMessage(IMessage message)
@@ -102,6 +103,7 @@ public class DispatchingChannelErrorHandlingTest
     private sealed class ThrowingHandler : IMessageHandler
     {
         public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
+
         public string ServiceName { get; set; } = nameof(ThrowingHandler);
 
         public void HandleMessage(IMessage message)

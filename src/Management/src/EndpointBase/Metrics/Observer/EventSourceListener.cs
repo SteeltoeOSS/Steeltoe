@@ -16,6 +16,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 public class EventSourceListener : EventListener
 {
     private readonly ILogger<EventSourceListener> _logger;
+
     protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; set; }
 
     protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }

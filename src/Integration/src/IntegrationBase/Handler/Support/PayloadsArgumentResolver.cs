@@ -37,9 +37,9 @@ public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMet
 
         if (!_expressionCache.ContainsKey(parameter))
         {
-            var payloads = parameter.GetCustomAttribute<PayloadsAttribute>();
+            var attribute = parameter.GetCustomAttribute<PayloadsAttribute>();
 
-            IExpression value = !string.IsNullOrEmpty(payloads.Expression) ? ExpressionParser.ParseExpression($"![payload.{payloads.Expression}]") : null;
+            IExpression value = !string.IsNullOrEmpty(attribute.Expression) ? ExpressionParser.ParseExpression($"![payload.{attribute.Expression}]") : null;
             _expressionCache.Add(parameter, value);
         }
 
@@ -50,9 +50,7 @@ public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMet
             return EvaluateExpression(expression, messages, parameter.ParameterType);
         }
 
-        {
-            List<object> payloads = messages.Select(m => m.Payload).ToList();
-            return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
-        }
+        List<object> payloads = messages.Select(m => m.Payload).ToList();
+        return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
     }
 }

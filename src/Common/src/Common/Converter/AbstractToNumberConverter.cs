@@ -17,8 +17,7 @@ public abstract class AbstractToNumberConverter : AbstractGenericConditionalConv
     public override bool Matches(Type sourceType, Type targetType)
     {
         Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
-        (Type sourceType, Type targetCheck) pair = (sourceType, targetCheck);
-        return convertableTypes.Contains(pair);
+        return convertableTypes.Contains((sourceType, targetCheck));
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)

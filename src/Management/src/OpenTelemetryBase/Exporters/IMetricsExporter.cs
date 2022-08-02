@@ -12,6 +12,7 @@ public abstract class MetricsExporter : BaseExporter<Metric>, IPullMetricExporte
     internal abstract int ScrapeResponseCacheDurationMilliseconds { get; }
 
     internal abstract Func<Batch<Metric>, ExportResult> OnExport { get; set; }
+
     public abstract Func<int, bool> Collect { get; set; }
 
     internal abstract ICollectionResponse GetCollectionResponse(Batch<Metric> metrics = default);

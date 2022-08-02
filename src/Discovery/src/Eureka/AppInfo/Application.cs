@@ -11,6 +11,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 public class Application
 {
     internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new();
+
     public string Name { get; internal set; }
 
     public int Count => InstanceMap.Count;

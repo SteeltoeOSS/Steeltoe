@@ -1615,6 +1615,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     public class ConsumerTagStrategy : IConsumerTagStrategy
     {
         private int _increment;
+
         public string TagPrefix { get; } = Guid.NewGuid().ToString();
 
         public string ServiceName { get; set; }

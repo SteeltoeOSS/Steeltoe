@@ -18,6 +18,7 @@ public class InstanceInfo
     private Dictionary<string, string> _metaData;
 
     private bool _isDirty;
+
     public string InstanceId { get; internal set; }
 
     public string AppName { get; internal set; }

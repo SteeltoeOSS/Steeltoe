@@ -11,6 +11,7 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 public abstract class MetricsObserver : DiagnosticObserver
 {
     private Regex _pathMatcher;
+
     protected IMetricsObserverOptions Options { get; }
 
     protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)

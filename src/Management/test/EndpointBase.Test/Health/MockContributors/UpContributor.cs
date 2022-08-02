@@ -9,6 +9,7 @@ namespace Steeltoe.Management.Endpoint.Health.Test;
 public class UpContributor : IHealthContributor
 {
     private readonly int? _sleepyTime;
+
     public string Id { get; } = "Up";
 
     public UpContributor(int? sleepyTime = null)

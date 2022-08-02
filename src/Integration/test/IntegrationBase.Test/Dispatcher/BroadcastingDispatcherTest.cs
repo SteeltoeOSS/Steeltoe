@@ -351,6 +351,7 @@ public class BroadcastingDispatcherTest
     private sealed class MessageStoringTestEndpoint : IMessageHandler
     {
         public readonly ConcurrentQueue<IMessage> MessageList;
+
         public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
 
         public MessageStoringTestEndpoint(ConcurrentQueue<IMessage> messageList)

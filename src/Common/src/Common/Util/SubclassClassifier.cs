@@ -9,6 +9,7 @@ namespace Steeltoe.Common.Util;
 public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget>
 {
     protected ConcurrentDictionary<Type, TTarget> TypeMap { get; set; }
+
     public TTarget DefaultValue { get; set; }
 
     public SubclassClassifier()

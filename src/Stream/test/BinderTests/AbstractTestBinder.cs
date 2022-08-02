@@ -23,9 +23,7 @@ public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     public TBinder Binder
     {
         get => CoreBinder;
-        set =>
-            // value.Initialize();
-            CoreBinder = value;
+        set => CoreBinder = value;
     }
 
     public IApplicationContext ApplicationContext => Binder?.ApplicationContext;
