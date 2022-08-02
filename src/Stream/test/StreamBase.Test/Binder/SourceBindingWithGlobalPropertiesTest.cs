@@ -15,28 +15,23 @@ public class SourceBindingWithGlobalPropertiesTest : AbstractTest
     [Fact]
     public async Task TestGlobalPropertiesSet()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithDefaultBindings(
-                searchDirectories,
-                "spring.cloud.stream.default.contentType=application/json",
-                "spring.cloud.stream.bindings.output.destination=ticktock",
-                "spring.cloud.stream.default.producer.requiredGroups:0=someGroup",
-                "spring.cloud.stream.default.producer.partitionCount=1",
-                "spring.cloud.stream.bindings.output.producer.headerMode=none",
-                "spring.cloud.stream.bindings.output.producer.partitionCount=4",
-                "spring.cloud.stream.defaultBinder=mock")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring.cloud.stream.default.contentType=application/json",
+            "spring.cloud.stream.bindings.output.destination=ticktock", "spring.cloud.stream.default.producer.requiredGroups:0=someGroup",
+            "spring.cloud.stream.default.producer.partitionCount=1", "spring.cloud.stream.bindings.output.producer.headerMode=none",
+            "spring.cloud.stream.bindings.output.producer.partitionCount=4", "spring.cloud.stream.defaultBinder=mock").BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
+        IBinder binder = factory.GetBinder(null);
         Assert.NotNull(binder);
 
         var bindingServiceProperties = provider.GetService<IOptions<BindingServiceOptions>>();
         Assert.NotNull(bindingServiceProperties.Value);
-        var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
+        BindingOptions bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
         Assert.NotNull(bindingProperties);
         Assert.Equal("application/json", bindingProperties.ContentType);
         Assert.Equal("ticktock", bindingProperties.Destination);

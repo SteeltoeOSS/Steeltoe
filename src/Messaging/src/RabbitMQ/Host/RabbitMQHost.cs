@@ -10,19 +10,23 @@ namespace Steeltoe.Messaging.RabbitMQ.Host;
 
 public sealed class RabbitMQHost : IHost
 {
-    public static IHostBuilder CreateDefaultBuilder() =>
-        new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
-
-    public static IHostBuilder CreateDefaultBuilder(string[] args) =>
-        new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
+    private readonly IHost _host;
 
     public IServiceProvider Services => _host.Services;
-
-    private readonly IHost _host;
 
     public RabbitMQHost(IHost host)
     {
         _host = host;
+    }
+
+    public static IHostBuilder CreateDefaultBuilder()
+    {
+        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder());
+    }
+
+    public static IHostBuilder CreateDefaultBuilder(string[] args)
+    {
+        return new RabbitMQHostBuilder(Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder(args));
     }
 
     public void Dispose()
@@ -32,7 +36,7 @@ public sealed class RabbitMQHost : IHost
 
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        using (var scope = _host.Services.CreateScope())
+        using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
             lifecycleProcessor.OnRefresh();
@@ -43,7 +47,7 @@ public sealed class RabbitMQHost : IHost
 
     public Task StopAsync(CancellationToken cancellationToken = default)
     {
-        using (var scope = _host.Services.CreateScope())
+        using (IServiceScope scope = _host.Services.CreateScope())
         {
             var lifecycleProcessor = scope.ServiceProvider.GetRequiredService<ILifecycleProcessor>();
             lifecycleProcessor.Stop();

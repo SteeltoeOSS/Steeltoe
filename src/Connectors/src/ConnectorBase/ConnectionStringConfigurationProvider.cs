@@ -4,14 +4,15 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector;
 
 internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvider
 {
-    internal Lazy<IConfiguration> Configuration { get; private set; }
-
     internal IList<IConfigurationProvider> Providers;
+
+    internal Lazy<IConfiguration> Configuration { get; }
 
     internal Lazy<ConnectionStringManager> ConnectionStringManager { get; set; }
 
@@ -24,19 +25,22 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
             throw new ArgumentNullException(nameof(providers));
         }
 
-        this.Providers = providers.ToList();
-        Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(this.Providers));
+        Providers = providers.ToList();
+        Configuration = new Lazy<IConfiguration>(() => new ConfigurationRoot(Providers));
         ConnectionStringManager = new Lazy<ConnectionStringManager>(() => new ConnectionStringManager(Configuration.Value));
     }
 
-    public new IChangeToken GetReloadToken() => Configuration.Value.GetReloadToken();
+    public new IChangeToken GetReloadToken()
+    {
+        return Configuration.Value.GetReloadToken();
+    }
 
     /// <inheritdoc />
     public override bool TryGet(string key, out string value)
     {
         if (key.StartsWith("ConnectionStrings:", StringComparison.InvariantCultureIgnoreCase))
         {
-            var searchKey = key.Split(':')[1];
+            string searchKey = key.Split(':')[1];
 
             try
             {
@@ -48,7 +52,8 @@ internal sealed class ConnectionStringConfigurationProvider : ConfigurationProvi
             {
                 // look for a service info with that id
                 ServiceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(Configuration.Value);
-                var serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
+                IServiceInfo serviceInfo = ServiceInfoCreator.ServiceInfos.FirstOrDefault(si => si.Id.Equals(searchKey));
+
                 if (serviceInfo != null)
                 {
                     value = ConnectionStringManager.Value.GetFromServiceInfo(serviceInfo).ConnectionString;

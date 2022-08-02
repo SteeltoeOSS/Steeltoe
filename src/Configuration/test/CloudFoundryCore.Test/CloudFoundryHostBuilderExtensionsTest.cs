@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -17,12 +18,15 @@ public class CloudFoundryHostBuilderExtensionsTest
     public void WebHostAddCloudConfigurationFoundry_Adds()
     {
         var hostbuilder = new WebHostBuilder();
-        hostbuilder.Configure(_ => { });
+
+        hostbuilder.Configure(_ =>
+        {
+        });
 
         hostbuilder.AddCloudFoundryConfiguration();
-        var host = hostbuilder.Build();
+        IWebHost host = hostbuilder.Build();
 
-        var instanceInfo = host.Services.GetApplicationInstanceInfo();
+        IApplicationInstanceInfo instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
@@ -34,9 +38,9 @@ public class CloudFoundryHostBuilderExtensionsTest
         var hostbuilder = new HostBuilder();
 
         hostbuilder.AddCloudFoundryConfiguration();
-        var host = hostbuilder.Build();
+        IHost host = hostbuilder.Build();
 
-        var instanceInfo = host.Services.GetApplicationInstanceInfo();
+        IApplicationInstanceInfo instanceInfo = host.Services.GetApplicationInstanceInfo();
         Assert.IsAssignableFrom<CloudFoundryApplicationOptions>(instanceInfo);
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
@@ -46,10 +50,13 @@ public class CloudFoundryHostBuilderExtensionsTest
     public void WebHostAddCloudFoundryConfiguration_Adds()
     {
         var hostbuilder = new WebHostBuilder();
-        hostbuilder.Configure(_ => { });
+
+        hostbuilder.Configure(_ =>
+        {
+        });
 
         hostbuilder.AddCloudFoundryConfiguration();
-        var host = hostbuilder.Build();
+        IWebHost host = hostbuilder.Build();
 
         var cfg = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(cfg.Providers, provider => provider is CloudFoundryConfigurationProvider);
@@ -58,9 +65,9 @@ public class CloudFoundryHostBuilderExtensionsTest
     [Fact]
     public void WebApplicationAddCloudFoundryConfiguration_Adds()
     {
-        var hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostbuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostbuilder.AddCloudFoundryConfiguration();
-        var host = hostbuilder.Build();
+        WebApplication host = hostbuilder.Build();
 
         var config = host.Services.GetService(typeof(IConfiguration)) as IConfigurationRoot;
         Assert.Contains(config.Providers, provider => provider is CloudFoundryConfigurationProvider);

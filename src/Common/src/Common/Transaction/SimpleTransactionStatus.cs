@@ -6,6 +6,8 @@ namespace Steeltoe.Common.Transaction;
 
 public class SimpleTransactionStatus : AbstractTransactionStatus
 {
+    public override bool IsNewTransaction { get; }
+
     public SimpleTransactionStatus()
         : this(true)
     {
@@ -15,6 +17,4 @@ public class SimpleTransactionStatus : AbstractTransactionStatus
     {
         IsNewTransaction = newTransaction;
     }
-
-    public override bool IsNewTransaction { get; }
 }

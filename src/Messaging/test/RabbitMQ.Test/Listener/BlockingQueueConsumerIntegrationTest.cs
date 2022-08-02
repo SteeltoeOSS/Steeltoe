@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using RabbitMQ.Client.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -27,23 +28,18 @@ public class BlockingQueueConsumerIntegrationTest
         admin.DeclareQueue(new Queue(Queue1Name));
         admin.DeclareQueue(new Queue(Queue2Name));
         var template = new RabbitTemplate(connectionFactory);
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            null,
-            Queue1Name,
-            Queue2Name);
-        var prefix = Guid.NewGuid().ToString();
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, null, Queue1Name, Queue2Name);
+
+        string prefix = Guid.NewGuid().ToString();
         blockingQueueConsumer.TagStrategy = new TagStrategy(prefix);
+
         try
         {
             blockingQueueConsumer.Start();
-            var n = 0;
-            var consumers = blockingQueueConsumer.CurrentConsumers();
+            int n = 0;
+            List<RC.DefaultBasicConsumer> consumers = blockingQueueConsumer.CurrentConsumers();
 
             // Wait for consumers
             while (n < 100)
@@ -61,7 +57,13 @@ public class BlockingQueueConsumerIntegrationTest
             }
 
             Assert.Equal(2, consumers.Count);
-            var tags = new List<string> { consumers[0].ConsumerTag, consumers[1].ConsumerTag };
+
+            var tags = new List<string>
+            {
+                consumers[0].ConsumerTag,
+                consumers[1].ConsumerTag
+            };
+
             Assert.Contains($"{prefix}#{Queue1Name}", tags);
             Assert.Contains($"{prefix}#{Queue2Name}", tags);
             blockingQueueConsumer.Stop();
@@ -79,17 +81,11 @@ public class BlockingQueueConsumerIntegrationTest
     public void TestAvoidHangAMQP_508()
     {
         using var connectionFactory = new CachingConnectionFactory("localhost");
-        var longName = new string('x', 300);
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            null,
-            longName,
-            "foobar");
+        string longName = new string('x', 300);
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, null, longName, "foobar");
+
         try
         {
             blockingQueueConsumer.Start();
@@ -97,7 +93,7 @@ public class BlockingQueueConsumerIntegrationTest
         }
         catch (FatalListenerStartupException e)
         {
-            Assert.IsType<RC.Exceptions.WireFormattingException>(e.InnerException);
+            Assert.IsType<WireFormattingException>(e.InnerException);
         }
         finally
         {
@@ -107,14 +103,14 @@ public class BlockingQueueConsumerIntegrationTest
 
     public class TagStrategy : IConsumerTagStrategy
     {
+        public string ServiceName { get; set; } = nameof(TagStrategy);
+
+        public string Prefix { get; }
+
         public TagStrategy(string prefix)
         {
             Prefix = prefix;
         }
-
-        public string ServiceName { get; set; } = nameof(TagStrategy);
-
-        public string Prefix { get; }
 
         public string CreateConsumerTag(string queue)
         {

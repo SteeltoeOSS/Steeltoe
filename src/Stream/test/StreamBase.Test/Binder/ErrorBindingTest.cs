@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Lifecycle;
@@ -11,7 +12,6 @@ using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;
@@ -21,17 +21,18 @@ public class ErrorBindingTest : AbstractTest
     [Fact]
     public async Task TestErrorChannelNotBoundByDefault()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock")
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock")
             .BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
+        IBinder binder = factory.GetBinder(null);
         Assert.NotNull(binder);
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("input", null, It.IsAny<IMessageChannel>(), It.IsAny<ConsumerOptions>()));
         mock.Verify(b => b.BindProducer("output", It.IsAny<IMessageChannel>(), It.IsAny<ProducerOptions>()));
     }
@@ -39,10 +40,13 @@ public class ErrorBindingTest : AbstractTest
     [Fact]
     public async Task TestConfigurationWithDefaultErrorHandler()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        var container = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
+        ServiceCollection container =
+            CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
+
         container.AddStreamListeners<ErrorConfigurationDefault>();
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
@@ -55,10 +59,13 @@ public class ErrorBindingTest : AbstractTest
     [Fact]
     public async Task TestConfigurationWithCustomErrorHandler()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        var container = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
+        ServiceCollection container =
+            CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:bindings:input:consumer:maxAttempts=1");
+
         container.AddStreamListeners<ErrorConfigurationWithCustomErrorHandler>();
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 

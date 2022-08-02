@@ -28,134 +28,125 @@ public class RandomValueExtensionsTest
     [Fact]
     public void AddRandomValueSource_Ignores()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["foo:bar"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["foo:bar"];
         Assert.Equal("value", value);
     }
 
     [Fact]
     public void AddRandomValueSource_String()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:string"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:string"];
         Assert.NotNull(value);
     }
 
     [Fact]
     public void AddRandomValueSource_Uuid()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:uuid"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:uuid"];
         Assert.NotNull(value);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomInt()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:int"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:int"];
         Assert.NotNull(value);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomIntRange()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:int[4,10]"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:int[4,10]"];
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomIntMax()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:int(10)"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:int(10)"];
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 0, 10);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomLong()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:long"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:long"];
         Assert.NotNull(value);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomLongRange()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:long[4,10]"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:long[4,10]"];
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
     }
 
     [Fact]
     public void AddRandomValueSource_RandomLongMax()
     {
-        var builder = new ConfigurationBuilder()
-            .AddRandomValueSource()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "foo:bar", "value" }
-            });
-        var config = builder.Build();
-        var value = config["random:long(10)"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddRandomValueSource().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo:bar", "value" }
+        });
+
+        IConfigurationRoot config = builder.Build();
+        string value = config["random:long(10)"];
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 0, 10);
     }
 }

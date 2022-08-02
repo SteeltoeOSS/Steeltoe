@@ -38,13 +38,22 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
+    /// Initializes a new instance of the <see cref="ConsulServiceRegistry" /> class.
     /// </summary>
-    /// <param name="client">the Consul client to use.</param>
-    /// <param name="options">the configuration options.</param>
-    /// <param name="scheduler">a scheduler to use for heart beats.</param>
-    /// <param name="logger">an optional logger.</param>
-    public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
+    /// <param name="client">
+    /// the Consul client to use.
+    /// </param>
+    /// <param name="options">
+    /// the configuration options.
+    /// </param>
+    /// <param name="scheduler">
+    /// a scheduler to use for heart beats.
+    /// </param>
+    /// <param name="logger">
+    /// an optional logger.
+    /// </param>
+    public ConsulServiceRegistry(IConsulClient client, ConsulDiscoveryOptions options, IScheduler scheduler = null,
+        ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -53,13 +62,22 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistry"/> class.
+    /// Initializes a new instance of the <see cref="ConsulServiceRegistry" /> class.
     /// </summary>
-    /// <param name="client">the Consul client to use.</param>
-    /// <param name="optionsMonitor">the configuration options.</param>
-    /// <param name="scheduler">a scheduler to use for heart beats.</param>
-    /// <param name="logger">an optional logger.</param>
-    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null, ILogger<ConsulServiceRegistry> logger = null)
+    /// <param name="client">
+    /// the Consul client to use.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// the configuration options.
+    /// </param>
+    /// <param name="scheduler">
+    /// a scheduler to use for heart beats.
+    /// </param>
+    /// <param name="logger">
+    /// an optional logger.
+    /// </param>
+    public ConsulServiceRegistry(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IScheduler scheduler = null,
+        ILogger<ConsulServiceRegistry> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
@@ -67,7 +85,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         _logger = logger;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task RegisterAsync(IConsulRegistration registration)
     {
         if (registration == null)
@@ -85,6 +103,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         try
         {
             await _client.Agent.ServiceRegister(registration.Service).ConfigureAwait(false);
+
             if (Options.IsHeartBeatEnabled && _scheduler != null)
             {
                 _scheduler.Add(registration.InstanceId);
@@ -102,7 +121,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task DeregisterAsync(IConsulRegistration registration)
     {
         if (registration == null)
@@ -125,7 +144,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         return _client.Agent.ServiceDeregister(registration.InstanceId);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task SetStatusAsync(IConsulRegistration registration, string status)
     {
         if (registration == null)
@@ -151,7 +170,7 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         throw new ArgumentException($"Unknown status: {status}");
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task<object> GetStatusAsync(IConsulRegistration registration)
     {
         if (registration == null)
@@ -164,10 +183,10 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
 
     public async Task<object> GetStatusAsyncInternal(IConsulRegistration registration)
     {
-        var response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
-        var checks = response.Response;
+        QueryResult<HealthCheck[]> response = await _client.Health.Checks(registration.ServiceId, QueryOptions.Default).ConfigureAwait(false);
+        HealthCheck[] checks = response.Response;
 
-        foreach (var check in checks)
+        foreach (HealthCheck check in checks)
         {
             if (check.ServiceID.Equals(registration.InstanceId) && check.Name.Equals("Service Maintenance Mode", StringComparison.OrdinalIgnoreCase))
             {
@@ -178,34 +197,34 @@ public class ConsulServiceRegistry : IConsulServiceRegistry
         return Up;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Register(IConsulRegistration registration)
     {
         RegisterAsync(registration).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Deregister(IConsulRegistration registration)
     {
         DeregisterAsync(registration).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void SetStatus(IConsulRegistration registration, string status)
     {
         SetStatusAsync(registration, status).GetAwaiter().GetResult();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public TStatus GetStatus<TStatus>(IConsulRegistration registration)
         where TStatus : class
     {
-        var result = GetStatusAsync(registration).GetAwaiter().GetResult();
+        object result = GetStatusAsync(registration).GetAwaiter().GetResult();
 
         return (TStatus)result;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

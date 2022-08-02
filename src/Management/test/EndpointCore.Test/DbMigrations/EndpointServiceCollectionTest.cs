@@ -18,8 +18,8 @@ public class EndpointServiceCollectionTest : BaseTest
         const ServiceCollection nullServices = null;
         var services = new ServiceCollection();
 
-        var action1 = () => nullServices.AddDbMigrationsActuator();
-        var action2 = () => services.AddDbMigrationsActuator();
+        Action action1 = () => nullServices.AddDbMigrationsActuator();
+        Action action2 = () => services.AddDbMigrationsActuator();
 
         action1.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "services");
         action2.Should().ThrowExactly<ArgumentNullException>().Where(exception => exception.ParamName == "config");
@@ -35,14 +35,15 @@ public class EndpointServiceCollectionTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(config);
 
         services.AddDbMigrationsActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IDbMigrationsOptions>();
         options.Should().NotBeNull();
         var ep = serviceProvider.GetService<DbMigrationsEndpoint>();

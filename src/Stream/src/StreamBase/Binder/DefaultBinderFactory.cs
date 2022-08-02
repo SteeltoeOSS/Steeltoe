@@ -11,30 +11,19 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultBinderFactory : IBinderFactory, IDisposable
 {
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
     private readonly IBinderConfigurations _binderConfigurations;
     private readonly List<IBinderFactoryListener> _listeners; // TODO: implement listener callback
     private readonly IApplicationContext _context;
     private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
     private Dictionary<string, IBinder> _binderInstanceCache;
 
-    private BindingServiceOptions Options
-    {
-        get
-        {
-            return _optionsMonitor.CurrentValue;
-        }
-    }
+    private BindingServiceOptions Options => _optionsMonitor.CurrentValue;
 
-    private string DefaultBinder
-    {
-        get
-        {
-            return Options.DefaultBinder;
-        }
-    }
+    private string DefaultBinder => Options.DefaultBinder;
 
-    public DefaultBinderFactory(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations, IEnumerable<IBinderFactoryListener> listeners = null)
+    public DefaultBinderFactory(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBinderConfigurations binderConfigurations,
+        IEnumerable<IBinderFactoryListener> listeners = null)
     {
         _listeners = listeners?.ToList();
         _context = context;
@@ -54,7 +43,7 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
         {
             if (_binderInstanceCache != null)
             {
-                foreach (var binder in _binderInstanceCache)
+                foreach (KeyValuePair<string, IBinder> binder in _binderInstanceCache)
                 {
                     binder.Value.Dispose();
                 }
@@ -73,9 +62,9 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 
     public IBinder GetBinder(string name, Type bindableType)
     {
-        var binderName = !string.IsNullOrEmpty(name) ? name : DefaultBinder;
+        string binderName = !string.IsNullOrEmpty(name) ? name : DefaultBinder;
         IBinder result = null;
-        var binders = _context.GetServices<IBinder>();
+        IEnumerable<IBinder> binders = _context.GetServices<IBinder>();
 
         if (!string.IsNullOrEmpty(binderName))
         {
@@ -102,9 +91,10 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
         if (string.IsNullOrEmpty(name))
         {
             var defaultCandidateConfigurations = new HashSet<string>();
+
             if (string.IsNullOrEmpty(DefaultBinder))
             {
-                foreach (var config in _binderConfigurations.Configurations)
+                foreach (KeyValuePair<string, BinderConfiguration> config in _binderConfigurations.Configurations)
                 {
                     if (config.Value.IsDefaultCandidate)
                     {
@@ -121,9 +111,11 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
                 {
                     // Multiple default candidates, find by target type match
                     var candidatesForBindableType = new List<string>();
-                    foreach (var defaultCandidateConfiguration in defaultCandidateConfigurations)
+
+                    foreach (string defaultCandidateConfiguration in defaultCandidateConfigurations)
                     {
-                        var binder = GetBinderInstance(defaultCandidateConfiguration);
+                        IBinder binder = GetBinderInstance(defaultCandidateConfiguration);
+
                         if (VerifyBinderTypeMatchesTarget(binder, bindableType))
                         {
                             candidatesForBindableType.Add(defaultCandidateConfiguration);
@@ -150,7 +142,8 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
             configurationName = name;
         }
 
-        var binderInstance = GetBinderInstance(configurationName);
+        IBinder binderInstance = GetBinderInstance(configurationName);
+
         if (binderInstance == null)
         {
             throw new InvalidOperationException($"Unknown binder configuration: {configurationName}");
@@ -167,7 +160,7 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
     private IBinder GetBinderInstance(string configurationName)
     {
         BuildBinderCache();
-        _binderInstanceCache.TryGetValue(configurationName, out var binder);
+        _binderInstanceCache.TryGetValue(configurationName, out IBinder binder);
 
         return binder;
     }
@@ -181,14 +174,16 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
                 if (_binderInstanceCache == null)
                 {
                     _binderInstanceCache = new Dictionary<string, IBinder>();
-                    var binders = _context.GetServices<IBinder>();
-                    foreach (var binder in binders)
+                    IEnumerable<IBinder> binders = _context.GetServices<IBinder>();
+
+                    foreach (IBinder binder in binders)
                     {
-                        var binderName = binder.ServiceName;
+                        string binderName = binder.ServiceName;
                         _binderInstanceCache.TryAdd(binderName, binder);
 
-                        var names = _binderConfigurations.FindMatchingConfigurationsIfAny(binder);
-                        foreach (var name in names)
+                        List<string> names = _binderConfigurations.FindMatchingConfigurationsIfAny(binder);
+
+                        foreach (string name in names)
                         {
                             _binderInstanceCache.TryAdd(name, binder);
                         }
@@ -200,9 +195,7 @@ public class DefaultBinderFactory : IBinderFactory, IDisposable
 
     private bool VerifyBinderTypeMatchesTarget(IBinder binderInstance, Type bindingTargetType)
     {
-        return (binderInstance is IPollableConsumerBinder &&
-                GenericsUtils.CheckCompatiblePollableBinder(binderInstance, bindingTargetType)) ||
-               GenericsUtils.GetParameterType(binderInstance.GetType(), typeof(IBinder<>), 0)
-                   .IsAssignableFrom(bindingTargetType);
+        return (binderInstance is IPollableConsumerBinder && GenericsUtils.CheckCompatiblePollableBinder(binderInstance, bindingTargetType)) ||
+            GenericsUtils.GetParameterType(binderInstance.GetType(), typeof(IBinder<>), 0).IsAssignableFrom(bindingTargetType);
     }
 }

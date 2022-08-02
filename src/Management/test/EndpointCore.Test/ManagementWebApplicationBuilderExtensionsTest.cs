@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -29,7 +30,6 @@ using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
 using Steeltoe.Management.Info;
 using Steeltoe.Management.OpenTelemetry.Exporters;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -39,39 +39,39 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddDbMigrationsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddDbMigrationsActuator().Build();
+        WebApplication host = hostBuilder.AddDbMigrationsActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<DbMigrationsEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/dbmigrations");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/dbmigrations");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddEnvActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddEnvActuator().Build();
+        WebApplication host = hostBuilder.AddEnvActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<EnvEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/env");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/env");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public void AddHealthActuator_WebApplicationBuilder()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        var host = hostBuilder.AddHealthActuator().Build();
+        WebApplication host = hostBuilder.AddHealthActuator().Build();
 
         Assert.Single(host.Services.GetServices<HealthEndpointCore>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -80,9 +80,12 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public void AddHealthActuator_WebApplicationBuilder_WithTypes()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        var host = hostBuilder.AddHealthActuator(new[] { typeof(DownContributor) }).Build();
+        WebApplication host = hostBuilder.AddHealthActuator(new[]
+        {
+            typeof(DownContributor)
+        }).Build();
 
         Assert.Single(host.Services.GetServices<HealthEndpointCore>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -91,9 +94,12 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public void AddHealthActuator_WebApplicationBuilder_WithAggregator()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        var host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[] { typeof(DownContributor) }).Build();
+        WebApplication host = hostBuilder.AddHealthActuator(new DefaultHealthAggregator(), new[]
+        {
+            typeof(DownContributor)
+        }).Build();
 
         Assert.Single(host.Services.GetServices<HealthEndpointCore>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -102,18 +108,18 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHealthActuator_WebApplicationBuilder_IStartupFilterFireRegistersAvailabilityEvents()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
         // start the server, get a client
-        var host = hostBuilder.AddHealthActuator().Build();
+        WebApplication host = hostBuilder.AddHealthActuator().Build();
         host.UseRouting();
         await host.StartAsync();
-        var client = host.GetTestClient();
+        HttpClient client = host.GetTestClient();
         await client.GetAsync("/actuator/health");
 
         // request liveness & readiness in order to validate the ApplicationAvailability has been set as expected
-        var livenessResult = await client.GetAsync("actuator/health/liveness");
-        var readinessResult = await client.GetAsync("actuator/health/readiness");
+        HttpResponseMessage livenessResult = await client.GetAsync("actuator/health/liveness");
+        HttpResponseMessage readinessResult = await client.GetAsync("actuator/health/readiness");
         Assert.Equal(HttpStatusCode.OK, livenessResult.StatusCode);
         Assert.Contains("\"LivenessState\":\"CORRECT\"", await livenessResult.Content.ReadAsStringAsync());
         Assert.Equal(HttpStatusCode.OK, readinessResult.StatusCode);
@@ -131,15 +137,15 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = GetTestServerWithRouting();
+            WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-            var host = hostBuilder.AddHeapDumpActuator().Build();
+            WebApplication host = hostBuilder.AddHeapDumpActuator().Build();
             host.UseRouting();
             await host.StartAsync();
 
             Assert.Single(host.Services.GetServices<HeapDumpEndpoint>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-            var response = await host.GetTestClient().GetAsync("/actuator/heapdump");
+            HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/heapdump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -147,45 +153,49 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddHypermediaActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddHypermediaActuator().Build();
+        WebApplication host = hostBuilder.AddHypermediaActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<ActuatorEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddInfoActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddInfoActuator(new IInfoContributor[] { new AppSettingsInfoContributor(hostBuilder.Configuration) }).Build();
+        WebApplication host = hostBuilder.AddInfoActuator(new IInfoContributor[]
+        {
+            new AppSettingsInfoContributor(hostBuilder.Configuration)
+        }).Build();
+
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<InfoEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/info");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddLoggersActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddLoggersActuator().Build();
+        WebApplication host = hostBuilder.AddLoggersActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<LoggersEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/loggers");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -193,45 +203,45 @@ public class ManagementWebApplicationBuilderExtensionsTest
     public async Task AddLoggers_WebApplicationBuilder_MultipleLoggersScenario1()
     {
         // Add Serilog + DynamicConsole = runs OK
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
         hostBuilder.Logging.AddDynamicSerilog();
         hostBuilder.Logging.AddDynamicConsole();
 
-        var host = hostBuilder.AddLoggersActuator().Build();
+        WebApplication host = hostBuilder.AddLoggersActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
-        var response = await host.GetTestClient().GetAsync("/actuator/loggers");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/loggers");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddMappingsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddMappingsActuator().Build();
+        WebApplication host = hostBuilder.AddMappingsActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<IRouteMappings>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/mappings");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/mappings");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddMetricsActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddMetricsActuator().Build();
+        WebApplication host = hostBuilder.AddMetricsActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<MetricsEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/metrics");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/metrics");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         await host.StopAsync();
     }
@@ -239,15 +249,15 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddRefreshActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddRefreshActuator().Build();
+        WebApplication host = hostBuilder.AddRefreshActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<RefreshEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/refresh");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/refresh");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
@@ -256,15 +266,15 @@ public class ManagementWebApplicationBuilderExtensionsTest
     {
         if (Platform.IsWindows)
         {
-            var hostBuilder = GetTestServerWithRouting();
+            WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-            var host = hostBuilder.AddThreadDumpActuator().Build();
+            WebApplication host = hostBuilder.AddThreadDumpActuator().Build();
             host.UseRouting();
             await host.StartAsync();
 
             Assert.Single(host.Services.GetServices<ThreadDumpEndpointV2>());
             Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-            var response = await host.GetTestClient().GetAsync("/actuator/threaddump");
+            HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/threaddump");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
@@ -272,24 +282,24 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddTraceActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddTraceActuator().Build();
+        WebApplication host = hostBuilder.AddTraceActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
         Assert.Single(host.Services.GetServices<HttpTraceEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await host.GetTestClient().GetAsync("/actuator/httptrace");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/actuator/httptrace");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public void AddCloudFoundryActuator_WebApplicationBuilder()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
-        var host = hostBuilder.AddCloudFoundryActuator().Build();
+        WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
 
         Assert.Single(host.Services.GetServices<CloudFoundryEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
@@ -298,16 +308,16 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuators_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddAllActuators().Build();
+        WebApplication host = hostBuilder.AddAllActuators().Build();
         host.UseRouting();
         await host.StartAsync();
-        var client = host.GetTestClient();
+        HttpClient client = host.GetTestClient();
 
         Assert.Single(host.Services.GetServices<ActuatorEndpoint>());
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -318,12 +328,12 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddAllActuatorsWithConventions_WebApplicationBuilder_IStartupFilterFires()
     {
-        var host = GetTestWebAppWithSecureRouting(builder => builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")));
+        WebApplication host = GetTestWebAppWithSecureRouting(builder => builder.AddAllActuators(ep => ep.RequireAuthorization("TestAuth")));
 
         await host.StartAsync();
-        var client = host.GetTestClient();
+        HttpClient client = host.GetTestClient();
 
-        var response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -334,31 +344,28 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddCloudFoundryActuator_WebApplicationBuilder_IStartupFilterFires()
     {
-        var hostBuilder = GetTestServerWithRouting();
+        WebApplicationBuilder hostBuilder = GetTestServerWithRouting();
 
-        var host = hostBuilder.AddCloudFoundryActuator().Build();
+        WebApplication host = hostBuilder.AddCloudFoundryActuator().Build();
         host.UseRouting();
         await host.StartAsync();
 
-        var response = await host.GetTestClient().GetAsync("/cloudfoundryapplication");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync("/cloudfoundryapplication");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
 
     [Fact]
     public async Task AddSeveralActuators_WebApplicationBuilder_NoConflict()
     {
-        var host = GetTestWebAppWithSecureRouting(s =>
-                            {
-                                s.AddHypermediaActuator()
-                                    .AddInfoActuator()
-                                    .AddHealthActuator()
-                                    .AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
-                            });
+        WebApplication host = GetTestWebAppWithSecureRouting(s =>
+        {
+            s.AddHypermediaActuator().AddInfoActuator().AddHealthActuator().AddAllActuators(ep => ep.RequireAuthorization("TestAuth"));
+        });
 
         await host.StartAsync();
-        var client = host.GetTestClient();
+        HttpClient client = host.GetTestClient();
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -369,22 +376,18 @@ public class ManagementWebApplicationBuilderExtensionsTest
     [Fact]
     public async Task AddSeveralActuators_WebApplicationBuilder_PrefersEndpointConfiguration()
     {
-        var host =
-            GetTestWebAppWithSecureRouting(builder =>
-            {
-                builder
-                    .AddHypermediaActuator()
-                    .AddInfoActuator()
-                    .AddHealthActuator();
-                builder.Services.ActivateActuatorEndpoints(ep => ep.RequireAuthorization("TestAuth"));
-            });
+        WebApplication host = GetTestWebAppWithSecureRouting(builder =>
+        {
+            builder.AddHypermediaActuator().AddInfoActuator().AddHealthActuator();
+            builder.Services.ActivateActuatorEndpoints(ep => ep.RequireAuthorization("TestAuth"));
+        });
 
         await host.StartAsync();
-        var client = host.GetTestClient();
+        HttpClient client = host.GetTestClient();
 
         // these requests hit the "RequireAuthorization" policy and will only pass if _testServerWithSecureRouting is used
         Assert.Single(host.Services.GetServices<IStartupFilter>().Where(filter => filter is AllActuatorsStartupFilter));
-        var response = await client.GetAsync("/actuator");
+        HttpResponseMessage response = await client.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         response = await client.GetAsync("/actuator/info");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -402,11 +405,11 @@ public class ManagementWebApplicationBuilderExtensionsTest
             { "management:metrics:export:wavefront:step", "500" }
         };
 
-        var builder = WebApplication.CreateBuilder();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.Configuration.AddInMemoryCollection(settings);
         builder.WebHost.UseTestServer();
 
-        var host = builder.AddWavefrontMetrics().Build();
+        WebApplication host = builder.AddWavefrontMetrics().Build();
 
         await host.StartAsync();
 
@@ -421,22 +424,25 @@ public class ManagementWebApplicationBuilderExtensionsTest
 
     private WebApplicationBuilder GetTestServerWithRouting()
     {
-        var builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
         return builder;
     }
 
     private WebApplication GetTestWebAppWithSecureRouting(Action<WebApplicationBuilder> customizeBuilder = null)
     {
-        var builder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder builder = TestHelpers.GetTestWebApplicationBuilder();
         customizeBuilder?.Invoke(builder);
 
         builder.Services.AddRouting();
-        builder.Services
-            .AddAuthentication(TestAuthHandler.AuthenticationScheme)
-            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
+
+        builder.Services.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+            TestAuthHandler.AuthenticationScheme, _ =>
+            {
+            });
+
         builder.Services.AddAuthorization(options => options.AddPolicy("TestAuth", policy => policy.RequireClaim("scope", "actuators.read")));
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
         app.UseRouting().UseAuthentication().UseAuthorization();
         return app;
     }

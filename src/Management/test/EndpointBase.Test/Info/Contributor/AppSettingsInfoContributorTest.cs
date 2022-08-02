@@ -17,7 +17,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
         contributor.Contribute(builder);
-        var result = builder.Build();
+        Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -34,9 +34,10 @@ public class AppSettingsInfoContributorTest : BaseTest
             ["info:NET:type"] = "Core",
             ["info:NET:version"] = "1.1.0"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 
         Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
@@ -56,15 +57,16 @@ public class AppSettingsInfoContributorTest : BaseTest
             ["info:NET:ASPNET:type"] = "Core",
             ["info:NET:ASPNET:version"] = "1.1.0"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 
         var builder = new InfoBuilder();
         settings.Contribute(builder);
 
-        var info = builder.Build();
+        Dictionary<string, object> info = builder.Build();
         Assert.NotNull(info);
         Assert.Equal(2, info.Count);
         Assert.True(info.ContainsKey("application"));

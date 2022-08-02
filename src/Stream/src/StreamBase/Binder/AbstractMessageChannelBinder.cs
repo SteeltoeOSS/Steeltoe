@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
@@ -14,35 +15,33 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System.Text.Json;
+using AbstractMessageChannel = Steeltoe.Integration.Channel.AbstractMessageChannel;
+using AbstractSubscribableChannel = Steeltoe.Integration.Channel.AbstractSubscribableChannel;
 
 namespace Steeltoe.Stream.Binder;
 
 public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChannel>
 {
+    private readonly ILogger _logger;
     protected readonly IProvisioningProvider InnerProvisioningProvider;
-    protected readonly EmbeddedHeadersChannelInterceptor CurrentEmbeddedHeadersChannelInterceptor = new ();
+    protected readonly EmbeddedHeadersChannelInterceptor CurrentEmbeddedHeadersChannelInterceptor = new();
     protected readonly string[] HeadersToEmbed;
     protected bool producerBindingExist;
-    private readonly ILogger _logger;
 
-    protected AbstractMessageChannelBinder(
-        IApplicationContext context,
-        string[] headersToEmbed,
-        IProvisioningProvider provisioningProvider,
-        ILogger logger)
+    protected virtual IListenerContainerCustomizer ListenerContainerCustomizer { get; }
+
+    protected virtual IMessageSourceCustomizer MessageSourceCustomizer { get; }
+
+    public override Type TargetType { get; } = typeof(IMessageChannel);
+
+    protected AbstractMessageChannelBinder(IApplicationContext context, string[] headersToEmbed, IProvisioningProvider provisioningProvider, ILogger logger)
         : this(context, headersToEmbed, provisioningProvider, null, null, logger)
     {
         _logger = logger;
     }
 
-    protected AbstractMessageChannelBinder(
-        IApplicationContext context,
-        string[] headersToEmbed,
-        IProvisioningProvider provisioningProvider,
-        IListenerContainerCustomizer containerCustomizer,
-        IMessageSourceCustomizer sourceCustomizer,
-        ILogger logger)
+    protected AbstractMessageChannelBinder(IApplicationContext context, string[] headersToEmbed, IProvisioningProvider provisioningProvider,
+        IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer, ILogger logger)
         : base(context, logger)
     {
         HeadersToEmbed = headersToEmbed ?? Array.Empty<string>();
@@ -51,12 +50,6 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         MessageSourceCustomizer = sourceCustomizer;
         _logger = logger;
     }
-
-    public override Type TargetType { get; } = typeof(IMessageChannel);
-
-    protected virtual IListenerContainerCustomizer ListenerContainerCustomizer { get; }
-
-    protected virtual IMessageSourceCustomizer MessageSourceCustomizer { get; }
 
     protected override IBinding DoBindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
     {
@@ -71,7 +64,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         try
         {
             producerDestination = InnerProvisioningProvider.ProvisionProducerDestination(name, producerOptions);
-            var errorChannel = producerOptions.ErrorChannelEnabled ? RegisterErrorInfrastructure(producerDestination) : null;
+            ISubscribableChannel errorChannel = producerOptions.ErrorChannelEnabled ? RegisterErrorInfrastructure(producerDestination) : null;
             producerMessageHandler = CreateProducerMessageHandler(producerDestination, producerOptions, subscribableChannel, errorChannel);
         }
         catch (Exception e) when (e is BinderException || e is ProvisioningException)
@@ -89,18 +82,15 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         }
 
         PostProcessOutputChannel(subscribableChannel, producerOptions);
-        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode), HeadersToEmbed, UseNativeEncoding(producerOptions));
+
+        var sendingHandler = new SendingHandler(ApplicationContext, producerMessageHandler, HeaderMode.EmbeddedHeaders.Equals(producerOptions.HeaderMode),
+            HeadersToEmbed, UseNativeEncoding(producerOptions));
+
         sendingHandler.Initialize();
         subscribableChannel.Subscribe(sendingHandler);
 
-        IBinding binding = new DefaultProducingMessageChannelBinding(
-            this,
-            name,
-            subscribableChannel,
-            producerMessageHandler as ILifecycle,
-            producerOptions,
-            producerDestination,
-            _logger);
+        IBinding binding = new DefaultProducingMessageChannelBinding(this, name, subscribableChannel, producerMessageHandler as ILifecycle, producerOptions,
+            producerDestination, _logger);
 
         producerBindingExist = true;
         return binding;
@@ -116,12 +106,14 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         // default no-op
     }
 
-    protected virtual IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel channel, IMessageChannel errorChannel)
+    protected virtual IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties,
+        IMessageChannel channel, IMessageChannel errorChannel)
     {
         return CreateProducerMessageHandler(destination, producerProperties, errorChannel);
     }
 
-    protected abstract IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel);
+    protected abstract IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties,
+        IMessageChannel errorChannel);
 
     protected virtual void AfterUnbindProducer(IProducerDestination destination, IProducerOptions producerOptions)
     {
@@ -130,9 +122,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     protected override IBinding DoBindConsumer(string name, string group, IMessageChannel inputTarget, IConsumerOptions consumerOptions)
     {
         IMessageProducer consumerEndpoint = null;
+
         try
         {
-            var destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
+            IConsumerDestination destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
 
             // TODO: the function support for the inbound channel is only for Sink
             // if (ShouldWireFunctionToChannel(false))
@@ -152,15 +145,8 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
                 lifecycle.Start();
             }
 
-            IBinding binding = new DefaultConsumerMessageChannelBinding(
-                this,
-                name,
-                group,
-                inputTarget,
-                consumerEndpoint as ILifecycle,
-                consumerOptions,
-                destination,
-                _logger);
+            IBinding binding = new DefaultConsumerMessageChannelBinding(this, name, group, inputTarget, consumerEndpoint as ILifecycle, consumerOptions,
+                destination, _logger);
 
             return binding;
         }
@@ -175,14 +161,13 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             {
                 throw;
             }
-            else if (e is ProvisioningException)
+
+            if (e is ProvisioningException)
             {
                 throw;
             }
-            else
-            {
-                throw new BinderException("Exception thrown while starting consumer: ", e);
-            }
+
+            throw new BinderException("Exception thrown while starting consumer: ", e);
         }
     }
 
@@ -192,25 +177,27 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
     }
 
-    protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, ILogger logger)
+    protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions,
+        ILogger logger)
     {
         return RegisterErrorInfrastructure(destination, group, consumerOptions, false, logger);
     }
 
-    protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions, bool polled, ILogger logger)
+    protected virtual ErrorInfrastructure RegisterErrorInfrastructure(IConsumerDestination destination, string group, IConsumerOptions consumerOptions,
+        bool polled, ILogger logger)
     {
-        var errorMessageStrategy = GetErrorMessageStrategy();
+        IErrorMessageStrategy errorMessageStrategy = GetErrorMessageStrategy();
 
-        var errorChannelName = GetErrorsBaseName(destination, group, consumerOptions);
+        string errorChannelName = GetErrorsBaseName(destination, group, consumerOptions);
 
-        var errorChannel = GetErrorChannel(logger, errorChannelName);
+        ISubscribableChannel errorChannel = GetErrorChannel(logger, errorChannelName);
 
         var recoverer = new ErrorMessageSendingRecoverer(ApplicationContext, errorChannel, errorMessageStrategy);
 
-        var recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
+        string recovererBeanName = GetErrorRecovererName(destination, group, consumerOptions);
         ApplicationContext.Register(recovererBeanName, recoverer);
 
-        var handler = polled
+        IMessageHandler handler = polled
             ? GetPolledConsumerErrorMessageHandler(destination, group, consumerOptions)
             : GetErrorMessageHandler(destination, group, consumerOptions);
 
@@ -221,24 +208,23 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             handler = GetDefaultErrorMessageHandler(channel, defaultErrorChannel != null);
         }
 
-        var errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, consumerOptions);
+        string errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, consumerOptions);
 
         if (handler != null)
         {
             handler.ServiceName = errorMessageHandlerName;
+
             if (IsSubscribable(errorChannel))
             {
-                var errorHandler = handler;
+                IMessageHandler errorHandler = handler;
                 ApplicationContext.Register(errorMessageHandlerName, errorHandler);
                 errorChannel.Subscribe(handler);
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName
-                                                                  + "' is an instance of DirectChannel, "
-                                                                  + "so no more subscribers could be added which may affect DLQ processing. "
-                                                                  + "Resolution: Configure your own errorChannel as "
-                                                                  + "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
+                    "so no more subscribers could be added which may affect DLQ processing. " + "Resolution: Configure your own errorChannel as " +
+                    "an instance of PublishSubscribeChannel");
             }
         }
 
@@ -250,19 +236,18 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
                 {
                     OutputChannel = defaultErrorChannel
                 };
+
                 errorChannel.Subscribe(errorBridge);
 
-                var errorBridgeHandlerName = GetErrorBridgeName(destination, group, consumerOptions);
+                string errorBridgeHandlerName = GetErrorBridgeName(destination, group, consumerOptions);
                 errorBridge.ServiceName = errorBridgeHandlerName;
                 ApplicationContext.Register(errorBridgeHandlerName, errorBridge);
             }
             else
             {
-                _logger?.LogWarning("The provided errorChannel '" + errorChannelName
-                                                                  + "' is an instance of DirectChannel, "
-                                                                  + "so no more subscribers could be added and no error messages will be sent to global error channel. "
-                                                                  + "Resolution: Configure your own errorChannel as "
-                                                                  + "an instance of PublishSubscribeChannel");
+                _logger?.LogWarning("The provided errorChannel '" + errorChannelName + "' is an instance of DirectChannel, " +
+                    "so no more subscribers could be added and no error messages will be sent to global error channel. " +
+                    "Resolution: Configure your own errorChannel as " + "an instance of PublishSubscribeChannel");
             }
         }
 
@@ -320,9 +305,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     }
 
     private static bool IsSubscribable(ISubscribableChannel errorChannel)
-        => errorChannel is PublishSubscribeChannel
-           || errorChannel is not Integration.Channel.AbstractSubscribableChannel
-           || (errorChannel is Integration.Channel.AbstractSubscribableChannel subscribableChannel && subscribableChannel.SubscriberCount == 0);
+    {
+        return errorChannel is PublishSubscribeChannel || errorChannel is not AbstractSubscribableChannel ||
+            (errorChannel is AbstractSubscribableChannel subscribableChannel && subscribableChannel.SubscriberCount == 0);
+    }
 
     private static Dictionary<string, object> DoGetExtendedInfo(object destination, object properties)
     {
@@ -332,6 +318,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         };
 
         object value;
+
         if (properties is string stringValue)
         {
             value = JsonSerializer.Deserialize<Dictionary<string, object>>(stringValue);
@@ -349,6 +336,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
         ISubscribableChannel errorChannel;
         var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
+
         if (errorChannelObject != null)
         {
             if (errorChannelObject is not ISubscribableChannel subscribableChannel)
@@ -369,9 +357,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     private ISubscribableChannel RegisterErrorInfrastructure(IProducerDestination destination)
     {
-        var errorChannelName = GetErrorsBaseName(destination);
+        string errorChannelName = GetErrorsBaseName(destination);
         ISubscribableChannel errorChannel;
         var errorChannelObject = ApplicationContext.GetService<IMessageChannel>(errorChannelName);
+
         if (errorChannelObject != null)
         {
             if (errorChannelObject is not ISubscribableChannel subscribableChannel)
@@ -395,8 +384,9 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             {
                 OutputChannel = defaultErrorChannel
             };
+
             errorChannel.Subscribe(errorBridge);
-            var errorBridgeHandlerName = GetErrorBridgeName(destination);
+            string errorBridgeHandlerName = GetErrorBridgeName(destination);
             ApplicationContext.Register(errorBridgeHandlerName, errorBridge);
         }
 
@@ -405,11 +395,13 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     private void DestroyErrorInfrastructure(IProducerDestination destination)
     {
-        var errorChannelName = GetErrorsBaseName(destination);
-        var errorBridgeHandlerName = GetErrorBridgeName(destination);
+        string errorChannelName = GetErrorsBaseName(destination);
+        string errorBridgeHandlerName = GetErrorBridgeName(destination);
+
         if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
         {
             var bridgeHandler = ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName);
+
             if (bridgeHandler != null)
             {
                 channel.Unsubscribe(bridgeHandler);
@@ -424,17 +416,18 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
         try
         {
-            var recoverer = GetErrorRecovererName(destination, group, options);
+            string recoverer = GetErrorRecovererName(destination, group, options);
 
             DestroyBean(recoverer);
 
-            var errorChannelName = GetErrorsBaseName(destination, group, options);
-            var errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, options);
-            var errorBridgeHandlerName = GetErrorBridgeName(destination, group, options);
+            string errorChannelName = GetErrorsBaseName(destination, group, options);
+            string errorMessageHandlerName = GetErrorMessageHandlerName(destination, group, options);
+            string errorBridgeHandlerName = GetErrorBridgeName(destination, group, options);
 
             if (ApplicationContext.GetService<IMessageChannel>(errorChannelName) is ISubscribableChannel channel)
             {
                 var bridgeHandler = ApplicationContext.GetService<IMessageHandler>(errorBridgeHandlerName);
+
                 if (bridgeHandler != null)
                 {
                     channel.Unsubscribe(bridgeHandler);
@@ -442,6 +435,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
                 }
 
                 var messageHandler = ApplicationContext.GetService<IMessageHandler>(errorMessageHandlerName);
+
                 if (messageHandler != null)
                 {
                     channel.Unsubscribe(messageHandler);
@@ -464,7 +458,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
     private void EnhanceMessageChannel(IMessageChannel inputChannel)
     {
-        ((Integration.Channel.AbstractMessageChannel)inputChannel).AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
+        ((AbstractMessageChannel)inputChannel).AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
     }
 
     // private void doPublishEvent(ApplicationEvent event)
@@ -552,31 +546,31 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     // }
     public class ErrorInfrastructure
     {
+        public ISubscribableChannel ErrorChannel { get; }
+
+        public ErrorMessageSendingRecoverer Recoverer { get; }
+
+        public IMessageHandler Handler { get; }
+
         public ErrorInfrastructure(ISubscribableChannel errorChannel, ErrorMessageSendingRecoverer recoverer, IMessageHandler handler)
         {
             ErrorChannel = errorChannel;
             Recoverer = recoverer;
             Handler = handler;
         }
-
-        public ISubscribableChannel ErrorChannel { get; }
-
-        public ErrorMessageSendingRecoverer Recoverer { get; }
-
-        public IMessageHandler Handler { get; }
     }
 
     protected class PolledConsumerResources
     {
+        protected internal IMessageSource Source { get; }
+
+        protected internal ErrorInfrastructure ErrorInfrastructure { get; }
+
         public PolledConsumerResources(IMessageSource source, ErrorInfrastructure errorInfrastructure)
         {
             Source = source;
             ErrorInfrastructure = errorInfrastructure;
         }
-
-        protected internal IMessageSource Source { get; }
-
-        protected internal ErrorInfrastructure ErrorInfrastructure { get; }
     }
 
     protected class SendingHandler : AbstractMessageHandler, ILifecycle
@@ -588,6 +582,8 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         private readonly IMessageHandler _handler;
 
         private readonly bool _useNativeEncoding;
+
+        public bool IsRunning => _handler is ILifecycle lifecycle && lifecycle.IsRunning;
 
         public SendingHandler(IApplicationContext context, IMessageHandler handler, bool embedHeaders, string[] headersToEmbed, bool useNativeEncoding)
             : base(context)
@@ -622,17 +618,9 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             return Task.CompletedTask;
         }
 
-        public bool IsRunning
-        {
-            get
-            {
-                return _handler is ILifecycle lifecycle && lifecycle.IsRunning;
-            }
-        }
-
         protected override void HandleMessageInternal(IMessage message)
         {
-            var messageToSend = _useNativeEncoding ? message : SerializeAndEmbedHeadersIfApplicable(message);
+            IMessage messageToSend = _useNativeEncoding ? message : SerializeAndEmbedHeadersIfApplicable(message);
             _handler.HandleMessage(messageToSend);
         }
 
@@ -641,9 +629,10 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             var transformed = new MessageValues(message);
 
             object payload;
+
             if (_embedHeaders)
             {
-                transformed.TryGetValue(MessageHeaders.ContentType, out var contentType);
+                transformed.TryGetValue(MessageHeaders.ContentType, out object contentType);
 
                 // transform content type headers to String, so that they can be properly
                 // embedded in JSON
@@ -670,30 +659,18 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         private readonly IProducerDestination _producerDestination;
         private readonly ILogger _logger;
 
-        public DefaultProducingMessageChannelBinding(
-            AbstractMessageChannelBinder binder,
-            string destination,
-            IMessageChannel target,
-            ILifecycle lifecycle,
-            IProducerOptions options,
-            IProducerDestination producerDestination,
-            ILogger logger = null)
+        public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(Name, _options);
+
+        public override bool IsInput => false;
+
+        public DefaultProducingMessageChannelBinding(AbstractMessageChannelBinder binder, string destination, IMessageChannel target, ILifecycle lifecycle,
+            IProducerOptions options, IProducerDestination producerDestination, ILogger logger = null)
             : base(destination, target, lifecycle)
         {
             _binder = binder;
             _options = options;
             _producerDestination = producerDestination;
             _logger = logger;
-        }
-
-        public override IDictionary<string, object> ExtendedInfo
-        {
-            get => DoGetExtendedInfo(Name, _options);
-        }
-
-        public override bool IsInput
-        {
-            get { return false; }
         }
 
         protected override void AfterUnbind()
@@ -718,15 +695,12 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         private readonly IConsumerDestination _destination;
         private readonly ILogger _logger;
 
-        public DefaultConsumerMessageChannelBinding(
-            AbstractMessageChannelBinder binder,
-            string name,
-            string group,
-            IMessageChannel inputChannel,
-            ILifecycle lifecycle,
-            IConsumerOptions options,
-            IConsumerDestination consumerDestination,
-            ILogger logger = null)
+        public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
+
+        public override bool IsInput => true;
+
+        public DefaultConsumerMessageChannelBinding(AbstractMessageChannelBinder binder, string name, string group, IMessageChannel inputChannel,
+            ILifecycle lifecycle, IConsumerOptions options, IConsumerDestination consumerDestination, ILogger logger = null)
             : base(name, group, inputChannel, lifecycle)
         {
             _binder = binder;
@@ -734,10 +708,6 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
             _destination = consumerDestination;
             _logger = logger;
         }
-
-        public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
-
-        public override bool IsInput => true;
 
         protected override void AfterUnbind()
         {
@@ -764,24 +734,18 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         private readonly IConsumerOptions _options;
         private readonly IConsumerDestination _destination;
 
-        public DefaultPollableChannelBinding(
-            AbstractMessageChannelBinder binder,
-            string name,
-            string group,
-            IPollableSource<IMessageHandler> inboundBindTarget,
-            ILifecycle lifecycle,
-            IConsumerOptions options,
-            IConsumerDestination consumerDestination)
+        public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
+
+        public override bool IsInput => true;
+
+        public DefaultPollableChannelBinding(AbstractMessageChannelBinder binder, string name, string group, IPollableSource<IMessageHandler> inboundBindTarget,
+            ILifecycle lifecycle, IConsumerOptions options, IConsumerDestination consumerDestination)
             : base(name, group, inboundBindTarget, lifecycle)
         {
             _binder = binder;
             _options = options;
             _destination = consumerDestination;
         }
-
-        public override IDictionary<string, object> ExtendedInfo => DoGetExtendedInfo(_destination, _options);
-
-        public override bool IsInput => true;
 
         protected override void AfterUnbind()
         {
@@ -794,15 +758,18 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
     {
         protected readonly ILogger Logger;
 
-        public EmbeddedHeadersChannelInterceptor(ILogger logger = null) => Logger = logger;
+        public EmbeddedHeadersChannelInterceptor(ILogger logger = null)
+        {
+            Logger = logger;
+        }
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            if (message.Payload is byte[] payloadBytes
-                && !message.Headers.ContainsKey(BinderHeaders.NativeHeadersPresent)
-                && EmbeddedHeaderUtils.MayHaveEmbeddedHeaders(payloadBytes))
+            if (message.Payload is byte[] payloadBytes && !message.Headers.ContainsKey(BinderHeaders.NativeHeadersPresent) &&
+                EmbeddedHeaderUtils.MayHaveEmbeddedHeaders(payloadBytes))
             {
                 MessageValues messageValues;
+
                 try
                 {
                     messageValues = EmbeddedHeaderUtils.ExtractHeaders((IMessage<byte[]>)message, true);

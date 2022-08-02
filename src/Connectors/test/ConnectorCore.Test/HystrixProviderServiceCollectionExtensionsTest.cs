@@ -24,14 +24,10 @@ public class HystrixProviderServiceCollectionExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot config = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddHystrixConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddHystrixConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -41,14 +37,10 @@ public class HystrixProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddHystrixConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config));
         Assert.Contains(nameof(config), ex.Message);
 
-        var ex2 =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddHystrixConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, "foobar"));
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -59,9 +51,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
         const IConfigurationRoot config = null;
         const string serviceName = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddHystrixConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixConnection(config, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -69,7 +59,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_NoVCAPs_AddsConfiguredConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddHystrixConnection(config);
 
@@ -81,18 +71,16 @@ public class HystrixProviderServiceCollectionExtensionsTest
     public void AddHystrixConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        var ex =
-            Assert.Throws<ConnectorException>(
-                () => services.AddHystrixConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
     [Fact]
     public void AddHystrixConnection_MultipleHystrixServices_ThrowsConnectorException()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                         ""credentials"": {
@@ -211,18 +199,16 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        var ex =
-            Assert.Throws<ConnectorException>(
-                () => services.AddHystrixConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddHystrixConnection(config));
         Assert.Contains("Multiple", ex.Message);
     }
 
     [Fact]
     public void AddHystrixConnection_WithVCAPs_AddsHystrixConnectionFactory()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                     ""credentials"": {
@@ -287,7 +273,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddHystrixConnection(config);
 

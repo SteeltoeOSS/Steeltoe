@@ -8,7 +8,8 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
 public readonly struct SteeltoeCollectionResponse : ICollectionResponse
 {
-    public SteeltoeCollectionResponse(MetricsCollection<List<MetricSample>> metricSamples, MetricsCollection<List<MetricTag>> availableTags, DateTime generatedAtUtc)
+    public SteeltoeCollectionResponse(MetricsCollection<List<MetricSample>> metricSamples, MetricsCollection<List<MetricTag>> availableTags,
+        DateTime generatedAtUtc)
     {
         MetricSamples = metricSamples;
         AvailableTags = availableTags;

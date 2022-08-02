@@ -9,22 +9,16 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class ApplicationInfoManager
 {
-    protected ApplicationInfoManager()
-    {
-    }
+    protected static readonly ApplicationInfoManager InnerInstance = new();
 
-    protected static readonly ApplicationInfoManager InnerInstance = new ();
+    private readonly object _statusChangedLock = new();
     protected ILogger logger;
-
-    private readonly object _statusChangedLock = new ();
 
     public static ApplicationInfoManager Instance => InnerInstance;
 
     public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
 
     public virtual InstanceInfo InstanceInfo { get; protected internal set; }
-
-    public event EventHandler<StatusChangedEventArgs> StatusChanged;
 
     public virtual InstanceStatus InstanceStatus
     {
@@ -47,7 +41,8 @@ public class ApplicationInfoManager
 
             lock (_statusChangedLock)
             {
-                var prev = InstanceInfo.Status;
+                InstanceStatus prev = InstanceInfo.Status;
+
                 if (prev != value)
                 {
                     InstanceInfo.Status = value;
@@ -63,6 +58,12 @@ public class ApplicationInfoManager
                 }
             }
         }
+    }
+
+    public event EventHandler<StatusChangedEventArgs> StatusChanged;
+
+    protected ApplicationInfoManager()
+    {
     }
 
     public virtual void Initialize(IEurekaInstanceConfig instanceConfig, ILoggerFactory logFactory = null)
@@ -92,6 +93,7 @@ public class ApplicationInfoManager
                 DurationInSecs = InstanceConfig.LeaseExpirationDurationInSeconds,
                 RenewalIntervalInSecs = InstanceConfig.LeaseRenewalIntervalInSeconds
             };
+
             InstanceInfo.LeaseInfo = newLease;
             InstanceInfo.IsDirty = true;
         }

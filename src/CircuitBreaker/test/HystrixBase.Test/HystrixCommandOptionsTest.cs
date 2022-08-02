@@ -11,40 +11,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class HystrixCommandOptionsTest
 {
-    public static HystrixCommandOptions GetUnitTestOptions()
-    {
-        return new HystrixCommandOptions
-        {
-            ExecutionTimeoutInMilliseconds = 1000, // when an execution will be timed out
-            ExecutionTimeoutEnabled = true,
-            ExecutionIsolationStrategy = ExecutionIsolationStrategy.Thread, // we want thread execution by default in tests
-            CircuitBreakerForceOpen = false, // we don't want short-circuiting by default
-            CircuitBreakerErrorThresholdPercentage = 40, // % of 'marks' that must be failed to trip the circuit
-            MetricsRollingStatisticalWindowInMilliseconds = 5000, // milliseconds back that will be tracked
-            MetricsRollingStatisticalWindowBuckets = 5, // buckets
-            CircuitBreakerRequestVolumeThreshold = 0, // in testing we will not have a threshold unless we're specifically testing that feature
-            CircuitBreakerSleepWindowInMilliseconds = 5_000_000, // milliseconds after tripping circuit before allowing retry (by default set VERY long as we want it to effectively never allow a singleTest for most unit tests)
-            CircuitBreakerEnabled = true,
-            RequestLogEnabled = true,
-            ExecutionIsolationSemaphoreMaxConcurrentRequests = 20,
-            FallbackIsolationSemaphoreMaxConcurrentRequests = 10,
-            FallbackEnabled = true,
-            CircuitBreakerForceClosed = false,
-            MetricsRollingPercentileEnabled = true,
-            RequestCacheEnabled = true,
-            MetricsRollingPercentileWindowInMilliseconds = 60000,
-            MetricsRollingPercentileWindowBuckets = 12,
-            MetricsRollingPercentileBucketSize = 1000,
-            MetricsHealthSnapshotIntervalInMilliseconds = 100
-        };
-    }
-
     [Fact]
     public void TestBooleanBuilderOverride1()
     {
-        var properties = new HystrixCommandOptions(
-            HystrixCommandKeyDefault.AsKey("TEST"),
-            new HystrixCommandOptions { CircuitBreakerForceClosed = true });
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            CircuitBreakerForceClosed = true
+        });
 
         // the builder override should take precedence over the default
         Assert.True(properties.CircuitBreakerForceClosed);
@@ -53,9 +26,10 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanBuilderOverride2()
     {
-        var properties = new HystrixCommandOptions(
-            HystrixCommandKeyDefault.AsKey("TEST"),
-            new HystrixCommandOptions { CircuitBreakerForceClosed = false });
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            CircuitBreakerForceClosed = false
+        });
 
         // the builder override should take precedence over the default
         Assert.False(properties.CircuitBreakerForceClosed);
@@ -71,7 +45,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanGlobalDynamicOverrideOfCodeDefault()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -84,10 +58,11 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
@@ -99,7 +74,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceBuilderOverrideOfGlobalDynamicOverride1()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -112,12 +87,17 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
-        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = true }, dynamics);
+
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            CircuitBreakerForceClosed = true
+        }, dynamics);
 
         // the builder injected should take precedence over the global dynamic property
         Assert.True(properties.CircuitBreakerForceClosed);
@@ -126,7 +106,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceBuilderOverrideOfGlobalDynamicOverride2()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -139,12 +119,17 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
-        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = false }, dynamics);
+
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            CircuitBreakerForceClosed = false
+        }, dynamics);
 
         // the builder injected should take precedence over the global dynamic property
         Assert.False(properties.CircuitBreakerForceClosed);
@@ -153,7 +138,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceDynamicOverrideOfEverything()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -171,13 +156,17 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
 
-        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { CircuitBreakerForceClosed = false }, dynamics);
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            CircuitBreakerForceClosed = false
+        }, dynamics);
 
         // the instance specific dynamic property should take precedence over everything
         Assert.True(properties.CircuitBreakerForceClosed);
@@ -186,9 +175,10 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerBuilderOverride()
     {
-        var properties = new HystrixCommandOptions(
-            HystrixCommandKeyDefault.AsKey("TEST"),
-            new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 });
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            MetricsRollingStatisticalWindowInMilliseconds = 5000
+        });
 
         // the builder override should take precedence over the default
         Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -197,16 +187,14 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerCodeDefault()
     {
-        var properties = new HystrixCommandOptions(
-            HystrixCommandKeyDefault.AsKey("TEST"),
-            new HystrixCommandOptions());
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions());
         Assert.Equal(HystrixCommandOptions.DefaultMetricsRollingStatisticalWindow, properties.MetricsRollingStatisticalWindowInMilliseconds);
     }
 
     [Fact]
     public void TestIntegerGlobalDynamicOverrideOfCodeDefault()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -221,10 +209,11 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
 
         var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), null, dynamics);
@@ -235,7 +224,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerInstanceBuilderOverrideOfGlobalDynamicOverride()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -250,13 +239,17 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
 
-        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            MetricsRollingStatisticalWindowInMilliseconds = 5000
+        }, dynamics);
 
         // the builder injected should take precedence over the global dynamic property
         Assert.Equal(5000, properties.MetricsRollingStatisticalWindowInMilliseconds);
@@ -265,7 +258,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerInstanceDynamicOverrideOfEverything()
     {
-        var configSettings = @"
+        string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -287,16 +280,49 @@ public class HystrixCommandOptionsTest
                 }
 
             }";
-        var memStream = GetMemoryStream(configSettings);
+
+        MemoryStream memStream = GetMemoryStream(configSettings);
         var builder = new ConfigurationBuilder();
         builder.Add(new JsonStreamConfigurationSource(memStream));
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var dynamics = new HystrixDynamicOptionsDefault(config);
 
-        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions { MetricsRollingStatisticalWindowInMilliseconds = 5000 }, dynamics);
+        var properties = new HystrixCommandOptions(HystrixCommandKeyDefault.AsKey("TEST"), new HystrixCommandOptions
+        {
+            MetricsRollingStatisticalWindowInMilliseconds = 5000
+        }, dynamics);
 
         // the instance specific dynamic property should take precedence over everything
         Assert.Equal(3456, properties.MetricsRollingStatisticalWindowInMilliseconds);
+    }
+
+    public static HystrixCommandOptions GetUnitTestOptions()
+    {
+        return new HystrixCommandOptions
+        {
+            ExecutionTimeoutInMilliseconds = 1000, // when an execution will be timed out
+            ExecutionTimeoutEnabled = true,
+            ExecutionIsolationStrategy = ExecutionIsolationStrategy.Thread, // we want thread execution by default in tests
+            CircuitBreakerForceOpen = false, // we don't want short-circuiting by default
+            CircuitBreakerErrorThresholdPercentage = 40, // % of 'marks' that must be failed to trip the circuit
+            MetricsRollingStatisticalWindowInMilliseconds = 5000, // milliseconds back that will be tracked
+            MetricsRollingStatisticalWindowBuckets = 5, // buckets
+            CircuitBreakerRequestVolumeThreshold = 0, // in testing we will not have a threshold unless we're specifically testing that feature
+            CircuitBreakerSleepWindowInMilliseconds =
+                5_000_000, // milliseconds after tripping circuit before allowing retry (by default set VERY long as we want it to effectively never allow a singleTest for most unit tests)
+            CircuitBreakerEnabled = true,
+            RequestLogEnabled = true,
+            ExecutionIsolationSemaphoreMaxConcurrentRequests = 20,
+            FallbackIsolationSemaphoreMaxConcurrentRequests = 10,
+            FallbackEnabled = true,
+            CircuitBreakerForceClosed = false,
+            MetricsRollingPercentileEnabled = true,
+            RequestCacheEnabled = true,
+            MetricsRollingPercentileWindowInMilliseconds = 60000,
+            MetricsRollingPercentileWindowBuckets = 12,
+            MetricsRollingPercentileBucketSize = 1000,
+            MetricsHealthSnapshotIntervalInMilliseconds = 100
+        };
     }
 
     internal static MemoryStream GetMemoryStream(string json)

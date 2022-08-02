@@ -12,9 +12,17 @@ public static class TracingBaseHostBuilderExtensions
     /// <summary>
     /// Configure distributed tracing via OpenTelemetry with HttpClient Instrumentation.
     /// </summary>
-    /// <param name="hostBuilder">Your hostBuilder.</param>
-    /// <param name="action">Customize the <see cref="TracerProviderBuilder" />.</param>
-    /// <returns>The configured hostBuilder.</returns>
+    /// <param name="hostBuilder">
+    /// Your hostBuilder.
+    /// </param>
+    /// <param name="action">
+    /// Customize the <see cref="TracerProviderBuilder" />.
+    /// </param>
+    /// <returns>
+    /// The configured hostBuilder.
+    /// </returns>
     public static IHostBuilder AddDistributedTracing(this IHostBuilder hostBuilder, Action<TracerProviderBuilder> action = null)
-        => hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracing(action));
+    {
+        return hostBuilder.ConfigureServices((_, services) => services.AddDistributedTracing(action));
+    }
 }

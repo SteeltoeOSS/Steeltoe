@@ -14,7 +14,11 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
     public const string StandardReplyHeaderNamePattern = "STANDARD_REPLY_HEADERS";
     public const string NonStandardHeaderNamePattern = "NON_STANDARD_HEADERS";
 
-    private readonly List<string> _transientHeaderNames = new () { MessageHeaders.IdName, MessageHeaders.TimestampName };
+    private readonly List<string> _transientHeaderNames = new()
+    {
+        MessageHeaders.IdName,
+        MessageHeaders.TimestampName
+    };
 
     private readonly ILogger _logger;
 
@@ -89,7 +93,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
     protected virtual IHeaderMatcher CreateHeaderMatcher(string[] patterns)
     {
         var matchers = new List<IHeaderMatcher>();
-        foreach (var pattern in patterns)
+
+        foreach (string pattern in patterns)
         {
             if (StandardRequestHeaderNamePattern.Equals(pattern))
             {
@@ -105,8 +110,9 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
             }
             else
             {
-                var thePattern = pattern;
-                var negate = false;
+                string thePattern = pattern;
+                bool negate = false;
+
                 if (pattern.StartsWith("!"))
                 {
                     thePattern = pattern[1..];
@@ -134,7 +140,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     protected virtual TValue GetHeaderIfAvailable<TValue>(IDictionary<string, object> headers, string name, Type type)
     {
-        headers.TryGetValue(name, out var value);
+        headers.TryGetValue(name, out object value);
+
         if (value == null)
         {
             return default;
@@ -144,10 +151,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         {
             return default;
         }
-        else
-        {
-            return (TValue)value;
-        }
+
+        return (TValue)value;
     }
 
     protected virtual string CreateTargetPropertyName(string propertyName, bool fromMessageHeaders)
@@ -173,16 +178,21 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     protected abstract void PopulateUserDefinedHeader(string headerName, object headerValue, T target);
 
-    private static bool IsMessageChannel(object headerValue) => headerValue is IMessageChannel;
+    private static bool IsMessageChannel(object headerValue)
+    {
+        return headerValue is IMessageChannel;
+    }
 
     private void FromHeaders(IMessageHeaders headers, T target, IHeaderMatcher headerMatcher)
     {
         try
         {
             var subset = new Dictionary<string, object>();
-            foreach (var entry in (IDictionary<string, object>)headers)
+
+            foreach (KeyValuePair<string, object> entry in (IDictionary<string, object>)headers)
             {
-                var headerName = entry.Key;
+                string headerName = entry.Key;
+
                 if (ShouldMapHeader(headerName, headerMatcher))
                 {
                     subset[headerName] = entry.Value;
@@ -200,17 +210,18 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     private void PopulateUserDefinedHeaders(IDictionary<string, object> headers, T target)
     {
-        foreach (var entry in headers)
+        foreach (KeyValuePair<string, object> entry in headers)
         {
-            var headerName = entry.Key;
-            var value = entry.Value;
+            string headerName = entry.Key;
+            object value = entry.Value;
+
             if (value != null && !IsMessageChannel(value))
             {
                 try
                 {
                     if (!headerName.StartsWith(StandardHeaderPrefix))
                     {
-                        var key = CreateTargetPropertyName(headerName, true);
+                        string key = CreateTargetPropertyName(headerName, true);
                         PopulateUserDefinedHeader(key, value, target);
                     }
                 }
@@ -225,9 +236,9 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
     private Dictionary<string, object> ToHeaders(T source, IHeaderMatcher headerMatcher)
     {
         var headers = new Dictionary<string, object>();
-        var standardHeaders = ExtractStandardHeaders(source);
+        IDictionary<string, object> standardHeaders = ExtractStandardHeaders(source);
         CopyHeaders(standardHeaders, headers, headerMatcher);
-        var userDefinedHeaders = ExtractUserDefinedHeaders(source);
+        IDictionary<string, object> userDefinedHeaders = ExtractUserDefinedHeaders(source);
         CopyHeaders(userDefinedHeaders, headers, headerMatcher);
         return headers;
     }
@@ -236,11 +247,12 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
     {
         if (source != null)
         {
-            foreach (var entry in source)
+            foreach (KeyValuePair<string, object> entry in source)
             {
                 try
                 {
-                    var headerName = CreateTargetPropertyName(entry.Key, false);
+                    string headerName = CreateTargetPropertyName(entry.Key, false);
+
                     if (ShouldMapHeader(headerName, headerMatcher))
                     {
                         target[headerName] = entry.Value;
@@ -261,9 +273,9 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     public interface IHeaderMatcher
     {
-        bool MatchHeader(string headerName);
-
         bool IsNegated { get; }
+
+        bool MatchHeader(string headerName);
     }
 
     protected class ContentBasedHeaderMatcher : IHeaderMatcher
@@ -271,6 +283,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         private bool Match { get; }
 
         private List<string> Content { get; }
+
+        public bool IsNegated => false;
 
         public ContentBasedHeaderMatcher(bool match, List<string> content)
         {
@@ -280,15 +294,13 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            var result = Match == ContainsIgnoreCase(headerName);
+            bool result = Match == ContainsIgnoreCase(headerName);
             return result;
         }
 
-        public bool IsNegated => false;
-
         private bool ContainsIgnoreCase(string name)
         {
-            foreach (var headerName in Content)
+            foreach (string headerName in Content)
             {
                 if (headerName.Equals(name, StringComparison.InvariantCultureIgnoreCase))
                 {
@@ -302,7 +314,9 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
     protected class PatternBasedHeaderMatcher : IHeaderMatcher
     {
-        private List<string> Patterns { get; } = new ();
+        private List<string> Patterns { get; } = new();
+
+        public bool IsNegated => false;
 
         public PatternBasedHeaderMatcher(List<string> patterns)
         {
@@ -316,7 +330,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
                 throw new ArgumentException("At least one pattern must be specified");
             }
 
-            foreach (var pattern in patterns)
+            foreach (string pattern in patterns)
             {
                 Patterns.Add(pattern.ToLower());
             }
@@ -324,8 +338,9 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            var header = headerName.ToLower();
-            foreach (var pattern in Patterns)
+            string header = headerName.ToLower();
+
+            foreach (string pattern in Patterns)
             {
                 if (PatternMatchUtils.SimpleMatch(pattern, header))
                 {
@@ -335,8 +350,6 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
             return false;
         }
-
-        public bool IsNegated => false;
     }
 
     protected class SinglePatternBasedHeaderMatcher : IHeaderMatcher
@@ -344,6 +357,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         private string Pattern { get; }
 
         private bool Negate { get; }
+
+        public bool IsNegated => Negate;
 
         public SinglePatternBasedHeaderMatcher(string pattern)
             : this(pattern, false)
@@ -363,7 +378,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            var header = headerName.ToLower();
+            string header = headerName.ToLower();
+
             if (PatternMatchUtils.SimpleMatch(Pattern, header))
             {
                 return true;
@@ -371,8 +387,6 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
             return false;
         }
-
-        public bool IsNegated => Negate;
     }
 
     protected class PrefixBasedMatcher : IHeaderMatcher
@@ -380,6 +394,8 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
         private bool Match { get; }
 
         private string Prefix { get; }
+
+        public bool IsNegated { get; }
 
         public PrefixBasedMatcher(bool match, string prefix)
         {
@@ -389,16 +405,16 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            var result = Match == headerName.StartsWith(Prefix);
+            bool result = Match == headerName.StartsWith(Prefix);
             return result;
         }
-
-        public bool IsNegated { get; }
     }
 
     protected class CompositeHeaderMatcher : IHeaderMatcher
     {
         private List<IHeaderMatcher> Matchers { get; }
+
+        public bool IsNegated { get; }
 
         public CompositeHeaderMatcher(List<IHeaderMatcher> strategies)
         {
@@ -412,7 +428,7 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
         public bool MatchHeader(string headerName)
         {
-            foreach (var strategy in Matchers)
+            foreach (IHeaderMatcher strategy in Matchers)
             {
                 if (strategy.MatchHeader(headerName))
                 {
@@ -427,7 +443,5 @@ public abstract class AbstractHeaderMapper<T> : IRequestReplyHeaderMapper<T>
 
             return false;
         }
-
-        public bool IsNegated { get; }
     }
 }

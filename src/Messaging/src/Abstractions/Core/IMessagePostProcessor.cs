@@ -5,15 +5,18 @@
 namespace Steeltoe.Messaging.Core;
 
 /// <summary>
-/// A contract for processing a message after it has been created, either
-/// returning a modified(effectively new) message or returning the same.
+/// A contract for processing a message after it has been created, either returning a modified(effectively new) message or returning the same.
 /// </summary>
 public interface IMessagePostProcessor
 {
     /// <summary>
     /// Process the message.
     /// </summary>
-    /// <param name="message">the message to process.</param>
-    /// <returns>the result of post processing.</returns>
+    /// <param name="message">
+    /// the message to process.
+    /// </param>
+    /// <returns>
+    /// the result of post processing.
+    /// </returns>
     IMessage PostProcessMessage(IMessage message);
 }

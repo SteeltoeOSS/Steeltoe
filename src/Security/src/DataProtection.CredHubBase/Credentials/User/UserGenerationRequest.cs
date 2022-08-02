@@ -7,12 +7,17 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class UserGenerationRequest : CredHubGenerateRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="UserGenerationRequest"/> class.
-    /// Use to request a new <see cref="UserCredential"/>.
+    /// Initializes a new instance of the <see cref="UserGenerationRequest" /> class. Use to request a new <see cref="UserCredential" />.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="parameters">Variables for username and password generation.</param>
-    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="parameters">
+    /// Variables for username and password generation.
+    /// </param>
+    /// <param name="overwriteMode">
+    /// Overwrite existing credential (default: no-overwrite).
+    /// </param>
     public UserGenerationRequest(string credentialName, UserGenerationParameters parameters, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         Name = credentialName;

@@ -7,6 +7,10 @@ namespace Steeltoe.Stream.Attributes;
 [AttributeUsage(AttributeTargets.Assembly)]
 public class BinderAttribute : Attribute
 {
+    public virtual string Name { get; set; }
+
+    public virtual string ConfigureClass { get; set; }
+
     public BinderAttribute()
     {
         Name = string.Empty;
@@ -18,8 +22,4 @@ public class BinderAttribute : Attribute
         Name = name;
         ConfigureClass = configureClass.AssemblyQualifiedName;
     }
-
-    public virtual string Name { get; set; }
-
-    public virtual string ConfigureClass { get; set; }
 }

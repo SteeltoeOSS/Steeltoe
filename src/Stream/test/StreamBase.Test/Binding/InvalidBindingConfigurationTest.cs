@@ -11,10 +11,9 @@ public class InvalidBindingConfigurationTest : AbstractTest
     [Fact]
     public void TestDuplicateBindingConfig()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
         Assert.Throws<InvalidOperationException>(() => CreateStreamsContainerWithBinding(
-            searchDirectories,
-            typeof(ITestInvalidBinding),
-            "spring.cloud.stream.defaultbinder=mock"));
+            searchDirectories, typeof(ITestInvalidBinding), "spring.cloud.stream.defaultbinder=mock"));
     }
 }

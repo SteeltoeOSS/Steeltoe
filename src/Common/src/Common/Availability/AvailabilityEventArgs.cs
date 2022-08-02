@@ -6,7 +6,10 @@ namespace Steeltoe.Common.Availability;
 
 public class AvailabilityEventArgs : EventArgs
 {
-    public AvailabilityEventArgs(IAvailabilityState availabilityState) => NewState = availabilityState;
-
     public IAvailabilityState NewState { get; }
+
+    public AvailabilityEventArgs(IAvailabilityState availabilityState)
+    {
+        NewState = availabilityState;
+    }
 }

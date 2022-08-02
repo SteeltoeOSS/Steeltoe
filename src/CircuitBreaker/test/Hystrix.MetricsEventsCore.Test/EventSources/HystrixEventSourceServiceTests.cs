@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Tracing;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.EventSources;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System.Diagnostics.Tracing;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEventsCore.Test.EventSources;
@@ -32,11 +32,9 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
 
         service.OnNext(GetTestData());
 
-        var i = 0;
-        while (i++ < 100
-               && listener.CommandEvents.Count <= 0
-               && listener.ThreadPoolEvents.Count <= 0
-               && listener.CollapserEvents.Count <= 0)
+        int i = 0;
+
+        while (i++ < 100 && listener.CommandEvents.Count <= 0 && listener.ThreadPoolEvents.Count <= 0 && listener.CollapserEvents.Count <= 0)
         {
             Thread.Sleep(1000);
         }
@@ -50,21 +48,29 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
         var tpKey = new HystrixThreadPoolKeyDefault("threadPool");
         var collapserKey = new HystrixCollapserKeyDefault("collapser");
 
-        var commandMetric = new HystrixCommandMetrics(
-            commandKey,
-            new HystrixCommandGroupKeyDefault("group"),
-            tpKey,
-            new HystrixCommandOptions(),
+        var commandMetric = new HystrixCommandMetrics(commandKey, new HystrixCommandGroupKeyDefault("group"), tpKey, new HystrixCommandOptions(),
             HystrixEventNotifierDefault.GetInstance());
-        var threadPoolMetric = HystrixThreadPoolMetrics.GetInstance(
-            tpKey,
-            new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()),
-            new HystrixThreadPoolOptions());
-        var commandMetrics = new List<HystrixCommandMetrics> { commandMetric };
-        var collapserOptions = new HystrixCollapserOptions(collapserKey);
-        var threadPoolMetrics = new List<HystrixThreadPoolMetrics> { threadPoolMetric };
 
-        var collapserMetrics = new List<HystrixCollapserMetrics> { HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions) };
+        var threadPoolMetric = HystrixThreadPoolMetrics.GetInstance(
+            tpKey, new HystrixSyncTaskScheduler(new HystrixThreadPoolOptions()), new HystrixThreadPoolOptions());
+
+        var commandMetrics = new List<HystrixCommandMetrics>
+        {
+            commandMetric
+        };
+
+        var collapserOptions = new HystrixCollapserOptions(collapserKey);
+
+        var threadPoolMetrics = new List<HystrixThreadPoolMetrics>
+        {
+            threadPoolMetric
+        };
+
+        var collapserMetrics = new List<HystrixCollapserMetrics>
+        {
+            HystrixCollapserMetrics.GetInstance(collapserKey, collapserOptions)
+        };
+
         return new HystrixDashboardStream.DashboardData(commandMetrics, threadPoolMetrics, collapserMetrics);
     }
 
@@ -72,20 +78,13 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
     {
         private const string EventSourceName = "Steeltoe.Hystrix.Events";
 
-        private enum EventTypes
-        {
-            CommandMetrics,
-            ThreadPoolMetrics,
-            CollapserMetrics
-        }
-
-        public List<EventWrittenEventArgs> CommandEvents = new ();
-        public List<EventWrittenEventArgs> ThreadPoolEvents = new ();
-        public List<EventWrittenEventArgs> CollapserEvents = new ();
+        public List<EventWrittenEventArgs> CommandEvents = new();
+        public List<EventWrittenEventArgs> ThreadPoolEvents = new();
+        public List<EventWrittenEventArgs> CollapserEvents = new();
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {
-            if (Enum.TryParse<EventTypes>(eventData.EventName, out var eventType))
+            if (Enum.TryParse<EventTypes>(eventData.EventName, out EventTypes eventType))
             {
                 switch (eventType)
                 {
@@ -108,6 +107,13 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
             {
                 EnableEvents(eventSource, EventLevel.Verbose, EventKeywords.All);
             }
+        }
+
+        private enum EventTypes
+        {
+            CommandMetrics,
+            ThreadPoolMetrics,
+            CollapserMetrics
         }
     }
 }

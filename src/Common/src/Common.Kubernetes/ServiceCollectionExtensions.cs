@@ -13,9 +13,11 @@ namespace Steeltoe.Common.Kubernetes;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="KubernetesApplicationOptions" />.
+    /// Removes any existing <see cref="IApplicationInstanceInfo" /> if found. Registers a <see cref="KubernetesApplicationOptions" />.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services.</param>
+    /// <param name="serviceCollection">
+    /// Collection of configured services.
+    /// </param>
     public static IServiceCollection AddKubernetesApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
         if (serviceCollection is null)
@@ -23,7 +25,7 @@ public static class ServiceCollectionExtensions
             throw new ArgumentNullException(nameof(serviceCollection));
         }
 
-        var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+        ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
 
         if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(KubernetesApplicationOptions)) != true)
         {
@@ -32,18 +34,25 @@ public static class ServiceCollectionExtensions
                 serviceCollection.Remove(appInfo);
             }
 
-            serviceCollection.AddSingleton(typeof(KubernetesApplicationOptions), serviceProvider => new KubernetesApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
-            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo), serviceProvider => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
+            serviceCollection.AddSingleton(typeof(KubernetesApplicationOptions),
+                serviceProvider => new KubernetesApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+
+            serviceCollection.AddSingleton(typeof(IApplicationInstanceInfo),
+                serviceProvider => serviceProvider.GetRequiredService<KubernetesApplicationOptions>());
         }
 
         return serviceCollection;
     }
 
     /// <summary>
-    /// Retrieves <see cref="KubernetesApplicationOptions"/> from the service collection.
+    /// Retrieves <see cref="KubernetesApplicationOptions" /> from the service collection.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services.</param>
-    /// <returns>Relevant <see cref="KubernetesApplicationOptions" />.</returns>
+    /// <param name="serviceCollection">
+    /// Collection of configured services.
+    /// </param>
+    /// <returns>
+    /// Relevant <see cref="KubernetesApplicationOptions" />.
+    /// </returns>
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IApplicationInstanceInfo GetKubernetesApplicationOptions(this IServiceCollection serviceCollection)
     {
@@ -53,18 +62,25 @@ public static class ServiceCollectionExtensions
         }
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
-        var sp = serviceCollection.BuildServiceProvider();
+        ServiceProvider sp = serviceCollection.BuildServiceProvider();
 
         return sp.GetRequiredService<IApplicationInstanceInfo>();
     }
 
     /// <summary>
-    /// Add a <see cref="IKubernetes"/> client to the service collection.
+    /// Add a <see cref="IKubernetes" /> client to the service collection.
     /// </summary>
-    /// <param name="serviceCollection"><see cref="IServiceCollection"/>.</param>
-    /// <param name="kubernetesClientConfiguration">Customization of the Kubernetes Client.</param>
-    /// <returns>Collection of configured services.</returns>
-    public static IServiceCollection AddKubernetesClient(this IServiceCollection serviceCollection, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null)
+    /// <param name="serviceCollection">
+    /// <see cref="IServiceCollection" />.
+    /// </param>
+    /// <param name="kubernetesClientConfiguration">
+    /// Customization of the Kubernetes Client.
+    /// </param>
+    /// <returns>
+    /// Collection of configured services.
+    /// </returns>
+    public static IServiceCollection AddKubernetesClient(this IServiceCollection serviceCollection,
+        Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null)
     {
         if (serviceCollection is null)
         {
@@ -72,9 +88,10 @@ public static class ServiceCollectionExtensions
         }
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
+
         serviceCollection.TryAddSingleton(serviceProvider =>
         {
-            var logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
+            ILogger logger = serviceProvider.GetService<ILoggerFactory>()?.CreateLogger("Steeltoe.Common.KubernetesClientHelpers");
             var appInfo = serviceProvider.GetRequiredService<KubernetesApplicationOptions>();
             return KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
         });

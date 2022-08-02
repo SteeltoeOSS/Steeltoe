@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Util;
 
 public interface ITimerListener
 {
-    void Tick();
-
     int IntervalTimeInMilliseconds { get; }
+
+    void Tick();
 }

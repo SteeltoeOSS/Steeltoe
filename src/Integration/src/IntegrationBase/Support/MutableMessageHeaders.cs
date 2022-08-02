@@ -8,6 +8,12 @@ namespace Steeltoe.Integration.Support;
 
 public class MutableMessageHeaders : MessageHeaders
 {
+    public override object this[string key]
+    {
+        get => Headers[key];
+        set => Headers[key] = value;
+    }
+
     public MutableMessageHeaders(IDictionary<string, object> headers)
         : base(headers, ExtractId(headers), ExtractTimestamp(headers))
     {
@@ -18,31 +24,45 @@ public class MutableMessageHeaders : MessageHeaders
     {
     }
 
-    public override void Add(string key, object value) => Headers.Add(key, value);
+    public override void Add(string key, object value)
+    {
+        Headers.Add(key, value);
+    }
 
-    public override void Add(KeyValuePair<string, object> item) => Headers.Add(item);
+    public override void Add(KeyValuePair<string, object> item)
+    {
+        Headers.Add(item);
+    }
 
     public virtual void AddRange(IDictionary<string, object> map)
     {
-        foreach (var entry in map)
+        foreach (KeyValuePair<string, object> entry in map)
         {
             Headers.Add(entry);
         }
     }
 
-    public override object this[string key] { get => Headers[key]; set => Headers[key] = value; }
+    public override void Clear()
+    {
+        Headers.Clear();
+    }
 
-    public override void Clear() => Headers.Clear();
+    public override bool Remove(KeyValuePair<string, object> item)
+    {
+        return Headers.Remove(item);
+    }
 
-    public override bool Remove(KeyValuePair<string, object> item) => Headers.Remove(item);
-
-    public override bool Remove(string key) => Headers.Remove(key);
+    public override bool Remove(string key)
+    {
+        return Headers.Remove(key);
+    }
 
     private static string ExtractId(IDictionary<string, object> headers)
     {
         if (headers != null && headers.ContainsKey(IdName))
         {
-            var id = headers[IdName];
+            object id = headers[IdName];
+
             switch (id)
             {
                 case string idAsString:
@@ -61,7 +81,7 @@ public class MutableMessageHeaders : MessageHeaders
     {
         if (headers != null && headers.ContainsKey(TimestampName))
         {
-            var timestamp = headers[TimestampName];
+            object timestamp = headers[TimestampName];
             return timestamp is string strTimestamp ? long.Parse(strTimestamp) : (long)timestamp;
         }
 

@@ -60,9 +60,10 @@ public static class ConversionUtils
     public static string ToString(IEnumerable collection, Type targetType, IConversionService conversionService)
     {
         var sj = new StringBuilder();
-        foreach (var sourceElement in collection)
+
+        foreach (object sourceElement in collection)
         {
-            var targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
+            object targetElement = conversionService.Convert(sourceElement, sourceElement.GetType(), targetType);
             sj.Append(targetElement);
             sj.Append(Delimiter);
         }
@@ -116,7 +117,8 @@ public static class ConversionUtils
 
             if (type.IsGenericType)
             {
-                var definition = type.GetGenericTypeDefinition();
+                Type definition = type.GetGenericTypeDefinition();
+
                 if (typeof(IList<>) == definition || typeof(IEnumerator<>) == definition || typeof(ICollection<>) == definition)
                 {
                     return true;
@@ -152,7 +154,8 @@ public static class ConversionUtils
 
             if (type.IsGenericType)
             {
-                var definition = type.GetGenericTypeDefinition();
+                Type definition = type.GetGenericTypeDefinition();
+
                 if (typeof(IDictionary<,>) == definition)
                 {
                     return true;
@@ -203,7 +206,8 @@ public static class ConversionUtils
         {
             if (type.IsGenericType)
             {
-                var definition = type.GetGenericTypeDefinition();
+                Type definition = type.GetGenericTypeDefinition();
+
                 if (typeof(IList<>) == definition || typeof(IEnumerable<>) == definition || typeof(ICollection<>) == definition)
                 {
                     return (IList)Activator.CreateInstance(MakeGenericListType(type));
@@ -222,10 +226,8 @@ public static class ConversionUtils
 
             return null;
         }
-        else
-        {
-            return (IList)Activator.CreateInstance(type);
-        }
+
+        return (IList)Activator.CreateInstance(type);
     }
 
     public static IDictionary CreateCompatDictionaryFor(Type type)
@@ -239,7 +241,8 @@ public static class ConversionUtils
         {
             if (type.IsGenericType)
             {
-                var definition = type.GetGenericTypeDefinition();
+                Type definition = type.GetGenericTypeDefinition();
+
                 if (typeof(IDictionary<,>) == definition)
                 {
                     return (IDictionary)Activator.CreateInstance(MakeGenericDictionaryType(type));
@@ -258,10 +261,8 @@ public static class ConversionUtils
 
             return null;
         }
-        else
-        {
-            return (IDictionary)Activator.CreateInstance(type);
-        }
+
+        return (IDictionary)Activator.CreateInstance(type);
     }
 
     public static ConstructorInfo GetConstructorIfAvailable(Type clazz, params Type[] paramTypes)
@@ -295,7 +296,8 @@ public static class ConversionUtils
 
         try
         {
-            var method = clazz.GetMethod(methodName, args);
+            MethodInfo method = clazz.GetMethod(methodName, args);
+
             if (method != null)
             {
                 return method.IsStatic ? method : null;
@@ -332,23 +334,23 @@ public static class ConversionUtils
                 return null;
             }
         }
-        else
-        {
-            var candidates = FindMethodCandidatesByName(clazz, methodName);
-            if (candidates.Count == 1)
-            {
-                return candidates[0];
-            }
 
-            return null;
+        List<MethodInfo> candidates = FindMethodCandidatesByName(clazz, methodName);
+
+        if (candidates.Count == 1)
+        {
+            return candidates[0];
         }
+
+        return null;
     }
 
     internal static List<MethodInfo> FindMethodCandidatesByName(Type clazz, string methodName)
     {
         var candidates = new List<MethodInfo>();
-        var methods = clazz.GetMethods();
-        foreach (var method in methods)
+        MethodInfo[] methods = clazz.GetMethods();
+
+        foreach (MethodInfo method in methods)
         {
             if (methodName.Equals(method.Name))
             {
@@ -371,14 +373,14 @@ public static class ConversionUtils
 
     internal static Type MakeGenericListType(Type type)
     {
-        var elemType = type.GetGenericArguments()[0];
+        Type elemType = type.GetGenericArguments()[0];
         return typeof(List<>).MakeGenericType(elemType);
     }
 
     internal static Type MakeGenericDictionaryType(Type type)
     {
-        var keyType = type.GetGenericArguments()[0];
-        var valType = type.GetGenericArguments()[1];
+        Type keyType = type.GetGenericArguments()[0];
+        Type valType = type.GetGenericArguments()[1];
         return typeof(Dictionary<,>).MakeGenericType(keyType, valType);
     }
 }

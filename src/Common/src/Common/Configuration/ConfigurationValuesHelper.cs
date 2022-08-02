@@ -11,7 +11,8 @@ public static class ConfigurationValuesHelper
     public static string GetSetting(string key, IConfiguration primary, IConfiguration secondary, IConfiguration resolve, string def)
     {
         // First check for key in primary
-        var setting = GetString(key, primary, resolve, null);
+        string setting = GetString(key, primary, resolve, null);
+
         if (!string.IsNullOrEmpty(setting))
         {
             return setting;
@@ -19,6 +20,7 @@ public static class ConfigurationValuesHelper
 
         // Next check for key in secondary
         setting = GetString(key, secondary, resolve, null);
+
         if (!string.IsNullOrEmpty(setting))
         {
             return setting;
@@ -30,17 +32,28 @@ public static class ConfigurationValuesHelper
     /// <summary>
     /// Get setting from config searching the given configPrefix keys in order. Returns the first element with key.
     /// </summary>
-    /// <param name="key">The key of the element to return.</param>
-    /// <param name="config">IConfiguration to search through.</param>
-    /// <param name="defaultValue">The default Value if no configuration is found.</param>
-    /// <param name="configPrefixes">The prefixes to search for in given order.</param>
-    /// <returns>Config value.</returns>
+    /// <param name="key">
+    /// The key of the element to return.
+    /// </param>
+    /// <param name="config">
+    /// IConfiguration to search through.
+    /// </param>
+    /// <param name="defaultValue">
+    /// The default Value if no configuration is found.
+    /// </param>
+    /// <param name="configPrefixes">
+    /// The prefixes to search for in given order.
+    /// </param>
+    /// <returns>
+    /// Config value.
+    /// </returns>
     public static string GetSetting(string key, IConfiguration config, string defaultValue, params string[] configPrefixes)
     {
-        foreach (var prefix in configPrefixes)
+        foreach (string prefix in configPrefixes)
         {
-            var section = config.GetSection(prefix);
-            var result = section.GetValue<string>(key);
+            IConfigurationSection section = config.GetSection(prefix);
+            string result = section.GetValue<string>(key);
+
             if (!string.IsNullOrEmpty(result))
             {
                 return result;
@@ -53,15 +66,24 @@ public static class ConfigurationValuesHelper
     /// <summary>
     /// Get a setting from config by searching the given keys in order. Returns the first match.
     /// </summary>
-    /// <param name="config">IConfiguration to search through.</param>
-    /// <param name="defaultValue">The default Value if no configuration is found.</param>
-    /// <param name="configKeys">The fully-qualified keys to search for in given order.</param>
-    /// <returns>Value from config or default (if not found).</returns>
+    /// <param name="config">
+    /// IConfiguration to search through.
+    /// </param>
+    /// <param name="defaultValue">
+    /// The default Value if no configuration is found.
+    /// </param>
+    /// <param name="configKeys">
+    /// The fully-qualified keys to search for in given order.
+    /// </param>
+    /// <returns>
+    /// Value from config or default (if not found).
+    /// </returns>
     public static string GetPreferredSetting(IConfiguration config, string defaultValue, params string[] configKeys)
     {
-        foreach (var key in configKeys.Where(c => !string.IsNullOrEmpty(c)))
+        foreach (string key in configKeys.Where(c => !string.IsNullOrEmpty(c)))
         {
-            var result = config.GetValue<string>(key);
+            string result = config.GetValue<string>(key);
+
             if (!string.IsNullOrEmpty(result))
             {
                 return result;
@@ -73,8 +95,9 @@ public static class ConfigurationValuesHelper
 
     public static int GetInt(string key, IConfiguration config, IConfiguration resolve, int def)
     {
-        var val = GetString(key, config, resolve, null);
-        if (!string.IsNullOrEmpty(val) && int.TryParse(val, out var result))
+        string val = GetString(key, config, resolve, null);
+
+        if (!string.IsNullOrEmpty(val) && int.TryParse(val, out int result))
         {
             return result;
         }
@@ -84,8 +107,9 @@ public static class ConfigurationValuesHelper
 
     public static double GetDouble(string key, IConfiguration config, IConfiguration resolve, double def)
     {
-        var val = GetString(key, config, resolve, null);
-        if (!string.IsNullOrEmpty(val) && double.TryParse(val, out var result))
+        string val = GetString(key, config, resolve, null);
+
+        if (!string.IsNullOrEmpty(val) && double.TryParse(val, out double result))
         {
             return result;
         }
@@ -95,8 +119,9 @@ public static class ConfigurationValuesHelper
 
     public static bool GetBoolean(string key, IConfiguration config, IConfiguration resolve, bool def)
     {
-        var val = GetString(key, config, resolve, null);
-        if (!string.IsNullOrEmpty(val) && bool.TryParse(val, out var result))
+        string val = GetString(key, config, resolve, null);
+
+        if (!string.IsNullOrEmpty(val) && bool.TryParse(val, out bool result))
         {
             return result;
         }
@@ -116,7 +141,8 @@ public static class ConfigurationValuesHelper
             throw new ArgumentNullException(nameof(config));
         }
 
-        var val = config[key];
+        string val = config[key];
+
         if (!string.IsNullOrEmpty(val))
         {
             return PropertyPlaceholderHelper.ResolvePlaceholders(val, resolve);

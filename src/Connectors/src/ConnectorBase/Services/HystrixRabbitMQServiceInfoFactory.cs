@@ -8,9 +8,13 @@ namespace Steeltoe.Connector.Services;
 
 public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
 {
-    public static readonly Tags HystrixRabbitServiceTags = new ("hystrix-amqp");
+    private static readonly string[] Scheme =
+    {
+        RabbitMQServiceInfo.AmqpScheme,
+        RabbitMQServiceInfo.AmqpSecureScheme
+    };
 
-    private static readonly string[] Scheme = { RabbitMQServiceInfo.AmqpScheme, RabbitMQServiceInfo.AmqpSecureScheme };
+    public static readonly Tags HystrixRabbitServiceTags = new("hystrix-amqp");
 
     public HystrixRabbitMQServiceInfoFactory()
         : base(HystrixRabbitServiceTags, Scheme)
@@ -24,12 +28,13 @@ public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        var amqpCredentials = binding.Credentials["amqp"];
-        var uri = GetUriFromCredentials(amqpCredentials);
-        var sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
+        Credential amqpCredentials = binding.Credentials["amqp"];
+        string uri = GetUriFromCredentials(amqpCredentials);
+        bool sslEnabled = GetBoolFromCredentials(amqpCredentials, "ssl");
+
         if (amqpCredentials.ContainsKey("uris"))
         {
-            var uris = GetListFromCredentials(amqpCredentials, "uris");
+            List<string> uris = GetListFromCredentials(amqpCredentials, "uris");
             return new HystrixRabbitMQServiceInfo(binding.Name, uri, uris, sslEnabled);
         }
 
@@ -40,11 +45,12 @@ public class HystrixRabbitMQServiceInfoFactory : ServiceInfoFactory
     {
         if (credentials.ContainsKey("amqp"))
         {
-            var amqpDict = credentials["amqp"];
-            var uri = GetStringFromCredentials(amqpDict, UriKeys);
+            Credential amqpDict = credentials["amqp"];
+            string uri = GetStringFromCredentials(amqpDict, UriKeys);
+
             if (uri != null)
             {
-                foreach (var uriScheme in UriSchemes)
+                foreach (string uriScheme in UriSchemes)
                 {
                     if (uri.StartsWith($"{uriScheme}://"))
                     {

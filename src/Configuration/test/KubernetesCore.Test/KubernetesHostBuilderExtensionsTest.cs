@@ -4,6 +4,7 @@
 
 using k8s;
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,12 +21,12 @@ public class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_DefaultWebHost_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        var hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestServerStartup>();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().UseStartup<TestServerStartup>();
 
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
-        var serviceProvider = hostBuilder.Build().Services;
+        IServiceProvider serviceProvider = hostBuilder.Build().Services;
         var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
-        var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+        IApplicationInstanceInfo appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
@@ -36,12 +37,12 @@ public class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_WebHostBuilder_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        var hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>();
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>();
 
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
-        var serviceProvider = hostBuilder.Build().Services;
+        IServiceProvider serviceProvider = hostBuilder.Build().Services;
         var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
-        var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+        IApplicationInstanceInfo appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
@@ -52,12 +53,12 @@ public class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_DefaultHost_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        var hostBuilder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerStartup>());
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(builder => builder.UseStartup<TestServerStartup>());
 
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
-        var serviceProvider = hostBuilder.Build().Services;
+        IServiceProvider serviceProvider = hostBuilder.Build().Services;
         var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
-        var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+        IApplicationInstanceInfo appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
@@ -68,11 +69,11 @@ public class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_HostBuilder_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        var hostBuilder = new HostBuilder().AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
+        IHostBuilder hostBuilder = new HostBuilder().AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
 
-        var serviceProvider = hostBuilder.Build().Services;
+        IServiceProvider serviceProvider = hostBuilder.Build().Services;
         var config = serviceProvider.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
-        var appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+        IApplicationInstanceInfo appInfo = serviceProvider.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
@@ -83,22 +84,24 @@ public class KubernetesHostBuilderExtensionsTest
     public void AddKubernetesConfiguration_WebApplicationBuilder_AddsConfig()
     {
         using var server = new MockKubeApiServer();
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostBuilder.AddKubernetesConfiguration(GetFakeClientSetup(server.Uri.ToString()));
 
-        var host = hostBuilder.Build();
+        WebApplication host = hostBuilder.Build();
         var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
-        var appInfo = host.Services.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
+        IApplicationInstanceInfo appInfo = host.Services.GetServices<IApplicationInstanceInfo>().SingleOrDefault();
 
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapProvider))) == 2);
         Assert.True(config.Providers.Count(ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretProvider))) == 2);
         Assert.IsAssignableFrom<KubernetesApplicationOptions>(appInfo);
     }
 
-    private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host) =>
-        fakeClient =>
+    private Action<KubernetesClientConfiguration> GetFakeClientSetup(string host)
+    {
+        return fakeClient =>
         {
             fakeClient.Namespace = "default";
             fakeClient.Host = host;
         };
+    }
 }

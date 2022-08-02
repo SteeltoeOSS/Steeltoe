@@ -15,9 +15,7 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        return ConversionUtils.CanCreateCompatDictionaryFor(targetType) &&
-               CanConvertKey(sourceType, targetType) &&
-               CanConvertValue(sourceType, targetType);
+        return ConversionUtils.CanCreateCompatDictionaryFor(targetType) && CanConvertKey(sourceType, targetType) && CanConvertValue(sourceType, targetType);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -28,21 +26,23 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         }
 
         var sourceDict = source as IDictionary;
-        var len = sourceDict.Count;
+        int len = sourceDict.Count;
 
         // Shortcut if possible...
-        var copyRequired = !targetType.IsInstanceOfType(source);
+        bool copyRequired = !targetType.IsInstanceOfType(source);
+
         if (!copyRequired && len == 0)
         {
             return source;
         }
 
-        var targetKeyType = ConversionUtils.GetDictionaryKeyType(targetType);
-        var targetValueType = ConversionUtils.GetDictionaryValueType(targetType);
-        var sourceKeyType = ConversionUtils.GetDictionaryKeyType(sourceType);
-        var sourceValueType = ConversionUtils.GetDictionaryValueType(sourceType);
+        Type targetKeyType = ConversionUtils.GetDictionaryKeyType(targetType);
+        Type targetValueType = ConversionUtils.GetDictionaryValueType(targetType);
+        Type sourceKeyType = ConversionUtils.GetDictionaryKeyType(sourceType);
+        Type sourceValueType = ConversionUtils.GetDictionaryValueType(sourceType);
 
-        var dict = ConversionUtils.CreateCompatDictionaryFor(targetType);
+        IDictionary dict = ConversionUtils.CreateCompatDictionaryFor(targetType);
+
         if (dict == null)
         {
             throw new InvalidOperationException("Unable to create compatible dictionary");
@@ -50,7 +50,8 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
 
         if (!targetType.IsGenericType)
         {
-            var enumerator = sourceDict.GetEnumerator();
+            IDictionaryEnumerator enumerator = sourceDict.GetEnumerator();
+
             while (enumerator.MoveNext())
             {
                 dict.Add(enumerator.Key, enumerator.Value);
@@ -58,11 +59,12 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         }
         else
         {
-            var enumerator = sourceDict.GetEnumerator();
+            IDictionaryEnumerator enumerator = sourceDict.GetEnumerator();
+
             while (enumerator.MoveNext())
             {
-                var targetKey = ConvertKey(enumerator.Key, sourceKeyType, targetKeyType);
-                var targetValue = ConvertValue(enumerator.Value, sourceValueType, targetValueType);
+                object targetKey = ConvertKey(enumerator.Key, sourceKeyType, targetKeyType);
+                object targetValue = ConvertValue(enumerator.Value, sourceValueType, targetValueType);
                 dict.Add(targetKey, targetValue);
             }
         }
@@ -76,23 +78,19 @@ public class DictionaryToDictionaryConverter : AbstractToCollectionConverter
         {
             (typeof(IDictionary), typeof(IDictionary)),
             (typeof(IDictionary), typeof(IDictionary<,>)),
-            (typeof(IDictionary), typeof(Dictionary<,>)),
+            (typeof(IDictionary), typeof(Dictionary<,>))
         };
     }
 
     private bool CanConvertKey(Type sourceType, Type targetType)
     {
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetDictionaryKeyType(sourceType),
-            ConversionUtils.GetDictionaryKeyType(targetType),
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetDictionaryKeyType(sourceType), ConversionUtils.GetDictionaryKeyType(targetType),
             ConversionService);
     }
 
     private bool CanConvertValue(Type sourceType, Type targetType)
     {
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetDictionaryValueType(sourceType),
-            ConversionUtils.GetDictionaryValueType(targetType),
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetDictionaryValueType(sourceType), ConversionUtils.GetDictionaryValueType(targetType),
             ConversionService);
     }
 

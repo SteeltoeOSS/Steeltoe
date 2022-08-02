@@ -24,10 +24,12 @@ public class KubernetesActuatorsStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapAllActuators(_mediaTypeVersion);
             });
+
             app.ApplicationServices.InitializeAvailability();
         };
     }

@@ -6,7 +6,17 @@ namespace Steeltoe.Common.Util;
 
 public abstract class AbstractAttributeAccessor : IAttributeAccessor
 {
-    private readonly Dictionary<string, object> _attributes = new ();
+    private readonly Dictionary<string, object> _attributes = new();
+
+    public virtual string[] AttributeNames
+    {
+#pragma warning disable S2365 // Properties should not make collection or array copies
+        get
+        {
+            return _attributes.Keys.ToArray();
+        }
+#pragma warning restore S2365 // Properties should not make collection or array copies
+    }
 
     public virtual void SetAttribute(string name, object value)
     {
@@ -32,7 +42,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
             throw new ArgumentNullException(nameof(name));
         }
 
-        _attributes.TryGetValue(name, out var result);
+        _attributes.TryGetValue(name, out object result);
         return result;
     }
 
@@ -43,7 +53,7 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
             throw new ArgumentNullException(nameof(name));
         }
 
-        _attributes.TryGetValue(name, out var original);
+        _attributes.TryGetValue(name, out object original);
         _attributes.Remove(name);
         return original;
     }
@@ -56,13 +66,6 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
         }
 
         return _attributes.ContainsKey(name);
-    }
-
-    public virtual string[] AttributeNames
-    {
-#pragma warning disable S2365 // Properties should not make collection or array copies
-        get { return _attributes.Keys.ToArray(); }
-#pragma warning restore S2365 // Properties should not make collection or array copies
     }
 
     public override bool Equals(object obj)
@@ -82,9 +85,9 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
             return false;
         }
 
-        foreach (var kvp in _attributes)
+        foreach (KeyValuePair<string, object> kvp in _attributes)
         {
-            if (!accessor._attributes.TryGetValue(kvp.Key, out var value2))
+            if (!accessor._attributes.TryGetValue(kvp.Key, out object value2))
             {
                 return false;
             }
@@ -110,8 +113,9 @@ public abstract class AbstractAttributeAccessor : IAttributeAccessor
             throw new ArgumentNullException(nameof(source));
         }
 
-        var attributeNames = source.AttributeNames;
-        foreach (var attributeName in attributeNames)
+        string[] attributeNames = source.AttributeNames;
+
+        foreach (string attributeName in attributeNames)
         {
             SetAttribute(attributeName, source.GetAttribute(attributeName));
         }

@@ -6,14 +6,14 @@ namespace Steeltoe.Common.Converter;
 
 public class ConverterNotFoundException : ConversionException
 {
+    public Type SourceType { get; }
+
+    public Type TargetType { get; }
+
     public ConverterNotFoundException(Type sourceType, Type targetType)
         : base($"No converter found capable of converting from type [{sourceType}] to type [{targetType}]")
     {
         SourceType = sourceType;
         TargetType = targetType;
     }
-
-    public Type SourceType { get; }
-
-    public Type TargetType { get; }
 }

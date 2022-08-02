@@ -11,6 +11,9 @@ public static class HostingHelpers
 {
     public static IHostEnvironment GetHostingEnvironment(string environmentName = "EnvironmentName")
     {
-        return new HostingEnvironment { EnvironmentName = environmentName };
+        return new HostingEnvironment
+        {
+            EnvironmentName = environmentName
+        };
     }
 }

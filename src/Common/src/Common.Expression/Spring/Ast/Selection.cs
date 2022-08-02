@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Collections;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -36,9 +36,9 @@ public class Selection : SpelNode
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
-        var op = state.GetActiveContextObject();
-        var operand = op.Value;
-        var selectionCriteria = children[0];
+        ITypedValue op = state.GetActiveContextObject();
+        object operand = op.Value;
+        SpelNode selectionCriteria = children[0];
 
         if (operand is IDictionary mapData)
         {
@@ -53,7 +53,8 @@ public class Selection : SpelNode
                     var kvPair = new TypedValue(entry);
                     state.PushActiveContextObject(kvPair);
                     state.EnterScope();
-                    var val = selectionCriteria.GetValueInternal(state).Value;
+                    object val = selectionCriteria.GetValueInternal(state).Value;
+
                     if (val is bool boolean)
                     {
                         if (boolean)
@@ -88,7 +89,7 @@ public class Selection : SpelNode
             if (_variant == Last)
             {
                 var resultMap = new Dictionary<object, object>();
-                result.TryGetValue(lastKey, out var lastValue);
+                result.TryGetValue(lastKey, out object lastValue);
                 resultMap[lastKey] = lastValue;
                 return new TypedValueHolderValueRef(new TypedValue(resultMap), this);
             }
@@ -101,14 +102,16 @@ public class Selection : SpelNode
             var operandAsArray = data as Array;
 
             var result = new List<object>();
-            var index = 0;
-            foreach (var element in data)
+            int index = 0;
+
+            foreach (object element in data)
             {
                 try
                 {
                     state.PushActiveContextObject(new TypedValue(element));
                     state.EnterScope("index", index);
-                    var val = selectionCriteria.GetValueInternal(state).Value;
+                    object val = selectionCriteria.GetValueInternal(state).Value;
+
                     if (val is bool boolean)
                     {
                         if (boolean)
@@ -142,7 +145,7 @@ public class Selection : SpelNode
 
             if (_variant == Last)
             {
-                var lastElem = result == null || result.Count == 0 ? null : result[result.Count - 1];
+                object lastElem = result == null || result.Count == 0 ? null : result[result.Count - 1];
                 return new TypedValueHolderValueRef(new TypedValue(lastElem), this);
             }
 
@@ -155,7 +158,8 @@ public class Selection : SpelNode
             if (operandAsArray != null)
             {
                 Type elementType = null;
-                var typeDesc = op.TypeDescriptor;
+                Type typeDesc = op.TypeDescriptor;
+
                 if (typeDesc != null)
                 {
                     elementType = ReflectionHelper.GetElementTypeDescriptor(typeDesc);
@@ -192,7 +196,7 @@ public class Selection : SpelNode
             All => "?[",
             First => "^[",
             Last => "$[",
-            _ => string.Empty,
+            _ => string.Empty
         };
     }
 }

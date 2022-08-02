@@ -13,7 +13,7 @@ public class CloudFoundryApplicationOptionsTest
     public void Constructor_WithNoVcapApplicationConfiguration()
     {
         var builder = new ConfigurationBuilder();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryApplicationOptions(config);
 
@@ -50,7 +50,7 @@ public class CloudFoundryApplicationOptionsTest
     [Fact]
     public void Constructor_WithVcapApplicationConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
             {
                 ""vcap"": {
                     ""application"" : {
@@ -79,10 +79,10 @@ public class CloudFoundryApplicationOptionsTest
                 }
             }";
 
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryApplicationOptions(config);
 

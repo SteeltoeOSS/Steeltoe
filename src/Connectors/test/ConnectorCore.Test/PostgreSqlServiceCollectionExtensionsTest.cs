@@ -62,7 +62,7 @@ public class PostgreSqlServiceCollectionExtensionsTest
     public void AddPostgreSqlHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddPostgresHealthContributor(config);
 
@@ -74,7 +74,7 @@ public class PostgreSqlServiceCollectionExtensionsTest
     public void AddPostgreSqlHealthContributor_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresHealthContributor(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -86,7 +86,7 @@ public class PostgreSqlServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddPostgresHealthContributor(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;

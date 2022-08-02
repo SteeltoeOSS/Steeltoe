@@ -16,11 +16,17 @@ public class Client : ManagementClient
     }
 
     internal async Task<IEnumerable<EnqBinding>> GetBindingsBySource(string vhost, string exchangeName)
-        => await GetBindingsWithSourceAsync(await GetExchange(vhost, exchangeName));
+    {
+        return await GetBindingsWithSourceAsync(await GetExchange(vhost, exchangeName));
+    }
 
     internal async Task<Exchange> GetExchange(string vhost, string exchange)
-        => await GetExchangeAsync(exchange, this.GetVhost(vhost));
+    {
+        return await GetExchangeAsync(exchange, this.GetVhost(vhost));
+    }
 
     internal async Task<Queue> GetQueue(string vhost, string queueName)
-        => await GetQueueAsync(queueName, this.GetVhost(vhost));
+    {
+        return await GetQueueAsync(queueName, this.GetVhost(vhost));
+    }
 }

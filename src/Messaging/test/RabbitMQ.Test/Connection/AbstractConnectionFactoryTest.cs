@@ -19,10 +19,15 @@ public abstract class AbstractConnectionFactoryTest
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
 
         // var mockLogger = new Mock<ILoggerFactory>();
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
         var listener = new IncrementConnectionListener();
-        connectionFactory.SetConnectionListeners(new List<IConnectionListener> { listener });
-        var con = connectionFactory.CreateConnection();
+
+        connectionFactory.SetConnectionListeners(new List<IConnectionListener>
+        {
+            listener
+        });
+
+        IConnection con = connectionFactory.CreateConnection();
         Assert.Equal(1, listener.Called);
 
         // mockLogger.Verify((l) => l.Log(LogLevel.Information, 0, It.IsAny<It.IsAnyType>(), null, (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()), Times.AtLeast(2));
@@ -53,10 +58,15 @@ public abstract class AbstractConnectionFactoryTest
         var mockConnection = new Mock<RC.IConnection>();
         var listener = new IncrementConnectionListener();
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
-        var con = connectionFactory.CreateConnection();
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        IConnection con = connectionFactory.CreateConnection();
         Assert.Equal(0, listener.Called);
-        connectionFactory.SetConnectionListeners(new List<IConnectionListener> { listener });
+
+        connectionFactory.SetConnectionListeners(new List<IConnectionListener>
+        {
+            listener
+        });
+
         Assert.Equal(1, listener.Called);
         con.Close();
         Assert.Equal(1, listener.Called);
@@ -76,13 +86,11 @@ public abstract class AbstractConnectionFactoryTest
         var mockConnection1 = new Mock<RC.IConnection>();
         var mockConnection2 = new Mock<RC.IConnection>();
         var mockChanel2 = new Mock<RC.IModel>();
-        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection1.Object)
-            .Returns(mockConnection2.Object);
+        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection1.Object).Returns(mockConnection2.Object);
         mockConnection1.Setup(c => c.IsOpen).Returns(false);
         mockConnection2.Setup(c => c.CreateModel()).Returns(mockChanel2.Object);
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
-        var connection = connectionFactory.CreateConnection();
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        IConnection connection = connectionFactory.CreateConnection();
 
         // the dead connection should be discarded
         _ = connection.CreateChannel();
@@ -96,7 +104,7 @@ public abstract class AbstractConnectionFactoryTest
     public void TestDestroyBeforeUsed()
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
         connectionFactory.Destroy();
         mockConnectionFactory.Verify(f => f.CreateConnection(It.IsAny<string>()), Times.Never);
     }

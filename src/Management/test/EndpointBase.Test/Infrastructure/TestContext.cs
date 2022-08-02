@@ -20,7 +20,7 @@ internal sealed class TestContext : IDisposable
     private IConfigurationRoot _configurationRoot;
 
     /// <summary>
-    /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection"/>.
+    /// Gets or sets a delegate that allows tests to configure <see cref="IServiceCollection" />.
     /// </summary>
     public Action<IServiceCollection, IConfiguration> AdditionalServices { get; set; }
 

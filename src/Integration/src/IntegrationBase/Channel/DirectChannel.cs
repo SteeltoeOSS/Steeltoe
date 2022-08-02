@@ -10,8 +10,7 @@ using Steeltoe.Messaging.Support;
 namespace Steeltoe.Integration.Channel;
 
 /// <summary>
-///  A channel that invokes a single subscriber for each sent Message.
-///  The invocation will occur in the sender's thread.
+/// A channel that invokes a single subscriber for each sent Message. The invocation will occur in the sender's thread.
 /// </summary>
 public class DirectChannel : AbstractSubscribableChannel
 {

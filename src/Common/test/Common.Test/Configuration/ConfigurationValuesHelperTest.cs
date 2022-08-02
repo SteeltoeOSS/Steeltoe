@@ -19,7 +19,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetString("a:b", config, null, null);
+        string result = ConfigurationValuesHelper.GetString("a:b", config, null, null);
         Assert.Equal("astring", result);
     }
 
@@ -33,7 +33,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetInt("a:b", config, null, 500);
+        int result = ConfigurationValuesHelper.GetInt("a:b", config, null, 500);
         Assert.Equal(100, result);
     }
 
@@ -47,7 +47,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetDouble("a:b", config, null, 500.00);
+        double result = ConfigurationValuesHelper.GetDouble("a:b", config, null, 500.00);
         Assert.Equal(100.00, result);
     }
 
@@ -61,7 +61,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetBoolean("a:b", config, null, false);
+        bool result = ConfigurationValuesHelper.GetBoolean("a:b", config, null, false);
         Assert.True(result);
     }
 
@@ -75,7 +75,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetInt("a:b:c", config, null, 100);
+        int result = ConfigurationValuesHelper.GetInt("a:b:c", config, null, 100);
         Assert.Equal(100, result);
     }
 
@@ -89,7 +89,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetDouble("a:b:c", config, null, 100.00);
+        double result = ConfigurationValuesHelper.GetDouble("a:b:c", config, null, 100.00);
         Assert.Equal(100.00, result);
     }
 
@@ -103,7 +103,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetBoolean("a:b:c", config, null, true);
+        bool result = ConfigurationValuesHelper.GetBoolean("a:b:c", config, null, true);
         Assert.True(result);
     }
 
@@ -117,7 +117,7 @@ public class ConfigurationValuesHelperTest
 
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
 
-        var result = ConfigurationValuesHelper.GetString("a:b:c", config, null, "foobar");
+        string result = ConfigurationValuesHelper.GetString("a:b:c", config, null, "foobar");
         Assert.Equal("foobar", result);
     }
 
@@ -128,6 +128,7 @@ public class ConfigurationValuesHelperTest
         {
             { "a:b", "${a:b:c}" }
         };
+
         var dict2 = new Dictionary<string, string>
         {
             { "a:b:c", "astring" }
@@ -136,7 +137,7 @@ public class ConfigurationValuesHelperTest
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(dict2).Build();
 
-        var result = ConfigurationValuesHelper.GetString("a:b", config, resolve, "foobar");
+        string result = ConfigurationValuesHelper.GetString("a:b", config, resolve, "foobar");
         Assert.Equal("astring", result);
     }
 
@@ -147,6 +148,7 @@ public class ConfigurationValuesHelperTest
         {
             { "a:b", "${a:b:c}" }
         };
+
         var dict2 = new Dictionary<string, string>
         {
             { "a:b:d", "astring" }
@@ -155,7 +157,7 @@ public class ConfigurationValuesHelperTest
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(dict2).Build();
 
-        var result = ConfigurationValuesHelper.GetString("a:b", config, resolve, null);
+        string result = ConfigurationValuesHelper.GetString("a:b", config, resolve, null);
         Assert.Equal("${a:b:c}", result);
     }
 
@@ -166,6 +168,7 @@ public class ConfigurationValuesHelperTest
         {
             { "a:b", "${a:b:c?placeholderdefault}" }
         };
+
         var dict2 = new Dictionary<string, string>
         {
             { "a:b:d", "astring" }
@@ -174,7 +177,7 @@ public class ConfigurationValuesHelperTest
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
         IConfiguration resolve = new ConfigurationBuilder().AddInMemoryCollection(dict2).Build();
 
-        var result = ConfigurationValuesHelper.GetString("a:b", config, resolve, "foobar");
+        string result = ConfigurationValuesHelper.GetString("a:b", config, resolve, "foobar");
         Assert.Equal("placeholderdefault", result);
     }
 
@@ -185,6 +188,7 @@ public class ConfigurationValuesHelperTest
         {
             { "a:b", "setting1" }
         };
+
         var dict2 = new Dictionary<string, string>
         {
             { "a:b", "setting2" }
@@ -193,7 +197,7 @@ public class ConfigurationValuesHelperTest
         IConfiguration config1 = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
         IConfiguration config2 = new ConfigurationBuilder().AddInMemoryCollection(dict2).Build();
 
-        var result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
+        string result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
         Assert.Equal("setting1", result);
     }
 
@@ -204,6 +208,7 @@ public class ConfigurationValuesHelperTest
         {
             { "a:b:c", "setting1" }
         };
+
         var dict2 = new Dictionary<string, string>
         {
             { "a:b", "setting2" }
@@ -212,7 +217,7 @@ public class ConfigurationValuesHelperTest
         IConfiguration config1 = new ConfigurationBuilder().AddInMemoryCollection(dict).Build();
         IConfiguration config2 = new ConfigurationBuilder().AddInMemoryCollection(dict2).Build();
 
-        var result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
+        string result = ConfigurationValuesHelper.GetSetting("a:b", config1, config2, null, "foobar");
         Assert.Equal("setting2", result);
     }
 }

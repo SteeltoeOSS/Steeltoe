@@ -11,7 +11,27 @@ namespace Steeltoe.Integration.Rabbit.Support;
 
 public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, IRabbitHeaderMapper
 {
-    private static readonly List<string> StandardHeaderNames = new ();
+    private static readonly List<string> StandardHeaderNames = new();
+
+    public static string[] InboundRequestHeaders { get; } =
+    {
+        "*"
+    };
+
+    public static string[] InboundReplyHeaders { get; } = SafeOutboundHeaders;
+
+    public static string[] SafeOutboundHeaders { get; } =
+    {
+        "!x-*",
+        "*"
+    };
+
+    public static string[] OutboundRequestHeaders { get; } = SafeOutboundHeaders;
+
+    public static string[] OutboundReplyHeaders { get; } =
+    {
+        "*"
+    };
 
     static DefaultRabbitHeaderMapper()
     {
@@ -70,33 +90,25 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
 
     protected override void PopulateStandardHeaders(IDictionary<string, object> headers, IMessageHeaders target)
     {
-        headers
-            .Where(header => StandardHeaderNames.Contains(header.Key) && !string.IsNullOrEmpty(header.Value?.ToString()))
-            .ToList()
+        headers.Where(header => StandardHeaderNames.Contains(header.Key) && !string.IsNullOrEmpty(header.Value?.ToString())).ToList()
             .ForEach(header => target.Add(header.Key, header.Value));
     }
 
     protected override void PopulateUserDefinedHeader(string headerName, object headerValue, IMessageHeaders target)
     {
-        if (!target.ContainsKey(headerName)
-            && !RabbitMessageHeaders.ContentType.Equals(headerName)
-            && !headerName.StartsWith("json"))
+        if (!target.ContainsKey(headerName) && !RabbitMessageHeaders.ContentType.Equals(headerName) && !headerName.StartsWith("json"))
         {
             target.Add(headerName, headerValue);
         }
     }
 
-    public static string[] InboundRequestHeaders { get; } = { "*" };
+    public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger)
+    {
+        return new(InboundRequestHeaders, InboundReplyHeaders, logger);
+    }
 
-    public static string[] InboundReplyHeaders { get; } = SafeOutboundHeaders;
-
-    public static string[] SafeOutboundHeaders { get; } = { "!x-*", "*" };
-
-    public static string[] OutboundRequestHeaders { get; } = SafeOutboundHeaders;
-
-    public static string[] OutboundReplyHeaders { get; } = { "*" };
-
-    public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger) => new (InboundRequestHeaders, InboundReplyHeaders, logger);
-
-    public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger) => new (OutboundRequestHeaders, OutboundReplyHeaders, logger);
+    public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger)
+    {
+        return new(OutboundRequestHeaders, OutboundReplyHeaders, logger);
+    }
 }

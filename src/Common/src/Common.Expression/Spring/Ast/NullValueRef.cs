@@ -6,9 +6,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class NullValueRef : IValueRef
 {
-    public static readonly NullValueRef Instance = new ();
+    public static readonly NullValueRef Instance = new();
 
-    public ITypedValue GetValue() => TypedValue.Null;
+    public bool IsWritable => false;
+
+    public ITypedValue GetValue()
+    {
+        return TypedValue.Null;
+    }
 
     public void SetValue(object newValue)
     {
@@ -17,6 +22,4 @@ public class NullValueRef : IValueRef
         // would be unfortunate.
         throw new SpelEvaluationException(0, SpelMessage.NotAssignable, "null");
     }
-
-    public bool IsWritable => false;
 }

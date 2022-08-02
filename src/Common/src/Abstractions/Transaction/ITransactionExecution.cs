@@ -6,11 +6,11 @@ namespace Steeltoe.Common.Transaction;
 
 public interface ITransactionExecution
 {
-    void SetRollbackOnly();
-
     bool IsCompleted { get; }
 
     bool IsRollbackOnly { get; }
 
     bool IsNewTransaction { get; }
+
+    void SetRollbackOnly();
 }

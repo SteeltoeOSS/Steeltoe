@@ -14,7 +14,11 @@ public interface IBinderFactoryListener
     /// <summary>
     /// Applying additional capabilities to the binder after the binder context has been initialized.
     /// </summary>
-    /// <param name="configurationName">the binders configuration name.</param>
-    /// <param name="binderContext">the configured service provider.</param>
+    /// <param name="configurationName">
+    /// the binders configuration name.
+    /// </param>
+    /// <param name="binderContext">
+    /// the configured service provider.
+    /// </param>
     void AfterBinderInitialized(string configurationName, IApplicationContext binderContext);
 }

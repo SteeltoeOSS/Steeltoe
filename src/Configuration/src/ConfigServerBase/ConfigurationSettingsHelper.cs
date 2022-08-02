@@ -32,7 +32,7 @@ public static class ConfigurationSettingsHelper
             throw new ArgumentNullException(nameof(config));
         }
 
-        var configurationSection = config.GetSection(configPrefix);
+        IConfigurationSection configurationSection = config.GetSection(configPrefix);
 
         settings.Name = GetApplicationName(configPrefix, config, settings.Name);
         settings.Environment = GetEnvironment(configurationSection, settings.Environment);
@@ -183,60 +183,30 @@ public static class ConfigurationSettingsHelper
 
     private static string GetClientSecret(string configPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting(
-            "credentials:client_secret",
-            configuration,
-            ConfigServerClientSettings.DefaultClientSecret,
-            VcapServicesConfigserverPrefix,
-            VcapServicesConfigserver30Prefix,
-            VcapServicesConfigserverAltPrefix,
-            configPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:client_secret", configuration, ConfigServerClientSettings.DefaultClientSecret,
+            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, configPrefix);
     }
 
     private static string GetClientId(string configPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting(
-            "credentials:client_id",
-            configuration,
-            ConfigServerClientSettings.DefaultClientId,
-            VcapServicesConfigserverPrefix,
-            VcapServicesConfigserver30Prefix,
-            VcapServicesConfigserverAltPrefix,
-            configPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:client_id", configuration, ConfigServerClientSettings.DefaultClientId,
+            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, configPrefix);
     }
 
     private static string GetAccessTokenUri(string configPrefix, IConfiguration configuration)
     {
-        return ConfigurationValuesHelper.GetSetting(
-            "credentials:access_token_uri",
-            configuration,
-            ConfigServerClientSettings.DefaultAccessTokenUri,
-            VcapServicesConfigserverPrefix,
-            VcapServicesConfigserver30Prefix,
-            VcapServicesConfigserverAltPrefix,
-            configPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:access_token_uri", configuration, ConfigServerClientSettings.DefaultAccessTokenUri,
+            VcapServicesConfigserverPrefix, VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix, configPrefix);
     }
 
     private static string GetApplicationName(string configPrefix, IConfiguration configuration, string defName)
     {
-        return ConfigurationValuesHelper.GetSetting(
-            "name",
-            configuration,
-            defName,
-            configPrefix,
-            SpringApplicationPrefix,
-            VcapApplicationPrefix);
+        return ConfigurationValuesHelper.GetSetting("name", configuration, defName, configPrefix, SpringApplicationPrefix, VcapApplicationPrefix);
     }
 
     private static string GetCloudFoundryUri(string configPrefix, IConfiguration configuration, string def)
     {
-        return ConfigurationValuesHelper.GetSetting(
-            "credentials:uri",
-            configuration,
-            def,
-            configPrefix,
-            VcapServicesConfigserverPrefix,
-            VcapServicesConfigserver30Prefix,
-            VcapServicesConfigserverAltPrefix);
+        return ConfigurationValuesHelper.GetSetting("credentials:uri", configuration, def, configPrefix, VcapServicesConfigserverPrefix,
+            VcapServicesConfigserver30Prefix, VcapServicesConfigserverAltPrefix);
     }
 }

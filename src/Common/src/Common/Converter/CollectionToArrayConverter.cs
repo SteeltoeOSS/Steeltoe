@@ -23,8 +23,7 @@ public class CollectionToArrayConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -34,20 +33,22 @@ public class CollectionToArrayConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var targetElementType = ConversionUtils.GetElementType(targetType);
+        Type targetElementType = ConversionUtils.GetElementType(targetType);
+
         if (targetElementType == null)
         {
             throw new InvalidOperationException("No target element type");
         }
 
         var enumerable = source as IEnumerable;
-        var len = ConversionUtils.Count(enumerable);
+        int len = ConversionUtils.Count(enumerable);
 
         var array = Array.CreateInstance(targetElementType, len);
-        var i = 0;
-        foreach (var sourceElement in enumerable)
+        int i = 0;
+
+        foreach (object sourceElement in enumerable)
         {
-            var targetElement = _conversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
+            object targetElement = _conversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
             array.SetValue(targetElement, i++);
         }
 
@@ -59,7 +60,7 @@ public class CollectionToArrayConverter : AbstractGenericConditionalConverter
         return new HashSet<(Type Source, Type Target)>
         {
             (typeof(ICollection), typeof(object[])),
-            (typeof(ISet<>), typeof(object[])),
+            (typeof(ISet<>), typeof(object[]))
         };
     }
 }

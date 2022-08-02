@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Net;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -13,7 +13,8 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions managementOptions, ILogger<PrometheusScraperEndpointMiddleware> logger = null)
+    public PrometheusScraperEndpointMiddleware(RequestDelegate next, PrometheusScraperEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<PrometheusScraperEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
         _next = next;
@@ -31,19 +32,19 @@ public class PrometheusScraperEndpointMiddleware : EndpointMiddleware<string>
 
     public override string HandleRequest()
     {
-        var result = endpoint.Invoke();
+        string result = endpoint.Invoke();
         return result;
     }
 
     protected internal Task HandleMetricsRequestAsync(HttpContext context)
     {
-        var request = context.Request;
-        var response = context.Response;
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
 
         logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
         // GET /metrics/{metricName}?tag=key:value&tag=key:value
-        var serialInfo = HandleRequest();
+        string serialInfo = HandleRequest();
 
         if (serialInfo == null)
         {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
+using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
 
 namespace Steeltoe.Stream.Binding;
@@ -18,30 +19,16 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
     private readonly INewDestinationBindingCallback _newBindingCallback;
     private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
 
-    public BindingServiceOptions Options
-    {
-        get
-        {
-            return _optionsMonitor.CurrentValue;
-        }
-    }
+    public BindingServiceOptions Options => _optionsMonitor.CurrentValue;
 
-    public BinderAwareChannelResolver(
-        IApplicationContext context,
-        IOptionsMonitor<BindingServiceOptions> optionsMonitor,
-        IBindingService bindingService,
-        SubscribableChannelBindingTargetFactory bindingTargetFactory,
-        DynamicDestinationsBindable dynamicDestinationsBindable)
+    public BinderAwareChannelResolver(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBindingService bindingService,
+        SubscribableChannelBindingTargetFactory bindingTargetFactory, DynamicDestinationsBindable dynamicDestinationsBindable)
         : this(context, optionsMonitor, bindingService, bindingTargetFactory, dynamicDestinationsBindable, null)
     {
     }
 
-    public BinderAwareChannelResolver(
-        IApplicationContext context,
-        IOptionsMonitor<BindingServiceOptions> optionsMonitor,
-        IBindingService bindingService,
-        SubscribableChannelBindingTargetFactory bindingTargetFactory,
-        DynamicDestinationsBindable dynamicDestinationsBindable,
+    public BinderAwareChannelResolver(IApplicationContext context, IOptionsMonitor<BindingServiceOptions> optionsMonitor, IBindingService bindingService,
+        SubscribableChannelBindingTargetFactory bindingTargetFactory, DynamicDestinationsBindable dynamicDestinationsBindable,
         INewDestinationBindingCallback callback)
         : base(context)
     {
@@ -54,14 +41,16 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
 
     public override IMessageChannel ResolveDestination(string name)
     {
-        var options = Options;
-        var dynamicDestinations = options.DynamicDestinations;
+        BindingServiceOptions options = Options;
+        List<string> dynamicDestinations = options.DynamicDestinations;
 
         IMessageChannel channel;
-        var dynamicAllowed = dynamicDestinations.Count == 0 || dynamicDestinations.Contains(name);
+        bool dynamicAllowed = dynamicDestinations.Count == 0 || dynamicDestinations.Contains(name);
+
         try
         {
             channel = base.ResolveDestination(name);
+
             if (channel == null && dynamicAllowed)
             {
                 channel = CreateDynamic(name, options);
@@ -73,10 +62,8 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
             {
                 throw;
             }
-            else
-            {
-                channel = CreateDynamic(name, options);
-            }
+
+            channel = CreateDynamic(name, options);
         }
 
         return channel;
@@ -84,16 +71,17 @@ public class BinderAwareChannelResolver : DefaultMessageChannelDestinationResolv
 
     private IMessageChannel CreateDynamic(string name, BindingServiceOptions options)
     {
-        var channel = _bindingTargetFactory.CreateOutput(name);
+        ISubscribableChannel channel = _bindingTargetFactory.CreateOutput(name);
+
         if (_newBindingCallback != null)
         {
-            var producerOptions = options.GetProducerOptions(name);
+            ProducerOptions producerOptions = options.GetProducerOptions(name);
 
             _newBindingCallback.Configure(name, channel, producerOptions, null);
             options.UpdateProducerOptions(name, producerOptions);
         }
 
-        var binding = _bindingService.BindProducer(channel, name);
+        IBinding binding = _bindingService.BindProducer(channel, name);
         _dynamicDestinationsBindable.AddOutputBinding(name, binding);
         return channel;
     }

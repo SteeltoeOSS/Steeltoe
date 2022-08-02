@@ -30,9 +30,17 @@ public class DefaultIsServicePortSecureResolverTest
     {
         var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string>
+        {
+            { "secured", "true" },
+            { "other", "value" }
+        })));
 
-        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string>
+        {
+            { "secured", "1" },
+            { "other", "value" }
+        })));
     }
 
     [Fact]
@@ -40,8 +48,16 @@ public class DefaultIsServicePortSecureResolverTest
     {
         var sut = new DefaultIsServicePortSecureResolver(new KubernetesDiscoveryOptions());
 
-        Assert.True(sut.Resolve(new Input("dummy", 8080, null, new Dictionary<string, string> { { "secured", "true" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, null, new Dictionary<string, string>
+        {
+            { "secured", "true" },
+            { "other", "value" }
+        })));
 
-        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string> { { "secured", "1" }, { "other", "value" } })));
+        Assert.True(sut.Resolve(new Input("dummy", 8080, new Dictionary<string, string>
+        {
+            { "secured", "1" },
+            { "other", "value" }
+        })));
     }
 }

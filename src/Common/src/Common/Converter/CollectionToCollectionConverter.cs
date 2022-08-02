@@ -23,8 +23,8 @@ public class CollectionToCollectionConverter : AbstractToCollectionConverter
 
         if (ConversionUtils.CanCreateCompatListFor(targetType))
         {
-            return ConversionUtils.CanConvertElements(
-                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), ConversionService);
+            return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType),
+                ConversionService);
         }
 
         return false;
@@ -37,7 +37,8 @@ public class CollectionToCollectionConverter : AbstractToCollectionConverter
             return null;
         }
 
-        var list = ConversionUtils.CreateCompatListFor(targetType);
+        IList list = ConversionUtils.CreateCompatListFor(targetType);
+
         if (list == null)
         {
             throw new InvalidOperationException("Unable to create compatible list");
@@ -45,19 +46,20 @@ public class CollectionToCollectionConverter : AbstractToCollectionConverter
 
         if (!targetType.IsGenericType)
         {
-            foreach (var elem in sourceCollection)
+            foreach (object elem in sourceCollection)
             {
                 list.Add(elem);
             }
         }
         else
         {
-            var targetElementType = ConversionUtils.GetElementType(targetType) ?? typeof(object);
-            foreach (var sourceElement in sourceCollection)
+            Type targetElementType = ConversionUtils.GetElementType(targetType) ?? typeof(object);
+
+            foreach (object sourceElement in sourceCollection)
             {
                 if (sourceElement != null)
                 {
-                    var targetElement = ConversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
+                    object targetElement = ConversionService.Convert(sourceElement, sourceElement.GetType(), targetElementType);
                     list.Add(targetElement);
                 }
                 else

@@ -13,35 +13,6 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
 
     protected override string PlatformRoot => PlatformConfigRoot;
 
-    public CloudFoundryApplicationOptions()
-    {
-        SecondChanceSetIdProperties();
-    }
-
-    public CloudFoundryApplicationOptions(IConfiguration config)
-        : base(config, PlatformConfigRoot)
-    {
-        SetIdPropertiesFromVcap(config);
-    }
-
-    private void SetIdPropertiesFromVcap(IConfiguration config = null)
-    {
-        if (config != null)
-        {
-            var vcapInstanceId = config.GetValue<string>($"{PlatformConfigRoot}:application:instance_id");
-            if (!string.IsNullOrEmpty(vcapInstanceId))
-            {
-                Instance_Id = vcapInstanceId;
-            }
-
-            var vcapAppId = config.GetValue<string>($"{PlatformConfigRoot}:application:id");
-            if (!string.IsNullOrEmpty(vcapAppId))
-            {
-                Application_Id = vcapAppId;
-            }
-        }
-    }
-
     // ReSharper disable once InconsistentNaming
     public string CF_Api { get; set; }
 
@@ -91,4 +62,35 @@ public class CloudFoundryApplicationOptions : ApplicationInstanceInfo
     public override int MemoryLimit => Limits?.Mem ?? -1;
 
     public override int FileDescriptorLimit => Limits?.Fds ?? -1;
+
+    public CloudFoundryApplicationOptions()
+    {
+        SecondChanceSetIdProperties();
+    }
+
+    public CloudFoundryApplicationOptions(IConfiguration config)
+        : base(config, PlatformConfigRoot)
+    {
+        SetIdPropertiesFromVcap(config);
+    }
+
+    private void SetIdPropertiesFromVcap(IConfiguration config = null)
+    {
+        if (config != null)
+        {
+            string vcapInstanceId = config.GetValue<string>($"{PlatformConfigRoot}:application:instance_id");
+
+            if (!string.IsNullOrEmpty(vcapInstanceId))
+            {
+                Instance_Id = vcapInstanceId;
+            }
+
+            string vcapAppId = config.GetValue<string>($"{PlatformConfigRoot}:application:id");
+
+            if (!string.IsNullOrEmpty(vcapAppId))
+            {
+                Application_Id = vcapAppId;
+            }
+        }
+    }
 }

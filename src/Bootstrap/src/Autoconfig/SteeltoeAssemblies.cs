@@ -36,9 +36,6 @@ public static class SteeltoeAssemblies
     public const string SteeltoeSecurityDataProtectionCredHubCore = "Steeltoe.Security.DataProtection.CredHubCore";
     public const string SteeltoeSecurityDataProtectionRedisCore = "Steeltoe.Security.DataProtection.RedisCore";
 
-    internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields()
-        .Where(x => x.FieldType == typeof(string))
-        .Select(x => x.GetValue(null))
-        .Cast<string>()
-        .ToArray();
+    internal static readonly string[] AllAssemblies = typeof(SteeltoeAssemblies).GetFields().Where(x => x.FieldType == typeof(string))
+        .Select(x => x.GetValue(null)).Cast<string>().ToArray();
 }

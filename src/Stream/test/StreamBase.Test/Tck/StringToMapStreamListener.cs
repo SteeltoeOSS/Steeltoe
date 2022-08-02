@@ -14,7 +14,7 @@ public class StringToMapStreamListener
     [SendTo(ISource.OutputName)]
     public string Echo([Payload] Dictionary<object, object> value)
     {
-        value.TryGetValue("name", out var result);
+        value.TryGetValue("name", out object result);
         return (string)result;
     }
 }

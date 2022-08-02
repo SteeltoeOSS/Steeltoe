@@ -8,16 +8,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class DeclarationExceptionEvent : RabbitAdminEvent
 {
+    public IDeclarable Declarable { get; }
+
+    public Exception Exception { get; }
+
     public DeclarationExceptionEvent(object source, IDeclarable declarable, Exception exception)
         : base(source)
     {
         Declarable = declarable;
         Exception = exception;
     }
-
-    public IDeclarable Declarable { get; }
-
-    public Exception Exception { get; }
 
     public override string ToString()
     {

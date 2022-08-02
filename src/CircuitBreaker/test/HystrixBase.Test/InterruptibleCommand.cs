@@ -8,23 +8,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
 {
+    private volatile bool _hasBeenInterrupted;
+
+    public bool HasBeenInterrupted => _hasBeenInterrupted;
+
     public InterruptibleCommand(TestCircuitBreaker circuitBreaker, bool shouldInterrupt, bool shouldInterruptOnCancel, int timeoutInMillis)
-        : base(TestPropsBuilder()
-            .SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
-            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), shouldInterrupt, shouldInterruptOnCancel, timeoutInMillis)))
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
+            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), shouldInterrupt, shouldInterruptOnCancel,
+                timeoutInMillis)))
     {
     }
 
     public InterruptibleCommand(TestCircuitBreaker circuitBreaker, bool shouldInterrupt)
         : this(circuitBreaker, shouldInterrupt, false, 100)
     {
-    }
-
-    private volatile bool _hasBeenInterrupted;
-
-    public bool HasBeenInterrupted
-    {
-        get { return _hasBeenInterrupted; }
     }
 
     protected override bool Run()
@@ -44,7 +41,8 @@ internal sealed class InterruptibleCommand : TestHystrixCommand<bool>
         return _hasBeenInterrupted;
     }
 
-    private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, bool shouldInterrupt, bool shouldInterruptOnCancel, int timeoutInMillis)
+    private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, bool shouldInterrupt, bool shouldInterruptOnCancel,
+        int timeoutInMillis)
     {
         hystrixCommandOptions.ExecutionTimeoutInMilliseconds = timeoutInMillis;
         return hystrixCommandOptions;

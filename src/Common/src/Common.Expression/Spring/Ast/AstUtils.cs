@@ -10,9 +10,11 @@ public static class AstUtils
     {
         var specificAccessors = new List<IPropertyAccessor>();
         var generalAccessors = new List<IPropertyAccessor>();
-        foreach (var resolver in propertyAccessors)
+
+        foreach (IPropertyAccessor resolver in propertyAccessors)
         {
-            var targets = resolver.GetSpecificTargetClasses();
+            IList<Type> targets = resolver.GetSpecificTargetClasses();
+
             if (targets == null)
             {
                 // generic resolver that says it can be used for any type
@@ -22,8 +24,9 @@ public static class AstUtils
             {
                 if (targetType != null)
                 {
-                    var pos = 0;
-                    foreach (var clazz in targets)
+                    int pos = 0;
+
+                    foreach (Type clazz in targets)
                     {
                         if (clazz == targetType)
                         {

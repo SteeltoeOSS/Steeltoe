@@ -27,7 +27,7 @@ public class ConfigurationSettingsHelperTest
     [Fact]
     public void Initialize_WithDefaultSettings()
     {
-        var prefix = "spring:cloud:config";
+        string prefix = "spring:cloud:config";
         var settings = new ConfigServerClientSettings();
         IConfiguration config = new ConfigurationRoot(new List<IConfigurationProvider>());
 

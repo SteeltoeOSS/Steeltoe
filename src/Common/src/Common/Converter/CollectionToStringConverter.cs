@@ -11,15 +11,17 @@ public class CollectionToStringConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public CollectionToStringConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(ICollection), typeof(string)) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(ICollection), typeof(string))
+        })
     {
         _conversionService = conversionService;
     }
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -30,6 +32,7 @@ public class CollectionToStringConverter : AbstractGenericConditionalConverter
         }
 
         var sourceCollection = (ICollection)source;
+
         if (sourceCollection.Count == 0)
         {
             return string.Empty;

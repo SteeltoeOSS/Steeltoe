@@ -2,33 +2,33 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Ast;
-using Steeltoe.Common.Expression.Internal.Spring.Common;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Steeltoe.Common.Expression.Internal.Spring.Ast;
+using Steeltoe.Common.Expression.Internal.Spring.Common;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 {
-    public InternalSpelExpressionParser(SpelParserOptions configuration)
-    {
-        Configuration = configuration;
-    }
+    private static readonly Regex ValidQualifiedIdPattern = new("[\\p{L}\\p{N}_$]+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
 
-    private static readonly Regex ValidQualifiedIdPattern = new ("[\\p{L}\\p{N}_$]+", RegexOptions.Compiled, TimeSpan.FromSeconds(1));
+    internal Stack<SpelNode> ConstructedNodes = new();
 
     internal SpelParserOptions Configuration { get; }
 
-    internal Stack<SpelNode> ConstructedNodes = new ();
-
     internal string ExpressionString { get; private set; }
 
-    internal List<Token> TokenStream { get; private set; } = new ();
+    internal List<Token> TokenStream { get; private set; } = new();
 
     internal int TokenStreamLength { get; private set; }
 
     internal int TokenStreamPointer { get; private set; }
+
+    public InternalSpelExpressionParser(SpelParserOptions configuration)
+    {
+        Configuration = configuration;
+    }
 
     protected internal override IExpression DoParseExpression(string expressionString, IParserContext context)
     {
@@ -40,13 +40,15 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             TokenStreamLength = TokenStream.Count;
             TokenStreamPointer = 0;
             ConstructedNodes.Clear();
-            var ast = EatExpression();
+            SpelNode ast = EatExpression();
+
             if (ast == null)
             {
                 throw new InvalidOperationException("No node");
             }
 
-            var t = PeekToken();
+            Token t = PeekToken();
+
             if (t != null)
             {
                 throw new SpelParseException(t.StartPos, SpelMessage.MoreInput, ToString(NextToken()));
@@ -67,8 +69,9 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatExpression()
     {
-        var expr = EatLogicalOrExpression();
-        var t = PeekToken();
+        SpelNode expr = EatLogicalOrExpression();
+        Token t = PeekToken();
+
         if (t != null)
         {
             if (Equals(t.Kind, TokenKind.Assign))
@@ -77,7 +80,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
 
                 NextToken();
-                var assignedValue = EatLogicalOrExpression();
+                SpelNode assignedValue = EatLogicalOrExpression();
                 return new Assign(t.StartPos, t.EndPos, expr, assignedValue);
             }
 
@@ -86,8 +89,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 // a?:b (a if it isn't null, otherwise b)
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 2);
 
-                NextToken();  // elvis has left the building
-                var valueIfNull = EatExpression() ?? new NullLiteral(t.StartPos + 1, t.EndPos + 1);
+                NextToken(); // elvis has left the building
+                SpelNode valueIfNull = EatExpression() ?? new NullLiteral(t.StartPos + 1, t.EndPos + 1);
 
                 return new Elvis(t.StartPos, t.EndPos, expr, valueIfNull);
             }
@@ -98,9 +101,9 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 expr ??= new NullLiteral(t.StartPos - 1, t.EndPos - 1);
 
                 NextToken();
-                var ifTrueExprValue = EatExpression();
+                SpelNode ifTrueExprValue = EatExpression();
                 EatToken(TokenKind.Colon);
-                var ifFalseExprValue = EatExpression();
+                SpelNode ifFalseExprValue = EatExpression();
                 return new Ternary(t.StartPos, t.EndPos, expr, ifTrueExprValue, ifFalseExprValue);
             }
         }
@@ -110,12 +113,13 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatLogicalOrExpression()
     {
-        var expr = EatLogicalAndExpression();
+        SpelNode expr = EatLogicalAndExpression();
+
         while (PeekIdentifierToken("or") || PeekToken(TokenKind.SymbolicOr))
         {
             // consume OR
-            var t = TakeToken();
-            var rhExpr = EatLogicalAndExpression();
+            Token t = TakeToken();
+            SpelNode rhExpr = EatLogicalAndExpression();
             CheckOperands(t, expr, rhExpr);
             expr = new OpOr(t.StartPos, t.EndPos, expr, rhExpr);
         }
@@ -125,12 +129,13 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatLogicalAndExpression()
     {
-        var expr = EatRelationalExpression();
+        SpelNode expr = EatRelationalExpression();
+
         while (PeekIdentifierToken("and") || PeekToken(TokenKind.SymbolicAnd))
         {
             // consume 'AND'
-            var t = TakeToken();
-            var rhExpr = EatRelationalExpression();
+            Token t = TakeToken();
+            SpelNode rhExpr = EatRelationalExpression();
             CheckOperands(t, expr, rhExpr);
             expr = new OpAnd(t.StartPos, t.EndPos, expr, rhExpr);
         }
@@ -140,15 +145,16 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatRelationalExpression()
     {
-        var expr = EatSumExpression();
-        var relationalOperatorToken = MaybeEatRelationalOperator();
+        SpelNode expr = EatSumExpression();
+        Token relationalOperatorToken = MaybeEatRelationalOperator();
+
         if (relationalOperatorToken != null)
         {
             // consume relational operator token
-            var t = TakeToken();
-            var rhExpr = EatSumExpression();
+            Token t = TakeToken();
+            SpelNode rhExpr = EatSumExpression();
             CheckOperands(t, expr, rhExpr);
-            var tk = relationalOperatorToken.Kind;
+            TokenKind tk = relationalOperatorToken.Kind;
 
             if (relationalOperatorToken.IsNumericRelationalOperator)
             {
@@ -208,13 +214,15 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatSumExpression()
     {
-        var expr = EatProductExpression();
+        SpelNode expr = EatProductExpression();
+
         while (PeekToken(TokenKind.Plus, TokenKind.Minus, TokenKind.Inc))
         {
             // consume PLUS or MINUS or INC
-            var t = TakeToken();
-            var rhExpr = EatProductExpression();
+            Token t = TakeToken();
+            SpelNode rhExpr = EatProductExpression();
             CheckRightOperand(t, rhExpr);
+
             if (Equals(t.Kind, TokenKind.Plus))
             {
                 expr = new OpPlus(t.StartPos, t.EndPos, expr, rhExpr);
@@ -230,12 +238,14 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatProductExpression()
     {
-        var expr = EatPowerIncDecExpression();
+        SpelNode expr = EatPowerIncDecExpression();
+
         while (PeekToken(TokenKind.Star, TokenKind.Div, TokenKind.Mod))
         {
-            var t = TakeToken();  // consume STAR/DIV/MOD
-            var rhExpr = EatPowerIncDecExpression();
+            Token t = TakeToken(); // consume STAR/DIV/MOD
+            SpelNode rhExpr = EatPowerIncDecExpression();
             CheckOperands(t, expr, rhExpr);
+
             if (Equals(t.Kind, TokenKind.Star))
             {
                 expr = new OpMultiply(t.StartPos, t.EndPos, expr, rhExpr);
@@ -260,18 +270,20 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatPowerIncDecExpression()
     {
-        var expr = EatUnaryExpression();
+        SpelNode expr = EatUnaryExpression();
+
         if (PeekToken(TokenKind.Power))
         {
-            var t = TakeToken();  // consume POWER
-            var rhExpr = EatUnaryExpression();
+            Token t = TakeToken(); // consume POWER
+            SpelNode rhExpr = EatUnaryExpression();
             CheckRightOperand(t, rhExpr);
             return new OperatorPower(t.StartPos, t.EndPos, expr, rhExpr);
         }
 
         if (expr != null && PeekToken(TokenKind.Inc, TokenKind.Dec))
         {
-            var t = TakeToken();  // consume INC/DEC
+            Token t = TakeToken(); // consume INC/DEC
+
             if (Equals(t.Kind, TokenKind.Inc))
             {
                 return new OpInc(t.StartPos, t.EndPos, true, expr);
@@ -287,8 +299,9 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     {
         if (PeekToken(TokenKind.Plus, TokenKind.Minus, TokenKind.Not))
         {
-            var t = TakeToken();
-            var expr = EatUnaryExpression();
+            Token t = TakeToken();
+            SpelNode expr = EatUnaryExpression();
+
             if (expr == null)
             {
                 throw new InvalidOperationException("No node");
@@ -314,8 +327,9 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
         if (PeekToken(TokenKind.Inc, TokenKind.Dec))
         {
-            var t = TakeToken();
-            var expr = EatUnaryExpression();
+            Token t = TakeToken();
+            SpelNode expr = EatUnaryExpression();
+
             if (Equals(t.Kind, TokenKind.Inc))
             {
                 return new OpInc(t.StartPos, t.EndPos, false, expr);
@@ -329,9 +343,10 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatPrimaryExpression()
     {
-        var start = EatStartNode();  // always a start node
+        SpelNode start = EatStartNode(); // always a start node
         List<SpelNode> nodes = null;
-        var node = EatNode();
+        SpelNode node = EatNode();
+
         while (node != null)
         {
             nodes ??= new List<SpelNode>(4)
@@ -368,10 +383,11 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private SpelNode EatDottedNode()
     {
-        var t = TakeToken();  // it was a '.' or a '?.'
-        var nullSafeNavigation = Equals(t.Kind, TokenKind.SafeNavigator);
-        if (MaybeEatMethodOrProperty(nullSafeNavigation) || MaybeEatFunctionOrVar() ||
-            MaybeEatProjection(nullSafeNavigation) || MaybeEatSelection(nullSafeNavigation))
+        Token t = TakeToken(); // it was a '.' or a '?.'
+        bool nullSafeNavigation = Equals(t.Kind, TokenKind.SafeNavigator);
+
+        if (MaybeEatMethodOrProperty(nullSafeNavigation) || MaybeEatFunctionOrVar() || MaybeEatProjection(nullSafeNavigation) ||
+            MaybeEatSelection(nullSafeNavigation))
         {
             return Pop();
         }
@@ -381,10 +397,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             // unexpectedly ran out of data
             throw InternalException(t.StartPos, SpelMessage.Ood);
         }
-        else
-        {
-            throw InternalException(t.StartPos, SpelMessage.UnexpectedDataAfterDot, ToString(PeekToken()));
-        }
+
+        throw InternalException(t.StartPos, SpelMessage.UnexpectedDataAfterDot, ToString(PeekToken()));
     }
 
     private bool MaybeEatFunctionOrVar()
@@ -394,9 +408,10 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return false;
         }
 
-        var t = TakeToken();
-        var functionOrVariableName = EatToken(TokenKind.Identifier);
-        var args = MaybeEatMethodArgs();
+        Token t = TakeToken();
+        Token functionOrVariableName = EatToken(TokenKind.Identifier);
+        SpelNode[] args = MaybeEatMethodArgs();
+
         if (args == null)
         {
             Push(new VariableReference(functionOrVariableName.StringValue, t.StartPos, functionOrVariableName.EndPos));
@@ -433,18 +448,21 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private void ConsumeArguments(List<SpelNode> accumulatedArguments)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             throw new InvalidOperationException("Expected token");
         }
 
-        var pos = t.StartPos;
+        int pos = t.StartPos;
         Token next;
+
         do
         {
-            NextToken();  // consume (first time through) or comma (subsequent times)
+            NextToken(); // consume (first time through) or comma (subsequent times)
             t = PeekToken();
+
             if (t == null)
             {
                 throw InternalException(pos, SpelMessage.RunOutOfArguments);
@@ -483,40 +501,43 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         {
             return Pop();
         }
-        else if (MaybeEatParenExpression())
+
+        if (MaybeEatParenExpression())
         {
             return Pop();
         }
-        else if (MaybeEatTypeReference() || MaybeEatNullReference() || MaybeEatConstructorReference() ||
-                 MaybeEatMethodOrProperty(false) || MaybeEatFunctionOrVar())
+
+        if (MaybeEatTypeReference() || MaybeEatNullReference() || MaybeEatConstructorReference() || MaybeEatMethodOrProperty(false) || MaybeEatFunctionOrVar())
         {
             return Pop();
         }
-        else if (MaybeEatServiceReference())
+
+        if (MaybeEatServiceReference())
         {
             return Pop();
         }
-        else if (MaybeEatProjection(false) || MaybeEatSelection(false) || MaybeEatIndexer())
+
+        if (MaybeEatProjection(false) || MaybeEatSelection(false) || MaybeEatIndexer())
         {
             return Pop();
         }
-        else if (MaybeEatInlineListOrMap())
+
+        if (MaybeEatInlineListOrMap())
         {
             return Pop();
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private bool MaybeEatServiceReference()
     {
         if (PeekToken(TokenKind.ServiceRef) || PeekToken(TokenKind.FactoryServiceRef))
         {
-            var serviceRefToken = TakeToken();
+            Token serviceRefToken = TakeToken();
             Token serviceNameToken = null;
             string serviceName = null;
+
             if (PeekToken(TokenKind.Identifier))
             {
                 serviceNameToken = EatToken(TokenKind.Identifier);
@@ -534,9 +555,10 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             }
 
             ServiceReference serviceReference;
+
             if (Equals(serviceRefToken.Kind, TokenKind.FactoryServiceRef))
             {
-                var serviceNameString = new string(TokenKind.FactoryServiceRef.TokenChars) + serviceName;
+                string serviceNameString = new string(TokenKind.FactoryServiceRef.TokenChars) + serviceName;
                 serviceReference = new ServiceReference(serviceRefToken.StartPos, serviceNameToken.EndPos, serviceNameString);
             }
             else
@@ -555,7 +577,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     {
         if (PeekToken(TokenKind.Identifier))
         {
-            var typeName = PeekToken();
+            Token typeName = PeekToken();
+
             if (typeName == null)
             {
                 throw new InvalidOperationException("Expected token");
@@ -567,7 +590,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             }
 
             // It looks like a type reference but is T being used as a map key?
-            var t = TakeToken();
+            Token t = TakeToken();
+
             if (PeekToken(TokenKind.RightSquare))
             {
                 // looks like 'T]' (T is map key)
@@ -576,11 +600,12 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             }
 
             EatToken(TokenKind.LeftParen);
-            var node = EatPossiblyQualifiedId();
+            SpelNode node = EatPossiblyQualifiedId();
 
             // dotted qualified id
             // Are there array dimensions?
-            var dims = 0;
+            int dims = 0;
+
             while (PeekToken(TokenKind.LeftSquare, true))
             {
                 EatToken(TokenKind.RightSquare);
@@ -599,7 +624,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     {
         if (PeekToken(TokenKind.Identifier))
         {
-            var nullToken = PeekToken();
+            Token nullToken = PeekToken();
+
             if (nullToken == null)
             {
                 throw new InvalidOperationException("Expected token");
@@ -620,7 +646,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool MaybeEatProjection(bool nullSafeNavigation)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (!PeekToken(TokenKind.Project, true))
         {
             return false;
@@ -631,7 +658,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             throw new InvalidOperationException("No token");
         }
 
-        var expr = EatExpression();
+        SpelNode expr = EatExpression();
+
         if (expr == null)
         {
             throw new InvalidOperationException("No node");
@@ -644,7 +672,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool MaybeEatInlineListOrMap()
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (!PeekToken(TokenKind.LeftCurly, true))
         {
             return false;
@@ -656,7 +685,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         }
 
         SpelNode expr = null;
-        var closingCurly = PeekToken();
+        Token closingCurly = PeekToken();
+
         if (PeekToken(TokenKind.RightCurly, true))
         {
             // empty list '{}'
@@ -676,7 +706,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         }
         else
         {
-            var firstExpression = EatExpression();
+            SpelNode firstExpression = EatExpression();
 
             // Next is either:
             // '}' - end of list
@@ -689,6 +719,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 {
                     firstExpression
                 };
+
                 closingCurly = EatToken(TokenKind.RightCurly);
                 expr = new InlineList(t.StartPos, closingCurly.EndPos, elements.ToArray());
             }
@@ -699,11 +730,13 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 {
                     firstExpression
                 };
+
                 do
                 {
                     elements.Add(EatExpression());
                 }
                 while (PeekToken(TokenKind.Comma, true));
+
                 closingCurly = EatToken(TokenKind.RightCurly);
                 expr = new InlineList(t.StartPos, closingCurly.EndPos, elements.ToArray());
             }
@@ -715,6 +748,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                     firstExpression,
                     EatExpression()
                 };
+
                 while (PeekToken(TokenKind.Comma, true))
                 {
                     elements.Add(EatExpression());
@@ -737,7 +771,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool MaybeEatIndexer()
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (!PeekToken(TokenKind.LeftSquare, true))
         {
             return false;
@@ -748,7 +783,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             throw new InvalidOperationException("No token");
         }
 
-        var expr = EatExpression();
+        SpelNode expr = EatExpression();
+
         if (expr == null)
         {
             throw new InvalidOperationException("No node");
@@ -761,7 +797,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool MaybeEatSelection(bool nullSafeNavigation)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (!PeekSelectToken())
         {
             return false;
@@ -773,13 +810,15 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         }
 
         NextToken();
-        var expr = EatExpression();
+        SpelNode expr = EatExpression();
+
         if (expr == null)
         {
             throw InternalException(t.StartPos, SpelMessage.MissingSelectionExpression);
         }
 
         EatToken(TokenKind.RightSquare);
+
         if (Equals(t.Kind, TokenKind.SelectFirst))
         {
             ConstructedNodes.Push(new Selection(nullSafeNavigation, Selection.First, t.StartPos, t.EndPos, expr));
@@ -799,10 +838,12 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     private SpelNode EatPossiblyQualifiedId()
     {
         var qualifiedIdPieces = new List<SpelNode>();
-        var node = PeekToken();
+        Token node = PeekToken();
+
         while (IsValidQualifiedId(node))
         {
             NextToken();
+
             if (!Equals(node.Kind, TokenKind.Dot))
             {
                 qualifiedIdPieces.Add(new Identifier(node.StringValue, node.StartPos, node.EndPos));
@@ -836,7 +877,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             return true;
         }
 
-        var value = node.StringValue;
+        string value = node.StringValue;
         return !string.IsNullOrEmpty(value) && ValidQualifiedIdPattern.Matches(value).Count > 0;
     }
 
@@ -844,12 +885,15 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     {
         if (PeekToken(TokenKind.Identifier))
         {
-            var methodOrPropertyName = TakeToken();
-            var args = MaybeEatMethodArgs();
+            Token methodOrPropertyName = TakeToken();
+            SpelNode[] args = MaybeEatMethodArgs();
+
             if (args == null)
             {
                 // property
-                Push(new PropertyOrFieldReference(nullSafeNavigation, methodOrPropertyName.StringValue, methodOrPropertyName.StartPos, methodOrPropertyName.EndPos));
+                Push(new PropertyOrFieldReference(nullSafeNavigation, methodOrPropertyName.StringValue, methodOrPropertyName.StartPos,
+                    methodOrPropertyName.EndPos));
+
                 return true;
             }
 
@@ -867,7 +911,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
     {
         if (PeekIdentifierToken("new"))
         {
-            var newToken = TakeToken();
+            Token newToken = TakeToken();
 
             // It looks like a constructor reference but is NEW being used as a map key?
             if (PeekToken(TokenKind.RightSquare))
@@ -877,15 +921,18 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
                 return true;
             }
 
-            var possiblyQualifiedConstructorName = EatPossiblyQualifiedId();
+            SpelNode possiblyQualifiedConstructorName = EatPossiblyQualifiedId();
+
             var nodes = new List<SpelNode>
             {
                 possiblyQualifiedConstructorName
             };
+
             if (PeekToken(TokenKind.LeftSquare))
             {
                 // array initializer
                 var dimensions = new List<SpelNode>();
+
                 while (PeekToken(TokenKind.LeftSquare, true))
                 {
                     dimensions.Add(!PeekToken(TokenKind.RightSquare) ? EatExpression() : null);
@@ -927,7 +974,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool MaybeEatLiteral()
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;
@@ -983,7 +1031,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         if (PeekToken(TokenKind.LeftParen))
         {
             NextToken();
-            var expr = EatExpression();
+            SpelNode expr = EatExpression();
+
             if (expr == null)
             {
                 throw new InvalidOperationException("No node");
@@ -993,15 +1042,14 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
             Push(expr);
             return true;
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
     }
 
     private Token MaybeEatRelationalOperator()
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return null;
@@ -1014,7 +1062,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
         if (t.IsIdentifier)
         {
-            var idString = t.StringValue;
+            string idString = t.StringValue;
+
             if (idString.Equals("instanceof", StringComparison.InvariantCultureIgnoreCase))
             {
                 return t.AsInstanceOfToken();
@@ -1036,10 +1085,11 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private Token EatToken(TokenKind expectedKind)
     {
-        var t = NextToken();
+        Token t = NextToken();
+
         if (t == null)
         {
-            var pos = ExpressionString.Length;
+            int pos = ExpressionString.Length;
             throw InternalException(pos, SpelMessage.Ood);
         }
 
@@ -1058,7 +1108,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool PeekToken(TokenKind desiredTokenKind, bool consumeIfMatched)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;
@@ -1077,9 +1128,7 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
         // Might be one of the textual forms of the operators (e.g. NE for != ) -
         // in which case we can treat it as an identifier. The list is represented here:
         // Tokenizer.alternativeOperatorNames and those ones are in order in the TokenKind enum.
-        if (Equals(desiredTokenKind, TokenKind.Identifier) &&
-            t.Kind.Ordinal >= TokenKind.Div.Ordinal &&
-            t.Kind.Ordinal <= TokenKind.Not.Ordinal &&
+        if (Equals(desiredTokenKind, TokenKind.Identifier) && t.Kind.Ordinal >= TokenKind.Div.Ordinal && t.Kind.Ordinal <= TokenKind.Not.Ordinal &&
             t.Data != null)
         {
             // if t.data were null, we'd know it wasn't the textual form, it was the symbol form
@@ -1091,7 +1140,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool PeekToken(TokenKind possible1, TokenKind possible2)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;
@@ -1102,7 +1152,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool PeekToken(TokenKind possible1, TokenKind possible2, TokenKind possible3)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;
@@ -1123,7 +1174,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool PeekIdentifierToken(string identifierString)
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;
@@ -1134,7 +1186,8 @@ public class InternalSpelExpressionParser : TemplateAwareExpressionParser
 
     private bool PeekSelectToken()
     {
-        var t = PeekToken();
+        Token t = PeekToken();
+
         if (t == null)
         {
             return false;

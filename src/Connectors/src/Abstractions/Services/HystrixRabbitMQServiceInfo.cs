@@ -6,20 +6,6 @@ namespace Steeltoe.Connector.Services;
 
 public class HystrixRabbitMQServiceInfo : ServiceInfo
 {
-    public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
-        : base(id)
-    {
-        IsSslEnabled = sslEnabled;
-        RabbitInfo = new RabbitMQServiceInfo(id, uri);
-    }
-
-    public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
-        : base(id)
-    {
-        RabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
-        IsSslEnabled = sslEnabled;
-    }
-
     public RabbitMQServiceInfo RabbitInfo { get; }
 
     public string Scheme => RabbitInfo.Scheme;
@@ -41,4 +27,18 @@ public class HystrixRabbitMQServiceInfo : ServiceInfo
     public string Password => RabbitInfo.Password;
 
     public bool IsSslEnabled { get; }
+
+    public HystrixRabbitMQServiceInfo(string id, string uri, bool sslEnabled)
+        : base(id)
+    {
+        IsSslEnabled = sslEnabled;
+        RabbitInfo = new RabbitMQServiceInfo(id, uri);
+    }
+
+    public HystrixRabbitMQServiceInfo(string id, string uri, List<string> uris, bool sslEnabled)
+        : base(id)
+    {
+        RabbitInfo = new RabbitMQServiceInfo(id, uri, null, uris, null);
+        IsSslEnabled = sslEnabled;
+    }
 }

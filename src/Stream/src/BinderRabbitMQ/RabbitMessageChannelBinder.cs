@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
@@ -10,6 +12,7 @@ using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Retry;
 using Steeltoe.Common.Util;
 using Steeltoe.Integration;
+using Steeltoe.Integration.Acks;
 using Steeltoe.Integration.Rabbit.Inbound;
 using Steeltoe.Integration.Rabbit.Outbound;
 using Steeltoe.Integration.Rabbit.Support;
@@ -33,8 +36,6 @@ using Steeltoe.Stream.Binder.Rabbit.Config;
 using Steeltoe.Stream.Binder.Rabbit.Provisioning;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
-using System.Text;
-using System.Text.RegularExpressions;
 using IntegrationChannel = Steeltoe.Integration.Channel;
 using MessagingSupport = Steeltoe.Messaging.Support;
 using SteeltoeConnectionFactory = Steeltoe.Messaging.RabbitMQ.Connection.IConnectionFactory;
@@ -43,33 +44,14 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 
 public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 {
-    private static readonly SimplePassThroughMessageConverter PassThoughConverter = new ();
+    private static readonly SimplePassThroughMessageConverter PassThoughConverter = new();
     private static readonly IMessageHeadersConverter InboundMessagePropertiesConverter = new DefaultBinderMessagePropertiesConverter();
-    private static readonly RabbitMessageHeaderErrorMessageStrategy ErrorMessageStrategy = new ();
-    private static readonly Regex InterceptorNeededPattern = new ("(Payload|#root|#this)");
-
-    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
-        : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
-    {
-    }
-
-    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer)
-        : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
-    {
-    }
-
-    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider, IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
-        : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
-    {
-        this.logger = logger;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        RabbitConnectionOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
-        BinderOptions = binderOptions?.CurrentValue;
-        BindingsOptions = bindingsOptions?.CurrentValue;
-        ServiceName = "rabbitBinder";
-    }
+    private static readonly RabbitMessageHeaderErrorMessageStrategy ErrorMessageStrategy = new();
+    private static readonly Regex InterceptorNeededPattern = new("(Payload|#root|#this)");
 
     protected ILogger logger;
+
+    protected RabbitExchangeQueueProvisioner ProvisioningProvider => (RabbitExchangeQueueProvisioner)InnerProvisioningProvider;
 
     public SteeltoeConnectionFactory ConnectionFactory { get; }
 
@@ -91,7 +73,34 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     public override string ServiceName { get; set; }
 
-    protected RabbitExchangeQueueProvisioner ProvisioningProvider => (RabbitExchangeQueueProvisioner)InnerProvisioningProvider;
+    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory,
+        IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions,
+        IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider)
+        : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, null, null)
+    {
+    }
+
+    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory,
+        IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions,
+        IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider,
+        IListenerContainerCustomizer containerCustomizer)
+        : this(context, logger, connectionFactory, rabbitOptions, binderOptions, bindingsOptions, provisioningProvider, containerCustomizer, null)
+    {
+    }
+
+    public RabbitMessageChannelBinder(IApplicationContext context, ILogger<RabbitMessageChannelBinder> logger, SteeltoeConnectionFactory connectionFactory,
+        IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions,
+        IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, RabbitExchangeQueueProvisioner provisioningProvider,
+        IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer)
+        : base(context, Array.Empty<string>(), provisioningProvider, containerCustomizer, sourceCustomizer, logger)
+    {
+        this.logger = logger;
+        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        RabbitConnectionOptions = rabbitOptions ?? throw new ArgumentNullException(nameof(rabbitOptions));
+        BinderOptions = binderOptions?.CurrentValue;
+        BindingsOptions = bindingsOptions?.CurrentValue;
+        ServiceName = "rabbitBinder";
+    }
 
     public void Initialize()
     {
@@ -118,24 +127,28 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         base.Dispose(disposing);
     }
 
-    protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
+    protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties,
+        IMessageChannel errorChannel)
     {
         if (producerProperties.HeaderMode == HeaderMode.EmbeddedHeaders)
         {
             throw new InvalidOperationException("The RabbitMQ binder does not support embedded headers since RabbitMQ supports headers natively");
         }
 
-        var extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
-        var prefix = extendedProperties.Prefix;
-        var exchangeName = destination.Name;
-        var destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
-        var template = BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault());
+        RabbitProducerOptions extendedProperties = BindingsOptions.GetRabbitProducerOptions(producerProperties.BindingName);
+        string prefix = extendedProperties.Prefix;
+        string exchangeName = destination.Name;
+        string destinationName = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName[prefix.Length..];
+        RabbitTemplate template = BuildRabbitTemplate(extendedProperties, errorChannel != null || extendedProperties.UseConfirmHeader.GetValueOrDefault());
+
         var endpoint = new RabbitOutboundEndpoint(ApplicationContext, template, logger)
         {
             ExchangeName = exchangeName
         };
-        var expressionInterceptorNeeded = ExpressionInterceptorNeeded(extendedProperties);
-        var routingKeyExpression = extendedProperties.RoutingKeyExpression;
+
+        bool expressionInterceptorNeeded = ExpressionInterceptorNeeded(extendedProperties);
+        string routingKeyExpression = extendedProperties.RoutingKeyExpression;
+
         if (!producerProperties.IsPartitioned)
         {
             UpdateRoutingKeyExpressionForNonPartitioned(endpoint, destinationName, expressionInterceptorNeeded, routingKeyExpression);
@@ -157,28 +170,37 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             }
         }
 
-        var mapper = DefaultRabbitHeaderMapper.GetOutboundMapper(logger);
+        DefaultRabbitHeaderMapper mapper = DefaultRabbitHeaderMapper.GetOutboundMapper(logger);
+
         var headerPatterns = new List<string>(extendedProperties.HeaderPatterns.Count + 3)
         {
             $"!{BinderHeaders.PartitionHeader}",
             $"!{IntegrationMessageHeaderAccessor.SourceData}",
             $"!{IntegrationMessageHeaderAccessor.DeliveryAttempt}"
         };
+
         headerPatterns.AddRange(extendedProperties.HeaderPatterns);
 
         mapper.SetRequestHeaderNames(headerPatterns.ToArray());
         endpoint.HeaderMapper = mapper;
 
         endpoint.DefaultDeliveryMode = extendedProperties.DeliveryMode.Value;
+
         if (errorChannel != null)
         {
             CheckConnectionFactoryIsErrorCapable();
             endpoint.ReturnChannel = errorChannel;
+
             if (!extendedProperties.UseConfirmHeader.GetValueOrDefault())
             {
                 endpoint.ConfirmNackChannel = errorChannel;
-                var ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel) ? extendedProperties.ConfirmAckChannel : IntegrationContextUtils.NullChannelBeanName;
-                if (!ackChannelBeanName.Equals(IntegrationContextUtils.NullChannelBeanName) && !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
+
+                string ackChannelBeanName = !string.IsNullOrEmpty(extendedProperties.ConfirmAckChannel)
+                    ? extendedProperties.ConfirmAckChannel
+                    : IntegrationContextUtils.NullChannelBeanName;
+
+                if (!ackChannelBeanName.Equals(IntegrationContextUtils.NullChannelBeanName) &&
+                    !ApplicationContext.ContainsService<IMessageChannel>(ackChannelBeanName))
                 {
                     var ackChannel = new IntegrationChannel.DirectChannel(ApplicationContext);
                     ApplicationContext.Register(ackChannelBeanName, ackChannel);
@@ -205,11 +227,13 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     protected override void PostProcessOutputChannel(IMessageChannel outputChannel, IProducerOptions producerOptions)
     {
-        var rabbitProducerOptions = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
+        RabbitProducerOptions rabbitProducerOptions = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
+
         if (ExpressionInterceptorNeeded(rabbitProducerOptions))
         {
             IExpression rkExpression = null;
             IExpression delayExpression = null;
+
             if (rabbitProducerOptions.RoutingKeyExpression != null)
             {
                 rkExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.RoutingKeyExpression);
@@ -220,7 +244,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
                 delayExpression = ExpressionParser.ParseExpression(rabbitProducerOptions.DelayExpression);
             }
 
-            ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0, new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression, EvaluationContext));
+            ((IntegrationChannel.AbstractMessageChannel)outputChannel).AddInterceptor(0,
+                new RabbitExpressionEvaluatingInterceptor(rkExpression, delayExpression, EvaluationContext));
         }
     }
 
@@ -231,26 +256,29 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             throw new InvalidOperationException("The RabbitMQ binder does not support embedded headers since RabbitMQ supports headers natively");
         }
 
-        var destinationName = destination.Name;
+        string destinationName = destination.Name;
 
-        var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+        RabbitConsumerOptions properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+
         var listenerContainer = new DirectMessageListenerContainer(ApplicationContext, ConnectionFactory)
         {
             AcknowledgeMode = properties.AcknowledgeMode.GetValueOrDefault(AcknowledgeMode.Auto),
             IsChannelTransacted = properties.Transacted.GetValueOrDefault(),
             DefaultRequeueRejected = properties.RequeueRejected ?? true
         };
-        var concurrency = consumerOptions.Concurrency;
+
+        int concurrency = consumerOptions.Concurrency;
         concurrency = concurrency > 0 ? concurrency : 1;
         listenerContainer.ConsumersPerQueue = concurrency;
         listenerContainer.PrefetchCount = properties.Prefetch ?? listenerContainer.PrefetchCount;
         listenerContainer.RecoveryInterval = properties.RecoveryInterval ?? listenerContainer.RecoveryInterval;
-        var queueNames = destinationName.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
+        IEnumerable<string> queueNames = destinationName.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
         listenerContainer.SetQueueNames(queueNames.ToArray());
         listenerContainer.SetAfterReceivePostProcessors(DecompressingPostProcessor);
         listenerContainer.MessageHeadersConverter = InboundMessagePropertiesConverter;
         listenerContainer.Exclusive = properties.Exclusive ?? listenerContainer.Exclusive;
         listenerContainer.MissingQueuesFatal = properties.MissingQueuesFatal ?? listenerContainer.MissingQueuesFatal;
+
         if (properties.FailedDeclarationRetryInterval != null)
         {
             listenerContainer.FailedDeclarationRetryInterval = properties.FailedDeclarationRetryInterval.Value;
@@ -266,12 +294,14 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         //    listenerContainer.setApplicationEventPublisher(getApplicationContext());
         // }
         ListenerContainerCustomizer?.Configure(listenerContainer, destination.Name, group);
+
         if (!string.IsNullOrEmpty(properties.ConsumerTagPrefix))
         {
             listenerContainer.ConsumerTagStrategy = new RabbitBinderConsumerTagStrategy(properties.ConsumerTagPrefix);
         }
 
         listenerContainer.Initialize();
+
         var adapter = new RabbitInboundChannelAdapter(ApplicationContext, listenerContainer, logger)
         {
             BindSourceMessage = true,
@@ -281,7 +311,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         // DefaultAmqpHeaderMapper mapper = DefaultAmqpHeaderMapper.inboundMapper();
         // mapper.setRequestHeaderNames(properties.getExtension().getHeaderPatterns());
         // adapter.setHeaderMapper(mapper);
-        var errorInfrastructure = RegisterErrorInfrastructure(destination, group, consumerOptions, logger);
+        ErrorInfrastructure errorInfrastructure = RegisterErrorInfrastructure(destination, group, consumerOptions, logger);
+
         if (consumerOptions.MaxAttempts > 1)
         {
             adapter.RetryTemplate = BuildRetryTemplate(consumerOptions);
@@ -297,7 +328,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         return adapter;
     }
 
-    protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
+    protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination,
+        IConsumerOptions consumerOptions)
     {
         if (consumerOptions.Multiplex)
         {
@@ -308,6 +340,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         {
             RawMessageHeader = true
         };
+
         MessageSourceCustomizer?.Configure(source, destination.Name, group);
         return new PolledConsumerResources(source, RegisterErrorInfrastructure(destination, group, consumerOptions, true, logger));
     }
@@ -317,6 +350,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         bindingTarget.AttributeProvider = (accessor, message) =>
         {
             var rawMessage = message.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage);
+
             if (rawMessage != null)
             {
                 accessor.SetAttribute(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage, rawMessage);
@@ -331,12 +365,14 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     protected override IMessageHandler GetErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
     {
-        var properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+        RabbitConsumerOptions properties = BindingsOptions.GetRabbitConsumerOptions(consumerOptions.BindingName);
+
         if (properties.RepublishToDlq.Value)
         {
             return new RepublishToDlqErrorMessageHandler(this, properties, logger);
         }
-        else if (consumerOptions.MaxAttempts > 1)
+
+        if (consumerOptions.MaxAttempts > 1)
         {
             return new RejectingErrorMessageHandler(logger);
         }
@@ -346,14 +382,15 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     protected override IMessageHandler GetPolledConsumerErrorMessageHandler(IConsumerDestination destination, string group, IConsumerOptions consumerProperties)
     {
-        var handler = GetErrorMessageHandler(destination, group, consumerProperties);
+        IMessageHandler handler = GetErrorMessageHandler(destination, group, consumerProperties);
+
         if (handler != null)
         {
             return handler;
         }
 
-        var superHandler = base.GetErrorMessageHandler(destination, group, consumerProperties);
-        var properties = BindingsOptions.GetRabbitConsumerOptions(consumerProperties.BindingName);
+        IMessageHandler superHandler = base.GetErrorMessageHandler(destination, group, consumerProperties);
+        RabbitConsumerOptions properties = BindingsOptions.GetRabbitConsumerOptions(consumerProperties.BindingName);
         return new DefaultPolledConsumerErrorMessageHandler(superHandler, properties, logger);
     }
 
@@ -369,9 +406,11 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     private static bool ExpressionInterceptorNeeded(RabbitProducerOptions extendedProperties)
     {
-        var rkExpression = extendedProperties.RoutingKeyExpression;
-        var delayExpression = extendedProperties.DelayExpression;
-        return (rkExpression != null && InterceptorNeededPattern.IsMatch(rkExpression)) || (delayExpression != null && InterceptorNeededPattern.IsMatch(delayExpression));
+        string rkExpression = extendedProperties.RoutingKeyExpression;
+        string delayExpression = extendedProperties.DelayExpression;
+
+        return (rkExpression != null && InterceptorNeededPattern.IsMatch(rkExpression)) ||
+            (delayExpression != null && InterceptorNeededPattern.IsMatch(delayExpression));
     }
 
     private static string GetDeadLetterExchangeName(RabbitCommonOptions properties)
@@ -380,13 +419,12 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         {
             return ApplyPrefix(properties.Prefix, RabbitCommonOptions.DeadLetterExchangeName);
         }
-        else
-        {
-            return properties.DeadLetterExchange;
-        }
+
+        return properties.DeadLetterExchange;
     }
 
-    private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpoint, bool expressionInterceptorNeeded, string routingKeyExpression)
+    private void UpdateRoutingKeyExpressionForPartitioned(string destinationName, RabbitOutboundEndpoint endpoint, bool expressionInterceptorNeeded,
+        string routingKeyExpression)
     {
         if (routingKeyExpression == null)
         {
@@ -400,7 +438,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         }
     }
 
-    private void UpdateRoutingKeyExpressionForNonPartitioned(RabbitOutboundEndpoint endpoint, string destinationName, bool expressionInterceptorNeeded, string routingKeyExpression)
+    private void UpdateRoutingKeyExpressionForNonPartitioned(RabbitOutboundEndpoint endpoint, string destinationName, bool expressionInterceptorNeeded,
+        string routingKeyExpression)
     {
         if (routingKeyExpression == null)
         {
@@ -423,45 +462,43 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
         if (ConnectionFactory is not CachingConnectionFactory factory)
         {
-            logger.LogWarning(
-                "Unknown connection factory type, cannot determine error capabilities: "
-                + ConnectionFactory.GetType());
+            logger.LogWarning("Unknown connection factory type, cannot determine error capabilities: " + ConnectionFactory.GetType());
         }
         else
         {
-            var ccf = factory;
+            CachingConnectionFactory ccf = factory;
+
             if (!ccf.IsPublisherConfirms && !ccf.IsPublisherReturns)
             {
-                logger.LogWarning(
-                    "Producer error channel is enabled, but the connection factory is not configured for "
-                    + "returns or confirms; the error channel will receive no messages");
+                logger.LogWarning("Producer error channel is enabled, but the connection factory is not configured for " +
+                    "returns or confirms; the error channel will receive no messages");
             }
             else if (!ccf.IsPublisherConfirms)
             {
-                logger.LogInformation(
-                    "Producer error channel is enabled, but the connection factory is only configured to "
-                    + "handle returned messages; negative acks will not be reported");
+                logger.LogInformation("Producer error channel is enabled, but the connection factory is only configured to " +
+                    "handle returned messages; negative acks will not be reported");
             }
             else if (!ccf.IsPublisherReturns)
             {
-                logger.LogInformation(
-                    "Producer error channel is enabled, but the connection factory is only configured to "
-                    + "handle negatively acked messages; returned messages will not be reported");
+                logger.LogInformation("Producer error channel is enabled, but the connection factory is only configured to " +
+                    "handle negatively acked messages; returned messages will not be reported");
             }
         }
     }
 
     private IExpression BuildPartitionRoutingExpression(string expressionRoot, bool rootIsExpression)
     {
-        var partitionRoutingExpression = rootIsExpression
+        string partitionRoutingExpression = rootIsExpression
             ? $"{expressionRoot} + '-' + Headers['{BinderHeaders.PartitionHeader}']"
             : $"'{expressionRoot}-' + Headers['{BinderHeaders.PartitionHeader}']";
+
         return ExpressionParser.ParseExpression(partitionRoutingExpression);
     }
 
     private RabbitTemplate BuildRabbitTemplate(RabbitProducerOptions properties, bool mandatory)
     {
         RabbitTemplate rabbitTemplate;
+
         if (properties.BatchingEnabled.Value)
         {
             var batchingStrategy = new SimpleBatchingStrategy(properties.BatchSize.Value, properties.BatchBufferLimit.Value, properties.BatchTimeout.Value);
@@ -476,16 +513,21 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         rabbitTemplate.IsChannelTransacted = properties.Transacted.Value;
         rabbitTemplate.ConnectionFactory = ConnectionFactory;
         rabbitTemplate.UsePublisherConnection = true;
+
         if (properties.Compress.Value)
         {
             rabbitTemplate.SetBeforePublishPostProcessors(CompressingPostProcessor);
         }
 
         rabbitTemplate.Mandatory = mandatory; // returned messages
+
         if (RabbitConnectionOptions != null && RabbitConnectionOptions.CurrentValue.Template.Retry.Enabled)
         {
-            var retry = RabbitConnectionOptions.CurrentValue.Template.Retry;
-            var retryTemplate = new PollyRetryTemplate(retry.MaxAttempts, (int)retry.InitialInterval.TotalMilliseconds, (int)retry.MaxInterval.TotalMilliseconds, retry.Multiplier, logger);
+            RabbitOptions.RetryOptions retry = RabbitConnectionOptions.CurrentValue.Template.Retry;
+
+            var retryTemplate = new PollyRetryTemplate(retry.MaxAttempts, (int)retry.InitialInterval.TotalMilliseconds,
+                (int)retry.MaxInterval.TotalMilliseconds, retry.Multiplier, logger);
+
             rabbitTemplate.RetryTemplate = retryTemplate;
         }
 
@@ -498,6 +540,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         private readonly RabbitConsumerOptions _properties;
         private readonly ILogger _logger;
 
+        public string ServiceName { get; set; }
+
         public DefaultPolledConsumerErrorMessageHandler(IMessageHandler superHandler, RabbitConsumerOptions properties, ILogger logger)
         {
             _superHandler = superHandler;
@@ -506,11 +550,10 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             ServiceName = $"{GetType()}@{GetHashCode()}";
         }
 
-        public string ServiceName { get; set; }
-
         public void HandleMessage(IMessage message)
         {
             var amqpMessage = message.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage);
+
             if (message is not MessagingSupport.ErrorMessage errorMessage)
             {
                 _logger?.LogError("Expected an ErrorMessage, not a " + message.GetType() + " for: " + message);
@@ -526,12 +569,11 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 if (errorMessage.Payload is MessagingException payload)
                 {
-                    var ack = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(payload.FailedMessage);
+                    IAcknowledgmentCallback ack = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(payload.FailedMessage);
+
                     if (ack != null)
                     {
-                        ack.Acknowledge(_properties.RequeueRejected.Value
-                            ? Integration.Acks.Status.Requeue
-                            : Integration.Acks.Status.Reject);
+                        ack.Acknowledge(_properties.RequeueRejected.Value ? Status.Requeue : Status.Reject);
                     }
                 }
             }
@@ -540,16 +582,16 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     private sealed class RejectingErrorMessageHandler : IMessageHandler
     {
-        private readonly RejectAndDoNotRequeueRecoverer _recoverer = new ();
+        private readonly RejectAndDoNotRequeueRecoverer _recoverer = new();
         private readonly ILogger _logger;
+
+        public string ServiceName { get; set; }
 
         public RejectingErrorMessageHandler(ILogger logger)
         {
             ServiceName = $"{GetType()}@{GetHashCode()}";
             _logger = logger;
         }
-
-        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -574,13 +616,17 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
         private readonly ILogger _logger;
         private int _maxStackTraceLength = -1;
 
+        public string ServiceName { get; set; }
+
         public RepublishToDlqErrorMessageHandler(RabbitMessageChannelBinder binder, RabbitConsumerOptions properties, ILogger logger)
         {
             _binder = binder;
+
             _template = new RabbitTemplate(_binder.ConnectionFactory)
             {
                 UsePublisherConnection = true
             };
+
             _exchange = GetDeadLetterExchangeName(properties);
             _routingKey = properties.DeadLetterRoutingKey;
             _frameMaxHeadroom = properties.FrameMaxHeadroom.Value;
@@ -588,8 +634,6 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             _logger = logger;
             ServiceName = $"{GetType()}@{GetHashCode()}";
         }
-
-        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -600,17 +644,20 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             }
 
             var cause = message.Payload as Exception;
+
             if (!ShouldRepublish(cause))
             {
                 _logger.LogDebug("Skipping republish of: " + message);
                 return;
             }
 
-            var stackTraceAsString = cause.StackTrace;
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(errorMessage);
+            string stackTraceAsString = cause.StackTrace;
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(errorMessage);
+
             if (_maxStackTraceLength < 0)
             {
-                var result = RabbitUtils.GetMaxFrame(_binder.ConnectionFactory);
+                int result = RabbitUtils.GetMaxFrame(_binder.ConnectionFactory);
+
                 if (result > 0)
                 {
                     _maxStackTraceLength = result - _frameMaxHeadroom;
@@ -621,13 +668,16 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 stackTraceAsString = stackTraceAsString.Substring(0, _maxStackTraceLength);
 
-                _logger.LogWarning("Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth", cause);
+                _logger.LogWarning(
+                    "Stack trace in republished message header truncated due to frame_max limitations; consider increasing frame_max on the broker or reduce the stack trace depth",
+                    cause);
             }
 
             accessor.SetHeader(RepublishMessageRecoverer.XExceptionStacktrace, stackTraceAsString);
             accessor.SetHeader(RepublishMessageRecoverer.XExceptionMessage, cause.InnerException != null ? cause.InnerException.Message : cause.Message);
             accessor.SetHeader(RepublishMessageRecoverer.XOriginalExchange, accessor.ReceivedExchange);
             accessor.SetHeader(RepublishMessageRecoverer.XOriginalRoutingKey, accessor.ReceivedRoutingKey);
+
             if (_properties.RepublishDeliveryMode != null)
             {
                 accessor.DeliveryMode = _properties.RepublishDeliveryMode.Value;
@@ -637,7 +687,7 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
             if (_properties.AcknowledgeMode == AcknowledgeMode.Manual)
             {
-                var deliveryTag = errorMessage.Headers.DeliveryTag().GetValueOrDefault();
+                ulong deliveryTag = errorMessage.Headers.DeliveryTag().GetValueOrDefault();
                 var channel = errorMessage.Headers[RabbitMessageHeaders.Channel] as IModel;
                 channel.BasicAck(deliveryTag, false);
             }
@@ -645,7 +695,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
         private static bool ShouldRepublish(Exception exception)
         {
-            var cause = exception;
+            Exception cause = exception;
+
             while (cause != null && cause is not RabbitRejectAndDoNotRequeueException && cause is not ImmediateAcknowledgeException)
             {
                 cause = cause.InnerException;
@@ -659,14 +710,14 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
         private readonly string _prefix;
 
-        private readonly AtomicInteger _index = new ();
+        private readonly AtomicInteger _index = new();
+
+        public string ServiceName { get; set; } = nameof(RabbitBinderConsumerTagStrategy);
 
         public RabbitBinderConsumerTagStrategy(string prefix)
         {
             _prefix = prefix;
         }
-
-        public string ServiceName { get; set; } = nameof(RabbitBinderConsumerTagStrategy);
 
         public string CreateConsumerTag(string queue)
         {
@@ -678,8 +729,8 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
     {
         public override IMessageHeaders ToMessageHeaders(IBasicProperties source, Envelope envelope, Encoding charset)
         {
-            var result = base.ToMessageHeaders(source, envelope, charset);
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(result);
+            IMessageHeaders result = base.ToMessageHeaders(source, envelope, charset);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(result);
             accessor.DeliveryMode = null;
             return accessor.MessageHeaders;
         }
@@ -687,9 +738,13 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
 
     private sealed class SimplePassThroughMessageConverter : AbstractMessageConverter
     {
-        private readonly SimpleMessageConverter _converter = new ();
+        private readonly SimpleMessageConverter _converter = new();
 
-        public override string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public override string ServiceName
+        {
+            get => throw new NotImplementedException();
+            set => throw new NotImplementedException();
+        }
 
         public override object FromMessage(IMessage message, Type targetType, object conversionHint)
         {
@@ -702,11 +757,9 @@ public class RabbitMessageChannelBinder : AbstractPollableMessageSourceBinder
             {
                 return Message.Create(payloadBytes, headers);
             }
-            else
-            {
-                // just for safety (backwards compatibility)
-                return _converter.ToMessage(payload, headers);
-            }
+
+            // just for safety (backwards compatibility)
+            return _converter.ToMessage(payload, headers);
         }
     }
 }

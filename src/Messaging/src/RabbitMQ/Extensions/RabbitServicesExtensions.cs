@@ -15,8 +15,10 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Host;
 using Steeltoe.Messaging.RabbitMQ.Listener;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using static Steeltoe.Common.Contexts.AbstractApplicationContext;
 using RC = RabbitMQ.Client;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;
 
@@ -32,7 +34,8 @@ public static class RabbitServicesExtensions
         return services.AddRabbitTemplate(RabbitTemplate.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitTemplate> configure = null)
+    public static IServiceCollection AddRabbitTemplate(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitTemplate> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -43,6 +46,7 @@ public static class RabbitServicesExtensions
         {
             var template = ActivatorUtilities.CreateInstance(p, typeof(RabbitTemplate)) as RabbitTemplate;
             template.ServiceName = serviceName;
+
             if (configure != null)
             {
                 configure(p, template);
@@ -69,7 +73,8 @@ public static class RabbitServicesExtensions
         return services.AddRabbitAdmin(RabbitAdmin.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitAdmin> configure = null)
+    public static IServiceCollection AddRabbitAdmin(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitAdmin> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -80,6 +85,7 @@ public static class RabbitServicesExtensions
         {
             var admin = ActivatorUtilities.CreateInstance(p, typeof(RabbitAdmin)) as RabbitAdmin;
             admin.ServiceName = serviceName;
+
             if (configure != null)
             {
                 configure(p, admin);
@@ -87,16 +93,18 @@ public static class RabbitServicesExtensions
 
             return admin;
         });
+
         services.AddSingleton<IRabbitAdmin>(p =>
         {
             return p.GetServices<RabbitAdmin>().SingleOrDefault(t => t.ServiceName == serviceName);
         });
+
         return services;
     }
 
     public static IServiceCollection AddRabbitQueues(this IServiceCollection services, params IQueue[] queues)
     {
-        foreach (var q in queues)
+        foreach (IQueue q in queues)
         {
             services.AddRabbitQueue(q);
         }
@@ -120,9 +128,11 @@ public static class RabbitServicesExtensions
     public static IServiceCollection AddRabbitQueue(this IServiceCollection services, string queueName, Action<IServiceProvider, Queue> configure = null)
     {
         services.RegisterService(queueName, typeof(IQueue));
+
         services.AddSingleton<IQueue>(p =>
         {
             var queue = new Queue(queueName);
+
             if (configure != null)
             {
                 configure(p, queue);
@@ -136,7 +146,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitExchanges(this IServiceCollection services, params IExchange[] exchanges)
     {
-        foreach (var e in exchanges)
+        foreach (IExchange e in exchanges)
         {
             services.AddRabbitExchange(e);
         }
@@ -156,7 +166,8 @@ public static class RabbitServicesExtensions
         return services.AddSingleton(exchange);
     }
 
-    public static IServiceCollection AddRabbitExchange(this IServiceCollection services, string exchangeName, string exchangeType, Action<IServiceProvider, IExchange> configure = null)
+    public static IServiceCollection AddRabbitExchange(this IServiceCollection services, string exchangeName, string exchangeType,
+        Action<IServiceProvider, IExchange> configure = null)
     {
         if (string.IsNullOrEmpty(exchangeName))
         {
@@ -170,7 +181,8 @@ public static class RabbitServicesExtensions
 
         services.AddSingleton(p =>
         {
-            var exchange = ExchangeBuilder.Create(exchangeName, exchangeType);
+            IExchange exchange = ExchangeBuilder.Create(exchangeName, exchangeType);
+
             if (configure != null)
             {
                 configure(p, exchange);
@@ -184,7 +196,7 @@ public static class RabbitServicesExtensions
 
     public static IServiceCollection AddRabbitBindings(this IServiceCollection services, params IBinding[] bindings)
     {
-        foreach (var b in bindings)
+        foreach (IBinding b in bindings)
         {
             services.AddRabbitBinding(b);
         }
@@ -206,7 +218,8 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitBinding(this IServiceCollection services, string bindingName, Binding.DestinationType bindingType, Action<IServiceProvider, IBinding> configure = null)
+    public static IServiceCollection AddRabbitBinding(this IServiceCollection services, string bindingName, Binding.DestinationType bindingType,
+        Action<IServiceProvider, IBinding> configure = null)
     {
         if (string.IsNullOrEmpty(bindingName))
         {
@@ -214,9 +227,11 @@ public static class RabbitServicesExtensions
         }
 
         services.RegisterService(bindingName, typeof(IBinding));
+
         services.AddSingleton(p =>
         {
-            var binding = BindingBuilder.Create(bindingName, bindingType);
+            IBinding binding = BindingBuilder.Create(bindingName, bindingType);
+
             if (configure != null)
             {
                 configure(p, binding);
@@ -224,27 +239,26 @@ public static class RabbitServicesExtensions
 
             return binding;
         });
+
         return services;
     }
 
     public static IServiceCollection ConfigureRabbitOptions(this IServiceCollection services, IConfiguration config)
     {
-        services.AddOptions<RabbitOptions>()
-            .Bind(config.GetSection(RabbitOptions.Prefix))
-            .Configure<IServiceProvider>((options, provider) =>
-            {
-                using var scope = provider.CreateScope();
-                var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
+        services.AddOptions<RabbitOptions>().Bind(config.GetSection(RabbitOptions.Prefix)).Configure<IServiceProvider>((options, provider) =>
+        {
+            using IServiceScope scope = provider.CreateScope();
+            var connectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
-                if (connectionFactory is not null)
-                {
-                    options.Addresses = $"{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
-                    options.VirtualHost = connectionFactory.VirtualHost;
-                    options.Host = connectionFactory.HostName;
-                    options.Username = connectionFactory.UserName;
-                    options.Password = connectionFactory.Password;
-                }
-            });
+            if (connectionFactory is not null)
+            {
+                options.Addresses = $"{connectionFactory.UserName}:{connectionFactory.Password}@{connectionFactory.HostName}:{connectionFactory.Port}";
+                options.VirtualHost = connectionFactory.VirtualHost;
+                options.Host = connectionFactory.HostName;
+                options.Username = connectionFactory.UserName;
+                options.Password = connectionFactory.Password;
+            }
+        });
 
         return services;
     }
@@ -259,6 +273,7 @@ public static class RabbitServicesExtensions
         services.AddRabbitHostingServices();
 
         services.AddRabbitConnectionFactory();
+
         if (useJsonMessageConverter)
         {
             services.AddRabbitJsonMessageConverter();
@@ -281,9 +296,12 @@ public static class RabbitServicesExtensions
         services.AddOptions();
         services.AddHostedService<RabbitHostService>();
         services.TryAddSingleton<ILifecycleProcessor, DefaultLifecycleProcessor>();
+
         services.TryAddSingleton<IApplicationContext>(p =>
         {
-            var context = new GenericApplicationContext(p.GetRequiredService<IServiceProvider>(), p.GetService<IConfiguration>(), p.GetServices<NameToTypeMapping>());
+            var context = new GenericApplicationContext(p.GetRequiredService<IServiceProvider>(), p.GetService<IConfiguration>(),
+                p.GetServices<NameToTypeMapping>());
+
             context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
             return context;
         });
@@ -291,12 +309,14 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
+    public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services,
+        Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
     {
         return services.AddRabbitListenerAttributeProcessor<RabbitListenerAttributeProcessor>(RabbitListenerAttributeProcessor.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
+    public static IServiceCollection AddRabbitListenerAttributeProcessor(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitListenerAttributeProcessor> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -307,18 +327,21 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerAttributeProcessor<TProcessor>(this IServiceCollection services, Action<IServiceProvider, TProcessor> configure)
+    public static IServiceCollection AddRabbitListenerAttributeProcessor<TProcessor>(this IServiceCollection services,
+        Action<IServiceProvider, TProcessor> configure)
         where TProcessor : IRabbitListenerAttributeProcessor
     {
         return services.AddRabbitListenerAttributeProcessor(null, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerAttributeProcessor<TProcessor>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TProcessor> configure = null)
+    public static IServiceCollection AddRabbitListenerAttributeProcessor<TProcessor>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TProcessor> configure = null)
         where TProcessor : IRabbitListenerAttributeProcessor
     {
         services.TryAddSingleton<IRabbitListenerAttributeProcessor>(p =>
         {
             var instance = (TProcessor)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TProcessor));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -335,13 +358,15 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services, Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services,
+        Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
     {
         services.AddRabbitListenerEndpointRegistrar<RabbitListenerEndpointRegistrar>(RabbitListenerEndpointRegistrar.DefaultServiceName, configure);
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistrar(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitListenerEndpointRegistrar> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -352,18 +377,21 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistrar<TRegistrar>(this IServiceCollection services, Action<IServiceProvider, TRegistrar> configure)
+    public static IServiceCollection AddRabbitListenerEndpointRegistrar<TRegistrar>(this IServiceCollection services,
+        Action<IServiceProvider, TRegistrar> configure)
         where TRegistrar : IRabbitListenerEndpointRegistrar
     {
         return services.AddRabbitListenerEndpointRegistrar(null, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistrar<TRegistrar>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TRegistrar> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistrar<TRegistrar>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TRegistrar> configure = null)
         where TRegistrar : IRabbitListenerEndpointRegistrar
     {
         services.TryAddSingleton<IRabbitListenerEndpointRegistrar>(p =>
         {
             var instance = (TRegistrar)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TRegistrar));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -380,13 +408,15 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services, Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services,
+        Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
     {
         services.AddRabbitListenerEndpointRegistry<RabbitListenerEndpointRegistry>(RabbitListenerEndpointRegistry.DefaultServiceName, configure);
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistry(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitListenerEndpointRegistry> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -397,18 +427,21 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegistry>(this IServiceCollection services, Action<IServiceProvider, TRegistry> configure)
+    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegistry>(this IServiceCollection services,
+        Action<IServiceProvider, TRegistry> configure)
         where TRegistry : IRabbitListenerEndpointRegistry
     {
         return services.AddRabbitListenerEndpointRegistry(null, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegistry>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TRegistry> configure = null)
+    public static IServiceCollection AddRabbitListenerEndpointRegistry<TRegistry>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TRegistry> configure = null)
         where TRegistry : IRabbitListenerEndpointRegistry
     {
         services.TryAddSingleton<IRabbitListenerEndpointRegistry>(p =>
         {
             var instance = (TRegistry)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TRegistry));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -431,12 +464,15 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
+    public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services,
+        Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
     {
-        return services.AddRabbitListenerContainerFactory<DirectRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName, configure);
+        return services.AddRabbitListenerContainerFactory<DirectRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName,
+            configure);
     }
 
-    public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
+    public static IServiceCollection AddRabbitListenerContainerFactory(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, DirectRabbitListenerContainerFactory> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -452,7 +488,8 @@ public static class RabbitServicesExtensions
         return services.AddRabbitListenerContainerFactory(null, configure);
     }
 
-    public static IServiceCollection AddRabbitListenerContainerFactory<TFactory>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TFactory> configure = null)
+    public static IServiceCollection AddRabbitListenerContainerFactory<TFactory>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TFactory> configure = null)
         where TFactory : IRabbitListenerContainerFactory
     {
         if (string.IsNullOrEmpty(serviceName))
@@ -463,6 +500,7 @@ public static class RabbitServicesExtensions
         services.AddSingleton<IRabbitListenerContainerFactory>(p =>
         {
             var instance = (TFactory)ActivatorUtilities.CreateInstance(p, typeof(TFactory));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -475,15 +513,18 @@ public static class RabbitServicesExtensions
 
             return instance;
         });
+
         return services;
     }
 
-    public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, Action<IServiceProvider, CachingConnectionFactory> configure = null)
+    public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services,
+        Action<IServiceProvider, CachingConnectionFactory> configure = null)
     {
         return services.AddRabbitConnectionFactory<CachingConnectionFactory>(CachingConnectionFactory.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, CachingConnectionFactory> configure = null)
+    public static IServiceCollection AddRabbitConnectionFactory(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, CachingConnectionFactory> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -499,18 +540,18 @@ public static class RabbitServicesExtensions
         return services.AddRabbitConnectionFactory(null, configure);
     }
 
-    public static IServiceCollection AddRabbitConnectionFactory<TFactory>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TFactory> configure = null)
+    public static IServiceCollection AddRabbitConnectionFactory<TFactory>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TFactory> configure = null)
         where TFactory : IConnectionFactory
     {
         services.AddSingleton(provider =>
         {
-            using var scope = provider.CreateScope();
+            using IServiceScope scope = provider.CreateScope();
             var rabbitConnectionFactory = scope.ServiceProvider.GetService<RC.IConnectionFactory>() as RC.ConnectionFactory;
 
-            IConnectionFactory instance =
-                rabbitConnectionFactory is not null && typeof(TFactory) == typeof(CachingConnectionFactory) ?
-                    new CachingConnectionFactory(rabbitConnectionFactory) :
-                    (TFactory)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(TFactory));
+            IConnectionFactory instance = rabbitConnectionFactory is not null && typeof(TFactory) == typeof(CachingConnectionFactory)
+                ? new CachingConnectionFactory(rabbitConnectionFactory)
+                : (TFactory)ActivatorUtilities.GetServiceOrCreateInstance(provider, typeof(TFactory));
 
             if (!string.IsNullOrEmpty(serviceName))
             {
@@ -528,12 +569,14 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
+    public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services,
+        Action<IServiceProvider, JsonMessageConverter> configure = null)
     {
-        return services.AddRabbitMessageConverter(Support.Converter.JsonMessageConverter.DefaultServiceName, configure);
+        return services.AddRabbitMessageConverter(JsonMessageConverter.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.JsonMessageConverter> configure = null)
+    public static IServiceCollection AddRabbitJsonMessageConverter(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, JsonMessageConverter> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -543,12 +586,14 @@ public static class RabbitServicesExtensions
         return services.AddRabbitMessageConverter(serviceName, configure);
     }
 
-    public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
+    public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services,
+        Action<IServiceProvider, SimpleMessageConverter> configure = null)
     {
-        return services.AddRabbitMessageConverter(SimpleMessageConverter.DefaultServiceName, configure);
+        return services.AddRabbitMessageConverter(Converter.SimpleMessageConverter.DefaultServiceName, configure);
     }
 
-    public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, string serviceName, Action<IServiceProvider, Support.Converter.SimpleMessageConverter> configure = null)
+    public static IServiceCollection AddRabbitDefaultMessageConverter(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, SimpleMessageConverter> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -564,12 +609,14 @@ public static class RabbitServicesExtensions
         return services.AddRabbitMessageConverter(null, configure);
     }
 
-    public static IServiceCollection AddRabbitMessageConverter<TConverter>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TConverter> configure = null)
+    public static IServiceCollection AddRabbitMessageConverter<TConverter>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TConverter> configure = null)
         where TConverter : ISmartMessageConverter
     {
         services.TryAddSingleton<ISmartMessageConverter>(p =>
         {
             var instance = (TConverter)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TConverter));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -586,12 +633,15 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
+    public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services,
+        Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
     {
-        return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(RabbitMessageHandlerMethodFactory.DefaultServiceName, configure);
+        return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(RabbitMessageHandlerMethodFactory.DefaultServiceName,
+            configure);
     }
 
-    public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, string serviceName, Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
+    public static IServiceCollection AddRabbitMessageHandlerMethodFactory(this IServiceCollection services, string serviceName,
+        Action<IServiceProvider, RabbitMessageHandlerMethodFactory> configure = null)
     {
         if (string.IsNullOrEmpty(serviceName))
         {
@@ -601,18 +651,21 @@ public static class RabbitServicesExtensions
         return services.AddRabbitMessageHandlerMethodFactory<RabbitMessageHandlerMethodFactory>(serviceName, configure);
     }
 
-    public static IServiceCollection AddRabbitMessageHandlerMethodFactory<TFactory>(this IServiceCollection services, Action<IServiceProvider, TFactory> configure)
+    public static IServiceCollection AddRabbitMessageHandlerMethodFactory<TFactory>(this IServiceCollection services,
+        Action<IServiceProvider, TFactory> configure)
         where TFactory : IMessageHandlerMethodFactory
     {
         return services.AddRabbitMessageHandlerMethodFactory(null, configure);
     }
 
-    public static IServiceCollection AddRabbitMessageHandlerMethodFactory<TFactory>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TFactory> configure = null)
+    public static IServiceCollection AddRabbitMessageHandlerMethodFactory<TFactory>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TFactory> configure = null)
         where TFactory : IMessageHandlerMethodFactory
     {
         services.TryAddSingleton<IMessageHandlerMethodFactory>(p =>
         {
             var instance = (TFactory)ActivatorUtilities.GetServiceOrCreateInstance(p, typeof(TFactory));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -631,12 +684,14 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services, Func<IServiceProvider, DirectMessageListenerContainer> factory)
+    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services,
+        Func<IServiceProvider, DirectMessageListenerContainer> factory)
     {
         return services.AddRabbitListenerContainer(factory);
     }
 
-    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
+    public static IServiceCollection AddRabbitDirectListenerContainer(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, DirectMessageListenerContainer> configure = null)
     {
         return services.AddRabbitListenerContainer(serviceName, configure);
     }
@@ -649,12 +704,14 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerContainer<TContainer>(this IServiceCollection services, string serviceName = null, Action<IServiceProvider, TContainer> configure = null)
+    public static IServiceCollection AddRabbitListenerContainer<TContainer>(this IServiceCollection services, string serviceName = null,
+        Action<IServiceProvider, TContainer> configure = null)
         where TContainer : AbstractMessageListenerContainer
     {
         services.AddSingleton<ISmartLifecycle>(p =>
         {
             var instance = (TContainer)ActivatorUtilities.CreateInstance(p, typeof(TContainer));
+
             if (!string.IsNullOrEmpty(serviceName))
             {
                 instance.ServiceName = serviceName;
@@ -673,7 +730,8 @@ public static class RabbitServicesExtensions
         return services;
     }
 
-    public static IServiceCollection AddRabbitListenerErrorHandler<THandler>(this IServiceCollection services, string serviceName, Func<IServiceProvider, THandler> factory)
+    public static IServiceCollection AddRabbitListenerErrorHandler<THandler>(this IServiceCollection services, string serviceName,
+        Func<IServiceProvider, THandler> factory)
         where THandler : IRabbitListenerErrorHandler
     {
         if (string.IsNullOrEmpty(serviceName))
@@ -682,9 +740,10 @@ public static class RabbitServicesExtensions
         }
 
         services.RegisterService(serviceName, typeof(IRabbitListenerErrorHandler));
+
         services.AddSingleton<IRabbitListenerErrorHandler>(p =>
         {
-            var result = factory(p);
+            THandler result = factory(p);
             result.ServiceName = serviceName;
             return result;
         });
@@ -701,6 +760,7 @@ public static class RabbitServicesExtensions
         }
 
         services.RegisterService(serviceName, typeof(IRabbitListenerErrorHandler));
+
         services.AddSingleton<IRabbitListenerErrorHandler>(p =>
         {
             var instance = (THandler)ActivatorUtilities.CreateInstance(p, typeof(THandler));

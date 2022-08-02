@@ -53,11 +53,11 @@ public class OracleDbContextServiceCollectionExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddDbContext<GoodOracleDbContext>(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodOracleDbContext>();
         var serviceHealth = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service);

@@ -3,14 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 // This file is a modified version of https://github.com/dotnet/aspnetcore/blob/master/src/Security/Authentication/Certificate/src/CertificateAuthenticationHandler.cs
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Certificate;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.Encodings.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Certificate;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 
@@ -19,31 +20,30 @@ namespace Steeltoe.Security.Authentication.Mtls;
 /// </summary>
 internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<MutualTlsAuthenticationOptions>
 {
-    private static readonly Oid ClientCertificateOid = new ("1.3.6.1.5.5.7.3.2");
+    private static readonly Oid ClientCertificateOid = new("1.3.6.1.5.5.7.3.2");
 
-    public MutualTlsAuthenticationHandler(
-        IOptionsMonitor<MutualTlsAuthenticationOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
+    /// <summary>
+    /// Gets the handler calls methods on the events which give the application control at certain points where processing is occurring. If it is not
+    /// provided a default instance is supplied which does nothing when the methods are called.
+    /// </summary>
+    private new CertificateAuthenticationEvents Events => (CertificateAuthenticationEvents)base.Events;
+
+    public MutualTlsAuthenticationHandler(IOptionsMonitor<MutualTlsAuthenticationOptions> options, ILoggerFactory logger, UrlEncoder encoder,
         ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
     }
 
     /// <summary>
-    /// Gets the handler calls methods on the events which give the application control at certain points where processing is occurring.
-    /// If it is not provided a default instance is supplied which does nothing when the methods are called.
-    /// </summary>
-    private new CertificateAuthenticationEvents Events
-    {
-        get { return (CertificateAuthenticationEvents)base.Events; }
-    }
-
-    /// <summary>
     /// Creates a new instance of the events instance.
     /// </summary>
-    /// <returns>A new instance of the events instance.</returns>
-    protected override Task<object> CreateEventsAsync() => Task.FromResult<object>(new CertificateAuthenticationEvents());
+    /// <returns>
+    /// A new instance of the events instance.
+    /// </returns>
+    protected override Task<object> CreateEventsAsync()
+    {
+        return Task.FromResult<object>(new CertificateAuthenticationEvents());
+    }
 
     protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
     {
@@ -55,7 +55,7 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
         try
         {
-            var clientCertificate = await Context.Connection.GetClientCertificateAsync();
+            X509Certificate2 clientCertificate = await Context.Connection.GetClientCertificateAsync();
 
             // This should never be the case, as cert authentication happens long before ASP.NET kicks in.
             if (clientCertificate == null)
@@ -80,20 +80,22 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
                 return AuthenticateResult.Fail("Options do not allow chained certificates.");
             }
 
-            var chainPolicy = BuildChainPolicy(clientCertificate);
+            X509ChainPolicy chainPolicy = BuildChainPolicy(clientCertificate);
+
             var chain = new X509Chain
             {
                 ChainPolicy = chainPolicy
             };
 
             //// <variation>
-            var certificateIsValid = IsChainValid(chain, clientCertificate);
+            bool certificateIsValid = IsChainValid(chain, clientCertificate);
             //// </variation>
 
             if (!certificateIsValid)
             {
                 var chainErrors = new List<string>();
-                foreach (var validationFailure in chain.ChainStatus)
+
+                foreach (X509ChainStatus validationFailure in chain.ChainStatus)
                 {
                     chainErrors.Add($"{validationFailure.Status} {validationFailure.StatusInformation}");
                 }
@@ -152,17 +154,23 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     /// <summary>
     /// Call chain.Build first, if !isValid then compares root with issuer chain known to this app.
     /// </summary>
-    /// <param name="chain">Certificate chain to validate against.</param>
-    /// <param name="certificate">Certificate to validate.</param>
-    /// <returns>Indication of chain validity.</returns>
+    /// <param name="chain">
+    /// Certificate chain to validate against.
+    /// </param>
+    /// <param name="certificate">
+    /// Certificate to validate.
+    /// </param>
+    /// <returns>
+    /// Indication of chain validity.
+    /// </returns>
     private bool IsChainValid(X509Chain chain, X509Certificate2 certificate)
     {
-        var isValid = chain.Build(certificate);
+        bool isValid = chain.Build(certificate);
 
         // allow root cert to be side loaded without installing into X509Store Root store
         if (!isValid && chain.ChainStatus.All(x =>
-                x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
-                x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
+            x.Status == X509ChainStatusFlags.UntrustedRoot || x.Status == X509ChainStatusFlags.PartialChain ||
+            x.Status == X509ChainStatusFlags.OfflineRevocation || x.Status == X509ChainStatusFlags.RevocationStatusUnknown))
         {
             Logger.LogInformation("Certificate not valid by standard rules, trying custom validation");
             isValid = Options.IssuerChain.Intersect(ToGenericEnumerable(chain.ChainElements).Select(c => c.Certificate)).Any();
@@ -179,8 +187,8 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     private X509ChainPolicy BuildChainPolicy(X509Certificate2 certificate)
     {
         // Now build the chain validation options.
-        var revocationFlag = Options.RevocationFlag;
-        var revocationMode = Options.RevocationMode;
+        X509RevocationFlag revocationFlag = Options.RevocationFlag;
+        X509RevocationMode revocationMode = Options.RevocationMode;
 
         if (certificate.IsSelfSigned())
         {
@@ -192,11 +200,11 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
         var chainPolicy = new X509ChainPolicy
         {
             RevocationFlag = revocationFlag,
-            RevocationMode = revocationMode,
+            RevocationMode = revocationMode
         };
 
         //// <variation>
-        foreach (var chainCert in Options.IssuerChain)
+        foreach (X509Certificate2 chainCert in Options.IssuerChain)
         {
             chainPolicy.ExtraStore.Add(chainCert);
         }
@@ -226,19 +234,21 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
     {
         var claims = new List<Claim>();
 
-        var issuer = certificate.Issuer;
+        string issuer = certificate.Issuer;
         claims.Add(new Claim("issuer", issuer, ClaimValueTypes.String, Options.ClaimsIssuer));
 
-        var thumbprint = certificate.Thumbprint;
+        string thumbprint = certificate.Thumbprint;
         claims.Add(new Claim(ClaimTypes.Thumbprint, thumbprint, ClaimValueTypes.Base64Binary, Options.ClaimsIssuer));
 
-        var value = certificate.SubjectName.Name;
+        string value = certificate.SubjectName.Name;
+
         if (!string.IsNullOrWhiteSpace(value))
         {
             claims.Add(new Claim(ClaimTypes.X500DistinguishedName, value, ClaimValueTypes.String, Options.ClaimsIssuer));
         }
 
         value = certificate.SerialNumber;
+
         if (!string.IsNullOrWhiteSpace(value))
         {
             claims.Add(new Claim(ClaimTypes.SerialNumber, value, ClaimValueTypes.String, Options.ClaimsIssuer));
@@ -256,7 +266,8 @@ internal sealed class MutualTlsAuthenticationHandler : AuthenticationHandler<Mut
 
     private void MapClaimIfFound(X509Certificate2 certificate, X509NameType claimSource, List<Claim> claims, string claimDestination)
     {
-        var value = certificate.GetNameInfo(claimSource, false);
+        string value = certificate.GetNameInfo(claimSource, false);
+
         if (!string.IsNullOrWhiteSpace(value))
         {
             claims.Add(new Claim(claimDestination, value, ClaimValueTypes.String, Options.ClaimsIssuer));

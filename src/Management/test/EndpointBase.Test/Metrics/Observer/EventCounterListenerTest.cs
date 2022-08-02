@@ -2,16 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 
 public class EventCounterListenerTest : BaseTest
 {
-    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 500 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    {
+        ScrapeResponseCacheDurationMilliseconds = 500
+    };
 
     private readonly string[] _metrics =
     {
@@ -43,14 +48,14 @@ public class EventCounterListenerTest : BaseTest
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var metrics = GetTestMetrics(null, exporter, null);
+        using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        foreach (var metric in _metrics)
+        foreach (string metric in _metrics)
         {
-            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
             Assert.NotNull(summary);
             Assert.True(summary.Count > 0);
         }
@@ -59,17 +64,29 @@ public class EventCounterListenerTest : BaseTest
     [Fact]
     public void EventCounterListenerGetsMetricsWithExclusionsTest()
     {
-        var exclusions = new List<string> { "alloc-rate", "threadpool-completed-items-count", "gen-1-gc-count", "gen-1-size" };
-        using var listener = new EventCounterListener(new MetricsObserverOptions { ExcludedMetrics = exclusions });
+        var exclusions = new List<string>
+        {
+            "alloc-rate",
+            "threadpool-completed-items-count",
+            "gen-1-gc-count",
+            "gen-1-size"
+        };
+
+        using var listener = new EventCounterListener(new MetricsObserverOptions
+        {
+            ExcludedMetrics = exclusions
+        });
+
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var metrics = GetTestMetrics(null, exporter, null);
+        using MeterProvider metrics = GetTestMetrics(null, exporter, null);
         Task.Delay(2000).Wait();
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        foreach (var metric in _metrics)
+        foreach (string metric in _metrics)
         {
-            var summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+            List<KeyValuePair<string, List<MetricSample>>> summary = collectionResponse.MetricSamples.Where(x => x.Key == metric).ToList();
+
             if (!exclusions.Contains(metric.Replace("System.Runtime.", string.Empty)))
             {
                 Assert.NotNull(summary);

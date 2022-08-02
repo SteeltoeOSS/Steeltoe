@@ -22,10 +22,9 @@ public class SpringBootConfigurationBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        var builder = new ConfigurationBuilder()
-            .AddSpringBootEnv();
-        var config = builder.Build();
-        var value = config["foo:bar"];
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootEnv();
+        IConfigurationRoot config = builder.Build();
+        string value = config["foo:bar"];
         Assert.Equal("value", value);
     }
 
@@ -43,15 +42,17 @@ public class SpringBootConfigurationBuilderExtensionsTest
     [Fact]
     public void AddSpringBootCmd_AddKeys()
     {
-        var config1 = new ConfigurationBuilder()
-            .AddCommandLine(new[] { "spring.foo.bar=value", "spring.bar.foo=value2", "bar.foo=value3" })
-            .Build();
+        IConfigurationRoot config1 = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "spring.foo.bar=value",
+            "spring.bar.foo=value2",
+            "bar.foo=value3"
+        }).Build();
 
-        var builder = new ConfigurationBuilder()
-            .AddSpringBootCmd(config1);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddSpringBootCmd(config1);
 
-        var config = builder.Build();
-        var value = config["spring:foo:bar"];
+        IConfigurationRoot config = builder.Build();
+        string value = config["spring:foo:bar"];
         Assert.Equal("value", value);
 
         value = config["spring:bar:foo"];

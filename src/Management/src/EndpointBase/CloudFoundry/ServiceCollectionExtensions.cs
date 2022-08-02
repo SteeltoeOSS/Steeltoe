@@ -17,9 +17,15 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Cloud Foundry actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configuration">Reference to the configuration system.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Reference to the configuration system.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddCloudFoundryActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -40,11 +46,15 @@ public static partial class ServiceCollectionExtensions
         services.TryAddSingleton(provider =>
         {
             var options = provider.GetService<ICloudFoundryOptions>();
-            var managementOptions = provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+
+            CloudFoundryManagementOptions managementOptions =
+                provider.GetServices<IManagementOptions>().OfType<CloudFoundryManagementOptions>().SingleOrDefault();
+
             managementOptions.EndpointOptions.Add(options);
 
             return new CloudFoundryEndpoint(options, managementOptions);
         });
+
         services.TryAddSingleton<ICloudFoundryEndpoint>(provider => provider.GetRequiredService<CloudFoundryEndpoint>());
 
         return services;

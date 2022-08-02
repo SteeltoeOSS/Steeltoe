@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
 namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -14,7 +14,7 @@ namespace Steeltoe.Management.Endpoint.Test.Infrastructure;
 internal sealed class TestOutputLoggerProvider : ILoggerProvider
 {
     private readonly ITestOutputHelper _output;
-    private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new ();
+    private readonly ConcurrentDictionary<string, TestOutputLogger> _loggers = new();
 
     public TestOutputLoggerProvider(ITestOutputHelper output)
     {

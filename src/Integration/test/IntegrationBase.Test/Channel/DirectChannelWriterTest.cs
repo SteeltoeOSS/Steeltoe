@@ -19,7 +19,7 @@ public class DirectChannelWriterTest
     {
         _services = new ServiceCollection();
         _services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         _services.AddSingleton<IConfiguration>(config);
         _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
@@ -27,13 +27,13 @@ public class DirectChannelWriterTest
     [Fact]
     public async Task TestWriteAsync()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
-        var message = Message.Create("test");
-        var currentId = Task.CurrentId;
-        var curThreadId = Thread.CurrentThread.ManagedThreadId;
+        IMessage<string> message = Message.Create("test");
+        int? currentId = Task.CurrentId;
+        int curThreadId = Thread.CurrentThread.ManagedThreadId;
         await channel.Writer.WriteAsync(message);
         Assert.Equal(currentId, target.TaskId);
         Assert.Equal(curThreadId, target.ThreadId);
@@ -42,13 +42,13 @@ public class DirectChannelWriterTest
     [Fact]
     public void TestTryWrite()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
-        var message = Message.Create("test");
-        var currentId = Task.CurrentId;
-        var curThreadId = Thread.CurrentThread.ManagedThreadId;
+        IMessage<string> message = Message.Create("test");
+        int? currentId = Task.CurrentId;
+        int curThreadId = Thread.CurrentThread.ManagedThreadId;
         Assert.True(channel.Writer.TryWrite(message));
         Assert.Equal(currentId, target.TaskId);
         Assert.Equal(curThreadId, target.ThreadId);
@@ -57,7 +57,7 @@ public class DirectChannelWriterTest
     [Fact]
     public async Task TestWaitToWriteAsync()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
@@ -69,7 +69,7 @@ public class DirectChannelWriterTest
     [Fact]
     public void TestTryComplete()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         Assert.False(channel.Writer.TryComplete());
     }

@@ -9,6 +9,8 @@ public class AbstractOrdered : IOrdered
     public const int HighestPrecedence = int.MinValue;
     public const int LowestPrecedence = int.MaxValue;
 
+    public int Order { get; }
+
     public AbstractOrdered()
     {
         Order = 0;
@@ -18,6 +20,4 @@ public class AbstractOrdered : IOrdered
     {
         Order = order;
     }
-
-    public int Order { get; private set; }
 }

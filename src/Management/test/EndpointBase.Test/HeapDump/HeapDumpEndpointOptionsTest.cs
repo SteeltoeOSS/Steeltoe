@@ -39,9 +39,10 @@ public class HeapDumpEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:validatecertificates"] = "true",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new HeapDumpEndpointOptions(config);
         var cloudOpts = new CloudFoundryEndpointOptions(config);

@@ -11,20 +11,6 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 {
     public const string ConfigurationPrefix = "spring:cloud:config";
 
-    public ConfigServerClientSettingsOptions()
-    {
-    }
-
-    public ConfigServerClientSettingsOptions(IConfigurationRoot root)
-        : base(root, ConfigurationPrefix)
-    {
-    }
-
-    public ConfigServerClientSettingsOptions(IConfiguration config)
-        : base(config)
-    {
-    }
-
     public bool Enabled { get; set; } = ConfigServerClientSettings.DefaultProviderEnabled;
 
     public bool FailFast { get; set; } = ConfigServerClientSettings.DefaultFailFast;
@@ -139,5 +125,19 @@ public class ConfigServerClientSettingsOptions : AbstractOptions
 
             return settings;
         }
+    }
+
+    public ConfigServerClientSettingsOptions()
+    {
+    }
+
+    public ConfigServerClientSettingsOptions(IConfigurationRoot root)
+        : base(root, ConfigurationPrefix)
+    {
+    }
+
+    public ConfigServerClientSettingsOptions(IConfiguration config)
+        : base(config)
+    {
     }
 }

@@ -8,13 +8,22 @@ public class PlaceOfBirth
 {
     public string Country;
 
-    public override string ToString() => City;
-
     public string City { get; set; }
 
-    public PlaceOfBirth(string str) => City = str;
+    public PlaceOfBirth(string str)
+    {
+        City = str;
+    }
 
-    public int DoubleIt(int i) => i * 2;
+    public override string ToString()
+    {
+        return City;
+    }
+
+    public int DoubleIt(int i)
+    {
+        return i * 2;
+    }
 
     public override bool Equals(object obj)
     {
@@ -31,5 +40,8 @@ public class PlaceOfBirth
         return City.Equals(other.City);
     }
 
-    public override int GetHashCode() => City.GetHashCode();
+    public override int GetHashCode()
+    {
+        return City.GetHashCode();
+    }
 }

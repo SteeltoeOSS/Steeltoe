@@ -7,6 +7,7 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.RabbitMQ.Support;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -16,13 +17,6 @@ namespace Steeltoe.Integration.Rabbit.Outbound;
 
 public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCallback, IReturnCallback
 {
-    public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
-        : base(context, logger)
-    {
-        Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
-        ConnectionFactory = Template.ConnectionFactory;
-    }
-
     public RabbitTemplate Template { get; }
 
     public bool ExpectReply { get; set; }
@@ -31,7 +25,17 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
 
     public TimeSpan WaitForConfirmTimeout { get; set; }
 
-    public new void Initialize() => base.Initialize();
+    public RabbitOutboundEndpoint(IApplicationContext context, RabbitTemplate rabbitTemplate, ILogger logger)
+        : base(context, logger)
+    {
+        Template = rabbitTemplate ?? throw new ArgumentNullException(nameof(rabbitTemplate));
+        ConnectionFactory = Template.ConnectionFactory;
+    }
+
+    public new void Initialize()
+    {
+        base.Initialize();
+    }
 
     public void Confirm(CorrelationData correlationData, bool ack, string cause)
     {
@@ -41,8 +45,8 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
     public void ReturnedMessage(IMessage<byte[]> message, int replyCode, string replyText, string exchange, string routingKey)
     {
         // no need for null check; we asserted we have a RabbitTemplate in doInit()
-        var converter = Template.MessageConverter;
-        var returned = BuildReturnedMessage(message, replyCode, replyText, exchange, routingKey, converter);
+        IMessageConverter converter = Template.MessageConverter;
+        IMessage returned = BuildReturnedMessage(message, replyCode, replyText, exchange, routingKey, converter);
         ReturnChannel.Send(returned);
     }
 
@@ -63,7 +67,8 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
             Template.ReturnCallback = this;
         }
 
-        var confirmTimeout = ConfirmTimeout;
+        TimeSpan? confirmTimeout = ConfirmTimeout;
+
         if (confirmTimeout != null)
         {
             WaitForConfirmTimeout = confirmTimeout.Value;
@@ -77,23 +82,23 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
 
     protected override object HandleRequestMessage(IMessage requestMessage)
     {
-        var correlationData = GenerateCorrelationData(requestMessage);
-        var exchangeName = GenerateExchangeName(requestMessage);
-        var routingKey = GenerateRoutingKey(requestMessage);
+        CorrelationData correlationData = GenerateCorrelationData(requestMessage);
+        string exchangeName = GenerateExchangeName(requestMessage);
+        string routingKey = GenerateRoutingKey(requestMessage);
+
         if (ExpectReply)
         {
             return SendAndReceive(exchangeName, routingKey, requestMessage, correlationData);
         }
-        else
-        {
-            Send(exchangeName, routingKey, requestMessage, correlationData);
-            if (ShouldWaitForConfirm && correlationData != null)
-            {
-                WaitForConfirm(requestMessage, correlationData);
-            }
 
-            return null;
+        Send(exchangeName, routingKey, requestMessage, correlationData);
+
+        if (ShouldWaitForConfirm && correlationData != null)
+        {
+            WaitForConfirm(requestMessage, correlationData);
         }
+
+        return null;
     }
 
     private void WaitForConfirm(IMessage requestMessage, CorrelationData correlationData)
@@ -105,7 +110,8 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
                 throw new MessageTimeoutException(requestMessage, $"{this}: Timed out awaiting publisher confirm");
             }
 
-            var confirm = correlationData.Future.Result;
+            CorrelationData.Confirm confirm = correlationData.Future.Result;
+
             if (!confirm.Ack)
             {
                 throw new RabbitException($"Negative publisher confirm received: {confirm}");
@@ -124,21 +130,21 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
 
     private void Send(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
     {
-        var converter = Template.MessageConverter;
+        IMessageConverter converter = Template.MessageConverter;
 
-        var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+        IMessage message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
         AddDelayProperty(message);
         Template.Send(exchangeName, routingKey, message, correlationData);
     }
 
     private IMessageBuilder SendAndReceive(string exchangeName, string routingKey, IMessage requestMessage, CorrelationData correlationData)
     {
-        var converter = Template.MessageConverter;
+        IMessageConverter converter = Template.MessageConverter;
 
-        var message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
+        IMessage message = MappingUtils.MapMessage(requestMessage, converter, HeaderMapper, DefaultDeliveryMode, HeadersMappedLast);
         AddDelayProperty(message);
 
-        var amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, message, correlationData);
+        IMessage amqpReplyMessage = Template.SendAndReceive(exchangeName, routingKey, message, correlationData);
 
         if (amqpReplyMessage == null)
         {

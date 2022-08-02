@@ -13,6 +13,7 @@ public static class SerialHystrixRequestEvents
     public static string ToJsonString(HystrixRequestEvents requestEvents)
     {
         using var sw = new StringWriter();
+
         using (var writer = new JsonTextWriter(sw))
         {
             SerializeRequestEvents(writer, requestEvents);
@@ -25,7 +26,7 @@ public static class SerialHystrixRequestEvents
     {
         json.WriteStartArray();
 
-        foreach (var entry in requestEvents.ExecutionsMappedToLatencies)
+        foreach (KeyValuePair<ExecutionSignature, List<int>> entry in requestEvents.ExecutionsMappedToLatencies)
         {
             ConvertExecutionToJson(json, entry.Key, entry.Value);
         }
@@ -38,12 +39,14 @@ public static class SerialHystrixRequestEvents
         json.WriteStartObject();
         json.WriteStringField("name", executionSignature.CommandName);
         json.WriteArrayFieldStart("events");
-        var eventCounts = executionSignature.Eventcounts;
-        foreach (var eventType in HystrixEventTypeHelper.Values)
+        ExecutionResult.EventCounts eventCounts = executionSignature.Eventcounts;
+
+        foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
         {
             if (!eventType.Equals(HystrixEventType.Collapsed) && eventCounts.Contains(eventType))
             {
-                var eventCount = eventCounts.GetCount(eventType);
+                int eventCount = eventCounts.GetCount(eventType);
+
                 if (eventCount > 1)
                 {
                     json.WriteStartObject();
@@ -60,12 +63,14 @@ public static class SerialHystrixRequestEvents
 
         json.WriteEndArray();
         json.WriteArrayFieldStart("latencies");
-        foreach (var latency in latencies)
+
+        foreach (int latency in latencies)
         {
             json.WriteValue(latency);
         }
 
         json.WriteEndArray();
+
         if (executionSignature.CachedCount > 0)
         {
             json.WriteIntegerField("cached", executionSignature.CachedCount);

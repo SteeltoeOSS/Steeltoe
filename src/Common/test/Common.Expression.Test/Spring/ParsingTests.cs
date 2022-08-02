@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class ParsingTests
 {
-    private readonly SpelExpressionParser _parser = new ();
+    private readonly SpelExpressionParser _parser = new();
 
     // literals
     [Fact]
@@ -179,31 +179,31 @@ public class ParsingTests
     public void TestRelOperatorsBetween02()
     {
         ParseCheck("'efg' between {'abc', 'xyz'}", "('efg' between {'abc','xyz'})");
-    }// true
+    } // true
 
     [Fact]
     public void TestRelOperatorsIs01()
     {
         ParseCheck("'xyz' instanceof int", "('xyz' instanceof int)");
-    }// false
+    } // false
 
     [Fact]
     public void TestRelOperatorsIs02()
     {
         ParseCheck("{1, 2, 3, 4, 5} instanceof List", "({1,2,3,4,5} instanceof List)");
-    }// true
+    } // true
 
     [Fact]
     public void TestRelOperatorsMatches01()
     {
         ParseCheck("'5.0067' matches '^-?\\d+(\\.\\d{2})?$'", "('5.0067' matches '^-?\\d+(\\.\\d{2})?$')");
-    }// false
+    } // false
 
     [Fact]
     public void TestRelOperatorsMatches02()
     {
         ParseCheck("'5.00' matches '^-?\\d+(\\.\\d{2})?$'", "('5.00' matches '^-?\\d+(\\.\\d{2})?$')");
-    }// true
+    } // true
 
     // mathematical operators
     [Fact]

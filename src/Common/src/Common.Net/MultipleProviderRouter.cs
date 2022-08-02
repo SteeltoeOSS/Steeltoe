@@ -22,7 +22,8 @@ internal sealed class MultipleProviderRouter : IMultipleProviderRouter
         return NativeMethods.WNetAddConnection2(netResource, password, username, flags);
     }
 
-    public int UseConnection(IntPtr hwndOwner, NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
+    public int UseConnection(IntPtr hwndOwner, NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize,
+        string lpResult)
     {
         return NativeMethods.WNetUseConnection(hwndOwner, netResource, password, username, flags, lpAccessName, lpBufferSize, lpResult);
     }

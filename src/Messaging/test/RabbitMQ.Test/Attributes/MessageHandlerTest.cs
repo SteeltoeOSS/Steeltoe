@@ -5,6 +5,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
@@ -21,14 +23,19 @@ public class MessageHandlerTest
         var services = new ServiceCollection();
         services.AddRabbitServices();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var bpp = provider.GetService<IRabbitListenerAttributeProcessor>() as RabbitListenerAttributeProcessor;
         bpp.Initialize();
-        var factory = bpp.MessageHandlerMethodFactory;
+        IMessageHandlerMethodFactory factory = bpp.MessageHandlerMethodFactory;
         var foo = new Foo();
-        var invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod(nameof(Foo.Listen1)));
-        var message = Message.Create("foo");
-        var list = new List<IMessage> { message };
+        IInvocableHandlerMethod invMethod = factory.CreateInvocableHandlerMethod(foo, typeof(Foo).GetMethod(nameof(Foo.Listen1)));
+        IMessage<string> message = Message.Create("foo");
+
+        var list = new List<IMessage>
+        {
+            message
+        };
+
         var mockChannel = new Mock<RC.IModel>();
         var adapter = new HandlerAdapter(invMethod);
         adapter.Invoke(Message.Create(list), mockChannel.Object);

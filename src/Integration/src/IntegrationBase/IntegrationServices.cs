@@ -23,11 +23,6 @@ public class IntegrationServices : IIntegrationServices
     protected IApplicationContext context;
     protected IExpressionParser expressionParser;
 
-    public IntegrationServices(IApplicationContext context)
-    {
-        this.context = context;
-    }
-
     public virtual IMessageBuilderFactory MessageBuilderFactory
     {
         get
@@ -36,10 +31,7 @@ public class IntegrationServices : IIntegrationServices
             return messageBuilderFactory;
         }
 
-        set
-        {
-            messageBuilderFactory = value;
-        }
+        set => messageBuilderFactory = value;
     }
 
     public virtual IExpressionParser ExpressionParser
@@ -50,10 +42,7 @@ public class IntegrationServices : IIntegrationServices
             return expressionParser;
         }
 
-        set
-        {
-            expressionParser = value;
-        }
+        set => expressionParser = value;
     }
 
     public virtual IDestinationResolver<IMessageChannel> ChannelResolver
@@ -64,10 +53,7 @@ public class IntegrationServices : IIntegrationServices
             return channelResolver;
         }
 
-        set
-        {
-            channelResolver = value;
-        }
+        set => channelResolver = value;
     }
 
     public virtual IConversionService ConversionService
@@ -78,10 +64,7 @@ public class IntegrationServices : IIntegrationServices
             return conversionService;
         }
 
-        set
-        {
-            conversionService = value;
-        }
+        set => conversionService = value;
     }
 
     public virtual IIdGenerator IdGenerator
@@ -92,9 +75,11 @@ public class IntegrationServices : IIntegrationServices
             return idGenerator;
         }
 
-        set
-        {
-            idGenerator = value;
-        }
+        set => idGenerator = value;
+    }
+
+    public IntegrationServices(IApplicationContext context)
+    {
+        this.context = context;
     }
 }

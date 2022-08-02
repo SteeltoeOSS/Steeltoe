@@ -7,38 +7,64 @@ namespace Steeltoe.Messaging.Core;
 /// <summary>
 /// Provides operations for receiving messages from a destination specified as a resolvable string.
 /// </summary>
-/// <typeparam name="TDestination">the destination type.</typeparam>
+/// <typeparam name="TDestination">
+/// the destination type.
+/// </typeparam>
 public interface IDestinationResolvingMessageReceivingOperations<TDestination> : IMessageReceivingOperations<TDestination>
 {
     /// <summary>
     /// Resolve the given destination and receive a message from it.
     /// </summary>
-    /// <param name="destinationName">the destination name to resolve.</param>
-    /// <param name="cancellationToken">a token used to cancel the operation.</param>
-    /// <returns>a task to signal completion.</returns>
+    /// <param name="destinationName">
+    /// the destination name to resolve.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// a token used to cancel the operation.
+    /// </param>
+    /// <returns>
+    /// a task to signal completion.
+    /// </returns>
     Task<IMessage> ReceiveAsync(string destinationName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Resolve the given destination, receive a message from it, convert the payload to the specified target type.
     /// </summary>
-    /// <typeparam name="T">the target type.</typeparam>
-    /// <param name="destinationName">the destination name to resolve.</param>
-    /// <param name="cancellationToken">a token used to cancel the operation.</param>
-    /// <returns>a task to signal completion.</returns>
+    /// <typeparam name="T">
+    /// the target type.
+    /// </typeparam>
+    /// <param name="destinationName">
+    /// the destination name to resolve.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// a token used to cancel the operation.
+    /// </param>
+    /// <returns>
+    /// a task to signal completion.
+    /// </returns>
     Task<T> ReceiveAndConvertAsync<T>(string destinationName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Resolve the given destination and receive a message from it.
     /// </summary>
-    /// <param name="destinationName">the destination name to resolve.</param>
-    /// <returns>the received message.</returns>
+    /// <param name="destinationName">
+    /// the destination name to resolve.
+    /// </param>
+    /// <returns>
+    /// the received message.
+    /// </returns>
     IMessage Receive(string destinationName);
 
     /// <summary>
     /// Resolve the given destination, receive a message from it, convert the payload to the specified target type.
     /// </summary>
-    /// <typeparam name="T">the target type.</typeparam>
-    /// <param name="destinationName">the destination name to resolve.</param>
-    /// <returns>the received message.</returns>
+    /// <typeparam name="T">
+    /// the target type.
+    /// </typeparam>
+    /// <param name="destinationName">
+    /// the destination name to resolve.
+    /// </param>
+    /// <returns>
+    /// the received message.
+    /// </returns>
     T ReceiveAndConvert<T>(string destinationName);
 }

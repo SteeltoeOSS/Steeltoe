@@ -16,11 +16,16 @@ public class EurekaDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
         var ext = new EurekaDiscoveryClientExtension();
-        var appSettings = new Dictionary<string, string> { { "eureka:client:serviceurl", "http://testhost/eureka" } };
+
+        var appSettings = new Dictionary<string, string>
+        {
+            { "eureka:client:serviceurl", "http://testhost/eureka" }
+        };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -31,15 +36,17 @@ public class EurekaDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
         var ext = new EurekaDiscoveryClientExtension();
+
         var appSettings = new Dictionary<string, string>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:serviceurl", "http://testhost/eureka" }
         };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -50,16 +57,18 @@ public class EurekaDiscoveryClientExtensionTest
     {
         var services = new ServiceCollection();
         var ext = new EurekaDiscoveryClientExtension();
+
         var appSettings = new Dictionary<string, string>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "eureka:client:enabled", "true" },
             { "eureka:client:serviceurl", "http://testhost/eureka" }
         };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ext.ConfigureEurekaServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<EurekaClientOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);

@@ -20,10 +20,10 @@ public class CoreServicesExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddCoreServices();
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
         Assert.NotNull(serviceProvider.GetService<IApplicationContext>());
         Assert.NotNull(serviceProvider.GetService<IConversionService>());
         Assert.NotNull(serviceProvider.GetService<ILifecycleProcessor>());

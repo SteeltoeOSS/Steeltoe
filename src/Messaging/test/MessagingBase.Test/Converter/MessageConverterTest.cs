@@ -13,7 +13,7 @@ public class MessageConverterTest
     [Fact]
     public void SupportsTargetClass()
     {
-        var message = MessageBuilder.WithPayload("ABC").Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").Build();
         var converter = new TestMessageConverter();
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
 
@@ -23,8 +23,7 @@ public class MessageConverterTest
     [Fact]
     public void SupportsMimeType()
     {
-        var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new TestMessageConverter();
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
     }
@@ -32,8 +31,7 @@ public class MessageConverterTest
     [Fact]
     public void SupportsMimeTypeNotSupported()
     {
-        var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
         var converter = new TestMessageConverter();
         Assert.Null(converter.FromMessage(message, typeof(string)));
     }
@@ -41,7 +39,7 @@ public class MessageConverterTest
     [Fact]
     public void SupportsMimeTypeNotSpecified()
     {
-        var message = MessageBuilder.WithPayload("ABC").Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").Build();
         var converter = new TestMessageConverter();
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
     }
@@ -49,8 +47,7 @@ public class MessageConverterTest
     [Fact]
     public void SupportsMimeTypeNoneConfigured()
     {
-        var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson).Build();
         var converter = new TestMessageConverter(new List<MimeType>());
 
         Assert.Equal("success-from", converter.FromMessage(message, typeof(string)));
@@ -59,16 +56,18 @@ public class MessageConverterTest
     [Fact]
     public void CanConvertFromStrictContentTypeMatch()
     {
-        var converter = new TestMessageConverter(new List<MimeType> { MimeTypeUtils.TextPlain })
+        var converter = new TestMessageConverter(new List<MimeType>
+        {
+            MimeTypeUtils.TextPlain
+        })
         {
             StrictContentTypeMatch = true
         };
 
-        var message = MessageBuilder.WithPayload("ABC").Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").Build();
         Assert.False(converter.CanConvertFrom(message, typeof(string)));
 
-        message = MessageBuilder.WithPayload("ABC")
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
+        message = MessageBuilder.WithPayload("ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         Assert.True(converter.CanConvertFrom(message, typeof(string)));
     }
 
@@ -86,9 +85,10 @@ public class MessageConverterTest
         {
             { "foo", "bar" }
         };
+
         var headers = new MessageHeaders(map);
         var converter = new TestMessageConverter();
-        var message = converter.ToMessage("ABC", headers);
+        IMessage message = converter.ToMessage("ABC", headers);
 
         Assert.NotNull(message.Headers.Id);
         Assert.NotNull(message.Headers.Timestamp);
@@ -103,9 +103,9 @@ public class MessageConverterTest
         accessor.SetHeader("foo", "bar");
         accessor.LeaveMutable = true;
 
-        var headers = accessor.MessageHeaders;
+        IMessageHeaders headers = accessor.MessageHeaders;
         var converter = new TestMessageConverter();
-        var message = converter.ToMessage("ABC", headers);
+        IMessage message = converter.ToMessage("ABC", headers);
 
         Assert.Same(headers, message.Headers);
         Assert.Null(message.Headers.Id);
@@ -117,7 +117,7 @@ public class MessageConverterTest
     public void ToMessageContentTypeHeader()
     {
         var converter = new TestMessageConverter();
-        var message = converter.ToMessage("ABC", null);
+        IMessage message = converter.ToMessage("ABC", null);
         Assert.Equal(MimeTypeUtils.TextPlain, message.Headers[MessageHeaders.ContentType]);
     }
 

@@ -2,31 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixThreadPoolStartStream : IHystrixEventStream<HystrixCommandExecutionStarted>
 {
-    private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, HystrixThreadPoolStartStream> Streams = new();
 
     private readonly IHystrixThreadPoolKey _threadPoolKey;
     private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
     private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
-
-    public static HystrixThreadPoolStartStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
-    {
-        return Streams.GetOrAddEx(threadPoolKey.Name, _ => new HystrixThreadPoolStartStream(threadPoolKey));
-    }
 
     internal HystrixThreadPoolStartStream(IHystrixThreadPoolKey threadPoolKey)
     {
         _threadPoolKey = threadPoolKey;
         _writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
         _readOnlyStream = _writeOnlySubject.AsObservable();
+    }
+
+    public static HystrixThreadPoolStartStream GetInstance(IHystrixThreadPoolKey threadPoolKey)
+    {
+        return Streams.GetOrAddEx(threadPoolKey.Name, _ => new HystrixThreadPoolStartStream(threadPoolKey));
     }
 
     public static void Reset()

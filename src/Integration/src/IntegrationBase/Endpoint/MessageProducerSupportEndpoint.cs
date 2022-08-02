@@ -13,8 +13,6 @@ namespace Steeltoe.Integration.Endpoint;
 
 public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessageProducer
 {
-    protected object @lock = new ();
-
     private readonly MessagingTemplate _messagingTemplate;
 
     private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
@@ -26,13 +24,9 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
     private volatile IMessageChannel _errorChannel;
 
     private volatile string _errorChannelName;
+    protected object @lock = new();
 
-    protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)
-        : base(context)
-    {
-        Phase = int.MaxValue / 2;
-        _messagingTemplate = new MessagingTemplate(context, logger);
-    }
+    protected virtual MessagingTemplate MessagingTemplate => _messagingTemplate;
 
     public virtual IMessageChannel OutputChannel
     {
@@ -54,18 +48,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
             return _outputChannel;
         }
 
-        set
-        {
-            _outputChannel = value;
-        }
+        set => _outputChannel = value;
     }
 
     public virtual string OutputChannelName
     {
-        get
-        {
-            return _outputChannelName;
-        }
+        get => _outputChannelName;
 
         set
         {
@@ -98,18 +86,12 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
             return _errorChannel;
         }
 
-        set
-        {
-            _errorChannel = value;
-        }
+        set => _errorChannel = value;
     }
 
     public virtual string ErrorChannelName
     {
-        get
-        {
-            return _errorChannelName;
-        }
+        get => _errorChannelName;
 
         set
         {
@@ -124,33 +106,29 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
     public virtual int SendTimeout
     {
-        get
-        {
-            return _messagingTemplate.SendTimeout;
-        }
+        get => _messagingTemplate.SendTimeout;
 
-        set
-        {
-            _messagingTemplate.SendTimeout = value;
-        }
+        set => _messagingTemplate.SendTimeout = value;
     }
 
     public virtual IErrorMessageStrategy ErrorMessageStrategy
     {
-        get
-        {
-            return _errorMessageStrategy;
-        }
+        get => _errorMessageStrategy;
 
-        set
-        {
-            _errorMessageStrategy = value ?? throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
-        }
+        set => _errorMessageStrategy = value ?? throw new ArgumentNullException(nameof(value), "'errorMessageStrategy' cannot be null");
+    }
+
+    protected MessageProducerSupportEndpoint(IApplicationContext context, ILogger logger = null)
+        : base(context)
+    {
+        Phase = int.MaxValue / 2;
+        _messagingTemplate = new MessagingTemplate(context, logger);
     }
 
     protected internal virtual void SendMessage(IMessage messageArg)
     {
-        var message = messageArg;
+        IMessage message = messageArg;
+
         if (message == null)
         {
             throw new MessagingException("cannot send a null message");
@@ -174,11 +152,6 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
         }
     }
 
-    protected virtual MessagingTemplate MessagingTemplate
-    {
-        get { return _messagingTemplate; }
-    }
-
     protected override Task DoStart()
     {
         return Task.CompletedTask;
@@ -191,7 +164,8 @@ public abstract class MessageProducerSupportEndpoint : AbstractEndpoint, IMessag
 
     protected bool SendErrorMessageIfNecessary(IMessage message, Exception exception)
     {
-        var channel = ErrorChannel;
+        IMessageChannel channel = ErrorChannel;
+
         if (channel != null)
         {
             _messagingTemplate.Send(channel, BuildErrorMessage(message, exception));

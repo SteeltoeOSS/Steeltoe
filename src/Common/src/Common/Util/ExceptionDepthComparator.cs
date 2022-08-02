@@ -25,8 +25,8 @@ public class ExceptionDepthComparator : IComparer<Type>
 
     public int Compare(Type o1, Type o2)
     {
-        var depth1 = GetDepth(o1, _targetException, 0);
-        var depth2 = GetDepth(o2, _targetException, 0);
+        int depth1 = GetDepth(o1, _targetException, 0);
+        int depth2 = GetDepth(o2, _targetException, 0);
         return depth1 - depth2;
     }
 

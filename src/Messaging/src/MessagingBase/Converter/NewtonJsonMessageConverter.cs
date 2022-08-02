@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Util;
-using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Messaging.Converter;
 
@@ -64,7 +64,8 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
     {
         var typeFilter = new TypeFilter((t, _) =>
         {
-            var candidate = t;
+            Type candidate = t;
+
             if (candidate.IsConstructedGenericType)
             {
                 candidate = candidate.GetGenericTypeDefinition();
@@ -83,7 +84,8 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
             return null;
         }
 
-        var result = type.FindInterfaces(typeFilter, null);
+        Type[] result = type.FindInterfaces(typeFilter, null);
+
         if (result.Length > 0)
         {
             return result[0].GenericTypeArguments[0];
@@ -92,14 +94,18 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
         return null;
     }
 
-    protected internal static bool IsIMessageGenericType(Type type) => GetIMessageGenericType(type) != null;
+    protected internal static bool IsIMessageGenericType(Type type)
+    {
+        return GetIMessageGenericType(type) != null;
+    }
 
     protected internal static Type GetTargetType(Type targetClass, object conversionHint)
     {
         if (conversionHint is ParameterInfo info)
         {
-            var paramType = info.ParameterType;
-            var messageType = GetIMessageGenericType(paramType);
+            Type paramType = info.ParameterType;
+            Type messageType = GetIMessageGenericType(paramType);
+
             if (messageType != null)
             {
                 return messageType;
@@ -123,17 +129,20 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {
-        var target = GetTargetType(targetClass, conversionHint);
-        var payload = message.Payload;
+        Type target = GetTargetType(targetClass, conversionHint);
+        object payload = message.Payload;
+
         if (targetClass.IsInstanceOfType(payload))
         {
             return payload;
         }
 
         var serializer = JsonSerializer.Create(Settings);
+
         try
         {
             TextReader textReader = null;
+
             if (payload is byte[] payloadBytes)
             {
                 var buffer = new MemoryStream(payloadBytes, false);
@@ -155,16 +164,19 @@ public class NewtonJsonMessageConverter : AbstractMessageConverter
     protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
     {
         var serializer = JsonSerializer.Create(Settings);
+
         try
         {
             if (typeof(byte[]) == SerializedPayloadClass)
             {
                 var memStream = new MemoryStream(1024);
-                var encoding = GetJsonEncoding(GetMimeType(headers));
+                Encoding encoding = GetJsonEncoding(GetMimeType(headers));
+
                 var writer = new StreamWriter(memStream, encoding)
                 {
                     AutoFlush = true
                 };
+
                 serializer.Serialize(writer, payload);
                 payload = memStream.ToArray();
             }

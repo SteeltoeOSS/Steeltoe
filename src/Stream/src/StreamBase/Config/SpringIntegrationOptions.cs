@@ -9,7 +9,11 @@ namespace Steeltoe.Stream.Config;
 public class SpringIntegrationOptions
 {
     public const string Prefix = "spring:cloud:stream:integration";
-    private static readonly string[] DefaultMessageHandlerNotPropagatedHeaders = { MessageHeaders.ContentType };
+
+    private static readonly string[] DefaultMessageHandlerNotPropagatedHeaders =
+    {
+        MessageHeaders.ContentType
+    };
 
     public string[] MessageHandlerNotPropagatedHeaders { get; set; } = DefaultMessageHandlerNotPropagatedHeaders;
 }

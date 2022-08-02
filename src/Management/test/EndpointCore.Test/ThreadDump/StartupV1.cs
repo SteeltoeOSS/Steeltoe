@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.ThreadDump.Test;
 
 public class StartupV1
 {
+    public IConfiguration Configuration { get; set; }
+
     public StartupV1(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -28,6 +28,7 @@ public class StartupV1
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<ThreadDumpEndpoint>();

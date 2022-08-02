@@ -12,15 +12,9 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     public new const string DefaultStatusPageUrlPath = "/info";
     public new const string DefaultHealthCheckUrlPath = "/health";
 
-    public EurekaInstanceOptions()
-    {
-        StatusPageUrlPath = DefaultStatusPageUrlPath;
-        HealthCheckUrlPath = DefaultHealthCheckUrlPath;
-        IsInstanceEnabledOnInit = true;
-        VirtualHostName = null;
-        SecureVirtualHostName = null;
-        InstanceId = $"{GetHostName(false)}:{AppName}:{NonSecurePort}";
-    }
+    private string _ipAddress;
+
+    private string _hostName;
 
     // eureka:instance:appGroup
     public virtual string AppGroup
@@ -73,16 +67,12 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
     // spring:cloud:discovery:registrationMethod changed to  eureka:instance:registrationMethod
     public virtual string RegistrationMethod { get; set; }
 
-    private string _ipAddress;
-
     public override string IpAddress
     {
         get => _ipAddress ?? thisHostAddress;
 
         set => _ipAddress = value;
     }
-
-    private string _hostName;
 
     public override string HostName
     {
@@ -94,6 +84,16 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
                 _hostName = value;
             }
         }
+    }
+
+    public EurekaInstanceOptions()
+    {
+        StatusPageUrlPath = DefaultStatusPageUrlPath;
+        HealthCheckUrlPath = DefaultHealthCheckUrlPath;
+        IsInstanceEnabledOnInit = true;
+        VirtualHostName = null;
+        SecureVirtualHostName = null;
+        InstanceId = $"{GetHostName(false)}:{AppName}:{NonSecurePort}";
     }
 
     public override string GetHostName(bool refresh)
@@ -117,7 +117,7 @@ public class EurekaInstanceOptions : EurekaInstanceConfig, IDiscoveryRegistratio
         // if registration method has been set, the user probably wants to define their own behavior
         if (addresses.Any() && string.IsNullOrEmpty(RegistrationMethod))
         {
-            foreach (var address in addresses)
+            foreach (Uri address in addresses)
             {
                 if (address.Scheme == "http" && Port == DefaultNonSecurePort)
                 {

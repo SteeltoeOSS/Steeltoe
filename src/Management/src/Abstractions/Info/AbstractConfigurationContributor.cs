@@ -34,10 +34,10 @@ public abstract class AbstractConfigurationContributor
         if (config != null)
         {
             var result = new Dictionary<string, object>();
-            var dict = result;
+            Dictionary<string, object> dict = result;
 
-            var section = config.GetSection(prefix);
-            var children = section.GetChildren();
+            IConfigurationSection section = config.GetSection(prefix);
+            IEnumerable<IConfigurationSection> children = section.GetChildren();
 
             if (keepPrefix)
             {
@@ -54,10 +54,11 @@ public abstract class AbstractConfigurationContributor
 
     protected virtual void AddChildren(Dictionary<string, object> dict, IEnumerable<IConfigurationSection> sections)
     {
-        foreach (var section in sections)
+        foreach (IConfigurationSection section in sections)
         {
-            var key = section.Key;
-            var val = section.Value;
+            string key = section.Key;
+            string val = section.Value;
+
             if (val == null)
             {
                 var newDict = new Dictionary<string, object>();

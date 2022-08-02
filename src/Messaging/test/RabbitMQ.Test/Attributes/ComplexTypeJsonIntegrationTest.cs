@@ -30,22 +30,10 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         _provider = _fixture.Provider;
     }
 
-    public static Foo<Bar<Baz, Qux>> MakeAFoo()
-    {
-        var foo = new Foo<Bar<Baz, Qux>>();
-        var bar = new Bar<Baz, Qux>
-        {
-            AField = new Baz("foo"),
-            BField = new Qux(42)
-        };
-        foo.Field = bar;
-        return foo;
-    }
-
     [Fact]
     public void TestSendAndReceive()
     {
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         IMessagePostProcessor pp = new EmptyPostProcessor();
         object message = "foo";
         Assert.NotNull(template.ConvertSendAndReceiveAsType(message, typeof(Foo<Bar<Baz, Qux>>)));
@@ -59,8 +47,8 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestReceive()
     {
-        var template = _provider.GetRabbitTemplate();
-        var foo = MakeAFoo();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        Foo<Bar<Baz, Qux>> foo = MakeAFoo();
         var pp = new TestPostProcessor();
         template.ConvertAndSend(TestQueue2, foo, pp);
         var result = template.ReceiveAndConvert<Foo<Bar<Baz, Qux>>>(10000);
@@ -70,13 +58,14 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestReceiveNoWait()
     {
-        var template = _provider.GetRabbitTemplate();
-        var foo = MakeAFoo();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        Foo<Bar<Baz, Qux>> foo = MakeAFoo();
         var pp = new TestPostProcessor();
         template.ConvertAndSend(TestQueue2, foo, pp);
         var result = template.ReceiveAndConvert<Foo<Bar<Baz, Qux>>>();
 
-        var n = 0;
+        int n = 0;
+
         while (n++ < 100 && foo == null)
         {
             Thread.Sleep(100);
@@ -89,7 +78,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public async Task TestAsyncSendAndReceive()
     {
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         IMessagePostProcessor pp = new EmptyPostProcessor();
         object message = "foo";
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(message, typeof(Foo<Bar<Baz, Qux>>)));
@@ -98,6 +87,20 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(TestQueue, message, pp, null, typeof(Foo<Bar<Baz, Qux>>)));
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, typeof(Foo<Bar<Baz, Qux>>)));
         Assert.NotNull(await template.ConvertSendAndReceiveAsTypeAsync(string.Empty, TestQueue, message, pp, typeof(Foo<Bar<Baz, Qux>>)));
+    }
+
+    public static Foo<Bar<Baz, Qux>> MakeAFoo()
+    {
+        var foo = new Foo<Bar<Baz, Qux>>();
+
+        var bar = new Bar<Baz, Qux>
+        {
+            AField = new Baz("foo"),
+            BField = new Qux(42)
+        };
+
+        foo.Field = bar;
+        return foo;
     }
 
     public class EmptyPostProcessor : IMessagePostProcessor
@@ -117,14 +120,14 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.RemoveHeaders("__TypeId__");
             return message;
         }
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.RemoveHeaders("__TypeId__");
             return message;
         }
@@ -146,8 +149,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
         public ServiceCollection CreateContainer(IConfiguration config = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder()
-                .Build();
+            config ??= new ConfigurationBuilder().Build();
 
             services.AddLogging(b =>
             {
@@ -166,6 +168,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
             services.AddRabbitAdmin();
+
             services.AddRabbitTemplate((_, t) =>
             {
                 t.DefaultReceiveDestination = TestQueue2;
@@ -182,7 +185,7 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
 
         public void Dispose()
         {
-            var admin = Provider.GetRabbitAdmin();
+            RabbitAdmin admin = Provider.GetRabbitAdmin();
             admin.DeleteQueue(TestQueue);
             admin.DeleteQueue(TestQueue2);
             Provider.Dispose();
@@ -222,12 +225,12 @@ public class ComplexTypeJsonIntegrationTest : IClassFixture<StartupFixture>
 
     public class Baz
     {
+        public string BazField { get; set; }
+
         public Baz(string s)
         {
             BazField = s;
         }
-
-        public string BazField { get; set; }
 
         public override string ToString()
         {

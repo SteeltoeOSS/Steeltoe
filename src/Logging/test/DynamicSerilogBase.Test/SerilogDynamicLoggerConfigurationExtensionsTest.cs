@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Serilog;
 using Serilog.Events;
 using Xunit;
 
@@ -18,9 +19,10 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
             { "Serilog:MinimumLevel:Default", "Error" },
             { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
             { "Serilog:MinimumLevel:Override:Steeltoe.Extensions", "Verbose" },
-            { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
+            { "Serilog:MinimumLevel:Override:Steeltoe", "Information" }
         };
-        var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(builder.Build());
@@ -39,7 +41,8 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
         {
             { "Serilog:MinimumLevel", "Error" }
         };
-        var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(builder.Build());
@@ -51,11 +54,8 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
     [Fact]
     public void SerilogOptions_Set_Correctly_Via_LoggerConfiguration()
     {
-        var loggerConfiguration = new Serilog.LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-            .MinimumLevel.Override("Steeltoe.Extensions", LogEventLevel.Verbose)
-            .MinimumLevel.Override("Steeltoe", LogEventLevel.Information);
+        LoggerConfiguration loggerConfiguration = new LoggerConfiguration().MinimumLevel.Debug().MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+            .MinimumLevel.Override("Steeltoe.Extensions", LogEventLevel.Verbose).MinimumLevel.Override("Steeltoe", LogEventLevel.Information);
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(loggerConfiguration);
@@ -70,7 +70,7 @@ public class SerilogDynamicLoggerConfigurationExtensionsTest
     public void SerilogOptions_NoError_When_NotConfigured()
     {
         var appSettings = new Dictionary<string, string>();
-        var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(builder.Build());

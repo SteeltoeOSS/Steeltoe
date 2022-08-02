@@ -8,12 +8,12 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public class TestOptionMonitorWrapper<T> : IOptionsMonitor<T>
 {
+    public T CurrentValue { get; }
+
     public TestOptionMonitorWrapper(T opt)
     {
         CurrentValue = opt;
     }
-
-    public T CurrentValue { get; private set; }
 
     public T Get(string name)
     {

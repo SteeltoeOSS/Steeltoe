@@ -12,7 +12,7 @@ public class ErrorMessageTest
     public void TestToString()
     {
         var em = new ErrorMessage(new Exception("foo"));
-        var emString = em.ToString();
+        string emString = em.ToString();
         Assert.DoesNotContain("original", emString);
 
         em = new ErrorMessage(new Exception("foo"), Message.Create("bar"));
@@ -25,7 +25,7 @@ public class ErrorMessageTest
     public void TestAnyExceptionType()
     {
         var em = new ErrorMessage(new InvalidOperationException("foo"));
-        var emString = em.ToString();
+        string emString = em.ToString();
         Assert.Contains("InvalidOperationException", emString);
     }
 }

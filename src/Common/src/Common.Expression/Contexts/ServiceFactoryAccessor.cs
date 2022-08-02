@@ -10,7 +10,8 @@ public class ServiceFactoryAccessor : IPropertyAccessor
 {
     public bool CanRead(IEvaluationContext context, object target, string name)
     {
-        var serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out var lookupName);
+        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+
         if (serviceType != null)
         {
             return target is IApplicationContext context1 && context1.ContainsService(lookupName, serviceType);
@@ -26,7 +27,10 @@ public class ServiceFactoryAccessor : IPropertyAccessor
 
     public IList<Type> GetSpecificTargetClasses()
     {
-        return new List<Type> { typeof(IApplicationContext) };
+        return new List<Type>
+        {
+            typeof(IApplicationContext)
+        };
     }
 
     public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -36,7 +40,8 @@ public class ServiceFactoryAccessor : IPropertyAccessor
             throw new InvalidOperationException("target must be of type IApplicationContext");
         }
 
-        var serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out var lookupName);
+        Type serviceType = ServiceFactoryResolver.GetServiceNameAndType(context, name, out string lookupName);
+
         if (serviceType != null)
         {
             return new TypedValue(targetContext.GetService(lookupName, serviceType));

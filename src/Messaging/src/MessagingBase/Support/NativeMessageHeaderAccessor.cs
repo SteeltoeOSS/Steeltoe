@@ -8,7 +8,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 {
     public const string NativeHeaders = "nativeHeaders";
 
-    private static readonly Dictionary<string, List<string>> Empty = new ();
+    private static readonly Dictionary<string, List<string>> Empty = new();
 
     protected internal NativeMessageHeaderAccessor()
         : this((IDictionary<string, List<string>>)null)
@@ -29,6 +29,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
         if (message != null)
         {
             var map = (IDictionary<string, List<string>>)GetHeader(NativeHeaders);
+
             if (map != null)
             {
                 // Force removal since setHeader checks for equality
@@ -40,10 +41,12 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 
     public static string GetFirstNativeHeader(string headerName, IDictionary<string, object> headers)
     {
-        headers.TryGetValue(NativeHeaders, out var obj);
+        headers.TryGetValue(NativeHeaders, out object obj);
+
         if (obj is IDictionary<string, List<string>> map)
         {
-            map.TryGetValue(headerName, out var values);
+            map.TryGetValue(headerName, out List<string> values);
+
             if (values != null)
             {
                 return values[0];
@@ -55,10 +58,12 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 
     public string GetFirstNativeHeader(string headerName)
     {
-        var map = GetNativeHeaders();
+        IDictionary<string, List<string>> map = GetNativeHeaders();
+
         if (map != null)
         {
-            map.TryGetValue(headerName, out var values);
+            map.TryGetValue(headerName, out List<string> values);
+
             if (values != null)
             {
                 return values[0];
@@ -70,7 +75,7 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 
     public virtual IDictionary<string, List<string>> ToNativeHeaderDictionary()
     {
-        var map = GetNativeHeaders();
+        IDictionary<string, List<string>> map = GetNativeHeaders();
         return map != null ? new Dictionary<string, List<string>>(map) : Empty;
     }
 
@@ -78,7 +83,8 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
     {
         if (IsMutable)
         {
-            var map = GetNativeHeaders();
+            IDictionary<string, List<string>> map = GetNativeHeaders();
+
             if (map != null)
             {
                 // Force removal since setHeader checks for equality
@@ -92,17 +98,17 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
 
     public bool ContainsNativeHeader(string headerName)
     {
-        var map = GetNativeHeaders();
+        IDictionary<string, List<string>> map = GetNativeHeaders();
         return map != null && map.ContainsKey(headerName);
     }
 
     public List<string> GetNativeHeader(string headerName)
     {
-        var map = GetNativeHeaders();
+        IDictionary<string, List<string>> map = GetNativeHeaders();
 
         if (map != null)
         {
-            map.TryGetValue(headerName, out var result);
+            map.TryGetValue(headerName, out List<string> result);
             return result;
         }
 
@@ -116,7 +122,8 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             throw new InvalidOperationException("Already immutable");
         }
 
-        var map = GetNativeHeaders();
+        IDictionary<string, List<string>> map = GetNativeHeaders();
+
         if (value == null)
         {
             if (map != null && map.TryGetValue(name, out _))
@@ -134,7 +141,11 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             SetHeader(NativeHeaders, map);
         }
 
-        var values = new List<string> { value };
+        var values = new List<string>
+        {
+            value
+        };
+
         if (!values.Equals(GetHeader(name)))
         {
             IsModified = true;
@@ -154,14 +165,15 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             return;
         }
 
-        var nativeHeaders = GetNativeHeaders();
+        IDictionary<string, List<string>> nativeHeaders = GetNativeHeaders();
+
         if (nativeHeaders == null)
         {
             nativeHeaders = new Dictionary<string, List<string>>();
             SetHeader(NativeHeaders, nativeHeaders);
         }
 
-        if (!nativeHeaders.TryGetValue(name, out var values))
+        if (!nativeHeaders.TryGetValue(name, out List<string> values))
         {
             values = new List<string>();
             nativeHeaders.Add(name, values);
@@ -178,11 +190,12 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             return;
         }
 
-        foreach (var entry in headers)
+        foreach (KeyValuePair<string, List<string>> entry in headers)
         {
-            var key = entry.Key;
-            var values = entry.Value;
-            foreach (var val in values)
+            string key = entry.Key;
+            List<string> values = entry.Value;
+
+            foreach (string val in values)
             {
                 AddNativeHeader(key, val);
             }
@@ -196,13 +209,14 @@ public class NativeMessageHeaderAccessor : MessageHeaderAccessor
             throw new InvalidOperationException("Already immutable");
         }
 
-        var nativeHeaders = GetNativeHeaders();
+        IDictionary<string, List<string>> nativeHeaders = GetNativeHeaders();
+
         if (nativeHeaders == null)
         {
             return null;
         }
 
-        if (nativeHeaders.TryGetValue(name, out var existing))
+        if (nativeHeaders.TryGetValue(name, out List<string> existing))
         {
             nativeHeaders.Remove(name);
         }

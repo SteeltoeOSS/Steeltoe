@@ -97,7 +97,7 @@ public class HystrixServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
 
         services.AddHystrixMonitoringStreams(null);
-        var sp = services.BuildServiceProvider();
+        ServiceProvider sp = services.BuildServiceProvider();
 
         Assert.NotNull(sp.GetService<HystrixDashboardStream>());
         Assert.NotNull(sp.GetService<HystrixRequestEventsStream>());

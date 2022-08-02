@@ -14,10 +14,7 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
 
     public Exception LastException
     {
-        get
-        {
-            return (Exception)GetAttribute(LastExceptionName);
-        }
+        get => (Exception)GetAttribute(LastExceptionName);
 
         set
         {
@@ -36,7 +33,8 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
     {
         get
         {
-            var result = (int?)GetAttribute(RetryCountName);
+            int? result = (int?)GetAttribute(RetryCountName);
+
             if (result == null)
             {
                 return 0;
@@ -45,18 +43,12 @@ public class RetryContext : AbstractAttributeAccessor, IRetryContext
             return result.Value;
         }
 
-        set
-        {
-            SetAttribute(RetryCountName, value);
-        }
+        set => SetAttribute(RetryCountName, value);
     }
 
     public IRetryContext Parent
     {
-        get
-        {
-            return (IRetryContext)GetAttribute(RetryParentName);
-        }
+        get => (IRetryContext)GetAttribute(RetryParentName);
 
         set
         {

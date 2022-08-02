@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security;
 
@@ -51,17 +51,20 @@ public class CertificateRotationService : IDisposable, ICertificateRotationServi
         var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
         personalCertStore.Open(OpenFlags.ReadWrite);
         authorityCertStore.Open(OpenFlags.ReadWrite);
+
         if (_lastValue != null)
         {
             personalCertStore.Certificates.Remove(_lastValue.Certificate);
-            foreach (var cert in _lastValue.IssuerChain)
+
+            foreach (X509Certificate2 cert in _lastValue.IssuerChain)
             {
                 personalCertStore.Certificates.Remove(cert);
             }
         }
 
         personalCertStore.Certificates.Add(newCert.Certificate);
-        foreach (var cert in newCert.IssuerChain)
+
+        foreach (X509Certificate2 cert in newCert.IssuerChain)
         {
             personalCertStore.Certificates.Add(cert);
         }

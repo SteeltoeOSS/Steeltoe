@@ -9,19 +9,11 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class DiscoveryManager
 {
-    protected DiscoveryManager()
-    {
-    }
+    protected static readonly DiscoveryManager InnerInstance = new();
 
-    protected static readonly DiscoveryManager InnerInstance = new ();
+    protected ILogger logger;
 
-    public static DiscoveryManager Instance
-    {
-        get
-        {
-            return InnerInstance;
-        }
-    }
+    public static DiscoveryManager Instance => InnerInstance;
 
     public virtual DiscoveryClient Client { get; protected internal set; }
 
@@ -29,15 +21,11 @@ public class DiscoveryManager
 
     public virtual IEurekaInstanceConfig InstanceConfig { get; protected internal set; }
 
-    public virtual ILookupService LookupService
-    {
-        get
-        {
-            return Client;
-        }
-    }
+    public virtual ILookupService LookupService => Client;
 
-    protected ILogger logger;
+    protected DiscoveryManager()
+    {
+    }
 
     public virtual void Initialize(IEurekaClientConfig clientConfig, ILoggerFactory logFactory = null)
     {
@@ -56,7 +44,8 @@ public class DiscoveryManager
         Client = new DiscoveryClient(clientConfig, httpClient, logFactory);
     }
 
-    public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient, ILoggerFactory logFactory = null)
+    public virtual void Initialize(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, IEurekaHttpClient httpClient,
+        ILoggerFactory logFactory = null)
     {
         logger = logFactory?.CreateLogger<DiscoveryManager>();
         ClientConfig = clientConfig ?? throw new ArgumentNullException(nameof(clientConfig));

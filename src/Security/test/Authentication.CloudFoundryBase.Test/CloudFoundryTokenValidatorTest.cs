@@ -13,8 +13,8 @@ public class CloudFoundryTokenValidatorTest
     {
         var validator = new CloudFoundryTokenValidator();
 
-        var uaaResult = validator.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
-        var foobarResult = validator.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
+        string uaaResult = validator.ValidateIssuer("https://uaa.system.testcloud.com/", null, null);
+        string foobarResult = validator.ValidateIssuer("https://foobar.system.testcloud.com/", null, null);
 
         Assert.NotNull(uaaResult);
         Assert.Null(foobarResult);

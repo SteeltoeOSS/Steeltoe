@@ -6,7 +6,7 @@ namespace Steeltoe.Management.Endpoint.DbMigrations;
 
 public class DbMigrationsDescriptor
 {
-    public List<string> PendingMigrations { get; set; } = new ();
+    public List<string> PendingMigrations { get; set; } = new();
 
-    public List<string> AppliedMigrations { get; set; } = new ();
+    public List<string> AppliedMigrations { get; set; } = new();
 }

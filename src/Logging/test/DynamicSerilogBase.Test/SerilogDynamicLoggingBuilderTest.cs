@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using A.B.C.D;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,7 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicLoggingBuilderTest
 {
-    private static readonly Dictionary<string, string> Appsettings = new ()
+    private static readonly Dictionary<string, string> Appsettings = new()
     {
         { "Serilog:MinimumLevel:Default", "Verbose" },
         { "Serilog:MinimumLevel:Override:Microsoft", "Warning" },
@@ -20,7 +21,7 @@ public class SerilogDynamicLoggingBuilderTest
         { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
         { "Serilog:MinimumLevel:Override:A", "Information" },
         { "Serilog:MinimumLevel:Override:A.B.C.D", "Fatal" },
-        { "Serilog:WriteTo:Name", "Console" },
+        { "Serilog:WriteTo:Name", "Console" }
     };
 
     [Fact]
@@ -31,16 +32,14 @@ public class SerilogDynamicLoggingBuilderTest
             ["Serilog:MinimumLevel:Default"] = "Information"
         };
 
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
-            .AddLogging(builder =>
-            {
-                builder.AddDynamicSerilog();
-            })
-            .BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+        ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        {
+            builder.AddDynamicSerilog();
+        }).BuildServiceProvider();
+
+        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
@@ -50,16 +49,14 @@ public class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
-            .AddLogging(builder =>
-            {
-                builder.AddDynamicSerilog();
-            })
-            .BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+        ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        {
+            builder.AddDynamicSerilog();
+        }).BuildServiceProvider();
+
+        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
@@ -71,8 +68,7 @@ public class SerilogDynamicLoggingBuilderTest
         // change the log level and confirm it worked
         var provider = services.GetRequiredService(typeof(ILoggerProvider)) as SerilogDynamicProvider;
         provider.SetLogLevel("A.B.C.D", LogLevel.Trace);
-        var levels = provider.GetLoggerConfigurations().Where(c => c.Name.StartsWith("A.B.C.D"))
-            .Select(x => x.EffectiveLevel);
+        IEnumerable<LogLevel> levels = provider.GetLoggerConfigurations().Where(c => c.Name.StartsWith("A.B.C.D")).Select(x => x.EffectiveLevel);
 
         Assert.NotNull(levels);
         Assert.True(levels.All(x => x == LogLevel.Trace));
@@ -81,16 +77,13 @@ public class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicSerilogPreservesDefaultLoggerWhenTrue()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
         var services = new ServiceCollection();
-        services
-            .AddSingleton<IConfiguration>(configuration)
-            .AddSingleton<ConsoleLoggerProvider>()
-            .AddLogging(builder =>
-            {
-                builder.AddDynamicSerilog(true);
-            })
-            .BuildServiceProvider();
+
+        services.AddSingleton<IConfiguration>(configuration).AddSingleton<ConsoleLoggerProvider>().AddLogging(builder =>
+        {
+            builder.AddDynamicSerilog(true);
+        }).BuildServiceProvider();
 
         Assert.Contains(services, d => d.ImplementationType == typeof(ConsoleLoggerProvider));
     }
@@ -98,16 +91,15 @@ public class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_AddsAllLoggerProviders()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
-            .AddLogging(builder =>
-            {
-                builder.AddDynamicSerilog();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        {
+            builder.AddDynamicSerilog();
+        }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        var logProviders = services.GetServices<ILoggerProvider>();
+        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
@@ -121,13 +113,12 @@ public class SerilogDynamicLoggingBuilderTest
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
-            .AddLogging(builder =>
-            {
-                builder.AddDynamicSerilog();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder =>
+        {
+            builder.AddDynamicSerilog();
+        }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
 
@@ -138,14 +129,13 @@ public class SerilogDynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_WithConfigurationParam_AddsServices()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IConfiguration>(configuration)
-            .AddLogging(builder => builder.AddDynamicSerilog())
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IConfiguration>(configuration).AddLogging(builder => builder.AddDynamicSerilog())
             .BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        var logProviders = services.GetServices<ILoggerProvider>();
+        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);

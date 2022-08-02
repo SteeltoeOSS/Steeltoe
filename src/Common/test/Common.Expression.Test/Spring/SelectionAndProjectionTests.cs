@@ -13,10 +13,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectionWithList()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
         var context = new StandardEvaluationContext(new ListTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(5, list.Count);
@@ -30,10 +30,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectFirstItemInList()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
         var context = new StandardEvaluationContext(new ListTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(0, value);
     }
@@ -41,10 +41,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectLastItemInList()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
         var context = new StandardEvaluationContext(new ListTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(4, value);
     }
@@ -52,10 +52,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectionWithSet()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
         var context = new StandardEvaluationContext(new SetTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(5, list.Count);
@@ -69,10 +69,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectFirstItemInSet()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
         var context = new StandardEvaluationContext(new SetTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(0, value);
     }
@@ -80,10 +80,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectLastItemInSet()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
         var context = new StandardEvaluationContext(new SetTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(4, value);
     }
@@ -91,10 +91,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectionWithIEnumerable()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
         var context = new StandardEvaluationContext(new EnumerableTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(5, list.Count);
@@ -108,13 +108,13 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectionWithArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.?[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
+        object value = expression.GetValue(context);
         Assert.True(value.GetType().IsArray);
         var typedValue = new TypedValue(value);
         Assert.Equal(typeof(int), typedValue.TypeDescriptor.GetElementType());
-        var array = (int[])value;
+        int[] array = (int[])value;
         Assert.Equal(5, array.Length);
         Assert.Equal(0, array[0]);
         Assert.Equal(1, array[1]);
@@ -126,10 +126,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectFirstItemInArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.^[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(0, value);
     }
@@ -137,10 +137,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void SelectLastItemInArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("Integers.$[#this<5]");
         var context = new StandardEvaluationContext(new ArrayTestBean());
-        var value = expression.GetValue(context);
-        var condition = value is int;
+        object value = expression.GetValue(context);
+        bool condition = value is int;
         Assert.True(condition);
         Assert.Equal(4, value);
     }
@@ -150,7 +150,7 @@ public class SelectionAndProjectionTests
     {
         var context = new StandardEvaluationContext(new MapTestBean());
         var parser = new SpelExpressionParser();
-        var exp = parser.ParseExpression("Colors.?[Key.StartsWith('b')]");
+        IExpression exp = parser.ParseExpression("Colors.?[Key.StartsWith('b')]");
 
         var colorsMap = (Dictionary<object, object>)exp.GetValue(context);
         Assert.Equal(3, colorsMap.Count);
@@ -165,20 +165,19 @@ public class SelectionAndProjectionTests
         var context = new StandardEvaluationContext(new MapTestBean());
         var parser = new SpelExpressionParser();
 
-        var exp = parser.ParseExpression("Colors.^[Key.StartsWith('b')]");
+        IExpression exp = parser.ParseExpression("Colors.^[Key.StartsWith('b')]");
         var colorsMap = (Dictionary<object, object>)exp.GetValue(context);
         Assert.Single(colorsMap);
         Assert.True(colorsMap.ContainsKey("brown"));
     }
 
     [Fact]
-
     public void SelectLastItemInMap()
     {
         var context = new StandardEvaluationContext(new MapTestBean());
         var parser = new SpelExpressionParser();
 
-        var exp = parser.ParseExpression("Colors.$[Key.StartsWith('b')]");
+        IExpression exp = parser.ParseExpression("Colors.$[Key.StartsWith('b')]");
         var colorsMap = (Dictionary<object, object>)exp.GetValue(context);
         Assert.Single(colorsMap);
         Assert.True(colorsMap.ContainsKey("beige"));
@@ -187,11 +186,11 @@ public class SelectionAndProjectionTests
     [Fact]
     public void ProjectionWithList()
     {
-        var expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
         var context = new StandardEvaluationContext();
         context.SetVariable("testList", IntegerTestBean.CreateList());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(3, list.Count);
@@ -203,11 +202,11 @@ public class SelectionAndProjectionTests
     [Fact]
     public void ProjectionWithSet()
     {
-        var expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
         var context = new StandardEvaluationContext();
         context.SetVariable("testList", IntegerTestBean.CreateSet());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(3, list.Count);
@@ -219,11 +218,11 @@ public class SelectionAndProjectionTests
     [Fact]
     public void ProjectionWithIEnumerable()
     {
-        var expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("#testList.![Wrapper.Value]");
         var context = new StandardEvaluationContext();
         context.SetVariable("testList", IntegerTestBean.CreateIterable());
-        var value = expression.GetValue(context);
-        var condition = value is List<object>;
+        object value = expression.GetValue(context);
+        bool condition = value is List<object>;
         Assert.True(condition);
         var list = (List<object>)value;
         Assert.Equal(3, list.Count);
@@ -235,10 +234,10 @@ public class SelectionAndProjectionTests
     [Fact]
     public void ProjectionWithArray()
     {
-        var expression = new SpelExpressionParser().ParseRaw("#testArray.![Wrapper.Value]");
+        IExpression expression = new SpelExpressionParser().ParseRaw("#testArray.![Wrapper.Value]");
         var context = new StandardEvaluationContext();
         context.SetVariable("testArray", IntegerTestBean.CreateArray());
-        var value = expression.GetValue(context);
+        object value = expression.GetValue(context);
         Assert.True(value.GetType().IsArray);
         var typedValue = new TypedValue(value);
         Assert.Equal(typeof(ValueType), typedValue.TypeDescriptor.GetElementType());
@@ -251,60 +250,62 @@ public class SelectionAndProjectionTests
 
     public class ListTestBean
     {
+        public List<int> Integers { get; } = new();
+
         public ListTestBean()
         {
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Integers.Add(i);
             }
         }
-
-        public List<int> Integers { get; } = new ();
     }
 
     public class SetTestBean
     {
+        public ISet<int> Integers { get; } = new HashSet<int>();
+
         public SetTestBean()
         {
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Integers.Add(i);
             }
         }
-
-        public ISet<int> Integers { get; } = new HashSet<int>();
     }
 
     public class EnumerableTestBean
     {
         private readonly ISet<int> _integers = new HashSet<int>();
 
+        public IEnumerable<int> Integers => _integers;
+
         public EnumerableTestBean()
         {
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 _integers.Add(i);
             }
         }
-
-        public IEnumerable<int> Integers => _integers;
     }
 
     public class ArrayTestBean
     {
+        public int[] Integers { get; } = new int[10];
+
         public ArrayTestBean()
         {
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 Integers[i] = i;
             }
         }
-
-        public int[] Integers { get; } = new int[10];
     }
 
     public class MapTestBean
     {
+        public Dictionary<string, string> Colors { get; } = new();
+
         public MapTestBean()
         {
             // colors.put("black", "schwarz");
@@ -314,12 +315,12 @@ public class SelectionAndProjectionTests
             Colors.Add("yellow", "gelb");
             Colors.Add("beige", "beige");
         }
-
-        public Dictionary<string, string> Colors { get; } = new ();
     }
 
     public class IntegerTestBean
     {
+        public IntegerWrapper Wrapper { get; }
+
         public IntegerTestBean(float value)
         {
             Wrapper = new IntegerWrapper(value);
@@ -330,12 +331,11 @@ public class SelectionAndProjectionTests
             Wrapper = new IntegerWrapper(value);
         }
 
-        public IntegerWrapper Wrapper { get; }
-
         public static List<IntegerTestBean> CreateList()
         {
             var list = new List<IntegerTestBean>();
-            for (var i = 0; i < 3; i++)
+
+            for (int i = 0; i < 3; i++)
             {
                 list.Add(new IntegerTestBean(i + 5));
             }
@@ -346,7 +346,8 @@ public class SelectionAndProjectionTests
         public static ISet<IntegerTestBean> CreateSet()
         {
             var set = new HashSet<IntegerTestBean>();
-            for (var i = 0; i < 3; i++)
+
+            for (int i = 0; i < 3; i++)
             {
                 set.Add(new IntegerTestBean(i + 5));
             }
@@ -356,14 +357,15 @@ public class SelectionAndProjectionTests
 
         public static IEnumerable<IntegerTestBean> CreateIterable()
         {
-            var set = CreateSet();
+            ISet<IntegerTestBean> set = CreateSet();
             return set;
         }
 
         public static IntegerTestBean[] CreateArray()
         {
             var array = new IntegerTestBean[3];
-            for (var i = 0; i < 3; i++)
+
+            for (int i = 0; i < 3; i++)
             {
                 if (i == 1)
                 {
@@ -384,16 +386,6 @@ public class SelectionAndProjectionTests
         private readonly int? _int;
         private readonly float? _float;
 
-        public IntegerWrapper(float value)
-        {
-            _float = value;
-        }
-
-        public IntegerWrapper(int value)
-        {
-            _int = value;
-        }
-
         public object Value
         {
             get
@@ -405,6 +397,16 @@ public class SelectionAndProjectionTests
 
                 return _float.Value;
             }
+        }
+
+        public IntegerWrapper(float value)
+        {
+            _float = value;
+        }
+
+        public IntegerWrapper(int value)
+        {
+            _int = value;
         }
     }
 }

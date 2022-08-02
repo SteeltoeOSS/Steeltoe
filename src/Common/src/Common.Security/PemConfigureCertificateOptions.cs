@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using Steeltoe.Common.Options;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Steeltoe.Common.Options;
 
 namespace Steeltoe.Common.Security;
 
@@ -30,25 +30,20 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
 
         options.Name = name;
 
-        var pemCert = _config["certificate"];
-        var pemKey = _config["privateKey"];
+        string pemCert = _config["certificate"];
+        string pemKey = _config["privateKey"];
 
         if (string.IsNullOrEmpty(pemCert) || string.IsNullOrEmpty(pemKey))
         {
             return;
         }
 
-        var certChain = Regex.Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline)
-            .Cast<Match>()
-            .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value)))
-            .ToList();
+        List<X509Certificate2> certChain = Regex.Matches(pemCert, "-+BEGIN CERTIFICATE-+.+?-+END CERTIFICATE-+", RegexOptions.Singleline)
+            .Select(x => new X509Certificate2(Encoding.Default.GetBytes(x.Value))).ToList();
 
         options.Certificate = certChain.FirstOrDefault().CopyWithPrivateKey(ReadRsaKeyFromString(pemKey));
 
-        options.IssuerChain = certChain
-            .Skip(1)
-            .Select(c => new X509Certificate2(c.GetRawCertData()))
-            .ToList();
+        options.IssuerChain = certChain.Skip(1).Select(c => new X509Certificate2(c.GetRawCertData())).ToList();
     }
 
     public void Configure(CertificateOptions options)
@@ -64,14 +59,11 @@ public class PemConfigureCertificateOptions : IConfigureNamedOptions<Certificate
 
         if (pemContents.StartsWith(rsaPrivateKeyHeader))
         {
-            var endIdx = pemContents.IndexOf(
-                rsaPrivateKeyFooter,
-                rsaPrivateKeyHeader.Length,
-                StringComparison.Ordinal);
+            int endIdx = pemContents.IndexOf(rsaPrivateKeyFooter, rsaPrivateKeyHeader.Length, StringComparison.Ordinal);
 
-            var base64 = pemContents[rsaPrivateKeyHeader.Length..endIdx];
+            string base64 = pemContents[rsaPrivateKeyHeader.Length..endIdx];
 
-            var der = Convert.FromBase64String(base64);
+            byte[] der = Convert.FromBase64String(base64);
             var rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(der, out _);
             return rsa;

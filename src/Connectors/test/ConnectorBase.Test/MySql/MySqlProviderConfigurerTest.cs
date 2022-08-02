@@ -13,6 +13,7 @@ public class MySqlProviderConfigurerTest
     public void UpdateConfiguration_WithNullMySqlServiceInfo_ReturnsExpected()
     {
         var configurer = new MySqlProviderConfigurer();
+
         var config = new MySqlProviderConnectorOptions
         {
             Server = "localhost",
@@ -21,6 +22,7 @@ public class MySqlProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Server);
@@ -35,6 +37,7 @@ public class MySqlProviderConfigurerTest
     public void UpdateConfiguration_WithMySqlServiceInfo_ReturnsExpected()
     {
         var configurer = new MySqlProviderConfigurer();
+
         var config = new MySqlProviderConnectorOptions
         {
             Server = "localhost",
@@ -43,6 +46,7 @@ public class MySqlProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, config);
@@ -67,7 +71,7 @@ public class MySqlProviderConfigurerTest
         };
 
         var configurer = new MySqlProviderConfigurer();
-        var opts = configurer.Configure(null, config);
+        string opts = configurer.Configure(null, config);
         Assert.Contains("Server=localhost;", opts);
         Assert.Contains("Port=1234;", opts);
         Assert.Contains("Username=username;", opts);
@@ -90,7 +94,7 @@ public class MySqlProviderConfigurerTest
         var configurer = new MySqlProviderConfigurer();
         var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-        var opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, config);
 
         Assert.Contains("Server=192.168.0.90;", opts);
         Assert.Contains("Port=3306;", opts);

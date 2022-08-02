@@ -2,22 +2,32 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<HystrixCommandCompletion, long[], long[]>
 {
-    private static readonly ConcurrentDictionary<string, RollingThreadPoolEventCounterStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, RollingThreadPoolEventCounterStream> Streams = new();
 
     private static readonly int AllEventTypesSize = ThreadPoolEventTypeHelper.Values.Count;
 
+    public override long[] EmptyBucketSummary => new long[AllEventTypesSize];
+
+    public override long[] EmptyOutputValue => new long[AllEventTypesSize];
+
+    private RollingThreadPoolEventCounterStream(IHystrixThreadPoolKey threadPoolKey, int numCounterBuckets, int counterBucketSizeInMs,
+        Func<long[], HystrixCommandCompletion, long[]> reduceCommandCompletion, Func<long[], long[], long[]> reduceBucket)
+        : base(HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey), numCounterBuckets, counterBucketSizeInMs, reduceCommandCompletion, reduceBucket)
+    {
+    }
+
     public static RollingThreadPoolEventCounterStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
     {
-        var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-        var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-        var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+        int counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+        int numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+        int counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
         return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
     }
@@ -26,7 +36,9 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
     {
         return Streams.GetOrAddEx(threadPoolKey.Name, _ =>
         {
-            var stream = new RollingThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket, HystrixThreadPoolMetrics.CounterAggregator);
+            var stream = new RollingThreadPoolEventCounterStream(threadPoolKey, numBuckets, bucketSizeInMs, HystrixThreadPoolMetrics.AppendEventToBucket,
+                HystrixThreadPoolMetrics.CounterAggregator);
+
             stream.StartCachingStreamValuesIfUnstarted();
             return stream;
         });
@@ -34,7 +46,7 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
 
     public static void Reset()
     {
-        foreach (var stream in Streams.Values)
+        foreach (RollingThreadPoolEventCounterStream stream in Streams.Values)
         {
             stream.Unsubscribe();
         }
@@ -42,21 +54,6 @@ public class RollingThreadPoolEventCounterStream : BucketedRollingCounterStream<
         HystrixThreadPoolCompletionStream.Reset();
 
         Streams.Clear();
-    }
-
-    private RollingThreadPoolEventCounterStream(IHystrixThreadPoolKey threadPoolKey, int numCounterBuckets, int counterBucketSizeInMs, Func<long[], HystrixCommandCompletion, long[]> reduceCommandCompletion, Func<long[], long[], long[]> reduceBucket)
-        : base(HystrixThreadPoolCompletionStream.GetInstance(threadPoolKey), numCounterBuckets, counterBucketSizeInMs, reduceCommandCompletion, reduceBucket)
-    {
-    }
-
-    public override long[] EmptyBucketSummary
-    {
-        get { return new long[AllEventTypesSize]; }
-    }
-
-    public override long[] EmptyOutputValue
-    {
-        get { return new long[AllEventTypesSize]; }
     }
 
     public long GetLatestCount(ThreadPoolEventType eventType)

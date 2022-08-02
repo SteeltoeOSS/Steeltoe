@@ -10,7 +10,7 @@ public static class TransactionSynchronizationUtils
 {
     public static void TriggerBeforeCommit(bool readOnly)
     {
-        foreach (var synchronization in TransactionSynchronizationManager.GetSynchronizations())
+        foreach (ITransactionSynchronization synchronization in TransactionSynchronizationManager.GetSynchronizations())
         {
             synchronization.BeforeCommit(readOnly);
         }
@@ -18,7 +18,7 @@ public static class TransactionSynchronizationUtils
 
     public static void TriggerBeforeCompletion(ILogger logger = null)
     {
-        foreach (var synchronization in TransactionSynchronizationManager.GetSynchronizations())
+        foreach (ITransactionSynchronization synchronization in TransactionSynchronizationManager.GetSynchronizations())
         {
             try
             {
@@ -40,7 +40,7 @@ public static class TransactionSynchronizationUtils
     {
         if (synchronizations != null)
         {
-            foreach (var synchronization in synchronizations)
+            foreach (ITransactionSynchronization synchronization in synchronizations)
             {
                 synchronization.AfterCommit();
             }
@@ -49,7 +49,7 @@ public static class TransactionSynchronizationUtils
 
     public static void TriggerAfterCompletion(int completionStatus)
     {
-        var synchronizations = TransactionSynchronizationManager.GetSynchronizations();
+        List<ITransactionSynchronization> synchronizations = TransactionSynchronizationManager.GetSynchronizations();
         InvokeAfterCompletion(synchronizations, completionStatus);
     }
 
@@ -57,7 +57,7 @@ public static class TransactionSynchronizationUtils
     {
         if (synchronizations != null)
         {
-            foreach (var synchronization in synchronizations)
+            foreach (ITransactionSynchronization synchronization in synchronizations)
             {
                 try
                 {

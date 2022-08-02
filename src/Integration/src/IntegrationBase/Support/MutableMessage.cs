@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
-using System.Text;
 
 namespace Steeltoe.Integration.Support;
 
@@ -13,6 +13,12 @@ public class MutableMessage : IMessage
     protected readonly object InnerPayload;
 
     protected readonly MutableMessageHeaders InnerHeaders;
+
+    protected internal IDictionary<string, object> RawHeaders => InnerHeaders.RawHeaders;
+
+    public IMessageHeaders Headers => InnerHeaders;
+
+    public object Payload => InnerPayload;
 
     public MutableMessage(object payload)
         : this(payload, (Dictionary<string, object>)null)
@@ -26,18 +32,15 @@ public class MutableMessage : IMessage
 
     public MutableMessage(object payload, MutableMessageHeaders headers)
     {
-        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
-        this.InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
+        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
     }
-
-    public IMessageHeaders Headers => InnerHeaders;
-
-    public object Payload => InnerPayload;
 
     public override string ToString()
     {
         var sb = new StringBuilder(GetType().Name);
         sb.Append(" [payload=");
+
         if (InnerPayload is byte[] v)
         {
             sb.Append("byte[").Append(v.Length).Append(']');
@@ -68,17 +71,17 @@ public class MutableMessage : IMessage
             return false;
         }
 
-        var thisId = InnerHeaders.Id;
-        var otherId = other.InnerHeaders.Id;
+        string thisId = InnerHeaders.Id;
+        string otherId = other.InnerHeaders.Id;
 
         return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }
-
-    protected internal IDictionary<string, object> RawHeaders => InnerHeaders.RawHeaders;
 }
 
 public class MutableMessage<T> : MutableMessage, IMessage<T>
 {
+    public new T Payload => (T)InnerPayload;
+
     public MutableMessage(T payload)
         : this(payload, (Dictionary<string, object>)null)
     {
@@ -94,9 +97,10 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
     {
     }
 
-    public new T Payload => (T)InnerPayload;
-
-    public override int GetHashCode() => base.GetHashCode();
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 
     public override bool Equals(object obj)
     {
@@ -110,8 +114,8 @@ public class MutableMessage<T> : MutableMessage, IMessage<T>
             return false;
         }
 
-        var thisId = InnerHeaders.Id;
-        var otherId = other.InnerHeaders.Id;
+        string thisId = InnerHeaders.Id;
+        string otherId = other.InnerHeaders.Id;
 
         return ObjectUtils.NullSafeEquals(thisId, otherId) && InnerHeaders.Equals(other.InnerHeaders) && InnerPayload.Equals(other.InnerPayload);
     }

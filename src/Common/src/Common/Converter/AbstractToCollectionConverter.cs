@@ -11,12 +11,12 @@ public abstract class AbstractToCollectionConverter : AbstractGenericConditional
     protected AbstractToCollectionConverter(IConversionService conversionService)
         : base(null)
     {
-        this.ConversionService = conversionService;
+        ConversionService = conversionService;
     }
 
     protected AbstractToCollectionConverter(ISet<(Type Source, Type Target)> convertableTypes, IConversionService conversionService)
         : base(convertableTypes)
     {
-        this.ConversionService = conversionService;
+        ConversionService = conversionService;
     }
 }

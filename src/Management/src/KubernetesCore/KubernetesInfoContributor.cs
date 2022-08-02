@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using k8s.Models;
 using Steeltoe.Common.Kubernetes;
 using Steeltoe.Management.Info;
 
@@ -18,8 +19,9 @@ public class KubernetesInfoContributor : IInfoContributor
 
     public void Contribute(IInfoBuilder builder)
     {
-        var current = _podUtilities.GetCurrentPodAsync().GetAwaiter().GetResult();
+        V1Pod current = _podUtilities.GetCurrentPodAsync().GetAwaiter().GetResult();
         var details = new Dictionary<string, object>();
+
         if (current != null)
         {
             details.Add("inside", true);

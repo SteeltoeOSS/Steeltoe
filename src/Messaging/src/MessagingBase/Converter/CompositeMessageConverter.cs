@@ -8,6 +8,10 @@ public class CompositeMessageConverter : ISmartMessageConverter
 {
     public const string DefaultServiceName = nameof(CompositeMessageConverter);
 
+    public string ServiceName { get; set; } = DefaultServiceName;
+
+    public List<IMessageConverter> Converters { get; }
+
     public CompositeMessageConverter(ICollection<IMessageConverter> converters)
     {
         if (converters == null || converters.Count == 0)
@@ -18,13 +22,12 @@ public class CompositeMessageConverter : ISmartMessageConverter
         Converters = new List<IMessageConverter>(converters);
     }
 
-    public string ServiceName { get; set; } = DefaultServiceName;
-
     public object FromMessage(IMessage message, Type targetType)
     {
-        foreach (var converter in Converters)
+        foreach (IMessageConverter converter in Converters)
         {
-            var result = converter.FromMessage(message, targetType);
+            object result = converter.FromMessage(message, targetType);
+
             if (result != null)
             {
                 return result;
@@ -36,11 +39,12 @@ public class CompositeMessageConverter : ISmartMessageConverter
 
     public object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
-        foreach (var converter in Converters)
+        foreach (IMessageConverter converter in Converters)
         {
-            var result = converter is ISmartMessageConverter smartConverter
+            object result = converter is ISmartMessageConverter smartConverter
                 ? smartConverter.FromMessage(message, targetType, conversionHint)
                 : converter.FromMessage(message, targetType);
+
             if (result != null)
             {
                 return result;
@@ -50,15 +54,22 @@ public class CompositeMessageConverter : ISmartMessageConverter
         return null;
     }
 
-    public T FromMessage<T>(IMessage message, object conversionHint) => (T)FromMessage(message, typeof(T), conversionHint);
+    public T FromMessage<T>(IMessage message, object conversionHint)
+    {
+        return (T)FromMessage(message, typeof(T), conversionHint);
+    }
 
-    public T FromMessage<T>(IMessage message) => (T)FromMessage(message, typeof(T), null);
+    public T FromMessage<T>(IMessage message)
+    {
+        return (T)FromMessage(message, typeof(T), null);
+    }
 
     public IMessage ToMessage(object payload, IMessageHeaders headers)
     {
-        foreach (var converter in Converters)
+        foreach (IMessageConverter converter in Converters)
         {
-            var result = converter.ToMessage(payload, headers);
+            IMessage result = converter.ToMessage(payload, headers);
+
             if (result != null)
             {
                 return result;
@@ -70,11 +81,12 @@ public class CompositeMessageConverter : ISmartMessageConverter
 
     public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
-        foreach (var converter in Converters)
+        foreach (IMessageConverter converter in Converters)
         {
-            var result = converter is ISmartMessageConverter smartConverter
+            IMessage result = converter is ISmartMessageConverter smartConverter
                 ? smartConverter.ToMessage(payload, headers, conversionHint)
                 : converter.ToMessage(payload, headers);
+
             if (result != null)
             {
                 return result;
@@ -84,7 +96,8 @@ public class CompositeMessageConverter : ISmartMessageConverter
         return null;
     }
 
-    public List<IMessageConverter> Converters { get; }
-
-    public override string ToString() => $"CompositeMessageConverter[converters={Converters.Count}]";
+    public override string ToString()
+    {
+        return $"CompositeMessageConverter[converters={Converters.Count}]";
+    }
 }

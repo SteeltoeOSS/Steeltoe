@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -18,13 +18,17 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
     }
 
-    public MessageMethodArgumentResolver(IMessageConverter converter) => Converter = converter;
+    public MessageMethodArgumentResolver(IMessageConverter converter)
+    {
+        Converter = converter;
+    }
 
     public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var targetPayloadType = GetPayloadType(parameter, message);
+        Type targetPayloadType = GetPayloadType(parameter, message);
 
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (targetPayloadType.IsInstanceOfType(payload))
         {
             return message;
@@ -32,10 +36,9 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
 
         if (IsEmptyPayload(payload))
         {
-            var payloadType = payload != null ? payload.GetType().ToString() : "null";
+            string payloadType = payload != null ? payload.GetType().ToString() : "null";
 
-            throw new MessageConversionException(
-                message,
+            throw new MessageConversionException(message,
                 $"Cannot convert from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}' when payload is empty");
         }
 
@@ -43,7 +46,10 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
         return MessageBuilder.CreateMessage(payload, message.Headers, targetPayloadType);
     }
 
-    public virtual bool SupportsParameter(ParameterInfo parameter) => typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
+    public virtual bool SupportsParameter(ParameterInfo parameter)
+    {
+        return typeof(IMessage).IsAssignableFrom(parameter.ParameterType);
+    }
 
     protected virtual Type GetPayloadType(ParameterInfo parameter, IMessage message)
     {
@@ -57,12 +63,14 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
             var method = parameter.Member as MethodInfo;
             Type[] methodArgs = null;
             Type[] typeArgs = null;
+
             if (method.IsGenericMethod)
             {
                 methodArgs = method.GetGenericArguments();
             }
 
-            var type = method.DeclaringType;
+            Type type = method.DeclaringType;
+
             if (type.IsGenericType)
             {
                 typeArgs = type.GetGenericArguments();
@@ -88,6 +96,7 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
     private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
     {
         object result = null;
+
         if (Converter is ISmartMessageConverter smartConverter)
         {
             result = smartConverter.FromMessage(message, targetPayloadType, parameter);
@@ -99,9 +108,9 @@ public class MessageMethodArgumentResolver : IHandlerMethodArgumentResolver
 
         if (result == null)
         {
-            var payloadType = message.Payload != null ? message.Payload.GetType().ToString() : "null";
-            throw new MessageConversionException(
-                message,
+            string payloadType = message.Payload != null ? message.Payload.GetType().ToString() : "null";
+
+            throw new MessageConversionException(message,
                 $"No converter found from actual payload type '{payloadType}' to expected payload type '{targetPayloadType}'");
         }
 

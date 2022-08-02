@@ -19,15 +19,15 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddStreamServices(config);
         container.AddProcessorStreamBinding();
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
 
         var binding = serviceProvider.GetService<IProcessor>();
         Assert.NotNull(binding);
-        var channels = serviceProvider.GetServices<IMessageChannel>();
+        IEnumerable<IMessageChannel> channels = serviceProvider.GetServices<IMessageChannel>();
 
         // NullChannel, Integration Error Channel, Processor channels (input and output)
         Assert.Equal(4, channels.Count());
@@ -42,15 +42,15 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddStreamServices(config);
         container.AddSinkStreamBinding();
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
 
         var binding = serviceProvider.GetService<ISink>();
         Assert.NotNull(binding);
-        var channels = serviceProvider.GetServices<IMessageChannel>();
+        IEnumerable<IMessageChannel> channels = serviceProvider.GetServices<IMessageChannel>();
 
         // NullChannel, Integration Error Channel, Sink channel (input)
         Assert.Equal(3, channels.Count());
@@ -64,15 +64,15 @@ public class EnableBindingsExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddDebug());
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddStreamServices(config);
         container.AddSourceStreamBinding();
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
 
         var binding = serviceProvider.GetService<ISource>();
         Assert.NotNull(binding);
-        var channels = serviceProvider.GetServices<IMessageChannel>();
+        IEnumerable<IMessageChannel> channels = serviceProvider.GetServices<IMessageChannel>();
 
         // NullChannel, Integration Error Channel, Source channel (output)
         Assert.Equal(3, channels.Count());

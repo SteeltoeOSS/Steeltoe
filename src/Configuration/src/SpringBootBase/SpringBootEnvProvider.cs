@@ -7,7 +7,8 @@ using Microsoft.Extensions.Configuration.Json;
 namespace Steeltoe.Extensions.Configuration.SpringBoot;
 
 /// <summary>
-/// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET compatible form.
+/// Configuration provider that expands the contents of SPRING_APPLICATION_JSON's Spring-style '.' delimited configuration key/value pairs to .NET
+/// compatible form.
 /// </summary>
 public class SpringBootEnvProvider : JsonStreamConfigurationProvider
 {
@@ -15,9 +16,11 @@ public class SpringBootEnvProvider : JsonStreamConfigurationProvider
     private readonly string _springApplicationJson;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SpringBootEnvProvider"/> class.
+    /// Initializes a new instance of the <see cref="SpringBootEnvProvider" /> class.
     /// </summary>
-    /// <param name="springApplicationJson"> The Json string to parse. </param>
+    /// <param name="springApplicationJson">
+    /// The Json string to parse.
+    /// </param>
     public SpringBootEnvProvider(string springApplicationJson = null)
         : base(new JsonStreamConfigurationSource())
     {
@@ -29,18 +32,21 @@ public class SpringBootEnvProvider : JsonStreamConfigurationProvider
     /// </summary>
     public override void Load()
     {
-        var json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
+        string json = _springApplicationJson ?? Environment.GetEnvironmentVariable(SpringApplicationJson);
+
         if (!string.IsNullOrEmpty(json))
         {
             Source.Stream = GetMemoryStream(json);
             base.Load();
             var keys = new List<string>(Data.Keys);
-            foreach (var key in keys)
+
+            foreach (string key in keys)
             {
-                var value = Data[key];
+                string value = Data[key];
+
                 if (key.Contains('.') && value != null)
                 {
-                    var nk = key.Replace('.', ':');
+                    string nk = key.Replace('.', ':');
                     Data[nk] = value;
                 }
             }

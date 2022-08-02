@@ -11,13 +11,16 @@ namespace Steeltoe.Management.Endpoint.Health;
 public class HealthStartupFilter : IStartupFilter
 {
     public static void InitializeAvailability(IServiceProvider serviceProvider)
-        => serviceProvider.InitializeAvailability();
+    {
+        serviceProvider.InitializeAvailability();
+    }
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<HealthEndpointCore>();

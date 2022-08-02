@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System.Globalization;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
@@ -32,13 +32,19 @@ public static class TestScenarioCreator
 
     public static int[] ReverseInt(int i, int j, int k)
     {
-        return new[] { k, j, i };
+        return new[]
+        {
+            k,
+            j,
+            i
+        };
     }
 
     public static string ReverseString(string input)
     {
         var backwards = new StringBuilder();
-        for (var i = 0; i < input.Length; i++)
+
+        for (int i = 0; i < input.Length; i++)
         {
             backwards.Append(input[input.Length - 1 - i]);
         }
@@ -49,9 +55,10 @@ public static class TestScenarioCreator
     public static string VarargsFunctionReverseStringsAndMerge(params string[] strings)
     {
         var sb = new StringBuilder();
+
         if (strings != null)
         {
-            for (var i = strings.Length - 1; i >= 0; i--)
+            for (int i = strings.Length - 1; i >= 0; i--)
             {
                 sb.Append(strings[i]);
             }
@@ -64,9 +71,10 @@ public static class TestScenarioCreator
     {
         var sb = new StringBuilder();
         sb.Append(j);
+
         if (strings != null)
         {
-            for (var i = strings.Length - 1; i >= 0; i--)
+            for (int i = strings.Length - 1; i >= 0; i--)
             {
                 sb.Append(strings[i]);
             }
@@ -79,11 +87,35 @@ public static class TestScenarioCreator
     {
         try
         {
-            testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod(nameof(IsEven), new[] { typeof(int) }));
-            testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod(nameof(ReverseInt), new[] { typeof(int), typeof(int), typeof(int) }));
-            testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod(nameof(ReverseString), new[] { typeof(string) }));
-            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod(nameof(VarargsFunctionReverseStringsAndMerge), new[] { typeof(string[]) }));
-            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod(nameof(VarargsFunctionReverseStringsAndMerge2), new[] { typeof(int), typeof(string[]) }));
+            testContext.RegisterFunction("IsEven", typeof(TestScenarioCreator).GetMethod(nameof(IsEven), new[]
+            {
+                typeof(int)
+            }));
+
+            testContext.RegisterFunction("ReverseInt", typeof(TestScenarioCreator).GetMethod(nameof(ReverseInt), new[]
+            {
+                typeof(int),
+                typeof(int),
+                typeof(int)
+            }));
+
+            testContext.RegisterFunction("ReverseString", typeof(TestScenarioCreator).GetMethod(nameof(ReverseString), new[]
+            {
+                typeof(string)
+            }));
+
+            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge", typeof(TestScenarioCreator).GetMethod(
+                nameof(VarargsFunctionReverseStringsAndMerge), new[]
+                {
+                    typeof(string[])
+                }));
+
+            testContext.RegisterFunction("VarargsFunctionReverseStringsAndMerge2", typeof(TestScenarioCreator).GetMethod(
+                nameof(VarargsFunctionReverseStringsAndMerge2), new[]
+                {
+                    typeof(int),
+                    typeof(string[])
+                }));
         }
         catch (Exception ex)
         {
@@ -99,16 +131,24 @@ public static class TestScenarioCreator
     private static void SetupRootContextObject(StandardEvaluationContext testContext)
     {
         var c = new GregorianCalendar();
+
         var tesla = new Inventor("Nikola Tesla", c.ToDateTime(1856, 7, 9, 0, 0, 0, Calendar.CurrentEra), "Serbian")
         {
             PlaceOfBirth = new PlaceOfBirth("SmilJan"),
             Inventions = new[]
             {
-                "Telephone repeater", "Rotating magnetic field principle",
-                "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
-                "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
+                "Telephone repeater",
+                "Rotating magnetic field principle",
+                "Polyphase alternating-current system",
+                "Induction motor",
+                "Alternating-current power transmission",
+                "Tesla coil transformer",
+                "Wireless communication",
+                "Radio",
+                "Fluorescent lights"
             }
         };
+
         testContext.SetRootObject(tesla);
     }
 }

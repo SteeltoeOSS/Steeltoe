@@ -38,21 +38,26 @@ public class ExternalTxManagerTests
 
         RC.IBasicConsumer consumer;
         var consumerLatch = new CountdownEvent(1);
-        onlyChannel.Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), null, It.IsAny<RC.IBasicConsumer>()))
-            .Returns((string _, bool _, string _, bool _, bool _, IDictionary<string, object> _, RC.IBasicConsumer iConsumer) =>
-            {
-                consumer = iConsumer;
-                consumerLatch.Signal();
-                return "consumerTag";
-            });
+
+        onlyChannel
+            .Setup(m => m.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), null,
+                It.IsAny<RC.IBasicConsumer>())).Returns(
+                (string _, bool _, string _, bool _, bool _, IDictionary<string, object> _, RC.IBasicConsumer iConsumer) =>
+                {
+                    consumer = iConsumer;
+                    consumerLatch.Signal();
+                    return "consumerTag";
+                });
 
         var commitLatch = new CountdownEvent(1);
+
         onlyChannel.Setup(m => m.TxCommit()).Callback(() =>
         {
             commitLatch.Signal();
         });
 
         var rollbackEvent = new CountdownEvent(1);
+
         onlyChannel.Setup(m => m.TxRollback()).Callback(() =>
         {
             rollbackEvent.Signal();
@@ -80,13 +85,13 @@ public class ExternalTxManagerTests
         private readonly IConnectionFactory _connectionFactory;
         private readonly CountdownEvent _latch;
 
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
         public TestListener(IConnectionFactory connectionFactory, CountdownEvent latch)
         {
             _connectionFactory = connectionFactory;
             _latch = latch;
         }
-
-        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message)
         {
@@ -104,7 +109,7 @@ public class ExternalTxManagerTests
 
     private sealed class DummyTxManager : AbstractPlatformTransactionManager
     {
-        private readonly CountdownEvent _latch = new (1);
+        private readonly CountdownEvent _latch = new(1);
 
         protected override void DoBegin(object transaction, ITransactionDefinition definition)
         {

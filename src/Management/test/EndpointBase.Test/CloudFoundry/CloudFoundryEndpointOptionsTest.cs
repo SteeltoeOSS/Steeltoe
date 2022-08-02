@@ -38,9 +38,10 @@ public class CloudFoundryEndpointOptionsTest : BaseTest
             ["management:endpoints:cloudfoundry:validatecertificates"] = "false",
             ["management:endpoints:cloudfoundry:enabled"] = "true"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new InfoEndpointOptions(config);
         var cloudOpts = new CloudFoundryEndpointOptions(config);

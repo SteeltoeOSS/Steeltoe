@@ -15,7 +15,10 @@ public class MongoDbServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mongodb",
-            Tags = new[] { "mongodb" },
+            Tags = new[]
+            {
+                "mongodb"
+            },
             Name = "mongoService",
             Plan = "free",
             Credentials = new Credential
@@ -25,9 +28,13 @@ public class MongoDbServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                {
+                    "uri",
+                    new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                }
             }
         };
+
         var factory = new MongoDbServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -38,7 +45,7 @@ public class MongoDbServiceInfoFactoryTest
         var s = new Service
         {
             Label = string.Empty,
-            Tags = System.Array.Empty<string>(),
+            Tags = Array.Empty<string>(),
             Name = "mongoService",
             Plan = "free",
             Credentials = new Credential
@@ -48,9 +55,13 @@ public class MongoDbServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                {
+                    "uri",
+                    new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                }
             }
         };
+
         var factory = new MongoDbServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -61,7 +72,11 @@ public class MongoDbServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -71,10 +86,16 @@ public class MongoDbServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MongoDbServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -85,7 +106,10 @@ public class MongoDbServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mongodb",
-            Tags = new[] { "mongodb" },
+            Tags = new[]
+            {
+                "mongodb"
+            },
             Name = "mongodbService",
             Plan = "free",
             Credentials = new Credential
@@ -95,9 +119,10 @@ public class MongoDbServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
+                { "uri", new Credential("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") }
             }
         };
+
         var factory = new MongoDbServiceInfoFactory();
         var info = factory.Create(s) as MongoDbServiceInfo;
         Assert.NotNull(info);

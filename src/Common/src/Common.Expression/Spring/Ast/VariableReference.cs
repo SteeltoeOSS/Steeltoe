@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class VariableReference : SpelNode
 {
     // Well known variables:
-    private static readonly string This = "this";  // currently active context object
-    private static readonly string Root = "root";  // root context object
+    private static readonly string This = "this"; // currently active context object
+    private static readonly string Root = "root"; // root context object
 
     private readonly string _name;
     private MethodInfo _method;
@@ -32,13 +32,14 @@ public class VariableReference : SpelNode
 
         if (_name.Equals(Root))
         {
-            var obj = state.RootContextObject;
+            ITypedValue obj = state.RootContextObject;
             exitTypeDescriptor = CodeFlow.ToDescriptorFromObject(obj.Value);
             return obj;
         }
 
-        var result = state.LookupVariable(_name);
-        var value = result.Value;
+        ITypedValue result = state.LookupVariable(_name);
+        object value = result.Value;
+
         if (value == null || !ReflectionHelper.IsPublic(value.GetType()))
         {
             // If the type is not public then when generateCode produces a checkcast to it
@@ -105,7 +106,7 @@ public class VariableReference : SpelNode
             return new TypedValueHolderValueRef(state.RootContextObject, this);
         }
 
-        var result = state.LookupVariable(_name);
+        ITypedValue result = state.LookupVariable(_name);
 
         // a null value will mean either the value was null or the variable was not found
         return new VariableRef(_name, result, state.EvaluationContext);
@@ -127,6 +128,8 @@ public class VariableReference : SpelNode
         private readonly ITypedValue _value;
         private readonly IEvaluationContext _evaluationContext;
 
+        public bool IsWritable => true;
+
         public VariableRef(string name, ITypedValue value, IEvaluationContext evaluationContext)
         {
             _name = name;
@@ -143,7 +146,5 @@ public class VariableReference : SpelNode
         {
             _evaluationContext.SetVariable(_name, newValue);
         }
-
-        public bool IsWritable => true;
     }
 }

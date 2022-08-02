@@ -14,8 +14,8 @@ public class EurekaInstanceConfigTest : AbstractBaseTest
     {
         var config = new EurekaInstanceConfig();
 
-        var thisHostName = config.GetHostName(false);
-        var thisHostAddress = config.GetHostAddress(false);
+        string thisHostName = config.GetHostName(false);
+        string thisHostAddress = config.GetHostAddress(false);
 
         Assert.False(config.IsInstanceEnabledOnInit);
         Assert.Equal(EurekaInstanceConfig.DefaultNonSecurePort, config.NonSecurePort);

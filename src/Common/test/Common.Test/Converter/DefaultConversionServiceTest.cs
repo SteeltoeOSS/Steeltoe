@@ -13,14 +13,8 @@ namespace Steeltoe.Common.Converter.Test;
 
 public class DefaultConversionServiceTest
 {
-    private enum Foo
-    {
-        Bar,
-        Baz
-    }
-
     // Static so only one is created for this battery of tests.. ensures internal cache is filled by all of the tests
-    private static readonly DefaultConversionService ConversionService = new ();
+    private static readonly DefaultConversionService ConversionService = new();
 
     [Fact]
     public void TestStringToCharacter()
@@ -201,7 +195,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestStringToDecimal()
     {
-        var result = 1.0m;
+        decimal result = 1.0m;
         Assert.Equal(result, ConversionService.Convert<decimal>("1.0"));
         Assert.Equal(result, ConversionService.Convert<decimal?>("1.0"));
     }
@@ -209,7 +203,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestDecimalToString()
     {
-        var source = 300.00m;
+        decimal source = 300.00m;
         Assert.Equal("300.00", ConversionService.Convert<string>(source));
     }
 
@@ -244,7 +238,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestStringToString()
     {
-        var str = "test";
+        string str = "test";
         Assert.Same(str, ConversionService.Convert<string>(str));
     }
 
@@ -252,7 +246,7 @@ public class DefaultConversionServiceTest
     public void TestGuidToStringAndStringToGuid()
     {
         var uuid = Guid.NewGuid();
-        var convertToString = ConversionService.Convert<string>(uuid);
+        string convertToString = ConversionService.Convert<string>(uuid);
         var convertToUuid = ConversionService.Convert<Guid>(convertToString);
         Assert.Equal(uuid, convertToUuid);
     }
@@ -284,7 +278,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToCollectionInterface()
     {
-        var result = ConversionService.Convert<IList<string>>(new[] { "1", "2", "3" });
+        var result = ConversionService.Convert<IList<string>>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        });
+
         Assert.Equal("1", result[0]);
         Assert.Equal("2", result[1]);
         Assert.Equal("3", result[2]);
@@ -293,7 +293,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableInterface()
     {
-        var array = new[] { "1", "2", "3" };
+        string[] array = new[]
+        {
+            "1",
+            "2",
+            "3"
+        };
+
         var result = ConversionService.Convert<IEnumerable>(array);
         Assert.IsType<string[]>(result);
         Assert.Same(result, array);
@@ -302,7 +308,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableStringInterface()
     {
-        var array = new[] { "1", "2", "3" };
+        string[] array = new[]
+        {
+            "1",
+            "2",
+            "3"
+        };
+
         var result = ConversionService.Convert<IEnumerable<string>>(array);
         Assert.IsType<string[]>(result);
         Assert.Same(result, array);
@@ -311,7 +323,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableGenericTypeConversion()
     {
-        var array = new[] { "1", "2", "3" };
+        string[] array = new[]
+        {
+            "1",
+            "2",
+            "3"
+        };
+
         var result = ConversionService.Convert<IEnumerable<int>>(array);
         Assert.Contains(1, result);
         Assert.Contains(2, result);
@@ -321,7 +339,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToCollectionGenericTypeConversion()
     {
-        var result = ConversionService.Convert<IList<int>>(new[] { "1", "2", "3" });
+        var result = ConversionService.Convert<IList<int>>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        });
+
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
         Assert.Equal(3, result[2]);
@@ -330,7 +354,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToCollectionImpl()
     {
-        var result = ConversionService.Convert<List<string>>(new[] { "1", "2", "3" });
+        var result = ConversionService.Convert<List<string>>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        });
+
         Assert.Equal("1", result[0]);
         Assert.Equal("2", result[1]);
         Assert.Equal("3", result[2]);
@@ -340,34 +370,51 @@ public class DefaultConversionServiceTest
     public void ConvertArrayToAbstractCollection()
     {
         // No public constructor found
-        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<CollectionBase>(new[] { "1", "2", "3" }));
+        Assert.Throws<ConverterNotFoundException>(() => ConversionService.Convert<CollectionBase>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        }));
     }
 
     [Fact]
     public void ConvertArrayToString()
     {
-        var result = ConversionService.Convert<string>(new[] { "1", "2", "3" });
+        string result = ConversionService.Convert<string>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        });
+
         Assert.Equal("1,2,3", result);
     }
 
     [Fact]
     public void ConvertArrayToStringWithElementConversion()
     {
-        var result = ConversionService.Convert<string>(new[] { 1, 2, 3 });
+        string result = ConversionService.Convert<string>(new[]
+        {
+            1,
+            2,
+            3
+        });
+
         Assert.Equal("1,2,3", result);
     }
 
     [Fact]
     public void ConvertEmptyArrayToString()
     {
-        var result = ConversionService.Convert<string>(Array.Empty<string>());
+        string result = ConversionService.Convert<string>(Array.Empty<string>());
         Assert.Equal(string.Empty, result);
     }
 
     [Fact]
     public void ConvertStringToArray()
     {
-        var result = ConversionService.Convert<string[]>("1,2,3");
+        string[] result = ConversionService.Convert<string[]>("1,2,3");
         Assert.Equal(3, result.Length);
         Assert.Equal("1", result[0]);
         Assert.Equal("2", result[1]);
@@ -377,7 +424,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertStringToArrayWithElementConversion()
     {
-        var result = ConversionService.Convert<int[]>("1,2,3");
+        int[] result = ConversionService.Convert<int[]>("1,2,3");
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -387,38 +434,50 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertEmptyStringToArray()
     {
-        var result = ConversionService.Convert<string[]>(string.Empty);
+        string[] result = ConversionService.Convert<string[]>(string.Empty);
         Assert.Empty(result);
     }
 
     [Fact]
     public void ConvertArrayToObject()
     {
-        var array = new[] { 3L };
-        var result = ConversionService.Convert<long>(array);
+        long[] array = new[]
+        {
+            3L
+        };
+
+        long result = ConversionService.Convert<long>(array);
         Assert.Equal(3L, result);
     }
 
     [Fact]
     public void ConvertArrayToObjectWithElementConversion()
     {
-        var array = new[] { "3" };
-        var result = ConversionService.Convert<int>(array);
+        string[] array = new[]
+        {
+            "3"
+        };
+
+        int result = ConversionService.Convert<int>(array);
         Assert.Equal(3, result);
     }
 
     [Fact]
     public void ConvertArrayToObjectAssignableTargetType()
     {
-        var array = new[] { 3L };
-        var result = ConversionService.Convert<long[]>(array);
+        long[] array = new[]
+        {
+            3L
+        };
+
+        long[] result = ConversionService.Convert<long[]>(array);
         Assert.Equal(array, result);
     }
 
     [Fact]
     public void ConvertObjectToArray()
     {
-        var result = ConversionService.Convert<object[]>(3L);
+        object[] result = ConversionService.Convert<object[]>(3L);
         Assert.Single(result);
         Assert.Equal(3L, result[0]);
     }
@@ -426,7 +485,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertObjectToArrayWithElementConversion()
     {
-        var result = ConversionService.Convert<int[]>(3L);
+        int[] result = ConversionService.Convert<int[]>(3L);
         Assert.Single(result);
         Assert.Equal(3, result[0]);
     }
@@ -438,7 +497,7 @@ public class DefaultConversionServiceTest
         list.Add("1");
         list.Add("2");
         list.Add("3");
-        var result = ConversionService.Convert<string[]>(list);
+        string[] result = ConversionService.Convert<string[]>(list);
         Assert.Equal(3, result.Length);
         Assert.Equal("1", result[0]);
         Assert.Equal("2", result[1]);
@@ -452,7 +511,7 @@ public class DefaultConversionServiceTest
         set.Add("1");
         set.Add("2");
         set.Add("3");
-        var result = ConversionService.Convert<string[]>(set);
+        string[] result = ConversionService.Convert<string[]>(set);
         Assert.Equal(3, result.Length);
         Assert.Equal("1", result[0]);
         Assert.Equal("2", result[1]);
@@ -466,7 +525,7 @@ public class DefaultConversionServiceTest
         set.Add("1");
         set.Add("2");
         set.Add("3");
-        var result = ConversionService.Convert<int[]>(set);
+        int[] result = ConversionService.Convert<int[]>(set);
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -480,7 +539,7 @@ public class DefaultConversionServiceTest
         list.Add(1L);
         list.Add(2L);
         list.Add(3L);
-        var result = ConversionService.Convert<int[]>(list);
+        int[] result = ConversionService.Convert<int[]>(list);
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -490,16 +549,26 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertCollectionToString()
     {
-        var list = new List<string> { "foo", "bar" };
-        var result = ConversionService.Convert<string>(list);
+        var list = new List<string>
+        {
+            "foo",
+            "bar"
+        };
+
+        string result = ConversionService.Convert<string>(list);
         Assert.Equal("foo,bar", result);
     }
 
     [Fact]
     public void ConvertCollectionToStringWithElementConversion()
     {
-        var list = new List<int> { 3, 5 };
-        var result = ConversionService.Convert<string>(list);
+        var list = new List<int>
+        {
+            3,
+            5
+        };
+
+        string result = ConversionService.Convert<string>(list);
         Assert.Equal("3,5", result);
     }
 
@@ -553,31 +622,50 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertCollectionToObject()
     {
-        var list = new List<long> { 3L };
-        var result = ConversionService.Convert<long>(list);
+        var list = new List<long>
+        {
+            3L
+        };
+
+        long result = ConversionService.Convert<long>(list);
         Assert.Equal(3L, result);
     }
 
     [Fact]
     public void ConvertCollectionToObjectWithElementConversion()
     {
-        var list = new List<string> { "3" };
-        var result = ConversionService.Convert<int>(list);
+        var list = new List<string>
+        {
+            "3"
+        };
+
+        int result = ConversionService.Convert<int>(list);
         Assert.Equal(3, result);
     }
 
     [Fact]
     public void ConvertCollectionToObjectAssignableTarget()
     {
-        IList<string> source = new List<string> { "foo" };
-        var result = ConversionService.Convert<object>(source);
+        IList<string> source = new List<string>
+        {
+            "foo"
+        };
+
+        object result = ConversionService.Convert<object>(source);
         Assert.Same(source, result);
     }
 
     [Fact]
     public void ConvertListToDictionaryAssignableTarget()
     {
-        IList<object> source = new List<object> { new Dictionary<string, object> { ["test"] = 3 } };
+        IList<object> source = new List<object>
+        {
+            new Dictionary<string, object>
+            {
+                ["test"] = 3
+            }
+        };
+
         var result = ConversionService.Convert<IDictionary<string, object>>(source);
         Assert.Equal(3, result["test"]);
     }
@@ -595,7 +683,8 @@ public class DefaultConversionServiceTest
     {
         var result = ConversionService.Convert<IEnumerable>(3L);
         Assert.Single(result);
-        foreach (var elem in result)
+
+        foreach (object elem in result)
         {
             Assert.Equal(3L, elem);
         }
@@ -620,7 +709,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertStringArrayToIntegerArray()
     {
-        var result = ConversionService.Convert<int[]>(new[] { "1", "2", "3" });
+        int[] result = ConversionService.Convert<int[]>(new[]
+        {
+            "1",
+            "2",
+            "3"
+        });
+
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -630,7 +725,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertIntegerArrayToIntegerArray()
     {
-        var result = ConversionService.Convert<int[]>(new[] { 1, 2, 3 });
+        int[] result = ConversionService.Convert<int[]>(new[]
+        {
+            1,
+            2,
+            3
+        });
+
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -640,7 +741,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertObjectArrayToIntegerArray()
     {
-        var result = ConversionService.Convert<int[]>(new object[] { 1, 2, 3 });
+        int[] result = ConversionService.Convert<int[]>(new object[]
+        {
+            1,
+            2,
+            3
+        });
+
         Assert.Equal(3, result.Length);
         Assert.Equal(1, result[0]);
         Assert.Equal(2, result[1]);
@@ -650,33 +757,64 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToArrayAssignable()
     {
-        var orig = new[] { 1, 2, 3 };
-        var result = ConversionService.Convert<int[]>(orig);
+        int[] orig = new[]
+        {
+            1,
+            2,
+            3
+        };
+
+        int[] result = ConversionService.Convert<int[]>(orig);
         Assert.Same(orig, result);
     }
 
     [Fact]
     public void ConvertListOfStringToString()
     {
-        var list = new List<string> { "Foo", "Bar" };
-        var result = ConversionService.Convert<string>(list);
+        var list = new List<string>
+        {
+            "Foo",
+            "Bar"
+        };
+
+        string result = ConversionService.Convert<string>(list);
         Assert.Equal("Foo,Bar", result);
     }
 
     [Fact]
     public void ConvertListOfListToString()
     {
-        var list1 = new List<string> { "Foo", "Bar" };
-        var list2 = new List<string> { "Baz", "Boop" };
-        var list = new List<List<string>> { list1, list2 };
-        var result = ConversionService.Convert<string>(list);
+        var list1 = new List<string>
+        {
+            "Foo",
+            "Bar"
+        };
+
+        var list2 = new List<string>
+        {
+            "Baz",
+            "Boop"
+        };
+
+        var list = new List<List<string>>
+        {
+            list1,
+            list2
+        };
+
+        string result = ConversionService.Convert<string>(list);
         Assert.Equal("Foo,Bar,Baz,Boop", result);
     }
 
     [Fact]
     public void ConvertCollectionToCollectionWithElementConversion()
     {
-        var foo = new Collection<string> { "1", "2", "3" };
+        var foo = new Collection<string>
+        {
+            "1",
+            "2",
+            "3"
+        };
 
         var result = ConversionService.Convert<List<int>>(foo);
         Assert.Equal(3, result.Count);
@@ -710,7 +848,13 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertCollectionToCollectionNotGeneric()
     {
-        var foo = new Collection<string> { "1", "2", "3" };
+        var foo = new Collection<string>
+        {
+            "1",
+            "2",
+            "3"
+        };
+
         var result = ConversionService.Convert<IList>(foo);
         Assert.Equal(3, result.Count);
         Assert.Equal("1", result[0]);
@@ -721,7 +865,11 @@ public class DefaultConversionServiceTest
     [Fact]
     public void CollectionToCollectionEnumerableWithElementConversion()
     {
-        var strings = new ArrayList { "3", "9" };
+        var strings = new ArrayList
+        {
+            "3",
+            "9"
+        };
 
         var result = ConversionService.Convert<IEnumerable<int>>(strings);
         Assert.Contains(3, result);
@@ -732,7 +880,11 @@ public class DefaultConversionServiceTest
     [Fact]
     public void CollectionToCollectionEnumerableString()
     {
-        var strings = new ArrayList { "3", "9" };
+        var strings = new ArrayList
+        {
+            "3",
+            "9"
+        };
 
         var result = ConversionService.Convert<IEnumerable<string>>(strings);
         Assert.Contains("3", result);
@@ -743,7 +895,11 @@ public class DefaultConversionServiceTest
     [Fact]
     public void CollectionToCollectionStringCollection()
     {
-        var strings = new ArrayList { "3", "9" };
+        var strings = new ArrayList
+        {
+            "3",
+            "9"
+        };
 
         var result = ConversionService.Convert<StringCollection>(strings);
         Assert.Contains("3", result[0]);
@@ -754,7 +910,11 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertDictToDictWithElementConversion()
     {
-        var foo = new Dictionary<string, string> { { "1", "BAR" }, { "2", "BAZ" } };
+        var foo = new Dictionary<string, string>
+        {
+            { "1", "BAR" },
+            { "2", "BAZ" }
+        };
 
         var map = ConversionService.Convert<Dictionary<int, Foo>>(foo);
         Assert.Equal(Foo.Bar, map[1]);
@@ -775,7 +935,12 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertDictionaryBothElementConversion()
     {
-        var strings = new Dictionary<string, string> { { "3", "9" }, { "6", "31" } };
+        var strings = new Dictionary<string, string>
+        {
+            { "3", "9" },
+            { "6", "31" }
+        };
+
         var integers = ConversionService.Convert<IDictionary<int, int>>(strings);
         Assert.Equal(9, integers[3]);
         Assert.Equal(31, integers[6]);
@@ -784,7 +949,12 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertHashtableToDictionary()
     {
-        var strings = new Hashtable { { "3", "9" }, { "6", "31" } };
+        var strings = new Hashtable
+        {
+            { "3", "9" },
+            { "6", "31" }
+        };
+
         var integers = ConversionService.Convert<IDictionary<int, int>>(strings);
         Assert.Equal(9, integers[3]);
         Assert.Equal(31, integers[6]);
@@ -793,7 +963,12 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertHashtableToSortedList()
     {
-        var strings = new Hashtable { { "3", "9" }, { "6", "31" } };
+        var strings = new Hashtable
+        {
+            { "3", "9" },
+            { "6", "31" }
+        };
+
         var integers = ConversionService.Convert<SortedList>(strings);
         Assert.Equal("9", integers["3"]);
         Assert.Equal("31", integers["6"]);
@@ -802,7 +977,12 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertDictionaryConcurrentDictionary()
     {
-        var strings = new Dictionary<string, string> { { "3", "9" }, { "6", "31" } };
+        var strings = new Dictionary<string, string>
+        {
+            { "3", "9" },
+            { "6", "31" }
+        };
+
         var integers = ConversionService.Convert<ConcurrentDictionary<int, int>>(strings);
         Assert.Equal(9, integers[3]);
         Assert.Equal(31, integers[6]);
@@ -859,27 +1039,59 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertCharArrayToString()
     {
-        var converted = ConversionService.Convert<string>(new[] { 'a', 'b', 'c' });
+        string converted = ConversionService.Convert<string>(new[]
+        {
+            'a',
+            'b',
+            'c'
+        });
+
         Assert.Equal("a,b,c", converted);
     }
 
     [Fact]
     public void ConvertStringToCharArray()
     {
-        var converted = ConversionService.Convert<char[]>("a,b,c");
-        Assert.Equal(new[] { 'a', 'b', 'c' }, converted);
+        char[] converted = ConversionService.Convert<char[]>("a,b,c");
+
+        Assert.Equal(new[]
+        {
+            'a',
+            'b',
+            'c'
+        }, converted);
     }
 
     [Fact]
     public void MultidimensionalArrayToListConversionShouldConvertEntriesCorrectly()
     {
-        var grid = new[]
+        string[][] grid = new[]
         {
-            new[] { "1", "2", "3", "4" }, new[] { "5", "6", "7", "8" },
-            new[] { "9", "10", "11", "12" }
+            new[]
+            {
+                "1",
+                "2",
+                "3",
+                "4"
+            },
+            new[]
+            {
+                "5",
+                "6",
+                "7",
+                "8"
+            },
+            new[]
+            {
+                "9",
+                "10",
+                "11",
+                "12"
+            }
         };
+
         var converted = ConversionService.Convert<List<string[]>>(grid);
-        var convertedBack = ConversionService.Convert<string[][]>(converted);
+        string[][] convertedBack = ConversionService.Convert<string[][]>(converted);
         Assert.Equal(grid, convertedBack);
     }
 
@@ -895,11 +1107,25 @@ public class DefaultConversionServiceTest
         Assert.Equal("utf-8", ConversionService.Convert<string>(Encoding.UTF8));
     }
 
+    private enum Foo
+    {
+        Bar,
+        Baz
+    }
+
     private sealed class Isbn
     {
         public static int ConstructorCount;
         public static int ToStringCount;
         public static int ValueOfCount;
+
+        private readonly string _value;
+
+        public Isbn(string value)
+        {
+            ConstructorCount++;
+            _value = value;
+        }
 
         public static void Reset()
         {
@@ -916,14 +1142,6 @@ public class DefaultConversionServiceTest
         }
 #pragma warning restore S1144 // Unused private types or members should be removed
 
-        private readonly string _value;
-
-        public Isbn(string value)
-        {
-            ConstructorCount++;
-            _value = value;
-        }
-
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(this, obj))
@@ -939,7 +1157,10 @@ public class DefaultConversionServiceTest
             return _value.Equals(other._value);
         }
 
-        public override int GetHashCode() => _value.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
+        }
 
         public override string ToString()
         {
@@ -954,18 +1175,18 @@ public class DefaultConversionServiceTest
 
         public static int ToStringCount;
 
-        public static void Reset()
-        {
-            ConstructorCount = 0;
-            ToStringCount = 0;
-        }
-
         private readonly string _value;
 
         public SocialSecurityNumber(string value)
         {
             ConstructorCount++;
             _value = value;
+        }
+
+        public static void Reset()
+        {
+            ConstructorCount = 0;
+            ToStringCount = 0;
         }
 
         public override bool Equals(object obj)
@@ -983,7 +1204,10 @@ public class DefaultConversionServiceTest
             return _value.Equals(ssn._value);
         }
 
-        public override int GetHashCode() => _value.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _value.GetHashCode();
+        }
 
         public override string ToString()
         {

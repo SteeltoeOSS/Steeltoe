@@ -11,10 +11,10 @@ public class EurekaServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        var uri = "https://username:password@hostname:1111/";
-        var clientId = "clientId";
-        var clientSecret = "clientSecret";
-        var accessTokenUri = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
+        string uri = "https://username:password@hostname:1111/";
+        string clientId = "clientId";
+        string clientSecret = "clientSecret";
+        string accessTokenUri = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
         var r1 = new EurekaServiceInfo("myId", uri, clientId, clientSecret, accessTokenUri);
 
         Assert.Equal("myId", r1.Id);

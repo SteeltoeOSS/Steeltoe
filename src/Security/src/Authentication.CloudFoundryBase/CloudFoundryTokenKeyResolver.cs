@@ -2,23 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Security;
 using Microsoft.IdentityModel.Tokens;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
-using System.Collections.Concurrent;
-using System.Net.Http.Headers;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public class CloudFoundryTokenKeyResolver
 {
-    internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new ();
-
     private readonly string _jwtKeyUrl;
     private readonly HttpMessageHandler _httpHandler;
     private readonly bool _validateCertificates;
     private readonly int _httpClientTimeoutMillis;
     private HttpClient _httpClient;
+
+    internal static ConcurrentDictionary<string, SecurityKey> Resolved { get; set; } = new();
 
     public CloudFoundryTokenKeyResolver(string jwtKeyUrl, HttpMessageHandler httpHandler, bool validateCertificates)
     {
@@ -46,17 +48,22 @@ public class CloudFoundryTokenKeyResolver
         _httpClientTimeoutMillis = httpClientTimeoutMs;
     }
 
-    public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid, TokenValidationParameters validationParameters)
+    public virtual IEnumerable<SecurityKey> ResolveSigningKey(string token, SecurityToken securityToken, string kid,
+        TokenValidationParameters validationParameters)
     {
-        if (Resolved.TryGetValue(kid, out var resolved))
+        if (Resolved.TryGetValue(kid, out SecurityKey resolved))
         {
-            return new List<SecurityKey> { resolved };
+            return new List<SecurityKey>
+            {
+                resolved
+            };
         }
 
-        var keySet = FetchKeySet().GetAwaiter().GetResult();
+        JsonWebKeySet keySet = FetchKeySet().GetAwaiter().GetResult();
+
         if (keySet != null)
         {
-            foreach (var key in keySet.Keys)
+            foreach (JsonWebKey key in keySet.Keys)
             {
                 FixupKey(key);
                 Resolved[key.Kid] = key;
@@ -65,7 +72,10 @@ public class CloudFoundryTokenKeyResolver
 
         if (Resolved.TryGetValue(kid, out resolved))
         {
-            return new List<SecurityKey> { resolved };
+            return new List<SecurityKey>
+            {
+                resolved
+            };
         }
 
         return null;
@@ -75,7 +85,7 @@ public class CloudFoundryTokenKeyResolver
     {
         if (Platform.IsFullFramework)
         {
-            var existing = Base64UrlEncoder.DecodeBytes(key.N);
+            byte[] existing = Base64UrlEncoder.DecodeBytes(key.N);
             TrimKey(key, existing);
         }
 
@@ -87,14 +97,13 @@ public class CloudFoundryTokenKeyResolver
         var requestMessage = new HttpRequestMessage(HttpMethod.Get, _jwtKeyUrl);
         requestMessage.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
-        var client = GetHttpClient();
+        HttpClient client = GetHttpClient();
 
-        HttpClientHelper.ConfigureCertificateValidation(
-            _validateCertificates,
-            out var prevProtocols,
-            out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType prevProtocols,
+            out RemoteCertificateValidationCallback prevValidator);
 
         HttpResponseMessage response = null;
+
         try
         {
             response = await client.SendAsync(requestMessage).ConfigureAwait(false);
@@ -106,7 +115,7 @@ public class CloudFoundryTokenKeyResolver
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
             return GetJsonWebKeySet(result);
         }
 
@@ -129,9 +138,9 @@ public class CloudFoundryTokenKeyResolver
 
     private void TrimKey(JsonWebKey key, byte[] existing)
     {
-        var signRemoved = new byte[existing.Length - 1];
+        byte[] signRemoved = new byte[existing.Length - 1];
         Buffer.BlockCopy(existing, 1, signRemoved, 0, existing.Length - 1);
-        var withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
+        string withSignRemoved = Base64UrlEncoder.Encode(signRemoved);
         key.N = withSignRemoved;
     }
 }

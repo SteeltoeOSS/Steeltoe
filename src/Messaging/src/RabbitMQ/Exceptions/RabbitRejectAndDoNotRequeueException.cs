@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitRejectAndDoNotRequeueException : RabbitException
 {
+    public bool IsRejectManual { get; }
+
     public RabbitRejectAndDoNotRequeueException(string message)
         : this(message, false, null)
     {
@@ -26,6 +28,4 @@ public class RabbitRejectAndDoNotRequeueException : RabbitException
     {
         IsRejectManual = rejectManual;
     }
-
-    public bool IsRejectManual { get; }
 }

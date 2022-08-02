@@ -8,21 +8,10 @@ namespace Steeltoe.Messaging.Support;
 
 public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISubscribableChannel
 {
-    internal HashSet<IMessageHandler> Handlers = new ();
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
+    internal HashSet<IMessageHandler> Handlers = new();
 
-    protected AbstractSubscribableChannel(ILogger logger = null)
-        : base(logger)
-    {
-    }
-
-    public virtual int SubscriberCount
-    {
-        get
-        {
-            return Handlers.Count;
-        }
-    }
+    public virtual int SubscriberCount => Handlers.Count;
 
     public virtual ISet<IMessageHandler> Subscribers
     {
@@ -33,6 +22,11 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
                 return new HashSet<IMessageHandler>(Handlers);
             }
         }
+    }
+
+    protected AbstractSubscribableChannel(ILogger logger = null)
+        : base(logger)
+    {
     }
 
     public virtual bool HasSubscription(IMessageHandler handler)
@@ -48,7 +42,8 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         lock (_lock)
         {
             var handlers = new HashSet<IMessageHandler>(Handlers);
-            var result = handlers.Add(handler);
+            bool result = handlers.Add(handler);
+
             if (result)
             {
                 Logger?.LogDebug("{serviceName} added to {handler} ", ServiceName, handler);
@@ -64,7 +59,8 @@ public abstract class AbstractSubscribableChannel : AbstractMessageChannel, ISub
         lock (_lock)
         {
             var handlers = new HashSet<IMessageHandler>(Handlers);
-            var result = handlers.Remove(handler);
+            bool result = handlers.Remove(handler);
+
             if (result)
             {
                 Logger?.LogDebug("{serviceName} removed from {handler} ", ServiceName, handler);

@@ -23,7 +23,9 @@ public interface IMessage
 /// <summary>
 /// A generic message representation with headers and a body.
 /// </summary>
-/// <typeparam name="T">the type of the payload.</typeparam>
+/// <typeparam name="T">
+/// the type of the payload.
+/// </typeparam>
 public interface IMessage<out T> : IMessage
 {
     /// <summary>

@@ -21,7 +21,7 @@ public class ServiceInfoFactoryTest
     [Fact]
     public void Constructor_ThrowsIfTagsNull()
     {
-        var scheme = "scheme";
+        string scheme = "scheme";
         const Tags tags = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(tags, scheme));
@@ -31,96 +31,156 @@ public class ServiceInfoFactoryTest
     [Fact]
     public void TagsMatch_Matches()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "bar" }
+            Tags = new[]
+            {
+                "bar"
+            }
         };
+
         Assert.True(sif.TagsMatch(service1));
     }
 
     [Fact]
     public void TagsMatch_DoesNotMatch()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "noMatch" }
+            Tags = new[]
+            {
+                "noMatch"
+            }
         };
+
         Assert.False(sif.TagsMatch(service1));
     }
 
     [Fact]
     public void LabelStartsWithTag_Matches()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "noMatch" },
+            Tags = new[]
+            {
+                "noMatch"
+            },
             Label = "foobarfoo"
         };
+
         Assert.True(sif.LabelStartsWithTag(service1));
     }
 
     [Fact]
     public void LabelStartsWithTag_DoesNotMatch()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "noMatch" },
+            Tags = new[]
+            {
+                "noMatch"
+            },
             Label = "baby"
         };
+
         Assert.False(sif.LabelStartsWithTag(service1));
     }
 
     [Fact]
     public void UriMatchesScheme_Matches()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "noMatch" },
+            Tags = new[]
+            {
+                "noMatch"
+            },
             Label = "noMatch",
             Credentials = new Dictionary<string, Credential>
             {
                 { "uri", new Credential("scheme://foo") }
             }
         };
+
         Assert.True(sif.UriMatchesScheme(service1));
     }
 
     [Fact]
     public void UriMatchesScheme_DoesNotMatch()
     {
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
+
         var service1 = new Service
         {
-            Tags = new[] { "noMatch" },
+            Tags = new[]
+            {
+                "noMatch"
+            },
             Label = "noMatch",
             Credentials = new Dictionary<string, Credential>
             {
                 { "uri", new Credential("nomatch://foo") }
             }
         };
+
         Assert.False(sif.UriMatchesScheme(service1));
     }
 
@@ -131,17 +191,24 @@ public class ServiceInfoFactoryTest
         {
             { "username", new Credential("username") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var username = sif.GetUsernameFromCredentials(credentials);
+        string username = sif.GetUsernameFromCredentials(credentials);
         Assert.Equal("username", username);
 
         credentials = new Dictionary<string, Credential>
         {
             { "user", new Credential("username") }
         };
+
         username = sif.GetUsernameFromCredentials(credentials);
         Assert.Equal("username", username);
 
@@ -157,11 +224,17 @@ public class ServiceInfoFactoryTest
         {
             { "password", new Credential("password") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var pwd = sif.GetPasswordFromCredentials(credentials);
+        string pwd = sif.GetPasswordFromCredentials(credentials);
         Assert.Equal("password", pwd);
         credentials = new Dictionary<string, Credential>();
         pwd = sif.GetPasswordFromCredentials(credentials);
@@ -175,11 +248,17 @@ public class ServiceInfoFactoryTest
         {
             { "port", new Credential("123") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var port = sif.GetPortFromCredentials(credentials);
+        int port = sif.GetPortFromCredentials(credentials);
         Assert.Equal(123, port);
         credentials = new Dictionary<string, Credential>();
         port = sif.GetPortFromCredentials(credentials);
@@ -193,17 +272,24 @@ public class ServiceInfoFactoryTest
         {
             { "host", new Credential("host") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var host = sif.GetHostFromCredentials(credentials);
+        string host = sif.GetHostFromCredentials(credentials);
         Assert.Equal("host", host);
 
         credentials = new Dictionary<string, Credential>
         {
             { "hostname", new Credential("hostname") }
         };
+
         host = sif.GetHostFromCredentials(credentials);
         Assert.Equal("hostname", host);
 
@@ -219,17 +305,24 @@ public class ServiceInfoFactoryTest
         {
             { "uri", new Credential("https://boo:222") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var uri = sif.GetUriFromCredentials(credentials);
+        string uri = sif.GetUriFromCredentials(credentials);
         Assert.Equal("https://boo:222", uri);
 
         credentials = new Dictionary<string, Credential>
         {
             { "url", new Credential("https://boo:222") }
         };
+
         uri = sif.GetUriFromCredentials(credentials);
         Assert.Equal("https://boo:222", uri);
 
@@ -244,18 +337,24 @@ public class ServiceInfoFactoryTest
         var credentials = new Dictionary<string, Credential>
         {
             {
-                "uris",
-                new Credential
+                "uris", new Credential
                 {
-                    { "0", new Credential("https://foo:11") }, { "1", new Credential("https://bar:11") }
+                    { "0", new Credential("https://foo:11") },
+                    { "1", new Credential("https://bar:11") }
                 }
             }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
-        var list = sif.GetListFromCredentials(credentials, "uris");
+        List<string> list = sif.GetListFromCredentials(credentials, "uris");
         Assert.NotNull(list);
         Assert.Equal(2, list.Count);
         Assert.True(list[0].Equals("https://foo:11") || list[0].Equals("https://bar:11"));
@@ -275,12 +374,18 @@ public class ServiceInfoFactoryTest
                         {
                             { "bang", new Credential("badabing") }
                         }
-                    },
+                    }
                 }
             }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         var ex = Assert.Throws<ConnectorException>(() => sif.GetListFromCredentials(credentials, "foo"));
@@ -295,8 +400,14 @@ public class ServiceInfoFactoryTest
         {
             { "key", new Credential("foobar") }
         };
-        var tags = new Tags(new[] { "foo", "bar" });
-        var scheme = "scheme";
+
+        var tags = new Tags(new[]
+        {
+            "foo",
+            "bar"
+        });
+
+        string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));

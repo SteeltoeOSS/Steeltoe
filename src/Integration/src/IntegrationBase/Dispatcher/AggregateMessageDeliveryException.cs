@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging;
 using System.Text;
+using Steeltoe.Messaging;
 
 namespace Steeltoe.Integration.Dispatcher;
 
@@ -11,24 +11,16 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
 {
     private readonly List<Exception> _aggregatedExceptions;
 
-    public AggregateMessageDeliveryException(IMessage undeliveredMessage, string description, List<Exception> aggregatedExceptions)
-        : base(undeliveredMessage, description, aggregatedExceptions[0])
-    {
-        _aggregatedExceptions = new List<Exception>(aggregatedExceptions);
-    }
-
-    public List<Exception> AggregatedExceptions
-    {
-        get { return new List<Exception>(_aggregatedExceptions); }
-    }
+    public List<Exception> AggregatedExceptions => new(_aggregatedExceptions);
 
     public override string Message
     {
         get
         {
-            var baseMessage = base.Message;
+            string baseMessage = base.Message;
             var message = new StringBuilder($"{AppendPeriodIfNecessary(baseMessage)} Multiple causes:\n");
-            foreach (var exception in _aggregatedExceptions)
+
+            foreach (Exception exception in _aggregatedExceptions)
             {
                 message.Append($"    {exception.Message}\n");
             }
@@ -38,19 +30,24 @@ public class AggregateMessageDeliveryException : MessageDeliveryException
         }
     }
 
+    public AggregateMessageDeliveryException(IMessage undeliveredMessage, string description, List<Exception> aggregatedExceptions)
+        : base(undeliveredMessage, description, aggregatedExceptions[0])
+    {
+        _aggregatedExceptions = new List<Exception>(aggregatedExceptions);
+    }
+
     private string AppendPeriodIfNecessary(string baseMessage)
     {
         if (string.IsNullOrEmpty(baseMessage))
         {
             return string.Empty;
         }
-        else if (!baseMessage.EndsWith("."))
+
+        if (!baseMessage.EndsWith("."))
         {
             return $"{baseMessage}.";
         }
-        else
-        {
-            return baseMessage;
-        }
+
+        return baseMessage;
     }
 }

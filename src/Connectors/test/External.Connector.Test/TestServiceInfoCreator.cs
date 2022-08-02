@@ -4,20 +4,21 @@
 
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Connector;
+using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
 
 namespace External.Connector.Test;
 
 internal sealed class TestServiceInfoCreator : ServiceInfoCreator
 {
+    public new static bool IsRelevant => bool.Parse(Environment.GetEnvironmentVariable("TestServiceInfoCreator") ?? "true");
+
     internal TestServiceInfoCreator(IConfiguration configuration)
         : base(configuration)
     {
     }
 
-    public static new bool IsRelevant => bool.Parse(Environment.GetEnvironmentVariable("TestServiceInfoCreator") ?? "true");
-
-    public static new TestServiceInfoCreator Instance(IConfiguration config)
+    public new static TestServiceInfoCreator Instance(IConfiguration config)
     {
         var creator = new TestServiceInfoCreator(config);
         creator.BuildServiceInfoFactories();
@@ -33,7 +34,7 @@ internal sealed class TestServiceInfoCreator : ServiceInfoCreator
 
     private void BuildServiceInfos()
     {
-        var factory = FindFactory(new Service());
+        IServiceInfoFactory factory = FindFactory(new Service());
         ServiceInfos.Add(factory.Create(null));
     }
 }

@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Ast;
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Spring.TestData;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Ast;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Spring.TestData;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -17,22 +17,6 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public class SpelCompilationCoverageTests : AbstractExpressionTests
 {
     private IExpression _expression;
-
-    public static string Concat(string a, string b)
-    {
-        return a + b;
-    }
-
-    public static string Join(params string[] strings)
-    {
-        var buf = new StringBuilder();
-        foreach (var value in strings)
-        {
-            buf.Append(value);
-        }
-
-        return buf.ToString();
-    }
 
     [Fact]
     public void TypeReference()
@@ -43,14 +27,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(typeof(string), _expression.GetValue());
 
         _expression = Parse("T(System.IO.IOException)");
-        Assert.Equal(typeof(System.IO.IOException), _expression.GetValue());
+        Assert.Equal(typeof(IOException), _expression.GetValue());
         AssertCanCompile(_expression);
-        Assert.Equal(typeof(System.IO.IOException), _expression.GetValue());
+        Assert.Equal(typeof(IOException), _expression.GetValue());
 
         _expression = Parse("T(System.IO.IOException[])");
-        Assert.Equal(typeof(System.IO.IOException[]), _expression.GetValue());
+        Assert.Equal(typeof(IOException[]), _expression.GetValue());
         AssertCanCompile(_expression);
-        Assert.Equal(typeof(System.IO.IOException[]), _expression.GetValue());
+        Assert.Equal(typeof(IOException[]), _expression.GetValue());
 
         _expression = Parse("T(int[][])");
         Assert.Equal(typeof(int[][]), _expression.GetValue());
@@ -121,13 +105,23 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True((bool)_expression.GetValue(list));
 
-        var arrayOfLists = new IList[] { new ArrayList() };
+        var arrayOfLists = new IList[]
+        {
+            new ArrayList()
+        };
+
         _expression = Parse("#root instanceof T(System.Collections.IList[])");
         Assert.True((bool)_expression.GetValue(arrayOfLists));
         AssertCanCompile(_expression);
         Assert.True((bool)_expression.GetValue(arrayOfLists));
 
-        var intArray = new[] { 1, 2, 3 };
+        int[] intArray =
+        {
+            1,
+            2,
+            3
+        };
+
         _expression = Parse("#root instanceof T(int[])");
         Assert.True((bool)_expression.GetValue(intArray));
         AssertCanCompile(_expression);
@@ -145,7 +139,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False((bool)_expression.GetValue(root1));
 
-        var root2 = "howdy";
+        string root2 = "howdy";
         _expression = Parse("#root instanceof T(System.Object)");
         Assert.True((bool)_expression.GetValue(root2));
         AssertCanCompile(_expression);
@@ -206,7 +200,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         _expression = Parser.ParseExpression("'abcde'");
         Assert.Equal("abcde", _expression.GetValue<string>(new TestClass1()));
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<string>(new TestClass1());
+        string resultC = _expression.GetValue<string>(new TestClass1());
         Assert.Equal("abcde", resultC);
         Assert.Equal("abcde", _expression.GetValue<string>());
         Assert.Equal("abcde", _expression.GetValue());
@@ -220,9 +214,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void NullLiteral()
     {
         _expression = Parser.ParseExpression("null");
-        var resultI = _expression.GetValue<object>(new TestClass1());
+        object resultI = _expression.GetValue<object>(new TestClass1());
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<object>(new TestClass1());
+        object resultC = _expression.GetValue<object>(new TestClass1());
         Assert.Null(resultI);
         Assert.Null(resultC);
     }
@@ -231,9 +225,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void RealLiteral()
     {
         _expression = Parser.ParseExpression("3.4d");
-        var resultI = _expression.GetValue<double>(new TestClass1());
+        double resultI = _expression.GetValue<double>(new TestClass1());
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<double>(new TestClass1());
+        double resultC = _expression.GetValue<double>(new TestClass1());
         Assert.Equal(3.4d, resultI);
         Assert.Equal(3.4d, resultC);
     }
@@ -242,7 +236,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void InlineList()
     {
         _expression = Parser.ParseExpression("'abcde'.Substring({1,3,4}[0])");
-        var o = _expression.GetValue();
+        object o = _expression.GetValue();
         Assert.Equal("bcde", o);
         AssertCanCompile(_expression);
         o = _expression.GetValue();
@@ -317,19 +311,19 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(9, o3[2]);
 
         _expression = Parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}.Count");
-        var c = _expression.GetValue<int>();
+        int c = _expression.GetValue<int>();
         Assert.Equal(3, c);
         AssertCanCompile(_expression);
         Assert.Equal(3, c);
 
         _expression = Parser.ParseExpression("{{1,2,3},{4,5,6},{7,8,9}}[1][0]");
-        var n = _expression.GetValue<int>();
+        int n = _expression.GetValue<int>();
         Assert.Equal(4, n);
         AssertCanCompile(_expression);
         Assert.Equal(4, n);
 
         _expression = Parser.ParseExpression("{{1,2,3},'abc',{7,8,9}}[1]");
-        var obj = _expression.GetValue();
+        object obj = _expression.GetValue();
         Assert.Equal("abc", obj);
         AssertCanCompile(_expression);
         Assert.Equal("abc", obj);
@@ -376,9 +370,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void IntLiteral()
     {
         _expression = Parser.ParseExpression("42");
-        var resultI = _expression.GetValue<int>(new TestClass1());
+        int resultI = _expression.GetValue<int>(new TestClass1());
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<int>(new TestClass1());
+        int resultC = _expression.GetValue<int>(new TestClass1());
         Assert.Equal(42, resultI);
         Assert.Equal(42, resultC);
 
@@ -397,9 +391,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void LongLiteral()
     {
         _expression = Parser.ParseExpression("99L");
-        var resultI = _expression.GetValue<long>(new TestClass1());
+        long resultI = _expression.GetValue<long>(new TestClass1());
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<long>(new TestClass1());
+        long resultC = _expression.GetValue<long>(new TestClass1());
         Assert.Equal(99L, resultI);
         Assert.Equal(99L, resultC);
     }
@@ -408,10 +402,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void BooleanLiteral()
     {
         _expression = Parser.ParseExpression("True");
-        var resultI = _expression.GetValue<bool>(new TestClass1());
+        bool resultI = _expression.GetValue<bool>(new TestClass1());
         Assert.True(resultI);
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<bool>(new TestClass1());
+        bool resultC = _expression.GetValue<bool>(new TestClass1());
         Assert.True(resultC);
 
         _expression = Parser.ParseExpression("False");
@@ -426,9 +420,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FloatLiteral()
     {
         _expression = Parser.ParseExpression("3.4f");
-        var resultI = _expression.GetValue<double>(new TestClass1());
+        double resultI = _expression.GetValue<double>(new TestClass1());
         AssertCanCompile(_expression);
-        var resultC = _expression.GetValue<double>(new TestClass1());
+        double resultC = _expression.GetValue<double>(new TestClass1());
         Assert.Equal(3.4f, resultI);
         Assert.Equal(3.4f, resultC);
     }
@@ -436,10 +430,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpOr()
     {
-        var expression = Parser.ParseExpression("False or False");
-        var resultI = expression.GetValue<bool>(1);
+        IExpression expression = Parser.ParseExpression("False or False");
+        bool resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
-        var resultC = expression.GetValue<bool>(1);
+        bool resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
@@ -490,9 +484,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expression); // Now been down both
         Assert.True(resultI);
 
-        var b = false;
+        bool b = false;
         expression = Parse("#root or #root");
-        var resultI2 = expression.GetValue<bool>(b);
+        bool resultI2 = expression.GetValue<bool>(b);
         AssertCanCompile(expression);
         Assert.False(resultI2);
         Assert.False(expression.GetValue<bool>(b));
@@ -501,10 +495,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpAnd()
     {
-        var expression = Parser.ParseExpression("False and False");
-        var resultI = expression.GetValue<bool>(1);
+        IExpression expression = Parser.ParseExpression("False and False");
+        bool resultI = expression.GetValue<bool>(1);
         SpelCompiler.Compile(expression);
-        var resultC = expression.GetValue<bool>(1);
+        bool resultC = expression.GetValue<bool>(1);
         Assert.False(resultI);
         Assert.False(resultC);
 
@@ -553,9 +547,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         resultI = expression.GetValue<bool>(tc);
         Assert.True(resultI);
 
-        var b = true;
+        bool b = true;
         expression = Parse("#root and #root");
-        var resultI2 = expression.GetValue<bool>(b);
+        bool resultI2 = expression.GetValue<bool>(b);
         AssertCanCompile(expression);
         Assert.True(resultI2);
         Assert.True(expression.GetValue<bool>(b));
@@ -574,7 +568,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>());
 
-        var b = true;
+        bool b = true;
         _expression = Parser.ParseExpression("!#root");
         Assert.False(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
@@ -590,10 +584,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void Ternary()
     {
-        var expression = Parser.ParseExpression("True?'a':'b'");
-        var resultI = expression.GetValue<string>();
+        IExpression expression = Parser.ParseExpression("True?'a':'b'");
+        string resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>();
+        string resultC = expression.GetValue<string>();
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
@@ -608,7 +602,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expression);
         Assert.Equal("b", expression.GetValue<string>());
 
-        var root = true;
+        bool root = true;
         expression = Parser.ParseExpression("(#root and True)?T(int).Parse('1'):T(long).Parse('3')");
         Assert.Equal(1, expression.GetValue(root));
         AssertCantCompile(expression); // Have not gone down false branch
@@ -623,7 +617,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void TernaryWithBooleanReturn_SPR12271()
     {
-        var expression = Parser.ParseExpression("T(Boolean).Parse('True')?'abc':'def'");
+        IExpression expression = Parser.ParseExpression("T(Boolean).Parse('True')?'abc':'def'");
         Assert.Equal("abc", expression.GetValue<string>());
         AssertCanCompile(expression);
         Assert.Equal("abc", expression.GetValue<string>());
@@ -805,10 +799,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void Elvis()
     {
-        var expression = Parser.ParseExpression("'a'?:'b'");
-        var resultI = expression.GetValue<string>();
+        IExpression expression = Parser.ParseExpression("'a'?:'b'");
+        string resultI = expression.GetValue<string>();
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>();
+        string resultC = expression.GetValue<string>();
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
@@ -819,7 +813,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
-        var s = "abc";
+        string s = "abc";
         expression = Parser.ParseExpression("#root?:'b'");
         AssertCantCompile(expression);
         resultI = expression.GetValue<string>(s);
@@ -832,16 +826,16 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void VariableReference_Root()
     {
-        var s = "hello";
-        var expression = Parser.ParseExpression("#root");
-        var resultI = expression.GetValue<string>(s);
+        string s = "hello";
+        IExpression expression = Parser.ParseExpression("#root");
+        string resultI = expression.GetValue<string>(s);
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>(s);
+        string resultC = expression.GetValue<string>(s);
         Assert.Equal("hello", resultI);
         Assert.Equal("hello", resultC);
 
         expression = Parser.ParseExpression("#root");
-        var i = expression.GetValue<int>(42);
+        int i = expression.GetValue<int>(42);
         Assert.Equal(42, i);
         AssertCanCompile(expression);
         i = expression.GetValue<int>(42);
@@ -856,7 +850,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Here the target method takes Object... and we are passing a string
         _expression = Parser.ParseExpression("#DoFormat('hey {0}', 'there')");
         context = new StandardEvaluationContext();
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
+
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[]
+        {
+            typeof(string),
+            typeof(object[])
+        }));
+
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -865,8 +865,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("hey there", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression("#DoFormat([0], 'there')");
-        context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
+
+        context = new StandardEvaluationContext(new object[]
+        {
+            "hey {0}"
+        });
+
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[]
+        {
+            typeof(string),
+            typeof(object[])
+        }));
+
         ((SpelExpression)_expression).EvaluationContext = context;
 
         Assert.Equal("hey there", _expression.GetValue<string>());
@@ -875,8 +885,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("hey there", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression("#DoFormat([0], #arg)");
-        context = new StandardEvaluationContext(new object[] { "hey {0}" });
-        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[] { typeof(string), typeof(object[]) }));
+
+        context = new StandardEvaluationContext(new object[]
+        {
+            "hey {0}"
+        });
+
+        context.RegisterFunction("DoFormat", typeof(DelegatingStringFormat).GetMethod(nameof(DelegatingStringFormat.Format), new[]
+        {
+            typeof(string),
+            typeof(object[])
+        }));
+
         context.SetVariable("arg", "there");
         ((SpelExpression)_expression).EvaluationContext = context;
 
@@ -890,7 +910,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReference()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod(nameof(Concat), new[] { typeof(string), typeof(string) });
+
+        MethodInfo m = GetType().GetMethod(nameof(Concat), new[]
+        {
+            typeof(string),
+            typeof(string)
+        });
+
         ctx.SetVariable("Concat", m);
 
         _expression = Parser.ParseExpression("#Concat('a','b')");
@@ -912,7 +938,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         ctx.SetVariable("b", "boo");
         Assert.Equal("fooboo", _expression.GetValue(ctx));
 
-        m = typeof(Math).GetMethod(nameof(Math.Pow), new[] { typeof(double), typeof(double) });
+        m = typeof(Math).GetMethod(nameof(Math.Pow), new[]
+        {
+            typeof(double),
+            typeof(double)
+        });
+
         ctx.SetVariable("kapow", m);
         _expression = Parser.ParseExpression("#kapow(2.0d,2.0d)");
         Assert.Equal(4.0d, _expression.GetValue(ctx));
@@ -924,8 +955,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVisibility_SPR12359()
     {
         // Confirms visibility of what is being called.
-        var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod).GetMethod("PrivateCompare", BindingFlags.Static | BindingFlags.NonPublic, null, new[] { typeof(object), typeof(object) }, null);
+        var context = new StandardEvaluationContext(new object[]
+        {
+            "1"
+        });
+
+        MethodInfo m = typeof(SomeCompareMethod).GetMethod("PrivateCompare", BindingFlags.Static | BindingFlags.NonPublic, null, new[]
+        {
+            typeof(object),
+            typeof(object)
+        }, null);
+
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
 
@@ -935,8 +975,17 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCantCompile(_expression);
 
         // type not public but method is
-        context = new StandardEvaluationContext(new object[] { "1" });
-        m = typeof(SomeCompareMethod).GetMethod(nameof(SomeCompareMethod.PublicCompare), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(object), typeof(object) }, null);
+        context = new StandardEvaluationContext(new object[]
+        {
+            "1"
+        });
+
+        m = typeof(SomeCompareMethod).GetMethod(nameof(SomeCompareMethod.PublicCompare), BindingFlags.Static | BindingFlags.Public, null, new[]
+        {
+            typeof(object),
+            typeof(object)
+        }, null);
+
         context.RegisterFunction("doCompare", m);
         context.SetVariable("arg", "2");
         _expression = Parser.ParseExpression("#doCompare([0],#arg)");
@@ -947,12 +996,26 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void FunctionReferenceNonCompilableArguments_SPR12359()
     {
-        var context = new StandardEvaluationContext(new object[] { "1" });
-        var m = typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Negate), BindingFlags.Static | BindingFlags.Public, null, new[] { typeof(int) }, null);
+        var context = new StandardEvaluationContext(new object[]
+        {
+            "1"
+        });
+
+        MethodInfo m = typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Negate), BindingFlags.Static | BindingFlags.Public, null, new[]
+        {
+            typeof(int)
+        }, null);
+
         context.RegisterFunction("negate", m);
         context.SetVariable("arg", "2");
 
-        var integers = new[] { 1, 2, 3 };
+        int[] integers =
+        {
+            1,
+            2,
+            3
+        };
+
         context.SetVariable("integers", integers);
 
         _expression = Parser.ParseExpression("#negate(#integers.?[#this<2][0])");
@@ -966,19 +1029,75 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs_SPR12359()
     {
         var context = new StandardEvaluationContext();
-        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append), new[] { typeof(string[]) }));
-        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append2), new[] { typeof(object[]) }));
-        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append3), new[] { typeof(string[]) }));
-        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append4), new[] { typeof(string), typeof(string[]) }));
-        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.AppendChar), new[] { typeof(char[]) }));
-        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Sum), new[] { typeof(int[]) }));
-        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumDouble), new[] { typeof(double[]) }));
-        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumFloat), new[] { typeof(float[]) }));
 
-        context.SetVariable("stringArray", new[] { "x", "y", "z" });
-        context.SetVariable("intArray", new[] { 5, 6, 9 });
-        context.SetVariable("doubleArray", new[] { 5.0d, 6.0d, 9.0d });
-        context.SetVariable("floatArray", new[] { 5.0f, 6.0f, 9.0f });
+        context.RegisterFunction("append", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append), new[]
+        {
+            typeof(string[])
+        }));
+
+        context.RegisterFunction("append2", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append2), new[]
+        {
+            typeof(object[])
+        }));
+
+        context.RegisterFunction("append3", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append3), new[]
+        {
+            typeof(string[])
+        }));
+
+        context.RegisterFunction("append4", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Append4), new[]
+        {
+            typeof(string),
+            typeof(string[])
+        }));
+
+        context.RegisterFunction("appendChar", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.AppendChar), new[]
+        {
+            typeof(char[])
+        }));
+
+        context.RegisterFunction("sum", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.Sum), new[]
+        {
+            typeof(int[])
+        }));
+
+        context.RegisterFunction("sumDouble", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumDouble), new[]
+        {
+            typeof(double[])
+        }));
+
+        context.RegisterFunction("sumFloat", typeof(SomeCompareMethod2).GetMethod(nameof(SomeCompareMethod2.SumFloat), new[]
+        {
+            typeof(float[])
+        }));
+
+        context.SetVariable("stringArray", new[]
+        {
+            "x",
+            "y",
+            "z"
+        });
+
+        context.SetVariable("intArray", new[]
+        {
+            5,
+            6,
+            9
+        });
+
+        context.SetVariable("doubleArray", new[]
+        {
+            5.0d,
+            6.0d,
+            9.0d
+        });
+
+        context.SetVariable("floatArray", new[]
+        {
+            5.0f,
+            6.0f,
+            9.0f
+        });
 
         _expression = Parser.ParseExpression("#append('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(context).ToString());
@@ -1154,7 +1273,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void FunctionReferenceVarargs()
     {
         var ctx = new StandardEvaluationContext();
-        var m = GetType().GetMethod(nameof(Join), new[] { typeof(string[]) });
+
+        MethodInfo m = GetType().GetMethod(nameof(Join), new[]
+        {
+            typeof(string[])
+        });
+
         ctx.SetVariable("join", m);
         _expression = Parser.ParseExpression("#join('a','b','c')");
         Assert.Equal("abc", _expression.GetValue(ctx));
@@ -1253,7 +1377,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root<300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1384,7 +1508,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root<=300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1515,7 +1639,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root>300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1646,7 +1770,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root>=300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1716,7 +1840,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpEq()
     {
-        var value = "35";
+        string value = "35";
         _expression = Parse("#root == 35");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
@@ -1807,13 +1931,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root==300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(l));
 
-        var b = true;
+        bool b = true;
         _expression = Parse("#root==true");
         Assert.True(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
@@ -1964,13 +2088,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        var l = 300L;
+        long l = 300L;
         _expression = Parse("#root!=300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(l));
 
-        var b = true;
+        bool b = true;
         _expression = Parse("#root!=true");
         Assert.False(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
@@ -2062,11 +2186,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var configuration = new SpelParserOptions(SpelCompilerMode.Mixed);
         var parser = new SpelExpressionParser(configuration);
-        var expression = parser.ParseExpression("Data['my-key'] != 'my-value'");
+        IExpression expression = parser.ParseExpression("Data['my-key'] != 'my-value'");
+
         var data = new Dictionary<string, string>
         {
             { "my-key", "my-value" }
         };
+
         var context = new StandardEvaluationContext(new MyContext(data));
         Assert.False(expression.GetValue<bool>(context));
         AssertCanCompile(expression);
@@ -2076,6 +2202,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             "foo"
         };
+
         context = new StandardEvaluationContext(ls);
         expression = Parse("get_Item(0) != 'foo'");
         Assert.False(expression.GetValue<bool>(context));
@@ -2099,7 +2226,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         sec.SetVariable("aa", aa);
         sec.SetVariable("bb", bb);
 
-        var b = _expression.GetValue<bool>(sec);
+        bool b = _expression.GetValue<bool>(sec);
         Assert.Same(bb, aa.GotComparedTo);
         Assert.False(b);
         bb.SetValue(1);
@@ -2126,8 +2253,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             "foo"
         };
+
         var context = new StandardEvaluationContext(ls);
-        var expression = Parse("get_Item(0) == 'foo'");
+        IExpression expression = Parse("get_Item(0) == 'foo'");
         Assert.True(expression.GetValue<bool>(context));
         AssertCanCompile(expression);
         Assert.True(expression.GetValue<bool>(context));
@@ -3489,7 +3617,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Off));
         var person = new Person3("foo", 1);
         var expression = parser.ParseRaw("#it?.Age?.Equals([0])") as SpelExpression;
-        var context = new StandardEvaluationContext(new object[] { 1 });
+
+        var context = new StandardEvaluationContext(new object[]
+        {
+            1
+        });
+
         context.SetVariable("it", person);
         expression.EvaluationContext = context;
         Assert.True(expression.GetValue<bool>());
@@ -3552,22 +3685,30 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal("Format:Format:1", _expression.GetValue<string>());
 
-        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).MethodA().MethodA().MethodB())");
+        _expression = Parser.ParseExpression(
+            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).MethodA().MethodA().MethodB())");
+
         Assert.Equal("Format:mb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:mb", _expression.GetValue<string>());
 
-        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.Fielda.Fieldb)");
+        _expression = Parser.ParseExpression(
+            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.Fielda.Fieldb)");
+
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>());
 
-        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).PropertyA.PropertyA.PropertyB)");
+        _expression = Parser.ParseExpression(
+            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).PropertyA.PropertyA.PropertyB)");
+
         Assert.Equal("Format:pb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:pb", _expression.GetValue<string>());
 
-        _expression = Parser.ParseExpression("T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
+        _expression = Parser.ParseExpression(
+            "T(String).Format('Format:{0}', T(Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$StaticsHelper).Fielda.MethodA().PropertyA.Fieldb)");
+
         Assert.Equal("Format:fb", _expression.GetValue<string>());
         AssertCanCompile(_expression);
         Assert.Equal("Format:fb", _expression.GetValue<string>());
@@ -3591,13 +3732,22 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void ConstructorReference_SPR12326()
     {
-        var type = GetType().FullName;
-        var prefix = $"new {type}$Obj";
+        string type = GetType().FullName;
+        string prefix = $"new {type}$Obj";
 
         _expression = Parser.ParseExpression($"{prefix}([0])");
-        Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
+
+        Assert.Equal("test", ((Obj)_expression.GetValue(new object[]
+        {
+            "test"
+        })).Param1);
+
         AssertCanCompile(_expression);
-        Assert.Equal("test", ((Obj)_expression.GetValue(new object[] { "test" })).Param1);
+
+        Assert.Equal("test", ((Obj)_expression.GetValue(new object[]
+        {
+            "test"
+        })).Param1);
 
         _expression = Parser.ParseExpression($"{prefix}2('foo','bar').Output");
         Assert.Equal("foobar", _expression.GetValue<string>());
@@ -3645,9 +3795,22 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("abc:5:", _expression.GetValue<string>());
 
         _expression = Parser.ParseExpression($"{prefix}4(#root).Output");
-        Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
+
+        Assert.Equal("123", _expression.GetValue<string>(new[]
+        {
+            1,
+            2,
+            3
+        }));
+
         AssertCanCompile(_expression);
-        Assert.Equal("123", _expression.GetValue<string>(new[] { 1, 2, 3 }));
+
+        Assert.Equal("123", _expression.GetValue<string>(new[]
+        {
+            1,
+            2,
+            3
+        }));
     }
 
     [Fact]
@@ -3661,28 +3824,48 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         _expression = Parser.ParseExpression("#it?.Age.Equals([0])");
         var person = new Person(1);
-        var context = new StandardEvaluationContext(new object[] { person.Age });
+
+        var context = new StandardEvaluationContext(new object[]
+        {
+            person.Age
+        });
+
         context.SetVariable("it", person);
         Assert.True(_expression.GetValue<bool>(context));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(context));
 
         var parser2 = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Immediate));
-        var ex = parser2.ParseExpression("#it?.Age.Equals([0])");
-        context = new StandardEvaluationContext(new object[] { person.Age });
+        IExpression ex = parser2.ParseExpression("#it?.Age.Equals([0])");
+
+        context = new StandardEvaluationContext(new object[]
+        {
+            person.Age
+        });
+
         context.SetVariable("it", person);
         Assert.True(ex.GetValue<bool>(context));
         Assert.True(ex.GetValue<bool>(context));
 
         var person2 = new PersonInOtherPackage(1);
         ex = parser2.ParseRaw("#it?.Age.Equals([0])");
-        context = new StandardEvaluationContext(new object[] { person2.Age });
+
+        context = new StandardEvaluationContext(new object[]
+        {
+            person2.Age
+        });
+
         context.SetVariable("it", person2);
         Assert.True(ex.GetValue<bool>(context));
         Assert.True(ex.GetValue<bool>(context));
 
         ex = parser2.ParseRaw("#it?.Age.Equals([0])");
-        context = new StandardEvaluationContext(new object[] { person2.Age });
+
+        context = new StandardEvaluationContext(new object[]
+        {
+            person2.Age
+        });
+
         context.SetVariable("it", person2);
         Assert.True(ex.GetValue<bool>(context));
         Assert.True(ex.GetValue<bool>(context));
@@ -3696,13 +3879,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Assert.Equal("123", _expression.GetValue());
         // AssertCanCompile(_expression);
         // Assert.Equal("123", _expression.GetValue());
-        var testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
+        string testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
 
         // multi arg ctor that includes primitives
         _expression = Parser.ParseExpression($"new {testClass8}(42,'123',4.0d,True)");
         Assert.IsType<TestClass8>(_expression.GetValue());
         AssertCanCompile(_expression);
-        var o = _expression.GetValue();
+        object o = _expression.GetValue();
         Assert.IsType<TestClass8>(o);
         var tc8 = (TestClass8)o;
         Assert.Equal(42, tc8.I);
@@ -3720,7 +3903,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(42, tc8.I);
 
         // private class, can't compile it
-        var testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
+        string testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
         _expression = Parser.ParseExpression($"new {testClass9}(42)");
         Assert.IsType<TestClass9>(_expression.GetValue());
         AssertCantCompile(_expression);
@@ -4151,10 +4334,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCantCompile(_expression); // Uncompilable as argument conversion is occurring
         tc.Reset();
 
-        var expression = Parser.ParseExpression("'abcd'.Substring(Index1,Index2)");
-        var resultI = expression.GetValue<string>(new TestClass1());
+        IExpression expression = Parser.ParseExpression("'abcd'.Substring(Index1,Index2)");
+        string resultI = expression.GetValue<string>(new TestClass1());
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>(new TestClass1());
+        string resultC = expression.GetValue<string>(new TestClass1());
         Assert.Equal("bcd", resultI);
         Assert.Equal("bcd", resultC);
 
@@ -4196,8 +4379,20 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // changing target
         // from primitive array to reference type array
-        var intArray = new[] { 1, 2, 3 };
-        var strings = new[] { "a", "b", "c" };
+        int[] intArray =
+        {
+            1,
+            2,
+            3
+        };
+
+        string[] strings =
+        {
+            "a",
+            "b",
+            "c"
+        };
+
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal(2, _expression.GetValue(intArray));
         AssertCanCompile(_expression);
@@ -4238,10 +4433,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_StaticMethod()
     {
-        var expression = Parser.ParseExpression("T(int).Parse('42')");
-        var resultI = expression.GetValue<int>(new TestClass1());
+        IExpression expression = Parser.ParseExpression("T(int).Parse('42')");
+        int resultI = expression.GetValue<int>(new TestClass1());
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<int>(new TestClass1());
+        int resultC = expression.GetValue<int>(new TestClass1());
         Assert.Equal(42, resultI);
         Assert.Equal(42, resultC);
     }
@@ -4249,10 +4444,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_LiteralArguments_int()
     {
-        var expression = Parser.ParseExpression("'abcd'.Substring(1,3)");
-        var resultI = expression.GetValue<string>(new TestClass1());
+        IExpression expression = Parser.ParseExpression("'abcd'.Substring(1,3)");
+        string resultI = expression.GetValue<string>(new TestClass1());
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>(new TestClass1());
+        string resultC = expression.GetValue<string>(new TestClass1());
         Assert.Equal("bcd", resultI);
         Assert.Equal("bcd", resultC);
     }
@@ -4260,10 +4455,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodNoArg()
     {
-        var expression = Parser.ParseExpression("ToString()");
-        var resultI = expression.GetValue<string>(42);
+        IExpression expression = Parser.ParseExpression("ToString()");
+        string resultI = expression.GetValue<string>(42);
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<string>(42);
+        string resultC = expression.GetValue<string>(42);
         Assert.Equal("42", resultI);
         Assert.Equal("42", resultC);
     }
@@ -4271,20 +4466,20 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodNoArgReturnPrimitive()
     {
-        var expression = Parser.ParseExpression("GetHashCode()");
-        var resultI = expression.GetValue<int>(42);
+        IExpression expression = Parser.ParseExpression("GetHashCode()");
+        int resultI = expression.GetValue<int>(42);
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<int>(42);
+        int resultC = expression.GetValue<int>(42);
         Assert.Equal(resultI, resultC);
     }
 
     [Fact]
     public void MethodReference_SimpleInstanceMethodOneArgReturnPrimitive1()
     {
-        var expression = Parser.ParseExpression("IndexOf('b')");
-        var resultI = expression.GetValue<int>("abc");
+        IExpression expression = Parser.ParseExpression("IndexOf('b')");
+        int resultI = expression.GetValue<int>("abc");
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<int>("abc");
+        int resultC = expression.GetValue<int>("abc");
         Assert.Equal(1, resultI);
         Assert.Equal(1, resultC);
     }
@@ -4292,10 +4487,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void MethodReference_SimpleInstanceMethodOneArgReturnPrimitive2()
     {
-        var expression = Parser.ParseExpression("get_Chars(2)");
-        var resultI = expression.GetValue<char>("abc");
+        IExpression expression = Parser.ParseExpression("get_Chars(2)");
+        char resultI = expression.GetValue<char>("abc");
         AssertCanCompile(expression);
-        var resultC = expression.GetValue<char>("abc");
+        char resultC = expression.GetValue<char>("abc");
         Assert.Equal('c', resultI);
         Assert.Equal('c', resultC);
     }
@@ -4383,14 +4578,61 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void Indexer()
     {
-        var sss = new[] { "a", "b", "c" };
-        var iss = new[] { 8, 9, 10 };
-        var ds = new[] { 3.0d, 4.0d, 5.0d };
-        var ls = new[] { 2L, 3L, 4L };
-        var ss = new[] { (short)33, (short)44, (short)55 };
-        var fs = new[] { 6.0f, 7.0f, 8.0f };
-        var bs = new[] { (byte)2, (byte)3, (byte)4 };
-        var cs = new[] { 'a', 'b', 'c' };
+        string[] sss =
+        {
+            "a",
+            "b",
+            "c"
+        };
+
+        int[] iss =
+        {
+            8,
+            9,
+            10
+        };
+
+        double[] ds =
+        {
+            3.0d,
+            4.0d,
+            5.0d
+        };
+
+        long[] ls =
+        {
+            2L,
+            3L,
+            4L
+        };
+
+        short[] ss =
+        {
+            (short)33,
+            (short)44,
+            (short)55
+        };
+
+        float[] fs =
+        {
+            6.0f,
+            7.0f,
+            8.0f
+        };
+
+        byte[] bs =
+        {
+            (byte)2,
+            (byte)3,
+            (byte)4
+        };
+
+        char[] cs =
+        {
+            'a',
+            'b',
+            'c'
+        };
 
         _expression = Parser.ParseExpression("[0]");
         Assert.Equal("a", _expression.GetValue(sss));
@@ -4439,6 +4681,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             "bbb",
             "ccc"
         };
+
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal("bbb", _expression.GetValue(strings));
         AssertCanCompile(_expression);
@@ -4450,6 +4693,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             456,
             789
         };
+
         _expression = Parser.ParseExpression("[2]");
         Assert.Equal(789, _expression.GetValue(intArray));
         AssertCanCompile(_expression);
@@ -4461,6 +4705,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             { "bbb", 222 },
             { "ccc", 333 }
         };
+
         _expression = Parser.ParseExpression("['aaa']");
         Assert.Equal(111, _expression.GetValue(map1));
         AssertCanCompile(_expression);
@@ -4486,9 +4731,20 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // list of arrays
         var listOfStringArrays = new List<string[]>
         {
-            new[] { "a", "b", "c" },
-            new[] { "d", "e", "f" }
+            new[]
+            {
+                "a",
+                "b",
+                "c"
+            },
+            new[]
+            {
+                "d",
+                "e",
+                "f"
+            }
         };
+
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfStringArrays)));
         AssertCanCompile(_expression);
@@ -4501,9 +4757,20 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         var listOfIntegerArrays = new List<int[]>
         {
-            new[] { 1, 2, 3 },
-            new[] { 4, 5, 6 }
+            new[]
+            {
+                1,
+                2,
+                3
+            },
+            new[]
+            {
+                4,
+                5,
+                6
+            }
         };
+
         _expression = Parser.ParseExpression("[0]");
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(listOfIntegerArrays)));
         AssertCanCompile(_expression);
@@ -4516,12 +4783,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // array of lists
         var stringArrayOfLists = new List<string>[2];
+
         stringArrayOfLists[0] = new List<string>
         {
             "a",
             "b",
             "c"
         };
+
         stringArrayOfLists[1] = new List<string>
         {
             "d",
@@ -4540,7 +4809,22 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("f", Stringify(_expression.GetValue(stringArrayOfLists)));
 
         // array of arrays
-        var referenceTypeArrayOfArrays = new[] { new[] { "a", "b", "c" }, new[] { "d", "e", "f" } };
+        string[][] referenceTypeArrayOfArrays =
+        {
+            new[]
+            {
+                "a",
+                "b",
+                "c"
+            },
+            new[]
+            {
+                "d",
+                "e",
+                "f"
+            }
+        };
+
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
         AssertCanCompile(_expression);
@@ -4551,7 +4835,22 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.Equal("f", Stringify(_expression.GetValue(referenceTypeArrayOfArrays)));
 
-        var primitiveTypeArrayOfArrays = new[] { new[] { 1, 2, 3 }, new[] { 4, 5, 6 } };
+        int[][] primitiveTypeArrayOfArrays =
+        {
+            new[]
+            {
+                1,
+                2,
+                3
+            },
+            new[]
+            {
+                4,
+                5,
+                6
+            }
+        };
+
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal("4 5 6", Stringify(_expression.GetValue(primitiveTypeArrayOfArrays)));
         AssertCanCompile(_expression);
@@ -4564,19 +4863,23 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // list of lists of reference types
         var listOfListOfStrings = new List<List<string>>();
+
         var list = new List<string>
         {
             "a",
             "b",
             "c"
         };
+
         listOfListOfStrings.Add(list);
+
         list = new List<string>
         {
             "d",
             "e",
             "f"
         };
+
         listOfListOfStrings.Add(list);
         _expression = Parser.ParseExpression("[1]");
         Assert.Equal("d e f", Stringify(_expression.GetValue(listOfListOfStrings)));
@@ -4590,12 +4893,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // Map of lists
         var mapToLists = new Dictionary<string, List<string>>();
+
         list = new List<string>
         {
             "a",
             "b",
             "c"
         };
+
         mapToLists.Add("foo", list);
 
         _expression = Parser.ParseExpression("['foo']");
@@ -4612,7 +4917,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var mapToIntArray = new Dictionary<string, int[]>();
         var ctx = new StandardEvaluationContext();
         ctx.AddPropertyAccessor(new CompilableMapAccessor());
-        mapToIntArray.Add("foo", new[] { 1, 2, 3 });
+
+        mapToIntArray.Add("foo", new[]
+        {
+            1,
+            2,
+            3
+        });
 
         _expression = Parser.ParseExpression("['foo']");
         Assert.Equal("1 2 3", Stringify(_expression.GetValue(mapToIntArray)));
@@ -4641,6 +4952,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // Map array
         var mapArray = new Dictionary<string, string>[1];
+
         mapArray[0] = new Dictionary<string, string>
         {
             { "key", "value1" }
@@ -4661,7 +4973,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     public void PlusNeedingCheckCast_SPR12426()
     {
         _expression = Parser.ParseExpression("Object + ' world'");
-        var v = _expression.GetValue(new FooObject());
+        object v = _expression.GetValue(new FooObject());
         Assert.Equal("hello world", v);
         AssertCanCompile(_expression);
         Assert.Equal("hello world", v);
@@ -4680,11 +4992,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         _expression = Parser.ParseExpression("DR[0].Threeee");
         _expression.GetValue(payload);
 
-        var expression = Parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
-        var v = expression.GetValue(payload);
+        IExpression expression = Parser.ParseExpression("DR[0].Threeee.Four lt 0.1d?#root:null");
+        object v = expression.GetValue(payload);
 
         AssertCanCompile(expression);
-        var vc = expression.GetValue(payload);
+        object vc = expression.GetValue(payload);
         Assert.Equal(payload, v);
         Assert.Equal(payload, vc);
         payload.DR[0].Threeee.four = 0.13d;
@@ -4699,7 +5011,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
         ctx.AddPropertyAccessor(new MyAccessor());
         _expression = Parser.ParseExpression("Payload2.Var1");
-        var v = _expression.GetValue(ctx, holder);
+        object v = _expression.GetValue(ctx, holder);
         Assert.Equal("abc", v);
 
         AssertCanCompile(_expression);
@@ -4949,7 +5261,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertIsCompiled(exp);
 
         var context = new StandardEvaluationContext();
-        context.SetVariable("map", new Dictionary<string, string> { { "foo", "qux" } });
+
+        context.SetVariable("map", new Dictionary<string, string>
+        {
+            { "foo", "qux" }
+        });
 
         exp = new SpelExpressionParser(configuration).ParseExpression("Bar(#map['foo'])") as SpelExpression;
         Assert.Equal("QUX", exp.GetValue<string>(context, new Foo()));
@@ -5008,7 +5324,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // variable access returning array
         exp = new SpelExpressionParser(configuration).ParseExpression("#x?:'foo'") as SpelExpression;
-        context.SetVariable("x", new[] { 1, 2, 3 });
+
+        context.SetVariable("x", new[]
+        {
+            1,
+            2,
+            3
+        });
+
         Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
         AssertCanCompile(exp);
         Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
@@ -5040,11 +5363,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(3L, _expression.GetValue(rh));
 
         _expression = sep.ParseExpression("Record['abc']?:Record.Add('abc',Expression.SomeLong)");
-        rh = new RecordHolder { Expression = { SomeLong = 6L } };
+
+        rh = new RecordHolder
+        {
+            Expression =
+            {
+                SomeLong = 6L
+            }
+        };
+
         Assert.Null(_expression.GetValue(rh));
         Assert.Equal(6L, rh.Get("abc"));
         AssertCanCompile(_expression);
-        rh = new RecordHolder { Expression = { SomeLong = 10L } };
+
+        rh = new RecordHolder
+        {
+            Expression =
+            {
+                SomeLong = 10L
+            }
+        };
+
         Assert.Null(_expression.GetValue(rh));
         Assert.Equal(10L, rh.Get("abc"));
     }
@@ -5102,7 +5441,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var configuration = new SpelParserOptions(SpelCompilerMode.Immediate);
         var context = new StandardEvaluationContext();
-        context.SetVariable("map", new Dictionary<string, string> { { "foo", "qux" } });
+
+        context.SetVariable("map", new Dictionary<string, string>
+        {
+            { "foo", "qux" }
+        });
 
         var exp = new SpelExpressionParser(configuration).ParseExpression("Bar(#map['foo'] != null ? #map['foo'] : 'qux')") as SpelExpression;
         Assert.Equal("QUX", exp.GetValue<string>(context, new Foo()));
@@ -5164,7 +5507,14 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         // variable access returning array
         exp = new SpelExpressionParser(configuration).ParseExpression("#x==#x?'1,2,3':'foo'") as SpelExpression;
-        context.SetVariable("x", new[] { 1, 2, 3 });
+
+        context.SetVariable("x", new[]
+        {
+            1,
+            2,
+            3
+        });
+
         Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
         AssertCanCompile(exp);
         Assert.Equal("1,2,3", exp.GetValue<string>(context, new Foo()));
@@ -5174,7 +5524,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void RepeatedCompilations()
     {
-        for (var i = 0; i < 1500; i++)
+        for (int i = 0; i < 1500; i++)
         {
             var expression = Parser.ParseExpression("4 + 5") as SpelExpression;
             Assert.Equal(9, expression.GetValue<int>());
@@ -5189,9 +5539,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser(new SpelParserOptions(SpelCompilerMode.Mixed));
         var expression = parser.ParseExpression("4 + 5") as SpelExpression;
-        for (var i = 0; i < 200; i++)
+
+        for (int i = 0; i < 200; i++)
         {
             Assert.Equal(9, expression.GetValue<int>());
+
             if (i < SpelExpression.InterpretedCountThreshold)
             {
                 AssertNotCompiled(expression);
@@ -5208,7 +5560,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         // static property on value type
         _expression = Parser.ParseExpression("T(DateTime).Now");
-        var start = DateTime.Now.Ticks;
+        long start = DateTime.Now.Ticks;
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
         AssertCanCompile(_expression);
         Assert.True(start < _expression.GetValue<DateTime>().Ticks);
@@ -5320,10 +5672,27 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(20, testArgs.Value);
     }
 
+    public static string Concat(string a, string b)
+    {
+        return a + b;
+    }
+
+    public static string Join(params string[] strings)
+    {
+        var buf = new StringBuilder();
+
+        foreach (string value in strings)
+        {
+            buf.Append(value);
+        }
+
+        return buf.ToString();
+    }
+
     private void VerifyCompilationAndBehaviourWithNull(string expressionText, SpelExpressionParser parser, StandardEvaluationContext ctx)
     {
         var r = (Reg)ctx.RootObject.Value;
-        r.SetValue2(1);  // having a value in value2 fields will enable compilation to succeed, then can switch it to null
+        r.SetValue2(1); // having a value in value2 fields will enable compilation to succeed, then can switch it to null
         var fast = (SpelExpression)parser.ParseExpression(expressionText);
         var slow = (SpelExpression)parser.ParseExpression(expressionText);
         fast.GetValue(ctx);
@@ -5331,11 +5700,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         r.SetValue2(null);
 
         // try the numbers 0,1,2,null
-        for (var i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             r.SetValue(i < 3 ? i : null);
-            var slowResult = slow.GetValue<bool>(ctx);
-            var fastResult = fast.GetValue<bool>(ctx);
+            bool slowResult = slow.GetValue<bool>(ctx);
+            bool fastResult = fast.GetValue<bool>(ctx);
 
             Assert.Equal(slowResult, fastResult);
         }
@@ -5350,11 +5719,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         var r = (Reg)ctx.RootObject.Value;
 
         // try the numbers 0,1,2,null
-        for (var i = 0; i < 4; i++)
+        for (int i = 0; i < 4; i++)
         {
             r.SetValue(i < 3 ? i : null);
-            var slowResult = slow.GetValue<bool>(ctx);
-            var fastResult = fast.GetValue<bool>(ctx);
+            bool slowResult = slow.GetValue<bool>(ctx);
+            bool fastResult = fast.GetValue<bool>(ctx);
 
             Assert.Equal(slowResult, fastResult);
         }
@@ -5393,9 +5762,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     private string Stringify(object obj)
     {
         var s = new StringBuilder();
+
         if (obj is IList ls)
         {
-            foreach (var l in ls)
+            foreach (object l in ls)
             {
                 s.Append(l);
                 s.Append(' ');
@@ -5403,7 +5773,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
         else if (obj is object[] os)
         {
-            foreach (var o in os)
+            foreach (object o in os)
             {
                 s.Append(o);
                 s.Append(' ');
@@ -5411,7 +5781,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         }
         else if (obj is int[] iss)
         {
-            foreach (var i in iss)
+            foreach (int i in iss)
             {
                 s.Append(i);
                 s.Append(' ');
@@ -5439,7 +5809,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void CheckCalc(PayloadX p, string expression, int expectedResult)
     {
-        var expr = Parse(expression);
+        IExpression expr = Parse(expression);
         Assert.Equal(expectedResult, expr.GetValue(p));
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
@@ -5447,7 +5817,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void CheckCalc(PayloadX p, string expression, float expectedResult)
     {
-        var expr = Parse(expression);
+        IExpression expr = Parse(expression);
         Assert.Equal(expectedResult, expr.GetValue(p));
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
@@ -5455,7 +5825,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void CheckCalc(PayloadX p, string expression, long expectedResult)
     {
-        var expr = Parse(expression);
+        IExpression expr = Parse(expression);
         Assert.Equal(expectedResult, expr.GetValue(p));
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
@@ -5463,12 +5833,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     private void CheckCalc(PayloadX p, string expression, double expectedResult)
     {
-        var expr = Parse(expression);
+        IExpression expr = Parse(expression);
         Assert.Equal(expectedResult, expr.GetValue(p));
         AssertCanCompile(expr);
         Assert.Equal(expectedResult, expr.GetValue(p));
     }
-
 #pragma warning disable IDE1006 // Naming Styles
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE0051 // Remove unused private members
@@ -5548,7 +5917,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class MyAccessor : ICompilablePropertyAccessor
     {
-        private static readonly MethodInfo _method = typeof(Payload2).GetMethod(nameof(Payload2.GetField), new[] { typeof(string) });
+        private static readonly MethodInfo _method = typeof(Payload2).GetMethod(nameof(Payload2.GetField), new[]
+        {
+            typeof(string)
+        });
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
@@ -5573,7 +5945,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type> { typeof(Payload2) };
+            return new List<Type>
+            {
+                typeof(Payload2)
+            };
         }
 
         public bool IsCompilable()
@@ -5588,7 +5963,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
         {
-            var descriptor = cf.LastDescriptor();
+            TypeDescriptor descriptor = cf.LastDescriptor();
+
             if (descriptor == null)
             {
                 CodeFlow.LoadTarget(gen);
@@ -5606,7 +5982,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class CompilableMapAccessor : ICompilablePropertyAccessor
     {
-        private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
+        private static readonly MethodInfo _getItem = typeof(IDictionary).GetMethod("get_Item", new[]
+        {
+            typeof(object)
+        });
 
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
@@ -5617,7 +5996,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
             var map = (IDictionary)target;
-            var value = map[name];
+            object value = map[name];
+
             if (value == null && !map.Contains(name))
             {
                 throw new AccessException(name);
@@ -5639,7 +6019,10 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type> { typeof(IDictionary) };
+            return new List<Type>
+            {
+                typeof(IDictionary)
+            };
         }
 
         public bool IsCompilable()
@@ -5654,7 +6037,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
         {
-            var descriptor = cf.LastDescriptor();
+            TypeDescriptor descriptor = cf.LastDescriptor();
+
             if (descriptor == null)
             {
                 CodeFlow.LoadTarget(gen);
@@ -5667,6 +6051,22 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Reg
     {
+        public int Value { get; private set; }
+
+        public long ValueL { get; private set; }
+
+        public double ValueD { get; private set; }
+
+        public float ValueF { get; private set; }
+
+        public int Value2 { get; private set; }
+
+        public long ValueL2 { get; private set; }
+
+        public double ValueD2 { get; private set; }
+
+        public float ValueF2 { get; private set; }
+
         public Reg(int v)
         {
             Value = v;
@@ -5683,14 +6083,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             ValueF = value == null ? default : (float)(int)value;
         }
 
-        public int Value { get; private set; }
-
-        public long ValueL { get; private set; }
-
-        public double ValueD { get; private set; }
-
-        public float ValueF { get; private set; }
-
         public void SetValue2(object value)
         {
             Value2 = value == null ? default : (int)value;
@@ -5698,14 +6090,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             ValueD2 = value == null ? default : (double)(int)value;
             ValueF2 = value == null ? default : (float)(int)value;
         }
-
-        public int Value2 { get; private set; }
-
-        public long ValueL2 { get; private set; }
-
-        public double ValueD2 { get; private set; }
-
-        public float ValueF2 { get; private set; }
     }
 
     public class LongHolder
@@ -5715,9 +6099,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class RecordHolder
     {
-        public Dictionary<string, long> Record = new ();
+        public Dictionary<string, long> Record = new();
 
-        public LongHolder Expression = new ();
+        public LongHolder Expression = new();
 
         public void Add(string key, long value)
         {
@@ -5767,6 +6151,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
                     { "command", "wibble" },
                     { "command2", "wobble" }
                 };
+
                 return mh;
             }
         }
@@ -5775,7 +6160,11 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             get
             {
-                return new[] { 5, 3 };
+                return new[]
+                {
+                    5,
+                    3
+                };
             }
         }
 
@@ -5788,6 +6177,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
                     "wibble",
                     "wobble"
                 };
+
                 return l;
             }
         }
@@ -5815,7 +6205,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             {
                 return Var1;
             }
-            else if (name.Equals("Var2"))
+
+            if (name.Equals("Var2"))
             {
                 return _var2;
             }
@@ -5826,7 +6217,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload2Holder
     {
-        public Payload2 Payload2 = new ();
+        public Payload2 Payload2 = new();
     }
 
     public class FooString
@@ -5838,18 +6229,18 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     {
         public static string Apple = "value2";
 
-        public static string Plum { get; } = "value4";
-
         public string Orange = "value1";
 
         public long Peach = 34L;
+
+        public static string Plum { get; } = "value4";
 
         public string Banana { get; } = "value3";
     }
 
     public class Two
     {
-        public Three Threeee { get; } = new ();
+        public Three Threeee { get; } = new();
 
         public override string ToString()
         {
@@ -5859,9 +6250,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload
     {
-        public Two[] DR { get; } = { new Two() };
+        public Two Holder = new();
 
-        public Two Holder = new ();
+        public Two[] DR { get; } =
+        {
+            new()
+        };
     }
 
     public class TestClass5
@@ -5890,8 +6284,19 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static byte B2 = 66;
         public static byte B3 = 67;
 
-        public static string[] StringArray = { "aaa", "bbb", "ccc" };
-        public static int[] IntArray = { 11, 22, 33 };
+        public static string[] StringArray =
+        {
+            "aaa",
+            "bbb",
+            "ccc"
+        };
+
+        public static int[] IntArray =
+        {
+            11,
+            22,
+            33
+        };
 
         public int I;
         public string S;
@@ -5978,7 +6383,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = string.Empty;
-                foreach (var arg in args)
+
+                foreach (string arg in args)
                 {
                     S += arg;
                 }
@@ -5994,7 +6400,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 I = 0;
-                foreach (var arg in args)
+
+                foreach (int arg in args)
                 {
                     I += arg;
                 }
@@ -6010,7 +6417,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = $"{a}::";
-                foreach (var arg in args)
+
+                foreach (string arg in args)
                 {
                     S += arg;
                 }
@@ -6020,10 +6428,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayz(params bool[] bs)
         {
             S = string.Empty;
+
             if (bs != null)
             {
                 S = string.Empty;
-                foreach (var b in bs)
+
+                foreach (bool b in bs)
                 {
                     S += b.ToString();
                 }
@@ -6033,10 +6443,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrays(params short[] ss)
         {
             S = string.Empty;
+
             if (ss != null)
             {
                 S = string.Empty;
-                foreach (var s in ss)
+
+                foreach (short s in ss)
                 {
                     S += s.ToString();
                 }
@@ -6046,10 +6458,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayd(params double[] args)
         {
             S = string.Empty;
+
             if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in args)
+
+                foreach (double v in args)
                 {
                     S += v.ToString();
                 }
@@ -6059,10 +6473,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayf(params float[] args)
         {
             S = string.Empty;
+
             if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in args)
+
+                foreach (float v in args)
                 {
                     S += v.ToString();
                 }
@@ -6072,10 +6488,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayj(params long[] args)
         {
             S = string.Empty;
+
             if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in args)
+
+                foreach (long v in args)
                 {
                     S += v.ToString();
                 }
@@ -6085,10 +6503,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayb(params byte[] args)
         {
             S = string.Empty;
+
             if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in args)
+
+                foreach (byte v in args)
                 {
                     S += v.ToString();
                 }
@@ -6098,10 +6518,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public void Arrayc(params char[] args)
         {
             S = string.Empty;
+
             if (args != null)
             {
                 S = string.Empty;
-                foreach (var v in args)
+
+                foreach (char v in args)
                 {
                     S += v.ToString();
                 }
@@ -6117,10 +6539,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = $"{a}::";
-                foreach (var arg in args)
+
+                foreach (string[] arg in args)
                 {
                     S += "{";
-                    foreach (var v in arg)
+
+                    foreach (string v in arg)
                     {
                         S += v;
                     }
@@ -6139,10 +6563,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = $"{a}::";
-                foreach (var arg in args)
+
+                foreach (int[] arg in args)
                 {
                     S += "{";
-                    foreach (var v in arg)
+
+                    foreach (int v in arg)
                     {
                         S += v;
                     }
@@ -6161,7 +6587,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = string.Empty;
-                foreach (var arg in args)
+
+                foreach (object arg in args)
                 {
                     S += arg;
                 }
@@ -6192,7 +6619,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = string.Empty;
-                foreach (var arg in args)
+
+                foreach (string arg in args)
                 {
                     S += arg;
                 }
@@ -6213,7 +6641,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             else
             {
                 S = string.Empty;
-                foreach (var arg in args)
+
+                foreach (object arg in args)
                 {
                     S += arg;
                 }
@@ -6271,7 +6700,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public Obj2(params string[] strings)
         {
             var b = new StringBuilder();
-            foreach (var p in strings)
+
+            foreach (string p in strings)
             {
                 b.Append(p);
             }
@@ -6287,7 +6717,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public Obj3(params int[] integers)
         {
             var b = new StringBuilder();
-            foreach (var p in integers)
+
+            foreach (int p in integers)
             {
                 b.Append(p);
             }
@@ -6302,7 +6733,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
             b.Append(':');
             b.Append(f);
             b.Append(':');
-            foreach (var p in integers)
+
+            foreach (int p in integers)
             {
                 b.Append(p);
             }
@@ -6318,7 +6750,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public Obj4(int[] integers)
         {
             var b = new StringBuilder();
-            foreach (var p in integers)
+
+            foreach (int p in integers)
             {
                 b.Append(p);
             }
@@ -6339,12 +6772,12 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Person3
     {
+        public object Age { get; }
+
         public Person3(string name, int age)
         {
             Age = age;
         }
-
-        public object Age { get; }
     }
 
     public class Apple : IComparable
@@ -6366,30 +6799,30 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             GotComparedTo = obj;
             var that = obj as Apple;
+
             if (I < that.I)
             {
                 return -1;
             }
-            else if (I > that.I)
+
+            if (I > that.I)
             {
                 return +1;
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
     }
 
     // For OpNe_SPR14863
     public class MyContext
     {
+        public Dictionary<string, string> Data { get; }
+
         public MyContext(Dictionary<string, string> data)
         {
             Data = data;
         }
-
-        public Dictionary<string, string> Data { get; }
     }
 
     public class TestClass7
@@ -6398,7 +6831,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static void Reset()
         {
-            var s = "UK 123";
+            string s = "UK 123";
             Property = s.Split(' ')[0];
         }
     }
@@ -6486,7 +6919,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static string Append(params string[] strings)
         {
             var b = new StringBuilder();
-            foreach (var str in strings)
+
+            foreach (string str in strings)
             {
                 b.Append(str);
             }
@@ -6497,7 +6931,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static string Append2(params object[] objects)
         {
             var b = new StringBuilder();
-            foreach (var obj in objects)
+
+            foreach (object obj in objects)
             {
                 b.Append(obj);
             }
@@ -6508,7 +6943,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static string Append3(string[] strings)
         {
             var b = new StringBuilder();
-            foreach (var str in strings)
+
+            foreach (string str in strings)
             {
                 b.Append(str);
             }
@@ -6520,7 +6956,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             var b = new StringBuilder();
             b.Append(s).Append("::");
-            foreach (var str in strings)
+
+            foreach (string str in strings)
             {
                 b.Append(str);
             }
@@ -6531,7 +6968,8 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         public static string AppendChar(params char[] values)
         {
             var b = new StringBuilder();
-            foreach (var ch in values)
+
+            foreach (char ch in values)
             {
                 b.Append(ch);
             }
@@ -6541,8 +6979,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static int Sum(params int[] integers)
         {
-            var total = 0;
-            foreach (var i in integers)
+            int total = 0;
+
+            foreach (int i in integers)
             {
                 total += i;
             }
@@ -6552,8 +6991,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static int SumDouble(params double[] values)
         {
-            var total = 0;
-            foreach (var i in values)
+            int total = 0;
+
+            foreach (double i in values)
             {
                 total += (int)i;
             }
@@ -6563,8 +7003,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static int SumFloat(params float[] values)
         {
-            var total = 0;
-            foreach (var i in values)
+            int total = 0;
+
+            foreach (float i in values)
             {
                 total += (int)i;
             }
@@ -6582,9 +7023,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class StaticsHelper
     {
-        public static StaticsHelper sh = new ();
+        public static StaticsHelper sh = new();
         public static StaticsHelper Fielda = sh;
         public static string Fieldb = "fb";
+
+        public static StaticsHelper PropertyA => sh;
+
+        public static string PropertyB => "pb";
 
         public static StaticsHelper MethodA()
         {
@@ -6595,10 +7040,6 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         {
             return "mb";
         }
-
-        public static StaticsHelper PropertyA => sh;
-
-        public static string PropertyB => "pb";
 
         public override string ToString()
         {
@@ -6615,28 +7056,34 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class FooObjectHolder
     {
-        public FooObject Foo { get; set; } = new ();
+        public FooObject Foo { get; set; } = new();
     }
 
     public class FooObject
     {
+        public object Object => "hello";
+
         public object GetObject()
         {
             return Object;
         }
-
-        public object Object => "hello";
     }
 
     public class TestClass4
     {
-        public bool GetTrue() => true;
-
-        public bool GetFalse() => false;
-
         public bool A { get; set; }
 
         public bool B { get; set; }
+
+        public bool GetTrue()
+        {
+            return true;
+        }
+
+        public bool GetFalse()
+        {
+            return false;
+        }
     }
 
     private sealed class TestClass9

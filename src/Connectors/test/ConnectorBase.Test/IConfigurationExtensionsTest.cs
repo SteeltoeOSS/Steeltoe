@@ -19,9 +19,9 @@ public class ConfigurationExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
 
-        var config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
-        var infos = config.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> infos = config.GetServiceInfos(typeof(RedisServiceInfo));
 
         Assert.NotEmpty(infos);
     }
@@ -31,9 +31,9 @@ public class ConfigurationExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
-        var config = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build();
 
-        var infos = config.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> infos = config.GetServiceInfos(typeof(RedisServiceInfo));
 
         Assert.NotEmpty(infos);
         var si = infos.First() as RedisServiceInfo;
@@ -55,12 +55,15 @@ public class ConfigurationExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
-        var config = new ConfigurationBuilder().AddCloudFoundry().AddConnectionStrings().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().AddConnectionStrings().Build();
 
-        var connStringByName = config.GetConnectionString("spring-cloud-broker-db");
-        var connStringByType = config.GetConnectionString("mysql");
+        string connStringByName = config.GetConnectionString("spring-cloud-broker-db");
+        string connStringByType = config.GetConnectionString("mysql");
 
-        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", connStringByName);
-        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;", connStringByType);
+        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;",
+            connStringByName);
+
+        Assert.Equal("Server=192.168.0.90;Port=3306;Username=Dd6O1BPXUHdrmzbP;Password=7E1LxXnlH2hhlPVt;Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355;",
+            connStringByType);
     }
 }

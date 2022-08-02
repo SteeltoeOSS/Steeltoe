@@ -21,14 +21,34 @@ public class ApplicationsTest : AbstractBaseTest
     public void ApplicationListConstructor__AddsAppsFromList()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1" });
-        app2.Add(new InstanceInfo { InstanceId = "id2" });
 
-        var apps = new Applications(new List<Application> { app1, app2 });
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
+
+        var apps = new Applications(new List<Application>
+        {
+            app1,
+            app2
+        });
 
         Assert.NotNull(apps.ApplicationMap);
         Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
@@ -47,7 +67,12 @@ public class ApplicationsTest : AbstractBaseTest
     public void Add__DoesNotAddAppWithNullInstanceId()
     {
         var app = new Application("app");
-        app.Add(new InstanceInfo { InstanceId = null });
+
+        app.Add(new InstanceInfo
+        {
+            InstanceId = null
+        });
+
         Assert.Equal(0, app.Count);
     }
 
@@ -55,12 +80,28 @@ public class ApplicationsTest : AbstractBaseTest
     public void Add_AddsTo_ApplicationMap()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1" });
-        app2.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -76,18 +117,46 @@ public class ApplicationsTest : AbstractBaseTest
     public void Add_UpdatesExisting_ApplicationMap()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1" });
-        app2.Add(new InstanceInfo { InstanceId = "id2" });
 
-        var apps = new Applications(new List<Application> { app1, app2 });
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
+
+        var apps = new Applications(new List<Application>
+        {
+            app1,
+            app2
+        });
 
         var app1Updated = new Application("app1");
-        app1Updated.Add(new InstanceInfo { InstanceId = "id3" });
-        app1Updated.Add(new InstanceInfo { InstanceId = "id4" });
+
+        app1Updated.Add(new InstanceInfo
+        {
+            InstanceId = "id3"
+        });
+
+        app1Updated.Add(new InstanceInfo
+        {
+            InstanceId = "id4"
+        });
 
         apps.Add(app1Updated);
 
@@ -95,11 +164,12 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(2, apps.ApplicationMap.Count);
         Assert.True(apps.ApplicationMap.ContainsKey("app1".ToUpperInvariant()));
         Assert.True(apps.ApplicationMap.ContainsKey("app2".ToUpperInvariant()));
-        var app = apps.ApplicationMap["app1".ToUpperInvariant()];
+        Application app = apps.ApplicationMap["app1".ToUpperInvariant()];
         Assert.NotNull(app);
-        var instances = app.Instances;
+        IList<InstanceInfo> instances = app.Instances;
         Assert.NotNull(instances);
-        foreach (var instance in instances)
+
+        foreach (InstanceInfo instance in instances)
         {
             Assert.True(instance.InstanceId.Equals("id3") || instance.InstanceId.Equals("id4"));
         }
@@ -109,12 +179,36 @@ public class ApplicationsTest : AbstractBaseTest
     public void Add_AddsTo_VirtualHostInstanceMaps()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -139,16 +233,36 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetRegisteredApplications_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1" });
-        app2.Add(new InstanceInfo { InstanceId = "id2" });
 
-        var apps = new Applications(new List<Application> { app1, app2 });
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
 
-        var registered = apps.GetRegisteredApplications();
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
+
+        var apps = new Applications(new List<Application>
+        {
+            app1,
+            app2
+        });
+
+        IList<Application> registered = apps.GetRegisteredApplications();
         Assert.NotNull(registered);
         Assert.Equal(2, registered.Count);
         Assert.True(registered[0].Name.Equals("app1") || registered[0].Name.Equals("app2"));
@@ -159,12 +273,36 @@ public class ApplicationsTest : AbstractBaseTest
     public void RemoveInstanceFromVip_UpdatesApp_RemovesFromVirtualHostInstanceMaps()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -184,8 +322,19 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(2, apps.SecureVirtualHostInstanceMap["svapp1".ToUpperInvariant()].Count);
         Assert.Equal(2, apps.SecureVirtualHostInstanceMap["svapp2".ToUpperInvariant()].Count);
 
-        apps.RemoveInstanceFromVip(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        apps.RemoveInstanceFromVip(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+        apps.RemoveInstanceFromVip(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        apps.RemoveInstanceFromVip(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         Assert.NotNull(apps.VirtualHostInstanceMap);
         Assert.Single(apps.VirtualHostInstanceMap);
@@ -206,16 +355,36 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetRegisteredApplication_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1" });
-        app2.Add(new InstanceInfo { InstanceId = "id2" });
 
-        var apps = new Applications(new List<Application> { app1, app2 });
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1"
+        });
 
-        var registered = apps.GetRegisteredApplication("app1");
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2"
+        });
+
+        var apps = new Applications(new List<Application>
+        {
+            app1,
+            app2
+        });
+
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
 
@@ -251,18 +420,42 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetInstancesBySecureVirtualHostName_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
         apps.Add(app2);
 
-        var result = apps.GetInstancesBySecureVirtualHostName("svapp1");
+        IList<InstanceInfo> result = apps.GetInstancesBySecureVirtualHostName("svapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -284,18 +477,42 @@ public class ApplicationsTest : AbstractBaseTest
     public void GetInstancesByVirtualHostName_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
         apps.Add(app2);
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -317,12 +534,40 @@ public class ApplicationsTest : AbstractBaseTest
     public void UpdateFromDelta_EmptyDelta_NoChange()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -331,7 +576,7 @@ public class ApplicationsTest : AbstractBaseTest
         var delta = new Applications();
         apps.UpdateFromDelta(delta);
 
-        var registered = apps.GetRegisteredApplication("app1");
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -343,7 +588,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(2, registered.Instances.Count);
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -365,12 +610,40 @@ public class ApplicationsTest : AbstractBaseTest
     public void UpdateFromDelta_AddNewAppNewInstance_UpdatesCorrectly()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -378,11 +651,20 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", ActionType = ActionType.Added });
+
+        app3.Add(new InstanceInfo
+        {
+            AppName = "app3",
+            InstanceId = "id1",
+            VipAddress = "vapp3",
+            SecureVipAddress = "svapp3",
+            ActionType = ActionType.Added
+        });
+
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
-        var registered = apps.GetRegisteredApplication("app1");
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -400,7 +682,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(1, registered.Instances.Count);
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -427,12 +709,40 @@ public class ApplicationsTest : AbstractBaseTest
     public void UpdateFromDelta_ExistingAppWithAddNewInstance_UpdatesCorrectly()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2" });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2"
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -440,11 +750,20 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id3", VipAddress = "vapp2", SecureVipAddress = "svapp2", ActionType = ActionType.Added });
+
+        deltaApp3.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id3",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            ActionType = ActionType.Added
+        });
+
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
-        var registered = apps.GetRegisteredApplication("app1");
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -456,7 +775,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(registered.Instances);
         Assert.Equal(3, registered.Instances.Count);
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -479,12 +798,42 @@ public class ApplicationsTest : AbstractBaseTest
     public void UpdateFromDelta_ExistingAppWithModifyInstance_UpdatesCorrectly()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Down });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Up
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Down
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -492,11 +841,21 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up, ActionType = ActionType.Modified });
+
+        deltaApp3.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Up,
+            ActionType = ActionType.Modified
+        });
+
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
-        var registered = apps.GetRegisteredApplication("app1");
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -507,12 +866,13 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal("app2", registered.Name);
         Assert.NotNull(registered.Instances);
         Assert.Equal(2, registered.Instances.Count);
-        foreach (var inst in registered.Instances)
+
+        foreach (InstanceInfo inst in registered.Instances)
         {
             Assert.Equal(InstanceStatus.Up, inst.Status);
         }
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -534,12 +894,42 @@ public class ApplicationsTest : AbstractBaseTest
     public void UpdateFromDelta_ExistingAppWithRemovedInstance_UpdatesCorrectly()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1" });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1"
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Down });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Up
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Down
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -547,11 +937,20 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var deltaApp3 = new Application("app2");
-        deltaApp3.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", ActionType = ActionType.Deleted });
+
+        deltaApp3.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            ActionType = ActionType.Deleted
+        });
+
         delta.Add(deltaApp3);
         apps.UpdateFromDelta(delta);
 
-        var registered = apps.GetRegisteredApplication("app1");
+        Application registered = apps.GetRegisteredApplication("app1");
         Assert.NotNull(registered);
         Assert.Equal("app1", registered.Name);
         Assert.NotNull(registered.Instances);
@@ -562,12 +961,13 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal("app2", registered.Name);
         Assert.NotNull(registered.Instances);
         Assert.Equal(1, registered.Instances.Count);
-        foreach (var inst in registered.Instances)
+
+        foreach (InstanceInfo inst in registered.Instances)
         {
             Assert.Equal(InstanceStatus.Up, inst.Status);
         }
 
-        var result = apps.GetInstancesByVirtualHostName("vapp1");
+        IList<InstanceInfo> result = apps.GetInstancesByVirtualHostName("vapp1");
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -589,12 +989,44 @@ public class ApplicationsTest : AbstractBaseTest
     public void ComputeHashCode_ReturnsExpected()
     {
         var app1 = new Application("app1");
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id1", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
-        app1.Add(new InstanceInfo { AppName = "app1", InstanceId = "id2", VipAddress = "vapp1", SecureVipAddress = "svapp1", Status = InstanceStatus.Down });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id1",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1",
+            Status = InstanceStatus.Down
+        });
+
+        app1.Add(new InstanceInfo
+        {
+            AppName = "app1",
+            InstanceId = "id2",
+            VipAddress = "vapp1",
+            SecureVipAddress = "svapp1",
+            Status = InstanceStatus.Down
+        });
 
         var app2 = new Application("app2");
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id1", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.Up });
-        app2.Add(new InstanceInfo { AppName = "app2", InstanceId = "id2", VipAddress = "vapp2", SecureVipAddress = "svapp2", Status = InstanceStatus.OutOfService });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id1",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.Up
+        });
+
+        app2.Add(new InstanceInfo
+        {
+            AppName = "app2",
+            InstanceId = "id2",
+            VipAddress = "vapp2",
+            SecureVipAddress = "svapp2",
+            Status = InstanceStatus.OutOfService
+        });
 
         var apps = new Applications();
         apps.Add(app1);
@@ -602,11 +1034,21 @@ public class ApplicationsTest : AbstractBaseTest
 
         var delta = new Applications();
         var app3 = new Application("app3");
-        app3.Add(new InstanceInfo { AppName = "app3", InstanceId = "id1", VipAddress = "vapp3", SecureVipAddress = "svapp3", ActionType = ActionType.Added, Status = InstanceStatus.Starting });
+
+        app3.Add(new InstanceInfo
+        {
+            AppName = "app3",
+            InstanceId = "id1",
+            VipAddress = "vapp3",
+            SecureVipAddress = "svapp3",
+            ActionType = ActionType.Added,
+            Status = InstanceStatus.Starting
+        });
+
         delta.Add(app3);
         apps.UpdateFromDelta(delta);
 
-        var hashcode = apps.ComputeHashCode();
+        string hashcode = apps.ComputeHashCode();
         Assert.Equal("DOWN_2_OUT_OF_SERVICE_1_STARTING_1_UP_1_", hashcode);
     }
 
@@ -644,23 +1086,33 @@ public class ApplicationsTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
+            Metadata = new Dictionary<string, string>
+            {
+                { "@class", "java.util.Collections$EmptyMap" }
+            },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
+
         var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { instanceInfo }
+            Instances = new List<JsonInstanceInfo>
+            {
+                instanceInfo
+            }
         };
 
         var applications = new JsonApplications
         {
             AppsHashCode = "AppsHashCode",
             VersionDelta = 1L,
-            Applications = new List<JsonApplication> { application }
+            Applications = new List<JsonApplication>
+            {
+                application
+            }
         };
 
         var apps = Applications.FromJsonApplications(applications);
@@ -670,7 +1122,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(apps.ApplicationMap);
         Assert.Single(apps.ApplicationMap);
 
-        var app = apps.GetRegisteredApplication("myApp");
+        Application app = apps.GetRegisteredApplication("myApp");
 
         // Verify
         Assert.NotNull(app);
@@ -679,7 +1131,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.Equal(1, app.Count);
         Assert.Equal(1, app.Instances.Count);
         Assert.NotNull(app.GetInstance("InstanceId"));
-        var info = app.GetInstance("InstanceId");
+        InstanceInfo info = app.GetInstance("InstanceId");
 
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);
@@ -752,23 +1204,33 @@ public class ApplicationsTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
+            Metadata = new Dictionary<string, string>
+            {
+                { "@class", "java.util.Collections$EmptyMap" }
+            },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
             AsgName = "AsgName"
         };
+
         var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { instanceInfo }
+            Instances = new List<JsonInstanceInfo>
+            {
+                instanceInfo
+            }
         };
 
         var applications = new JsonApplications
         {
             AppsHashCode = "AppsHashCode",
             VersionDelta = 1L,
-            Applications = new List<JsonApplication> { application }
+            Applications = new List<JsonApplication>
+            {
+                application
+            }
         };
 
         var apps = Applications.FromJsonApplications(applications);
@@ -778,7 +1240,7 @@ public class ApplicationsTest : AbstractBaseTest
         Assert.NotNull(apps.ApplicationMap);
         Assert.Single(apps.ApplicationMap);
 
-        var app = apps.GetRegisteredApplication("myApp");
+        Application app = apps.GetRegisteredApplication("myApp");
 
         // Verify
         Assert.NotNull(app);

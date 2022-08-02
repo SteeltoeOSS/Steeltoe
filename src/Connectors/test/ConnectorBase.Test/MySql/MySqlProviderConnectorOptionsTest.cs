@@ -33,7 +33,7 @@ public class MySqlProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new MySqlProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Server);
@@ -51,9 +51,10 @@ public class MySqlProviderConnectorOptionsTest
         {
             ["mysql:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new MySqlProviderConnectorOptions(config);
 
@@ -78,7 +79,7 @@ public class MySqlProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new MySqlProviderConnectorOptions(config);
 

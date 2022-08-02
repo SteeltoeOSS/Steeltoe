@@ -13,33 +13,31 @@ namespace Steeltoe.Messaging.RabbitMQ.Host;
 
 public class RabbitMQHostBuilder : IHostBuilder
 {
-    public IDictionary<object, object> Properties => _hostbuilder.Properties;
-
     private readonly IHostBuilder _hostbuilder;
+
+    public IDictionary<object, object> Properties => _hostbuilder.Properties;
 
     public RabbitMQHostBuilder(IHostBuilder hostbuilder)
     {
         _hostbuilder = hostbuilder;
 
-        _hostbuilder
-            .ConfigureAppConfiguration(configBuilder =>
-            {
-                configBuilder.AddSpringBootEnv();
-            })
-            .ConfigureServices((hostBuilderContext, services) =>
-            {
-                var rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.Prefix);
-                services.Configure<RabbitOptions>(rabbitConfigSection);
+        _hostbuilder.ConfigureAppConfiguration(configBuilder =>
+        {
+            configBuilder.AddSpringBootEnv();
+        }).ConfigureServices((hostBuilderContext, services) =>
+        {
+            IConfigurationSection rabbitConfigSection = hostBuilderContext.Configuration.GetSection(RabbitOptions.Prefix);
+            services.Configure<RabbitOptions>(rabbitConfigSection);
 
-                services.AddRabbitServices();
-                services.AddRabbitAdmin();
-                services.AddRabbitTemplate();
-            });
+            services.AddRabbitServices();
+            services.AddRabbitAdmin();
+            services.AddRabbitTemplate();
+        });
     }
 
     public IHost Build()
     {
-        var host = _hostbuilder.Build();
+        IHost host = _hostbuilder.Build();
 
         return new RabbitMQHost(host);
     }

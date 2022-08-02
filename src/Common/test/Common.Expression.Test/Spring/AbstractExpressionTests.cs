@@ -2,95 +2,100 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Collections;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public abstract class AbstractExpressionTests
 {
+    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
     protected static readonly bool ShouldBeWritable = true;
     protected static readonly bool ShouldNotBeWritable;
     protected readonly IExpressionParser Parser = new SpelExpressionParser();
     protected readonly StandardEvaluationContext Context = TestScenarioCreator.GetTestEvaluationContext();
-    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
 
     public virtual void EvaluateAndAskForReturnType(string expression, object expectedValue, Type expectedResultType)
     {
-        var expr = Parser.ParseExpression(expression);
+        IExpression expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
+
         if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(Context, expectedResultType);
+        object value = expr.GetValue(Context, expectedResultType);
+
         if (value == null)
         {
             if (expectedValue == null)
             {
-                return;  // no point doing other checks
+                return; // no point doing other checks
             }
 
             Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
         }
 
-        var resultType = value.GetType();
+        Type resultType = value.GetType();
         Assert.Equal(expectedResultType, resultType);
         Assert.Equal(expectedValue, value);
     }
 
     public virtual void Evaluate(string expression, object expectedValue, Type expectedResultType)
     {
-        var expr = Parser.ParseExpression(expression);
+        IExpression expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
+
         if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(Context);
+        object value = expr.GetValue(Context);
 
         // Check the return value
         if (value == null)
         {
             if (expectedValue == null)
             {
-                return;  // no point doing other checks
+                return; // no point doing other checks
             }
 
             Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
         }
 
-        var resultType = value.GetType();
+        Type resultType = value.GetType();
         Assert.Equal(expectedResultType, resultType);
         Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
     }
 
     public virtual void Evaluate(string expression, object expectedValue, Type expectedClassOfResult, bool shouldBeWritable)
     {
-        var expr = Parser.ParseExpression(expression);
+        IExpression expr = Parser.ParseExpression(expression);
         Assert.NotNull(expr);
+
         if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
         }
 
-        var value = expr.GetValue(Context);
+        object value = expr.GetValue(Context);
+
         if (value == null)
         {
             if (expectedValue == null)
             {
-                return;  // no point doing other checks
+                return; // no point doing other checks
             }
 
             Assert.True(expectedValue == null, $"Expression returned null value, but expected '{expectedValue}'");
         }
 
-        var resultType = value.GetType();
+        Type resultType = value.GetType();
         Assert.Equal(expectedValue, expectedValue is string ? StringValueOf(value) : value);
 
         Assert.Equal(expectedClassOfResult, resultType);
@@ -99,15 +104,17 @@ public abstract class AbstractExpressionTests
 
     protected static void PrintDimension(StringBuilder sb, Array array, int[] indexes, int dimension)
     {
-        var isLeaf = dimension == array.Rank - 1;
+        bool isLeaf = dimension == array.Rank - 1;
+
         if (isLeaf)
         {
-            var len = array.GetLength(dimension);
-            for (var i = 0; i < len; i++)
+            int len = array.GetLength(dimension);
+
+            for (int i = 0; i < len; i++)
             {
                 indexes[dimension] = i;
                 sb.Append('(').Append(string.Join(",", indexes)).Append(")=");
-                var val = array.GetValue(indexes);
+                object val = array.GetValue(indexes);
                 sb.Append(val == null ? "null" : val.ToString());
 
                 sb.Append(',');
@@ -115,8 +122,9 @@ public abstract class AbstractExpressionTests
         }
         else
         {
-            var dimLen = array.GetLength(dimension);
-            for (var i = 0; i < dimLen; i++)
+            int dimLen = array.GetLength(dimension);
+
+            for (int i = 0; i < dimLen; i++)
             {
                 indexes[dimension] = i;
                 PrintDimension(sb, array, indexes, dimension + 1);
@@ -126,10 +134,11 @@ public abstract class AbstractExpressionTests
 
     protected static string PrintArray(Array array)
     {
-        var indexes = new int[array.Rank];
+        int[] indexes = new int[array.Rank];
         var sb = new StringBuilder();
         sb.Append(array.GetType().GetElementType().FullName);
-        for (var i = 0; i < array.Rank; i++)
+
+        for (int i = 0; i < array.Rank; i++)
         {
             sb.Append('[').Append(array.GetLength(i)).Append(']');
         }
@@ -153,15 +162,18 @@ public abstract class AbstractExpressionTests
             return "null";
         }
 
-        var valueType = value.GetType();
+        Type valueType = value.GetType();
+
         if (valueType.IsArray)
         {
-            var result = PrintArray(value as Array);
+            string result = PrintArray(value as Array);
             return result;
         }
-        else if (value is IDictionary dictionary)
+
+        if (value is IDictionary dictionary)
         {
             var sb = new StringBuilder("{");
+
             foreach (DictionaryEntry obj in dictionary)
             {
                 sb.Append(StringValueOf(obj.Key));
@@ -178,10 +190,12 @@ public abstract class AbstractExpressionTests
             sb.Append('}');
             return sb.ToString();
         }
-        else if (value is IEnumerable enumerable && value is not string)
+
+        if (value is IEnumerable enumerable && value is not string)
         {
             var sb = new StringBuilder("[");
-            foreach (var obj in enumerable)
+
+            foreach (object obj in enumerable)
             {
                 if (obj is IEnumerable && obj is not string)
                 {
@@ -203,10 +217,8 @@ public abstract class AbstractExpressionTests
             sb.Append(']');
             return sb.ToString();
         }
-        else
-        {
-            return value.ToString();
-        }
+
+        return value.ToString();
     }
 
     protected virtual void EvaluateAndCheckError(string expression, SpelMessage expectedMessage, params object[] otherProperties)
@@ -218,8 +230,9 @@ public abstract class AbstractExpressionTests
     {
         var ex = Assert.Throws<SpelEvaluationException>(() =>
         {
-            var expr = Parser.ParseExpression(expression);
+            IExpression expr = Parser.ParseExpression(expression);
             Assert.NotNull(expr);
+
             if (expectedReturnType != null)
             {
                 expr.GetValue(Context, expectedReturnType);
@@ -229,21 +242,25 @@ public abstract class AbstractExpressionTests
                 expr.GetValue(Context);
             }
         });
+
         Assert.Equal(expectedMessage, ex.MessageCode);
+
         if (otherProperties != null && otherProperties.Length != 0)
         {
             // first one is expected position of the error within the string
-            var pos = (int)otherProperties[0];
+            int pos = (int)otherProperties[0];
             Assert.Equal(pos, ex.Position);
+
             if (otherProperties.Length > 1)
             {
                 // Check inserts match
-                var inserts = ex.Inserts;
+                object[] inserts = ex.Inserts;
                 Assert.True(inserts.Length >= otherProperties.Length - 1);
-                var expectedInserts = new object[inserts.Length];
+                object[] expectedInserts = new object[inserts.Length];
                 Array.Copy(otherProperties, 1, expectedInserts, 0, expectedInserts.Length);
                 Assert.Equal(expectedInserts.Length, inserts.Length);
-                for (var i = 0; i < inserts.Length; i++)
+
+                for (int i = 0; i < inserts.Length; i++)
                 {
                     Assert.Equal(expectedInserts[i], inserts[i]);
                 }
@@ -255,27 +272,32 @@ public abstract class AbstractExpressionTests
     {
         var ex = Assert.Throws<SpelParseException>(() =>
         {
-            var expr = Parser.ParseExpression(expression);
+            IExpression expr = Parser.ParseExpression(expression);
+
             if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, expr);
             }
         });
+
         Assert.Equal(expectedMessage, ex.MessageCode);
+
         if (otherProperties != null && otherProperties.Length != 0)
         {
             // first one is expected position of the error within the string
-            var pos = (int)otherProperties[0];
+            int pos = (int)otherProperties[0];
             Assert.Equal(pos, ex.Position);
+
             if (otherProperties.Length > 1)
             {
                 // Check inserts match
-                var inserts = ex.Inserts;
+                object[] inserts = ex.Inserts;
                 Assert.True(inserts.Length >= otherProperties.Length - 1);
-                var expectedInserts = new object[inserts.Length];
+                object[] expectedInserts = new object[inserts.Length];
                 Array.Copy(otherProperties, 1, expectedInserts, 0, expectedInserts.Length);
                 Assert.Equal(expectedInserts.Length, inserts.Length);
-                for (var i = 0; i < inserts.Length; i++)
+
+                for (int i = 0; i < inserts.Length; i++)
                 {
                     Assert.Equal(expectedInserts[i], inserts[i]);
                 }

@@ -18,29 +18,19 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandler>, IPollableMessageSource, ILifecycle, IRetryListener
 {
-    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
+    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new();
 
     private readonly DirectChannel _dummyChannel;
     private readonly MessagingTemplate _messagingTemplate;
     private readonly ISmartMessageConverter _messageConverter;
-    private readonly List<IChannelInterceptor> _interceptors = new ();
+    private readonly List<IChannelInterceptor> _interceptors = new();
     private RetryTemplate _retryTemplate;
     private IRecoveryCallback _recoveryCallback;
     private int _running;
 
-    public DefaultPollableMessageSource(IApplicationContext context, ISmartMessageConverter messageConverter)
-    {
-        _messageConverter = messageConverter;
-        _messagingTemplate = new MessagingTemplate(context);
-        _dummyChannel = new DirectChannel(context);
-    }
-
     public RetryTemplate RetryTemplate
     {
-        get
-        {
-            return _retryTemplate;
-        }
+        get => _retryTemplate;
 
         set
         {
@@ -51,15 +41,9 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     public IRecoveryCallback RecoveryCallback
     {
-        get
-        {
-            return _recoveryCallback;
-        }
+        get => _recoveryCallback;
 
-        set
-        {
-            _recoveryCallback = new RecoveryCallbackWrapper(value);
-        }
+        set => _recoveryCallback = new RecoveryCallbackWrapper(value);
     }
 
     public IMessageChannel ErrorChannel { get; set; }
@@ -71,6 +55,13 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
     public IMessageSource Source { get; set; }
 
     public bool IsRunning => _running != 0;
+
+    public DefaultPollableMessageSource(IApplicationContext context, ISmartMessageConverter messageConverter)
+    {
+        _messageConverter = messageConverter;
+        _messagingTemplate = new MessagingTemplate(context);
+        _dummyChannel = new DirectChannel(context);
+    }
 
     public void AddInterceptor(IChannelInterceptor interceptor)
     {
@@ -109,13 +100,15 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     public override bool Poll(IMessageHandler handler, Type type)
     {
-        var message = Receive(type);
+        IMessage message = Receive(type);
+
         if (message == null)
         {
             return false;
         }
 
-        var ackCallback = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(message);
+        IAcknowledgmentCallback ackCallback = StaticMessageHeaderAccessor.GetAcknowledgmentCallback(message);
+
         try
         {
             if (RetryTemplate == null)
@@ -156,6 +149,7 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
         catch (Exception e)
         {
             AckUtils.AutoNack(ackCallback);
+
             switch (e)
             {
                 case MessageHandlingException exception when exception.FailedMessage.Equals(message):
@@ -192,8 +186,9 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     protected internal static bool ShouldRequeue(Exception e)
     {
-        var requeue = false;
-        var t = e.InnerException;
+        bool requeue = false;
+        Exception t = e.InnerException;
+
         while (t != null && !requeue)
         {
             requeue = t is RequeueCurrentMessageException;
@@ -205,19 +200,20 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     private IMessage Receive(Type type)
     {
-        var result = Source.Receive();
+        IMessage result = Source.Receive();
 
         if (result == null)
         {
             return null;
         }
 
-        var message = ApplyInterceptors(result);
+        IMessage message = ApplyInterceptors(result);
 
         if (message != null && type != null && _messageConverter != null)
         {
-            var targetType = type;
-            var payload = _messageConverter.FromMessage(message, targetType, type);
+            Type targetType = type;
+            object payload = _messageConverter.FromMessage(message, targetType, type);
+
             if (payload == null)
             {
                 throw new MessageConversionException(message, "No converter could convert Message");
@@ -244,10 +240,12 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     private IMessage ApplyInterceptors(IMessage message)
     {
-        var received = message;
-        foreach (var interceptor in _interceptors)
+        IMessage received = message;
+
+        foreach (IChannelInterceptor interceptor in _interceptors)
         {
             received = interceptor.PreSend(received, _dummyChannel);
+
             if (received == null)
             {
                 return null;
@@ -259,8 +257,9 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
     private void SetAttributesIfNecessary(IMessage message)
     {
-        var needHolder = ErrorChannel != null && RetryTemplate == null;
-        var needAttributes = needHolder || RetryTemplate != null;
+        bool needHolder = ErrorChannel != null && RetryTemplate == null;
+        bool needAttributes = needHolder || RetryTemplate != null;
+
         if (needHolder)
         {
             AttributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
@@ -268,10 +267,12 @@ public class DefaultPollableMessageSource : AbstractPollableSource<IMessageHandl
 
         if (needAttributes)
         {
-            var attributes = AttributesHolder.Value;
+            IAttributeAccessor attributes = AttributesHolder.Value;
+
             if (attributes != null)
             {
                 attributes.SetAttribute(ErrorMessageUtils.InputMessageContextKey, message);
+
                 if (AttributeProvider != null)
                 {
                     AttributeProvider.Invoke(attributes, message);

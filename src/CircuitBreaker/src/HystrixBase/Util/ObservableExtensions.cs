@@ -13,7 +13,7 @@ public static class ObservableExtensions
         return Observable.Create<TSource>(o =>
         {
             onSubscribe();
-            var d = source.Subscribe(o);
+            IDisposable d = source.Subscribe(o);
             return d;
         });
     }

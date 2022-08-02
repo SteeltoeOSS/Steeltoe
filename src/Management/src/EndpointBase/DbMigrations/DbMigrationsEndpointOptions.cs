@@ -10,6 +10,8 @@ public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigration
 {
     private const string ManagementInfoPrefix = "management:endpoints:dbmigrations";
 
+    public string[] KeysToSanitize => Array.Empty<string>();
+
     public DbMigrationsEndpointOptions()
     {
         Id = "dbmigrations";
@@ -29,6 +31,4 @@ public class DbMigrationsEndpointOptions : AbstractEndpointOptions, IDbMigration
             RequiredPermissions = Permissions.Restricted;
         }
     }
-
-    public string[] KeysToSanitize => Array.Empty<string>();
 }

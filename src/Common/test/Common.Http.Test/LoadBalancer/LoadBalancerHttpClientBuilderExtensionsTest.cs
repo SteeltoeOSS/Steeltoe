@@ -25,8 +25,8 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
         services.AddHttpClient("test").AddRandomLoadBalancer();
-        var serviceProvider = services.BuildServiceProvider();
-        var serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RandomLoadBalancer)));
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RandomLoadBalancer)));
 
         Assert.Single(serviceProvider.GetServices<RandomLoadBalancer>());
         Assert.NotNull(serviceEntryInCollection);
@@ -47,8 +47,8 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddConfigurationDiscoveryClient(new ConfigurationBuilder().Build());
 
         services.AddHttpClient("test").AddRoundRobinLoadBalancer();
-        var serviceProvider = services.BuildServiceProvider();
-        var serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RoundRobinLoadBalancer)));
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        ServiceDescriptor serviceEntryInCollection = services.FirstOrDefault(service => service.ServiceType.Equals(typeof(RoundRobinLoadBalancer)));
 
         Assert.Single(serviceProvider.GetServices<RoundRobinLoadBalancer>());
         Assert.Equal(ServiceLifetime.Singleton, serviceEntryInCollection.Lifetime);
@@ -67,7 +67,7 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         var services = new ServiceCollection();
 
         services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         Assert.Empty(serviceProvider.GetServices<FakeLoadBalancer>());
     }
@@ -79,9 +79,9 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddSingleton(typeof(FakeLoadBalancer));
 
         services.AddHttpClient("test").AddLoadBalancer<FakeLoadBalancer>();
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
-        var client = factory.CreateClient("test");
+        HttpClient client = factory.CreateClient("test");
 
         Assert.NotNull(client);
     }
@@ -100,12 +100,12 @@ public class LoadBalancerHttpClientBuilderExtensionsTest
         services.AddHttpClient("testFake").AddLoadBalancer<FakeLoadBalancer>();
         services.AddHttpClient("testFake2").AddLoadBalancer<FakeLoadBalancer>();
         var factory = services.BuildServiceProvider().GetRequiredService<IHttpClientFactory>();
-        var randomLbClient = factory.CreateClient("testRandom");
-        var randomLbClient2 = factory.CreateClient("testRandom2");
-        var roundRobinLbClient = factory.CreateClient("testRoundRobin");
-        var roundRobinLbClient2 = factory.CreateClient("testRoundRobin2");
-        var fakeLbClient = factory.CreateClient("testFake");
-        var fakeLbClient2 = factory.CreateClient("testFake2");
+        HttpClient randomLbClient = factory.CreateClient("testRandom");
+        HttpClient randomLbClient2 = factory.CreateClient("testRandom2");
+        HttpClient roundRobinLbClient = factory.CreateClient("testRoundRobin");
+        HttpClient roundRobinLbClient2 = factory.CreateClient("testRoundRobin2");
+        HttpClient fakeLbClient = factory.CreateClient("testFake");
+        HttpClient fakeLbClient2 = factory.CreateClient("testFake2");
 
         Assert.NotNull(randomLbClient);
         Assert.NotNull(randomLbClient2);

@@ -14,7 +14,7 @@ public class SpringBootEnvProviderTest
     {
         var prov = new SpringBootEnvProvider("{\"management.metrics.tags.application.type\":\"${spring.cloud.dataflow.stream.app.type:unknown}\"}");
         prov.Load();
-        prov.TryGet("management:metrics:tags:application:type", out var value);
+        prov.TryGet("management:metrics:tags:application:type", out string value);
         Assert.NotNull(value);
         Assert.Equal("${spring.cloud.dataflow.stream.app.type:unknown}", value);
     }
@@ -22,7 +22,7 @@ public class SpringBootEnvProviderTest
     [Fact]
     public void TryGet_Tree()
     {
-        var configString = @"{
+        string configString = @"{
                     ""a.b.c"": {
                                     ""e.f"": {
                                             ""g"":""h"",
@@ -36,7 +36,7 @@ public class SpringBootEnvProviderTest
         var prov = new SpringBootEnvProvider(configString);
 
         prov.Load();
-        prov.TryGet("a:b:c:e:f:i:j", out var value);
+        prov.TryGet("a:b:c:e:f:i:j", out string value);
         Assert.NotNull(value);
         Assert.Equal("k", value);
         prov.TryGet("l:m:n", out value);

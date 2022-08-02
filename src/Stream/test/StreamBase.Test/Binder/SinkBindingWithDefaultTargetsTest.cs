@@ -16,22 +16,20 @@ public class SinkBindingWithDefaultTargetsTest : AbstractTest
     [Fact]
     public async Task TestSourceOutputChannelBound()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithISinkBinding(
-                searchDirectories,
-                "spring:cloud:stream:defaultBinder=mock",
-                "spring.cloud.stream.bindings.input.destination=testtock")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock",
+            "spring.cloud.stream.bindings.input.destination=testtock").BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
+        IBinder binder = factory.GetBinder(null);
         Assert.NotNull(binder);
 
         var sink = provider.GetService<ISink>();
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("testtock", null, sink.Input, It.IsAny<ConsumerOptions>()));
     }
 }

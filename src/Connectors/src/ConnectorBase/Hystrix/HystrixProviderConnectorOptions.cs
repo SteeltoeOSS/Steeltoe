@@ -9,27 +9,12 @@ namespace Steeltoe.Connector.Hystrix;
 
 public class HystrixProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string HystrixClientSectionPrefix = "hystrix:client";
     public const string DefaultScheme = "amqp";
     public const string DefaultSslScheme = "amqps";
     public const string DefaultServer = "127.0.0.1";
     public const int DefaultPort = 5672;
     public const int DefaultSslPort = 5671;
-    private const string HystrixClientSectionPrefix = "hystrix:client";
-
-    public HystrixProviderConnectorOptions()
-    {
-    }
-
-    public HystrixProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(HystrixClientSectionPrefix);
-        section.Bind(this);
-    }
 
     public bool SslEnabled { get; set; }
 
@@ -47,6 +32,21 @@ public class HystrixProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string VirtualHost { get; set; }
 
+    public HystrixProviderConnectorOptions()
+    {
+    }
+
+    public HystrixProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(HystrixClientSectionPrefix);
+        section.Bind(this);
+    }
+
     public override string ToString()
     {
         if (!string.IsNullOrEmpty(Uri))
@@ -54,7 +54,7 @@ public class HystrixProviderConnectorOptions : AbstractServiceConnectorOptions
             return Uri;
         }
 
-        var uri = SslEnabled
+        UriInfo uri = SslEnabled
             ? new UriInfo(DefaultSslScheme, Server, SslPort, Username, Password, VirtualHost)
             : new UriInfo(DefaultScheme, Server, Port, Username, Password, VirtualHost);
 

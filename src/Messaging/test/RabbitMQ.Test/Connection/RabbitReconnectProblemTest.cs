@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Xunit;
 using Xunit.Abstractions;
@@ -21,7 +22,8 @@ public class RabbitReconnectProblemTest
     [Fact(Skip = "Requires manual intervention")]
     public void SurviveAReconnect()
     {
-        var myQueue = new Config.Queue("my-queue");
+        var myQueue = new Queue("my-queue");
+
         var cf = new RC.ConnectionFactory
         {
             Uri = new Uri("amqp://localhost")
@@ -32,12 +34,14 @@ public class RabbitReconnectProblemTest
             ChannelCacheSize = 2,
             ChannelCheckoutTimeout = 2000
         };
+
         var admin = new RabbitAdmin(ccf);
         admin.DeclareQueue(myQueue);
         var template = new RabbitTemplate(ccf);
         CheckIt(template, 0, myQueue.ActualName);
 
-        var i = 1;
+        int i = 1;
+
         while (i < 45)
         {
             // While in this loop, stop and start the broker
@@ -46,9 +50,9 @@ public class RabbitReconnectProblemTest
             // The available permits should always be == 2.
             Thread.Sleep(2000);
             CheckIt(template, i++, myQueue.ActualName);
-            using var values = ccf.CheckoutPermits.Values.GetEnumerator();
+            using Dictionary<IConnection, SemaphoreSlim>.ValueCollection.Enumerator values = ccf.CheckoutPermits.Values.GetEnumerator();
             values.MoveNext();
-            var availablePermits = values.Current.CurrentCount;
+            int availablePermits = values.Current.CurrentCount;
             _output.WriteLine("Permits after test: " + availablePermits);
             Assert.Equal(2, availablePermits);
         }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -13,14 +14,13 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.HeapDump.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new ()
+    private static readonly Dictionary<string, string> AppSettings = new()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
@@ -42,18 +42,18 @@ public class EndpointMiddlewareTest : BaseTest
         serviceCollection.AddLogging(builder => builder.SetMinimumLevel(LogLevel.Trace));
         var loggerFactory = serviceCollection.BuildServiceProvider().GetService<ILoggerFactory>();
 
-        var logger1 = loggerFactory.CreateLogger<HeapDumper>();
-        var logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
-        var logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
+        ILogger<HeapDumper> logger1 = loggerFactory.CreateLogger<HeapDumper>();
+        ILogger<HeapDumpEndpoint> logger2 = loggerFactory.CreateLogger<HeapDumpEndpoint>();
+        ILogger<HeapDumpEndpointMiddleware> logger3 = loggerFactory.CreateLogger<HeapDumpEndpointMiddleware>();
 
         var obs = new HeapDumper(opts, logger: logger1);
 
         var ep = new HeapDumpEndpoint(opts, obs, logger2);
         var middle = new HeapDumpEndpointMiddleware(null, ep, managementOptions, logger3);
-        var context = CreateRequest("GET", "/heapdump");
+        HttpContext context = CreateRequest("GET", "/heapdump");
         await middle.HandleHeapDumpRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
-        var buffer = new byte[1024];
+        byte[] buffer = new byte[1024];
         await context.Response.Body.ReadAsync(buffer);
         Assert.NotEqual(0, buffer[0]);
     }
@@ -61,31 +61,30 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task HeapDumpActuator_ReturnsExpectedData()
     {
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
+
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/heapdump");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
 
         Assert.True(result.Content.Headers.Contains("Content-Type"));
-        var contentType = result.Content.Headers.GetValues("Content-Type");
+        IEnumerable<string> contentType = result.Content.Headers.GetValues("Content-Type");
         Assert.Equal("application/octet-stream", contentType.Single());
         Assert.True(result.Content.Headers.Contains("Content-Disposition"));
 
         var tempFile = new TempFile();
         var fs = new FileStream(tempFile.FullPath, FileMode.Create);
-        var input = await result.Content.ReadAsStreamAsync();
+        Stream input = await result.Content.ReadAsStreamAsync();
         await input.CopyToAsync(fs);
         fs.Close();
 
-        var fs2 = File.Open(tempFile.FullPath, FileMode.Open);
+        FileStream fs2 = File.Open(tempFile.FullPath, FileMode.Open);
         Assert.NotEqual(0, fs2.Length);
         fs2.Close();
     }
@@ -106,6 +105,7 @@ public class EndpointMiddlewareTest : BaseTest
         {
             TraceIdentifier = Guid.NewGuid().ToString()
         };
+
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
         context.Request.Path = new PathString(path);

@@ -2,17 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
-using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public abstract class MetricsObserver : DiagnosticObserver
 {
+    private Regex _pathMatcher;
+
     protected IMetricsObserverOptions Options { get; }
 
-    private Regex _pathMatcher;
+    protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
+        : base(observerName, diagnosticName, logger)
+    {
+        Options = options;
+    }
 
     protected Regex GetPathMatcher()
     {
@@ -22,12 +28,6 @@ public abstract class MetricsObserver : DiagnosticObserver
     protected void SetPathMatcher(Regex value)
     {
         _pathMatcher = value;
-    }
-
-    protected MetricsObserver(string observerName, string diagnosticName, IMetricsObserverOptions options, ILogger logger = null)
-        : base(observerName, diagnosticName, logger)
-    {
-        Options = options;
     }
 
     public abstract override void ProcessEvent(string eventName, object value);

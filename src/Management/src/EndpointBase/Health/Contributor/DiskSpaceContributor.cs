@@ -12,24 +12,25 @@ public class DiskSpaceContributor : IHealthContributor
     private const string DefaultId = "diskSpace";
     private readonly DiskSpaceContributorOptions _options;
 
+    public string Id { get; } = DefaultId;
+
     public DiskSpaceContributor(DiskSpaceContributorOptions options = null)
     {
         _options = options ?? new DiskSpaceContributorOptions();
     }
 
-    public string Id { get; } = DefaultId;
-
     public HealthCheckResult Health()
     {
         var result = new HealthCheckResult();
 
-        var fullPath = Path.GetFullPath(_options.Path);
+        string fullPath = Path.GetFullPath(_options.Path);
         var dirInfo = new DirectoryInfo(fullPath);
+
         if (dirInfo.Exists)
         {
-            var rootName = dirInfo.Root.Name;
+            string rootName = dirInfo.Root.Name;
             var d = new DriveInfo(rootName);
-            var freeSpace = d.TotalFreeSpace;
+            long freeSpace = d.TotalFreeSpace;
             result.Status = freeSpace >= _options.Threshold ? HealthStatus.Up : HealthStatus.Down;
 
             result.Details.Add("total", d.TotalSize);

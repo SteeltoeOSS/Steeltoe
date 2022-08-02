@@ -7,7 +7,7 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 /// <summary>
 /// Common properties for CredHub requests.
 /// </summary>
-public partial class CredHubBaseObject
+public class CredHubBaseObject
 {
     /// <summary>
     /// Gets or sets name of Credential.

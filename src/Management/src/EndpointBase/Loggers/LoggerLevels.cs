@@ -2,24 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggerLevels
 {
-    public LoggerLevels(LogLevel? configured, LogLevel effective)
-    {
-        ConfiguredLevel = configured.HasValue ? MapLogLevel(configured.Value) : null;
-        EffectiveLevel = MapLogLevel(effective);
-    }
-
     [JsonPropertyName("configuredLevel")]
     public string ConfiguredLevel { get; }
 
     [JsonPropertyName("effectiveLevel")]
     public string EffectiveLevel { get; }
+
+    public LoggerLevels(LogLevel? configured, LogLevel effective)
+    {
+        ConfiguredLevel = configured.HasValue ? MapLogLevel(configured.Value) : null;
+        EffectiveLevel = MapLogLevel(effective);
+    }
 
     public static string MapLogLevel(LogLevel level)
     {
@@ -32,7 +32,7 @@ public class LoggerLevels
             LogLevel.Information => "INFO",
             LogLevel.Debug => "DEBUG",
             LogLevel.Trace => "TRACE",
-            _ => "OFF",
+            _ => "OFF"
         };
     }
 
@@ -47,7 +47,7 @@ public class LoggerLevels
             "INFO" => LogLevel.Information,
             "DEBUG" => LogLevel.Debug,
             "TRACE" => LogLevel.Trace,
-            _ => null,
+            _ => null
         };
     }
 }

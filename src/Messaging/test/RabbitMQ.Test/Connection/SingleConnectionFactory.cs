@@ -12,7 +12,9 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 {
     public const string DefaultServiceName = "scFactory";
 
-    private readonly object _connectionMonitor = new ();
+    private readonly object _connectionMonitor = new();
+
+    public SharedConnectionProxy Connection { get; private set; }
 
     public SingleConnectionFactory(ILoggerFactory loggerFactory = null)
         : this((string)null, loggerFactory)
@@ -55,8 +57,6 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         ServiceName = DefaultServiceName;
     }
 
-    public SharedConnectionProxy Connection { get; private set; }
-
     public override void SetConnectionListeners(List<IConnectionListener> listeners)
     {
         base.SetConnectionListeners(listeners);
@@ -85,7 +85,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
         {
             if (Connection == null)
             {
-                var target = DoCreateConnection();
+                IConnection target = DoCreateConnection();
                 Connection = new SharedConnectionProxy(this, target);
 
                 // invoke the listener *after* this.connection is assigned
@@ -115,7 +115,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
 
     protected IConnection DoCreateConnection()
     {
-        var connection = CreateBareConnection();
+        IConnection connection = CreateBareConnection();
         return connection;
     }
 
@@ -123,9 +123,37 @@ public class SingleConnectionFactory : AbstractConnectionFactory
     {
         private readonly ILogger _logger;
         private readonly SingleConnectionFactory _factory;
-        private readonly object _lock = new ();
+        private readonly object _lock = new();
 
         public IConnection Target { get; set; }
+
+        public bool IsOpen => Target != null && Target.IsOpen;
+
+        public IConnection TargetConnection => Target;
+
+        public int LocalPort
+        {
+            get
+            {
+                IConnection target = Target;
+
+                if (target != null)
+                {
+                    return target.LocalPort;
+                }
+
+                return 0;
+            }
+        }
+
+        public RC.IConnection Connection
+        {
+            get
+            {
+                var asSimple = Target as SimpleConnection;
+                return asSimple.Connection;
+            }
+        }
 
         public SharedConnectionProxy(SingleConnectionFactory factory, IConnection target, ILogger logger = null)
         {
@@ -149,7 +177,7 @@ public class SingleConnectionFactory : AbstractConnectionFactory
                 }
             }
 
-            var channel = Target.CreateChannel(transactional);
+            RC.IModel channel = Target.CreateChannel(transactional);
             _factory.ChannelListener.OnCreate(channel, transactional);
             return channel;
         }
@@ -177,39 +205,6 @@ public class SingleConnectionFactory : AbstractConnectionFactory
             }
 
             Target = null;
-        }
-
-        public bool IsOpen
-        {
-            get { return Target != null && Target.IsOpen; }
-        }
-
-        public IConnection TargetConnection
-        {
-            get { return Target; }
-        }
-
-        public int LocalPort
-        {
-            get
-            {
-                var target = Target;
-                if (target != null)
-                {
-                    return target.LocalPort;
-                }
-
-                return 0;
-            }
-        }
-
-        public RC.IConnection Connection
-        {
-            get
-            {
-                var asSimple = Target as SimpleConnection;
-                return asSimple.Connection;
-            }
         }
 
         public override int GetHashCode()

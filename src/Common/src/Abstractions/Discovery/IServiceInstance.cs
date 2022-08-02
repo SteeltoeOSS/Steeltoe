@@ -7,7 +7,7 @@ namespace Steeltoe.Common.Discovery;
 public interface IServiceInstance
 {
     /// <summary>
-    ///  Gets the service id as register by the DiscoveryClient.
+    /// Gets the service id as register by the DiscoveryClient.
     /// </summary>
     string ServiceId { get; }
 
@@ -32,7 +32,7 @@ public interface IServiceInstance
     Uri Uri { get; }
 
     /// <summary>
-    ///  Gets the key value pair metadata associated with the service instance.
+    /// Gets the key value pair metadata associated with the service instance.
     /// </summary>
     IDictionary<string, string> Metadata { get; }
 

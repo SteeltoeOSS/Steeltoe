@@ -14,7 +14,7 @@ public class TtlSchedulerTests
     public void Add_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
         var opts = new ConsulDiscoveryOptions();
         var sch = new TtlScheduler(opts, client);
         Assert.Throws<ArgumentException>(() => sch.Add(string.Empty));
@@ -24,8 +24,13 @@ public class TtlSchedulerTests
     public void Add_DoesNothing_NoHeartbeatOptionsConfigured()
     {
         var clientMoq = new Mock<IConsulClient>();
-        var client = clientMoq.Object;
-        var opts = new ConsulDiscoveryOptions { Heartbeat = null };
+        IConsulClient client = clientMoq.Object;
+
+        var opts = new ConsulDiscoveryOptions
+        {
+            Heartbeat = null
+        };
+
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
         Assert.Empty(sch.ServiceHeartbeats);
@@ -38,15 +43,17 @@ public class TtlSchedulerTests
         var agentMoq = new Mock<IAgentEndpoint>();
 
         clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
+
         var opts = new ConsulDiscoveryOptions
         {
             Heartbeat = new ConsulHeartbeatOptions()
         };
+
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
         Assert.NotEmpty(sch.ServiceHeartbeats);
-        Assert.True(sch.ServiceHeartbeats.TryRemove("foobar", out var timer));
+        Assert.True(sch.ServiceHeartbeats.TryRemove("foobar", out Timer timer));
         Assert.NotNull(timer);
         timer.Dispose();
     }
@@ -55,7 +62,7 @@ public class TtlSchedulerTests
     public void Remove_Throws_Invalid_InstanceId()
     {
         var clientMoq = new Mock<IConsulClient>();
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
         var opts = new ConsulDiscoveryOptions();
         var sch = new TtlScheduler(opts, client);
         Assert.Throws<ArgumentException>(() => sch.Remove(string.Empty));
@@ -68,7 +75,7 @@ public class TtlSchedulerTests
 #pragma warning restore S2699 // Tests should include assertions
     {
         var clientMoq = new Mock<IConsulClient>();
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
         var opts = new ConsulDiscoveryOptions();
         var sch = new TtlScheduler(opts, client);
         sch.Remove("barfoo");
@@ -81,15 +88,17 @@ public class TtlSchedulerTests
         var agentMoq = new Mock<IAgentEndpoint>();
 
         clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
+
         var opts = new ConsulDiscoveryOptions
         {
             Heartbeat = new ConsulHeartbeatOptions()
         };
+
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
         Assert.NotEmpty(sch.ServiceHeartbeats);
-        Assert.True(sch.ServiceHeartbeats.TryGetValue("foobar", out var timer));
+        Assert.True(sch.ServiceHeartbeats.TryGetValue("foobar", out Timer timer));
         Assert.NotNull(timer);
         sch.Remove("foobar");
         Assert.False(sch.ServiceHeartbeats.TryGetValue("foobar", out _));
@@ -101,11 +110,16 @@ public class TtlSchedulerTests
         var clientMoq = new Mock<IConsulClient>();
         var agentMoq = new Mock<IAgentEndpoint>();
         clientMoq.Setup(c => c.Agent).Returns(agentMoq.Object);
-        var client = clientMoq.Object;
+        IConsulClient client = clientMoq.Object;
+
         var opts = new ConsulDiscoveryOptions
         {
-            Heartbeat = new ConsulHeartbeatOptions { TtlValue = 2 }
+            Heartbeat = new ConsulHeartbeatOptions
+            {
+                TtlValue = 2
+            }
         };
+
         var sch = new TtlScheduler(opts, client);
         sch.Add("foobar");
         Thread.Sleep(2500);

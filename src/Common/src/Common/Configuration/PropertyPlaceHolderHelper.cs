@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System.Text;
 
 namespace Steeltoe.Common.Configuration;
 
 /// <summary>
-/// Utility class for working with configuration values that have placeholders in them.
-/// A placeholder takes the form of: <code> ${some:config:reference?default_if_not_present}></code>
-/// Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper.
+/// Utility class for working with configuration values that have placeholders in them. A placeholder takes the form of:
+/// <code> ${some:config:reference?default_if_not_present}></code> Note: This was "inspired" by the Spring class: PropertyPlaceholderHelper.
 /// </summary>
 public static class PropertyPlaceholderHelper
 {
@@ -21,34 +20,52 @@ public static class PropertyPlaceholderHelper
     private const string Separator = "?";
 
     /// <summary>
-    /// Replaces all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>
-    /// with the corresponding value from the supplied <see cref="IConfiguration"/>.
+    /// Replaces all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code> with the corresponding value from the supplied
+    /// <see cref="IConfiguration" />.
     /// </summary>
-    /// <param name="property">the string containing one or more placeholders.</param>
-    /// <param name="config">the configuration used for finding replace values.</param>
-    /// <param name="logger">optional logger.</param>
-    /// <returns>the supplied value with the placeholders replaced inline.</returns>
+    /// <param name="property">
+    /// the string containing one or more placeholders.
+    /// </param>
+    /// <param name="config">
+    /// the configuration used for finding replace values.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
+    /// <returns>
+    /// the supplied value with the placeholders replaced inline.
+    /// </returns>
     public static string ResolvePlaceholders(string property, IConfiguration config, ILogger logger = null)
     {
         return ParseStringValue(property, config, new HashSet<string>(), logger);
     }
 
     /// <summary>
-    /// Finds all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>,
-    /// resolves them from other values in the configuration, returns a new list to add to your configuration.
+    /// Finds all placeholders of the form: <code> ${some:config:reference?default_if_not_present}</code>, resolves them from other values in the
+    /// configuration, returns a new list to add to your configuration.
     /// </summary>
-    /// <param name="config">The configuration to use as both source and target for placeholder resolution.</param>
-    /// <param name="logger">Optional logger.</param>
-    /// <param name="useEmptyStringIfNotFound">Replace the placeholder with an empty string, so the application does not see it.</param>
-    /// <returns>A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder"/> with method 'AddInMemoryCollection'.</returns>
-    public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null, bool useEmptyStringIfNotFound = true)
+    /// <param name="config">
+    /// The configuration to use as both source and target for placeholder resolution.
+    /// </param>
+    /// <param name="logger">
+    /// Optional logger.
+    /// </param>
+    /// <param name="useEmptyStringIfNotFound">
+    /// Replace the placeholder with an empty string, so the application does not see it.
+    /// </param>
+    /// <returns>
+    /// A list of keys with resolved values. Add to your <see cref="ConfigurationBuilder" /> with method 'AddInMemoryCollection'.
+    /// </returns>
+    public static IEnumerable<KeyValuePair<string, string>> GetResolvedConfigurationPlaceholders(IConfiguration config, ILogger logger = null,
+        bool useEmptyStringIfNotFound = true)
     {
         // setup a holding tank for resolved values
         var resolvedValues = new Dictionary<string, string>();
         var visitedPlaceholders = new HashSet<string>();
 
         // iterate all config entries where the value isn't null and contains both the prefix and suffix that identify placeholders
-        foreach (var entry in config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
+        foreach (KeyValuePair<string, string> entry in
+            config.AsEnumerable().Where(e => e.Value != null && e.Value.Contains(Prefix) && e.Value.Contains(Suffix)))
         {
             logger?.LogTrace("Found a property placeholder '{placeholder}' to resolve for key '{key}", entry.Value, entry.Key);
             resolvedValues.Add(entry.Key, ParseStringValue(entry.Value, config, visitedPlaceholders, logger, useEmptyStringIfNotFound));
@@ -57,7 +74,8 @@ public static class PropertyPlaceholderHelper
         return resolvedValues;
     }
 
-    private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null, bool useEmptyStringIfNotFound = false)
+    private static string ParseStringValue(string property, IConfiguration config, ISet<string> visitedPlaceHolders, ILogger logger = null,
+        bool useEmptyStringIfNotFound = false)
     {
         if (config == null)
         {
@@ -69,7 +87,8 @@ public static class PropertyPlaceholderHelper
             return property;
         }
 
-        var startIndex = property.IndexOf(Prefix);
+        int startIndex = property.IndexOf(Prefix);
+
         if (startIndex == -1)
         {
             return property;
@@ -79,12 +98,13 @@ public static class PropertyPlaceholderHelper
 
         while (startIndex != -1)
         {
-            var endIndex = FindEndIndex(result, startIndex);
+            int endIndex = FindEndIndex(result, startIndex);
+
             if (endIndex != -1)
             {
-                var placeholder = result.Substring(startIndex + Prefix.Length, endIndex);
+                string placeholder = result.Substring(startIndex + Prefix.Length, endIndex);
 
-                var originalPlaceholder = placeholder;
+                string originalPlaceholder = placeholder;
 
                 if (!visitedPlaceHolders.Add(originalPlaceholder))
                 {
@@ -95,17 +115,19 @@ public static class PropertyPlaceholderHelper
                 placeholder = ParseStringValue(placeholder, config, visitedPlaceHolders);
 
                 // Handle array references foo:bar[1]:baz format -> foo:bar:1:baz
-                var lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
+                string lookup = placeholder.Replace('[', ':').Replace("]", string.Empty);
 
                 // Now obtain the value for the fully resolved key...
-                var propVal = config[lookup];
+                string propVal = config[lookup];
+
                 if (propVal == null)
                 {
-                    var separatorIndex = placeholder.IndexOf(Separator);
+                    int separatorIndex = placeholder.IndexOf(Separator);
+
                     if (separatorIndex != -1)
                     {
-                        var actualPlaceholder = placeholder.Substring(0, separatorIndex);
-                        var defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
+                        string actualPlaceholder = placeholder.Substring(0, separatorIndex);
+                        string defaultValue = placeholder.Substring(separatorIndex + Separator.Length);
                         propVal = config[actualPlaceholder] ?? defaultValue;
                     }
                     else if (useEmptyStringIfNotFound)
@@ -150,8 +172,9 @@ public static class PropertyPlaceholderHelper
 
     private static int FindEndIndex(StringBuilder property, int startIndex)
     {
-        var index = startIndex + Prefix.Length;
-        var withinNestedPlaceholder = 0;
+        int index = startIndex + Prefix.Length;
+        int withinNestedPlaceholder = 0;
+
         while (index < property.Length)
         {
             if (SubstringMatch(property, index, Suffix))
@@ -187,7 +210,7 @@ public static class PropertyPlaceholderHelper
             return false;
         }
 
-        for (var i = 0; i < substring.Length; i++)
+        for (int i = 0; i < substring.Length; i++)
         {
             if (str[index + i] != substring[i])
             {

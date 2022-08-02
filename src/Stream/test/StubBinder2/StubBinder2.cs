@@ -25,9 +25,15 @@ public sealed class StubBinder2 : IBinder<object>
         StubBinder2Dependency = stubBinder2Dependency;
     }
 
-    public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions) => null;
+    public IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
+    {
+        return null;
+    }
 
-    public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions) => null;
+    public IBinding BindProducer(string name, object outboundTarget, IProducerOptions producerOptions)
+    {
+        return null;
+    }
 
     public void Dispose()
     {

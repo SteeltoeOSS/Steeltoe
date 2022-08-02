@@ -11,19 +11,27 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Registers mapping for an endpoint. This gets used when calling <see cref="ActuatorRouteBuilderExtensions.MapAllActuators(AspNetCore.Routing.IEndpointRouteBuilder, MediaTypeVersion)"/>.
+    /// Registers mapping for an endpoint. This gets used when calling
+    /// <see cref="ActuatorRouteBuilderExtensions.MapAllActuators(AspNetCore.Routing.IEndpointRouteBuilder, MediaTypeVersion)" />.
     /// </summary>
-    /// <typeparam name="TEndpoint">The type of endpoint.</typeparam>
-    /// <param name="services">The service collection.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <typeparam name="TEndpoint">
+    /// The type of endpoint.
+    /// </typeparam>
+    /// <param name="services">
+    /// The service collection.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddActuatorEndpointMapping<TEndpoint>(this IServiceCollection services)
         where TEndpoint : class, IEndpoint
     {
         services.AddSingleton(new EndpointMappingEntry
         {
             // new way compatible with .NET 6
-            SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder),
+            SetupConvention = (endpoints, conventionBuilder) => endpoints.Map<TEndpoint>(conventionBuilder)
         });
+
         return services;
     }
 }

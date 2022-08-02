@@ -9,28 +9,36 @@ using Steeltoe.Common.LoadBalancer;
 namespace Steeltoe.Common.Http.LoadBalancer;
 
 /// <summary>
-/// Same as <see cref="LoadBalancerHttpClientHandler"/> except is a <see cref="DelegatingHandler"/>, for use with HttpClientFactory.
+/// Same as <see cref="LoadBalancerHttpClientHandler" /> except is a <see cref="DelegatingHandler" />, for use with HttpClientFactory.
 /// </summary>
 public class LoadBalancerDelegatingHandler : DelegatingHandler
 {
     private readonly ILoadBalancer _loadBalancer;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
-    /// For use with <see cref="IHttpClientBuilder"/>.
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler" /> class.
+    /// <para />
+    /// For use with <see cref="IHttpClientBuilder" />.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use.</param>
+    /// <param name="loadBalancer">
+    /// Load balancer to use.
+    /// </param>
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer)
     {
         _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler"/> class. <para />
-    /// For use with <see cref="IHttpClientBuilder"/>.
+    /// Initializes a new instance of the <see cref="LoadBalancerDelegatingHandler" /> class.
+    /// <para />
+    /// For use with <see cref="IHttpClientBuilder" />.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use.</param>
-    /// <param name="logger">For logging.</param>
+    /// <param name="loadBalancer">
+    /// Load balancer to use.
+    /// </param>
+    /// <param name="logger">
+    /// For logging.
+    /// </param>
     [Obsolete("Please remove ILogger parameter")]
     public LoadBalancerDelegatingHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
@@ -41,16 +49,17 @@ public class LoadBalancerDelegatingHandler : DelegatingHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         // record the original request
-        var originalUri = request.RequestUri;
+        Uri originalUri = request.RequestUri;
 
         // look up a service instance and update the request
-        var resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
+        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
         request.RequestUri = resolvedUri;
 
         // allow other handlers to operate and the request to continue
-        var startTime = DateTime.UtcNow;
+        DateTime startTime = DateTime.UtcNow;
 
         Exception exception = null;
+
         try
         {
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);

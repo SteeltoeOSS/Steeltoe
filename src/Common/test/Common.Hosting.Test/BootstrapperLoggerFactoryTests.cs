@@ -17,14 +17,14 @@ public class BootstrapperLoggerFactoryTests
     [Fact]
     public void BootstrapLoggerFactory_CorrectTypeResolved()
     {
-        var sut = BootstrapLoggerFactory.Instance;
+        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Instance;
         sut.Should().BeOfType<UpgradableBootstrapLoggerFactory>();
     }
 
     [Fact]
     public void UpgradableBootLogger()
     {
-        var sut = BootstrapLoggerFactory.Instance;
+        IBootstrapLoggerFactory sut = BootstrapLoggerFactory.Instance;
         sut.Should().BeOfType<UpgradableBootstrapLoggerFactory>();
 
         var logProvider = new Mock<ILoggerProvider>();
@@ -37,48 +37,41 @@ public class BootstrapperLoggerFactoryTests
             builder.AddConfiguration(configuration.GetSection("Logging"));
         });
 
-        var logger = sut.CreateLogger("test");
+        ILogger logger = sut.CreateLogger("test");
 
         // test default bootstrapper mode
         logger.LogInformation("Test");
-        mockLogger.Verify(x => x.Log(
-            LogLevel.Information,
-            It.IsAny<EventId>(),
-            It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-            It.IsAny<Exception>(),
+
+        mockLogger.Verify(x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((o, t) => string.Equals("Test", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
             It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)));
 
         // test change to log levels after updated with config
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
         {
             { "Logging:LogLevel:Default", nameof(LogLevel.Warning) }
         }).Build();
+
         sut.Update(config);
         logger.LogInformation("Test2");
+
         mockLogger.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                It.IsAny<Exception>(),
-                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
-            Times.Never);
+            x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => string.Equals("Test2", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
 
         // upgrade bootstrapper with new log factory, and confirm that it delegates to loggers spawned from it
         var newLogProvider = new Mock<ILoggerProvider>();
         var newMockLogger = new Mock<ILogger>();
         newLogProvider.Setup(provider => provider.CreateLogger(It.IsAny<string>())).Returns(() => newMockLogger.Object);
-        var newLoggerFactory = LoggerFactory.Create(builder => builder.Services.AddSingleton(newLogProvider));
+        ILoggerFactory newLoggerFactory = LoggerFactory.Create(builder => builder.Services.AddSingleton(newLogProvider));
 
         sut.Update(newLoggerFactory);
         logger.LogInformation("Test3");
+
         newMockLogger.Verify(
-            x => x.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.InvariantCultureIgnoreCase)),
-                It.IsAny<Exception>(),
-                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)),
-            Times.Never);
+            x => x.Log(LogLevel.Information, It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((o, t) => string.Equals("Test3", o.ToString(), StringComparison.InvariantCultureIgnoreCase)), It.IsAny<Exception>(),
+                It.Is<Func<It.IsAnyType, Exception, string>>((v, t) => true)), Times.Never);
     }
 }

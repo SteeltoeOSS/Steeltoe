@@ -11,20 +11,28 @@ public class OracleConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        OracleServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<OracleServiceInfo>()
             : configuration.GetRequiredServiceInfo<OracleServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((OracleServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((OracleServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) =>
-        serviceType.Equals("oracle", StringComparison.InvariantCultureIgnoreCase) ||
-        serviceType.Equals("oracledb", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("oracle", StringComparison.InvariantCultureIgnoreCase) ||
+            serviceType.Equals("oracledb", StringComparison.InvariantCultureIgnoreCase);
+    }
 
-    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is OracleServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+    {
+        return serviceInfo is OracleServiceInfo;
+    }
 
     private Connection GetConnection(OracleServiceInfo info, IConfiguration configuration)
     {

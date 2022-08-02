@@ -6,10 +6,10 @@ namespace Steeltoe.Connector.Hystrix;
 
 public class HystrixConnectionFactory
 {
+    public object ConnectionFactory { get; }
+
     public HystrixConnectionFactory(object realFactory)
     {
         ConnectionFactory = realFactory ?? throw new ArgumentNullException(nameof(realFactory));
     }
-
-    public object ConnectionFactory { get; private set; }
 }

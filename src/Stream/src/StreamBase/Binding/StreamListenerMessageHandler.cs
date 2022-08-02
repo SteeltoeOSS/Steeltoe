@@ -13,20 +13,18 @@ public class StreamListenerMessageHandler : AbstractReplyProducingMessageHandler
 {
     private readonly IInvocableHandlerMethod _invocableHandlerMethod;
 
-    public StreamListenerMessageHandler(IApplicationContext context, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders, IList<string> notPropagatedHeaders)
+    protected override bool ShouldCopyRequestHeaders { get; }
+
+    public bool IsVoid => _invocableHandlerMethod.IsVoid;
+
+    public StreamListenerMessageHandler(IApplicationContext context, IInvocableHandlerMethod invocableHandlerMethod, bool copyHeaders,
+        IList<string> notPropagatedHeaders)
         : base(context)
     {
         _invocableHandlerMethod = invocableHandlerMethod;
         ShouldCopyRequestHeaders = copyHeaders;
         NotPropagatedHeaders = notPropagatedHeaders;
     }
-
-    public bool IsVoid
-    {
-        get { return _invocableHandlerMethod.IsVoid; }
-    }
-
-    protected override bool ShouldCopyRequestHeaders { get; }
 
     public override void Initialize()
     {
@@ -38,7 +36,7 @@ public class StreamListenerMessageHandler : AbstractReplyProducingMessageHandler
         try
         {
             // TODO:  Look at async task type methods
-            var result = _invocableHandlerMethod.Invoke(requestMessage);
+            object result = _invocableHandlerMethod.Invoke(requestMessage);
             return result;
         }
         catch (Exception e)
@@ -47,11 +45,8 @@ public class StreamListenerMessageHandler : AbstractReplyProducingMessageHandler
             {
                 throw;
             }
-            else
-            {
-                throw new MessagingException(
-                    requestMessage, $"Exception thrown while invoking {_invocableHandlerMethod.ShortLogMessage}", e);
-            }
+
+            throw new MessagingException(requestMessage, $"Exception thrown while invoking {_invocableHandlerMethod.ShortLogMessage}", e);
         }
     }
 }

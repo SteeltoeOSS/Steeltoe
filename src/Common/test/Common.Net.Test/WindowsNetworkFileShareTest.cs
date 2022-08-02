@@ -52,7 +52,8 @@ public class WindowsNetworkFileShareTest
     {
         var fakeMpr = new FakeMultipleProviderRouter(false);
 
-        var exception = Assert.Throws<ExternalException>(() => new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMpr));
+        var exception = Assert.Throws<ExternalException>(() =>
+            new WindowsNetworkFileShare("doesn't-matter", new NetworkCredential("user", "password"), fakeMpr));
 
         Assert.Equal("Error connecting to remote share - Code: 1200, Error: Bad Device", exception.Message);
     }

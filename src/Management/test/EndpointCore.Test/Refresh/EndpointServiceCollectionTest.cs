@@ -18,9 +18,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRefreshActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddRefreshActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddRefreshActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -28,19 +28,21 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddRefreshActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(config);
 
         services.AddRefreshActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IRefreshOptions>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<RefreshEndpoint>();

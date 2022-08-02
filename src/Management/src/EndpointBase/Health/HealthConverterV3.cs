@@ -32,7 +32,7 @@ public class HealthConverterV3 : JsonConverter<HealthEndpointResponse>
                 writer.WritePropertyName("components");
                 writer.WriteStartObject();
 
-                foreach (var detail in health.Details)
+                foreach (KeyValuePair<string, object> detail in health.Details)
                 {
                     writer.WritePropertyName(detail.Key);
                     JsonSerializer.Serialize(writer, detail.Value, options);

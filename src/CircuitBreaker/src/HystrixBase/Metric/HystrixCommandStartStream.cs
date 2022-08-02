@@ -2,31 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using System.Collections.Concurrent;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixCommandStartStream : IHystrixEventStream<HystrixCommandExecutionStarted>
 {
-    private static readonly ConcurrentDictionary<string, HystrixCommandStartStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, HystrixCommandStartStream> Streams = new();
 
     private readonly IHystrixCommandKey _commandKey;
     private readonly ISubject<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted> _writeOnlySubject;
     private readonly IObservable<HystrixCommandExecutionStarted> _readOnlyStream;
-
-    public static HystrixCommandStartStream GetInstance(IHystrixCommandKey commandKey)
-    {
-        return Streams.GetOrAddEx(commandKey.Name, _ => new HystrixCommandStartStream(commandKey));
-    }
 
     internal HystrixCommandStartStream(IHystrixCommandKey commandKey)
     {
         _commandKey = commandKey;
         _writeOnlySubject = Subject.Synchronize<HystrixCommandExecutionStarted, HystrixCommandExecutionStarted>(new Subject<HystrixCommandExecutionStarted>());
         _readOnlyStream = _writeOnlySubject.AsObservable();
+    }
+
+    public static HystrixCommandStartStream GetInstance(IHystrixCommandKey commandKey)
+    {
+        return Streams.GetOrAddEx(commandKey.Name, _ => new HystrixCommandStartStream(commandKey));
     }
 
     public static void Reset()

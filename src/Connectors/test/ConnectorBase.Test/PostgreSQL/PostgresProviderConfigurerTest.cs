@@ -13,6 +13,7 @@ public class PostgresProviderConfigurerTest
     public void UpdateConfiguration_WithNullPostgresServiceInfo_ReturnsExpected()
     {
         var configurer = new PostgresProviderConfigurer();
+
         var config = new PostgresProviderConnectorOptions
         {
             Host = "localhost",
@@ -21,6 +22,7 @@ public class PostgresProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Host);
@@ -35,6 +37,7 @@ public class PostgresProviderConfigurerTest
     public void UpdateConfiguration_WithPostgresServiceInfo_ReturnsExpected()
     {
         var configurer = new PostgresProviderConfigurer();
+
         var config = new PostgresProviderConnectorOptions
         {
             Host = "localhost",
@@ -43,6 +46,7 @@ public class PostgresProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, config);
@@ -58,6 +62,7 @@ public class PostgresProviderConfigurerTest
     public void UpdateConfiguration_WithPostgresServiceInfo_UriEncoded_ReturnsExpected()
     {
         var configurer = new PostgresProviderConfigurer();
+
         var config = new PostgresProviderConnectorOptions
         {
             Host = "localhost",
@@ -66,6 +71,7 @@ public class PostgresProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:%247E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, config);
@@ -90,7 +96,7 @@ public class PostgresProviderConfigurerTest
         };
 
         var configurer = new PostgresProviderConfigurer();
-        var opts = configurer.Configure(null, config);
+        string opts = configurer.Configure(null, config);
         Assert.Contains("Host=localhost;", opts);
         Assert.Contains("Port=1234;", opts);
         Assert.Contains("Username=username;", opts);
@@ -113,7 +119,7 @@ public class PostgresProviderConfigurerTest
         var configurer = new PostgresProviderConfigurer();
         var si = new PostgresServiceInfo("MyId", "postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:5432/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-        var opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, config);
 
         Assert.Contains("Host=192.168.0.90;", opts);
         Assert.Contains("Port=5432;", opts);

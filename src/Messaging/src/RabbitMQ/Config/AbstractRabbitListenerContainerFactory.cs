@@ -14,37 +14,30 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabbitListenerContainerFactory<TContainer>
     where TContainer : AbstractMessageListenerContainer
 {
+    private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
-    private readonly IOptionsMonitor<RabbitOptions> _optionsMonitor;
 
     private ISmartMessageConverter _messageConverter;
 
-    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+    protected internal RabbitOptions Options
     {
-        ApplicationContext = applicationContext;
-        LoggerFactory = loggerFactory;
-    }
+        get
+        {
+            if (_optionsMonitor != null)
+            {
+                return _optionsMonitor.CurrentValue;
+            }
 
-    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-    {
-        ApplicationContext = applicationContext;
-        LoggerFactory = loggerFactory;
-        ConnectionFactory = connectionFactory;
-    }
-
-    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-    {
-        ApplicationContext = applicationContext;
-        LoggerFactory = loggerFactory;
-        ConnectionFactory = connectionFactory;
-        _optionsMonitor = optionsMonitor;
+            return null;
+        }
     }
 
     public IApplicationContext ApplicationContext { get; set; }
@@ -57,7 +50,9 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
     {
         get
         {
-            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ?? new RabbitMQ.Support.Converter.SimpleMessageConverter(LoggerFactory?.CreateLogger<RabbitMQ.Support.Converter.SimpleMessageConverter>());
+            _messageConverter ??= ApplicationContext?.GetService<ISmartMessageConverter>() ??
+                new SimpleMessageConverter(LoggerFactory?.CreateLogger<SimpleMessageConverter>());
+
             return _messageConverter;
         }
         set => _messageConverter = value;
@@ -111,17 +106,27 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public bool PossibleAuthenticationFailureFatal { get; set; } = true;
 
-    protected internal RabbitOptions Options
+    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
     {
-        get
-        {
-            if (_optionsMonitor != null)
-            {
-                return _optionsMonitor.CurrentValue;
-            }
+        ApplicationContext = applicationContext;
+        LoggerFactory = loggerFactory;
+    }
 
-            return null;
-        }
+    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
+        ILoggerFactory loggerFactory = null)
+    {
+        ApplicationContext = applicationContext;
+        LoggerFactory = loggerFactory;
+        ConnectionFactory = connectionFactory;
+    }
+
+    protected AbstractRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor,
+        IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+    {
+        ApplicationContext = applicationContext;
+        LoggerFactory = loggerFactory;
+        ConnectionFactory = connectionFactory;
+        _optionsMonitor = optionsMonitor;
     }
 
     public void SetAfterReceivePostProcessors(params IMessagePostProcessor[] postProcessors)
@@ -131,7 +136,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
             throw new ArgumentNullException(nameof(postProcessors));
         }
 
-        foreach (var p in postProcessors)
+        foreach (IMessagePostProcessor p in postProcessors)
         {
             if (p == null)
             {
@@ -149,7 +154,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
             throw new ArgumentNullException(nameof(postProcessors));
         }
 
-        foreach (var p in postProcessors)
+        foreach (IMessagePostProcessor p in postProcessors)
         {
             if (p == null)
             {
@@ -162,7 +167,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
 
     public TContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
     {
-        var instance = CreateContainerInstance();
+        TContainer instance = CreateContainerInstance();
 
         instance.ConnectionFactory = ConnectionFactory;
         instance.ErrorHandler = ErrorHandler;
@@ -239,6 +244,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
         }
 
         instance.Phase = Phase;
+
         if (AfterReceivePostProcessors != null)
         {
             instance.SetAfterReceivePostProcessors(AfterReceivePostProcessors.ToArray());
@@ -287,6 +293,7 @@ public abstract class AbstractRabbitListenerContainerFactory<TContainer> : IRabb
             if (RetryTemplate != null)
             {
                 adapterListener.RetryTemplate = RetryTemplate;
+
                 if (ReplyRecoveryCallback != null)
                 {
                     adapterListener.RecoveryCallback = ReplyRecoveryCallback;

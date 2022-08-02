@@ -2,28 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Metric;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using System.Collections.Concurrent;
 using System.Text;
+using Steeltoe.CircuitBreaker.Hystrix.Metric;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixRequestLog
 {
-    private sealed class HystrixRequestLogVariable : HystrixRequestVariableDefault<HystrixRequestLog>
-    {
-        public HystrixRequestLogVariable()
-            : base(() => new HystrixRequestLog(), log =>
-            {
-                HystrixRequestEventsStream.GetInstance().Write(log.AllExecutedCommands);
-            })
-        {
-        }
-    }
+    protected internal const int MaxStorage = 1000;
 
-    private static readonly HystrixRequestLogVariable RequestLog = new ();
+    private static readonly HystrixRequestLogVariable RequestLog = new();
+    private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new(MaxStorage);
 
     public static HystrixRequestLog CurrentRequestLog
     {
@@ -33,15 +25,12 @@ public class HystrixRequestLog
             {
                 return RequestLog.Value;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
-    protected internal const int MaxStorage = 1000;
-    private readonly BlockingCollection<IHystrixInvokableInfo> _allExecutedCommands = new (MaxStorage);
+    public ICollection<IHystrixInvokableInfo> AllExecutedCommands => _allExecutedCommands.ToList().AsReadOnly();
 
     internal HystrixRequestLog()
     {
@@ -56,14 +45,6 @@ public class HystrixRequestLog
         }
     }
 
-    public ICollection<IHystrixInvokableInfo> AllExecutedCommands
-    {
-        get
-        {
-            return _allExecutedCommands.ToList().AsReadOnly();
-        }
-    }
-
     public string GetExecutedCommandsAsString()
     {
         try
@@ -72,27 +53,31 @@ public class HystrixRequestLog
             var aggregatedCommandExecutionTime = new Dictionary<string, int>();
 
             var builder = new StringBuilder();
-            var estimatedLength = 0;
-            foreach (var command in _allExecutedCommands)
+            int estimatedLength = 0;
+
+            foreach (IHystrixInvokableInfo command in _allExecutedCommands)
             {
                 builder.Length = 0;
                 builder.Append(command.CommandKey.Name);
 
                 var events = new List<HystrixEventType>(command.ExecutionEvents);
+
                 if (events.Count > 0)
                 {
                     events.Sort();
 
                     // replicate functionality of Arrays.toString(events.toArray()) to append directly to existing StringBuilder
                     builder.Append('[');
-                    foreach (var ev in events)
+
+                    foreach (HystrixEventType ev in events)
                     {
-                        var eventName = ev.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+                        string eventName = ev.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
                         switch (ev)
                         {
                             case HystrixEventType.Emit:
-                                var numEmissions = command.NumberEmissions;
+                                int numEmissions = command.NumberEmissions;
+
                                 if (numEmissions > 1)
                                 {
                                     builder.Append(eventName).Append('x').Append(numEmissions).Append(", ");
@@ -104,7 +89,8 @@ public class HystrixRequestLog
 
                                 break;
                             case HystrixEventType.FallbackEmit:
-                                var numFallbackEmissions = command.NumberFallbackEmissions;
+                                int numFallbackEmissions = command.NumberFallbackEmissions;
+
                                 if (numFallbackEmissions > 1)
                                 {
                                     builder.Append(eventName).Append('x').Append(numFallbackEmissions).Append(", ");
@@ -129,9 +115,10 @@ public class HystrixRequestLog
                     builder.Append("[Executed]");
                 }
 
-                var display = builder.ToString();
+                string display = builder.ToString();
                 estimatedLength += display.Length + 12; // add 12 chars to display length for appending totalExecutionTime and count below
-                if (aggregatedCommandsExecuted.TryGetValue(display, out var counter))
+
+                if (aggregatedCommandsExecuted.TryGetValue(display, out int counter))
                 {
                     aggregatedCommandsExecuted[display] = counter + 1;
                 }
@@ -141,7 +128,8 @@ public class HystrixRequestLog
                     aggregatedCommandsExecuted.Add(display, 1);
                 }
 
-                var executionTime = command.ExecutionTimeInMilliseconds;
+                int executionTime = command.ExecutionTimeInMilliseconds;
+
                 if (executionTime < 0)
                 {
                     // do this so we don't create negative values or subtract values
@@ -162,7 +150,8 @@ public class HystrixRequestLog
 
             builder.Length = 0;
             builder.EnsureCapacity(estimatedLength);
-            foreach (var displayString in aggregatedCommandsExecuted.Keys)
+
+            foreach (string displayString in aggregatedCommandsExecuted.Keys)
             {
                 if (builder.Length > 0)
                 {
@@ -170,10 +159,11 @@ public class HystrixRequestLog
                 }
 
                 builder.Append(displayString);
-                var totalExecutionTime = aggregatedCommandExecutionTime[displayString];
+                int totalExecutionTime = aggregatedCommandExecutionTime[displayString];
                 builder.Append('[').Append(totalExecutionTime).Append("ms]");
 
-                var count = aggregatedCommandsExecuted[displayString];
+                int count = aggregatedCommandsExecuted[displayString];
+
                 if (count > 1)
                 {
                     builder.Append('x').Append(count);
@@ -187,6 +177,17 @@ public class HystrixRequestLog
             // logger.error("Failed to create HystrixRequestLog response header string.", e)
             // don't let this cause the entire app to fail so just return "Unknown"
             return "Unknown";
+        }
+    }
+
+    private sealed class HystrixRequestLogVariable : HystrixRequestVariableDefault<HystrixRequestLog>
+    {
+        public HystrixRequestLogVariable()
+            : base(() => new HystrixRequestLog(), log =>
+            {
+                HystrixRequestEventsStream.GetInstance().Write(log.AllExecutedCommands);
+            })
+        {
         }
     }
 }

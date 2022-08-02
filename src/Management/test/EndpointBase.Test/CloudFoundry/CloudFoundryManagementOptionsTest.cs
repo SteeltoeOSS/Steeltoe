@@ -31,12 +31,12 @@ public class CloudfoundryManagementOptionsTest : BaseTest
         var appsettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:path"] = "/management"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new ActuatorManagementOptions(config);
 
@@ -52,12 +52,12 @@ public class CloudfoundryManagementOptionsTest : BaseTest
         var appsettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:path"] = "/management"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new CloudFoundryManagementOptions(config);
 

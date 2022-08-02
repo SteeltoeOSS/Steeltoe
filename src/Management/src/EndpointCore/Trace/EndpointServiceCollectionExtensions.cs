@@ -17,8 +17,13 @@ public static class EndpointServiceCollectionExtensions
     /// <summary>
     /// Adds components of the Trace actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add trace to.</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace).</param>
+    /// <param name="services">
+    /// Service collection to add trace to.
+    /// </param>
+    /// <param name="config">
+    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
+    /// management:endpoints:trace).
+    /// </param>
     public static void AddTraceActuator(this IServiceCollection services, IConfiguration config = null)
     {
         services.AddTraceActuator(config, MediaTypeVersion.V2);
@@ -27,9 +32,16 @@ public static class EndpointServiceCollectionExtensions
     /// <summary>
     /// Adds components of the Trace actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add trace to.</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:trace).</param>
-    /// <param name="version"><see cref="MediaTypeVersion"/> to use in responses.</param>
+    /// <param name="services">
+    /// Service collection to add trace to.
+    /// </param>
+    /// <param name="config">
+    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
+    /// management:endpoints:trace).
+    /// </param>
+    /// <param name="version">
+    /// <see cref="MediaTypeVersion" /> to use in responses.
+    /// </param>
     public static void AddTraceActuator(this IServiceCollection services, IConfiguration config, MediaTypeVersion version)
     {
         if (services == null)
@@ -38,6 +50,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
@@ -57,7 +70,10 @@ public static class EndpointServiceCollectionExtensions
                 break;
             default:
                 services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, HttpTraceDiagnosticObserver>());
-                services.TryAddSingleton(p => new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+
+                services.TryAddSingleton(p =>
+                    new HttpTraceEndpoint(p.GetService<ITraceOptions>(), p.GetServices<IDiagnosticObserver>().OfType<HttpTraceDiagnosticObserver>().Single()));
+
                 services.AddActuatorEndpointMapping<HttpTraceEndpoint>();
                 break;
         }

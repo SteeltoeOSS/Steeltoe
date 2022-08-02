@@ -24,8 +24,9 @@ public class MethodInvoker
 
     public static int GetTypeDifferenceWeight(Type[] paramTypes, object[] args)
     {
-        var result = 0;
-        for (var i = 0; i < paramTypes.Length; i++)
+        int result = 0;
+
+        for (int i = 0; i < paramTypes.Length; i++)
         {
             if (!ClassUtils.IsAssignableValue(paramTypes[i], args[i]))
             {
@@ -34,8 +35,9 @@ public class MethodInvoker
 
             if (args[i] != null)
             {
-                var paramType = paramTypes[i];
-                var superClass = args[i].GetType().BaseType;
+                Type paramType = paramTypes[i];
+                Type superClass = args[i].GetType().BaseType;
+
                 while (superClass != null)
                 {
                     if (paramType.Equals(superClass))
@@ -67,6 +69,7 @@ public class MethodInvoker
     public virtual void SetTargetObject(object target)
     {
         TargetObject = target;
+
         if (target != null)
         {
             TargetClass = target.GetType();
@@ -82,22 +85,23 @@ public class MethodInvoker
     {
         if (StaticMethod != null)
         {
-            var lastDotIndex = StaticMethod.LastIndexOf('.');
+            int lastDotIndex = StaticMethod.LastIndexOf('.');
+
             if (lastDotIndex == -1 || lastDotIndex == StaticMethod.Length)
             {
-                throw new ArgumentException(
-                    "staticMethod must be a fully qualified class plus method name: " +
+                throw new ArgumentException("staticMethod must be a fully qualified class plus method name: " +
                     "e.g. 'example.MyExampleClass.myExampleMethod'");
             }
 
-            var className = StaticMethod.Substring(0, lastDotIndex);
-            var methodName = StaticMethod.Substring(lastDotIndex + 1);
+            string className = StaticMethod.Substring(0, lastDotIndex);
+            string methodName = StaticMethod.Substring(lastDotIndex + 1);
             TargetClass = ResolveClassName(className);
             TargetMethod = methodName;
         }
 
-        var targetClass = TargetClass;
-        var targetMethod = TargetMethod;
+        Type targetClass = TargetClass;
+        string targetMethod = TargetMethod;
+
         if (targetClass == null)
         {
             throw new ArgumentNullException("Either 'targetClass' or 'targetObject' is required");
@@ -108,9 +112,10 @@ public class MethodInvoker
             throw new ArgumentNullException("Property 'targetMethod' is required");
         }
 
-        var arguments = Arguments;
+        object[] arguments = Arguments;
         var argTypes = new Type[arguments.Length];
-        for (var i = 0; i < arguments.Length; ++i)
+
+        for (int i = 0; i < arguments.Length; ++i)
         {
             argTypes[i] = arguments[i] != null ? arguments[i].GetType() : typeof(object);
         }
@@ -123,6 +128,7 @@ public class MethodInvoker
         {
             // Just rethrow exception if we can't get any match.
             MethodObject = FindMatchingMethod();
+
             if (MethodObject == null)
             {
                 throw;
@@ -133,8 +139,9 @@ public class MethodInvoker
     public object Invoke()
     {
         // In the static case, target will simply be {@code null}.
-        var targetObject = TargetObject;
-        var preparedMethod = GetPreparedMethod();
+        object targetObject = TargetObject;
+        MethodInfo preparedMethod = GetPreparedMethod();
+
         if (targetObject == null && !preparedMethod.IsStatic)
         {
             throw new InvalidOperationException("Target method must not be non-static without a target");
@@ -155,26 +162,28 @@ public class MethodInvoker
 
     protected virtual MethodInfo FindMatchingMethod()
     {
-        var targetMethod = TargetMethod;
-        var arguments = Arguments;
-        var argCount = arguments.Length;
+        string targetMethod = TargetMethod;
+        object[] arguments = Arguments;
+        int argCount = arguments.Length;
 
-        var targetClass = TargetClass;
+        Type targetClass = TargetClass;
+
         if (targetClass == null)
         {
             throw new InvalidOperationException("No target class set");
         }
 
-        var candidates = targetClass.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-        var minTypeDiffWeight = int.MaxValue;
+        MethodInfo[] candidates = targetClass.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+        int minTypeDiffWeight = int.MaxValue;
         MethodInfo matchingMethod = null;
 
-        foreach (var candidate in candidates)
+        foreach (MethodInfo candidate in candidates)
         {
             if (candidate.Name.Equals(targetMethod) && candidate.GetParameters().Length == argCount)
             {
-                var paramTypes = GetParameterTypes(candidate);
-                var typeDiffWeight = GetTypeDifferenceWeight(paramTypes, arguments);
+                Type[] paramTypes = GetParameterTypes(candidate);
+                int typeDiffWeight = GetTypeDifferenceWeight(paramTypes, arguments);
+
                 if (typeDiffWeight < minTypeDiffWeight)
                 {
                     minTypeDiffWeight = typeDiffWeight;
@@ -193,10 +202,10 @@ public class MethodInvoker
 
     private Type[] GetParameterTypes(MethodInfo candidate)
     {
-        var parameters = candidate.GetParameters();
+        ParameterInfo[] parameters = candidate.GetParameters();
         var result = new Type[parameters.Length];
 
-        for (var i = 0; i < parameters.Length; i++)
+        for (int i = 0; i < parameters.Length; i++)
         {
             result[i] = parameters[i].ParameterType;
         }

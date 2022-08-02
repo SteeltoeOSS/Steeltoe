@@ -45,7 +45,7 @@ public static class IntegrationContextUtils
 
     public static IExpressionParser GetExpressionParser(IApplicationContext context)
     {
-        var result = context.GetService<IExpressionParser>() ?? new SpelExpressionParser();
+        IExpressionParser result = context.GetService<IExpressionParser>() ?? new SpelExpressionParser();
 
         return result;
     }

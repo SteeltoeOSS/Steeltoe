@@ -107,10 +107,7 @@ internal sealed class MessagingPredicates
         public bool Test(ParameterInfo parameter)
         {
             var annotation = parameter.GetCustomAttribute<HeaderAttribute>();
-            return annotation != null &&
-                   _name == annotation.Name &&
-                   annotation.Required == _required &&
-                   _defaultValue == annotation.DefaultValue;
+            return annotation != null && _name == annotation.Name && annotation.Required == _required && _defaultValue == annotation.DefaultValue;
         }
     }
 }

@@ -12,9 +12,9 @@ public class TracingCoreHostBuilderExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);

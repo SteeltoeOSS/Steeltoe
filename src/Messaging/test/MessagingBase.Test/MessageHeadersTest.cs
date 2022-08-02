@@ -34,7 +34,11 @@ public class MessageHeadersTest
     [Fact]
     public void TestTimestampProvidedNullValue()
     {
-        var input = new Dictionary<string, object> { { MessageHeaders.TimestampName, 1L } };
+        var input = new Dictionary<string, object>
+        {
+            { MessageHeaders.TimestampName, 1L }
+        };
+
         var headers = new MessageHeaders(input, null, null);
         Assert.NotNull(headers.Timestamp);
     }
@@ -73,7 +77,12 @@ public class MessageHeadersTest
     public void TestIdProvidedNullValue()
     {
         var id = Guid.NewGuid();
-        var input = new Dictionary<string, object> { { MessageHeaders.IdName, id } };
+
+        var input = new Dictionary<string, object>
+        {
+            { MessageHeaders.IdName, id }
+        };
+
         var headers = new MessageHeaders(input, null, null);
         Assert.NotNull(headers.Id);
     }
@@ -92,6 +101,7 @@ public class MessageHeadersTest
         {
             { "test", 123 }
         };
+
         var headers = new MessageHeaders(map);
         Assert.Equal(123, headers["test"]);
     }
@@ -103,6 +113,7 @@ public class MessageHeadersTest
         {
             { "test", 123 }
         };
+
         var headers = new MessageHeaders(map);
         Assert.Equal(123, headers.Get<int>("test"));
     }
@@ -114,6 +125,7 @@ public class MessageHeadersTest
         {
             { "test", 123 }
         };
+
         var headers = new MessageHeaders(map);
         Assert.Throws<InvalidCastException>(() => headers.Get<string>("test"));
     }
@@ -123,7 +135,7 @@ public class MessageHeadersTest
     {
         var map = new Dictionary<string, object>();
         var headers = new MessageHeaders(map);
-        headers.TryGetValue("nosuchattribute", out var val);
+        headers.TryGetValue("nosuchattribute", out object val);
         Assert.Null(val);
     }
 
@@ -143,8 +155,9 @@ public class MessageHeadersTest
             { "key1", "val1" },
             { "key2", 123 }
         };
+
         var headers = new MessageHeaders(map);
-        var keys = headers.Keys;
+        ICollection<string> keys = headers.Keys;
         Assert.True(keys.Contains("key1"));
         Assert.True(keys.Contains("key2"));
     }

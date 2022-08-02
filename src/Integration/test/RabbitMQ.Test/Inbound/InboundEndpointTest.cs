@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -15,13 +16,14 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Batch;
+using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Steeltoe.Messaging.Support;
-using System.Text;
 using Xunit;
 using RC = RabbitMQ.Client;
 
@@ -32,34 +34,39 @@ public class InboundEndpointTest
     [Fact]
     public void TestInt2809JavaTypePropertiesToRabbit()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
-        var connection = new Mock<Messaging.RabbitMQ.Connection.IConnection>();
+        var connection = new Mock<IConnection>();
         connection.Setup(c => c.IsOpen).Returns(true);
         connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
+        var connectionFactory = new Mock<IConnectionFactory>();
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = connectionFactory.Object;
-        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.Manual;
-        var adapter = new RabbitInboundChannelAdapter(context, container) { MessageConverter = new JsonMessageConverter() };
+        container.AcknowledgeMode = AcknowledgeMode.Manual;
+
+        var adapter = new RabbitInboundChannelAdapter(context, container)
+        {
+            MessageConverter = new JsonMessageConverter()
+        };
+
         var queueChannel = new QueueChannel(context);
         adapter.OutputChannel = queueChannel;
         adapter.BindSourceMessage = true;
         object payload = new Foo("bar1");
         var objectToJsonTransformer = new ObjectToJsonTransformer(context, typeof(byte[]));
-        var jsonMessage = objectToJsonTransformer.Transform(Message.Create(payload));
+        IMessage jsonMessage = objectToJsonTransformer.Transform(Message.Create(payload));
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(jsonMessage);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(jsonMessage);
         accessor.DeliveryTag = 123ul;
         var listener = container.MessageListener as IChannelAwareMessageListener;
         var rabbitChannel = new Mock<RC.IModel>();
         listener.OnMessage(jsonMessage, rabbitChannel.Object);
-        var result = queueChannel.Receive(1000);
+        IMessage result = queueChannel.Receive(1000);
         Assert.Equal(payload, result.Payload);
         Assert.Same(rabbitChannel.Object, result.Headers.Get<RC.IModel>(RabbitMessageHeaders.Channel));
         Assert.Equal(123ul, result.Headers.DeliveryTag());
@@ -70,16 +77,16 @@ public class InboundEndpointTest
     [Fact]
     public void TestInt2809JavaTypePropertiesFromAmqp()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
-        var connection = new Mock<Messaging.RabbitMQ.Connection.IConnection>();
+        var connection = new Mock<IConnection>();
         connection.Setup(c => c.IsOpen).Returns(true);
         connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
+        var connectionFactory = new Mock<IConnectionFactory>();
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = connectionFactory.Object;
@@ -88,11 +95,11 @@ public class InboundEndpointTest
         adapter.OutputChannel = queueChannel;
         object payload = new Foo("bar1");
         var headers = new MessageHeaders();
-        var amqpMessage = new JsonMessageConverter().ToMessage(payload, headers);
+        IMessage amqpMessage = new JsonMessageConverter().ToMessage(payload, headers);
         var listener = container.MessageListener as IChannelAwareMessageListener;
         listener.OnMessage(amqpMessage, null);
-        var receive = queueChannel.Receive(1000);
-        var result = new JsonToObjectTransformer(context).Transform(receive);
+        IMessage receive = queueChannel.Receive(1000);
+        IMessage result = new JsonToObjectTransformer(context).Transform(receive);
         Assert.NotNull(result);
         Assert.Equal(payload, result.Payload);
         var sourceData = result.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SourceData);
@@ -102,16 +109,16 @@ public class InboundEndpointTest
     [Fact]
     public void TestAdapterConversionError()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var channel = new Mock<RC.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
-        var connection = new Mock<Messaging.RabbitMQ.Connection.IConnection>();
+        var connection = new Mock<IConnection>();
         connection.Setup(c => c.IsOpen).Returns(true);
         connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
-        var connectionFactory = new Mock<Messaging.RabbitMQ.Connection.IConnectionFactory>();
+        var connectionFactory = new Mock<IConnectionFactory>();
         connectionFactory.Setup(f => f.CreateConnection()).Returns(connection.Object);
         var container = new DirectMessageListenerContainer();
         container.ConnectionFactory = connectionFactory.Object;
@@ -123,17 +130,21 @@ public class InboundEndpointTest
         adapter.ErrorChannel = errorChannel;
         adapter.MessageConverter = new ThrowingMessageConverter();
 
-        var accessor = new RabbitHeaderAccessor { DeliveryTag = 123ul };
-        var headers = accessor.MessageHeaders;
-        var message = Message.Create(string.Empty, headers);
+        var accessor = new RabbitHeaderAccessor
+        {
+            DeliveryTag = 123ul
+        };
+
+        IMessageHeaders headers = accessor.MessageHeaders;
+        IMessage<string> message = Message.Create(string.Empty, headers);
         var listener = container.MessageListener as IChannelAwareMessageListener;
         listener.OnMessage(message, null);
         Assert.Null(outputChannel.Receive(0));
-        var received = errorChannel.Receive(0);
+        IMessage received = errorChannel.Receive(0);
         Assert.NotNull(received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage));
         Assert.IsType<ListenerExecutionFailedException>(received.Payload);
 
-        container.AcknowledgeMode = Messaging.RabbitMQ.Core.AcknowledgeMode.Manual;
+        container.AcknowledgeMode = AcknowledgeMode.Manual;
         var channel2 = new Mock<RC.IModel>();
         listener.OnMessage(message, channel2.Object);
         Assert.Null(outputChannel.Receive(0));
@@ -148,23 +159,30 @@ public class InboundEndpointTest
     [Fact]
     public void TestRetryWithinOnMessageAdapter()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var container = new DirectMessageListenerContainer();
+
         var adapter = new RabbitInboundChannelAdapter(context, container)
         {
-            OutputChannel = new DirectChannel(context), RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1)
+            OutputChannel = new DirectChannel(context),
+            RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1)
         };
 
         var errors = new QueueChannel(context);
-        var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors) { ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy() };
+
+        var recoveryCallback = new ErrorMessageSendingRecoverer(context, errors)
+        {
+            ErrorMessageStrategy = new RabbitMessageHeaderErrorMessageStrategy()
+        };
+
         adapter.RecoveryCallback = recoveryCallback;
         var listener = container.MessageListener as IChannelAwareMessageListener;
-        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("foo")).CopyHeaders(new MessageHeaders()).Build();
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("foo")).CopyHeaders(new MessageHeaders()).Build();
         listener.OnMessage(message, null);
-        var errorMessage = errors.Receive(0);
+        IMessage errorMessage = errors.Receive(0);
         Assert.NotNull(errorMessage);
         var payload = errorMessage.Payload as MessagingException;
         Assert.NotNull(payload);
@@ -180,8 +198,8 @@ public class InboundEndpointTest
     [Fact]
     public void TestBatchedAdapter()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var container = new DirectMessageListenerContainer();
@@ -190,14 +208,19 @@ public class InboundEndpointTest
         adapter.OutputChannel = outChannel;
         var listener = container.MessageListener as IChannelAwareMessageListener;
         var bs = new SimpleBatchingStrategy(2, 10_000, 10_000L);
-        var accessor = new MessageHeaderAccessor { ContentType = "text/plain" };
-        var message = Message.Create(Encoding.UTF8.GetBytes("test1"), accessor.MessageHeaders);
+
+        var accessor = new MessageHeaderAccessor
+        {
+            ContentType = "text/plain"
+        };
+
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("test1"), accessor.MessageHeaders);
         bs.AddToBatch("foo", "bar", message);
         message = Message.Create(Encoding.UTF8.GetBytes("test2"), accessor.MessageHeaders);
-        var batched = bs.AddToBatch("foo", "bar", message);
+        MessageBatch? batched = bs.AddToBatch("foo", "bar", message);
         Assert.NotNull(batched);
         listener.OnMessage(batched.Value.Message, null);
-        var received = outChannel.Receive();
+        IMessage received = outChannel.Receive();
         Assert.NotNull(received);
         var asList = received.Payload as List<object>;
         Assert.NotNull(asList);

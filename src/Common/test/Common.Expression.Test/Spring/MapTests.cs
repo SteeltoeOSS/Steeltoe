@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Ast;
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System.Collections;
 using System.Collections.ObjectModel;
+using Steeltoe.Common.Expression.Internal.Spring.Ast;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -92,6 +92,7 @@ public class MapTests : AbstractExpressionTests
             { "b", "b" },
             { "c", "c" }
         };
+
         Evaluate("new System.Collections.Hashtable({a:'a',b:'b',c:'c'})", expected, typeof(Hashtable));
     }
 
@@ -161,10 +162,11 @@ public class MapTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var expression = (SpelExpression)parser.ParseExpression(expressionText);
-        var node = expression.Ast;
-        var condition = node is InlineMap;
+        ISpelNode node = expression.Ast;
+        bool condition = node is InlineMap;
         Assert.True(condition);
         var inlineMap = (InlineMap)node;
+
         if (expectedToBeConstant)
         {
             Assert.True(inlineMap.IsConstant);

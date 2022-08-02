@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using HdrHistogram;
 using Steeltoe.Common;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class RollingCollapserBatchSizeDistributionStream : RollingDistributionStream<HystrixCollapserEvent>
 {
-    private static readonly ConcurrentDictionary<string, RollingCollapserBatchSizeDistributionStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, RollingCollapserBatchSizeDistributionStream> Streams = new();
 
     private static Func<LongHistogram, HystrixCollapserEvent, LongHistogram> AddValuesToBucket { get; } = (initialDistribution, @event) =>
     {
@@ -23,19 +23,21 @@ public class RollingCollapserBatchSizeDistributionStream : RollingDistributionSt
                 }
 
                 break;
-            default:
-                // do nothing
-                break;
         }
 
         return initialDistribution;
     };
 
+    private RollingCollapserBatchSizeDistributionStream(IHystrixCollapserKey collapserKey, int numPercentileBuckets, int percentileBucketSizeInMs)
+        : base(HystrixCollapserEventStream.GetInstance(collapserKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
+    {
+    }
+
     public static RollingCollapserBatchSizeDistributionStream GetInstance(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions properties)
     {
-        var percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
-        var numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
-        var percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
+        int percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
+        int numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
+        int percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
 
         return GetInstance(collapserKey, numPercentileBuckets, percentileBucketSizeInMs);
     }
@@ -52,17 +54,12 @@ public class RollingCollapserBatchSizeDistributionStream : RollingDistributionSt
 
     public static void Reset()
     {
-        foreach (var stream in Streams.Values)
+        foreach (RollingCollapserBatchSizeDistributionStream stream in Streams.Values)
         {
             stream.Unsubscribe();
         }
 
         HystrixCollapserEventStream.Reset();
         Streams.Clear();
-    }
-
-    private RollingCollapserBatchSizeDistributionStream(IHystrixCollapserKey collapserKey, int numPercentileBuckets, int percentileBucketSizeInMs)
-        : base(HystrixCollapserEventStream.GetInstance(collapserKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
-    {
     }
 }

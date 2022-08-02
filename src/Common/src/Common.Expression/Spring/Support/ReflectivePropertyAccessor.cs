@@ -2,19 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class ReflectivePropertyAccessor : IPropertyAccessor
 {
     private readonly bool _allowWrite;
-    private readonly ConcurrentDictionary<PropertyCacheKey, InvokerPair> _readerCache = new ();
-    private readonly ConcurrentDictionary<PropertyCacheKey, MemberInfo> _writerCache = new ();
-    private readonly ConcurrentDictionary<PropertyCacheKey, Type> _typeDescriptorCache = new ();
+    private readonly ConcurrentDictionary<PropertyCacheKey, InvokerPair> _readerCache = new();
+    private readonly ConcurrentDictionary<PropertyCacheKey, MemberInfo> _writerCache = new();
+    private readonly ConcurrentDictionary<PropertyCacheKey, Type> _typeDescriptorCache = new();
 
     public ReflectivePropertyAccessor()
     {
@@ -38,39 +38,41 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             return false;
         }
 
-        var type = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
+
         if (type.IsArray && name.Equals("Length"))
         {
             return true;
         }
 
         var cacheKey = new PropertyCacheKey(type, name, target is Type);
+
         if (_readerCache.ContainsKey(cacheKey))
         {
             return true;
         }
 
-        var method = FindGetterForProperty(name, type, target);
+        MethodInfo method = FindGetterForProperty(name, type, target);
+
         if (method != null)
         {
             // Treat it like a property...
             // The readerCache will only contain gettable properties (let's not worry about setters for now).
-            var typeDescriptor = method.ReturnType;
+            Type typeDescriptor = method.ReturnType;
             method = ClassUtils.GetInterfaceMethodIfPossible(method);
             _readerCache[cacheKey] = new InvokerPair(method, typeDescriptor);
             _typeDescriptorCache[cacheKey] = typeDescriptor;
             return true;
         }
-        else
+
+        FieldInfo field = FindField(name, type, target);
+
+        if (field != null)
         {
-            var field = FindField(name, type, target);
-            if (field != null)
-            {
-                var typeDescriptor = field.FieldType;
-                _readerCache[cacheKey] = new InvokerPair(field, typeDescriptor);
-                _typeDescriptorCache[cacheKey] = typeDescriptor;
-                return true;
-            }
+            Type typeDescriptor = field.FieldType;
+            _readerCache[cacheKey] = new InvokerPair(field, typeDescriptor);
+            _typeDescriptorCache[cacheKey] = typeDescriptor;
+            return true;
         }
 
         return false;
@@ -83,7 +85,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             throw new ArgumentNullException(nameof(target));
         }
 
-        var type = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
 
         if (type.IsArray && name.Equals("Length"))
         {
@@ -97,19 +99,21 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         }
 
         var cacheKey = new PropertyCacheKey(type, name, target is Type);
-        _readerCache.TryGetValue(cacheKey, out var invoker);
+        _readerCache.TryGetValue(cacheKey, out InvokerPair invoker);
 
         if (invoker == null || invoker.Member is MethodInfo)
         {
             var method = (MethodInfo)invoker?.Member;
+
             if (method == null)
             {
                 method = FindGetterForProperty(name, type, target);
+
                 if (method != null)
                 {
                     // Treat it like a property...
                     // The readerCache will only contain gettable properties (let's not worry about setters for now).
-                    var typeDescriptor = method.ReturnType;
+                    Type typeDescriptor = method.ReturnType;
                     method = ClassUtils.GetInterfaceMethodIfPossible(method);
                     invoker = new InvokerPair(method, typeDescriptor);
                     _readerCache[cacheKey] = invoker;
@@ -120,7 +124,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 try
                 {
-                    var value = method.Invoke(target, Array.Empty<object>());
+                    object value = method.Invoke(target, Array.Empty<object>());
                     return new TypedValue(value, value != null ? value.GetType() : invoker.TypeDescriptor);
                 }
                 catch (Exception ex)
@@ -133,9 +137,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         if (invoker == null || invoker.Member is FieldInfo)
         {
             var field = (FieldInfo)invoker?.Member;
+
             if (field == null)
             {
                 field = FindField(name, type, target);
+
                 if (field != null)
                 {
                     invoker = new InvokerPair(field, field.FieldType);
@@ -147,7 +153,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 try
                 {
-                    var value = field.GetValue(target);
+                    object value = field.GetValue(target);
                     return new TypedValue(value, value != null ? value.GetType() : invoker.TypeDescriptor);
                 }
                 catch (Exception ex)
@@ -167,32 +173,33 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             return false;
         }
 
-        var type = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
         var cacheKey = new PropertyCacheKey(type, name, target is Type);
+
         if (_writerCache.ContainsKey(cacheKey))
         {
             return true;
         }
 
-        var method = FindSetterForProperty(name, type, target);
+        MethodInfo method = FindSetterForProperty(name, type, target);
+
         if (method != null)
         {
             // Treat it like a property
-            var typeDescriptor = method.GetParameters()[0].ParameterType;
+            Type typeDescriptor = method.GetParameters()[0].ParameterType;
             method = ClassUtils.GetInterfaceMethodIfPossible(method);
             _writerCache[cacheKey] = method;
             _typeDescriptorCache[cacheKey] = typeDescriptor;
             return true;
         }
-        else
+
+        FieldInfo field = FindField(name, type, target);
+
+        if (field != null)
         {
-            var field = FindField(name, type, target);
-            if (field != null)
-            {
-                _writerCache[cacheKey] = field;
-                _typeDescriptorCache[cacheKey] = field.FieldType;
-                return true;
-            }
+            _writerCache[cacheKey] = field;
+            _typeDescriptorCache[cacheKey] = field.FieldType;
+            return true;
         }
 
         return false;
@@ -210,10 +217,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             throw new ArgumentNullException(nameof(target));
         }
 
-        var type = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
 
-        var possiblyConvertedNewValue = newValue;
-        var typeDescriptor = GetTypeDescriptor(context, target, name);
+        object possiblyConvertedNewValue = newValue;
+        Type typeDescriptor = GetTypeDescriptor(context, target, name);
+
         if (typeDescriptor != null)
         {
             try
@@ -227,14 +235,16 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         }
 
         var cacheKey = new PropertyCacheKey(type, name, target is Type);
-        _writerCache.TryGetValue(cacheKey, out var cachedMember);
+        _writerCache.TryGetValue(cacheKey, out MemberInfo cachedMember);
 
         if (cachedMember == null || cachedMember is MethodInfo)
         {
             var method = (MethodInfo)cachedMember;
+
             if (method == null)
             {
                 method = FindSetterForProperty(name, type, target);
+
                 if (method != null)
                 {
                     method = ClassUtils.GetInterfaceMethodIfPossible(method);
@@ -247,7 +257,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 try
                 {
-                    method.Invoke(target, new[] { possiblyConvertedNewValue });
+                    method.Invoke(target, new[]
+                    {
+                        possiblyConvertedNewValue
+                    });
+
                     return;
                 }
                 catch (Exception ex)
@@ -260,9 +274,11 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         if (cachedMember == null || cachedMember is FieldInfo)
         {
             var field = (FieldInfo)cachedMember;
+
             if (field == null)
             {
                 field = FindField(name, type, target);
+
                 if (field != null)
                 {
                     cachedMember = field;
@@ -295,24 +311,27 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             return this;
         }
 
-        var clazz = target as Type ?? target.GetType();
+        Type clazz = target as Type ?? target.GetType();
+
         if (clazz.IsArray)
         {
             return this;
         }
 
         var cacheKey = new PropertyCacheKey(clazz, name, target is Type);
-        _readerCache.TryGetValue(cacheKey, out var invocationTarget);
+        _readerCache.TryGetValue(cacheKey, out InvokerPair invocationTarget);
 
         if (invocationTarget == null || invocationTarget.Member is MethodInfo)
         {
             var method = (MethodInfo)invocationTarget?.Member;
+
             if (method == null)
             {
                 method = FindGetterForProperty(name, clazz, target);
+
                 if (method != null)
                 {
-                    var typeDescriptor = method.ReturnType;
+                    Type typeDescriptor = method.ReturnType;
                     method = ClassUtils.GetInterfaceMethodIfPossible(method);
                     invocationTarget = new InvokerPair(method, typeDescriptor);
                     _readerCache[cacheKey] = invocationTarget;
@@ -327,10 +346,12 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         if (invocationTarget == null || invocationTarget.Member is FieldInfo)
         {
-            var field = invocationTarget != null ? (FieldInfo)invocationTarget.Member : null;
+            FieldInfo field = invocationTarget != null ? (FieldInfo)invocationTarget.Member : null;
+
             if (field == null)
             {
                 field = FindField(name, clazz, target is Type);
+
                 if (field != null)
                 {
                     invocationTarget = new InvokerPair(field, field.FieldType);
@@ -354,14 +375,15 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             return str;
         }
 
-        var baseChar = str[0];
-        var updatedChar = char.ToUpperInvariant(baseChar);
+        char baseChar = str[0];
+        char updatedChar = char.ToUpperInvariant(baseChar);
+
         if (baseChar == updatedChar)
         {
             return str;
         }
 
-        var chars = str.ToCharArray();
+        char[] chars = str.ToCharArray();
         chars[0] = updatedChar;
         return new string(chars);
     }
@@ -383,8 +405,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     protected virtual FieldInfo FindField(string name, Type clazz, bool mustBeStatic)
     {
-        var fields = clazz.GetFields();
-        foreach (var field in fields)
+        FieldInfo[] fields = clazz.GetFields();
+
+        foreach (FieldInfo field in fields)
         {
             if (field.Name.Equals(name) && (!mustBeStatic || field.IsStatic))
             {
@@ -396,16 +419,18 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         // although it shouldn't be necessary - however, see SPR-10125.
         if (clazz.BaseType != null)
         {
-            var field = FindField(name, clazz.BaseType, mustBeStatic);
+            FieldInfo field = FindField(name, clazz.BaseType, mustBeStatic);
+
             if (field != null)
             {
                 return field;
             }
         }
 
-        foreach (var implementedInterface in clazz.GetInterfaces())
+        foreach (Type implementedInterface in clazz.GetInterfaces())
         {
-            var field = FindField(name, implementedInterface, mustBeStatic);
+            FieldInfo field = FindField(name, implementedInterface, mustBeStatic);
+
             if (field != null)
             {
                 return field;
@@ -417,7 +442,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     private FieldInfo FindField(string name, Type clazz, object target)
     {
-        var field = FindField(name, clazz, target is Type);
+        FieldInfo field = FindField(name, clazz, target is Type);
+
         if (field == null && target is Type)
         {
             field = FindField(name, target.GetType(), false);
@@ -428,10 +454,12 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     private MethodInfo FindMethodForProperty(string propertyName, Type clazz, bool setter, bool mustBeStatic)
     {
-        var propInfo = clazz.GetProperty(propertyName);
+        PropertyInfo propInfo = clazz.GetProperty(propertyName);
+
         if (propInfo != null)
         {
             MethodInfo method = null;
+
             if (setter)
             {
                 if (propInfo.CanWrite)
@@ -458,7 +486,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     private Type GetTypeDescriptor(IEvaluationContext context, object target, string name)
     {
-        var type = target as Type ?? target.GetType();
+        Type type = target as Type ?? target.GetType();
 
         if (type.IsArray && name.Equals("Length"))
         {
@@ -466,7 +494,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
         }
 
         var cacheKey = new PropertyCacheKey(type, name, target is Type);
-        _typeDescriptorCache.TryGetValue(cacheKey, out var typeDescriptor);
+        _typeDescriptorCache.TryGetValue(cacheKey, out Type typeDescriptor);
+
         if (typeDescriptor == null)
         {
             // Attempt to populate the cache entry
@@ -488,7 +517,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     private MethodInfo FindGetterForProperty(string propertyName, Type clazz, object target)
     {
-        var method = FindGetterForProperty(propertyName, clazz, target is Type);
+        MethodInfo method = FindGetterForProperty(propertyName, clazz, target is Type);
+
         if (method == null && target is Type)
         {
             method = FindGetterForProperty(propertyName, typeof(Type), false);
@@ -499,7 +529,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     private MethodInfo FindSetterForProperty(string propertyName, Type clazz, object target)
     {
-        var method = FindSetterForProperty(propertyName, clazz, target is Type);
+        MethodInfo method = FindSetterForProperty(propertyName, clazz, target is Type);
+
         if (method == null && target is Type)
         {
             method = FindSetterForProperty(propertyName, typeof(Type), false);
@@ -548,8 +579,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 return false;
             }
 
-            return _clazz == otherKey._clazz && _property.Equals(otherKey._property) &&
-                   _targetIsClass == otherKey._targetIsClass;
+            return _clazz == otherKey._clazz && _property.Equals(otherKey._property) && _targetIsClass == otherKey._targetIsClass;
         }
 
         public override int GetHashCode()
@@ -564,7 +594,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         public int CompareTo(PropertyCacheKey other)
         {
-            var result = _clazz.Name.CompareTo(_clazz.Name);
+            int result = _clazz.Name.CompareTo(_clazz.Name);
+
             if (result == 0)
             {
                 result = _property.CompareTo(other._property);
@@ -576,15 +607,15 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
     public class OptimalPropertyAccessor : ICompilablePropertyAccessor
     {
+        public MemberInfo Member { get; }
+
+        public Type TypeDescriptor { get; }
+
         public OptimalPropertyAccessor(InvokerPair target)
         {
             Member = target.Member;
             TypeDescriptor = target.TypeDescriptor;
         }
-
-        public MemberInfo Member { get; }
-
-        public Type TypeDescriptor { get; }
 
         public IList<Type> GetSpecificTargetClasses()
         {
@@ -598,7 +629,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 return false;
             }
 
-            var type = target as Type ?? target.GetType();
+            Type type = target as Type ?? target.GetType();
+
             if (type.IsArray)
             {
                 return false;
@@ -606,7 +638,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
             if (Member is MethodInfo method)
             {
-                var getterName = $"get_{Capitalize(name)}";
+                string getterName = $"get_{Capitalize(name)}";
+
                 if (getterName.Equals(method.Name))
                 {
                     return true;
@@ -614,11 +647,9 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
                 return false;
             }
-            else
-            {
-                var field = (FieldInfo)Member;
-                return field.Name.Equals(name);
-            }
+
+            var field = (FieldInfo)Member;
+            return field.Name.Equals(name);
         }
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
@@ -627,7 +658,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 try
                 {
-                    var value = method.Invoke(target, Array.Empty<object>());
+                    object value = method.Invoke(target, Array.Empty<object>());
                     return new TypedValue(value, value != null ? value.GetType() : TypeDescriptor);
                 }
                 catch (Exception ex)
@@ -635,18 +666,17 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                     throw new AccessException($"Unable to access property '{name}' through getter method", ex);
                 }
             }
-            else
+
+            var field = (FieldInfo)Member;
+
+            try
             {
-                var field = (FieldInfo)Member;
-                try
-                {
-                    var value = field.GetValue(target);
-                    return new TypedValue(value, value != null ? value.GetType() : TypeDescriptor);
-                }
-                catch (Exception ex)
-                {
-                    throw new AccessException($"Unable to access field '{name}'", ex);
-                }
+                object value = field.GetValue(target);
+                return new TypedValue(value, value != null ? value.GetType() : TypeDescriptor);
+            }
+            catch (Exception ex)
+            {
+                throw new AccessException($"Unable to access field '{name}'", ex);
             }
         }
 
@@ -671,10 +701,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 return info.IsPublic;
             }
-            else
-            {
-                return ((FieldInfo)Member).IsPublic;
-            }
+
+            return ((FieldInfo)Member).IsPublic;
         }
 
         public Type GetPropertyType()
@@ -683,10 +711,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
             {
                 return info.ReturnType;
             }
-            else
-            {
-                return ((FieldInfo)Member).FieldType;
-            }
+
+            return ((FieldInfo)Member).FieldType;
         }
 
         public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
@@ -703,7 +729,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         private void GenerateCode(MethodInfo method, ILGenerator gen, CodeFlow cf)
         {
-            var stackDescriptor = cf.LastDescriptor();
+            TypeDescriptor stackDescriptor = cf.LastDescriptor();
 
             if (stackDescriptor == null)
             {
@@ -721,7 +747,7 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                         gen.Emit(OpCodes.Unbox_Any, method.DeclaringType);
                     }
 
-                    var vtLocal = gen.DeclareLocal(method.DeclaringType);
+                    LocalBuilder vtLocal = gen.DeclareLocal(method.DeclaringType);
                     gen.Emit(OpCodes.Stloc, vtLocal);
                     gen.Emit(OpCodes.Ldloca, vtLocal);
                     gen.Emit(OpCodes.Call, method);
@@ -752,7 +778,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         private void GenerateCode(FieldInfo field, ILGenerator gen, CodeFlow cf)
         {
-            var stackDescriptor = cf.LastDescriptor();
+            TypeDescriptor stackDescriptor = cf.LastDescriptor();
+
             if (stackDescriptor == null)
             {
                 CodeFlow.LoadTarget(gen);
@@ -802,7 +829,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
         private void EmitLiteralFieldCode(ILGenerator gen, FieldInfo field)
         {
-            var constant = field.GetRawConstantValue();
+            object constant = field.GetRawConstantValue();
+
             if (field.FieldType.IsClass && constant == null)
             {
                 gen.Emit(OpCodes.Ldnull);
@@ -816,7 +844,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
 
             switch (field.FieldType)
             {
-                case var t when t == typeof(int) || t == typeof(short) || t == typeof(char) || t == typeof(byte) || t == typeof(uint) || t == typeof(ushort) || t == typeof(sbyte):
+                case var t when t == typeof(int) || t == typeof(short) || t == typeof(char) || t == typeof(byte) || t == typeof(uint) || t == typeof(ushort) ||
+                    t == typeof(sbyte):
                     gen.Emit(OpCodes.Ldc_I4, (int)constant);
                     return;
                 case var t when t == typeof(long) || t == typeof(ulong):
@@ -831,7 +860,8 @@ public class ReflectivePropertyAccessor : IPropertyAccessor
                 case var t when t == typeof(string):
                     gen.Emit(OpCodes.Ldstr, (string)constant);
                     return;
-                default: return;
+                default:
+                    return;
             }
         }
     }

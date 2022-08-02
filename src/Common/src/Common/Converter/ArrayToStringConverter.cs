@@ -9,7 +9,10 @@ public class ArrayToStringConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public ArrayToStringConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(object[]), typeof(string)) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(object[]), typeof(string))
+        })
     {
         _conversionService = conversionService;
     }
@@ -21,8 +24,7 @@ public class ArrayToStringConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -33,6 +35,7 @@ public class ArrayToStringConverter : AbstractGenericConditionalConverter
         }
 
         var sourceArray = source as Array;
+
         if (sourceArray.GetLength(0) == 0)
         {
             return string.Empty;

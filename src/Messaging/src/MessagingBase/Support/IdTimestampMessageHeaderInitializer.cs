@@ -19,7 +19,8 @@ public class IdTimestampMessageHeaderInitializer : IMessageHeaderInitializer
 
     public void InitHeaders(IMessageHeaderAccessor headerAccessor)
     {
-        var idGenerator = IdGenerator;
+        IIdGenerator idGenerator = IdGenerator;
+
         if (idGenerator != null)
         {
             headerAccessor.IdGenerator = idGenerator;

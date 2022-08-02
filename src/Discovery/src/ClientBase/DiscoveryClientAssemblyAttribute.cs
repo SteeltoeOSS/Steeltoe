@@ -14,10 +14,11 @@ namespace Steeltoe.Discovery;
 public sealed class DiscoveryClientAssemblyAttribute : AssemblyContainsTypeAttribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="DiscoveryClientAssemblyAttribute"/> class.
-    /// Used to identify assemblies that contain a discovery client.
+    /// Initializes a new instance of the <see cref="DiscoveryClientAssemblyAttribute" /> class. Used to identify assemblies that contain a discovery client.
     /// </summary>
-    /// <param name="discoveryClientExtensionType">The <see cref="IDiscoveryClientExtension"/>.</param>
+    /// <param name="discoveryClientExtensionType">
+    /// The <see cref="IDiscoveryClientExtension" />.
+    /// </param>
     public DiscoveryClientAssemblyAttribute(Type discoveryClientExtensionType)
         : base(discoveryClientExtensionType)
     {

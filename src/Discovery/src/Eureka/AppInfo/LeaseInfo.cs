@@ -26,9 +26,16 @@ public class LeaseInfo
 
     public long ServiceUpTimestamp { get; internal set; }
 
+    internal LeaseInfo()
+    {
+        RenewalIntervalInSecs = DefaultRenewalIntervalInSecs;
+        DurationInSecs = DefaultDurationInSecs;
+    }
+
     internal static LeaseInfo FromJson(JsonLeaseInfo leaseInfo)
     {
         var info = new LeaseInfo();
+
         if (leaseInfo != null)
         {
             info.RenewalIntervalInSecs = leaseInfo.RenewalIntervalInSecs;
@@ -50,13 +57,8 @@ public class LeaseInfo
             RenewalIntervalInSecs = config.LeaseRenewalIntervalInSeconds,
             DurationInSecs = config.LeaseExpirationDurationInSeconds
         };
-        return info;
-    }
 
-    internal LeaseInfo()
-    {
-        RenewalIntervalInSecs = DefaultRenewalIntervalInSecs;
-        DurationInSecs = DefaultDurationInSecs;
+        return info;
     }
 
     internal JsonLeaseInfo ToJson()
@@ -71,6 +73,7 @@ public class LeaseInfo
             EvictionTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(EvictionTimestamp, DateTimeKind.Utc)),
             ServiceUpTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(ServiceUpTimestamp, DateTimeKind.Utc))
         };
+
         return leaseInfo;
     }
 }

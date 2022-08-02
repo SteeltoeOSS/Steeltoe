@@ -2,26 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixRequestCache
 {
     // the String key must be: HystrixRequestCache.prefix + cacheKey
-    private static readonly ConcurrentDictionary<RequestCacheKey, HystrixRequestCache> Caches = new ();
+    private static readonly ConcurrentDictionary<RequestCacheKey, HystrixRequestCache> Caches = new();
 
-    private sealed class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
+    private static readonly HystrixRequestCacheVariable RequestVariableForCache = new();
+
+    private readonly RequestCacheKey _rcKey;
+
+    private HystrixRequestCache(RequestCacheKey rcKey)
     {
-        public HystrixRequestCacheVariable()
-            : base(() => new ConcurrentDictionary<ValueCacheKey, object>())
-        {
-        }
+        _rcKey = rcKey;
     }
-
-    private static readonly HystrixRequestCacheVariable RequestVariableForCache = new ();
 
     public static HystrixRequestCache GetInstance(IHystrixCommandKey key)
     {
@@ -38,21 +37,16 @@ public class HystrixRequestCache
         return Caches.GetOrAddEx(rcKey, _ => new HystrixRequestCache(rcKey));
     }
 
-    private readonly RequestCacheKey _rcKey;
-
-    private HystrixRequestCache(RequestCacheKey rcKey)
-    {
-        _rcKey = rcKey;
-    }
-
     public T Get<T>(string cacheKey)
     {
-        var key = GetRequestCacheKey(cacheKey);
+        ValueCacheKey key = GetRequestCacheKey(cacheKey);
+
         if (key != null)
         {
-            var cacheInstance = RequestVariableForCache.Value;
+            ConcurrentDictionary<ValueCacheKey, object> cacheInstance = RequestVariableForCache.Value;
+
             /* look for the stored value */
-            if (cacheInstance.TryGetValue(key, out var result))
+            if (cacheInstance.TryGetValue(key, out object result))
             {
                 return (T)result;
             }
@@ -63,30 +57,31 @@ public class HystrixRequestCache
 
     public void Clear(string cacheKey)
     {
-        var key = GetRequestCacheKey(cacheKey);
+        ValueCacheKey key = GetRequestCacheKey(cacheKey);
+
         if (key != null)
         {
             /* remove this cache key */
-            var cacheInstance = RequestVariableForCache.Value;
+            ConcurrentDictionary<ValueCacheKey, object> cacheInstance = RequestVariableForCache.Value;
             cacheInstance.TryRemove(key, out _);
         }
     }
 
     internal T PutIfAbsent<T>(string cacheKey, T f)
     {
-        var key = GetRequestCacheKey(cacheKey);
+        ValueCacheKey key = GetRequestCacheKey(cacheKey);
+
         if (key != null)
         {
-            var cacheInstance = RequestVariableForCache.Value;
-            var result = cacheInstance.GetOrAdd(key, f);
+            ConcurrentDictionary<ValueCacheKey, object> cacheInstance = RequestVariableForCache.Value;
+            object result = cacheInstance.GetOrAdd(key, f);
+
             if (f.Equals(result))
             {
                 return default;
             }
-            else
-            {
-                return (T)result;
-            }
+
+            return (T)result;
         }
 
         return default;
@@ -101,6 +96,14 @@ public class HystrixRequestCache
         }
 
         return null;
+    }
+
+    private sealed class HystrixRequestCacheVariable : HystrixRequestVariableDefault<ConcurrentDictionary<ValueCacheKey, object>>
+    {
+        public HystrixRequestCacheVariable()
+            : base(() => new ConcurrentDictionary<ValueCacheKey, object>())
+        {
+        }
     }
 
     private sealed class ValueCacheKey

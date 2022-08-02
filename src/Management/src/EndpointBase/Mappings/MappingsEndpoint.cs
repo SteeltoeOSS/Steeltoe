@@ -10,18 +10,12 @@ public class MappingsEndpoint : AbstractEndpoint<ApplicationMappings>
 {
     private readonly ILogger<MappingsEndpoint> _logger;
 
+    public new IMappingsOptions Options => options as IMappingsOptions;
+
     public MappingsEndpoint(IMappingsOptions options, ILogger<MappingsEndpoint> logger = null)
         : base(options)
     {
         _logger = logger;
-    }
-
-    public new IMappingsOptions Options
-    {
-        get
-        {
-            return options as IMappingsOptions;
-        }
     }
 
     public override ApplicationMappings Invoke()

@@ -15,6 +15,7 @@ public class HeapDumpStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<HeapDumpEndpoint>();

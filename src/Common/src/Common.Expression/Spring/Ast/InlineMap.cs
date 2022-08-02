@@ -12,6 +12,8 @@ public class InlineMap : SpelNode
     // If the map is purely literals, it is a constant value and can be computed and cached
     private ITypedValue _constant;
 
+    public bool IsConstant => _constant != null;
+
     public InlineMap(int startPos, int endPos, params SpelNode[] args)
         : base(startPos, endPos, args)
     {
@@ -24,37 +26,38 @@ public class InlineMap : SpelNode
         {
             return _constant;
         }
-        else
-        {
-            var returnValue = new Dictionary<object, object>();
-            var childCount = ChildCount;
-            for (var c = 0; c < childCount; c++)
-            {
-                // Allow for key being PropertyOrFieldReference like Indexer on maps
-                var keyChild = GetChild(c++);
-                object key = null;
-                if (keyChild is PropertyOrFieldReference reference)
-                {
-                    key = reference.Name;
-                }
-                else
-                {
-                    key = keyChild.GetValue(state);
-                }
 
-                var value = GetChild(c).GetValue(state);
-                returnValue[key] = value;
+        var returnValue = new Dictionary<object, object>();
+        int childCount = ChildCount;
+
+        for (int c = 0; c < childCount; c++)
+        {
+            // Allow for key being PropertyOrFieldReference like Indexer on maps
+            ISpelNode keyChild = GetChild(c++);
+            object key = null;
+
+            if (keyChild is PropertyOrFieldReference reference)
+            {
+                key = reference.Name;
+            }
+            else
+            {
+                key = keyChild.GetValue(state);
             }
 
-            return new TypedValue(returnValue);
+            object value = GetChild(c).GetValue(state);
+            returnValue[key] = value;
         }
+
+        return new TypedValue(returnValue);
     }
 
     public override string ToStringAst()
     {
         var sb = new StringBuilder("{");
-        var count = ChildCount;
-        for (var c = 0; c < count; c++)
+        int count = ChildCount;
+
+        for (int c = 0; c < count; c++)
         {
             if (c > 0)
             {
@@ -70,8 +73,6 @@ public class InlineMap : SpelNode
         return sb.ToString();
     }
 
-    public bool IsConstant => _constant != null;
-
     public IDictionary<object, object> GetConstantValue()
     {
         if (_constant == null)
@@ -84,10 +85,12 @@ public class InlineMap : SpelNode
 
     private void CheckIfConstant()
     {
-        var isConstant = true;
+        bool isConstant = true;
+
         for (int c = 0, max = ChildCount; c < max; c++)
         {
-            var child = GetChild(c);
+            ISpelNode child = GetChild(c);
+
             if (child is not Literal)
             {
                 if (child is InlineList inlineList)
@@ -117,13 +120,15 @@ public class InlineMap : SpelNode
         if (isConstant)
         {
             var constantMap = new Dictionary<object, object>();
-            var childCount = ChildCount;
-            for (var c = 0; c < childCount; c++)
+            int childCount = ChildCount;
+
+            for (int c = 0; c < childCount; c++)
             {
-                var keyChild = GetChild(c++);
-                var valueChild = GetChild(c);
+                ISpelNode keyChild = GetChild(c++);
+                ISpelNode valueChild = GetChild(c);
                 object key = null;
                 object value = null;
+
                 if (keyChild is Literal literal)
                 {
                     key = literal.GetLiteralValue().Value;

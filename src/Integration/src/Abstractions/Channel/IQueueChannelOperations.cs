@@ -24,13 +24,19 @@ public interface IQueueChannelOperations
     /// <summary>
     /// Clear all items off the queue.
     /// </summary>
-    /// <returns>list of removed messages.</returns>
+    /// <returns>
+    /// list of removed messages.
+    /// </returns>
     IList<IMessage> Clear();
 
     /// <summary>
     /// Remove any Messages that are not accepted by the provided selector.
     /// </summary>
-    /// <param name="messageSelector">the selector to apply.</param>
-    /// <returns>list of purged messages.</returns>
+    /// <param name="messageSelector">
+    /// the selector to apply.
+    /// </param>
+    /// <returns>
+    /// list of purged messages.
+    /// </returns>
     IList<IMessage> Purge(IMessageSelector messageSelector);
 }

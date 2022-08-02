@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.Common.Util;
-using System.Reactive.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -22,10 +22,10 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestGetErrorPercentage()
     {
-        var key = "cmd-metrics-A";
+        string key = "cmd-metrics-A";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var metrics = cmd1.InnerMetrics;
+        HystrixCommandMetrics metrics = cmd1.InnerMetrics;
 
         Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
 
@@ -84,10 +84,10 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestBadRequestsDoNotAffectErrorPercentage()
     {
-        var key = "cmd-metrics-B";
+        string key = "cmd-metrics-B";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
-        var metrics = cmd1.InnerMetrics;
+        HystrixCommandMetrics metrics = cmd1.InnerMetrics;
 
         Assert.True(WaitForHealthCountToUpdate(key, 1000), "Health count stream took to long");
         cmd1.Execute();
@@ -105,6 +105,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
 
         HystrixCommand<bool> cmd3 = new BadRequestCommand(key, 0);
         HystrixCommand<bool> cmd4 = new BadRequestCommand(key, 0);
+
         try
         {
             cmd3.Execute();
@@ -141,17 +142,17 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestCurrentConcurrentExecutionCount()
     {
-        var key = "cmd-metrics-C";
+        string key = "cmd-metrics-C";
 
         HystrixCommandMetrics metrics = null;
         var cmdResults = new List<IObservable<bool>>();
 
-        for (var i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
             HystrixCommand<bool> cmd = new SuccessCommand(key, 900);
             metrics ??= cmd.InnerMetrics;
 
-            var eagerObservable = cmd.Observe();
+            IObservable<bool> eagerObservable = cmd.Observe();
             cmdResults.Add(eagerObservable);
         }
 
@@ -168,21 +169,19 @@ public class HystrixCommandMetricsTest : HystrixTestBase
         Assert.Equal(8, metrics.CurrentConcurrentExecutionCount);
 
         var latch = new CountdownEvent(1);
-        cmdResults.Merge().Subscribe(
-            _ =>
-            {
-            },
-            e =>
-            {
-                _output.WriteLine("Error during command execution");
-                _output.WriteLine(e.ToString());
-                latch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine("All commands done");
-                latch.SignalEx();
-            });
+
+        cmdResults.Merge().Subscribe(_ =>
+        {
+        }, e =>
+        {
+            _output.WriteLine("Error during command execution");
+            _output.WriteLine(e.ToString());
+            latch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine("All commands done");
+            latch.SignalEx();
+        });
 
         latch.Wait(10000);
         Assert.Equal(0, metrics.CurrentConcurrentExecutionCount);
@@ -227,7 +226,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
 
         private static HystrixCommandOptions GetUnitTestSettings(string commandKey)
         {
-            var opts = HystrixCommandOptionsTest.GetUnitTestOptions();
+            HystrixCommandOptions opts = HystrixCommandOptionsTest.GetUnitTestOptions();
             opts.GroupKey = HystrixCommandGroupKeyDefault.AsKey("Command");
             opts.CommandKey = HystrixCommandKeyDefault.AsKey(commandKey);
             opts.ExecutionTimeoutInMilliseconds = 1000;

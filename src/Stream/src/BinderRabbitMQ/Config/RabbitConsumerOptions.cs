@@ -60,7 +60,12 @@ public class RabbitConsumerOptions : RabbitCommonOptions
         RepublishToDlq ??= defaultOptions?.RepublishToDlq ?? true;
         RepublishDeliveryMode ??= defaultOptions?.RepublishDeliveryMode ?? RabbitCore.MessageDeliveryMode.Persistent;
         RequeueRejected ??= defaultOptions?.RequeueRejected ?? false;
-        HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
+
+        HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>
+        {
+            "*"
+        };
+
         RecoveryInterval ??= defaultOptions?.RecoveryInterval ?? 5000;
         Exclusive ??= defaultOptions?.Exclusive ?? false;
         MissingQueuesFatal ??= defaultOptions?.MissingQueuesFatal ?? false;

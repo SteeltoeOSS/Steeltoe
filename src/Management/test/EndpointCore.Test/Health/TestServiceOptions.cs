@@ -9,13 +9,17 @@ namespace Steeltoe.Management.Endpoint.Health.Test;
 
 public sealed class TestServiceOptions : IOptionsMonitor<HealthCheckServiceOptions>, IDisposable
 {
+    public HealthCheckServiceOptions CurrentValue { get; }
+
     public TestServiceOptions()
     {
         CurrentValue = new HealthCheckServiceOptions();
-        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[] { "tags" }.ToList()));
-    }
 
-    public HealthCheckServiceOptions CurrentValue { get; }
+        CurrentValue.Registrations.Add(new HealthCheckRegistration("test", _ => new TestHealthCheck(), HealthStatus.Unhealthy, new[]
+        {
+            "tags"
+        }.ToList()));
+    }
 
     public void Dispose()
     {

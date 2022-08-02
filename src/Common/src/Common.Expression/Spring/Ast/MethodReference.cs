@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -17,6 +17,8 @@ public class MethodReference : SpelNode
 
     private volatile CachedMethodExecutor _cachedExecutor;
 
+    public string Name { get; }
+
     public MethodReference(bool nullSafe, string methodName, int startPos, int endPos, params SpelNode[] arguments)
         : base(startPos, endPos, arguments)
     {
@@ -24,15 +26,13 @@ public class MethodReference : SpelNode
         _nullSafe = nullSafe;
     }
 
-    public string Name { get; }
-
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var evaluationContext = state.EvaluationContext;
-        var value = state.GetActiveContextObject().Value;
-        var targetType = state.GetActiveContextObject().TypeDescriptor;
-        var arguments = GetArguments(state);
-        var result = GetValueInternal(evaluationContext, value, targetType, arguments);
+        IEvaluationContext evaluationContext = state.EvaluationContext;
+        object value = state.GetActiveContextObject().Value;
+        Type targetType = state.GetActiveContextObject().TypeDescriptor;
+        object[] arguments = GetArguments(state);
+        ITypedValue result = GetValueInternal(evaluationContext, value, targetType, arguments);
         UpdateExitTypeDescriptor(result.Value);
         return result;
     }
@@ -40,7 +40,8 @@ public class MethodReference : SpelNode
     public override string ToStringAst()
     {
         var sj = new List<string>();
-        for (var i = 0; i < ChildCount; i++)
+
+        for (int i = 0; i < ChildCount; i++)
         {
             sj.Add(GetChild(i).ToStringAst());
         }
@@ -50,13 +51,14 @@ public class MethodReference : SpelNode
 
     public override bool IsCompilable()
     {
-        var executorToCheck = _cachedExecutor;
+        CachedMethodExecutor executorToCheck = _cachedExecutor;
+
         if (executorToCheck == null || executorToCheck.HasProxyTarget || executorToCheck.Get() is not ReflectiveMethodExecutor)
         {
             return false;
         }
 
-        foreach (var child in children)
+        foreach (SpelNode child in children)
         {
             if (!child.IsCompilable())
             {
@@ -65,12 +67,14 @@ public class MethodReference : SpelNode
         }
 
         var executor = (ReflectiveMethodExecutor)executorToCheck.Get();
+
         if (executor.DidArgumentConversionOccur)
         {
             return false;
         }
 
-        var clazz = executor.Method.DeclaringType;
+        Type clazz = executor.Method.DeclaringType;
+
         if (!ReflectionHelper.IsPublic(clazz) && executor.GetPublicDeclaringClass() == null)
         {
             return false;
@@ -81,7 +85,8 @@ public class MethodReference : SpelNode
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        var method = GetTargetMethodAndType(out var classType);
+        MethodInfo method = GetTargetMethodAndType(out Type classType);
+
         if (method.IsStatic)
         {
             GenerateStaticMethodCode(gen, cf, method);
@@ -96,7 +101,8 @@ public class MethodReference : SpelNode
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
-        var arguments = GetArguments(state);
+        object[] arguments = GetArguments(state);
+
         if (state.GetActiveContextObject().Value == null)
         {
             ThrowIfNotNullSafe(GetArgumentTypes(arguments));
@@ -118,8 +124,9 @@ public class MethodReference : SpelNode
 
     private void GenerateStaticMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo method)
     {
-        var stackDescriptor = cf.LastDescriptor();
+        TypeDescriptor stackDescriptor = cf.LastDescriptor();
         Label? skipIfNullTarget = null;
+
         if (_nullSafe)
         {
             skipIfNullTarget = GenerateNullCheckCode(gen);
@@ -149,7 +156,8 @@ public class MethodReference : SpelNode
 
     private void GenerateInstanceMethodCode(ILGenerator gen, CodeFlow cf, MethodInfo targetMethod, Type targetType)
     {
-        var stackDescriptor = cf.LastDescriptor();
+        TypeDescriptor stackDescriptor = cf.LastDescriptor();
+
         if (stackDescriptor == null)
         {
             // Nothing on the stack but something is needed
@@ -158,6 +166,7 @@ public class MethodReference : SpelNode
         }
 
         Label? skipIfNullTarget = null;
+
         if (_nullSafe)
         {
             skipIfNullTarget = GenerateNullCheckCode(gen);
@@ -170,7 +179,7 @@ public class MethodReference : SpelNode
                 gen.Emit(OpCodes.Unbox_Any, targetType);
             }
 
-            var local = gen.DeclareLocal(targetType);
+            LocalBuilder local = gen.DeclareLocal(targetType);
             gen.Emit(OpCodes.Stloc, local);
             gen.Emit(OpCodes.Ldloca, local);
         }
@@ -200,8 +209,8 @@ public class MethodReference : SpelNode
 
     private Label GenerateNullCheckCode(ILGenerator gen)
     {
-        var skipIfNullTarget = gen.DefineLabel();
-        var continueTarget = gen.DefineLabel();
+        Label skipIfNullTarget = gen.DefineLabel();
+        Label continueTarget = gen.DefineLabel();
         gen.Emit(OpCodes.Dup);
         gen.Emit(OpCodes.Ldnull);
         gen.Emit(OpCodes.Cgt_Un);
@@ -216,14 +225,16 @@ public class MethodReference : SpelNode
 
     private ITypedValue GetValueInternal(IEvaluationContext evaluationContext, object value, Type targetType, object[] arguments)
     {
-        var argumentTypes = GetArgumentTypes(arguments);
+        List<Type> argumentTypes = GetArgumentTypes(arguments);
+
         if (value == null)
         {
             ThrowIfNotNullSafe(argumentTypes);
             return TypedValue.Null;
         }
 
-        var executorToUse = GetCachedExecutor(evaluationContext, value, targetType, argumentTypes);
+        IMethodExecutor executorToUse = GetCachedExecutor(evaluationContext, value, targetType, argumentTypes);
+
         if (executorToUse != null)
         {
             try
@@ -254,6 +265,7 @@ public class MethodReference : SpelNode
         // either there was no accessor or it no longer existed
         executorToUse = FindAccessorForMethod(argumentTypes, value, evaluationContext);
         _cachedExecutor = new CachedMethodExecutor(executorToUse, value as Type, targetType, argumentTypes);
+
         try
         {
             return executorToUse.Execute(evaluationContext, value, arguments);
@@ -270,7 +282,8 @@ public class MethodReference : SpelNode
     {
         if (!_nullSafe)
         {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.MethodCallOnNullObjectNotAllowed, FormatHelper.FormatMethodForMessage(Name, argumentTypes));
+            throw new SpelEvaluationException(StartPosition, SpelMessage.MethodCallOnNullObjectNotAllowed,
+                FormatHelper.FormatMethodForMessage(Name, argumentTypes));
         }
     }
 
@@ -278,23 +291,23 @@ public class MethodReference : SpelNode
     {
         if (ex.InnerException is TargetInvocationException)
         {
-            var rootCause = ex.InnerException.InnerException;
+            Exception rootCause = ex.InnerException.InnerException;
+
             if (rootCause is SystemException exception)
             {
                 throw exception;
             }
 
-            throw new ExpressionInvocationTargetException(
-                StartPosition,
-                $"A problem occurred when trying to execute method '{Name}' on object of type [{value.GetType().FullName}]",
-                rootCause);
+            throw new ExpressionInvocationTargetException(StartPosition,
+                $"A problem occurred when trying to execute method '{Name}' on object of type [{value.GetType().FullName}]", rootCause);
         }
     }
 
     private object[] GetArguments(ExpressionState state)
     {
-        var arguments = new object[ChildCount];
-        for (var i = 0; i < arguments.Length; i++)
+        object[] arguments = new object[ChildCount];
+
+        for (int i = 0; i < arguments.Length; i++)
         {
             // Make the root object the active context again for evaluating the parameter expressions
             try
@@ -314,7 +327,8 @@ public class MethodReference : SpelNode
     private List<Type> GetArgumentTypes(params object[] arguments)
     {
         var descriptors = new List<Type>(arguments.Length);
-        foreach (var argument in arguments)
+
+        foreach (object argument in arguments)
         {
             descriptors.Add(argument?.GetType());
         }
@@ -324,14 +338,16 @@ public class MethodReference : SpelNode
 
     private IMethodExecutor GetCachedExecutor(IEvaluationContext evaluationContext, object value, Type target, IList<Type> argumentTypes)
     {
-        var methodResolvers = evaluationContext.MethodResolvers;
+        List<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
+
         if (methodResolvers.Count != 1 || methodResolvers[0] is not ReflectiveMethodResolver)
         {
             // Not a default ReflectiveMethodResolver - don't know whether caching is valid
             return null;
         }
 
-        var executorToCheck = _cachedExecutor;
+        CachedMethodExecutor executorToCheck = _cachedExecutor;
+
         if (executorToCheck != null && executorToCheck.IsSuitable(value, target, argumentTypes))
         {
             return executorToCheck.Get();
@@ -344,12 +360,14 @@ public class MethodReference : SpelNode
     private IMethodExecutor FindAccessorForMethod(List<Type> argumentTypes, object targetObject, IEvaluationContext evaluationContext)
     {
         AccessException accessException = null;
-        var methodResolvers = evaluationContext.MethodResolvers;
-        foreach (var methodResolver in methodResolvers)
+        List<IMethodResolver> methodResolvers = evaluationContext.MethodResolvers;
+
+        foreach (IMethodResolver methodResolver in methodResolvers)
         {
             try
             {
-                var methodExecutor = methodResolver.Resolve(evaluationContext, targetObject, Name, argumentTypes);
+                IMethodExecutor methodExecutor = methodResolver.Resolve(evaluationContext, targetObject, Name, argumentTypes);
+
                 if (methodExecutor != null)
                 {
                     return methodExecutor;
@@ -362,25 +380,26 @@ public class MethodReference : SpelNode
             }
         }
 
-        var method = FormatHelper.FormatMethodForMessage(Name, argumentTypes);
-        var className = FormatHelper.FormatClassNameForMessage(targetObject as Type ?? targetObject.GetType());
+        string method = FormatHelper.FormatMethodForMessage(Name, argumentTypes);
+        string className = FormatHelper.FormatClassNameForMessage(targetObject as Type ?? targetObject.GetType());
+
         if (accessException != null)
         {
             throw new SpelEvaluationException(StartPosition, accessException, SpelMessage.ProblemLocatingMethod, method, className);
         }
-        else
-        {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.MethodNotFound, method, className);
-        }
+
+        throw new SpelEvaluationException(StartPosition, SpelMessage.MethodNotFound, method, className);
     }
 
     private void UpdateExitTypeDescriptor(object result)
     {
-        var executorToCheck = _cachedExecutor;
+        CachedMethodExecutor executorToCheck = _cachedExecutor;
+
         if (executorToCheck != null && executorToCheck.Get() is ReflectiveMethodExecutor executor)
         {
-            var method = executor.Method;
-            var descriptor = ComputeExitDescriptor(result, method.ReturnType);
+            MethodInfo method = executor.Method;
+            TypeDescriptor descriptor = ComputeExitDescriptor(result, method.ReturnType);
+
             if (_nullSafe && CodeFlow.IsValueType(descriptor))
             {
                 _originalPrimitiveExitTypeDescriptor = descriptor;
@@ -396,12 +415,13 @@ public class MethodReference : SpelNode
     private MethodInfo GetTargetMethodAndType(out Type targetType)
     {
         var methodExecutor = (ReflectiveMethodExecutor)_cachedExecutor?.Get();
+
         if (methodExecutor == null)
         {
             throw new InvalidOperationException($"No applicable cached executor found: {_cachedExecutor}");
         }
 
-        var method = methodExecutor.Method;
+        MethodInfo method = methodExecutor.Method;
         targetType = GetMethodTargetType(method, methodExecutor);
         return method;
     }
@@ -412,10 +432,8 @@ public class MethodReference : SpelNode
         {
             return method.DeclaringType;
         }
-        else
-        {
-            return methodExecutor.GetPublicDeclaringClass();
-        }
+
+        return methodExecutor.GetPublicDeclaringClass();
     }
 
     private sealed class MethodValueRef : IValueRef
@@ -425,6 +443,8 @@ public class MethodReference : SpelNode
         private readonly Type _targetType;
         private readonly object[] _arguments;
         private readonly MethodReference _methodReference;
+
+        public bool IsWritable => false;
 
         public MethodValueRef(MethodReference methodReference, ExpressionState state, object[] arguments)
         {
@@ -437,7 +457,7 @@ public class MethodReference : SpelNode
 
         public ITypedValue GetValue()
         {
-            var result = _methodReference.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
+            ITypedValue result = _methodReference.GetValueInternal(_evaluationContext, _value, _targetType, _arguments);
             _methodReference.UpdateExitTypeDescriptor(result.Value);
             return result;
         }
@@ -446,8 +466,6 @@ public class MethodReference : SpelNode
         {
             throw new InvalidOperationException();
         }
-
-        public bool IsWritable => false;
     }
 
     private sealed class CachedMethodExecutor
@@ -456,6 +474,8 @@ public class MethodReference : SpelNode
         private readonly Type _staticClass;
         private readonly Type _target;
         private readonly List<Type> _argumentTypes;
+
+        public bool HasProxyTarget => false;
 
         public CachedMethodExecutor(IMethodExecutor methodExecutor, Type staticClass, Type target, List<Type> argumentTypes)
         {
@@ -467,11 +487,8 @@ public class MethodReference : SpelNode
 
         public bool IsSuitable(object value, Type target, IList<Type> argumentTypes)
         {
-            return (_staticClass == null || _staticClass.Equals(value)) &&
-                   ObjectUtils.NullSafeEquals(_target, target) && Equal(_argumentTypes, argumentTypes);
+            return (_staticClass == null || _staticClass.Equals(value)) && ObjectUtils.NullSafeEquals(_target, target) && Equal(_argumentTypes, argumentTypes);
         }
-
-        public bool HasProxyTarget => false;
 
         public IMethodExecutor Get()
         {
@@ -500,7 +517,7 @@ public class MethodReference : SpelNode
                 return false;
             }
 
-            for (var i = 0; i < list1.Count; i++)
+            for (int i = 0; i < list1.Count; i++)
             {
                 if (list1[i] != list2[i])
                 {

@@ -11,7 +11,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Support;
 public static class RabbitExceptionTranslator
 {
     public static Exception ConvertRabbitAccessException(Exception exception)
-        => exception switch
+    {
+        return exception switch
         {
             null => throw new ArgumentNullException(nameof(exception)),
             RabbitException rabbitException => rabbitException,
@@ -25,4 +26,5 @@ public static class RabbitExceptionTranslator
             ConsumerCancelledException => exception,
             _ => new RabbitUncategorizedException(exception)
         };
+    }
 }

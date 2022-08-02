@@ -10,6 +10,8 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 [JsonConverter(typeof(JsonCredentialJsonConverter))]
 public class JsonCredential : ICredentialValue
 {
+    public JsonElement Value { get; }
+
     public JsonCredential(JsonElement value)
     {
         Value = value;
@@ -17,11 +19,9 @@ public class JsonCredential : ICredentialValue
 
     public JsonCredential(string valueAsString)
     {
-        using var doc = JsonDocument.Parse(valueAsString);
+        using JsonDocument doc = JsonDocument.Parse(valueAsString);
         Value = doc.RootElement;
     }
-
-    public JsonElement Value { get; private set; }
 
     public override string ToString()
     {

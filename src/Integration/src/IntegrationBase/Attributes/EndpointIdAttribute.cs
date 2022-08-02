@@ -7,6 +7,8 @@ namespace Steeltoe.Integration.Attributes;
 [AttributeUsage(AttributeTargets.Method)]
 public class EndpointIdAttribute : Attribute
 {
+    public string Id { get; }
+
     public EndpointIdAttribute()
     {
     }
@@ -15,6 +17,4 @@ public class EndpointIdAttribute : Attribute
     {
         Id = id;
     }
-
-    public string Id { get; }
 }

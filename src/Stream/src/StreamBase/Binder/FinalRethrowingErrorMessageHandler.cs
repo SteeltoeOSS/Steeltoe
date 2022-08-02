@@ -12,14 +12,14 @@ internal sealed class FinalRethrowingErrorMessageHandler : ILastSubscriberMessag
 
     private readonly bool _defaultErrorChannelPresent;
 
+    public string ServiceName { get; set; }
+
     public FinalRethrowingErrorMessageHandler(ILastSubscriberAwareChannel errorChannel, bool defaultErrorChannelPresent)
     {
         _errorChannel = errorChannel;
         _defaultErrorChannelPresent = defaultErrorChannelPresent;
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
     }
-
-    public string ServiceName { get; set; }
 
     public void HandleMessage(IMessage message)
     {
@@ -34,9 +34,7 @@ internal sealed class FinalRethrowingErrorMessageHandler : ILastSubscriberMessag
         {
             throw exception;
         }
-        else
-        {
-            throw new MessagingException((IMessage)null, (Exception)message.Payload);
-        }
+
+        throw new MessagingException((IMessage)null, (Exception)message.Payload);
     }
 }

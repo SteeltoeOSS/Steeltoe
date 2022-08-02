@@ -15,6 +15,7 @@ public sealed class XunitLoggerFactory : ILoggerFactory
     public XunitLoggerFactory(ITestOutputHelper output)
     {
         _output = output;
+
         _factory = LoggerFactory.Create(builder =>
         {
             builder.AddDebug();

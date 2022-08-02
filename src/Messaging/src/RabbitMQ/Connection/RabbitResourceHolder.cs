@@ -12,15 +12,19 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class RabbitResourceHolder : ResourceHolderSupport
 {
-    private readonly List<IConnection> _connections = new ();
+    private readonly List<IConnection> _connections = new();
 
-    private readonly List<RC.IModel> _channels = new ();
+    private readonly List<RC.IModel> _channels = new();
 
-    private readonly Dictionary<IConnection, List<RC.IModel>> _channelsPerConnection = new ();
+    private readonly Dictionary<IConnection, List<RC.IModel>> _channelsPerConnection = new();
 
-    private readonly Dictionary<RC.IModel, List<ulong>> _deliveryTags = new ();
+    private readonly Dictionary<RC.IModel, List<ulong>> _deliveryTags = new();
 
     private readonly ILogger _logger;
+
+    public bool ReleaseAfterCompletion { get; }
+
+    public bool RequeueOnRollback { get; set; } = true;
 
     public RabbitResourceHolder(ILogger logger = null)
     {
@@ -34,10 +38,6 @@ public class RabbitResourceHolder : ResourceHolderSupport
         ReleaseAfterCompletion = releaseAfterCompletion;
         _logger = logger;
     }
-
-    public bool ReleaseAfterCompletion { get; }
-
-    public bool RequeueOnRollback { get; set; } = true;
 
     public void AddConnection(IConnection connection)
     {
@@ -67,9 +67,10 @@ public class RabbitResourceHolder : ResourceHolderSupport
         if (!_channels.Contains(channel))
         {
             _channels.Add(channel);
+
             if (connection != null)
             {
-                if (!_channelsPerConnection.TryGetValue(connection, out var channelsForConnection))
+                if (!_channelsPerConnection.TryGetValue(connection, out List<RC.IModel> channelsForConnection))
                 {
                     channelsForConnection = new List<RC.IModel>();
                     _channelsPerConnection[connection] = channelsForConnection;
@@ -99,11 +100,11 @@ public class RabbitResourceHolder : ResourceHolderSupport
     {
         try
         {
-            foreach (var channel in _channels)
+            foreach (RC.IModel channel in _channels)
             {
-                if (_deliveryTags.TryGetValue(channel, out var tags))
+                if (_deliveryTags.TryGetValue(channel, out List<ulong> tags))
                 {
-                    foreach (var deliveryTag in tags)
+                    foreach (ulong deliveryTag in tags)
                     {
                         channel.BasicAck(deliveryTag, false);
                     }
@@ -121,7 +122,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
 
     public void CloseAll()
     {
-        foreach (var channel in _channels)
+        foreach (RC.IModel channel in _channels)
         {
             try
             {
@@ -140,7 +141,7 @@ public class RabbitResourceHolder : ResourceHolderSupport
             }
         }
 
-        foreach (var con in _connections)
+        foreach (IConnection con in _connections)
         {
             RabbitUtils.CloseConnection(con);
         }
@@ -152,27 +153,32 @@ public class RabbitResourceHolder : ResourceHolderSupport
 
     public void AddDeliveryTag(RC.IModel channel, ulong deliveryTag)
     {
-        if (_deliveryTags.TryGetValue(channel, out var tags))
+        if (_deliveryTags.TryGetValue(channel, out List<ulong> tags))
         {
             tags.Add(deliveryTag);
         }
         else
         {
-            tags = new List<ulong> { deliveryTag };
+            tags = new List<ulong>
+            {
+                deliveryTag
+            };
+
             _deliveryTags.Add(channel, tags);
         }
     }
 
     public void RollbackAll()
     {
-        foreach (var channel in _channels)
+        foreach (RC.IModel channel in _channels)
         {
             _logger?.LogDebug("Rolling back messages to channel: {channel}", channel);
 
             RabbitUtils.RollbackIfNecessary(channel);
-            if (_deliveryTags.TryGetValue(channel, out var tags))
+
+            if (_deliveryTags.TryGetValue(channel, out List<ulong> tags))
             {
-                foreach (var deliveryTag in tags)
+                foreach (ulong deliveryTag in tags)
                 {
                     try
                     {

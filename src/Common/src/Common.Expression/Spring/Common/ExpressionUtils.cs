@@ -15,7 +15,8 @@ public static class ExpressionUtils
 
     public static object ConvertTypedValue(IEvaluationContext context, ITypedValue typedValue, Type targetType)
     {
-        var value = typedValue.Value;
+        object value = typedValue.Value;
+
         if (targetType == null)
         {
             return value;
@@ -96,7 +97,8 @@ public static class ExpressionUtils
 
     private static T ConvertValue<T>(ITypeConverter typeConverter, ITypedValue typedValue)
     {
-        var result = typeConverter.ConvertValue(typedValue.Value, typedValue.TypeDescriptor, typeof(T));
+        object result = typeConverter.ConvertValue(typedValue.Value, typedValue.TypeDescriptor, typeof(T));
+
         if (result == null)
         {
             throw new InvalidOperationException($"Null conversion result for value [{typedValue.Value}]");

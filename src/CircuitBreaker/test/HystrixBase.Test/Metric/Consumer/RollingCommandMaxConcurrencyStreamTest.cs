@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
-using System.Reactive.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,18 +14,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer.Test;
 public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
 {
     private static readonly IHystrixCommandGroupKey GroupKey = HystrixCommandGroupKeyDefault.AsKey("Command-Concurrency");
-    private RollingCommandMaxConcurrencyStream _stream;
-    private IDisposable _latchSubscription;
-
-    private sealed class LatchedObserver : TestObserverBase<int>
-    {
-        public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
-            : base(output, latch)
-        {
-        }
-    }
 
     private readonly ITestOutputHelper _output;
+    private RollingCommandMaxConcurrencyStream _stream;
+    private IDisposable _latchSubscription;
 
     public RollingCommandMaxConcurrencyStreamTest(ITestOutputHelper output)
     {
@@ -35,25 +27,11 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         HystrixCommandStartStream.Reset();
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _latchSubscription?.Dispose();
-            _latchSubscription = null;
-
-            _stream?.Unsubscribe();
-            _stream = null;
-        }
-
-        base.Dispose(disposing);
-    }
-
     [Fact]
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestEmptyStreamProducesZeros()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-A");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-A");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -70,7 +48,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestStartsAndEndsInSameBucketProduceValue()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-B");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-B");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -78,8 +56,8 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 2000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
+        Command cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
+        Command cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 100);
 
         Task t1 = cmd1.ExecuteAsync();
         Task t2 = cmd2.ExecuteAsync();
@@ -97,7 +75,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Fact]
     public void TestOneCommandCarriesOverToNextBucket()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-C");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-C");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -105,9 +83,9 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 250);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 250);
+        Command cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
 
@@ -133,7 +111,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestMultipleCommandsCarryOverMultipleBuckets()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-D");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-D");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -141,10 +119,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        Command cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        Command cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
         WaitForLatchedObserverToUpdate(observer, 1, 100, 125, _output);
@@ -170,7 +148,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestMultipleCommandsCarryOverMultipleBucketsAndThenAgeOut()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-E");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-E");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -178,10 +156,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Take(20 + LatchedObserver.StableTickCount).Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        Command cmd2 = Command.From(GroupKey, key, HystrixEventType.Success, 300);
+        Command cmd3 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
+        Command cmd4 = Command.From(GroupKey, key, HystrixEventType.Success, 10);
 
         Task t1 = cmd1.ExecuteAsync();
         WaitForLatchedObserverToUpdate(observer, 1, 100, 125, _output);
@@ -202,7 +180,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestConcurrencyStreamProperlyFiltersOutResponseFromCache()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-F");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-F");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -210,10 +188,10 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         _latchSubscription = _stream.Observe().Subscribe(observer);
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
-        var cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 40);
-        var cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
-        var cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
-        var cmd4 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        Command cmd1 = Command.From(GroupKey, key, HystrixEventType.Success, 40);
+        Command cmd2 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        Command cmd3 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
+        Command cmd4 = Command.From(GroupKey, key, HystrixEventType.ResponseFromCache);
 
         Task t1 = cmd1.ExecuteAsync();
         Time.Wait(5);
@@ -230,7 +208,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestConcurrencyStreamProperlyFiltersOutShortCircuits()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-G");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-G");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -241,13 +219,13 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         // after 3 failures, next command should short-circuit.
         // to prove short-circuited commands don't contribute to concurrency, execute 3 FAILURES in the first bucket sequentially
         // then when circuit is open, execute 20 concurrent commands.  they should all get short-circuited, and max concurrency should be 1
-        var failure1 = Command.From(GroupKey, key, HystrixEventType.Failure);
-        var failure2 = Command.From(GroupKey, key, HystrixEventType.Failure);
-        var failure3 = Command.From(GroupKey, key, HystrixEventType.Failure);
+        Command failure1 = Command.From(GroupKey, key, HystrixEventType.Failure);
+        Command failure2 = Command.From(GroupKey, key, HystrixEventType.Failure);
+        Command failure3 = Command.From(GroupKey, key, HystrixEventType.Failure);
 
         var shortCircuited = new List<Command>();
 
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             shortCircuited.Add(Command.From(GroupKey, key, HystrixEventType.Success, 0));
         }
@@ -259,7 +237,8 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         Assert.True(WaitForHealthCountToUpdate(key.Name, 500, _output), "Health count stream update took to long");
 
         var tasks = new List<Task>();
-        foreach (var cmd in shortCircuited)
+
+        foreach (Command cmd in shortCircuited)
         {
             tasks.Add(cmd.ExecuteAsync());
         }
@@ -274,7 +253,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public async Task TestConcurrencyStreamProperlyFiltersOutSemaphoreRejections()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-H");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -286,26 +265,29 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         // once these are in-flight, execute 10 more concurrently on new caller threads.
         // since these are semaphore-rejected, the max concurrency should be 10
         var saturators = new List<Command>();
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 500, ExecutionIsolationStrategy.Semaphore));
         }
 
         var rejected = new List<Command>();
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             rejected.Add(Command.From(GroupKey, key, HystrixEventType.Success, 0, ExecutionIsolationStrategy.Semaphore));
         }
 
         var tasks = new List<Task>();
-        foreach (var saturatingCmd in saturators)
+
+        foreach (Command saturatingCmd in saturators)
         {
             tasks.Add(Task.Run(() => saturatingCmd.Execute()));
         }
 
         await Task.Delay(50);
 
-        foreach (var rejectedCmd in rejected)
+        foreach (Command rejectedCmd in rejected)
         {
             await Task.Run(() => rejectedCmd.Execute());
         }
@@ -319,7 +301,7 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestConcurrencyStreamProperlyFiltersOutThreadPoolRejections()
     {
-        var key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-I");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("CMD-Concurrency-I");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -331,26 +313,29 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         // once these are in-flight, execute 10 more concurrently
         // since these are threadpool-rejected, the max concurrency should be 10
         var saturators = new List<Command>();
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             saturators.Add(Command.From(GroupKey, key, HystrixEventType.Success, 400));
         }
 
         var rejected = new List<Command>();
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             rejected.Add(Command.From(GroupKey, key, HystrixEventType.Success, 100));
         }
 
         var tasks = new List<Task>();
-        foreach (var saturatingCmd in saturators)
+
+        foreach (Command saturatingCmd in saturators)
         {
             tasks.Add(saturatingCmd.ExecuteAsync());
         }
 
         Time.Wait(30);
 
-        foreach (var rejectedCmd in rejected)
+        foreach (Command rejectedCmd in rejected)
         {
             tasks.Add(rejectedCmd.ExecuteAsync());
         }
@@ -358,5 +343,27 @@ public class RollingCommandMaxConcurrencyStreamTest : CommandStreamTest
         Task.WaitAll(tasks.ToArray());
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
         Assert.Equal(10, _stream.LatestRollingMax);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _latchSubscription?.Dispose();
+            _latchSubscription = null;
+
+            _stream?.Unsubscribe();
+            _stream = null;
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private sealed class LatchedObserver : TestObserverBase<int>
+    {
+        public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+            : base(output, latch)
+        {
+        }
     }
 }

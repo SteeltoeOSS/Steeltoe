@@ -19,7 +19,7 @@ public class ConsulDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -29,11 +29,16 @@ public class ConsulDiscoveryClientExtensionTest
     public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
+
+        var appSettings = new Dictionary<string, string>
+        {
+            { "spring:cloud:discovery:enabled", "false" }
+        };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -43,15 +48,17 @@ public class ConsulDiscoveryClientExtensionTest
     public void ClientFavorsConsulDiscoveryEnabled()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "consul:discovery:enabled", "true" }
         };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         ConsulDiscoveryClientExtension.ConfigureConsulServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<ConsulDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);

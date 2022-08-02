@@ -19,13 +19,17 @@ public class HystrixQueuedTaskSchedulerTest
     [Fact]
     public void TestContinuationTasks_DoNotCauseDeadlocks()
     {
-        var dummyCommand = new DummyCommand(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("foobar") });
+        var dummyCommand = new DummyCommand(new HystrixCommandOptions
+        {
+            GroupKey = HystrixCommandGroupKeyDefault.AsKey("foobar")
+        });
+
         var options = new HystrixThreadPoolOptions
         {
             CoreSize = 2,
             MaxQueueSize = 2,
             QueueSizeRejectionThreshold = 2,
-            AllowMaximumSizeToDivergeFromCoreSize = false,
+            AllowMaximumSizeToDivergeFromCoreSize = false
         };
 
         // Scheduler to test
@@ -82,31 +86,31 @@ public class HystrixQueuedTaskSchedulerTest
 
     private sealed class TaskActionClass
     {
-        public int Value;
+        public readonly int Value;
         public bool Stop;
         public ITestOutputHelper Output;
 
         public TaskActionClass(ITestOutputHelper output, int val)
         {
-            this.Output = output;
+            Output = output;
             Value = val;
         }
 
         public int Run(object cmd)
         {
-            var result = RunAsync().GetAwaiter().GetResult();
+            int result = RunAsync().GetAwaiter().GetResult();
             return result;
         }
 
         public async Task<int> RunAsync()
         {
-            var result = await DoWorkAsync();
+            int result = await DoWorkAsync();
             return result;
         }
 
         public Task<int> DoWorkAsync()
         {
-            var t = Task.Run(() =>
+            Task<int> t = Task.Run(() =>
             {
                 while (!Stop)
                 {
@@ -115,6 +119,7 @@ public class HystrixQueuedTaskSchedulerTest
 
                 return Value;
             });
+
             return t;
         }
     }

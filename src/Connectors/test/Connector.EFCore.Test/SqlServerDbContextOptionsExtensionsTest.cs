@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data.Common;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -65,7 +66,7 @@ public class SqlServerDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseSqlServer(config, serviceName));
@@ -79,13 +80,13 @@ public class SqlServerDbContextOptionsExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext_WithSqlServerConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.IsType<SqlConnection>(con);
     }
@@ -94,7 +95,7 @@ public class SqlServerDbContextOptionsExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config, "foobar"));
 
@@ -112,10 +113,9 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseSqlServer(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("Multiple", ex.Message);
@@ -131,19 +131,19 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
         Assert.NotNull(service);
 
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.IsType<SqlConnection>(con);
 
-        var connString = con.ConnectionString;
+        string connString = con.ConnectionString;
         Assert.NotNull(connString);
         Assert.Contains("Initial Catalog=de5aa3a747c134b3d8780f8cc80be519e", connString);
         Assert.Contains("Data Source=192.168.0.80", connString);
@@ -161,19 +161,19 @@ public class SqlServerDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddDbContext<GoodDbContext>(options => options.UseSqlServer(config));
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
         Assert.NotNull(service);
 
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.IsType<SqlConnection>(con);
 
-        var connString = con.ConnectionString;
+        string connString = con.ConnectionString;
         Assert.NotNull(connString);
         Assert.Contains("Initial Catalog=u9e44b3e8e31", connString);
         Assert.Contains("Data Source=ud6893c77875.database.windows.net", connString);

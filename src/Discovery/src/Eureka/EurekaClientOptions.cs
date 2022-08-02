@@ -10,12 +10,6 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
 
     public new const int DefaultInstanceInfoReplicationIntervalSeconds = 30;
 
-    public EurekaClientOptions()
-    {
-        EurekaServer = new EurekaServerConfig(this);
-        Health = new EurekaHealthConfig(this);
-    }
-
     // Configuration property: eureka:client:accessTokenUri
     public string AccessTokenUri { get; set; }
 
@@ -45,7 +39,9 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     /// <summary>
     /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
-    /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
+    /// <remarks>
+    /// configuration property: eureka:client:cacheTTL.
+    /// </remarks>
     public int CacheTtl { get; set; } = 15;
 
     // Configuration property: eureka:client:eurekaServer
@@ -54,14 +50,15 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
     // Configuration property: eureka:client:health
     public EurekaHealthConfig Health { get; set; }
 
+    public EurekaClientOptions()
+    {
+        EurekaServer = new EurekaServerConfig(this);
+        Health = new EurekaHealthConfig(this);
+    }
+
     public class EurekaHealthConfig
     {
         private readonly EurekaClientOptions _options;
-
-        public EurekaHealthConfig(EurekaClientOptions options)
-        {
-            _options = options;
-        }
 
         // Configuration property: eureka:client:health:enabled
         public bool Enabled
@@ -86,16 +83,16 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
 
             set => _options.HealthCheckEnabled = value;
         }
+
+        public EurekaHealthConfig(EurekaClientOptions options)
+        {
+            _options = options;
+        }
     }
 
     public class EurekaServerConfig
     {
         private readonly EurekaClientOptions _options;
-
-        public EurekaServerConfig(EurekaClientOptions options)
-        {
-            _options = options;
-        }
 
         /// <summary>
         /// Gets or sets configuration property: eureka:client:eurekaServer:proxyHost.
@@ -118,7 +115,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyUserName.
+        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyUserName.
         /// </summary>
         public string ProxyUserName
         {
@@ -128,7 +125,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:proxyPassword.
+        /// Gets or sets configuration property: eureka:client:eurekaServer:proxyPassword.
         /// </summary>
         public string ProxyPassword
         {
@@ -138,7 +135,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets a value indicating whether configuration property: eureka:client:eurekaServer:shouldGZipContent.
+        /// Gets or sets a value indicating whether configuration property: eureka:client:eurekaServer:shouldGZipContent.
         /// </summary>
         public bool ShouldGZipContent
         {
@@ -148,7 +145,7 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
         }
 
         /// <summary>
-        ///  Gets or sets configuration property: eureka:client:eurekaServer:connectTimeoutSeconds.
+        /// Gets or sets configuration property: eureka:client:eurekaServer:connectTimeoutSeconds.
         /// </summary>
         public int ConnectTimeoutSeconds
         {
@@ -165,6 +162,11 @@ public class EurekaClientOptions : EurekaClientConfig, IDiscoveryClientOptions
             get => _options.EurekaServerRetryCount;
 
             set => _options.EurekaServerRetryCount = value;
+        }
+
+        public EurekaServerConfig(EurekaClientOptions options)
+        {
+            _options = options;
         }
     }
 }

@@ -15,10 +15,12 @@ public class HystrixMetricsStreamPublisherTest : HystrixTestBase
     public void Constructor_SetsUpStream()
     {
         var stream = HystrixDashboardStream.GetInstance();
+
         var options = new OptionsWrapper<HystrixMetricsStreamOptions>
         {
             Value = new HystrixMetricsStreamOptions()
         };
+
         var publisher = new HystrixMetricsStreamPublisher(options, stream);
         Assert.NotNull(publisher.SampleSubscription);
         publisher.SampleSubscription.Dispose();

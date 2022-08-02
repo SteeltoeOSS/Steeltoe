@@ -15,28 +15,18 @@ namespace Steeltoe.Integration.Dispatcher;
 
 public abstract class AbstractDispatcher : IMessageDispatcher
 {
+    private readonly object _lock = new();
+    private readonly MessageHandlerComparer _comparer = new();
     protected readonly IApplicationContext Context;
     protected readonly ILogger InnerLogger;
     protected readonly TaskScheduler Executor;
     protected readonly TaskFactory Factory;
-    protected List<IMessageHandler> handlers = new ();
-
-    private readonly object _lock = new ();
-    private readonly MessageHandlerComparer _comparer = new ();
     private IErrorHandler _errorHandler;
     private volatile IMessageHandler _theOneHandler;
     private IIntegrationServices _integrationServices;
+    protected List<IMessageHandler> handlers = new();
 
-    protected AbstractDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
-    {
-        this.Context = context;
-        this.InnerLogger = logger;
-        this.Executor = executor;
-        if (executor != null)
-        {
-            Factory = new TaskFactory(executor);
-        }
-    }
+    internal List<IMessageHandler> Handlers => new(handlers);
 
     public virtual int MaxSubscribers { get; set; } = int.MaxValue;
 
@@ -69,9 +59,18 @@ public abstract class AbstractDispatcher : IMessageDispatcher
             return _errorHandler;
         }
 
-        set
+        set => _errorHandler = value;
+    }
+
+    protected AbstractDispatcher(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
+    {
+        Context = context;
+        InnerLogger = logger;
+        Executor = executor;
+
+        if (executor != null)
         {
-            _errorHandler = value;
+            Factory = new TaskFactory(executor);
         }
     }
 
@@ -84,12 +83,13 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
         lock (_lock)
         {
-            if (this.handlers.Count == MaxSubscribers)
+            if (handlers.Count == MaxSubscribers)
             {
                 throw new ArgumentException("Maximum subscribers exceeded");
             }
 
-            var newHandlers = new List<IMessageHandler>(this.handlers);
+            var newHandlers = new List<IMessageHandler>(handlers);
+
             if (newHandlers.Contains(handler))
             {
                 return false;
@@ -99,7 +99,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
             newHandlers.Sort(_comparer);
             _theOneHandler = newHandlers.Count == 1 ? handler : null;
 
-            this.handlers = newHandlers;
+            handlers = newHandlers;
         }
 
         return true;
@@ -114,8 +114,9 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
         lock (_lock)
         {
-            var newHandlers = new List<IMessageHandler>(this.handlers);
-            var removed = newHandlers.Remove(handler);
+            var newHandlers = new List<IMessageHandler>(handlers);
+            bool removed = newHandlers.Remove(handler);
+
             if (newHandlers.Count == 1)
             {
                 _theOneHandler = newHandlers[0];
@@ -126,7 +127,7 @@ public abstract class AbstractDispatcher : IMessageDispatcher
                 _theOneHandler = null;
             }
 
-            this.handlers = newHandlers;
+            handlers = newHandlers;
 
             return removed;
         }
@@ -146,7 +147,8 @@ public abstract class AbstractDispatcher : IMessageDispatcher
 
     protected virtual bool TryOptimizedDispatch(IMessage message)
     {
-        var handler = _theOneHandler;
+        IMessageHandler handler = _theOneHandler;
+
         if (handler != null)
         {
             try
@@ -156,7 +158,8 @@ public abstract class AbstractDispatcher : IMessageDispatcher
             }
             catch (Exception e)
             {
-                var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "Dispatcher failed to deliver Message", e);
+                Exception wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "Dispatcher failed to deliver Message", e);
+
                 if (wrapped != e)
                 {
                     throw wrapped;
@@ -169,14 +172,13 @@ public abstract class AbstractDispatcher : IMessageDispatcher
         return false;
     }
 
-    internal List<IMessageHandler> Handlers => new (handlers);
-
     private sealed class MessageHandlerComparer : OrderComparer, IComparer<IMessageHandler>
     {
         public int Compare(IMessageHandler x, IMessageHandler y)
         {
             var xo = x as IOrdered;
             var yo = y as IOrdered;
+
             if (xo != null && yo != null)
             {
                 return Compare(xo, yo);

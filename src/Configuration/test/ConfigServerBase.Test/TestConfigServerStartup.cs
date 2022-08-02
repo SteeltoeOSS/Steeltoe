@@ -9,21 +9,14 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.Test;
 
 public class TestConfigServerStartup
 {
-    public static void Reset()
-    {
-        Response = null;
-        ReturnStatus = new[] { 200 };
-        LastRequest = null;
-        RequestCount = 0;
-        Label = AppName = Env = string.Empty;
-        InitialRequestLatch = new CountdownEvent(1);
-    }
-
-    public static CountdownEvent InitialRequestLatch = new CountdownEvent(1);
+    public static CountdownEvent InitialRequestLatch = new(1);
 
     public static string Response { get; set; }
 
-    public static int[] ReturnStatus { get; set; } = { 200 };
+    public static int[] ReturnStatus { get; set; } =
+    {
+        200
+    };
 
     public static HttpRequestInfo LastRequest { get; set; }
 
@@ -35,6 +28,21 @@ public class TestConfigServerStartup
 
     public static string Env { get; set; } = string.Empty;
 
+    public static void Reset()
+    {
+        Response = null;
+
+        ReturnStatus = new[]
+        {
+            200
+        };
+
+        LastRequest = null;
+        RequestCount = 0;
+        Label = AppName = Env = string.Empty;
+        InitialRequestLatch = new CountdownEvent(1);
+    }
+
     public void Configure(IApplicationBuilder app)
     {
         app.Run(async context =>
@@ -42,6 +50,7 @@ public class TestConfigServerStartup
             LastRequest = new HttpRequestInfo(context.Request);
             context.Response.StatusCode = GetStatusCode(context.Request.Path);
             RequestCount++;
+
             if (context.Response.StatusCode == 200)
             {
                 context.Response.Headers.Add("content-type", "application/json");

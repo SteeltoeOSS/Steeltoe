@@ -2,39 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Connector.MySql;
 
 /// <summary>
-/// Currently enabling properties supported by BOTH of these connectors:
-/// https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
+/// Currently enabling properties supported by BOTH of these connectors: https://dev.mysql.com/doc/connector-net/en/connector-net-connection-options.html
 /// https://mysql-net.github.io/MySqlConnector/tutorials/migrating-from-connector-net/.
 /// </summary>
 public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string MysqlClientSectionPrefix = "mysql:client";
     public const string DefaultServer = "localhost";
     public const int DefaultPort = 3306;
-    private const string MysqlClientSectionPrefix = "mysql:client";
     private readonly bool _cloudFoundryConfigFound;
-
-    public MySqlProviderConnectorOptions()
-    {
-    }
-
-    public MySqlProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(MysqlClientSectionPrefix);
-        section.Bind(this);
-
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
-    }
 
     public string ConnectionString { get; set; }
 
@@ -81,6 +63,23 @@ public class MySqlProviderConnectorOptions : AbstractServiceConnectorOptions
     public int? MinimumPoolSize { get; set; }
 
     public bool? Pooling { get; set; }
+
+    public MySqlProviderConnectorOptions()
+    {
+    }
+
+    public MySqlProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(MysqlClientSectionPrefix);
+        section.Bind(this);
+
+        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+    }
 
     public override string ToString()
     {

@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Diagnostics.Tracing;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Symbols;
 using Microsoft.Diagnostics.Tracing;
 using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.ThreadDump;
 
@@ -17,14 +18,14 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 /// </summary>
 public class ThreadDumperEp : IThreadDumper
 {
-    private static readonly StackTraceElement UnknownStackTraceElement = new ()
+    private static readonly StackTraceElement UnknownStackTraceElement = new()
     {
         ClassName = "[UnknownClass]",
         MethodName = "[UnknownMethod]",
         IsNativeMethod = true
     };
 
-    private static readonly StackTraceElement NativeStackTraceElement = new ()
+    private static readonly StackTraceElement NativeStackTraceElement = new()
     {
         ClassName = "[NativeClasses]",
         MethodName = "[NativeMethods]",
@@ -43,21 +44,25 @@ public class ThreadDumperEp : IThreadDumper
     /// <summary>
     /// Connect using the EventPipe and obtain a dump of all the Threads and for each thread a stacktrace.
     /// </summary>
-    /// <returns>the list of threads with stack trace information.</returns>
+    /// <returns>
+    /// the list of threads with stack trace information.
+    /// </returns>
     public List<ThreadInfo> DumpThreads()
     {
         var results = new List<ThreadInfo>();
+
         try
         {
             _logger?.LogDebug("Starting thread dump");
 
-            var client = new DiagnosticsClient(System.Diagnostics.Process.GetCurrentProcess().Id);
+            var client = new DiagnosticsClient(Process.GetCurrentProcess().Id);
+
             var providers = new List<EventPipeProvider>
             {
-                new ("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
+                new("Microsoft-DotNETCore-SampleProfiler", EventLevel.Informational)
             };
 
-            using var session = client.StartEventPipeSession(providers);
+            using EventPipeSession session = client.StartEventPipeSession(providers);
             DumpThreads(session, results);
         }
         catch (Exception e)
@@ -66,7 +71,7 @@ public class ThreadDumperEp : IThreadDumper
         }
         finally
         {
-            var totalMemory = GC.GetTotalMemory(true);
+            long totalMemory = GC.GetTotalMemory(true);
             _logger?.LogDebug("Total Memory {0}", totalMemory);
         }
 
@@ -77,13 +82,20 @@ public class ThreadDumperEp : IThreadDumper
     private void DumpThreads(EventPipeSession session, List<ThreadInfo> results)
     {
         string traceFileName = null;
+
         try
         {
             traceFileName = CreateTraceFile(session).Result;
+
             if (traceFileName != null)
             {
-                using var symbolReader = new SymbolReader(TextWriter.Null) { SymbolPath = Environment.CurrentDirectory };
+                using var symbolReader = new SymbolReader(TextWriter.Null)
+                {
+                    SymbolPath = Environment.CurrentDirectory
+                };
+
                 using var eventLog = new TraceLog(traceFileName);
+
                 var stackSource = new MutableTraceEventStackSource(eventLog)
                 {
                     OnlyManagedCodeStacks = true
@@ -96,29 +108,34 @@ public class ThreadDumperEp : IThreadDumper
 
                 stackSource.ForEach(sample =>
                 {
-                    var stackIndex = sample.StackIndex;
+                    StackSourceCallStackIndex stackIndex = sample.StackIndex;
+
                     while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
                     {
                         stackIndex = stackSource.GetCallerIndex(stackIndex);
                     }
 
-                    var template = "Thread (";
-                    var threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
-                    var threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
+                    string template = "Thread (";
+                    string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
+                    int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
 
-                    if (samplesForThread.TryGetValue(threadId, out var samples))
+                    if (samplesForThread.TryGetValue(threadId, out List<StackSourceSample> samples))
                     {
                         samples.Add(sample);
                     }
                     else
                     {
-                        samplesForThread[threadId] = new List<StackSourceSample> { sample };
+                        samplesForThread[threadId] = new List<StackSourceSample>
+                        {
+                            sample
+                        };
                     }
                 });
 
-                foreach (var (threadId, samples) in samplesForThread)
+                foreach ((int threadId, List<StackSourceSample> samples) in samplesForThread)
                 {
                     _logger?.LogDebug("Found {0} stacks for thread {1}", samples.Count, threadId);
+
                     var threadInfo = new ThreadInfo
                     {
                         ThreadId = threadId,
@@ -130,6 +147,7 @@ public class ThreadDumperEp : IThreadDumper
                         LockedSynchronizers = new List<LockInfo>(),
                         StackTrace = GetStackTrace(threadId, samples[0], stackSource, symbolReader)
                     };
+
                     threadInfo.ThreadState = GetThreadState(threadInfo.StackTrace);
                     threadInfo.IsInNative = IsThreadInNative(threadInfo.StackTrace);
                     results.Add(threadInfo);
@@ -172,19 +190,22 @@ public class ThreadDumperEp : IThreadDumper
         return State.Runnable;
     }
 
-    private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource, SymbolReader symbolReader)
+    private List<StackTraceElement> GetStackTrace(int threadId, StackSourceSample stackSourceSample, TraceEventStackSource stackSource,
+        SymbolReader symbolReader)
     {
         _logger?.LogDebug("Processing thread with ID: {0}", threadId);
 
         var result = new List<StackTraceElement>();
 
-        var stackIndex = stackSourceSample.StackIndex;
-        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), verboseName: false).StartsWith("Thread ("))
+        StackSourceCallStackIndex stackIndex = stackSourceSample.StackIndex;
+
+        while (!stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false).StartsWith("Thread ("))
         {
-            var frameIndex = stackSource.GetFrameIndex(stackIndex);
-            var frameName = stackSource.GetFrameName(frameIndex, verboseName: false);
-            var sourceLine = GetSourceLine(stackSource, frameIndex, symbolReader);
-            var stackElement = GetStackTraceElement(frameName, sourceLine);
+            StackSourceFrameIndex frameIndex = stackSource.GetFrameIndex(stackIndex);
+            string frameName = stackSource.GetFrameName(frameIndex, false);
+            SourceLocation sourceLine = GetSourceLine(stackSource, frameIndex, symbolReader);
+            StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLine);
+
             if (stackElement != null)
             {
                 result.Add(stackElement);
@@ -203,8 +224,7 @@ public class ThreadDumperEp : IThreadDumper
             return UnknownStackTraceElement;
         }
 
-        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase) ||
-            frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
+        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase) || frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
         {
             return NativeStackTraceElement;
         }
@@ -216,7 +236,7 @@ public class ThreadDumperEp : IThreadDumper
             ClassName = "Unknown"
         };
 
-        if (ParseFrameName(frameName, out var assemblyName, out var className, out var methodName, out var parameters))
+        if (ParseFrameName(frameName, out string assemblyName, out string className, out string methodName, out string parameters))
         {
             result.ClassName = $"{assemblyName}!{className}";
             result.MethodName = methodName + parameters;
@@ -225,6 +245,7 @@ public class ThreadDumperEp : IThreadDumper
         if (sourceLocation != null)
         {
             result.LineNumber = sourceLocation.LineNumber;
+
             if (sourceLocation.SourceFile != null)
             {
                 result.FileName = sourceLocation.SourceFile.BuildTimeFilePath;
@@ -263,7 +284,7 @@ public class ThreadDumperEp : IThreadDumper
             return false;
         }
 
-        var extIndex = remaining.IndexOf('.');
+        int extIndex = remaining.IndexOf('.');
         assemblyName = extIndex > 0 ? remaining.Substring(0, extIndex) : remaining;
 
         return true;
@@ -271,7 +292,8 @@ public class ThreadDumperEp : IThreadDumper
 
     private bool ParseClassName(string input, ref string remaining, ref string className)
     {
-        var classStartIndex = input.IndexOf('!');
+        int classStartIndex = input.IndexOf('!');
+
         if (classStartIndex == -1)
         {
             className = input;
@@ -288,7 +310,8 @@ public class ThreadDumperEp : IThreadDumper
 
     private bool ParseMethod(string input, ref string remaining, ref string methodName)
     {
-        var methodStartIndex = input.LastIndexOf('.');
+        int methodStartIndex = input.LastIndexOf('.');
+
         if (methodStartIndex > 0)
         {
             remaining = input.Substring(0, methodStartIndex);
@@ -301,7 +324,8 @@ public class ThreadDumperEp : IThreadDumper
 
     private bool ParseParameters(string input, ref string remaining, ref string parameters)
     {
-        var paramStartIndex = input.IndexOf('(');
+        int paramStartIndex = input.IndexOf('(');
+
         if (paramStartIndex > 0)
         {
             remaining = input.Substring(0, paramStartIndex);
@@ -315,36 +339,41 @@ public class ThreadDumperEp : IThreadDumper
     // Much of this code is from PerfView/TraceLog.cs
     private SourceLocation GetSourceLine(TraceEventStackSource stackSource, StackSourceFrameIndex frameIndex, SymbolReader reader)
     {
-        var log = stackSource.TraceLog;
-        var codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;
+        TraceLog log = stackSource.TraceLog;
+        uint codeAddress = (uint)frameIndex - (uint)StackSourceFrameIndex.Start;
+
         if (codeAddress >= log.CodeAddresses.Count)
         {
             return null;
         }
 
         var codeAddressIndex = (CodeAddressIndex)codeAddress;
-        var moduleFile = log.CodeAddresses.ModuleFile(codeAddressIndex);
+        TraceModuleFile moduleFile = log.CodeAddresses.ModuleFile(codeAddressIndex);
+
         if (moduleFile == null)
         {
             _logger?.LogTrace("GetSourceLine: Could not find moduleFile {0:x}.", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
-        var methodIndex = log.CodeAddresses.MethodIndex(codeAddressIndex);
+        MethodIndex methodIndex = log.CodeAddresses.MethodIndex(codeAddressIndex);
+
         if (methodIndex == MethodIndex.Invalid)
         {
             _logger?.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
-        var methodToken = log.CodeAddresses.Methods.MethodToken(methodIndex);
+        int methodToken = log.CodeAddresses.Methods.MethodToken(methodIndex);
+
         if (methodToken == 0)
         {
             _logger?.LogTrace("GetSourceLine: Could not find method for {0:x}", log.CodeAddresses.Address(codeAddressIndex));
             return null;
         }
 
-        var ilOffset = log.CodeAddresses.ILOffset(codeAddressIndex);
+        int ilOffset = log.CodeAddresses.ILOffset(codeAddressIndex);
+
         if (ilOffset < 0)
         {
             ilOffset = 0;
@@ -354,12 +383,14 @@ public class ThreadDumperEp : IThreadDumper
 
         if (moduleFile.PdbSignature != Guid.Empty)
         {
-            pdbFileName = reader.FindSymbolFilePath(moduleFile.PdbName, moduleFile.PdbSignature, moduleFile.PdbAge, moduleFile.FilePath, moduleFile.ProductVersion, true);
+            pdbFileName = reader.FindSymbolFilePath(moduleFile.PdbName, moduleFile.PdbSignature, moduleFile.PdbAge, moduleFile.FilePath,
+                moduleFile.ProductVersion, true);
         }
 
         if (pdbFileName == null)
         {
-            var simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
+            string simpleName = Path.GetFileNameWithoutExtension(moduleFile.FilePath);
+
             if (simpleName.EndsWith(".il"))
             {
                 simpleName = Path.GetFileNameWithoutExtension(simpleName);
@@ -370,12 +401,15 @@ public class ThreadDumperEp : IThreadDumper
 
         if (pdbFileName != null)
         {
-            var symbolReaderModule = reader.OpenSymbolFile(pdbFileName);
+            ManagedSymbolModule symbolReaderModule = reader.OpenSymbolFile(pdbFileName);
+
             if (symbolReaderModule != null)
             {
                 if (moduleFile.PdbSignature != Guid.Empty && symbolReaderModule.PdbGuid != moduleFile.PdbSignature)
                 {
-                    _logger?.LogTrace("ERROR: the PDB we opened does not match the PDB desired.  PDB GUID = " + symbolReaderModule.PdbGuid + " DESIRED GUID = " + moduleFile.PdbSignature);
+                    _logger?.LogTrace("ERROR: the PDB we opened does not match the PDB desired.  PDB GUID = " + symbolReaderModule.PdbGuid +
+                        " DESIRED GUID = " + moduleFile.PdbSignature);
+
                     return null;
                 }
 
@@ -389,18 +423,20 @@ public class ThreadDumperEp : IThreadDumper
 
     private async Task<string> CreateTraceFile(EventPipeSession session)
     {
-        var tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
+        string tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
+
         try
         {
-            await using (var fs = File.OpenWrite(tempNetTraceFilename))
+            await using (FileStream fs = File.OpenWrite(tempNetTraceFilename))
             {
-                var copyTask = session.EventStream.CopyToAsync(fs);
+                Task copyTask = session.EventStream.CopyToAsync(fs);
                 await Task.Delay(_options.Duration);
                 session.Stop();
 
                 // check if rundown is taking more than 5 seconds and log
-                var timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
-                var completedTask = await Task.WhenAny(copyTask, timeoutTask);
+                Task timeoutTask = Task.Delay(TimeSpan.FromSeconds(5));
+                Task completedTask = await Task.WhenAny(copyTask, timeoutTask);
+
                 if (completedTask == timeoutTask)
                 {
                     _logger?.LogInformation("Sufficiently large applications can cause this command to take non-trivial amounts of time");

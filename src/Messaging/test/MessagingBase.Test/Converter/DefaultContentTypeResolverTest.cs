@@ -16,6 +16,7 @@ public class DefaultContentTypeResolverTest
         {
             { MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson }
         };
+
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
         Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));
@@ -28,6 +29,7 @@ public class DefaultContentTypeResolverTest
         {
             { MessageHeaders.ContentType, MimeTypeUtils.ApplicationJsonValue }
         };
+
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
         Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));
@@ -40,6 +42,7 @@ public class DefaultContentTypeResolverTest
         {
             { MessageHeaders.ContentType, "invalidContentType" }
         };
+
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
         Assert.Throws<ArgumentException>(() => resolver.Resolve(headers));
@@ -52,6 +55,7 @@ public class DefaultContentTypeResolverTest
         {
             { MessageHeaders.ContentType, 1 }
         };
+
         var headers = new MessageHeaders(map);
         var resolver = new DefaultContentTypeResolver();
         Assert.Throws<ArgumentException>(() => resolver.Resolve(headers));
@@ -72,6 +76,7 @@ public class DefaultContentTypeResolverTest
         {
             DefaultMimeType = MimeTypeUtils.ApplicationJson
         };
+
         var headers = new MessageHeaders(new Dictionary<string, object>());
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, resolver.Resolve(headers));

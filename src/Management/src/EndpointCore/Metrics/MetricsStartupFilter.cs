@@ -15,6 +15,7 @@ public class MetricsStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<MetricsEndpoint>();

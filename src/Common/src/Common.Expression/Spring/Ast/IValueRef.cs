@@ -6,9 +6,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public interface IValueRef
 {
+    bool IsWritable { get; }
+
     ITypedValue GetValue();
 
     void SetValue(object newValue);
-
-    bool IsWritable { get; }
 }

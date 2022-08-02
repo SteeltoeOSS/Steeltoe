@@ -8,45 +8,21 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRoutingConnectionFactory
 {
-    private readonly ConcurrentDictionary<object, IConnectionFactory> _targetConnectionFactories = new ();
+    private readonly ConcurrentDictionary<object, IConnectionFactory> _targetConnectionFactories = new();
 
-    private readonly List<IConnectionListener> _connectionListeners = new ();
+    private readonly List<IConnectionListener> _connectionListeners = new();
 
     public IConnectionFactory DefaultTargetConnectionFactory { get; set; }
 
     public bool LenientFallback { get; set; }
 
-    public string Host
-    {
-        get
-        {
-            return DetermineTargetConnectionFactory().Host;
-        }
-    }
+    public string Host => DetermineTargetConnectionFactory().Host;
 
-    public int Port
-    {
-        get
-        {
-            return DetermineTargetConnectionFactory().Port;
-        }
-    }
+    public int Port => DetermineTargetConnectionFactory().Port;
 
-    public string VirtualHost
-    {
-        get
-        {
-            return DetermineTargetConnectionFactory().VirtualHost;
-        }
-    }
+    public string VirtualHost => DetermineTargetConnectionFactory().VirtualHost;
 
-    public string Username
-    {
-        get
-        {
-            return DetermineTargetConnectionFactory().Username;
-        }
-    }
+    public string Username => DetermineTargetConnectionFactory().Username;
 
     public IConnectionFactory PublisherConnectionFactory => null;
 
@@ -60,7 +36,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual IConnectionFactory GetTargetConnectionFactory(object key)
     {
-        _targetConnectionFactories.TryGetValue(key, out var result);
+        _targetConnectionFactories.TryGetValue(key, out IConnectionFactory result);
         return result;
     }
 
@@ -71,14 +47,14 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
             throw new ArgumentNullException(nameof(targetConnectionFactories));
         }
 
-        foreach (var factory in targetConnectionFactories.Values)
+        foreach (IConnectionFactory factory in targetConnectionFactories.Values)
         {
             if (factory == null)
             {
                 throw new ArgumentException("'targetConnectionFactories' cannot have null values.");
             }
 
-            foreach (var kvp in targetConnectionFactories)
+            foreach (KeyValuePair<object, IConnectionFactory> kvp in targetConnectionFactories)
             {
                 _targetConnectionFactories[kvp.Key] = kvp.Value;
             }
@@ -92,7 +68,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual void AddConnectionListener(IConnectionListener connectionListener)
     {
-        foreach (var connectionFactory in _targetConnectionFactories.Values)
+        foreach (IConnectionFactory connectionFactory in _targetConnectionFactories.Values)
         {
             connectionFactory.AddConnectionListener(connectionListener);
         }
@@ -107,10 +83,12 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual bool RemoveConnectionListener(IConnectionListener connectionListener)
     {
-        var removed = false;
-        foreach (var connectionFactory in _targetConnectionFactories.Values)
+        bool removed = false;
+
+        foreach (IConnectionFactory connectionFactory in _targetConnectionFactories.Values)
         {
-            var listenerRemoved = connectionFactory.RemoveConnectionListener(connectionListener);
+            bool listenerRemoved = connectionFactory.RemoveConnectionListener(connectionListener);
+
             if (!removed)
             {
                 removed = listenerRemoved;
@@ -119,7 +97,8 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
         if (DefaultTargetConnectionFactory != null)
         {
-            var listenerRemoved = DefaultTargetConnectionFactory.RemoveConnectionListener(connectionListener);
+            bool listenerRemoved = DefaultTargetConnectionFactory.RemoveConnectionListener(connectionListener);
+
             if (!removed)
             {
                 removed = listenerRemoved;
@@ -132,7 +111,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual void ClearConnectionListeners()
     {
-        foreach (var connectionFactory in _targetConnectionFactories.Values)
+        foreach (IConnectionFactory connectionFactory in _targetConnectionFactories.Values)
         {
             connectionFactory.ClearConnectionListeners();
         }
@@ -164,7 +143,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
     {
         _targetConnectionFactories[key] = connectionFactory;
 
-        foreach (var listener in _connectionListeners)
+        foreach (IConnectionListener listener in _connectionListeners)
         {
             connectionFactory.AddConnectionListener(listener);
         }
@@ -172,8 +151,9 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual IConnectionFactory DetermineTargetConnectionFactory()
     {
-        var lookupKey = DetermineCurrentLookupKey();
+        object lookupKey = DetermineCurrentLookupKey();
         IConnectionFactory connectionFactory = null;
+
         if (lookupKey != null)
         {
             _targetConnectionFactories.TryGetValue(lookupKey, out connectionFactory);
@@ -194,7 +174,7 @@ public abstract class AbstractRoutingConnectionFactory : IConnectionFactory, IRo
 
     public virtual IConnectionFactory RemoveTargetConnectionFactory(object key)
     {
-        _targetConnectionFactories.TryRemove(key, out var connectionFactory);
+        _targetConnectionFactories.TryRemove(key, out IConnectionFactory connectionFactory);
         return connectionFactory;
     }
 

@@ -6,18 +6,18 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class QueueInformation
 {
+    public string Name { get; }
+
+    public uint MessageCount { get; }
+
+    public uint ConsumerCount { get; }
+
     public QueueInformation(string name, uint messageCount, uint consumerCount)
     {
         Name = name;
         MessageCount = messageCount;
         ConsumerCount = consumerCount;
     }
-
-    public string Name { get; }
-
-    public uint MessageCount { get; }
-
-    public uint ConsumerCount { get; }
 
     public override int GetHashCode()
     {

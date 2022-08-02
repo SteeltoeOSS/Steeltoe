@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections.Concurrent;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
@@ -11,15 +11,31 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
 {
     private readonly HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> _commandCollapser;
     private readonly int _maxBatchSize;
-    private readonly AtomicBoolean _batchStarted = new ();
+    private readonly AtomicBoolean _batchStarted = new();
 
-    private readonly ConcurrentDictionary<TRequestArgument, CollapsedRequest<TRequestResponse, TRequestArgument>> _argumentMap = new ();
+    private readonly ConcurrentDictionary<TRequestArgument, CollapsedRequest<TRequestResponse, TRequestArgument>> _argumentMap = new();
     private readonly IHystrixCollapserOptions _properties;
 
-    private readonly ReaderWriterLockSlim _batchLock = new (LockRecursionPolicy.SupportsRecursion);
-    private readonly AtomicReference<CollapsedRequest<TRequestResponse, TRequestArgument>> _nullArg = new ();
+    private readonly ReaderWriterLockSlim _batchLock = new(LockRecursionPolicy.SupportsRecursion);
+    private readonly AtomicReference<CollapsedRequest<TRequestResponse, TRequestArgument>> _nullArg = new();
 
-    public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser, int maxBatchSize)
+    public int Size
+    {
+        get
+        {
+            int result = _argumentMap.Count;
+
+            if (_nullArg != null)
+            {
+                result++;
+            }
+
+            return result;
+        }
+    }
+
+    public RequestBatch(IHystrixCollapserOptions properties, HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser,
+        int maxBatchSize)
     {
         _properties = properties;
         _commandCollapser = commandCollapser;
@@ -57,7 +73,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                     var tcs = new TaskCompletionSource<TRequestResponse>(collapsedRequest);
                     collapsedRequest.CompletionSource = tcs;
 
-                    var existing = arg == null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
+                    CollapsedRequest<TRequestResponse, TRequestArgument> existing =
+                        arg == null ? GetOrAddNullArg(collapsedRequest) : _argumentMap.GetOrAdd(arg, collapsedRequest);
 
                     /*
                      * If the argument already exists in the batch, then there are 2 options:
@@ -73,7 +90,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                      */
                     if (existing != collapsedRequest)
                     {
-                        var requestCachingEnabled = _properties.RequestCacheEnabled;
+                        bool requestCachingEnabled = _properties.RequestCacheEnabled;
+
                         if (requestCachingEnabled)
                         {
                             return existing;
@@ -95,10 +113,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                 _batchLock.ExitReadLock();
             }
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public void ExecuteBatchIfNotAlreadyStarted()
@@ -113,10 +129,11 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
             _batchLock.EnterWriteLock();
 
             var args = new List<CollapsedRequest<TRequestResponse, TRequestArgument>>();
+
             try
             {
                 // Check for cancel
-                foreach (var entry in _argumentMap)
+                foreach (KeyValuePair<TRequestArgument, CollapsedRequest<TRequestResponse, TRequestArgument>> entry in _argumentMap)
                 {
                     if (!entry.Value.IsRequestCanceled())
                     {
@@ -127,7 +144,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                 // Handle case of null arg submit
                 if (_nullArg.Value != null)
                 {
-                    var req = _nullArg.Value;
+                    CollapsedRequest<TRequestResponse, TRequestArgument> req = _nullArg.Value;
+
                     if (!req.IsRequestCanceled())
                     {
                         args.Add(req);
@@ -137,16 +155,16 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                 if (args.Count > 0)
                 {
                     // shard batches
-                    var shards = _commandCollapser.DoShardRequests(args);
+                    ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> shards = _commandCollapser.DoShardRequests(args);
 
                     // for each shard execute its requests
-                    foreach (var shardRequests in shards)
+                    foreach (ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> shardRequests in shards)
                     {
                         try
                         {
                             // create a new command to handle this batch of requests
-                            var command = _commandCollapser.DoCreateObservableCommand(shardRequests);
-                            var result = command.Execute();
+                            HystrixCommand<TBatchReturn> command = _commandCollapser.DoCreateObservableCommand(shardRequests);
+                            TBatchReturn result = command.Execute();
 
                             try
                             {
@@ -155,7 +173,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                             catch (Exception mapException)
                             {
                                 // logger.debug("Exception mapping responses to requests.", e);
-                                foreach (var request in args)
+                                foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in args)
                                 {
                                     try
                                     {
@@ -173,11 +191,14 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
 
                             // check that all requests had setResponse or setException invoked in case 'mapResponseToRequests' was implemented poorly
                             Exception e = null;
-                            foreach (var request in shardRequests.OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
+
+                            foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in shardRequests
+                                .OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
                             {
                                 try
                                 {
-                                    e = request.SetExceptionIfResponseNotReceived(e, $"No response set by {_commandCollapser.CollapserKey.Name} 'mapResponseToRequests' implementation.");
+                                    e = request.SetExceptionIfResponseNotReceived(e,
+                                        $"No response set by {_commandCollapser.CollapserKey.Name} 'mapResponseToRequests' implementation.");
                                 }
                                 catch (InvalidOperationException)
                                 {
@@ -189,7 +210,8 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                         {
                             // logger.error("Exception while creating and queueing command with batch.", e);
                             // if a failure occurs we want to pass that exception to all of the Futures that we've returned
-                            foreach (var request in shardRequests.OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
+                            foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in shardRequests
+                                .OfType<CollapsedRequest<TRequestResponse, TRequestArgument>>())
                             {
                                 try
                                 {
@@ -234,6 +256,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
         {
             // get the write lock so offers are synced with this (we don't really need to unlock as this is a one-shot deal to shutdown)
             _batchLock.EnterWriteLock();
+
             try
             {
                 // if we win the 'start' and once we have the lock we can now shut it down otherwise another thread will finish executing this batch
@@ -247,7 +270,7 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
                      *
                      * This safety-net just prevents the CollapsedRequestFutureImpl.get() from waiting on the CountDownLatch until its max timeout.
                      */
-                    foreach (var request in _argumentMap.Values)
+                    foreach (CollapsedRequest<TRequestResponse, TRequestArgument> request in _argumentMap.Values)
                     {
                         try
                         {
@@ -267,20 +290,6 @@ public class RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>
             {
                 _batchLock.ExitWriteLock();
             }
-        }
-    }
-
-    public int Size
-    {
-        get
-        {
-            var result = _argumentMap.Count;
-            if (_nullArg != null)
-            {
-                result++;
-            }
-
-            return result;
         }
     }
 

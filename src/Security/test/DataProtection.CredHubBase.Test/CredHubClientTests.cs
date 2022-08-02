@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using RichardSzalay.MockHttp;
 using System.Net;
 using System.Text.Json;
+using RichardSzalay.MockHttp;
 using Xunit;
 
 namespace Steeltoe.Security.DataProtection.CredHub.Test;
@@ -16,8 +16,7 @@ public class CredHubClientTests
     [Fact]
     public async Task CreateAsync_RequestsToken_Once()
     {
-        const MockedRequest authRequest = null;
-        var mockHttpMessageHandler = InitializedHandlerWithLogin(authRequest);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
         await InitializeClientAsync(mockHttpMessageHandler);
 
@@ -27,13 +26,14 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_Values()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"value\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example\",\"value\":\"sample\"}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<ValueCredential>(new ValueSetRequest("example", "sample"));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"value\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example\",\"value\":\"sample\"}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<ValueCredential> response = await client.WriteAsync<ValueCredential>(new ValueSetRequest("example", "sample"));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -48,13 +48,14 @@ public class CredHubClientTests
     public async Task WriteAsync_Sets_Json()
     {
         var jsonObject = JsonSerializer.Deserialize<JsonElement>(@"{""key"": 123,""key_list"": [""val1"",""val2""],""is_true"": true}");
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", $"{{\"type\":\"json\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"b84cd415-2218-41c9-9455-b3e4c6a5ec0f\",\"name\":\"/example-json\",\"value\":{jsonObject}}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<JsonCredential>(new JsonSetRequest("example", jsonObject));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            $"{{\"type\":\"json\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"b84cd415-2218-41c9-9455-b3e4c6a5ec0f\",\"name\":\"/example-json\",\"value\":{jsonObject}}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<JsonCredential> response = await client.WriteAsync<JsonCredential>(new JsonSetRequest("example", jsonObject));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -68,13 +69,14 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_Password()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"73ef170e-12b7-4f91-94a0-e3a1686cbe2b\",\"name\":\"/example-password\",\"value\":\"sample\"}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<PasswordCredential>(new PasswordSetRequest("example", "sample"));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"password\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"73ef170e-12b7-4f91-94a0-e3a1686cbe2b\",\"name\":\"/example-password\",\"value\":\"sample\"}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<PasswordCredential> response = await client.WriteAsync<PasswordCredential>(new PasswordSetRequest("example", "sample"));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -88,15 +90,17 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsyncUserWithPermissions_Sets_UserWithPermissions()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .WithContent("{\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\"},\"name\":\"example-user\",\"type\":\"User\"}")
-            .Respond("application/json", "{\"type\":\"user\",\"version_created_at\":\"2017-11-22T21:49:09Z\",\"id\":\"b6dffbd6-ccca-4703-a4fd-8d39ca7b564a\",\"name\":\"/example-user\",\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\",\"password_hash\":\"$6$rzwQOeLD$uuZp.sh9mT/bUGSB9i9x8pr.MG8hvo7bsUf2BNEKMVUErzEtYxGdmG6AfHtM1s087DUE1NeC01LOwtDLg3tLb/\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
+            .WithContent("{\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\"},\"name\":\"example-user\",\"type\":\"User\"}").Respond(
+                "application/json",
+                "{\"type\":\"user\",\"version_created_at\":\"2017-11-22T21:49:09Z\",\"id\":\"b6dffbd6-ccca-4703-a4fd-8d39ca7b564a\",\"name\":\"/example-user\",\"value\":{\"username\":\"testUser\",\"password\":\"testPassword\",\"password_hash\":\"$6$rzwQOeLD$uuZp.sh9mT/bUGSB9i9x8pr.MG8hvo7bsUf2BNEKMVUErzEtYxGdmG6AfHtM1s087DUE1NeC01LOwtDLg3tLb/\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
         var request = new UserSetRequest("example-user", "testUser", "testPassword");
 
-        var response = await client.WriteAsync<UserCredential>(request);
+        CredHubCredential<UserCredential> response = await client.WriteAsync<UserCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -112,15 +116,17 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_RootCertificate()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        var certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", null, certificate, privateKey));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+
+        CredHubCredential<CertificateCredential> response =
+            await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", null, certificate, privateKey));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -136,16 +142,18 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_NonRootCertificate()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":\"-----BEGIN PUBLIC KEY-----\\nFakeCAKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var certificateAuthority = "-----BEGIN PUBLIC KEY-----\nFakeCAKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
-        var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        var certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", privateKey, certificate, certificateAuthority));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":\"-----BEGIN PUBLIC KEY-----\\nFakeCAKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+        string certificateAuthority = "-----BEGIN PUBLIC KEY-----\nFakeCAKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+
+        CredHubCredential<CertificateCredential> response =
+            await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", privateKey, certificate, certificateAuthority));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -161,15 +169,16 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_RSA()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        var publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<RsaCredential>(new RsaSetRequest("example-rsa", privateKey, publicKey));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+
+        CredHubCredential<RsaCredential> response = await client.WriteAsync<RsaCredential>(new RsaSetRequest("example-rsa", privateKey, publicKey));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -184,15 +193,16 @@ public class CredHubClientTests
     [Fact]
     public async Task WriteAsync_Sets_SSH()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Put, $"{_credHubBase}/v1/data")
-            .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        var publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.WriteAsync<SshCredential>(new SshSetRequest("example-ssh", privateKey, publicKey));
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Put, $"{_credHubBase}/v1/data").Respond("application/json",
+            "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+
+        CredHubCredential<SshCredential> response = await client.WriteAsync<SshCredential>(new SshSetRequest("example-ssh", privateKey, publicKey));
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -207,14 +217,15 @@ public class CredHubClientTests
     [Fact]
     public async Task GetByIdAsync_Gets()
     {
-        var credId = Guid.Parse("f82cc4a6-4490-4ed7-92c9-5115006bd691");
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}v1/data/{credId}")
-            .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-20T17:37:57Z\",\"id\":\"f82cc4a6-4490-4ed7-92c9-5115006bd691\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyText\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        Guid credId = Guid.Parse("f82cc4a6-4490-4ed7-92c9-5115006bd691");
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GetByIdAsync<SshCredential>(credId);
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}v1/data/{credId}").Respond("application/json",
+            "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-20T17:37:57Z\",\"id\":\"f82cc4a6-4490-4ed7-92c9-5115006bd691\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyText\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<SshCredential> response = await client.GetByIdAsync<SshCredential>(credId);
 
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Equal(CredentialType.SSH, response.Type);
@@ -229,13 +240,14 @@ public class CredHubClientTests
     [Fact]
     public async Task GetByNameAsync_Gets()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example-rsa")
-            .Respond("application/json", "{\"data\":[{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GetByNameAsync<RsaCredential>("/example-rsa");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example-rsa").Respond("application/json",
+            "{\"data\":[{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<RsaCredential> response = await client.GetByNameAsync<RsaCredential>("/example-rsa");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -258,19 +270,22 @@ public class CredHubClientTests
     [Fact]
     public async Task GetByNameWithHistoryAsync_Gets()
     {
-        var revisionCount = 3;
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example&versions={revisionCount}")
-            .Respond("application/json", "{\"data\":[{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:32Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef43\",\"name\":\"/example\",\"value\":\"Value example 3\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:28Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef42\",\"name\":\"/example\",\"value\":\"Value example 2\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:22Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef41\",\"name\":\"/example\",\"value\":\"Value example 1\"}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        int revisionCount = 3;
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GetByNameWithHistoryAsync<string>("/example", revisionCount);
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example&versions={revisionCount}").Respond(
+            "application/json",
+            "{\"data\":[{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:32Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef43\",\"name\":\"/example\",\"value\":\"Value example 3\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:28Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef42\",\"name\":\"/example\",\"value\":\"Value example 2\"},{\"type\":\"value\",\"version_created_at\":\"2017-11-20T23:03:22Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef41\",\"name\":\"/example\",\"value\":\"Value example 1\"}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        List<CredHubCredential<string>> response = await client.GetByNameWithHistoryAsync<string>("/example", revisionCount);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
-        var index = 3;
-        foreach (var item in response)
+        int index = 3;
+
+        foreach (CredHubCredential<string> item in response)
         {
             Assert.Equal(CredentialType.Value, item.Type);
             Assert.Equal(Guid.Parse($"2af5191f-9c05-4746-b72c-78b3283aef4{index}"), item.Id);
@@ -283,15 +298,21 @@ public class CredHubClientTests
     [Fact]
     public async Task GenerateAsync_Creates_Password()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"length\":40},\"name\":\"generated-password\",\"type\":\"Password\"}")
-            .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters { Length = 40 });
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GenerateAsync<PasswordCredential>(request);
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
+            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"length\":40},\"name\":\"generated-password\",\"type\":\"Password\"}").Respond(
+                "application/json",
+                "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        var request = new PasswordGenerationRequest("generated-password", new PasswordGenerationParameters
+        {
+            Length = 40
+        });
+
+        CredHubCredential<PasswordCredential> response = await client.GenerateAsync<PasswordCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -305,15 +326,20 @@ public class CredHubClientTests
     [Fact]
     public async Task GenerateAsync_Creates_User()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"length\":40},\"name\":\"generated-user\",\"type\":\"User\"}")
-            .Respond("application/json", "{\"type\":\"user\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-user\",\"value\":{\"username\":\"HzFFMbHuRbtImAWdGmML\",\"password\":\"zVNmqtSHakqRCMb2OtUFtwnoOSJ0T4NCSaaYdIku\",\"password_hash\":\"$6$8Oq5Fmmr$dVjMXUCk.r9I6jpQYapnwtoK80qrpSSCBqezyeB7AFJFPvQQy.tw0LBHSBJjaT9L9W3u1nodrDol8U.knd17y0\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var request = new UserGenerationRequest("generated-user", new UserGenerationParameters { Length = 40 });
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GenerateAsync<UserCredential>(request);
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
+            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"length\":40},\"name\":\"generated-user\",\"type\":\"User\"}").Respond("application/json",
+                "{\"type\":\"user\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-user\",\"value\":{\"username\":\"HzFFMbHuRbtImAWdGmML\",\"password\":\"zVNmqtSHakqRCMb2OtUFtwnoOSJ0T4NCSaaYdIku\",\"password_hash\":\"$6$8Oq5Fmmr$dVjMXUCk.r9I6jpQYapnwtoK80qrpSSCBqezyeB7AFJFPvQQy.tw0LBHSBJjaT9L9W3u1nodrDol8U.knd17y0\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        var request = new UserGenerationRequest("generated-user", new UserGenerationParameters
+        {
+            Length = 40
+        });
+
+        CredHubCredential<UserCredential> response = await client.GenerateAsync<UserCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -329,16 +355,25 @@ public class CredHubClientTests
     [Fact]
     public async Task GenerateAsync_Creates_Certificate()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"common_name\":\"TestCA\",\"duration\":365,\"is_ca\":true,\"self_sign\":false,\"key_length\":2048},\"name\":\"example-ca\",\"type\":\"Certificate\"}")
-            .Respond("application/json", "{\"type\":\"certificate\",\"transitional\":false,\"version_created_at\":\"2017-11-20T15:55:24Z\",\"id\":\"0d698309-cca6-4626-aae3-a72ed664304a\",\"name\":\"/example-ca\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN CERTIFICATE-----\\nFakeCertificateText\\n-----END CERTIFICATE-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var parameters = new CertificateGenerationParameters { CommonName = "TestCA", IsCertificateAuthority = true };
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
+            .WithContent(
+                "{\"mode\":\"converge\",\"parameters\":{\"common_name\":\"TestCA\",\"duration\":365,\"is_ca\":true,\"self_sign\":false,\"key_length\":2048},\"name\":\"example-ca\",\"type\":\"Certificate\"}")
+            .Respond("application/json",
+                "{\"type\":\"certificate\",\"transitional\":false,\"version_created_at\":\"2017-11-20T15:55:24Z\",\"id\":\"0d698309-cca6-4626-aae3-a72ed664304a\",\"name\":\"/example-ca\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN CERTIFICATE-----\\nFakeCertificateText\\n-----END CERTIFICATE-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        var parameters = new CertificateGenerationParameters
+        {
+            CommonName = "TestCA",
+            IsCertificateAuthority = true
+        };
+
         var request = new CertificateGenerationRequest("example-ca", parameters);
 
-        var response = await client.GenerateAsync<CertificateCredential>(request);
+        CredHubCredential<CertificateCredential> response = await client.GenerateAsync<CertificateCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -354,15 +389,16 @@ public class CredHubClientTests
     [Fact]
     public async Task GenerateAsync_Creates_RSA()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"key_length\":2048},\"name\":\"example-rsa\",\"type\":\"RSA\"}")
-            .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
+            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"key_length\":2048},\"name\":\"example-rsa\",\"type\":\"RSA\"}").Respond("application/json",
+                "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
         var request = new RsaGenerationRequest("example-rsa");
 
-        var response = await client.GenerateAsync<RsaCredential>(request);
+        CredHubCredential<RsaCredential> response = await client.GenerateAsync<RsaCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -377,15 +413,16 @@ public class CredHubClientTests
     [Fact]
     public async Task GenerateAsync_Creates_SSH()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
-            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"key_length\":2048},\"name\":\"example-ssh\",\"type\":\"SSH\"}")
-            .Respond("application/json", "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText asdf\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/data")
+            .WithContent("{\"mode\":\"converge\",\"parameters\":{\"key_length\":2048},\"name\":\"example-ssh\",\"type\":\"SSH\"}").Respond("application/json",
+                "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"ssh-rsa FakePublicKeyText asdf\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\",\"public_key_fingerprint\":\"mkiqcOCEUhYsp/0Uu5ZsJlLkKt74/lV4Yz/FKslHxR8\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
         var request = new SshGenerationRequest("example-ssh");
 
-        var response = await client.GenerateAsync<SshCredential>(request);
+        CredHubCredential<SshCredential> response = await client.GenerateAsync<SshCredential>(request);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -401,14 +438,15 @@ public class CredHubClientTests
     [Fact]
     public async Task RegenerateAsync_Regenerates_Password()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/regenerate")
-            .WithContent("{\"name\":\"generated-password\"}")
-            .Respond("application/json", "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.RegenerateAsync<PasswordCredential>("generated-password");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/regenerate")
+            .WithContent("{\"name\":\"generated-password\"}").Respond("application/json",
+                "{\"type\":\"password\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/generated-password\",\"value\":\"W9VwGfI3gvV0ypMDUaFvYDnui84elZPtfGaKaILO\"}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<PasswordCredential> response = await client.RegenerateAsync<PasswordCredential>("generated-password");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -422,14 +460,15 @@ public class CredHubClientTests
     [Fact]
     public async Task RegenerateAsync_Regenerates_RSA()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/regenerate")
-            .WithContent("{\"name\":\"regenerated-rsa\"}")
-            .Respond("application/json", "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/regenerated-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.RegenerateAsync<RsaCredential>("regenerated-rsa");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/regenerate")
+            .WithContent("{\"name\":\"regenerated-rsa\"}").Respond("application/json",
+                "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/regenerated-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        CredHubCredential<RsaCredential> response = await client.RegenerateAsync<RsaCredential>("regenerated-rsa");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -452,14 +491,15 @@ public class CredHubClientTests
     [Fact]
     public async Task BulkRegenerateAsync_Regenerates_Certificates()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/bulk-regenerate")
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/bulk-regenerate")
             .WithContent("{\"signed_by\":\"example-ca\"}")
             .Respond("application/json", "{\"regenerated_credentials\":[\"/example-certificate3\",\"/example-certificate2\"]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        var response = await client.BulkRegenerateAsync("example-ca");
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        RegeneratedCertificates response = await client.BulkRegenerateAsync("example-ca");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -478,13 +518,11 @@ public class CredHubClientTests
     [Fact]
     public async Task DeleteByNameAsync_ReturnsTrue_WhenCredDeleted()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        mockHttpMessageHandler
-            .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa")
-            .Respond(HttpStatusCode.NoContent);
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+        mockHttpMessageHandler.Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa").Respond(HttpStatusCode.NoContent);
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        var response = await client.DeleteByNameAsync("/example-rsa");
+        bool response = await client.DeleteByNameAsync("/example-rsa");
 
         Assert.True(response);
     }
@@ -492,13 +530,11 @@ public class CredHubClientTests
     [Fact]
     public async Task DeleteByNameAsync_ReturnsTrue_WhenCredNotFound()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        mockHttpMessageHandler
-            .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa")
-            .Respond(HttpStatusCode.NotFound);
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+        mockHttpMessageHandler.Expect(HttpMethod.Delete, $"{_credHubBase}/v1/data?name=/example-rsa").Respond(HttpStatusCode.NotFound);
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        var response = await client.DeleteByNameAsync("/example-rsa");
+        bool response = await client.DeleteByNameAsync("/example-rsa");
 
         Assert.True(response);
     }
@@ -514,13 +550,14 @@ public class CredHubClientTests
     [Fact]
     public async Task FindByNameAsync_Returns_Credentials_WithQuery()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name-like=example")
-            .Respond("application/json", "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.FindByNameAsync("example");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name-like=example").Respond("application/json",
+            "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        List<FoundCredential> response = await client.FindByNameAsync("example");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -541,13 +578,14 @@ public class CredHubClientTests
     [Fact]
     public async Task FindByPathAsync_Returns_Credentials_WithQuery()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?path=/")
-            .Respond("application/json", "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.FindByPathAsync("/");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?path=/").Respond("application/json",
+            "{\"credentials\":[{\"version_created_at\":\"2017-11-21T20:39:59Z\",\"name\":\"/example-certificate\"},{\"version_created_at\":\"2017-11-21T18:59:26Z\",\"name\":\"/example-user\"},{\"version_created_at\":\"2017-11-20T22:40:00Z\",\"name\":\"/example-ssh\"}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        List<FoundCredential> response = await client.FindByPathAsync("/");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -576,18 +614,20 @@ public class CredHubClientTests
     [Fact]
     public async Task GetPermissionsAsync_ReturnsPermittedActors()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/permissions?credential_name=/example-password")
-            .Respond("application/json", "{\"credential_name\":\"/example-password\",\"permissions\":[{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\",\"read_acl\",\"write_acl\"]}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.GetPermissionsAsync("/example-password");
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/permissions?credential_name=/example-password").Respond(
+            "application/json",
+            "{\"credential_name\":\"/example-password\",\"permissions\":[{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\",\"read_acl\",\"write_acl\"]}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        List<CredentialPermission> response = await client.GetPermissionsAsync("/example-password");
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
         Assert.Single(response);
-        var permission = response.First();
+        CredentialPermission permission = response.First();
         Assert.Equal("uaa-user:credhub_client", permission.Actor);
         Assert.Equal(5, permission.Operations.Count);
         Assert.Contains(OperationPermissions.Read, permission.Operations);
@@ -624,26 +664,41 @@ public class CredHubClientTests
     [Fact]
     public async Task AddPermissionsAsync_AddsAndReturnsPermissions()
     {
-        var credentialName = "/generated-password";
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockAddRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/permissions")
+        string credentialName = "/generated-password";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
+        MockedRequest mockAddRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/permissions")
             .WithContent(
                 $"{{\"credential_name\":\"{credentialName}\",\"permissions\":[{{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\"]}}]}}")
             .Respond(HttpStatusCode.Created);
-        var mockVerifyRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Get, $"{_credHubBase}/v1/permissions?credential_name={credentialName}")
-            .Respond("application/json", $"{{\"credential_name\":\"{credentialName}\",\"permissions\":[{{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\"]}}]}}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var newPermissions = new CredentialPermission { Actor = "uaa-user:credhub_client", Operations = new List<OperationPermissions> { OperationPermissions.Read, OperationPermissions.Write, OperationPermissions.Delete } };
 
-        var response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission> { newPermissions });
+        MockedRequest mockVerifyRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/permissions?credential_name={credentialName}")
+            .Respond("application/json",
+                $"{{\"credential_name\":\"{credentialName}\",\"permissions\":[{{\"actor\":\"uaa-user:credhub_client\",\"operations\":[\"read\",\"write\",\"delete\"]}}]}}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        var newPermissions = new CredentialPermission
+        {
+            Actor = "uaa-user:credhub_client",
+            Operations = new List<OperationPermissions>
+            {
+                OperationPermissions.Read,
+                OperationPermissions.Write,
+                OperationPermissions.Delete
+            }
+        };
+
+        List<CredentialPermission> response = await client.AddPermissionsAsync(credentialName, new List<CredentialPermission>
+        {
+            newPermissions
+        });
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockAddRequest));
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockVerifyRequest));
         Assert.Single(response);
-        var permission = response.First();
+        CredentialPermission permission = response.First();
         Assert.Equal("uaa-user:credhub_client", permission.Actor);
         Assert.Equal(3, permission.Operations.Count);
         Assert.Contains(OperationPermissions.Read, permission.Operations);
@@ -672,19 +727,18 @@ public class CredHubClientTests
     [Fact]
     public async Task DeletePermissionAsync_ReturnsTrue_WhenDeleted()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
         var queryString = new List<KeyValuePair<string, string>>
         {
-            new ("credential_name", "/example-password"),
-            new ("actor", "uaa-user:credhub_client")
+            new("credential_name", "/example-password"),
+            new("actor", "uaa-user:credhub_client")
         };
-        mockHttpMessageHandler
-            .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions")
-            .WithQueryString(queryString)
-            .Respond(HttpStatusCode.NoContent);
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        var response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
+        mockHttpMessageHandler.Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions").WithQueryString(queryString).Respond(HttpStatusCode.NoContent);
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        bool response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
 
         Assert.True(response);
     }
@@ -692,19 +746,18 @@ public class CredHubClientTests
     [Fact]
     public async Task DeletePermissionAsync_ReturnsTrue_WhenNotFound()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
+
         var queryString = new List<KeyValuePair<string, string>>
         {
-            new ("credential_name", "/example-password"),
-            new ("actor", "uaa-user:credhub_client")
+            new("credential_name", "/example-password"),
+            new("actor", "uaa-user:credhub_client")
         };
-        mockHttpMessageHandler
-            .Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions")
-            .WithQueryString(queryString)
-            .Respond(HttpStatusCode.NotFound);
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        var response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
+        mockHttpMessageHandler.Expect(HttpMethod.Delete, $"{_credHubBase}/v1/permissions").WithQueryString(queryString).Respond(HttpStatusCode.NotFound);
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        bool response = await client.DeletePermissionAsync("/example-password", "uaa-user:credhub_client");
 
         Assert.True(response);
     }
@@ -720,14 +773,17 @@ public class CredHubClientTests
     [Fact]
     public async Task InterpolateServiceDataAsync_CallsEndpoint_ReturnsInterpolatedString()
     {
-        var mockHttpMessageHandler = InitializedHandlerWithLogin();
-        var mockRequest = mockHttpMessageHandler
-            .Expect(HttpMethod.Post, $"{_credHubBase}/v1/interpolate")
-            .Respond("application/json", "{\"p-config-server\":[{\"credentials\":{\"key\":123,\"key_list\":[\"val1\",\"val2\"],\"is_true\":true},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}");
-        var client = await InitializeClientAsync(mockHttpMessageHandler);
-        var serviceData = "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
+        MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        var response = await client.InterpolateServiceDataAsync(serviceData);
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/interpolate").Respond("application/json",
+            "{\"p-config-server\":[{\"credentials\":{\"key\":123,\"key_list\":[\"val1\",\"val2\"],\"is_true\":true},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}");
+
+        CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
+
+        string serviceData =
+            "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
+
+        string response = await client.InterpolateServiceDataAsync(serviceData);
 
         mockHttpMessageHandler.VerifyNoOutstandingExpectation();
         Assert.Equal(1, mockHttpMessageHandler.GetMatchCount(mockRequest));
@@ -736,14 +792,22 @@ public class CredHubClientTests
 
     private Task<CredHubClient> InitializeClientAsync(MockHttpMessageHandler mockHttpMessageHandler)
     {
-        return CredHubClient.CreateUaaClientAsync(new CredHubOptions { CredHubUrl = _credHubBase, ClientId = "credHubUser", ClientSecret = "credHubPassword" }, httpClient: new HttpClient(mockHttpMessageHandler));
+        return CredHubClient.CreateUaaClientAsync(new CredHubOptions
+        {
+            CredHubUrl = _credHubBase,
+            ClientId = "credHubUser",
+            ClientSecret = "credHubPassword"
+        }, httpClient: new HttpClient(mockHttpMessageHandler));
     }
 
     private MockHttpMessageHandler InitializedHandlerWithLogin(MockedRequest authRequest = null)
     {
         var mockHttpMessageHandler = new MockHttpMessageHandler();
-        var infoUrl = _credHubBase.Replace("/api", "/info");
-        mockHttpMessageHandler.Expect(HttpMethod.Get, infoUrl).Respond("application/json", "{\"auth-server\": {\"url\": \"http://uaa-server\"},\"app\":{\"name\":\"CredHub\" }}");
+        string infoUrl = _credHubBase.Replace("/api", "/info");
+
+        mockHttpMessageHandler.Expect(HttpMethod.Get, infoUrl)
+            .Respond("application/json", "{\"auth-server\": {\"url\": \"http://uaa-server\"},\"app\":{\"name\":\"CredHub\" }}");
+
         mockHttpMessageHandler.Expect(HttpMethod.Post, "http://uaa-server/oauth/token").Respond("application/json", "{\"access_token\" : \"fake token\"}");
         return mockHttpMessageHandler;
     }

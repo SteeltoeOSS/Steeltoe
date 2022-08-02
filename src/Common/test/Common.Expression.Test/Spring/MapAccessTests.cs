@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Collections;
 using System.Diagnostics;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -28,11 +28,11 @@ public class MapAccessTests : AbstractExpressionTests
     public void TestCustomMapAccessor()
     {
         var parser = new SpelExpressionParser();
-        var ctx = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext ctx = TestScenarioCreator.GetTestEvaluationContext();
         ctx.AddPropertyAccessor(new MapAccessor());
 
-        var expr = parser.ParseExpression("TestDictionary.monday");
-        var value = expr.GetValue(ctx, typeof(string));
+        IExpression expr = parser.ParseExpression("TestDictionary.monday");
+        object value = expr.GetValue(ctx, typeof(string));
         Assert.Equal("montag", value);
     }
 
@@ -40,11 +40,11 @@ public class MapAccessTests : AbstractExpressionTests
     public void TestVariableMapAccess()
     {
         var parser = new SpelExpressionParser();
-        var ctx = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext ctx = TestScenarioCreator.GetTestEvaluationContext();
         ctx.SetVariable("day", "saturday");
 
-        var expr = parser.ParseExpression("TestDictionary[#day]");
-        var value = expr.GetValue(ctx, typeof(string));
+        IExpression expr = parser.ParseExpression("TestDictionary[#day]");
+        object value = expr.GetValue(ctx, typeof(string));
         Assert.Equal("samstag", value);
     }
 
@@ -61,7 +61,7 @@ public class MapAccessTests : AbstractExpressionTests
         object bean = new TestBean("name1", new TestBean("name2", null, "Description 2", 15, props1), "description 1", 6, props1);
 
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("TestService.Properties['key2']");
+        IExpression expr = parser.ParseExpression("TestService.Properties['key2']");
         Assert.Equal("value2", expr.GetValue(bean));
     }
 
@@ -74,26 +74,27 @@ public class MapAccessTests : AbstractExpressionTests
         };
 
         var spelExpressionParser = new SpelExpressionParser();
-        var expr = spelExpressionParser.ParseExpression("#root['key']");
+        IExpression expr = spelExpressionParser.ParseExpression("#root['key']");
         Assert.Equal("value", expr.GetValue(map));
     }
 
     [Fact(Skip = "Time sensitive test, sometimes fails on CI")]
-
     public void TestGetValuePerformance()
     {
         var map = new Dictionary<string, string>
         {
             { "key", "value" }
         };
+
         var context = new StandardEvaluationContext(map);
 
         var spelExpressionParser = new SpelExpressionParser();
-        var expr = spelExpressionParser.ParseExpression("#root['key']");
+        IExpression expr = spelExpressionParser.ParseExpression("#root['key']");
 
         var s = new Stopwatch();
         s.Start();
-        for (var i = 0; i < 10000; i++)
+
+        for (int i = 0; i < 10000; i++)
         {
             expr.GetValue(context);
         }
@@ -104,15 +105,6 @@ public class MapAccessTests : AbstractExpressionTests
 
     public class TestBean
     {
-        public TestBean(string name, TestBean testBean, string description, int priority, Dictionary<string, string> props)
-        {
-            Name = name;
-            TestService = testBean;
-            Description = description;
-            Priority = priority;
-            Properties = props;
-        }
-
         public string Name { get; set; }
 
         public TestBean TestService { get; set; }
@@ -122,6 +114,15 @@ public class MapAccessTests : AbstractExpressionTests
         public int Priority { get; set; }
 
         public Dictionary<string, string> Properties { get; set; }
+
+        public TestBean(string name, TestBean testBean, string description, int priority, Dictionary<string, string> props)
+        {
+            Name = name;
+            TestService = testBean;
+            Description = description;
+            Priority = priority;
+            Properties = props;
+        }
     }
 
     public class MapAccessor : IPropertyAccessor
@@ -148,7 +149,10 @@ public class MapAccessTests : AbstractExpressionTests
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type> { typeof(IDictionary) };
+            return new List<Type>
+            {
+                typeof(IDictionary)
+            };
         }
     }
 }

@@ -8,12 +8,9 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 
 public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodReturnValueHandler
 {
-    private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new ();
+    private readonly List<IHandlerMethodReturnValueHandler> _returnValueHandlers = new();
 
-    public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers
-    {
-        get { return new List<IHandlerMethodReturnValueHandler>(_returnValueHandlers); }
-    }
+    public IList<IHandlerMethodReturnValueHandler> ReturnValueHandlers => new List<IHandlerMethodReturnValueHandler>(_returnValueHandlers);
 
     public void Clear()
     {
@@ -43,7 +40,8 @@ public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodRetur
 
     public void HandleReturnValue(object returnValue, ParameterInfo returnType, IMessage message)
     {
-        var handler = GetReturnValueHandler(returnType);
+        IHandlerMethodReturnValueHandler handler = GetReturnValueHandler(returnType);
+
         if (handler == null)
         {
             throw new InvalidOperationException($"No handler for return value type: {returnType.ParameterType}");
@@ -57,12 +55,14 @@ public class HandlerMethodReturnValueHandlerComposite : IAsyncHandlerMethodRetur
     }
 
     public bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo)
-        => GetReturnValueHandler(parameterInfo) is IAsyncHandlerMethodReturnValueHandler handler1 &&
-           handler1.IsAsyncReturnValue(returnValue, parameterInfo);
+    {
+        return GetReturnValueHandler(parameterInfo) is IAsyncHandlerMethodReturnValueHandler handler1 &&
+            handler1.IsAsyncReturnValue(returnValue, parameterInfo);
+    }
 
     private IHandlerMethodReturnValueHandler GetReturnValueHandler(ParameterInfo returnType)
     {
-        foreach (var handler in _returnValueHandlers)
+        foreach (IHandlerMethodReturnValueHandler handler in _returnValueHandlers)
         {
             if (handler.SupportsReturnType(returnType))
             {

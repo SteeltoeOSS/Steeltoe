@@ -14,14 +14,14 @@ namespace Steeltoe.Stream.TestBinder;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; }
+
+    public bool ConfigureServicesInvoked { get; set; }
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; }
-
-    public bool ConfigureServicesInvoked { get; set; }
 
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)

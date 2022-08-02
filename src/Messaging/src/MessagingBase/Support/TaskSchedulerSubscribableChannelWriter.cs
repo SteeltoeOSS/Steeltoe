@@ -8,12 +8,12 @@ namespace Steeltoe.Messaging.Support;
 
 public class TaskSchedulerSubscribableChannelWriter : AbstractMessageChannelWriter
 {
+    public virtual TaskSchedulerSubscribableChannel Channel => (TaskSchedulerSubscribableChannel)channel;
+
     public TaskSchedulerSubscribableChannelWriter(TaskSchedulerSubscribableChannel channel, ILogger logger = null)
         : base(channel, logger)
     {
     }
-
-    public virtual TaskSchedulerSubscribableChannel Channel => (TaskSchedulerSubscribableChannel)channel;
 
     public override bool TryComplete(Exception error = null)
     {

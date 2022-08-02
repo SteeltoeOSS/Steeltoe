@@ -11,13 +11,13 @@ public class PemCertificateSource : ICertificateSource
     private readonly string _certFilePath;
     private readonly string _keyFilePath;
 
+    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
+
     public PemCertificateSource(string certFilePath, string keyFilePath)
     {
         _certFilePath = Path.GetFullPath(certFilePath);
         _keyFilePath = Path.GetFullPath(keyFilePath);
     }
-
-    public Type OptionsConfigurer => typeof(PemConfigureCertificateOptions);
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
@@ -36,18 +36,12 @@ public class PemCertificateSource : ICertificateSource
             Path = Path.GetFileName(_keyFilePath),
             Optional = false,
             ReloadOnChange = true,
-            ReloadDelay = 1000,
+            ReloadDelay = 1000
         };
 
-        var certProvider = new ConfigurationBuilder()
-            .SetBasePath(Path.GetDirectoryName(_certFilePath))
-            .Add(certSource)
-            .Build();
+        IConfigurationRoot certProvider = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(_certFilePath)).Add(certSource).Build();
 
-        var keyProvider = new ConfigurationBuilder()
-            .SetBasePath(Path.GetDirectoryName(_keyFilePath))
-            .Add(keySource)
-            .Build();
+        IConfigurationRoot keyProvider = new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(_keyFilePath)).Add(keySource).Build();
 
         return new PemCertificateProvider(certProvider, keyProvider);
     }

@@ -10,9 +10,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public static class ConnectionFactoryUtils
 {
-    public static RabbitResourceHolder GetTransactionalResourceHolder(IConnectionFactory connectionFactory, bool synchedLocalTransactionAllowed, bool publisherConnectionIfPossible)
+    public static RabbitResourceHolder GetTransactionalResourceHolder(IConnectionFactory connectionFactory, bool synchedLocalTransactionAllowed,
+        bool publisherConnectionIfPossible)
     {
-        return DoGetTransactionalResourceHolder(connectionFactory, new RabbitResourceFactory(connectionFactory, synchedLocalTransactionAllowed, publisherConnectionIfPossible));
+        return DoGetTransactionalResourceHolder(connectionFactory,
+            new RabbitResourceFactory(connectionFactory, synchedLocalTransactionAllowed, publisherConnectionIfPossible));
     }
 
     public static RabbitResourceHolder GetTransactionalResourceHolder(IConnectionFactory connectionFactory, bool synchedLocalTransactionAllowed)
@@ -51,6 +53,7 @@ public static class ConnectionFactoryUtils
 
         TransactionSynchronizationManager.BindResource(connectionFactory, resourceHolder);
         resourceHolder.SynchronizedWithTransaction = true;
+
         if (TransactionSynchronizationManager.IsSynchronizationActive())
         {
             TransactionSynchronizationManager.RegisterSynchronization(new RabbitResourceSynchronization(resourceHolder, connectionFactory));
@@ -63,7 +66,8 @@ public static class ConnectionFactoryUtils
     {
         if (publisherConnectionIfPossible)
         {
-            var publisherFactory = connectionFactory.PublisherConnectionFactory;
+            IConnectionFactory publisherFactory = connectionFactory.PublisherConnectionFactory;
+
             if (publisherFactory != null)
             {
                 return publisherFactory.CreateConnection();
@@ -81,6 +85,7 @@ public static class ConnectionFactoryUtils
         }
 
         var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
+
         if (resourceHolder != null)
         {
             resourceHolder.AddDeliveryTag(channel, tag);
@@ -100,19 +105,22 @@ public static class ConnectionFactoryUtils
         }
 
         var resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
+
         if (resourceHolder != null)
         {
-            var model = resourceFactory.GetChannel(resourceHolder);
+            RC.IModel model = resourceFactory.GetChannel(resourceHolder);
+
             if (model != null)
             {
                 return resourceHolder;
             }
         }
 
-        var resourceHolderToUse = resourceHolder ?? new RabbitResourceHolder();
+        RabbitResourceHolder resourceHolderToUse = resourceHolder ?? new RabbitResourceHolder();
 
-        var connection = resourceFactory.GetConnection(resourceHolderToUse);
+        IConnection connection = resourceFactory.GetConnection(resourceHolderToUse);
         RC.IModel channel;
+
         try
         {
             /*
@@ -120,9 +128,11 @@ public static class ConnectionFactoryUtils
              * for this consumer and the consumer is using the same connection factory.
              */
             channel = ConsumerChannelRegistry.GetConsumerChannel(connectionFactory);
+
             if (channel == null && connection == null)
             {
                 connection = resourceFactory.CreateConnection2();
+
                 if (resourceHolder == null)
                 {
                     /*
@@ -130,6 +140,7 @@ public static class ConnectionFactoryUtils
                      * transactional channel and bound it to the transaction.
                      */
                     resourceHolder = (RabbitResourceHolder)TransactionSynchronizationManager.GetResource(connectionFactory);
+
                     if (resourceHolder != null)
                     {
                         channel = resourceHolder.GetChannel();
@@ -160,6 +171,8 @@ public static class ConnectionFactoryUtils
 
     public interface IResourceFactory
     {
+        bool IsSynchedLocalTransactionAllowed { get; }
+
         RC.IModel GetChannel(RabbitResourceHolder holder);
 
         IConnection GetConnection(RabbitResourceHolder holder);
@@ -167,8 +180,6 @@ public static class ConnectionFactoryUtils
         IConnection CreateConnection2();
 
         RC.IModel CreateChannel(IConnection connection);
-
-        bool IsSynchedLocalTransactionAllowed { get; }
     }
 
     private sealed class RabbitResourceFactory : IResourceFactory

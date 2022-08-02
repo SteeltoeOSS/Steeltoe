@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -25,7 +25,8 @@ public class FunctionReference : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var value = state.LookupVariable(_name);
+        ITypedValue value = state.LookupVariable(_name);
+
         if (Equals(value, TypedValue.Null))
         {
             throw new SpelEvaluationException(StartPosition, SpelMessage.FunctionNotDefined, _name);
@@ -51,7 +52,8 @@ public class FunctionReference : SpelNode
     public override string ToStringAst()
     {
         var items = new List<string>();
-        for (var i = 0; i < ChildCount; i++)
+
+        for (int i = 0; i < ChildCount; i++)
         {
             items.Add(GetChild(i).ToStringAst());
         }
@@ -71,7 +73,7 @@ public class FunctionReference : SpelNode
             return false;
         }
 
-        foreach (var child in children)
+        foreach (SpelNode child in children)
         {
             if (!child.IsCompilable())
             {
@@ -84,7 +86,8 @@ public class FunctionReference : SpelNode
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        var method = _method;
+        MethodInfo method = _method;
+
         if (method == null)
         {
             throw new InvalidOperationException("No method handle");
@@ -98,8 +101,9 @@ public class FunctionReference : SpelNode
     private object[] GetArguments(ExpressionState state)
     {
         // Compute arguments to the function
-        var arguments = new object[ChildCount];
-        for (var i = 0; i < arguments.Length; i++)
+        object[] arguments = new object[ChildCount];
+
+        for (int i = 0; i < arguments.Length; i++)
         {
             arguments[i] = children[i].GetValueInternal(state).Value;
         }
@@ -109,11 +113,12 @@ public class FunctionReference : SpelNode
 
     private TypedValue ExecuteFunctionJlrMethod(ExpressionState state, MethodInfo method)
     {
-        var functionArgs = GetArguments(state);
+        object[] functionArgs = GetArguments(state);
 
         if (!method.IsVarArgs())
         {
-            var declaredParamCount = method.GetParameters().Length;
+            int declaredParamCount = method.GetParameters().Length;
+
             if (declaredParamCount != functionArgs.Length)
             {
                 throw new SpelEvaluationException(SpelMessage.IncorrectNumberOfArgumentsToFunction, functionArgs.Length, declaredParamCount);
@@ -126,17 +131,19 @@ public class FunctionReference : SpelNode
         }
 
         // Convert arguments if necessary and remap them for varargs if required
-        var converter = state.EvaluationContext.TypeConverter;
-        var argumentConversionOccurred = ReflectionHelper.ConvertAllArguments(converter, functionArgs, method);
+        ITypeConverter converter = state.EvaluationContext.TypeConverter;
+        bool argumentConversionOccurred = ReflectionHelper.ConvertAllArguments(converter, functionArgs, method);
+
         if (method.IsVarArgs())
         {
             functionArgs = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(method), functionArgs);
         }
 
-        var compilable = false;
+        bool compilable = false;
+
         try
         {
-            var result = method.Invoke(method.GetType(), functionArgs);
+            object result = method.Invoke(method.GetType(), functionArgs);
             compilable = !argumentConversionOccurred;
             return new TypedValue(result, result?.GetType() ?? method.ReturnType);
         }

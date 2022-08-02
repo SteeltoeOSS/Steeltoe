@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Collections;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -16,16 +16,18 @@ public class OperatorBetween : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var left = LeftOperand.GetValueInternal(state).Value;
-        var right = RightOperand.GetValueInternal(state).Value;
+        object left = LeftOperand.GetValueInternal(state).Value;
+        object right = RightOperand.GetValueInternal(state).Value;
+
         if (right is not IList list || list.Count != 2)
         {
             throw new SpelEvaluationException(RightOperand.StartPosition, SpelMessage.BetweenRightOperandMustBeTwoElementList);
         }
 
-        var low = list[0];
-        var high = list[1];
-        var comp = state.TypeComparator;
+        object low = list[0];
+        object high = list[1];
+        ITypeComparator comp = state.TypeComparator;
+
         try
         {
             return BooleanTypedValue.ForValue(comp.Compare(left, low) >= 0 && comp.Compare(left, high) <= 0);

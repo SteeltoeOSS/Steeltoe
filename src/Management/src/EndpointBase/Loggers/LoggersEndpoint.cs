@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Logging;
-using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
 public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, LoggersChangeRequest>, ILoggersEndpoint
 {
-    private static readonly List<string> Levels = new ()
+    private static readonly List<string> Levels = new()
     {
         LoggerLevels.MapLogLevel(LogLevel.None),
         LoggerLevels.MapLogLevel(LogLevel.Critical),
@@ -25,19 +25,13 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
     private readonly ILogger<LoggersEndpoint> _logger;
     private readonly IDynamicLoggerProvider _cloudFoundryLoggerProvider;
 
+    protected new ILoggersOptions Options => options as ILoggersOptions;
+
     public LoggersEndpoint(ILoggersOptions options, IDynamicLoggerProvider cloudFoundryLoggerProvider = null, ILogger<LoggersEndpoint> logger = null)
         : base(options)
     {
         _cloudFoundryLoggerProvider = cloudFoundryLoggerProvider;
         _logger = logger;
-    }
-
-    protected new ILoggersOptions Options
-    {
-        get
-        {
-            return options as ILoggersOptions;
-        }
     }
 
     public override Dictionary<string, object> Invoke(LoggersChangeRequest request)
@@ -58,9 +52,10 @@ public class LoggersEndpoint : AbstractEndpoint<Dictionary<string, object>, Logg
         else
         {
             AddLevels(result);
-            var configuration = GetLoggerConfigurations(provider);
+            ICollection<ILoggerConfiguration> configuration = GetLoggerConfigurations(provider);
             var loggers = new Dictionary<string, LoggerLevels>();
-            foreach (var c in configuration.OrderBy(entry => entry.Name))
+
+            foreach (ILoggerConfiguration c in configuration.OrderBy(entry => entry.Name))
             {
                 _logger.LogTrace("Adding " + c);
                 var lv = new LoggerLevels(c.ConfiguredLevel, c.EffectiveLevel);

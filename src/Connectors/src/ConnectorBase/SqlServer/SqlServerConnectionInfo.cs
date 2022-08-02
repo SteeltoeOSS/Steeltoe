@@ -11,20 +11,28 @@ public class SqlServerConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        SqlServerServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<SqlServerServiceInfo>()
             : configuration.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((SqlServerServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((SqlServerServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) =>
-        serviceType.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase) ||
-        serviceType.Equals("mssql", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("sqlserver", StringComparison.InvariantCultureIgnoreCase) ||
+            serviceType.Equals("mssql", StringComparison.InvariantCultureIgnoreCase);
+    }
 
-    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is SqlServerServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+    {
+        return serviceInfo is SqlServerServiceInfo;
+    }
 
     private Connection GetConnection(SqlServerServiceInfo info, IConfiguration configuration)
     {

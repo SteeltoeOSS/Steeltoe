@@ -8,7 +8,18 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 internal sealed class Tokenizer
 {
     // If this gets changed, it must remain sorted...
-    private static readonly string[] AlternativeOperatorNames = { "DIV", "EQ", "GE", "GT", "LE", "LT", "MOD", "NE", "NOT" };
+    private static readonly string[] AlternativeOperatorNames =
+    {
+        "DIV",
+        "EQ",
+        "GE",
+        "GT",
+        "LE",
+        "LT",
+        "MOD",
+        "NE",
+        "NOT"
+    };
 
     private static readonly byte[] Flags = new byte[256];
 
@@ -17,6 +28,16 @@ internal sealed class Tokenizer
     private static readonly byte IsHexDigitFlag = 0x02;
 
     private static readonly byte IsAlphaFlag = 0x04;
+
+    private readonly int _max;
+
+    private readonly List<Token> _tokens = new();
+
+    private readonly string _expressionString;
+
+    private readonly char[] _charsToProcess;
+
+    private int _pos;
 
     static Tokenizer()
     {
@@ -46,16 +67,6 @@ internal sealed class Tokenizer
         }
     }
 
-    private readonly int _max;
-
-    private readonly List<Token> _tokens = new ();
-
-    private readonly string _expressionString;
-
-    private readonly char[] _charsToProcess;
-
-    private int _pos;
-
     public Tokenizer(string inputData)
     {
         _expressionString = inputData;
@@ -68,7 +79,8 @@ internal sealed class Tokenizer
     {
         while (_pos < _max)
         {
-            var ch = _charsToProcess[_pos];
+            char ch = _charsToProcess[_pos];
+
             if (IsAlphabetic(ch))
             {
                 LexIdentifier();
@@ -281,7 +293,7 @@ internal sealed class Tokenizer
                         break;
                     case '\0':
                         // hit sentinel at end of value
-                        _pos++;  // will take us to the end
+                        _pos++; // will take us to the end
                         break;
                     case '\\':
                         RaiseParseException(_pos, SpelMessage.UnexpectedEscapeChar);
@@ -298,18 +310,20 @@ internal sealed class Tokenizer
     // STRING_LITERAL: '\''! (APOS|~'\'')* '\''!;
     private void LexQuotedStringLiteral()
     {
-        var start = _pos;
-        var terminated = false;
+        int start = _pos;
+        bool terminated = false;
+
         while (!terminated)
         {
             _pos++;
-            var ch = _charsToProcess[_pos];
+            char ch = _charsToProcess[_pos];
+
             if (ch == '\'')
             {
                 // may not be the end if the char after is also a '
                 if (_charsToProcess[_pos + 1] == '\'')
                 {
-                    _pos++;  // skip over that too, and continue
+                    _pos++; // skip over that too, and continue
                 }
                 else
                 {
@@ -330,18 +344,20 @@ internal sealed class Tokenizer
     // DQ_STRING_LITERAL: '"'! (~'"')* '"'!;
     private void LexDoubleQuotedStringLiteral()
     {
-        var start = _pos;
-        var terminated = false;
+        int start = _pos;
+        bool terminated = false;
+
         while (!terminated)
         {
             _pos++;
-            var ch = _charsToProcess[_pos];
+            char ch = _charsToProcess[_pos];
+
             if (ch == '"')
             {
                 // may not be the end if the char after is also a "
                 if (_charsToProcess[_pos + 1] == '"')
                 {
-                    _pos++;  // skip over that too, and continue
+                    _pos++; // skip over that too, and continue
                 }
                 else
                 {
@@ -376,20 +392,22 @@ internal sealed class Tokenizer
     // : (DECIMAL_DIGIT)+ (INTEGER_TYPE_SUFFIX)?;
     private void LexNumericLiteral(bool firstCharIsZero)
     {
-        var isReal = false;
-        var start = _pos;
-        var ch = _charsToProcess[_pos + 1];
-        var isHex = ch == 'x' || ch == 'X';
+        bool isReal = false;
+        int start = _pos;
+        char ch = _charsToProcess[_pos + 1];
+        bool isHex = ch == 'x' || ch == 'X';
 
         // deal with hexadecimal
         if (firstCharIsZero && isHex)
         {
             _pos++;
+
             do
             {
                 _pos++;
             }
             while (IsHexadecimalDigit(_charsToProcess[_pos]));
+
             if (IsChar('L', 'l'))
             {
                 PushHexIntToken(SubArray(start + 2, _pos), true, start, _pos);
@@ -414,10 +432,11 @@ internal sealed class Tokenizer
 
         // a '.' indicates this number is a real
         ch = _charsToProcess[_pos];
+
         if (ch == '.')
         {
             isReal = true;
-            var dotPos = _pos;
+            int dotPos = _pos;
 
             // carry on consuming digits
             do
@@ -425,6 +444,7 @@ internal sealed class Tokenizer
                 _pos++;
             }
             while (IsDigit(_charsToProcess[_pos]));
+
             if (_pos == dotPos + 1)
             {
                 // the number is something like '3.'. It is really an int but may be
@@ -436,7 +456,7 @@ internal sealed class Tokenizer
             }
         }
 
-        var endOfNumber = _pos;
+        int endOfNumber = _pos;
 
         // Now there may or may not be an exponent
 
@@ -455,7 +475,8 @@ internal sealed class Tokenizer
         else if (IsExponentChar(_charsToProcess[_pos]))
         {
             _pos++;
-            var possibleSign = _charsToProcess[_pos];
+            char possibleSign = _charsToProcess[_pos];
+
             if (IsSign(possibleSign))
             {
                 _pos++;
@@ -467,7 +488,9 @@ internal sealed class Tokenizer
                 _pos++;
             }
             while (IsDigit(_charsToProcess[_pos]));
-            var isFloat = false;
+
+            bool isFloat = false;
+
             if (IsFloatSuffix(_charsToProcess[_pos]))
             {
                 isFloat = true;
@@ -483,7 +506,8 @@ internal sealed class Tokenizer
         else
         {
             ch = _charsToProcess[_pos];
-            var isFloat = false;
+            bool isFloat = false;
+
             if (IsFloatSuffix(ch))
             {
                 isReal = true;
@@ -509,20 +533,23 @@ internal sealed class Tokenizer
 
     private void LexIdentifier()
     {
-        var start = _pos;
+        int start = _pos;
+
         do
         {
             _pos++;
         }
         while (IsIdentifier(_charsToProcess[_pos]));
-        var subArray = SubArray(start, _pos);
+
+        char[] subArray = SubArray(start, _pos);
 
         // Check if this is the alternative (textual) representation of an operator (see
         // alternativeOperatorNames)
         if (_pos - start == 2 || _pos - start == 3)
         {
-            var asString = new string(subArray).ToUpper();
-            var idx = Array.BinarySearch(AlternativeOperatorNames, asString);
+            string asString = new string(subArray).ToUpper();
+            int idx = Array.BinarySearch(AlternativeOperatorNames, asString);
+
             if (idx >= 0)
             {
                 PushOneCharOrTwoCharToken(TokenKind.ValueOf(asString), start, subArray);
@@ -535,9 +562,7 @@ internal sealed class Tokenizer
 
     private void PushIntToken(char[] data, bool isLong, int start, int end)
     {
-        _tokens.Add(isLong
-            ? new Token(TokenKind.LiteralLong, data, start, end)
-            : new Token(TokenKind.LiteralInt, data, start, end));
+        _tokens.Add(isLong ? new Token(TokenKind.LiteralLong, data, start, end) : new Token(TokenKind.LiteralInt, data, start, end));
     }
 
     private void PushHexIntToken(char[] data, bool isLong, int start, int end)
@@ -554,30 +579,24 @@ internal sealed class Tokenizer
             }
         }
 
-        _tokens.Add(isLong
-            ? new Token(TokenKind.LiteralHexLong, data, start, end)
-            : new Token(TokenKind.LiteralHexInt, data, start, end));
+        _tokens.Add(isLong ? new Token(TokenKind.LiteralHexLong, data, start, end) : new Token(TokenKind.LiteralHexInt, data, start, end));
     }
 
     private void PushRealToken(char[] data, bool isFloat, int start, int end)
     {
-        _tokens.Add(isFloat
-            ? new Token(TokenKind.LiteralRealFloat, data, start, end)
-            : new Token(TokenKind.LiteralReal, data, start, end));
+        _tokens.Add(isFloat ? new Token(TokenKind.LiteralRealFloat, data, start, end) : new Token(TokenKind.LiteralReal, data, start, end));
     }
 
     private char[] SubArray(int start, int end)
     {
-        var result = new char[end - start];
+        char[] result = new char[end - start];
         Array.Copy(_charsToProcess, start, result, 0, end - start);
         return result;
     }
 
     private bool IsTwoCharToken(TokenKind kind)
     {
-        return kind.TokenChars.Length == 2 &&
-               _charsToProcess[_pos] == kind.TokenChars[0] &&
-               _charsToProcess[_pos + 1] == kind.TokenChars[1];
+        return kind.TokenChars.Length == 2 && _charsToProcess[_pos] == kind.TokenChars[0] && _charsToProcess[_pos + 1] == kind.TokenChars[1];
     }
 
     private void PushCharToken(TokenKind kind)
@@ -605,7 +624,7 @@ internal sealed class Tokenizer
 
     private bool IsChar(char a, char b)
     {
-        var ch = _charsToProcess[_pos];
+        char ch = _charsToProcess[_pos];
         return ch == a || ch == b;
     }
 

@@ -2,22 +2,45 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Concurrent;
 using System.Text;
 using Steeltoe.Common.Util;
+using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public class Applications
 {
-    private readonly object _addRemoveInstanceLock = new ();
+    private readonly object _addRemoveInstanceLock = new();
+
+    internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new();
+
+    internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new();
+
+    internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new();
 
     public string AppsHashCode { get; internal set; }
 
     public long Version { get; internal set; }
 
     public bool ReturnUpInstancesOnly { get; set; }
+
+    internal Applications()
+    {
+    }
+
+    internal Applications(IList<Application> apps)
+    {
+        if (apps == null)
+        {
+            throw new ArgumentNullException(nameof(apps));
+        }
+
+        foreach (Application app in apps)
+        {
+            Add(app);
+        }
+    }
 
     public IList<Application> GetRegisteredApplications()
     {
@@ -31,7 +54,7 @@ public class Applications
             throw new ArgumentException(nameof(appName));
         }
 
-        ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out var result);
+        ApplicationMap.TryGetValue(appName.ToUpperInvariant(), out Application result);
         return result;
     }
 
@@ -58,7 +81,8 @@ public class Applications
     public override string ToString()
     {
         var sb = new StringBuilder("Applications[");
-        foreach (var kvp in ApplicationMap)
+
+        foreach (KeyValuePair<string, Application> kvp in ApplicationMap)
         {
             sb.Append(kvp.Value);
         }
@@ -66,23 +90,6 @@ public class Applications
         sb.Append("]");
 
         return sb.ToString();
-    }
-
-    internal Applications()
-    {
-    }
-
-    internal Applications(IList<Application> apps)
-    {
-        if (apps == null)
-        {
-            throw new ArgumentNullException(nameof(apps));
-        }
-
-        foreach (var app in apps)
-        {
-            Add(app);
-        }
     }
 
     internal void Add(Application app)
@@ -98,7 +105,7 @@ public class Applications
 
     internal void AddInstances(Application app)
     {
-        foreach (var inst in app.Instances)
+        foreach (InstanceInfo inst in app.Instances)
         {
             AddInstanceToVip(inst);
         }
@@ -126,8 +133,9 @@ public class Applications
 
         lock (_addRemoveInstanceLock)
         {
-            var addressUpper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUpper, out var instances);
+            string addressUpper = address.ToUpperInvariant();
+            dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
+
             if (instances == null)
             {
                 instances = dict[addressUpper] = new ConcurrentDictionary<string, InstanceInfo>();
@@ -154,11 +162,13 @@ public class Applications
     {
         lock (_addRemoveInstanceLock)
         {
-            var addressUpper = address.ToUpperInvariant();
-            dict.TryGetValue(addressUpper, out var instances);
+            string addressUpper = address.ToUpperInvariant();
+            dict.TryGetValue(addressUpper, out ConcurrentDictionary<string, InstanceInfo> instances);
+
             if (instances != null)
             {
                 instances.TryRemove(info.InstanceId, out _);
+
                 if (instances.Count <= 0)
                 {
                     _ = dict.TryRemove(addressUpper, out _);
@@ -169,11 +179,12 @@ public class Applications
 
     internal void UpdateFromDelta(Applications delta)
     {
-        foreach (var app in delta.GetRegisteredApplications())
+        foreach (Application app in delta.GetRegisteredApplications())
         {
-            foreach (var instance in app.Instances)
+            foreach (InstanceInfo instance in app.Instances)
             {
-                var existingApp = GetRegisteredApplication(instance.AppName);
+                Application existingApp = GetRegisteredApplication(instance.AppName);
+
                 if (existingApp == null)
                 {
                     Add(app);
@@ -193,9 +204,6 @@ public class Applications
                         existingApp.Remove(instance);
                         RemoveInstanceFromVip(instance);
                         break;
-                    default:
-                        // Log
-                        break;
                 }
             }
         }
@@ -207,13 +215,14 @@ public class Applications
     internal string ComputeHashCode()
     {
         var statusMap = new Dictionary<string, int>();
-        foreach (var app in GetRegisteredApplications())
+
+        foreach (Application app in GetRegisteredApplications())
         {
-            foreach (var inst in app.Instances)
+            foreach (InstanceInfo inst in app.Instances)
             {
                 string instanceStatus = inst.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
 
-                if (!statusMap.TryGetValue(instanceStatus, out var count))
+                if (!statusMap.TryGetValue(instanceStatus, out int count))
                 {
                     statusMap.Add(instanceStatus, 1);
                 }
@@ -224,9 +233,10 @@ public class Applications
             }
         }
 
-        var query = statusMap.OrderBy(kvp => kvp.Key);
+        IOrderedEnumerable<KeyValuePair<string, int>> query = statusMap.OrderBy(kvp => kvp.Key);
         var hashcodeBuilder = new StringBuilder();
-        foreach (var entry in query)
+
+        foreach (KeyValuePair<string, int> entry in query)
         {
             hashcodeBuilder.Append($"{entry.Key}_{entry.Value}_");
         }
@@ -234,15 +244,10 @@ public class Applications
         return hashcodeBuilder.ToString();
     }
 
-    internal ConcurrentDictionary<string, Application> ApplicationMap { get; } = new ();
-
-    internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> VirtualHostInstanceMap { get; } = new ();
-
-    internal ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> SecureVirtualHostInstanceMap { get; } = new ();
-
     internal static Applications FromJsonApplications(JsonApplications applications)
     {
         var apps = new Applications();
+
         if (applications != null)
         {
             apps.Version = applications.VersionDelta;
@@ -250,7 +255,7 @@ public class Applications
 
             if (applications.Applications != null)
             {
-                foreach (var application in applications.Applications)
+                foreach (JsonApplication application in applications.Applications)
                 {
                     var app = Application.FromJsonApplication(application);
                     apps.Add(app);
@@ -264,11 +269,13 @@ public class Applications
     private IList<InstanceInfo> DoGetByVirtualHostName(string name, ConcurrentDictionary<string, ConcurrentDictionary<string, InstanceInfo>> dict)
     {
         var result = new List<InstanceInfo>();
-        if (dict.TryGetValue(name.ToUpperInvariant(), out var instances))
+
+        if (dict.TryGetValue(name.ToUpperInvariant(), out ConcurrentDictionary<string, InstanceInfo> instances))
         {
-            foreach (var kvp in instances)
+            foreach (KeyValuePair<string, InstanceInfo> kvp in instances)
             {
-                var inst = kvp.Value;
+                InstanceInfo inst = kvp.Value;
+
                 if (ReturnUpInstancesOnly)
                 {
                     if (inst.Status == InstanceStatus.Up)

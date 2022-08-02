@@ -2,30 +2,34 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Integration.Attributes;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Reflection;
 
 namespace Steeltoe.Integration.Handler.Support;
 
 public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMethodArgumentResolver
 {
-    private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new ();
+    private readonly Dictionary<ParameterInfo, IExpression> _expressionCache = new();
 
     public PayloadsArgumentResolver(IApplicationContext context)
         : base(context)
     {
     }
 
-    public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadsAttribute>() != null;
+    public bool SupportsParameter(ParameterInfo parameter)
+    {
+        return parameter.GetCustomAttribute<PayloadsAttribute>() != null;
+    }
 
     public object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (payload is not ICollection<IMessage> messages)
         {
             throw new ArgumentException("This Argument Resolver support only messages with payload as ICollection<IMessage>");
@@ -33,21 +37,20 @@ public class PayloadsArgumentResolver : AbstractExpressionEvaluator, IHandlerMet
 
         if (!_expressionCache.ContainsKey(parameter))
         {
-            var payloads = parameter.GetCustomAttribute<PayloadsAttribute>();
+            var attribute = parameter.GetCustomAttribute<PayloadsAttribute>();
 
-            var value = !string.IsNullOrEmpty(payloads.Expression) ? ExpressionParser.ParseExpression($"![payload.{payloads.Expression}]") : null;
+            IExpression value = !string.IsNullOrEmpty(attribute.Expression) ? ExpressionParser.ParseExpression($"![payload.{attribute.Expression}]") : null;
             _expressionCache.Add(parameter, value);
         }
 
-        _expressionCache.TryGetValue(parameter, out var expression);
+        _expressionCache.TryGetValue(parameter, out IExpression expression);
+
         if (expression != null)
         {
             return EvaluateExpression(expression, messages, parameter.ParameterType);
         }
-        else
-        {
-            var payloads = messages.Select(m => m.Payload).ToList();
-            return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
-        }
+
+        List<object> payloads = messages.Select(m => m.Payload).ToList();
+        return EvaluationContext.TypeConverter.ConvertValue(payloads, payloads.GetType(), parameter.ParameterType);
     }
 }

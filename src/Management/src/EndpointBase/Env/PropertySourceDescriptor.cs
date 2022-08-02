@@ -8,15 +8,15 @@ namespace Steeltoe.Management.Endpoint.Env;
 
 public class PropertySourceDescriptor
 {
-    public PropertySourceDescriptor(string name, IDictionary<string, PropertyValueDescriptor> properties)
-    {
-        Name = name;
-        Properties = properties;
-    }
-
     [JsonPropertyName("name")]
     public string Name { get; }
 
     [JsonPropertyName("properties")]
     public IDictionary<string, PropertyValueDescriptor> Properties { get; }
+
+    public PropertySourceDescriptor(string name, IDictionary<string, PropertyValueDescriptor> properties)
+    {
+        Name = name;
+        Properties = properties;
+    }
 }

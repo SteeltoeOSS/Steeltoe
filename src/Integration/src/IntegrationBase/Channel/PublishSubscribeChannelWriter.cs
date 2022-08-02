@@ -8,10 +8,10 @@ namespace Steeltoe.Integration.Channel;
 
 public class PublishSubscribeChannelWriter : AbstractSubscribableChannelWriter
 {
+    public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)channel;
+
     public PublishSubscribeChannelWriter(PublishSubscribeChannel channel, ILogger logger = null)
         : base(channel, logger)
     {
     }
-
-    public new PublishSubscribeChannel Channel => (PublishSubscribeChannel)channel;
 }

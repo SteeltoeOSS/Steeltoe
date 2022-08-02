@@ -32,7 +32,7 @@ public class HystrixProviderConfigurationTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new HystrixProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Server);
@@ -59,10 +59,10 @@ public class HystrixProviderConfigurationTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new HystrixProviderConnectorOptions(config);
-        var result = options.ToString();
+        string result = options.ToString();
         Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
     }
 }

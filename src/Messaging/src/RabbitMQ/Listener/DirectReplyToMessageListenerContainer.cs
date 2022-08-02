@@ -2,39 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Collections.Concurrent;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class DirectReplyToMessageListenerContainer : DirectMessageListenerContainer
 {
-    internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> InUseConsumerChannels = new ();
-    internal readonly ConcurrentDictionary<SimpleConsumer, long> WhenUsed = new ();
     private const int DefaultIdle = 60000;
+    internal readonly ConcurrentDictionary<RC.IModel, SimpleConsumer> InUseConsumerChannels = new();
+    internal readonly ConcurrentDictionary<SimpleConsumer, long> WhenUsed = new();
     private int _consumerCount;
-
-    public DirectReplyToMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
-        : this(null, null, name, loggerFactory)
-    {
-    }
-
-    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILoggerFactory loggerFactory = null)
-        : this(applicationContext, null, name, loggerFactory)
-    {
-    }
-
-    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, Connection.IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
-        : base(applicationContext, connectionFactory, name, loggerFactory)
-    {
-        base.SetQueueNames(Address.AmqRabbitMQReplyTo);
-        AcknowledgeMode = AcknowledgeMode.None;
-        base.ConsumersPerQueue = 0;
-        IdleEventInterval = DefaultIdle;
-    }
 
     public override int ConsumersPerQueue
     {
@@ -66,6 +48,33 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         }
     }
 
+    public override IMessageListener MessageListener
+    {
+        get => base.MessageListener;
+
+        set => base.MessageListener = new ChannelAwareMessageListener(this, value);
+    }
+
+    public DirectReplyToMessageListenerContainer(string name = null, ILoggerFactory loggerFactory = null)
+        : this(null, null, name, loggerFactory)
+    {
+    }
+
+    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, string name = null, ILoggerFactory loggerFactory = null)
+        : this(applicationContext, null, name, loggerFactory)
+    {
+    }
+
+    public DirectReplyToMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null,
+        ILoggerFactory loggerFactory = null)
+        : base(applicationContext, connectionFactory, name, loggerFactory)
+    {
+        base.SetQueueNames(Address.AmqRabbitMQReplyTo);
+        AcknowledgeMode = AcknowledgeMode.None;
+        base.ConsumersPerQueue = 0;
+        IdleEventInterval = DefaultIdle;
+    }
+
     public override void SetQueueNames(params string[] queueNames)
     {
         throw new NotSupportedException();
@@ -81,24 +90,12 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
         throw new NotSupportedException();
     }
 
-    public override IMessageListener MessageListener
-    {
-        get
-        {
-            return base.MessageListener;
-        }
-
-        set
-        {
-            base.MessageListener = new ChannelAwareMessageListener(this, value);
-        }
-    }
-
     public ChannelHolder GetChannelHolder()
     {
         lock (ConsumersMonitor)
         {
             ChannelHolder channelHolder = null;
+
             while (channelHolder == null)
             {
                 if (!IsRunning)
@@ -106,9 +103,10 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
                     throw new InvalidOperationException("Direct reply-to container is not running");
                 }
 
-                foreach (var consumer in Consumers)
+                foreach (SimpleConsumer consumer in Consumers)
                 {
-                    var candidate = consumer.Model;
+                    RC.IModel candidate = consumer.Model;
+
                     if (candidate.IsOpen && InUseConsumerChannels.TryAdd(candidate, consumer))
                     {
                         channelHolder = new ChannelHolder(candidate, consumer.IncrementAndGetEpoch());
@@ -132,10 +130,12 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
     {
         lock (ConsumersMonitor)
         {
-            InUseConsumerChannels.TryGetValue(channelHolder.Channel, out var consumer);
+            InUseConsumerChannels.TryGetValue(channelHolder.Channel, out SimpleConsumer consumer);
+
             if (consumer != null && consumer.Epoch == channelHolder.ConsumerEpoch)
             {
                 InUseConsumerChannels.Remove(channelHolder.Channel, out _);
+
                 if (cancelConsumer)
                 {
                     if (message == null)
@@ -166,15 +166,15 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     protected override void ProcessMonitorTask()
     {
-        var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
         lock (ConsumersMonitor)
         {
             long reduce = 0;
-            foreach (var c in Consumers)
+
+            foreach (SimpleConsumer c in Consumers)
             {
-                if (WhenUsed.TryGetValue(c, out var howLong)
-                    && !InUseConsumerChannels.Values.Contains(c)
-                    && howLong < now - IdleEventInterval)
+                if (WhenUsed.TryGetValue(c, out long howLong) && !InUseConsumerChannels.Values.Contains(c) && howLong < now - IdleEventInterval)
                 {
                     reduce++;
                 }
@@ -191,7 +191,7 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     protected override int FindIdleConsumer()
     {
-        for (var i = 0; i < Consumers.Count; i++)
+        for (int i = 0; i < Consumers.Count; i++)
         {
             if (!InUseConsumerChannels.Values.Contains(Consumers[i]))
             {
@@ -210,15 +210,15 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
     public class ChannelHolder
     {
+        public RC.IModel Channel { get; }
+
+        public int ConsumerEpoch { get; }
+
         public ChannelHolder(RC.IModel channel, int consumerEpoch)
         {
             Channel = channel;
             ConsumerEpoch = consumerEpoch;
         }
-
-        public RC.IModel Channel { get; }
-
-        public int ConsumerEpoch { get; }
 
         public override string ToString()
         {
@@ -232,23 +232,20 @@ public class DirectReplyToMessageListenerContainer : DirectMessageListenerContai
 
         private readonly IMessageListener _listener;
 
-        public ChannelAwareMessageListener(DirectReplyToMessageListenerContainer container, IMessageListener listener)
-        {
-            _container = container;
-            _listener = listener;
-        }
-
         public AcknowledgeMode ContainerAckMode
         {
-            get
-            {
-                return AcknowledgeMode.None;
-            }
+            get => AcknowledgeMode.None;
 
             set
             {
                 // Do nothing
             }
+        }
+
+        public ChannelAwareMessageListener(DirectReplyToMessageListenerContainer container, IMessageListener listener)
+        {
+            _container = container;
+            _listener = listener;
         }
 
         public void OnMessage(IMessage message, RC.IModel channel)

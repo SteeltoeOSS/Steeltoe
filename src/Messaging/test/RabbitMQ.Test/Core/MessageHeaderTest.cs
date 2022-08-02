@@ -16,6 +16,7 @@ public class MessageHeaderTest
         {
             ReplyTo = "foo/bar"
         };
+
         Assert.Equal("bar", properties.ReplyToAddress.RoutingKey);
     }
 
@@ -31,9 +32,9 @@ public class MessageHeaderTest
     public void TestDelayHeader()
     {
         var properties = new RabbitHeaderAccessor();
-        var delay = 100;
+        int delay = 100;
         properties.Delay = delay;
-        var headers = properties.ToMessageHeaders();
+        IMessageHeaders headers = properties.ToMessageHeaders();
         Assert.Equal(delay, headers.Get<int>(RabbitHeaderAccessor.XDelay));
         properties.Delay = null;
         headers = properties.ToMessageHeaders();
@@ -47,6 +48,7 @@ public class MessageHeaderTest
         {
             ContentLength = 1L
         };
+
         Assert.True(properties.IsContentLengthSet);
     }
 
@@ -57,10 +59,12 @@ public class MessageHeaderTest
         {
             LeaveMutable = true
         };
+
         var mp2 = new RabbitHeaderAccessor
         {
             LeaveMutable = true
         };
+
         Assert.True(mp.MessageHeaders.Equals(mp2.MessageHeaders));
     }
 
@@ -69,8 +73,9 @@ public class MessageHeaderTest
     {
         var messageList = new HashSet<RabbitHeaderAccessor>
         {
-            new ()
+            new()
         };
+
         Assert.Single(messageList);
     }
 }

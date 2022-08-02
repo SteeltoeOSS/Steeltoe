@@ -6,11 +6,6 @@ namespace Steeltoe.Connector.Services;
 
 public class CosmosDbServiceInfo : ServiceInfo
 {
-    public CosmosDbServiceInfo(string id)
-        : base(id)
-    {
-    }
-
     public string Host { get; set; }
 
     public string MasterKey { get; set; }
@@ -20,4 +15,9 @@ public class CosmosDbServiceInfo : ServiceInfo
     public string DatabaseId { get; set; }
 
     public string DatabaseLink { get; set; }
+
+    public CosmosDbServiceInfo(string id)
+        : base(id)
+    {
+    }
 }

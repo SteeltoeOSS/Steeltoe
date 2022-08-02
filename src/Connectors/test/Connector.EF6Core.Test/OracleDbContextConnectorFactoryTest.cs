@@ -25,7 +25,7 @@ public class OracleDbContextConnectorFactoryTest
     {
         var config = new OracleProviderConnectorOptions();
         const OracleServiceInfo si = null;
-        var dbContextType = typeof(BadOracleDbContext);
+        Type dbContextType = typeof(BadOracleDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new OracleDbContextConnectorFactory(si, config, dbContextType).Create(null));
         Assert.Contains("BadOracleDbContext", ex.Message);
@@ -42,9 +42,10 @@ public class OracleDbContextConnectorFactoryTest
             Username = "SYSTEM",
             ServiceName = "ORCLCDB"
         };
+
         var si = new OracleServiceInfo("MyId", "Oracle://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
         var factory = new OracleDbContextConnectorFactory(si, config, typeof(GoodOracleDbContext));
-        var context = factory.Create(null);
+        object context = factory.Create(null);
         Assert.NotNull(context);
         var goodOracleDbContext = context as GoodOracleDbContext;
         Assert.NotNull(goodOracleDbContext);

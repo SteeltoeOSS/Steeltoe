@@ -27,10 +27,8 @@ public class HomeController : Controller
         {
             return _options.Bar + _options.Foo + _options.Info?.Description + _options.Info?.Url;
         }
-        else
-        {
-            return string.Empty;
-        }
+
+        return string.Empty;
     }
 
     [HttpGet]
@@ -38,22 +36,21 @@ public class HomeController : Controller
     {
         if (_health != null)
         {
-            var health = _health.Health();
-            health.Details.TryGetValue("propertySources", out var sourceList);
+            HealthCheckResult health = _health.Health();
+            health.Details.TryGetValue("propertySources", out object sourceList);
 
-            var nameList = ToCSV(sourceList as IList<string>);
+            object nameList = ToCSV(sourceList as IList<string>);
             return $"{health.Status.ToSnakeCaseString(SnakeCaseStyle.AllCaps)},{nameList}";
         }
-        else
-        {
-            return string.Empty;
-        }
+
+        return string.Empty;
     }
 
     private object ToCSV(IList<string> list)
     {
-        var result = string.Empty;
-        foreach (var name in list)
+        string result = string.Empty;
+
+        foreach (string name in list)
         {
             result += $"{name},";
         }

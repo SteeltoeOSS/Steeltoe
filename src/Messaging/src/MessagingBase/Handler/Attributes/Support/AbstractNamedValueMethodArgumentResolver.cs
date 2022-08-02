@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -16,7 +16,7 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
     private readonly IConversionService _conversionService;
     private readonly IApplicationContext _applicationContext;
     private readonly ServiceExpressionContext _expressionContext;
-    private readonly ConcurrentDictionary<ParameterInfo, NamedValueInfo> _namedValueInfoCache = new ();
+    private readonly ConcurrentDictionary<ParameterInfo, NamedValueInfo> _namedValueInfoCache = new();
 
     protected AbstractNamedValueMethodArgumentResolver(IConversionService conversionService, IApplicationContext context)
     {
@@ -27,16 +27,17 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
 
     public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var namedValueInfo = GetNamedValueInfo(parameter);
+        NamedValueInfo namedValueInfo = GetNamedValueInfo(parameter);
 
-        var resolvedName = ResolveEmbeddedValuesAndExpressions(namedValueInfo.Name);
+        object resolvedName = ResolveEmbeddedValuesAndExpressions(namedValueInfo.Name);
+
         if (resolvedName == null)
         {
-            throw new InvalidOperationException(
-                $"Specified name must not resolve to null: [{namedValueInfo.Name}]");
+            throw new InvalidOperationException($"Specified name must not resolve to null: [{namedValueInfo.Name}]");
         }
 
-        var arg = ResolveArgumentInternal(parameter, message, resolvedName.ToString());
+        object arg = ResolveArgumentInternal(parameter, message, resolvedName.ToString());
+
         if (arg == null)
         {
             if (namedValueInfo.DefaultValue != null)
@@ -82,10 +83,11 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
 
     private NamedValueInfo GetNamedValueInfo(ParameterInfo parameter)
     {
-        if (!_namedValueInfoCache.TryGetValue(parameter, out var namedValueInfo))
+        if (!_namedValueInfoCache.TryGetValue(parameter, out NamedValueInfo namedValueInfo))
         {
             namedValueInfo = CreateNamedValueInfo(parameter);
             namedValueInfo = UpdateNamedValueInfo(parameter, namedValueInfo);
+
             if (!_namedValueInfoCache.TryAdd(parameter, namedValueInfo))
             {
                 _namedValueInfoCache.TryGetValue(parameter, out namedValueInfo);
@@ -97,13 +99,16 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
 
     private NamedValueInfo UpdateNamedValueInfo(ParameterInfo parameter, NamedValueInfo info)
     {
-        var name = info.Name;
+        string name = info.Name;
+
         if (string.IsNullOrEmpty(info.Name))
         {
             name = parameter.Name;
+
             if (name == null)
             {
-                var type = parameter.ParameterType;
+                Type type = parameter.ParameterType;
+
                 throw new InvalidOperationException(
                     $"Name for argument of type [{type.Name}] not specified, and parameter name information not found in class file either.");
             }
@@ -120,7 +125,8 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
             {
                 return false;
             }
-            else if (paramType.IsPrimitive)
+
+            if (paramType.IsPrimitive)
             {
                 throw new InvalidOperationException(
                     $"Optional {paramType} parameter '{name}' is present but cannot be translated into a null value due to being declared as a primitive type. Consider declaring it as object wrapper for the corresponding primitive type.");
@@ -137,8 +143,9 @@ public abstract class AbstractNamedValueMethodArgumentResolver : IHandlerMethodA
             return value;
         }
 
-        var placeholdersResolved = _applicationContext.ResolveEmbeddedValue(value);
-        var exprResolver = _applicationContext.ServiceExpressionResolver;
+        string placeholdersResolved = _applicationContext.ResolveEmbeddedValue(value);
+        IServiceExpressionResolver exprResolver = _applicationContext.ServiceExpressionResolver;
+
         if (exprResolver == null)
         {
             return value;

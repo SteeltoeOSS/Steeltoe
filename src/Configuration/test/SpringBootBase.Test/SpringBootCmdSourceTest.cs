@@ -12,9 +12,7 @@ public class SpringBootCmdSourceTest
     [Fact]
     public void Constructors__InitializesDefaults()
     {
-        var config = new ConfigurationBuilder()
-            .AddCommandLine(Array.Empty<string>())
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
         var source = new SpringBootCmdSource(config);
         Assert.Equal(config, source.Config);
@@ -23,12 +21,10 @@ public class SpringBootCmdSourceTest
     [Fact]
     public void Build__ReturnsProvider()
     {
-        var config = new ConfigurationBuilder()
-            .AddCommandLine(Array.Empty<string>())
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(Array.Empty<string>()).Build();
 
         var source = new SpringBootCmdSource(config);
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<SpringBootCmdProvider>(provider);
     }
 }

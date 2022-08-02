@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
@@ -82,12 +82,12 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryOAuthAuthentication_AddsIntoPipeline()
     {
-        var builder = GetHostBuilder<TestServerStartup>();
+        IWebHostBuilder builder = GetHostBuilder<TestServerStartup>();
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var result = await client.GetAsync("http://localhost/");
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/");
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-        var location = result.Headers.Location.ToString();
+        string location = result.Headers.Location.ToString();
         Assert.StartsWith("http://default_oauthserviceurl/oauth/authorize", location);
     }
 
@@ -97,13 +97,14 @@ public class CloudFoundryExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", _vcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", _vcapServices);
 
-        var builder = GetHostBuilder<TestServerStartup>();
+        IWebHostBuilder builder = GetHostBuilder<TestServerStartup>();
+
         using (var server = new TestServer(builder))
         {
-            var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/");
+            HttpClient client = server.CreateClient();
+            HttpResponseMessage result = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-            var location = result.Headers.Location.ToString();
+            string location = result.Headers.Location.ToString();
             Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
         }
 
@@ -114,10 +115,10 @@ public class CloudFoundryExtensionsTest
     [Fact]
     public async Task AddCloudFoundryJwtBearerAuthentication_AddsIntoPipeline()
     {
-        var builder = GetHostBuilder<TestServerJwtStartup>();
+        IWebHostBuilder builder = GetHostBuilder<TestServerJwtStartup>();
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var result = await client.GetAsync("http://localhost/");
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/");
         Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
     }
 
@@ -127,12 +128,16 @@ public class CloudFoundryExtensionsTest
         Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse);
         Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
 
-        var builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string> { { "security:oauth2:client:Timeout", "9999" } });
+        IWebHostBuilder builder = GetHostBuilder<TestServerOpenIdStartup>(new Dictionary<string, string>
+        {
+            { "security:oauth2:client:Timeout", "9999" }
+        });
+
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var result = await client.GetAsync("http://localhost/");
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/");
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-        var location = result.Headers.Location.ToString();
+        string location = result.Headers.Location.ToString();
         Assert.StartsWith("https://default_oauthserviceurl/oauth/authorize", location);
     }
 
@@ -144,13 +149,14 @@ public class CloudFoundryExtensionsTest
         Environment.SetEnvironmentVariable("openIdConfigResponse", _openIdConfigResponse.Replace("default_oauthserviceurl", "login.system.testcloud.com"));
         Environment.SetEnvironmentVariable("jwksResponse", _jwksResponse);
 
-        var builder = GetHostBuilder<TestServerOpenIdStartup>();
+        IWebHostBuilder builder = GetHostBuilder<TestServerOpenIdStartup>();
+
         using (var server = new TestServer(builder))
         {
-            var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/");
+            HttpClient client = server.CreateClient();
+            HttpResponseMessage result = await client.GetAsync("http://localhost/");
             Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
-            var location = result.Headers.Location.ToString();
+            string location = result.Headers.Location.ToString();
             Assert.StartsWith("https://login.system.testcloud.com/oauth/authorize", location);
         }
 
@@ -161,17 +167,14 @@ public class CloudFoundryExtensionsTest
     private IWebHostBuilder GetHostBuilder<T>(Dictionary<string, string> appsettings = null)
         where T : class
     {
-        return new WebHostBuilder()
-            .UseStartup<T>()
-            .ConfigureAppConfiguration((_, builder) =>
+        return new WebHostBuilder().UseStartup<T>().ConfigureAppConfiguration((_, builder) =>
+        {
+            if (appsettings is not null)
             {
-                if (appsettings is not null)
-                {
-                    builder.AddInMemoryCollection(appsettings);
-                }
+                builder.AddInMemoryCollection(appsettings);
+            }
 
-                builder.AddCloudFoundry();
-            })
-            .UseEnvironment("development");
+            builder.AddCloudFoundry();
+        }).UseEnvironment("development");
     }
 }

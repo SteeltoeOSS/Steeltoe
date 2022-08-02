@@ -35,8 +35,8 @@ public static class RabbitMessageHeaders
     public const string ContentLength = $"{MessageHeaders.Internal}contentLength";
     public const string MessageCount = $"{MessageHeaders.Internal}messageCount";
     public const string PublishSequenceNumber = $"{MessageHeaders.Internal}PublishSequenceNumber";
-    public const string FinalRetryForMessageWithNoId =
-        $"{MessageHeaders.Internal}FinalRetryForMessageWithNoID";
+
+    public const string FinalRetryForMessageWithNoId = $"{MessageHeaders.Internal}FinalRetryForMessageWithNoID";
 
     // Used in RabbitMQ Integration code
     public const string PublishConfirmCorrelation = $"{Prefix}_publishConfirmCorrelation";

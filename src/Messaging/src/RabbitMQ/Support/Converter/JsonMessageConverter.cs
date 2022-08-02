@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
@@ -25,24 +25,6 @@ public class JsonMessageConverter : AbstractMessageConverter
 
     public override string ServiceName { get; set; } = DefaultServiceName;
 
-    public JsonMessageConverter(ILogger<JsonMessageConverter> logger = null)
-        : base(logger)
-    {
-        var contractResolver = new DefaultContractResolver
-        {
-            NamingStrategy = new CamelCaseNamingStrategy
-            {
-                ProcessDictionaryKeys = false
-            }
-        };
-        Settings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-            MissingMemberHandling = MissingMemberHandling.Ignore,
-            ContractResolver = contractResolver
-        };
-    }
-
     public bool AssumeSupportedContentType { get; set; } = true;
 
     public MimeType SupportedContentType { get; set; } = MimeTypeUtils.ApplicationJson;
@@ -57,25 +39,45 @@ public class JsonMessageConverter : AbstractMessageConverter
         set => TypeMapper.Precedence = value;
     }
 
+    public JsonMessageConverter(ILogger<JsonMessageConverter> logger = null)
+        : base(logger)
+    {
+        var contractResolver = new DefaultContractResolver
+        {
+            NamingStrategy = new CamelCaseNamingStrategy
+            {
+                ProcessDictionaryKeys = false
+            }
+        };
+
+        Settings = new JsonSerializerSettings
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            MissingMemberHandling = MissingMemberHandling.Ignore,
+            ContractResolver = contractResolver
+        };
+    }
+
     public override object FromMessage(IMessage message, Type targetType, object conversionHint)
     {
         object content = null;
-        var properties = message.Headers;
+        IMessageHeaders properties = message.Headers;
+
         if (properties != null)
         {
-            var contentType = properties.ContentType();
-            if ((AssumeSupportedContentType
-                 && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DefaultContentType)))
-                || (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
+            string contentType = properties.ContentType();
+
+            if ((AssumeSupportedContentType && (contentType == null || contentType.Equals(RabbitHeaderAccessor.DefaultContentType))) ||
+                (contentType != null && contentType.Contains(SupportedContentType.Subtype)))
             {
-                var encoding = EncodingUtils.GetEncoding(properties.ContentEncoding()) ?? DefaultCharset;
+                Encoding encoding = EncodingUtils.GetEncoding(properties.ContentEncoding()) ?? DefaultCharset;
 
                 content = DoFromMessage(message, targetType, conversionHint, properties, encoding);
             }
             else
             {
-                Logger?.LogWarning("Could not convert incoming message with content-type ["
-                                    + contentType + "], '" + SupportedContentType.Subtype + "' keyword missing.");
+                Logger?.LogWarning("Could not convert incoming message with content-type [" + contentType + "], '" + SupportedContentType.Subtype +
+                    "' keyword missing.");
             }
         }
 
@@ -86,9 +88,10 @@ public class JsonMessageConverter : AbstractMessageConverter
     protected override IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes;
+
         try
         {
-            var jsonString = JsonConvert.SerializeObject(payload, Settings);
+            string jsonString = JsonConvert.SerializeObject(payload, Settings);
             bytes = DefaultCharset.GetBytes(jsonString);
         }
         catch (Exception e)
@@ -96,13 +99,13 @@ public class JsonMessageConverter : AbstractMessageConverter
             throw new MessageConversionException("Failed to convert Message content", e);
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
         accessor.ContentType = SupportedContentType.ToString();
         accessor.ContentEncoding = EncodingUtils.GetEncoding(DefaultCharset);
         accessor.ContentLength = bytes.Length;
         TypeMapper.FromType(payload.GetType(), accessor.MessageHeaders);
 
-        var message = Message.Create(bytes, headers);
+        IMessage<byte[]> message = Message.Create(bytes, headers);
         return message;
     }
 
@@ -114,6 +117,7 @@ public class JsonMessageConverter : AbstractMessageConverter
         }
 
         object content;
+
         try
         {
             if (conversionHint is ParameterInfo parameterInfo)
@@ -144,7 +148,7 @@ public class JsonMessageConverter : AbstractMessageConverter
 
     private object ConvertBytesToObject(byte[] body, Encoding encoding, Type targetClass)
     {
-        var contentAsString = encoding.GetString(body);
+        string contentAsString = encoding.GetString(body);
         return JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
     }
 }

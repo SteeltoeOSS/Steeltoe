@@ -13,7 +13,8 @@ public class MessageSourceBindingTargetFactory : AbstractBindingTargetFactory<IP
     private readonly IMessageChannelAndSourceConfigurer _messageConfigurer;
     private readonly ISmartMessageConverter _messageConverter;
 
-    public MessageSourceBindingTargetFactory(IApplicationContext context, ISmartMessageConverter messageConverter, CompositeMessageChannelConfigurer messageConfigurer)
+    public MessageSourceBindingTargetFactory(IApplicationContext context, ISmartMessageConverter messageConverter,
+        CompositeMessageChannelConfigurer messageConfigurer)
         : base(context)
     {
         _messageConfigurer = messageConfigurer;

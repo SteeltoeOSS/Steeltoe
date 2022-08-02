@@ -9,14 +9,15 @@ namespace Steeltoe.Common.Security;
 
 public class LocalCertificateWriter
 {
-    internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
+    public static readonly string AppBasePath =
+        AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf($"{Path.DirectorySeparatorChar}bin"));
 
-    public static readonly string AppBasePath = AppContext.BaseDirectory.Substring(0, AppContext.BaseDirectory.LastIndexOf(
-        $"{Path.DirectorySeparatorChar}bin"));
+    internal string CertificateFilenamePrefix { get; set; } = "SteeltoeInstance";
 
     public string RootCaPfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeCA.pfx");
 
-    public string IntermediatePfxPath { get; set; } = Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
+    public string IntermediatePfxPath { get; set; } =
+        Path.Combine(Directory.GetParent(AppBasePath).ToString(), "GeneratedCertificates", "SteeltoeIntermediate.pfx");
 
     public bool Write(Guid orgId, Guid spaceId)
     {
@@ -25,7 +26,7 @@ public class LocalCertificateWriter
 
         // Certificates provided by Diego will have a subject that doesn't comply with standards, but CertificateRequest would re-order these components anyway
         // Diego subjects will look like this: "CN=<instanceId>, OU=organization:<organizationId> + OU=space:<spaceId> + OU=app:<appId>"
-        var subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId} + OU=organization:{orgId}";
+        string subject = $"CN={instanceId}, OU=app:{appId} + OU=space:{spaceId} + OU=organization:{orgId}";
 
         X509Certificate2 caCertificate;
 
@@ -58,7 +59,7 @@ public class LocalCertificateWriter
             intermediateCertificate = new X509Certificate2(IntermediatePfxPath);
         }
 
-        var clientCertificate = CreateClient(subject, intermediateCertificate, new SubjectAlternativeNameBuilder());
+        X509Certificate2 clientCertificate = CreateClient(subject, intermediateCertificate, new SubjectAlternativeNameBuilder());
 
         // Create a folder inside the project to store generated certificate files
         if (!Directory.Exists(Path.Combine(AppBasePath, "GeneratedCertificates")))
@@ -66,16 +67,13 @@ public class LocalCertificateWriter
             Directory.CreateDirectory(Path.Combine(AppBasePath, "GeneratedCertificates"));
         }
 
-        var certContents =
-            "-----BEGIN CERTIFICATE-----\r\n" +
+        string certContents = "-----BEGIN CERTIFICATE-----\r\n" +
             Convert.ToBase64String(clientCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) +
-            "\r\n-----END CERTIFICATE-----\r\n" +
-            "-----BEGIN CERTIFICATE-----\r\n" +
+            "\r\n-----END CERTIFICATE-----\r\n" + "-----BEGIN CERTIFICATE-----\r\n" +
             Convert.ToBase64String(intermediateCertificate.Export(X509ContentType.Cert), Base64FormattingOptions.InsertLineBreaks) +
             "\r\n-----END CERTIFICATE-----\r\n";
 
-        var keyContents =
-            "-----BEGIN RSA PRIVATE KEY-----\r\n" +
+        string keyContents = "-----BEGIN RSA PRIVATE KEY-----\r\n" +
             Convert.ToBase64String(clientCertificate.GetRSAPrivateKey().ExportRSAPrivateKey(), Base64FormattingOptions.InsertLineBreaks) +
             "\r\n-----END RSA PRIVATE KEY-----";
 
@@ -101,7 +99,7 @@ public class LocalCertificateWriter
         var request = new CertificateRequest(name, key, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(true, false, 0, true));
 
-        var serialNumber = new byte[8];
+        byte[] serialNumber = new byte[8];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(serialNumber);
 
@@ -115,25 +113,26 @@ public class LocalCertificateWriter
 
         request.CertificateExtensions.Add(new X509BasicConstraintsExtension(false, false, 0, false));
         request.CertificateExtensions.Add(new X509KeyUsageExtension(X509KeyUsageFlags.DigitalSignature, false));
-        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(
-            new OidCollection
-            {
-                new ("1.3.6.1.5.5.7.3.1"), // serverAuth
-                new ("1.3.6.1.5.5.7.3.2") // clientAuth
-            }, false));
+
+        request.CertificateExtensions.Add(new X509EnhancedKeyUsageExtension(new OidCollection
+        {
+            new("1.3.6.1.5.5.7.3.1"), // serverAuth
+            new("1.3.6.1.5.5.7.3.2") // clientAuth
+        }, false));
 
         if (altNames != null)
         {
             request.CertificateExtensions.Add(altNames.Build());
         }
 
-        var serialNumber = new byte[8];
+        byte[] serialNumber = new byte[8];
+
         using (var rng = RandomNumberGenerator.Create())
         {
             rng.GetBytes(serialNumber);
         }
 
-        var signedCert = request.Create(issuer, DateTimeOffset.UtcNow, notAfter ?? DateTimeOffset.UtcNow.AddDays(1), serialNumber);
+        X509Certificate2 signedCert = request.Create(issuer, DateTimeOffset.UtcNow, notAfter ?? DateTimeOffset.UtcNow.AddDays(1), serialNumber);
 
         return signedCert.CopyWithPrivateKey(key);
     }

@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Consul;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Consul.Discovery;
 using Steeltoe.Discovery.Consul.Util;
-using System.Text;
 
 namespace Steeltoe.Discovery.Consul.Registry;
 
@@ -33,11 +33,39 @@ public class ConsulRegistration : IConsulRegistration
         }
     }
 
+    /// <inheritdoc />
+    public AgentServiceRegistration Service { get; }
+
+    /// <inheritdoc />
+    public string InstanceId { get; private set; }
+
+    /// <inheritdoc />
+    public string ServiceId { get; private set; }
+
+    /// <inheritdoc />
+    public string Host { get; private set; }
+
+    /// <inheritdoc />
+    public int Port { get; private set; }
+
+    /// <inheritdoc />
+    public bool IsSecure => Options.Scheme == "https";
+
+    /// <inheritdoc />
+    public Uri Uri => new Uri($"{Options.Scheme}://{Host}:{Port}");
+
+    /// <inheritdoc />
+    public IDictionary<string, string> Metadata { get; private set; }
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
+    /// Initializes a new instance of the <see cref="ConsulRegistration" /> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
-    /// <param name="options">configuration options.</param>
+    /// <param name="agentServiceRegistration">
+    /// a Consul service registration to use.
+    /// </param>
+    /// <param name="options">
+    /// configuration options.
+    /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, ConsulDiscoveryOptions options)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -47,10 +75,14 @@ public class ConsulRegistration : IConsulRegistration
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulRegistration"/> class.
+    /// Initializes a new instance of the <see cref="ConsulRegistration" /> class.
     /// </summary>
-    /// <param name="agentServiceRegistration">a Consul service registration to use.</param>
-    /// <param name="optionsMonitor">configuration options.</param>
+    /// <param name="agentServiceRegistration">
+    /// a Consul service registration to use.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// configuration options.
+    /// </param>
     public ConsulRegistration(AgentServiceRegistration agentServiceRegistration, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor)
     {
         Service = agentServiceRegistration ?? throw new ArgumentNullException(nameof(agentServiceRegistration));
@@ -73,48 +105,18 @@ public class ConsulRegistration : IConsulRegistration
         Metadata = ConsulServerUtils.GetMetadata(agentServiceRegistration.Tags);
     }
 
-    /// <inheritdoc/>
-    public AgentServiceRegistration Service { get; }
-
-    /// <inheritdoc/>
-    public string InstanceId { get; private set; }
-
-    /// <inheritdoc/>
-    public string ServiceId { get; private set; }
-
-    /// <inheritdoc/>
-    public string Host { get; private set; }
-
-    /// <inheritdoc/>
-    public int Port { get; private set; }
-
-    /// <inheritdoc/>
-    public bool IsSecure
-    {
-        get
-        {
-            return Options.Scheme == "https";
-        }
-    }
-
-    /// <inheritdoc/>
-    public Uri Uri
-    {
-        get
-        {
-            return new Uri($"{Options.Scheme}://{Host}:{Port}");
-        }
-    }
-
-    /// <inheritdoc/>
-    public IDictionary<string, string> Metadata { get; private set; }
-
     /// <summary>
     /// Create a Consul registration.
     /// </summary>
-    /// <param name="options">configuration options to use.</param>
-    /// <param name="applicationInfo">Info about this app instance.</param>
-    /// <returns>a registration.</returns>
+    /// <param name="options">
+    /// configuration options to use.
+    /// </param>
+    /// <param name="applicationInfo">
+    /// Info about this app instance.
+    /// </param>
+    /// <returns>
+    /// a registration.
+    /// </returns>
     public static ConsulRegistration CreateRegistration(ConsulDiscoveryOptions options, IApplicationInstanceInfo applicationInfo)
     {
         if (options == null)
@@ -130,9 +132,12 @@ public class ConsulRegistration : IConsulRegistration
             service.Address = options.HostName;
         }
 
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+        string appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery,
+            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+
         service.Name = NormalizeForConsul(appName);
         service.Tags = CreateTags(options);
+
         if (options.Port != 0)
         {
             service.Port = options.Port;
@@ -145,6 +150,7 @@ public class ConsulRegistration : IConsulRegistration
     internal static string[] CreateTags(ConsulDiscoveryOptions options)
     {
         var tags = new List<string>();
+
         if (options.Tags != null)
         {
             tags.AddRange(options.Tags);
@@ -178,8 +184,11 @@ public class ConsulRegistration : IConsulRegistration
 
     internal static string GetDefaultInstanceId(IApplicationInstanceInfo applicationInfo)
     {
-        var appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery, $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
-        var instanceId = applicationInfo.InstanceId;
+        string appName = applicationInfo.ApplicationNameInContext(SteeltoeComponent.Discovery,
+            $"{ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix}:serviceName");
+
+        string instanceId = applicationInfo.InstanceId;
+
         if (string.IsNullOrEmpty(instanceId))
         {
             var rand = new Random();
@@ -193,14 +202,17 @@ public class ConsulRegistration : IConsulRegistration
     {
         if (s == null || !char.IsLetter(s[0]) || !char.IsLetterOrDigit(s[s.Length - 1]))
         {
-            throw new ArgumentException($"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {s}");
+            throw new ArgumentException(
+                $"Consul service ids must not be empty, must start with a letter, end with a letter or digit, and have as interior characters only letters, digits, and hyphen: {s}");
         }
 
         var normalized = new StringBuilder();
         char prev = default;
-        foreach (var ch in s)
+
+        foreach (char ch in s)
         {
             char toAppend = default;
+
             if (char.IsLetterOrDigit(ch))
             {
                 toAppend = ch;

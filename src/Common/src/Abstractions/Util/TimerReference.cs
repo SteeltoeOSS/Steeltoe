@@ -13,10 +13,14 @@ public class TimerReference : IDisposable
 
     public TimerReference(ITimerListener listener, TimeSpan period)
     {
-        this.Listener = listener;
+        Listener = listener;
         TokenSource = new CancellationTokenSource();
-        this.Period = period;
-        TimerTask = new Task(() => { Run(TokenSource); }, TaskCreationOptions.LongRunning);
+        Period = period;
+
+        TimerTask = new Task(() =>
+        {
+            Run(TokenSource);
+        }, TaskCreationOptions.LongRunning);
     }
 
     public void Start()

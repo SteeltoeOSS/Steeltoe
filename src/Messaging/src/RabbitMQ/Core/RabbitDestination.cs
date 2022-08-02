@@ -8,13 +8,7 @@ public class RabbitDestination
 {
     public string QueueName { get; }
 
-    public string RoutingKey
-    {
-        get
-        {
-            return QueueName;
-        }
-    }
+    public string RoutingKey => QueueName;
 
     public string ExchangeName { get; }
 
@@ -27,6 +21,18 @@ public class RabbitDestination
     {
         ExchangeName = exchangeName;
         QueueName = routingKey;
+    }
+
+    private static (string ExchangeName, string RoutingKey) ParseDestination(string destination)
+    {
+        string[] split = destination.Split('/');
+
+        if (split.Length >= 2)
+        {
+            return (split[0], split[1]);
+        }
+
+        return (string.Empty, split[0]);
     }
 
     public static implicit operator string(RabbitDestination destination)
@@ -46,20 +52,7 @@ public class RabbitDestination
             return new RabbitDestination(string.Empty, string.Empty);
         }
 
-        var result = ParseDestination(destination);
+        (string ExchangeName, string RoutingKey) result = ParseDestination(destination);
         return new RabbitDestination(result.ExchangeName, result.RoutingKey);
-    }
-
-    private static (string ExchangeName, string RoutingKey) ParseDestination(string destination)
-    {
-        var split = destination.Split('/');
-        if (split.Length >= 2)
-        {
-            return (split[0], split[1]);
-        }
-        else
-        {
-            return (string.Empty, split[0]);
-        }
     }
 }

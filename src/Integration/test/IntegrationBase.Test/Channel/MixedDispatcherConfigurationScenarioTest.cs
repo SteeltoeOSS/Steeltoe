@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
+using Steeltoe.Integration.Dispatcher;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
@@ -35,7 +36,7 @@ public class MixedDispatcherConfigurationScenarioTest
     public MixedDispatcherConfigurationScenarioTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
@@ -59,10 +60,12 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = false
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
+
         try
         {
             channel.Send(_message);
@@ -90,8 +93,9 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = false
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
 
@@ -99,7 +103,8 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             _start.Wait();
 
-            var sent = false;
+            bool sent = false;
+
             try
             {
                 sent = channel.Send(_message);
@@ -117,7 +122,7 @@ public class MixedDispatcherConfigurationScenarioTest
             _allDone.Signal();
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -139,6 +144,7 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = false
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             var e = new Exception();
@@ -147,7 +153,8 @@ public class MixedDispatcherConfigurationScenarioTest
             _allDone.Signal();
             throw e;
         });
-        var dispatcher = channel.Dispatcher;
+
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
 
@@ -158,7 +165,7 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -180,8 +187,9 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = false
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
         dispatcher.AddHandler(_handlerC.Object);
@@ -197,6 +205,7 @@ public class MixedDispatcherConfigurationScenarioTest
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
         _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
         _handlerC.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
+
         try
         {
             channel.Send(_message);
@@ -208,6 +217,7 @@ public class MixedDispatcherConfigurationScenarioTest
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
         _handlerB.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
         _handlerC.Verify(h => h.HandleMessage(_message), Times.Exactly(0));
+
         try
         {
             channel.Send(_message);
@@ -228,21 +238,24 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = false
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TotalExecutions);
-        var message2 = _message;
-        var failed1 = 0;
+        IMessage message2 = _message;
+        int failed1 = 0;
+
         void MessageSenderTask()
         {
             start1.Wait();
 
-            var sent = false;
+            bool sent = false;
+
             try
             {
                 sent = channel.Send(message2);
@@ -260,7 +273,7 @@ public class MixedDispatcherConfigurationScenarioTest
             allDone1.Signal();
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -283,15 +296,16 @@ public class MixedDispatcherConfigurationScenarioTest
             Failover = false
         };
 
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TotalExecutions);
-        var message2 = _message;
-        var failed1 = 0;
+        IMessage message2 = _message;
+        int failed1 = 0;
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             failed1 = 1;
@@ -300,10 +314,12 @@ public class MixedDispatcherConfigurationScenarioTest
             allDone1.Signal();
             throw e;
         });
+
         _handlerB.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             allDone1.Signal();
         });
+
         _handlerC.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             allDone1.Signal();
@@ -316,7 +332,7 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -337,8 +353,9 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = true
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
 
@@ -347,7 +364,8 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
         catch (Exception)
-        { /* ignore */
+        {
+            /* ignore */
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(1));
@@ -358,7 +376,8 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
         catch (Exception)
-        { /* ignore */
+        {
+            /* ignore */
         }
 
         _handlerA.Verify(h => h.HandleMessage(_message), Times.Exactly(2));
@@ -372,22 +391,24 @@ public class MixedDispatcherConfigurationScenarioTest
         {
             Failover = true
         };
+
         _handlerA.Setup(h => h.HandleMessage(_message)).Throws(new MessageRejectedException(_message, null));
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
         dispatcher.AddHandler(_handlerC.Object);
 
         var start1 = new CountdownEvent(1);
         var allDone1 = new CountdownEvent(TotalExecutions);
-        var message2 = _message;
-        var failed1 = 0;
+        IMessage message2 = _message;
+        int failed1 = 0;
 
         void MessageSenderTask()
         {
             start1.Wait();
 
-            var sent = false;
+            bool sent = false;
+
             try
             {
                 sent = channel.Send(message2);
@@ -405,7 +426,7 @@ public class MixedDispatcherConfigurationScenarioTest
             allDone1.Signal();
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -427,7 +448,7 @@ public class MixedDispatcherConfigurationScenarioTest
             Failover = true
         };
 
-        var dispatcher = channel.Dispatcher;
+        IMessageDispatcher dispatcher = channel.Dispatcher;
         dispatcher.AddHandler(_handlerA.Object);
         dispatcher.AddHandler(_handlerB.Object);
         dispatcher.AddHandler(_handlerC.Object);
@@ -438,6 +459,7 @@ public class MixedDispatcherConfigurationScenarioTest
             var e = new Exception();
             throw e;
         });
+
         _handlerB.Setup(h => h.HandleMessage(_message)).Callback(() =>
         {
             _allDone.Signal();
@@ -450,7 +472,7 @@ public class MixedDispatcherConfigurationScenarioTest
             channel.Send(_message);
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }

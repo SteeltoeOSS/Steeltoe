@@ -43,7 +43,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         IConfiguration config = new ConfigurationBuilder().Build();
         services.AddOptions();
         services.AddHystrixMetricsStream(config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var dashStream = provider.GetService<HystrixDashboardStream>();
         Assert.NotNull(dashStream);

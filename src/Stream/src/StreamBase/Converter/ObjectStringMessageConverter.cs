@@ -12,25 +12,32 @@ public class ObjectStringMessageConverter : AbstractMessageConverter
 {
     public const string DefaultServiceName = nameof(ObjectStringMessageConverter);
 
+    public override string ServiceName { get; set; } = DefaultServiceName;
+
     public ObjectStringMessageConverter()
         : base(new MimeType("text", "*", EncodingUtils.Utf8))
     {
         StrictContentTypeMatch = true;
     }
 
-    public override string ServiceName { get; set; } = DefaultServiceName;
-
     // only supports the conversion to String
-    public override bool CanConvertFrom(IMessage message, Type targetClass) => SupportsMimeType(message.Headers);
+    public override bool CanConvertFrom(IMessage message, Type targetClass)
+    {
+        return SupportsMimeType(message.Headers);
+    }
 
-    protected override bool Supports(Type clazz) => true;
+    protected override bool Supports(Type clazz)
+    {
+        return true;
+    }
 
     protected override bool SupportsMimeType(IMessageHeaders headers)
     {
-        var mimeType = GetMimeType(headers);
+        MimeType mimeType = GetMimeType(headers);
+
         if (mimeType != null)
         {
-            foreach (var current in SupportedMimeTypes)
+            foreach (MimeType current in SupportedMimeTypes)
             {
                 if (current.Type.Equals(mimeType.Type))
                 {
@@ -49,7 +56,7 @@ public class ObjectStringMessageConverter : AbstractMessageConverter
             return message.Payload switch
             {
                 byte[] v => typeof(byte[]).IsAssignableFrom(targetClass) ? message.Payload : EncodingUtils.Utf8.GetString(v),
-                _ => typeof(byte[]).IsAssignableFrom(targetClass) ? EncodingUtils.Utf8.GetBytes(message.Payload.ToString()) : message.Payload,
+                _ => typeof(byte[]).IsAssignableFrom(targetClass) ? EncodingUtils.Utf8.GetBytes(message.Payload.ToString()) : message.Payload
             };
         }
 

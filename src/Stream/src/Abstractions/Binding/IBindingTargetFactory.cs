@@ -12,21 +12,33 @@ public interface IBindingTargetFactory
     /// <summary>
     /// Checks whether a specific binding target type can be created by this factory.
     /// </summary>
-    /// <param name="type">the binding target type.</param>
-    /// <returns>true if binding target can be created.</returns>
+    /// <param name="type">
+    /// the binding target type.
+    /// </param>
+    /// <returns>
+    /// true if binding target can be created.
+    /// </returns>
     bool CanCreate(Type type);
 
     /// <summary>
     /// Create an input binding target that will be bound via a corresponding Binder.
     /// </summary>
-    /// <param name="name">the name of the binding target.</param>
-    /// <returns>the binding target.</returns>
+    /// <param name="name">
+    /// the name of the binding target.
+    /// </param>
+    /// <returns>
+    /// the binding target.
+    /// </returns>
     object CreateInput(string name);
 
     /// <summary>
     /// Create an output binding target that will be bound via a corresponding Binder.
     /// </summary>
-    /// <param name="name">the name of the binding target.</param>
-    /// <returns>the binding target.</returns>
+    /// <param name="name">
+    /// the name of the binding target.
+    /// </param>
+    /// <returns>
+    /// the binding target.
+    /// </returns>
     object CreateOutput(string name);
 }

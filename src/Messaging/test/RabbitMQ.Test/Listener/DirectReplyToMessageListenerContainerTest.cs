@@ -2,7 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Xunit;
@@ -21,13 +23,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
     {
         _adminCf = new CachingConnectionFactory("localhost");
         _admin = new RabbitAdmin(_adminCf);
-        _admin.DeclareQueue(new Config.Queue(TestReleaseConsumerQ));
-    }
-
-    public void Dispose()
-    {
-        _admin.DeleteQueue(TestReleaseConsumerQ);
-        _adminCf.Dispose();
+        _admin.DeclareQueue(new Queue(TestReleaseConsumerQ));
     }
 
     [Fact]
@@ -41,18 +37,19 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         var mockMessageListener = new MockChannelAwareMessageListener(container.MessageListener, latch);
         container.SetChannelAwareMessageListener(mockMessageListener);
 
-        var fooBytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var barBytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
+        byte[] fooBytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        byte[] barBytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
         await container.Start();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
-        var channel1 = container.GetChannelHolder();
-        var props = channel1.Channel.CreateBasicProperties();
+        DirectReplyToMessageListenerContainer.ChannelHolder channel1 = container.GetChannelHolder();
+        RC.IBasicProperties props = channel1.Channel.CreateBasicProperties();
         props.ReplyTo = Address.AmqRabbitMQReplyTo;
         RC.IModelExensions.BasicPublish(channel1.Channel, string.Empty, TestReleaseConsumerQ, props, fooBytes);
-        var replyChannel = connectionFactory.CreateConnection().CreateChannel();
-        var request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
-        var n = 0;
+        RC.IModel replyChannel = connectionFactory.CreateConnection().CreateChannel();
+        RC.BasicGetResult request = replyChannel.BasicGet(TestReleaseConsumerQ, true);
+        int n = 0;
+
         while (n++ < 100 && request == null)
         {
             Thread.Sleep(100);
@@ -65,10 +62,10 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         replyChannel.Close();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
 
-        var channel2 = container.GetChannelHolder();
+        DirectReplyToMessageListenerContainer.ChannelHolder channel2 = container.GetChannelHolder();
         Assert.Same(channel1.Channel, channel2.Channel);
         container.ReleaseConsumerFor(channel1, false, null); // simulate race for future timeout/cancel and onMessage()
-        var inUse = container.InUseConsumerChannels;
+        ConcurrentDictionary<RC.IModel, DirectMessageListenerContainer.SimpleConsumer> inUse = container.InUseConsumerChannels;
         Assert.Single(inUse);
         container.ReleaseConsumerFor(channel2, false, null);
         Assert.Empty(inUse);
@@ -76,18 +73,24 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         connectionFactory.Destroy();
     }
 
+    public void Dispose()
+    {
+        _admin.DeleteQueue(TestReleaseConsumerQ);
+        _adminCf.Dispose();
+    }
+
     private sealed class MockChannelAwareMessageListener : IChannelAwareMessageListener
     {
-        public IChannelAwareMessageListener MessageListener;
-        public CountdownEvent Latch;
+        public readonly IChannelAwareMessageListener MessageListener;
+        public readonly CountdownEvent Latch;
+
+        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public MockChannelAwareMessageListener(IMessageListener messageListener, CountdownEvent latch)
         {
-            this.MessageListener = messageListener as IChannelAwareMessageListener;
-            this.Latch = latch;
+            MessageListener = messageListener as IChannelAwareMessageListener;
+            Latch = latch;
         }
-
-        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message, RC.IModel channel)
         {

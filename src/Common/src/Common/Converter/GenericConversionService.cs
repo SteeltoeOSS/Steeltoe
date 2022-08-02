@@ -11,9 +11,9 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 {
     private static readonly IGenericConverter NoOpConverterSingleton = new NoOpConverter("NO_OP");
     private static readonly IGenericConverter NoMatchSingleton = new NoOpConverter("NO_MATCH");
-    private readonly Converters _converters = new ();
+    private readonly Converters _converters = new();
 
-    private readonly ConcurrentDictionary<ConverterCacheKey, IGenericConverter> _converterCache = new ();
+    private readonly ConcurrentDictionary<ConverterCacheKey, IGenericConverter> _converterCache = new();
 
     public bool CanConvert(Type sourceType, Type targetType)
     {
@@ -27,11 +27,14 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return true;
         }
 
-        var converter = GetConverter(sourceType, targetType);
+        IGenericConverter converter = GetConverter(sourceType, targetType);
         return converter != null;
     }
 
-    public T Convert<T>(object source) => (T)Convert(source, source.GetType(), typeof(T));
+    public T Convert<T>(object source)
+    {
+        return (T)Convert(source, source.GetType(), typeof(T));
+    }
 
     public object Convert(object source, Type sourceType, Type targetType)
     {
@@ -52,16 +55,16 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         if (source != null && !sourceType.IsInstanceOfType(source))
         {
-            throw new ArgumentException(
-                $"Source to convert from must be an instance of [{sourceType}]; instead it was a [{source.GetType().Name}]");
+            throw new ArgumentException($"Source to convert from must be an instance of [{sourceType}]; instead it was a [{source.GetType().Name}]");
         }
 
-        var converter = GetConverter(sourceType, targetType);
+        IGenericConverter converter = GetConverter(sourceType, targetType);
+
         if (converter != null)
         {
             try
             {
-                var result = converter.Convert(source, sourceType, targetType);
+                object result = converter.Convert(source, sourceType, targetType);
                 return HandleResult(sourceType, targetType, result);
             }
             catch (ConversionFailedException)
@@ -89,7 +92,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return true;
         }
 
-        var converter = GetConverter(sourceType, targetType);
+        IGenericConverter converter = GetConverter(sourceType, targetType);
         return converter == NoOpConverterSingleton;
     }
 
@@ -102,7 +105,8 @@ public class GenericConversionService : IConversionService, IConverterRegistry
     protected virtual IGenericConverter GetConverter(Type sourceType, Type targetType)
     {
         var key = new ConverterCacheKey(sourceType, targetType);
-        if (_converterCache.TryGetValue(key, out var converter))
+
+        if (_converterCache.TryGetValue(key, out IGenericConverter converter))
         {
             return converter != NoMatchSingleton ? converter : null;
         }
@@ -123,7 +127,10 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         return null;
     }
 
-    protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType) => targetType.IsAssignableFrom(sourceType) ? NoOpConverterSingleton : null;
+    protected virtual IGenericConverter GetDefaultConverter(Type sourceType, Type targetType)
+    {
+        return targetType.IsAssignableFrom(sourceType) ? NoOpConverterSingleton : null;
+    }
 
     private object HandleResult(Type sourceType, Type targetType, object result)
     {
@@ -163,16 +170,22 @@ public class GenericConversionService : IConversionService, IConverterRegistry
     {
         private readonly string _name;
 
+        public ISet<(Type Source, Type Target)> ConvertibleTypes => null;
+
         public NoOpConverter(string name)
         {
             _name = name;
         }
 
-        public ISet<(Type Source, Type Target)> ConvertibleTypes => null;
+        public object Convert(object source, Type sourceType, Type targetType)
+        {
+            return source;
+        }
 
-        public object Convert(object source, Type sourceType, Type targetType) => source;
-
-        public override string ToString() => _name;
+        public override string ToString()
+        {
+            return _name;
+        }
     }
 
 #pragma warning disable S1210 // "Equals" and the comparison operators should be overridden when implementing "IComparable"
@@ -209,11 +222,15 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return HashCode.Combine(_sourceType, _targetType);
         }
 
-        public override string ToString() => $"ConverterCacheKey [sourceType = {_sourceType}, targetType = {_targetType}]";
+        public override string ToString()
+        {
+            return $"ConverterCacheKey [sourceType = {_sourceType}, targetType = {_targetType}]";
+        }
 
         public int CompareTo(ConverterCacheKey other)
         {
-            var result = _sourceType.ToString().CompareTo(other._sourceType.ToString());
+            int result = _sourceType.ToString().CompareTo(other._sourceType.ToString());
+
             if (result == 0)
             {
                 result = _targetType.ToString().CompareTo(other._targetType.ToString());
@@ -225,7 +242,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
     private sealed class ConvertersForPair
     {
-        private readonly LinkedList<IGenericConverter> _converters = new ();
+        private readonly LinkedList<IGenericConverter> _converters = new();
 
         public void Add(IGenericConverter converter)
         {
@@ -234,7 +251,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         public IGenericConverter GetConverter(Type sourceType, Type targetType)
         {
-            foreach (var converter in _converters)
+            foreach (IGenericConverter converter in _converters)
             {
                 if (converter is not IConditionalGenericConverter genericConverter || genericConverter.Matches(sourceType, targetType))
                 {
@@ -245,18 +262,22 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             return null;
         }
 
-        public override string ToString() => string.Join(",", _converters);
+        public override string ToString()
+        {
+            return string.Join(",", _converters);
+        }
     }
 
     private sealed class Converters
     {
         private readonly ISet<IGenericConverter> _globalConverters = new HashSet<IGenericConverter>();
 
-        private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new ();
+        private readonly Dictionary<(Type Source, Type Target), ConvertersForPair> _converters = new();
 
         public void Add(IGenericConverter converter)
         {
-            var convertibleTypes = converter.ConvertibleTypes;
+            ISet<(Type Source, Type Target)> convertibleTypes = converter.ConvertibleTypes;
+
             if (convertibleTypes == null)
             {
                 if (converter is not IConditionalConverter)
@@ -268,9 +289,9 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             }
             else
             {
-                foreach (var convertiblePair in convertibleTypes)
+                foreach ((Type Source, Type Target) convertiblePair in convertibleTypes)
                 {
-                    var convertersForPair = GetMatchableConverters(convertiblePair);
+                    ConvertersForPair convertersForPair = GetMatchableConverters(convertiblePair);
                     convertersForPair.Add(converter);
                 }
             }
@@ -279,11 +300,13 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         public IGenericConverter Find(Type sourceType, Type targetType)
         {
             // Search the full type hierarchy
-            var sourceCandidates = GetClassHierarchy(sourceType);
-            var targetCandidates = GetClassHierarchy(targetType);
-            foreach (var sourceCandidate in sourceCandidates)
+            List<Type> sourceCandidates = GetClassHierarchy(sourceType);
+            List<Type> targetCandidates = GetClassHierarchy(targetType);
+
+            foreach (Type sourceCandidate in sourceCandidates)
             {
-                var converter = CheckTargets(sourceType, targetType, sourceCandidate, targetCandidates);
+                IGenericConverter converter = CheckTargets(sourceType, targetType, sourceCandidate, targetCandidates);
+
                 if (converter != null)
                 {
                     return converter;
@@ -292,6 +315,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
                 if (sourceCandidate.IsConstructedGenericType)
                 {
                     converter = CheckTargets(sourceType, targetType, sourceCandidate.GetGenericTypeDefinition(), targetCandidates);
+
                     if (converter != null)
                     {
                         return converter;
@@ -304,10 +328,11 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         public IGenericConverter CheckTargets(Type sourceType, Type targetType, Type sourceCandidate, List<Type> targetCandidates)
         {
-            foreach (var targetCandidate in targetCandidates)
+            foreach (Type targetCandidate in targetCandidates)
             {
-                var convertiblePair = (Source: sourceCandidate, Target: targetCandidate);
-                var converter = GetRegisteredConverter(sourceType, targetType, convertiblePair);
+                (Type Source, Type Target) convertiblePair = (Source: sourceCandidate, Target: targetCandidate);
+                IGenericConverter converter = GetRegisteredConverter(sourceType, targetType, convertiblePair);
+
                 if (converter != null)
                 {
                     return converter;
@@ -317,6 +342,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
                 {
                     convertiblePair.Target = targetCandidate.GetGenericTypeDefinition();
                     converter = GetRegisteredConverter(sourceType, targetType, convertiblePair);
+
                     if (converter != null)
                     {
                         return converter;
@@ -331,7 +357,8 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         {
             var builder = new StringBuilder();
             builder.Append("ConversionService converters =\n");
-            foreach (var converterString in GetConverterStrings())
+
+            foreach (string converterString in GetConverterStrings())
             {
                 builder.Append('\t').Append(converterString).Append('\n');
             }
@@ -341,7 +368,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         private ConvertersForPair GetMatchableConverters((Type Source, Type Target) convertiblePair)
         {
-            if (!_converters.TryGetValue(convertiblePair, out var convertersForPair))
+            if (!_converters.TryGetValue(convertiblePair, out ConvertersForPair convertersForPair))
             {
                 convertersForPair = new ConvertersForPair();
                 _converters.Add(convertiblePair, convertersForPair);
@@ -353,9 +380,10 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         private IGenericConverter GetRegisteredConverter(Type sourceType, Type targetType, (Type Source, Type Target) convertiblePair)
         {
             // Check specifically registered converters
-            if (_converters.TryGetValue(convertiblePair, out var convertersForPair))
+            if (_converters.TryGetValue(convertiblePair, out ConvertersForPair convertersForPair))
             {
-                var converter = convertersForPair.GetConverter(sourceType, targetType);
+                IGenericConverter converter = convertersForPair.GetConverter(sourceType, targetType);
+
                 if (converter != null)
                 {
                     return converter;
@@ -363,7 +391,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             }
 
             // Check ConditionalConverters for a dynamic match
-            foreach (var globalConverter in _globalConverters)
+            foreach (IGenericConverter globalConverter in _globalConverters)
             {
                 if (((IConditionalConverter)globalConverter).Matches(sourceType, targetType))
                 {
@@ -379,14 +407,16 @@ public class GenericConversionService : IConversionService, IConverterRegistry
             var hierarchy = new List<Type>();
             ISet<Type> visited = new HashSet<Type>();
             AddToClassHierarchy(0, type, false, hierarchy, visited);
-            var array = type.IsArray;
+            bool array = type.IsArray;
 
-            var i = 0;
+            int i = 0;
+
             while (i < hierarchy.Count)
             {
-                var candidate = hierarchy[i];
+                Type candidate = hierarchy[i];
                 candidate = array ? candidate.GetElementType() : candidate;
-                var superclass = candidate.BaseType;
+                Type superclass = candidate.BaseType;
+
                 if (superclass != null && superclass != typeof(object) && superclass != typeof(Enum))
                 {
                     AddToClassHierarchy(i + 1, candidate.BaseType, array, hierarchy, visited);
@@ -410,7 +440,7 @@ public class GenericConversionService : IConversionService, IConverterRegistry
 
         private void AddInterfacesToClassHierarchy(Type type, bool asArray, List<Type> hierarchy, ISet<Type> visited)
         {
-            foreach (var implementedInterface in type.GetInterfaces())
+            foreach (Type implementedInterface in type.GetInterfaces())
             {
                 AddToClassHierarchy(hierarchy.Count, implementedInterface, asArray, hierarchy, visited);
             }
@@ -432,7 +462,8 @@ public class GenericConversionService : IConversionService, IConverterRegistry
         private List<string> GetConverterStrings()
         {
             var converterStrings = new List<string>();
-            foreach (var convertersForPair in _converters.Values)
+
+            foreach (ConvertersForPair convertersForPair in _converters.Values)
             {
                 converterStrings.Add(convertersForPair.ToString());
             }

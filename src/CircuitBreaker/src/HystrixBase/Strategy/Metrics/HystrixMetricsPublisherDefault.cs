@@ -6,14 +6,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 
 public class HystrixMetricsPublisherDefault : HystrixMetricsPublisher
 {
-    private static readonly HystrixMetricsPublisherDefault Instance = new ();
+    private static readonly HystrixMetricsPublisherDefault Instance = new();
+
+    private HystrixMetricsPublisherDefault()
+    {
+    }
 
     public static HystrixMetricsPublisher GetInstance()
     {
         return Instance;
-    }
-
-    private HystrixMetricsPublisherDefault()
-    {
     }
 }

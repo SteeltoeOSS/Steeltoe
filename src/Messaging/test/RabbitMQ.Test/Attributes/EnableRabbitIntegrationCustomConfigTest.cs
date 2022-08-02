@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,11 +20,10 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
-using System.Reflection;
-using System.Text;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationCustomConfigTest;
 using RC = RabbitMQ.Client;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 
@@ -41,11 +42,13 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
     [Fact]
     public void TestConverted()
     {
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+
         var foo1 = new Foo1
         {
             Bar = "bar"
         };
+
         var ctx = _provider.GetService<IApplicationContext>();
         var converter = ctx.GetService<ISmartMessageConverter>(JsonMessageConverter.DefaultServiceName) as JsonMessageConverter;
         converter.TypeMapper.DefaultType = typeof(Dictionary<string, object>);
@@ -55,27 +58,27 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         Assert.Equal("bar", returned.Bar);
         converter.Precedence = TypePrecedence.Inferred;
 
-        template.MessageConverter = new Support.Converter.SimpleMessageConverter();
+        template.MessageConverter = new SimpleMessageConverter();
         var messagePostProcessor = new MessagePostProcessor();
-        var returned2 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned2 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("{\"bar\":\"baz\"}", Encoding.UTF8.GetString(returned2));
 
-        var returned3 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.list", "[{ \"bar\" : \"baz\" }]", messagePostProcessor);
+        byte[] returned3 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.list", "[{ \"bar\" : \"baz\" }]", messagePostProcessor);
         Assert.Equal("{\"bar\":\"BAZZZZ\"}", Encoding.UTF8.GetString(returned3));
 
-        var returned4 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.array", "[{ \"bar\" : \"baz\" }]", messagePostProcessor);
+        byte[] returned4 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.array", "[{ \"bar\" : \"baz\" }]", messagePostProcessor);
         Assert.Equal("{\"bar\":\"BAZZxx\"}", Encoding.UTF8.GetString(returned4));
 
-        var returned5 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.args1", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned5 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.args1", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"bar=baztest.converted.args1\"", Encoding.UTF8.GetString(returned5));
 
-        var returned6 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.args2", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned6 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.args2", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"bar=baztest.converted.args2\"", Encoding.UTF8.GetString(returned6));
 
         var beanMethodHeaders = new List<string>();
         var mpp = new AfterReceivePostProcessors(beanMethodHeaders);
         template.SetAfterReceivePostProcessors(mpp);
-        var returned7 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.message", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned7 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.message", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"bar=bazFoo2MessageFoo2Service\"", Encoding.UTF8.GetString(returned7));
         Assert.Equal(2, beanMethodHeaders.Count);
         Assert.Equal("Foo2Service", beanMethodHeaders[0]);
@@ -87,24 +90,30 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         Assert.NotNull(foo2Service.Method);
         Assert.Equal("Foo2Message", foo2Service.Method.Name);
 
-        var returned8 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.message", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned8 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.message", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"fooMessage`1\"", Encoding.UTF8.GetString(returned8));
         Assert.Equal("string", foo2Service.StringHeader);
         Assert.Equal(42, foo2Service.IntHeader);
 
-        var returned9 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.channel", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned9 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.channel", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"barAndChannel\"", Encoding.UTF8.GetString(returned9));
 
-        var returned10 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagechannel", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned10 =
+            template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagechannel", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+
         Assert.Equal("\"bar=bazMessage`1AndChannel\"", Encoding.UTF8.GetString(returned10));
 
-        var returned11 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagingmessage", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned11 =
+            template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagingmessage", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+
         Assert.Equal("\"Message`1Dictionary`2\"", Encoding.UTF8.GetString(returned11));
 
-        var returned12 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.foomessage", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned12 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.converted.foomessage", "{ \"bar\" : \"baz\" }", messagePostProcessor);
         Assert.Equal("\"Message`1Foo2guest\"", Encoding.UTF8.GetString(returned12));
 
-        var returned13 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagingmessagenotgeneric", "{ \"bar\" : \"baz\" }", messagePostProcessor);
+        byte[] returned13 = template.ConvertSendAndReceive<byte[]>(string.Empty, "test.notconverted.messagingmessagenotgeneric", "{ \"bar\" : \"baz\" }",
+            messagePostProcessor);
+
         Assert.Equal("\"Message`1Dictionary`2\"", Encoding.UTF8.GetString(returned13));
     }
 
@@ -136,7 +145,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = "application/json";
             accessor.UserId = "guest";
             accessor.SetHeader("stringHeader", "string");
@@ -146,7 +155,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.ContentType = "application/json";
             accessor.UserId = "guest";
             accessor.SetHeader("stringHeader", "string");
@@ -157,6 +166,23 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
     public sealed class CustomStartupFixture : IDisposable
     {
+        public static string[] Queues =
+        {
+            "test.converted",
+            "test.converted.list",
+            "test.converted.array",
+            "test.converted.args1",
+            "test.converted.args2",
+            "test.converted.message",
+            "test.notconverted.message",
+            "test.notconverted.channel",
+            "test.notconverted.messagechannel",
+            "test.notconverted.messagingmessage",
+            "test.converted.foomessage",
+            "test.notconverted.messagingmessagenotgeneric",
+            "test.simple.direct"
+        };
+
         private readonly CachingConnectionFactory _adminCf;
         private readonly RabbitAdmin _admin;
         private readonly IServiceCollection _services;
@@ -167,7 +193,8 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         {
             _adminCf = new CachingConnectionFactory("localhost");
             _admin = new RabbitAdmin(_adminCf);
-            foreach (var q in Queues)
+
+            foreach (string q in Queues)
             {
                 var queue = new Queue(q);
                 _admin.DeclareQueue(queue);
@@ -180,7 +207,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
         public void Dispose()
         {
-            foreach (var q in Queues)
+            foreach (string q in Queues)
             {
                 _admin.DeleteQueue(q);
             }
@@ -190,22 +217,6 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             _adminCf.Dispose();
 
             Provider.Dispose();
-        }
-
-        public class MyRabbitListenerConfigurer : IRabbitListenerConfigurer
-        {
-            private readonly IApplicationContext _context;
-
-            public MyRabbitListenerConfigurer(IApplicationContext context)
-            {
-                _context = context;
-            }
-
-            public void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar)
-            {
-                var handler = _context.GetService<IMessageHandlerMethodFactory>("myHandlerMethodFactory");
-                registrar.MessageHandlerMethodFactory = handler;
-            }
         }
 
         public ServiceCollection CreateContainer(IConfiguration config = null)
@@ -229,6 +240,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             services.AddRabbitConnectionFactory();
 
             services.AddSingleton<IRabbitListenerConfigurer, MyRabbitListenerConfigurer>();
+
             services.AddRabbitMessageHandlerMethodFactory((_, f) =>
             {
                 f.ServiceName = "myHandlerMethodFactory";
@@ -245,6 +257,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             });
 
             services.AddRabbitAdmin();
+
             services.AddRabbitTemplate((_, t) =>
             {
                 t.ReplyTimeout = 60000;
@@ -256,13 +269,21 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             return services;
         }
 
-        public static string[] Queues =
+        public class MyRabbitListenerConfigurer : IRabbitListenerConfigurer
         {
-            "test.converted", "test.converted.list", "test.converted.array", "test.converted.args1",
-            "test.converted.args2", "test.converted.message", "test.notconverted.message",
-            "test.notconverted.channel", "test.notconverted.messagechannel", "test.notconverted.messagingmessage",
-            "test.converted.foomessage", "test.notconverted.messagingmessagenotgeneric", "test.simple.direct",
-        };
+            private readonly IApplicationContext _context;
+
+            public MyRabbitListenerConfigurer(IApplicationContext context)
+            {
+                _context = context;
+            }
+
+            public void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar)
+            {
+                var handler = _context.GetService<IMessageHandlerMethodFactory>("myHandlerMethodFactory");
+                registrar.MessageHandlerMethodFactory = handler;
+            }
+        }
     }
 
     public class Foo2Service
@@ -284,7 +305,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         [RabbitListener("test.converted.list")]
         public Foo2 Foo2(List<Foo2> foo2S)
         {
-            var foo2 = foo2S[0];
+            Foo2 foo2 = foo2S[0];
             foo2.Bar = "BAZZZZ";
             return foo2;
         }
@@ -292,7 +313,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         [RabbitListener("test.converted.array")]
         public Foo2 Foo2(Foo2[] foo2S)
         {
-            var foo2 = foo2S[0];
+            Foo2 foo2 = foo2S[0];
             foo2.Bar = "BAZZxx";
             return foo2;
         }
@@ -344,18 +365,14 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
         }
 
         [RabbitListener("test.converted.foomessage")]
-        public string MessagingMessage(
-            IMessage<Foo2> message,
-            [Header("", Required = false)] string h,
+        public string MessagingMessage(IMessage<Foo2> message, [Header("", Required = false)] string h,
             [Header(RabbitMessageHeaders.ReceivedUserId)] string userId)
         {
             return message.GetType().Name + message.Payload.GetType().Name + userId;
         }
 
         [RabbitListener("test.notconverted.messagingmessagenotgeneric")]
-        public string MessagingMessage(
-            IMessage message,
-            [Header("", Required = false)] int? h)
+        public string MessagingMessage(IMessage message, [Header("", Required = false)] int? h)
         {
             return message.GetType().Name + message.Payload.GetType().Name;
         }
@@ -379,7 +396,10 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
     public class Foo1ToFoo2Converter : AbstractGenericConverter
     {
         public Foo1ToFoo2Converter()
-            : base(new HashSet<(Type, Type)> { (typeof(Foo1), typeof(Foo2)) })
+            : base(new HashSet<(Type, Type)>
+            {
+                (typeof(Foo1), typeof(Foo2))
+            })
         {
         }
 
@@ -389,6 +409,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
             {
                 Bar = source.Bar
             };
+
             return foo2;
         }
 
@@ -402,7 +423,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("bean", accessor.Target.GetType().Name);
             accessor.SetHeader("method", accessor.TargetMethod.Name);
             return message;
@@ -410,7 +431,7 @@ public class EnableRabbitIntegrationCustomConfigTest : IClassFixture<CustomStart
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("bean", accessor.Target.GetType().Name);
             accessor.SetHeader("method", accessor.TargetMethod.Name);
             return message;

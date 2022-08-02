@@ -10,6 +10,7 @@ using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Steeltoe.Messaging.RabbitMQ.Util;
 using Xunit;
 
@@ -19,14 +20,15 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 public sealed class RabbitBindingIntegrationTest : IDisposable
 {
     private const string QueueName = "test.queue.RabbitBindingIntegrationTests";
-    private readonly Queue _queue = new (QueueName);
+    private readonly Queue _queue = new(QueueName);
     private readonly ServiceCollection _services;
     private ServiceProvider _provider;
 
     public RabbitBindingIntegrationTest()
     {
         _services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         _services.AddLogging(b =>
         {
             b.AddDebug();
@@ -42,35 +44,30 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         _services.AddRabbitQueue(_queue);
     }
 
-    public void Dispose()
-    {
-        var admin = _provider.GetRabbitAdmin();
-        admin.DeleteQueue(QueueName);
-        _provider.Dispose();
-    }
-
     [Fact]
     public void TestSendAndReceiveWithTopicSingleCallback()
     {
         _provider = _services.BuildServiceProvider();
-        var admin = _provider.GetRabbitAdmin();
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
-        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
+        IBinding binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
+
         try
         {
             template.Execute(_ =>
             {
-                var consumer = CreateConsumer(template.ConnectionFactory);
-                var tag = consumer.GetConsumerTags()[0];
+                BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
+                string tag = consumer.GetConsumerTags()[0];
                 Assert.NotNull(tag);
                 template.ConvertAndSend("foo", "message");
+
                 try
                 {
-                    var result = GetResult(consumer, false);
+                    string result = GetResult(consumer, false);
                     Assert.Null(result);
                     template.ConvertAndSend("foo.end", "message");
                     result = GetResult(consumer, true);
@@ -92,23 +89,25 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     public void TestSendAndReceiveWithNonDefaultExchange()
     {
         _provider = _services.BuildServiceProvider();
-        var admin = _provider.GetRabbitAdmin();
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = _provider.GetRabbitTemplate();
-        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        IBinding binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
+
         try
         {
             template.Execute(_ =>
             {
-                var consumer = CreateConsumer(template.ConnectionFactory);
-                var tag = consumer.GetConsumerTags()[0];
+                BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
+                string tag = consumer.GetConsumerTags()[0];
                 Assert.NotNull(tag);
                 template.ConvertAndSend("topic", "foo", "message");
+
                 try
                 {
-                    var result = GetResult(consumer, false);
+                    string result = GetResult(consumer, false);
                     Assert.Null(result);
                     template.ConvertAndSend("topic", "foo.end", "message");
                     result = GetResult(consumer, true);
@@ -130,31 +129,32 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     public void TestSendAndReceiveWithTopicConsumeInBackground()
     {
         _provider = _services.BuildServiceProvider();
-        var admin = _provider.GetRabbitAdmin();
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
-        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
+        IBinding binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
 
         var cachingConnectionFactory = new CachingConnectionFactory("localhost");
+
         var template1 = new RabbitTemplate(cachingConnectionFactory)
         {
             DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty)
         };
 
-        var consumer = template1.Execute(_ =>
+        BlockingQueueConsumer consumer = template1.Execute(_ =>
         {
-            var consumer1 = CreateConsumer(template1.ConnectionFactory);
-            var tag = consumer1.GetConsumerTags()[0];
+            BlockingQueueConsumer consumer1 = CreateConsumer(template1.ConnectionFactory);
+            string tag = consumer1.GetConsumerTags()[0];
             Assert.NotNull(tag);
 
             return consumer1;
         });
 
         template1.ConvertAndSend("foo", "message");
-        var result = GetResult(consumer, false);
+        string result = GetResult(consumer, false);
         Assert.Null(result);
 
         template1.ConvertAndSend("foo.end", "message");
@@ -170,25 +170,27 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     public void TestSendAndReceiveWithTopicTwoCallbacks()
     {
         _provider = _services.BuildServiceProvider();
-        var admin = _provider.GetRabbitAdmin();
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new TopicExchange("topic");
         admin.DeclareExchange(exchange);
-        var binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
+        IBinding binding = BindingBuilder.Bind(_queue).To(exchange).With("*.end");
         admin.DeclareBinding(binding);
 
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
+
         try
         {
             template.Execute(_ =>
             {
-                var consumer = CreateConsumer(template.ConnectionFactory);
-                var tag = consumer.GetConsumerTags()[0];
+                BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
+                string tag = consumer.GetConsumerTags()[0];
                 Assert.NotNull(tag);
+
                 try
                 {
                     template.ConvertAndSend("foo", "message");
-                    var result = GetResult(consumer, false);
+                    string result = GetResult(consumer, false);
                     Assert.Null(result);
                 }
                 finally
@@ -199,13 +201,14 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
 
             template.Execute(_ =>
             {
-                var consumer = CreateConsumer(template.ConnectionFactory);
-                var tag = consumer.GetConsumerTags()[0];
+                BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
+                string tag = consumer.GetConsumerTags()[0];
                 Assert.NotNull(tag);
+
                 try
                 {
                     template.ConvertAndSend("foo.end", "message");
-                    var result = GetResult(consumer, true);
+                    string result = GetResult(consumer, true);
                     Assert.Equal("message", result);
                 }
                 finally
@@ -224,25 +227,26 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
     public void TestSendAndReceiveWithFanOut()
     {
         _provider = _services.BuildServiceProvider();
-        var admin = _provider.GetRabbitAdmin();
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
         var exchange = new FanOutExchange("fanout");
         admin.DeclareExchange(exchange);
         admin.DeclareBinding(BindingBuilder.Bind(_queue).To(exchange));
 
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         template.DefaultSendDestination = new RabbitDestination(exchange.ExchangeName, string.Empty);
+
         try
         {
             template.Execute(_ =>
             {
-                var consumer = CreateConsumer(template.ConnectionFactory);
-                var tag = consumer.GetConsumerTags()[0];
+                BlockingQueueConsumer consumer = CreateConsumer(template.ConnectionFactory);
+                string tag = consumer.GetConsumerTags()[0];
                 Assert.NotNull(tag);
 
                 try
                 {
                     template.ConvertAndSend("message");
-                    var result = GetResult(consumer, true);
+                    string result = GetResult(consumer, true);
                     Assert.Equal("message", result);
                 }
                 finally
@@ -257,31 +261,34 @@ public sealed class RabbitBindingIntegrationTest : IDisposable
         }
     }
 
+    public void Dispose()
+    {
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
+        admin.DeleteQueue(QueueName);
+        _provider.Dispose();
+    }
+
     private string GetResult(BlockingQueueConsumer consumer, bool expected)
     {
-        var response = consumer.NextMessage(expected ? 2000 : 100);
+        IMessage response = consumer.NextMessage(expected ? 2000 : 100);
+
         if (response == null)
         {
             return null;
         }
 
-        return new RabbitMQ.Support.Converter.SimpleMessageConverter().FromMessage<string>(response);
+        return new SimpleMessageConverter().FromMessage<string>(response);
     }
 
     private BlockingQueueConsumer CreateConsumer(IConnectionFactory connectionFactory)
     {
-        var consumer = new BlockingQueueConsumer(
-            connectionFactory,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            null,
-            _queue.QueueName);
+        var consumer = new BlockingQueueConsumer(connectionFactory, new DefaultMessageHeadersConverter(), new ActiveObjectCounter<BlockingQueueConsumer>(),
+            AcknowledgeMode.Auto, true, 1, null, _queue.QueueName);
+
         consumer.Start();
 
-        var n = 0;
+        int n = 0;
+
         while (n++ < 100)
         {
             if (consumer.CurrentConsumers().Count > 0)

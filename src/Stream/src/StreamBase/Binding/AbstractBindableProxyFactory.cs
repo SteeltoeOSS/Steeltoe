@@ -11,8 +11,12 @@ public class AbstractBindableProxyFactory : AbstractBindable
     protected IDictionary<string, Bindable> bindables;
     protected IList<IBindingTargetFactory> bindingTargetFactories;
 
-    protected Dictionary<string, Lazy<object>> boundInputTargets = new ();
-    protected Dictionary<string, Lazy<object>> boundOutputTargets = new ();
+    protected Dictionary<string, Lazy<object>> boundInputTargets = new();
+    protected Dictionary<string, Lazy<object>> boundOutputTargets = new();
+
+    public override ICollection<string> Inputs => boundInputTargets.Keys;
+
+    public override ICollection<string> Outputs => boundOutputTargets.Keys;
 
     public AbstractBindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
         : base(bindingType)
@@ -21,16 +25,13 @@ public class AbstractBindableProxyFactory : AbstractBindable
         Initialize();
     }
 
-    public override ICollection<string> Inputs => boundInputTargets.Keys;
-
-    public override ICollection<string> Outputs => boundOutputTargets.Keys;
-
     public override ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)
     {
         var bindings = new List<IBinding>();
-        foreach (var boundTarget in boundInputTargets)
+
+        foreach (KeyValuePair<string, Lazy<object>> boundTarget in boundInputTargets)
         {
-            var result = bindingService.BindConsumer(boundTarget.Value.Value, boundTarget.Key);
+            ICollection<IBinding> result = bindingService.BindConsumer(boundTarget.Value.Value, boundTarget.Key);
             bindings.AddRange(result);
         }
 
@@ -40,9 +41,10 @@ public class AbstractBindableProxyFactory : AbstractBindable
     public override ICollection<IBinding> CreateAndBindOutputs(IBindingService bindingService)
     {
         var bindings = new List<IBinding>();
-        foreach (var boundTarget in boundOutputTargets)
+
+        foreach (KeyValuePair<string, Lazy<object>> boundTarget in boundOutputTargets)
         {
-            var result = bindingService.BindProducer(boundTarget.Value.Value, boundTarget.Key);
+            IBinding result = bindingService.BindProducer(boundTarget.Value.Value, boundTarget.Key);
             bindings.Add(result);
         }
 
@@ -51,7 +53,7 @@ public class AbstractBindableProxyFactory : AbstractBindable
 
     public override void UnbindInputs(IBindingService bindingService)
     {
-        foreach (var boundTarget in boundInputTargets)
+        foreach (KeyValuePair<string, Lazy<object>> boundTarget in boundInputTargets)
         {
             bindingService.UnbindConsumers(boundTarget.Key);
         }
@@ -59,7 +61,7 @@ public class AbstractBindableProxyFactory : AbstractBindable
 
     public override void UnbindOutputs(IBindingService bindingService)
     {
-        foreach (var boundTarget in boundOutputTargets)
+        foreach (KeyValuePair<string, Lazy<object>> boundTarget in boundOutputTargets)
         {
             bindingService.UnbindProducers(boundTarget.Key);
         }
@@ -67,28 +69,30 @@ public class AbstractBindableProxyFactory : AbstractBindable
 
     public override object GetBoundTarget(string name)
     {
-        var result = GetBoundInputTarget(name) ?? GetBoundOutputTarget(name);
+        object result = GetBoundInputTarget(name) ?? GetBoundOutputTarget(name);
         return result;
     }
 
     public override object GetBoundInputTarget(string name)
     {
-        boundInputTargets.TryGetValue(name, out var result);
+        boundInputTargets.TryGetValue(name, out Lazy<object> result);
         return result.Value;
     }
 
     public override object GetBoundOutputTarget(string name)
     {
-        boundOutputTargets.TryGetValue(name, out var result);
+        boundOutputTargets.TryGetValue(name, out Lazy<object> result);
         return result.Value;
     }
 
     protected void Initialize()
     {
         bindables = BindingHelpers.CollectBindables(BindingType);
-        foreach (var bindable in bindables.Values)
+
+        foreach (Bindable bindable in bindables.Values)
         {
-            var factory = GetBindingTargetFactory(bindable.BindingTargetType);
+            IBindingTargetFactory factory = GetBindingTargetFactory(bindable.BindingTargetType);
+
             if (bindable.IsInput)
             {
                 var creator = new Lazy<object>(() => factory.CreateInput(bindable.Name));
@@ -106,7 +110,7 @@ public class AbstractBindableProxyFactory : AbstractBindable
     {
         IBindingTargetFactory result = null;
 
-        foreach (var factory in bindingTargetFactories)
+        foreach (IBindingTargetFactory factory in bindingTargetFactories)
         {
             if (factory.CanCreate(bindingTargetType))
             {

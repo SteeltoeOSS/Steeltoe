@@ -10,12 +10,12 @@ public class CertificateSource : ICertificateSource
 {
     private readonly string _certFilePath;
 
+    public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
+
     public CertificateSource(string certFilePath)
     {
         _certFilePath = Path.GetFullPath(certFilePath);
     }
-
-    public Type OptionsConfigurer => typeof(ConfigureCertificateOptions);
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {

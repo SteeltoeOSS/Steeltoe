@@ -2,7 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
+using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Transaction;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -13,8 +16,6 @@ using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Util;
-using System.Collections.Concurrent;
-using System.Runtime.CompilerServices;
 using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -24,100 +25,12 @@ public class BlockingQueueConsumer
     private const int DefaultDeclarationRetries = 3;
     private const int DefaultRetryDeclarationInterval = 60000;
 
-    public BlockingQueueConsumer(
-        IConnectionFactory connectionFactory,
-        IMessageHeadersConverter messagePropertiesConverter,
-        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
-        AcknowledgeMode acknowledgeMode,
-        bool transactional,
-        ushort prefetchCount,
-        ILoggerFactory loggerFactory,
-        params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, true, loggerFactory, queues)
-    {
-    }
+    private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new();
 
-    public BlockingQueueConsumer(
-        IConnectionFactory connectionFactory,
-        IMessageHeadersConverter messagePropertiesConverter,
-        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
-        AcknowledgeMode acknowledgeMode,
-        bool transactional,
-        ushort prefetchCount,
-        bool defaultRequeueRejected,
-        ILoggerFactory loggerFactory,
-        params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, null, loggerFactory, queues)
-    {
-    }
+    protected bool HasDelivery => Queue.Count != 0;
 
-    public BlockingQueueConsumer(
-        IConnectionFactory connectionFactory,
-        IMessageHeadersConverter messagePropertiesConverter,
-        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
-        AcknowledgeMode acknowledgeMode,
-        bool transactional,
-        ushort prefetchCount,
-        bool defaultRequeueRejected,
-        Dictionary<string, object> consumerArgs,
-        ILoggerFactory loggerFactory,
-        params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, consumerArgs, false, loggerFactory, queues)
-    {
-    }
-
-    public BlockingQueueConsumer(
-        IConnectionFactory connectionFactory,
-        IMessageHeadersConverter messagePropertiesConverter,
-        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
-        AcknowledgeMode acknowledgeMode,
-        bool transactional,
-        ushort prefetchCount,
-        bool defaultRequeueRejected,
-        Dictionary<string, object> consumerArgs,
-        bool exclusive,
-        ILoggerFactory loggerFactory,
-        params string[] queues)
-        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, consumerArgs, false, exclusive, loggerFactory, queues)
-    {
-    }
-
-    public BlockingQueueConsumer(
-        IConnectionFactory connectionFactory,
-        IMessageHeadersConverter messagePropertiesConverter,
-        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter,
-        AcknowledgeMode acknowledgeMode,
-        bool transactional,
-        ushort prefetchCount,
-        bool defaultRequeueRejected,
-        Dictionary<string, object> consumerArgs,
-        bool noLocal,
-        bool exclusive,
-        ILoggerFactory loggerFactory,
-        params string[] queues)
-    {
-        ConnectionFactory = connectionFactory;
-        MessageHeadersConverter = messagePropertiesConverter;
-        ActiveObjectCounter = activeObjectCounter;
-        AcknowledgeMode = acknowledgeMode;
-        Transactional = transactional;
-        PrefetchCount = prefetchCount;
-        DefaultRequeueRejected = defaultRequeueRejected;
-        if (consumerArgs != null && consumerArgs.Count > 0)
-        {
-            foreach (var arg in consumerArgs)
-            {
-                ConsumerArgs.Add(arg.Key, arg.Value);
-            }
-        }
-
-        NoLocal = noLocal;
-        Exclusive = exclusive;
-        Queues = queues.ToList();
-        Queue = new BlockingCollection<Delivery>(prefetchCount);
-        LoggerFactory = loggerFactory;
-        Logger = loggerFactory?.CreateLogger<BlockingQueueConsumer>();
-    }
+    protected bool Cancelled =>
+        Cancel.Value || (AbortStarted > 0 && AbortStarted + ShutdownTimeout > DateTimeOffset.Now.ToUnixTimeMilliseconds()) || !ActiveObjectCounter.IsActive;
 
     public ILogger<BlockingQueueConsumer> Logger { get; }
 
@@ -145,15 +58,15 @@ public class BlockingQueueConsumer
 
     public bool NoLocal { get; }
 
-    public AtomicBoolean Cancel { get; } = new (false);
+    public AtomicBoolean Cancel { get; } = new(false);
 
     public bool DefaultRequeueRejected { get; }
 
-    public Dictionary<string, object> ConsumerArgs { get; } = new ();
+    public Dictionary<string, object> ConsumerArgs { get; } = new();
 
     public RC.ShutdownEventArgs Shutdown { get; private set; }
 
-    public HashSet<ulong> DeliveryTags { get; internal set; } = new ();
+    public HashSet<ulong> DeliveryTags { get; internal set; } = new();
 
     public long AbortStarted { get; private set; }
 
@@ -177,21 +90,75 @@ public class BlockingQueueConsumer
 
     public int QueueCount => Queues.Count;
 
-    public HashSet<string> MissingQueues => new ();
+    public HashSet<string> MissingQueues => new();
 
     public long LastRetryDeclaration { get; set; }
 
     public RabbitResourceHolder ResourceHolder { get; set; }
 
-    private ConcurrentDictionary<string, InternalConsumer> Consumers { get; } = new ();
+    public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessageHeadersConverter messagePropertiesConverter,
+        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode, bool transactional, ushort prefetchCount,
+        ILoggerFactory loggerFactory, params string[] queues)
+        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, true, loggerFactory, queues)
+    {
+    }
+
+    public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessageHeadersConverter messagePropertiesConverter,
+        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode, bool transactional, ushort prefetchCount,
+        bool defaultRequeueRejected, ILoggerFactory loggerFactory, params string[] queues)
+        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected, null,
+            loggerFactory, queues)
+    {
+    }
+
+    public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessageHeadersConverter messagePropertiesConverter,
+        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode, bool transactional, ushort prefetchCount,
+        bool defaultRequeueRejected, Dictionary<string, object> consumerArgs, ILoggerFactory loggerFactory, params string[] queues)
+        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected,
+            consumerArgs, false, loggerFactory, queues)
+    {
+    }
+
+    public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessageHeadersConverter messagePropertiesConverter,
+        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode, bool transactional, ushort prefetchCount,
+        bool defaultRequeueRejected, Dictionary<string, object> consumerArgs, bool exclusive, ILoggerFactory loggerFactory, params string[] queues)
+        : this(connectionFactory, messagePropertiesConverter, activeObjectCounter, acknowledgeMode, transactional, prefetchCount, defaultRequeueRejected,
+            consumerArgs, false, exclusive, loggerFactory, queues)
+    {
+    }
+
+    public BlockingQueueConsumer(IConnectionFactory connectionFactory, IMessageHeadersConverter messagePropertiesConverter,
+        ActiveObjectCounter<BlockingQueueConsumer> activeObjectCounter, AcknowledgeMode acknowledgeMode, bool transactional, ushort prefetchCount,
+        bool defaultRequeueRejected, Dictionary<string, object> consumerArgs, bool noLocal, bool exclusive, ILoggerFactory loggerFactory,
+        params string[] queues)
+    {
+        ConnectionFactory = connectionFactory;
+        MessageHeadersConverter = messagePropertiesConverter;
+        ActiveObjectCounter = activeObjectCounter;
+        AcknowledgeMode = acknowledgeMode;
+        Transactional = transactional;
+        PrefetchCount = prefetchCount;
+        DefaultRequeueRejected = defaultRequeueRejected;
+
+        if (consumerArgs != null && consumerArgs.Count > 0)
+        {
+            foreach (KeyValuePair<string, object> arg in consumerArgs)
+            {
+                ConsumerArgs.Add(arg.Key, arg.Value);
+            }
+        }
+
+        NoLocal = noLocal;
+        Exclusive = exclusive;
+        Queues = queues.ToList();
+        Queue = new BlockingCollection<Delivery>(prefetchCount);
+        LoggerFactory = loggerFactory;
+        Logger = loggerFactory?.CreateLogger<BlockingQueueConsumer>();
+    }
 
     public List<string> GetConsumerTags()
     {
-        return Consumers
-            .Values
-            .Select(c => c.ConsumerTag)
-            .Where(tag => tag != null)
-            .ToList();
+        return Consumers.Values.Select(c => c.ConsumerTag).Where(tag => tag != null).ToList();
     }
 
     public void ClearDeliveryTags()
@@ -209,13 +176,15 @@ public class BlockingQueueConsumer
     {
         Logger?.LogTrace("Retrieving delivery for: {me}", ToString());
         CheckShutdown();
+
         if (MissingQueues.Count > 0)
         {
             CheckMissingQueues();
         }
 
-        Queue.TryTake(out var item, timeout);
-        var message = Handle(item);
+        Queue.TryTake(out Delivery item, timeout);
+        IMessage message = Handle(item);
+
         if (message == null && Cancel.Value)
         {
             throw new ConsumerCancelledException();
@@ -227,6 +196,7 @@ public class BlockingQueueConsumer
     public void Start()
     {
         Logger?.LogDebug("Starting consumer {consumer}", ToString());
+
         try
         {
             ResourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, Transactional);
@@ -274,7 +244,8 @@ public class BlockingQueueConsumer
 
     public void RollbackOnExceptionIfNecessary(Exception ex)
     {
-        var ackRequired = !AcknowledgeMode.IsAutoAck() && (!AcknowledgeMode.IsManual() || ContainerUtils.IsRejectManual(ex));
+        bool ackRequired = !AcknowledgeMode.IsAutoAck() && (!AcknowledgeMode.IsManual() || ContainerUtils.IsRejectManual(ex));
+
         try
         {
             if (Transactional)
@@ -287,7 +258,7 @@ public class BlockingQueueConsumer
             {
                 if (DeliveryTags.Count > 0)
                 {
-                    var deliveryTag = DeliveryTags.Max();
+                    ulong deliveryTag = DeliveryTags.Max();
                     Channel.BasicNack(deliveryTag, true, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, ex, Logger));
                 }
 
@@ -316,13 +287,15 @@ public class BlockingQueueConsumer
             return false;
         }
 
-        var isLocallyTransacted = localTx || (Transactional && TransactionSynchronizationManager.GetResource(ConnectionFactory) == null);
+        bool isLocallyTransacted = localTx || (Transactional && TransactionSynchronizationManager.GetResource(ConnectionFactory) == null);
+
         try
         {
-            var ackRequired = !AcknowledgeMode.IsAutoAck() && !AcknowledgeMode.IsManual();
+            bool ackRequired = !AcknowledgeMode.IsAutoAck() && !AcknowledgeMode.IsManual();
+
             if (ackRequired && (!Transactional || isLocallyTransacted))
             {
-                var deliveryTag = new List<ulong>(DeliveryTags)[DeliveryTags.Count - 1];
+                ulong deliveryTag = new List<ulong>(DeliveryTags)[DeliveryTags.Count - 1];
                 Channel.BasicAck(deliveryTag, true);
             }
 
@@ -351,18 +324,6 @@ public class BlockingQueueConsumer
         return Consumers.Values.ToList<RC.DefaultBasicConsumer>();
     }
 
-    protected bool HasDelivery => Queue.Count != 0;
-
-    protected bool Cancelled
-    {
-        get
-        {
-            return Cancel.Value ||
-                   (AbortStarted > 0 && AbortStarted + ShutdownTimeout > DateTimeOffset.Now.ToUnixTimeMilliseconds()) ||
-                   !ActiveObjectCounter.IsActive;
-        }
-    }
-
     protected void BasicCancel()
     {
         BasicCancel(false);
@@ -371,6 +332,7 @@ public class BlockingQueueConsumer
     protected void BasicCancel(bool expected)
     {
         NormalCancel = expected;
+
         GetConsumerTags().ForEach(consumerTag =>
         {
             if (Channel.IsOpen)
@@ -386,8 +348,9 @@ public class BlockingQueueConsumer
     private void PassiveDeclarations()
     {
         // mirrored queue might be being moved
-        var passiveDeclareRetries = DeclarationRetries;
+        int passiveDeclareRetries = DeclarationRetries;
         Declaring = true;
+
         do
         {
             if (Cancelled)
@@ -398,6 +361,7 @@ public class BlockingQueueConsumer
             try
             {
                 AttemptPassiveDeclarations();
+
                 if (passiveDeclareRetries < DeclarationRetries)
                 {
                     Logger?.LogInformation("Queue declaration succeeded after retrying");
@@ -411,6 +375,7 @@ public class BlockingQueueConsumer
             }
         }
         while (passiveDeclareRetries-- > 0 && !Cancelled);
+
         Declaring = false;
     }
 
@@ -435,7 +400,7 @@ public class BlockingQueueConsumer
         {
             if (!Cancelled)
             {
-                foreach (var queueName in Queues)
+                foreach (string queueName in Queues)
                 {
                     if (!MissingQueues.Contains(queueName))
                     {
@@ -455,6 +420,7 @@ public class BlockingQueueConsumer
         if (passiveDeclareRetries > 0 && Channel.IsOpen)
         {
             Logger?.LogWarning(e, "Queue declaration failed; retries left={retries}", passiveDeclareRetries);
+
             try
             {
                 Thread.Sleep(FailedDeclarationRetryInterval);
@@ -468,10 +434,12 @@ public class BlockingQueueConsumer
         }
         else if (e.FailedQueues.Count < Queues.Count)
         {
-            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}", string.Join(',', Queues), string.Join(',', e.FailedQueues));
+            Logger?.LogWarning("Not all queues are available; only listening on those that are - configured: {queues}; not available: {notAvailable}",
+                string.Join(',', Queues), string.Join(',', e.FailedQueues));
+
             lock (MissingQueues)
             {
-                foreach (var q in e.FailedQueues)
+                foreach (string q in e.FailedQueues)
                 {
                     MissingQueues.Add(q);
                 }
@@ -483,21 +451,18 @@ public class BlockingQueueConsumer
         {
             Declaring = false;
             ActiveObjectCounter.Release(this);
-            throw new QueuesNotAvailableException("Cannot prepare queue for listener. Either the queue doesn't exist or the broker will not allow us to use it.", e);
+
+            throw new QueuesNotAvailableException(
+                "Cannot prepare queue for listener. Either the queue doesn't exist or the broker will not allow us to use it.", e);
         }
     }
 
     private void ConsumeFromQueue(string queue)
     {
         var consumer = new InternalConsumer(this, Channel, queue);
-        var consumerTag = Channel.BasicConsume(
-            queue,
-            AcknowledgeMode.IsAutoAck(),
-            TagStrategy != null ? TagStrategy.CreateConsumerTag(queue) : string.Empty,
-            NoLocal,
-            Exclusive,
-            ConsumerArgs,
-            consumer);
+
+        string consumerTag = Channel.BasicConsume(queue, AcknowledgeMode.IsAutoAck(), TagStrategy != null ? TagStrategy.CreateConsumerTag(queue) : string.Empty,
+            NoLocal, Exclusive, ConsumerArgs, consumer);
 
         if (consumerTag != null)
         {
@@ -512,7 +477,8 @@ public class BlockingQueueConsumer
     private void AttemptPassiveDeclarations()
     {
         DeclarationException failures = null;
-        foreach (var queueName in Queues)
+
+        foreach (string queueName in Queues)
         {
             try
             {
@@ -520,7 +486,7 @@ public class BlockingQueueConsumer
                 {
                     Channel.QueueDeclarePassive(queueName);
                 }
-                catch (RC.Exceptions.WireFormattingException e)
+                catch (WireFormattingException e)
                 {
                     try
                     {
@@ -537,9 +503,10 @@ public class BlockingQueueConsumer
                     throw new FatalListenerStartupException("Illegal Argument on Queue Declaration", e);
                 }
             }
-            catch (RC.Exceptions.RabbitMQClientException e)
+            catch (RabbitMQClientException e)
             {
                 Logger?.LogWarning("Failed to declare queue: {name} ", queueName);
+
                 if (!Channel.IsOpen)
                 {
                     throw new RabbitIOException(e);
@@ -559,18 +526,21 @@ public class BlockingQueueConsumer
 
     private void CheckMissingQueues()
     {
-        var now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long now = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
         if (now - RetryDeclarationInterval > LastRetryDeclaration)
         {
             lock (MissingQueues)
             {
                 var toRemove = new List<string>();
                 Exception error = null;
-                foreach (var queueToCheck in MissingQueues)
+
+                foreach (string queueToCheck in MissingQueues)
                 {
-                    var available = true;
+                    bool available = true;
                     const IConnection connection = null;
                     RC.IModel channelForCheck = null;
+
                     try
                     {
                         channelForCheck = ConnectionFactory.CreateConnection().CreateChannel();
@@ -605,7 +575,7 @@ public class BlockingQueueConsumer
 
                 if (toRemove.Count > 0)
                 {
-                    foreach (var remove in toRemove)
+                    foreach (string remove in toRemove)
                     {
                         MissingQueues.Remove(remove);
                     }
@@ -641,13 +611,14 @@ public class BlockingQueueConsumer
             return null;
         }
 
-        var body = delivery.Body;
-        var messageProperties = MessageHeadersConverter.ToMessageHeaders(delivery.Properties, delivery.Envelope, EncodingUtils.Utf8);
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
+        byte[] body = delivery.Body;
+        IMessageHeaders messageProperties = MessageHeadersConverter.ToMessageHeaders(delivery.Properties, delivery.Envelope, EncodingUtils.Utf8);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(messageProperties);
         accessor.ConsumerTag = delivery.ConsumerTag;
         accessor.ConsumerQueue = delivery.Queue;
-        var message = Message.Create(body, accessor.MessageHeaders);
+        IMessage<byte[]> message = Message.Create(body, accessor.MessageHeaders);
         Logger?.LogDebug("Received message: {message}", message);
+
         if (messageProperties.DeliveryTag() != null)
         {
             DeliveryTags.Add(messageProperties.DeliveryTag().Value);
@@ -663,14 +634,6 @@ public class BlockingQueueConsumer
 
     private sealed class InternalConsumer : RC.DefaultBasicConsumer
     {
-        public InternalConsumer(BlockingQueueConsumer consumer, RC.IModel channel, string queue, ILogger<InternalConsumer> logger = null)
-            : base(channel)
-        {
-            Consumer = consumer;
-            QueueName = queue;
-            Logger = logger;
-        }
-
         public BlockingQueueConsumer Consumer { get; }
 
         public string QueueName { get; }
@@ -678,6 +641,14 @@ public class BlockingQueueConsumer
         public ILogger<InternalConsumer> Logger { get; }
 
         public bool Canceled { get; set; }
+
+        public InternalConsumer(BlockingQueueConsumer consumer, RC.IModel channel, string queue, ILogger<InternalConsumer> logger = null)
+            : base(channel)
+        {
+            Consumer = consumer;
+            QueueName = queue;
+            Logger = logger;
+        }
 
         public override void HandleBasicConsumeOk(string consumerTag)
         {
@@ -706,6 +677,7 @@ public class BlockingQueueConsumer
         {
             Logger?.LogWarning("Cancel received for {consumerTag} : {queueName} : {consumer}", consumerTag, QueueName, ToString());
             Consumer.Consumers.Remove(QueueName, out _);
+
             if (Consumer.Consumers.Count != 0)
             {
                 Consumer.BasicCancel(false);
@@ -722,18 +694,23 @@ public class BlockingQueueConsumer
             Canceled = true;
         }
 
-        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
+        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
+            RC.IBasicProperties properties, byte[] body)
         {
-            Logger?.LogDebug("Storing delivery for consumer tag: {tag} with deliveryTag: {deliveryTag} for consumer: {consumer}", ConsumerTag, deliveryTag, ToString());
+            Logger?.LogDebug("Storing delivery for consumer tag: {tag} with deliveryTag: {deliveryTag} for consumer: {consumer}", ConsumerTag, deliveryTag,
+                ToString());
+
             try
             {
                 var delivery = new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, QueueName);
+
                 if (Consumer.AbortStarted > 0)
                 {
                     if (!Consumer.Queue.TryAdd(delivery, Consumer.ShutdownTimeout))
                     {
                         RabbitUtils.SetPhysicalCloseRequired(Model, true);
                         _ = Consumer.Queue.TakeWhile(_ => Consumer.Queue.Count > 0);
+
                         if (!Canceled)
                         {
                             RabbitUtils.Cancel(Model, consumerTag);
@@ -768,6 +745,10 @@ public class BlockingQueueConsumer
 
     private sealed class DeclarationException : RabbitException
     {
+        public List<string> FailedQueues { get; } = new();
+
+        public override string Message => base.Message + string.Join(',', FailedQueues);
+
         public DeclarationException()
             : base("Failed to declare queue(s):")
         {
@@ -778,13 +759,9 @@ public class BlockingQueueConsumer
         {
         }
 
-        public List<string> FailedQueues { get; } = new ();
-
         public void AddFailedQueue(string queue)
         {
             FailedQueues.Add(queue);
         }
-
-        public override string Message => base.Message + string.Join(',', FailedQueues);
     }
 }

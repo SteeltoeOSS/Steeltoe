@@ -12,6 +12,34 @@ namespace Steeltoe.Integration.Channel;
 
 public class PublishSubscribeChannel : AbstractTaskSchedulerChannel
 {
+    protected BroadcastingDispatcher BroadcastingDispatcher => (BroadcastingDispatcher)Dispatcher;
+
+    public override string ComponentType => "publish-subscribe-channel";
+
+    public virtual IErrorHandler ErrorHandler
+    {
+        get => BroadcastingDispatcher.ErrorHandler;
+        set => BroadcastingDispatcher.ErrorHandler = value;
+    }
+
+    public virtual bool IgnoreFailures
+    {
+        get => BroadcastingDispatcher.IgnoreFailures;
+        set => BroadcastingDispatcher.IgnoreFailures = value;
+    }
+
+    public virtual bool ApplySequence
+    {
+        get => BroadcastingDispatcher.ApplySequence;
+        set => BroadcastingDispatcher.ApplySequence = value;
+    }
+
+    public virtual int MinSubscribers
+    {
+        get => BroadcastingDispatcher.MinSubscribers;
+        set => BroadcastingDispatcher.MinSubscribers = value;
+    }
+
     public PublishSubscribeChannel(ILogger logger = null)
         : this(null, null, null, logger)
     {
@@ -42,35 +70,4 @@ public class PublishSubscribeChannel : AbstractTaskSchedulerChannel
         Writer = new PublishSubscribeChannelWriter(this, logger);
         Reader = new NotSupportedChannelReader();
     }
-
-    public override string ComponentType
-    {
-        get { return "publish-subscribe-channel"; }
-    }
-
-    public virtual IErrorHandler ErrorHandler
-    {
-        get { return BroadcastingDispatcher.ErrorHandler; }
-        set { BroadcastingDispatcher.ErrorHandler = value; }
-    }
-
-    public virtual bool IgnoreFailures
-    {
-        get { return BroadcastingDispatcher.IgnoreFailures; }
-        set { BroadcastingDispatcher.IgnoreFailures = value; }
-    }
-
-    public virtual bool ApplySequence
-    {
-        get { return BroadcastingDispatcher.ApplySequence; }
-        set { BroadcastingDispatcher.ApplySequence = value; }
-    }
-
-    public virtual int MinSubscribers
-    {
-        get { return BroadcastingDispatcher.MinSubscribers; }
-        set { BroadcastingDispatcher.MinSubscribers = value; }
-    }
-
-    protected BroadcastingDispatcher BroadcastingDispatcher => (BroadcastingDispatcher)Dispatcher;
 }

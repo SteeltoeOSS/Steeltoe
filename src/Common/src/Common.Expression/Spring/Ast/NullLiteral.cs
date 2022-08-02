@@ -14,11 +14,20 @@ public class NullLiteral : Literal
         exitTypeDescriptor = TypeDescriptor.Object;
     }
 
-    public override ITypedValue GetLiteralValue() => TypedValue.Null;
+    public override ITypedValue GetLiteralValue()
+    {
+        return TypedValue.Null;
+    }
 
-    public override string ToString() => "null";
+    public override string ToString()
+    {
+        return "null";
+    }
 
-    public override bool IsCompilable() => true;
+    public override bool IsCompilable()
+    {
+        return true;
+    }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {

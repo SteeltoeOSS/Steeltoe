@@ -2,31 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Services;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.Common.Contexts;
 
 public abstract class AbstractApplicationContext : IApplicationContext
 {
-    private readonly ConcurrentDictionary<string, object> _instances = new ();
-
-    protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
-    {
-        ServiceProvider = serviceProvider;
-        Configuration = configuration;
-        if (nameToTypeMappings != null)
-        {
-            foreach (var seed in nameToTypeMappings)
-            {
-                Register(seed.Name, seed.Type);
-            }
-        }
-    }
+    private readonly ConcurrentDictionary<string, object> _instances = new();
 
     public IConfiguration Configuration { get; private set; }
 
@@ -34,9 +21,24 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public IServiceExpressionResolver ServiceExpressionResolver { get; set; }
 
+    protected AbstractApplicationContext(IServiceProvider serviceProvider, IConfiguration configuration, IEnumerable<NameToTypeMapping> nameToTypeMappings)
+    {
+        ServiceProvider = serviceProvider;
+        Configuration = configuration;
+
+        if (nameToTypeMappings != null)
+        {
+            foreach (NameToTypeMapping seed in nameToTypeMappings)
+            {
+                Register(seed.Name, seed.Type);
+            }
+        }
+    }
+
     public bool ContainsService(string name)
     {
-        _instances.TryGetValue(name, out var instance);
+        _instances.TryGetValue(name, out object instance);
+
         if (instance is Type type)
         {
             instance = ResolveNamedService(name, type);
@@ -47,7 +49,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public bool ContainsService(string name, Type serviceType)
     {
-        if (_instances.TryGetValue(name, out var instance))
+        if (_instances.TryGetValue(name, out object instance))
         {
             if (instance is Type type)
             {
@@ -62,7 +64,8 @@ public abstract class AbstractApplicationContext : IApplicationContext
             return false;
         }
 
-        var found = FindNamedService(name, serviceType);
+        object found = FindNamedService(name, serviceType);
+
         if (found != null)
         {
             Register(((IServiceNameAware)found).ServiceName, found);
@@ -79,7 +82,8 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public object GetService(string name)
     {
-        _instances.TryGetValue(name, out var instance);
+        _instances.TryGetValue(name, out object instance);
+
         if (instance is Type type)
         {
             instance = ResolveNamedService(name, type);
@@ -90,7 +94,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public object GetService(string name, Type serviceType)
     {
-        if (_instances.TryGetValue(name, out var instance))
+        if (_instances.TryGetValue(name, out object instance))
         {
             if (instance is Type type)
             {
@@ -110,7 +114,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
             return null;
         }
 
-        var found = FindNamedService(name, serviceType);
+        object found = FindNamedService(name, serviceType);
 
         if (found != null)
         {
@@ -137,13 +141,15 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public object GetService(Type serviceType)
     {
-        var result = _instances.Values.LastOrDefault(serviceType.IsInstanceOfType);
+        object result = _instances.Values.LastOrDefault(serviceType.IsInstanceOfType);
+
         if (result != null)
         {
             return result;
         }
 
-        var found = ServiceProvider.GetService(serviceType);
+        object found = ServiceProvider.GetService(serviceType);
+
         if (found is IServiceNameAware aware)
         {
             Register(aware.ServiceName, found);
@@ -155,8 +161,9 @@ public abstract class AbstractApplicationContext : IApplicationContext
     public IEnumerable<object> GetServices(Type serviceType)
     {
         var services = new List<object>();
-        var found = ServiceProvider.GetServices(serviceType);
-        foreach (var service in found)
+        IEnumerable<object> found = ServiceProvider.GetServices(serviceType);
+
+        foreach (object service in found)
         {
             if (service is IServiceNameAware aware)
             {
@@ -168,8 +175,9 @@ public abstract class AbstractApplicationContext : IApplicationContext
             }
         }
 
-        var results = _instances.Values.Where(serviceType.IsInstanceOfType);
-        foreach (var result in results)
+        IEnumerable<object> results = _instances.Values.Where(serviceType.IsInstanceOfType);
+
+        foreach (object result in results)
         {
             services.Add(result);
         }
@@ -180,8 +188,9 @@ public abstract class AbstractApplicationContext : IApplicationContext
     public IEnumerable<T> GetServices<T>()
     {
         var services = new List<T>();
-        var found = ServiceProvider.GetServices<T>();
-        foreach (var service in found)
+        IEnumerable<T> found = ServiceProvider.GetServices<T>();
+
+        foreach (T service in found)
         {
             if (service is IServiceNameAware aware)
             {
@@ -193,8 +202,9 @@ public abstract class AbstractApplicationContext : IApplicationContext
             }
         }
 
-        var results = _instances.Values.Where(instance => instance is T);
-        foreach (var result in results)
+        IEnumerable<object> results = _instances.Values.Where(instance => instance is T);
+
+        foreach (object result in results)
         {
             services.Add((T)result);
         }
@@ -217,7 +227,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
             return null;
         }
 
-        _instances.TryRemove(name, out var instance);
+        _instances.TryRemove(name, out object instance);
 
         if (instance is IDisposable disposable)
         {
@@ -234,7 +244,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
             return null;
         }
 
-        var resolved = PropertyPlaceholderHelper.ResolvePlaceholders(value, Configuration);
+        string resolved = PropertyPlaceholderHelper.ResolvePlaceholders(value, Configuration);
         return resolved.Trim();
     }
 
@@ -257,7 +267,8 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     private object ResolveNamedService(string name, Type serviceType)
     {
-        var instance = FindNamedService(name, serviceType);
+        object instance = FindNamedService(name, serviceType);
+
         if (instance != null)
         {
             Register(name, instance);
@@ -268,7 +279,7 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     private object FindNamedService(string name, Type serviceType)
     {
-        var found = ServiceProvider.GetServices(serviceType).SingleOrDefault(service =>
+        object found = ServiceProvider.GetServices(serviceType).SingleOrDefault(service =>
         {
             if (service is IServiceNameAware nameAware)
             {
@@ -283,14 +294,14 @@ public abstract class AbstractApplicationContext : IApplicationContext
 
     public class NameToTypeMapping
     {
+        public string Name { get; }
+
+        public Type Type { get; }
+
         public NameToTypeMapping(string name, Type type)
         {
             Name = name;
             Type = type;
         }
-
-        public string Name { get; }
-
-        public Type Type { get; }
     }
 }

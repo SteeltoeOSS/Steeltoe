@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
@@ -72,11 +72,12 @@ public class AspNetCoreHostingObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
-        var context = GetHttpRequestMessage();
-        var exception = observer.GetException(context);
+        HttpContext context = GetHttpRequestMessage();
+        string exception = observer.GetException(context);
         Assert.Equal("None", exception);
 
         context = GetHttpRequestMessage();
+
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
             Error = new ArgumentNullException()
@@ -94,7 +95,8 @@ public class AspNetCoreHostingObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
-        var context = GetHttpRequestMessage();
+        HttpContext context = GetHttpRequestMessage();
+
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
             Error = new ArgumentNullException()
@@ -103,7 +105,7 @@ public class AspNetCoreHostingObserverTest : BaseTest
         context.Features.Set<IExceptionHandlerFeature>(exceptionHandlerFeature);
         context.Response.StatusCode = 404;
 
-        var tagContext = observer.GetLabelSets(context).ToList();
+        List<KeyValuePair<string, object>> tagContext = observer.GetLabelSets(context).ToList();
 
         Assert.Contains(KeyValuePair.Create("exception", (object)"ArgumentNullException"), tagContext);
         Assert.Contains(KeyValuePair.Create("uri", (object)"/foobar"), tagContext);
@@ -122,7 +124,8 @@ public class AspNetCoreHostingObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var observer = new AspNetCoreHostingObserver(options, viewRegistry, null);
 
-        var context = GetHttpRequestMessage();
+        HttpContext context = GetHttpRequestMessage();
+
         var exceptionHandlerFeature = new ExceptionHandlerFeature
         {
             Error = new ArgumentNullException()

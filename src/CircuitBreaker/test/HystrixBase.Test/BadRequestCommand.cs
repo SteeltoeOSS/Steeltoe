@@ -8,10 +8,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class BadRequestCommand : TestHystrixCommand<bool>
 {
+    protected override string CacheKey => "one";
+
     public BadRequestCommand(TestCircuitBreaker circuitBreaker, ExecutionIsolationStrategy isolationType)
-        : base(TestPropsBuilder()
-            .SetCircuitBreaker(circuitBreaker)
-            .SetMetrics(circuitBreaker.Metrics)
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), isolationType)))
     {
     }
@@ -24,11 +24,6 @@ internal sealed class BadRequestCommand : TestHystrixCommand<bool>
     protected override bool RunFallback()
     {
         return false;
-    }
-
-    protected override string CacheKey
-    {
-        get { return "one"; }
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, ExecutionIsolationStrategy isolationType)

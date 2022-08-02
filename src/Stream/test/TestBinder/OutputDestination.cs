@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging;
 using System.Collections.Concurrent;
+using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.TestBinder;
 
@@ -15,7 +15,7 @@ public class OutputDestination : AbstractDestination
     {
         try
         {
-            _messages.TryTake(out var result, TimeSpan.FromMilliseconds(timeout));
+            _messages.TryTake(out IMessage result, TimeSpan.FromMilliseconds(timeout));
             return result;
         }
         catch (Exception)

@@ -74,8 +74,6 @@ public class LoggingHandler : AbstractMessageHandler
                 }
 
                 break;
-            default:
-                break;
         }
     }
 

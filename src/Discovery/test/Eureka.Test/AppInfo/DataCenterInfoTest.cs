@@ -21,7 +21,7 @@ public class DataCenterInfoTest : AbstractBaseTest
     public void ToJson_Correct()
     {
         var info = new DataCenterInfo(DataCenterName.MyOwn);
-        var json = info.ToJson();
+        JsonInstanceInfo.JsonDataCenterInfo json = info.ToJson();
         Assert.NotNull(json);
         Assert.Equal(DataCenterName.MyOwn.ToString(), json.Name);
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", json.ClassName);
@@ -31,7 +31,7 @@ public class DataCenterInfoTest : AbstractBaseTest
     public void FromJson_Correct()
     {
         var info = new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", "MyOwn");
-        var result = DataCenterInfo.FromJson(info);
+        IDataCenterInfo result = DataCenterInfo.FromJson(info);
         Assert.Equal(DataCenterName.MyOwn, result.Name);
     }
 

@@ -17,5 +17,8 @@ public class ClientCertificateHttpHandlerProvider : IHttpClientHandlerProvider
         _handler = new ClientCertificateHttpHandler(certOptions);
     }
 
-    public HttpClientHandler GetHttpClientHandler() => _handler;
+    public HttpClientHandler GetHttpClientHandler()
+    {
+        return _handler;
+    }
 }

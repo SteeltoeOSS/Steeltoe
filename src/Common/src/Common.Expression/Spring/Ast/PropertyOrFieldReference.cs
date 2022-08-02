@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -16,6 +16,10 @@ public class PropertyOrFieldReference : SpelNode
     private volatile IPropertyAccessor _cachedReadAccessor;
     private volatile IPropertyAccessor _cachedWriteAccessor;
 
+    public bool IsNullSafe { get; }
+
+    public string Name { get; }
+
     public PropertyOrFieldReference(bool nullSafe, string propertyOrFieldName, int startPos, int endPos)
         : base(startPos, endPos)
     {
@@ -23,17 +27,14 @@ public class PropertyOrFieldReference : SpelNode
         Name = propertyOrFieldName;
     }
 
-    public bool IsNullSafe { get; }
-
-    public string Name { get; }
-
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var tv = GetValueInternal(state.GetActiveContextObject(), state.EvaluationContext, state.Configuration.AutoGrowNullReferences);
-        var accessorToUse = _cachedReadAccessor;
+        ITypedValue tv = GetValueInternal(state.GetActiveContextObject(), state.EvaluationContext, state.Configuration.AutoGrowNullReferences);
+        IPropertyAccessor accessorToUse = _cachedReadAccessor;
+
         if (accessorToUse is ICompilablePropertyAccessor accessor)
         {
-            var descriptor = ComputeExitDescriptor(tv.Value, accessor.GetPropertyType());
+            TypeDescriptor descriptor = ComputeExitDescriptor(tv.Value, accessor.GetPropertyType());
             SetExitTypeDescriptor(descriptor);
         }
 
@@ -57,11 +58,13 @@ public class PropertyOrFieldReference : SpelNode
 
     public bool IsWritableProperty(string name, ITypedValue contextObject, IEvaluationContext evalContext)
     {
-        var value = contextObject.Value;
+        object value = contextObject.Value;
+
         if (value != null)
         {
-            var accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
-            foreach (var accessor in accessorsToTry)
+            IList<IPropertyAccessor> accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
+
+            foreach (IPropertyAccessor accessor in accessorsToTry)
             {
                 try
                 {
@@ -82,7 +85,7 @@ public class PropertyOrFieldReference : SpelNode
 
     public override bool IsCompilable()
     {
-        var accessorToUse = _cachedReadAccessor;
+        IPropertyAccessor accessorToUse = _cachedReadAccessor;
         return accessorToUse is ICompilablePropertyAccessor accessor && accessor.IsCompilable();
     }
 
@@ -94,6 +97,7 @@ public class PropertyOrFieldReference : SpelNode
         }
 
         Label? skipIfNullLabel = null;
+
         if (IsNullSafe)
         {
             skipIfNullLabel = gen.DefineLabel();
@@ -105,6 +109,7 @@ public class PropertyOrFieldReference : SpelNode
 
         accessorToUse.GenerateCode(Name, gen, cf);
         cf.PushDescriptor(exitTypeDescriptor);
+
         if (_originalPrimitiveExitTypeDescriptor != null)
         {
             // The output of the accessor is a primitive but from the block above it might be null,
@@ -152,12 +157,13 @@ public class PropertyOrFieldReference : SpelNode
 
     private ITypedValue GetValueInternal(ITypedValue contextObject, IEvaluationContext evalContext, bool isAutoGrowNullReferences)
     {
-        var result = ReadProperty(contextObject, evalContext, Name);
+        ITypedValue result = ReadProperty(contextObject, evalContext, Name);
 
         // Dynamically create the objects if the user has requested that optional behavior
         if (result.Value == null && isAutoGrowNullReferences && NextChildIs(typeof(Indexer), typeof(PropertyOrFieldReference)))
         {
-            var resultDescriptor = ClassUtils.GetGenericTypeDefinition(result.TypeDescriptor);
+            Type resultDescriptor = ClassUtils.GetGenericTypeDefinition(result.TypeDescriptor);
+
             if (resultDescriptor == null)
             {
                 throw new InvalidOperationException("No result type");
@@ -168,7 +174,7 @@ public class PropertyOrFieldReference : SpelNode
             {
                 if (IsWritableProperty(Name, contextObject, evalContext))
                 {
-                    var newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
+                    object newList = Activator.CreateInstance(typeof(List<>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
                     WriteProperty(contextObject, evalContext, Name, newList);
                     result = ReadProperty(contextObject, evalContext, Name);
@@ -178,7 +184,7 @@ public class PropertyOrFieldReference : SpelNode
             {
                 if (IsWritableProperty(Name, contextObject, evalContext))
                 {
-                    var newMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
+                    object newMap = Activator.CreateInstance(typeof(Dictionary<,>).MakeGenericType(result.TypeDescriptor.GetGenericArguments()));
 
                     WriteProperty(contextObject, evalContext, Name, newMap);
                     result = ReadProperty(contextObject, evalContext, Name);
@@ -209,8 +215,8 @@ public class PropertyOrFieldReference : SpelNode
                 {
                     if (IsWritableProperty(Name, contextObject, evalContext))
                     {
-                        var clazz = result.TypeDescriptor;
-                        var newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(Array.Empty<object>());
+                        Type clazz = result.TypeDescriptor;
+                        object newObject = ReflectionHelper.GetAccessibleConstructor(clazz).Invoke(Array.Empty<object>());
                         WriteProperty(contextObject, evalContext, Name, newObject);
                         result = ReadProperty(contextObject, evalContext, Name);
                     }
@@ -231,13 +237,15 @@ public class PropertyOrFieldReference : SpelNode
 
     private ITypedValue ReadProperty(ITypedValue contextObject, IEvaluationContext evalContext, string name)
     {
-        var targetObject = contextObject.Value;
+        object targetObject = contextObject.Value;
+
         if (targetObject == null && IsNullSafe)
         {
             return TypedValue.Null;
         }
 
-        var accessorToUse = _cachedReadAccessor;
+        IPropertyAccessor accessorToUse = _cachedReadAccessor;
+
         if (accessorToUse != null)
         {
             if (accessorToUse is ReflectivePropertyAccessor.OptimalPropertyAccessor || evalContext.PropertyAccessors.Contains(accessorToUse))
@@ -256,16 +264,17 @@ public class PropertyOrFieldReference : SpelNode
             _cachedReadAccessor = null;
         }
 
-        var accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
+        IList<IPropertyAccessor> accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
 
         // Go through the accessors that may be able to resolve it. If they are a cacheable accessor then
         // get the accessor and use it. If they are not cacheable but report they can read the property
         // then ask them to read it
         try
         {
-            foreach (var acc in accessorsToTry)
+            foreach (IPropertyAccessor acc in accessorsToTry)
             {
-                var accessor = acc;
+                IPropertyAccessor accessor = acc;
+
                 if (accessor.CanRead(evalContext, contextObject.Value, name))
                 {
                     if (accessor is ReflectivePropertyAccessor accessor1)
@@ -287,10 +296,9 @@ public class PropertyOrFieldReference : SpelNode
         {
             throw new SpelEvaluationException(SpelMessage.PropertyOrFieldNotReadableOnNull, name);
         }
-        else
-        {
-            throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotReadable, Name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
-        }
+
+        throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotReadable, Name,
+            FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
     }
 
     private void WriteProperty(ITypedValue contextObject, IEvaluationContext evalContext, string name, object newValue)
@@ -305,7 +313,8 @@ public class PropertyOrFieldReference : SpelNode
             throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotWritableOnNull, name);
         }
 
-        var accessorToUse = _cachedWriteAccessor;
+        IPropertyAccessor accessorToUse = _cachedWriteAccessor;
+
         if (accessorToUse != null)
         {
             if (accessorToUse is ReflectivePropertyAccessor.OptimalPropertyAccessor || evalContext.PropertyAccessors.Contains(accessorToUse))
@@ -325,10 +334,11 @@ public class PropertyOrFieldReference : SpelNode
             _cachedWriteAccessor = null;
         }
 
-        var accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
+        IList<IPropertyAccessor> accessorsToTry = GetPropertyAccessorsToTry(contextObject.Value, evalContext.PropertyAccessors);
+
         try
         {
-            foreach (var accessor in accessorsToTry)
+            foreach (IPropertyAccessor accessor in accessorsToTry)
             {
                 if (accessor.CanWrite(evalContext, contextObject.Value, name))
                 {
@@ -343,18 +353,21 @@ public class PropertyOrFieldReference : SpelNode
             throw new SpelEvaluationException(StartPosition, ex, SpelMessage.ExceptionDuringPropertyWrite, name, ex.Message);
         }
 
-        throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotWritable, name, FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
+        throw new SpelEvaluationException(StartPosition, SpelMessage.PropertyOrFieldNotWritable, name,
+            FormatHelper.FormatClassNameForMessage(GetObjectType(contextObject.Value)));
     }
 
     private IList<IPropertyAccessor> GetPropertyAccessorsToTry(object contextObject, IList<IPropertyAccessor> propertyAccessors)
     {
-        var targetType = contextObject?.GetType();
+        Type targetType = contextObject?.GetType();
 
         var specificAccessors = new List<IPropertyAccessor>();
         var generalAccessors = new List<IPropertyAccessor>();
-        foreach (var resolver in propertyAccessors)
+
+        foreach (IPropertyAccessor resolver in propertyAccessors)
         {
-            var targets = resolver.GetSpecificTargetClasses();
+            IList<Type> targets = resolver.GetSpecificTargetClasses();
+
             if (targets == null)
             {
                 // generic resolver that says it can be used for any type
@@ -362,14 +375,15 @@ public class PropertyOrFieldReference : SpelNode
             }
             else if (targetType != null)
             {
-                foreach (var clazz in targets)
+                foreach (Type clazz in targets)
                 {
                     if (clazz == targetType)
                     {
                         specificAccessors.Add(resolver);
                         break;
                     }
-                    else if (clazz.IsAssignableFrom(targetType))
+
+                    if (clazz.IsAssignableFrom(targetType))
                     {
                         generalAccessors.Add(resolver);
                     }
@@ -393,7 +407,10 @@ public class PropertyOrFieldReference : SpelNode
 
         private readonly bool _autoGrowNullReferences;
 
-        public AccessorLValue(PropertyOrFieldReference propertyOrFieldReference, ITypedValue activeContextObject, IEvaluationContext evalContext, bool autoGrowNullReferences)
+        public bool IsWritable => _ref.IsWritableProperty(_ref.Name, _contextObject, _evalContext);
+
+        public AccessorLValue(PropertyOrFieldReference propertyOrFieldReference, ITypedValue activeContextObject, IEvaluationContext evalContext,
+            bool autoGrowNullReferences)
         {
             _ref = propertyOrFieldReference;
             _contextObject = activeContextObject;
@@ -403,11 +420,12 @@ public class PropertyOrFieldReference : SpelNode
 
         public ITypedValue GetValue()
         {
-            var value = _ref.GetValueInternal(_contextObject, _evalContext, _autoGrowNullReferences);
-            var accessorToUse = _ref._cachedReadAccessor;
+            ITypedValue value = _ref.GetValueInternal(_contextObject, _evalContext, _autoGrowNullReferences);
+            IPropertyAccessor accessorToUse = _ref._cachedReadAccessor;
+
             if (accessorToUse is ICompilablePropertyAccessor accessor)
             {
-                var descriptor = _ref.ComputeExitDescriptor(value.Value, accessor.GetPropertyType());
+                TypeDescriptor descriptor = _ref.ComputeExitDescriptor(value.Value, accessor.GetPropertyType());
                 _ref.SetExitTypeDescriptor(descriptor);
             }
 
@@ -417,14 +435,6 @@ public class PropertyOrFieldReference : SpelNode
         public void SetValue(object newValue)
         {
             _ref.WriteProperty(_contextObject, _evalContext, _ref.Name, newValue);
-        }
-
-        public bool IsWritable
-        {
-            get
-            {
-                return _ref.IsWritableProperty(_ref.Name, _contextObject, _evalContext);
-            }
         }
     }
 }

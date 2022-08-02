@@ -11,7 +11,9 @@ public static class EndpointApplicationBuilderExtensions
     /// <summary>
     /// Add CloudFoundry Security Middleware.
     /// </summary>
-    /// <param name="builder">Your application builder.</param>
+    /// <param name="builder">
+    /// Your application builder.
+    /// </param>
     public static void UseCloudFoundrySecurity(this IApplicationBuilder builder)
     {
         if (builder == null)

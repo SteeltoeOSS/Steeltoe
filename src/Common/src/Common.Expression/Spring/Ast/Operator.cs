@@ -2,19 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Globalization;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class Operator : SpelNode
 {
-    protected static readonly MethodInfo EqualityCheckMethod = typeof(Operator).GetMethod(
-        "EqualityCheck",
-        new[] { typeof(IEvaluationContext), typeof(object), typeof(object) });
+    protected static readonly MethodInfo EqualityCheckMethod = typeof(Operator).GetMethod("EqualityCheck", new[]
+    {
+        typeof(IEvaluationContext),
+        typeof(object),
+        typeof(object)
+    });
 
     protected readonly string InnerOperatorName;
 
@@ -26,17 +29,17 @@ public abstract class Operator : SpelNode
 
     protected TypeDescriptor rightActualDescriptor;
 
-    protected Operator(string payload, int startPos, int endPos, params SpelNode[] operands)
-        : base(startPos, endPos, operands)
-    {
-        InnerOperatorName = payload;
-    }
-
     public virtual SpelNode LeftOperand => children[0];
 
     public virtual SpelNode RightOperand => children[1];
 
     public virtual string OperatorName => InnerOperatorName;
+
+    protected Operator(string payload, int startPos, int endPos, params SpelNode[] operands)
+        : base(startPos, endPos, operands)
+    {
+        InnerOperatorName = payload;
+    }
 
     public static bool IsNumber(object target)
     {
@@ -45,18 +48,11 @@ public abstract class Operator : SpelNode
             return false;
         }
 
-        var typeCode = targetConv.GetTypeCode();
-        return typeCode == TypeCode.Byte ||
-               typeCode == TypeCode.Decimal ||
-               typeCode == TypeCode.Double ||
-               typeCode == TypeCode.Int16 ||
-               typeCode == TypeCode.Int32 ||
-               typeCode == TypeCode.Int64 ||
-               typeCode == TypeCode.SByte ||
-               typeCode == TypeCode.Single ||
-               typeCode == TypeCode.UInt16 ||
-               typeCode == TypeCode.UInt32 ||
-               typeCode == TypeCode.UInt64;
+        TypeCode typeCode = targetConv.GetTypeCode();
+
+        return typeCode == TypeCode.Byte || typeCode == TypeCode.Decimal || typeCode == TypeCode.Double || typeCode == TypeCode.Int16 ||
+            typeCode == TypeCode.Int32 || typeCode == TypeCode.Int64 || typeCode == TypeCode.SByte || typeCode == TypeCode.Single ||
+            typeCode == TypeCode.UInt16 || typeCode == TypeCode.UInt32 || typeCode == TypeCode.UInt64;
     }
 
     public static bool EqualityCheck(IEvaluationContext context, object left, object right)
@@ -68,72 +64,82 @@ public abstract class Operator : SpelNode
 
             if (left is decimal || right is decimal)
             {
-                var leftVal = leftConv.ToDecimal(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToDecimal(CultureInfo.InvariantCulture);
+                decimal leftVal = leftConv.ToDecimal(CultureInfo.InvariantCulture);
+                decimal rightVal = rightConv.ToDecimal(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is double || right is double)
+
+            if (left is double || right is double)
             {
-                var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
+                double rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
 #pragma warning disable S1244 // Floating point numbers should not be tested for equality
                 return leftVal == rightVal;
 #pragma warning restore S1244 // Floating point numbers should not be tested for equality
             }
-            else if (left is float || right is float)
+
+            if (left is float || right is float)
             {
-                var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
+                float leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
+                float rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
 #pragma warning disable S1244 // Floating point numbers should not be tested for equality
                 return leftVal == rightVal;
 #pragma warning restore S1244 // Floating point numbers should not be tested for equality
             }
-            else if (left is long || right is long)
+
+            if (left is long || right is long)
             {
-                var leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
+                long leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
+                long rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is int || right is int)
+
+            if (left is int || right is int)
             {
-                var leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
+                int leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
+                int rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is short || right is short)
+
+            if (left is short || right is short)
             {
-                var leftVal = leftConv.ToInt16(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToInt16(CultureInfo.InvariantCulture);
+                short leftVal = leftConv.ToInt16(CultureInfo.InvariantCulture);
+                short rightVal = rightConv.ToInt16(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is byte || right is byte)
+
+            if (left is byte || right is byte)
             {
-                var leftVal = leftConv.ToByte(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToByte(CultureInfo.InvariantCulture);
+                byte leftVal = leftConv.ToByte(CultureInfo.InvariantCulture);
+                byte rightVal = rightConv.ToByte(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is sbyte || right is sbyte)
+
+            if (left is sbyte || right is sbyte)
             {
-                var leftVal = leftConv.ToSByte(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToSByte(CultureInfo.InvariantCulture);
+                sbyte leftVal = leftConv.ToSByte(CultureInfo.InvariantCulture);
+                sbyte rightVal = rightConv.ToSByte(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is uint || right is uint)
+
+            if (left is uint || right is uint)
             {
-                var leftVal = leftConv.ToUInt32(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToUInt32(CultureInfo.InvariantCulture);
+                uint leftVal = leftConv.ToUInt32(CultureInfo.InvariantCulture);
+                uint rightVal = rightConv.ToUInt32(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is ushort || right is ushort)
+
+            if (left is ushort || right is ushort)
             {
-                var leftVal = leftConv.ToUInt16(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToUInt16(CultureInfo.InvariantCulture);
+                ushort leftVal = leftConv.ToUInt16(CultureInfo.InvariantCulture);
+                ushort rightVal = rightConv.ToUInt16(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
-            else if (left is ulong || right is ulong)
+
+            if (left is ulong || right is ulong)
             {
-                var leftVal = leftConv.ToUInt64(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToUInt64(CultureInfo.InvariantCulture);
+                ulong leftVal = leftConv.ToUInt64(CultureInfo.InvariantCulture);
+                ulong rightVal = rightConv.ToUInt64(CultureInfo.InvariantCulture);
                 return leftVal == rightVal;
             }
         }
@@ -155,7 +161,8 @@ public abstract class Operator : SpelNode
 
         if (left is IComparable && right is IComparable)
         {
-            var ancestor = ClassUtils.DetermineCommonAncestor(left.GetType(), right.GetType());
+            Type ancestor = ClassUtils.DetermineCommonAncestor(left.GetType(), right.GetType());
+
             if (ancestor != null && typeof(IComparable).IsAssignableFrom(ancestor))
             {
                 return context.TypeComparator.Compare(left, right) == 0;
@@ -169,7 +176,8 @@ public abstract class Operator : SpelNode
     {
         var sb = new StringBuilder("(");
         sb.Append(GetChild(0).ToStringAst());
-        for (var i = 1; i < ChildCount; i++)
+
+        for (int i = 1; i < ChildCount; i++)
         {
             sb.Append(" ").Append(OperatorName).Append(" ");
             sb.Append(GetChild(i).ToStringAst());
@@ -181,36 +189,38 @@ public abstract class Operator : SpelNode
 
     protected virtual bool IsCompilableOperatorUsingNumerics()
     {
-        var left = LeftOperand;
-        var right = RightOperand;
+        SpelNode left = LeftOperand;
+        SpelNode right = RightOperand;
+
         if (!left.IsCompilable() || !right.IsCompilable())
         {
             return false;
         }
 
         // Supported operand types for equals (at the moment)
-        var leftDesc = left.ExitDescriptor;
-        var rightDesc = right.ExitDescriptor;
-        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
+        TypeDescriptor leftDesc = left.ExitDescriptor;
+        TypeDescriptor rightDesc = right.ExitDescriptor;
+        DescriptorComparison dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
         return dc.AreNumbers && dc.AreCompatible;
     }
 
     protected void GenerateComparisonCode(ILGenerator gen, CodeFlow cf, OpCode brToElseInstruction)
     {
-        var left = LeftOperand;
-        var right = RightOperand;
-        var leftDesc = left.ExitDescriptor;
-        var rightDesc = right.ExitDescriptor;
+        SpelNode left = LeftOperand;
+        SpelNode right = RightOperand;
+        TypeDescriptor leftDesc = left.ExitDescriptor;
+        TypeDescriptor rightDesc = right.ExitDescriptor;
 
-        var elseTarget = gen.DefineLabel();
-        var endOfIfTarget = gen.DefineLabel();
+        Label elseTarget = gen.DefineLabel();
+        Label endOfIfTarget = gen.DefineLabel();
 
-        var unboxLeft = !CodeFlow.IsValueType(leftDesc);
-        var unboxRight = !CodeFlow.IsValueType(rightDesc);
+        bool unboxLeft = !CodeFlow.IsValueType(leftDesc);
+        bool unboxRight = !CodeFlow.IsValueType(rightDesc);
 
         cf.EnterCompilationScope();
         left.GenerateCode(gen, cf);
         cf.ExitCompilationScope();
+
         if (CodeFlow.IsValueType(leftDesc))
         {
             gen.Emit(OpCodes.Box, leftDesc.Value);
@@ -220,14 +230,15 @@ public abstract class Operator : SpelNode
         cf.EnterCompilationScope();
         right.GenerateCode(gen, cf);
         cf.ExitCompilationScope();
+
         if (CodeFlow.IsValueType(rightDesc))
         {
             gen.Emit(OpCodes.Box, rightDesc.Value);
             unboxRight = true;
         }
 
-        var leftLocal = gen.DeclareLocal(typeof(object));
-        var rightLocal = gen.DeclareLocal(typeof(object));
+        LocalBuilder leftLocal = gen.DeclareLocal(typeof(object));
+        LocalBuilder rightLocal = gen.DeclareLocal(typeof(object));
         gen.Emit(OpCodes.Stloc, rightLocal);
         gen.Emit(OpCodes.Stloc, leftLocal);
 
@@ -236,14 +247,14 @@ public abstract class Operator : SpelNode
 
         // This code block checks whether the left or right operand is null and handles
         // those cases before letting the original code (that only handled actual numbers) run
-        var rightIsNonNullTarget = gen.DefineLabel();
+        Label rightIsNonNullTarget = gen.DefineLabel();
 
         // stack: left/right
         gen.Emit(OpCodes.Brtrue, rightIsNonNullTarget);
 
         // stack: left
         // here: RIGHT==null LEFT==unknown
-        var leftNotNullRightIsNullTarget = gen.DefineLabel();
+        Label leftNotNullRightIsNullTarget = gen.DefineLabel();
         gen.Emit(OpCodes.Brtrue, leftNotNullRightIsNullTarget);
 
         // stack: empty
@@ -286,7 +297,7 @@ public abstract class Operator : SpelNode
 
         // stack: left
         // here: RIGHT!=null LEFT==unknown
-        var neitherRightNorLeftAreNullTarget = gen.DefineLabel();
+        Label neitherRightNorLeftAreNullTarget = gen.DefineLabel();
         gen.Emit(OpCodes.Brtrue, neitherRightNorLeftAreNullTarget);
 
         // stack: empty
@@ -310,6 +321,7 @@ public abstract class Operator : SpelNode
         // stack: empty
         // neither were null so unbox and proceed with numeric comparison
         gen.Emit(OpCodes.Ldloc, leftLocal);
+
         if (unboxLeft)
         {
             gen.Emit(OpCodes.Unbox_Any, leftDesc.Value);
@@ -317,6 +329,7 @@ public abstract class Operator : SpelNode
 
         // stack: left
         gen.Emit(OpCodes.Ldloc, rightLocal);
+
         if (unboxRight)
         {
             gen.Emit(OpCodes.Unbox_Any, rightDesc.Value);
@@ -336,7 +349,7 @@ public abstract class Operator : SpelNode
         gen.MarkLabel(endOfIfTarget);
 
         // Stack: result on stack, convert to bool
-        var result = gen.DeclareLocal(typeof(bool));
+        LocalBuilder result = gen.DeclareLocal(typeof(bool));
         gen.Emit(OpCodes.Stloc, result);
         gen.Emit(OpCodes.Ldloc, result);
         cf.PushDescriptor(TypeDescriptor.Z);
@@ -344,21 +357,14 @@ public abstract class Operator : SpelNode
 
     protected class DescriptorComparison
     {
-        protected static readonly DescriptorComparison NotNumbers = new (false, false, TypeDescriptor.V);
-        protected static readonly DescriptorComparison IncompatibleNumbers = new (true, false, TypeDescriptor.V);
+        protected static readonly DescriptorComparison NotNumbers = new(false, false, TypeDescriptor.V);
+        protected static readonly DescriptorComparison IncompatibleNumbers = new(true, false, TypeDescriptor.V);
 
-        protected readonly bool InnerAreNumbers;  // Were the two compared descriptor both for numbers?
+        protected readonly bool InnerAreNumbers; // Were the two compared descriptor both for numbers?
 
-        protected readonly bool InnerAreCompatible;  // If they were numbers, were they compatible?
+        protected readonly bool InnerAreCompatible; // If they were numbers, were they compatible?
 
-        protected readonly TypeDescriptor InnerCompatibleType;  // When compatible, what is the descriptor of the common type
-
-        public DescriptorComparison(bool areNumbers, bool areCompatible, TypeDescriptor compatibleType)
-        {
-            this.InnerAreNumbers = areNumbers;
-            this.InnerAreCompatible = areCompatible;
-            this.InnerCompatibleType = compatibleType;
-        }
+        protected readonly TypeDescriptor InnerCompatibleType; // When compatible, what is the descriptor of the common type
 
         public bool AreNumbers => InnerAreNumbers;
 
@@ -366,13 +372,21 @@ public abstract class Operator : SpelNode
 
         public TypeDescriptor CompatibleType => InnerCompatibleType;
 
-        public static DescriptorComparison CheckNumericCompatibility(TypeDescriptor leftDeclaredDescriptor, TypeDescriptor rightDeclaredDescriptor, TypeDescriptor leftActualDescriptor, TypeDescriptor rightActualDescriptor)
+        public DescriptorComparison(bool areNumbers, bool areCompatible, TypeDescriptor compatibleType)
         {
-            var ld = leftDeclaredDescriptor;
-            var rd = rightDeclaredDescriptor;
+            InnerAreNumbers = areNumbers;
+            InnerAreCompatible = areCompatible;
+            InnerCompatibleType = compatibleType;
+        }
 
-            var leftNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(ld);
-            var rightNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(rd);
+        public static DescriptorComparison CheckNumericCompatibility(TypeDescriptor leftDeclaredDescriptor, TypeDescriptor rightDeclaredDescriptor,
+            TypeDescriptor leftActualDescriptor, TypeDescriptor rightActualDescriptor)
+        {
+            TypeDescriptor ld = leftDeclaredDescriptor;
+            TypeDescriptor rd = rightDeclaredDescriptor;
+
+            bool leftNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(ld);
+            bool rightNumeric = CodeFlow.IsPrimitiveOrUnboxableSupportedNumberOrBoolean(rd);
 
             // If the declared descriptors aren't providing the information, try the actual descriptors
             if (!leftNumeric && !ObjectUtils.NullSafeEquals(ld, leftActualDescriptor))
@@ -393,15 +407,11 @@ public abstract class Operator : SpelNode
                 {
                     return new DescriptorComparison(true, true, CodeFlow.ToPrimitiveTargetDescriptor(ld));
                 }
-                else
-                {
-                    return IncompatibleNumbers;
-                }
+
+                return IncompatibleNumbers;
             }
-            else
-            {
-                return NotNumbers;
-            }
+
+            return NotNumbers;
         }
     }
 }

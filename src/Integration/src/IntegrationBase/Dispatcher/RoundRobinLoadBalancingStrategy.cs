@@ -10,6 +10,12 @@ public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
 {
     private int _currentHandlerIndex = -1;
 
+    internal int CurrentHandlerIndex
+    {
+        get => _currentHandlerIndex;
+        set => _currentHandlerIndex = value;
+    }
+
     public int GetNextHandlerStartIndex(IMessage message, List<IMessageHandler> handlers)
     {
         if (handlers == null)
@@ -17,21 +23,14 @@ public class RoundRobinLoadBalancingStrategy : ILoadBalancingStrategy
             return 0;
         }
 
-        var size = handlers.Count;
+        int size = handlers.Count;
+
         if (size > 0)
         {
-            var indexTail = Interlocked.Increment(ref _currentHandlerIndex) % size;
+            int indexTail = Interlocked.Increment(ref _currentHandlerIndex) % size;
             return indexTail < 0 ? indexTail + size : indexTail;
         }
-        else
-        {
-            return size;
-        }
-    }
 
-    internal int CurrentHandlerIndex
-    {
-        get { return _currentHandlerIndex; }
-        set { _currentHandlerIndex = value; }
+        return size;
     }
 }

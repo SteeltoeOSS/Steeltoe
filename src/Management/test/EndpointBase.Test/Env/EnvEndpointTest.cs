@@ -49,6 +49,7 @@ public class EnvEndpointTest : BaseTest
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
                 services.AddEnvActuatorServices(configuration);
             };
+
             tc.AdditionalConfiguration = configuration =>
             {
                 configuration.AddEnvironmentVariables();
@@ -56,8 +57,8 @@ public class EnvEndpointTest : BaseTest
 
             var ep = tc.GetService<IEnvEndpoint>();
 
-            var provider = tc.Configuration.Providers.Single();
-            var name = ep.GetPropertySourceName(provider);
+            IConfigurationProvider provider = tc.Configuration.Providers.Single();
+            string name = ep.GetPropertySourceName(provider);
             Assert.Equal(provider.GetType().Name, name);
         }
 
@@ -68,6 +69,7 @@ public class EnvEndpointTest : BaseTest
                 services.AddSingleton(HostingHelpers.GetHostingEnvironment());
                 services.AddEnvActuatorServices(configuration);
             };
+
             tc.AdditionalConfiguration = configuration =>
             {
                 configuration.AddJsonFile("foobar", true);
@@ -75,8 +77,8 @@ public class EnvEndpointTest : BaseTest
 
             var ep = tc.GetService<IEnvEndpoint>();
 
-            var provider = tc.Configuration.Providers.Single();
-            var name = ep.GetPropertySourceName(provider);
+            IConfigurationProvider provider = tc.Configuration.Providers.Single();
+            string name = ep.GetPropertySourceName(provider);
             Assert.Equal("JsonConfigurationProvider: [foobar]", name);
         }
     }
@@ -104,11 +106,13 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
@@ -117,25 +121,25 @@ public class EnvEndpointTest : BaseTest
 
         var ep = tc.GetService<IEnvEndpoint>();
 
-        var appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
-        var appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
+        IConfigurationProvider appsettingsProvider = tc.Configuration.Providers.ElementAt(0);
+        PropertySourceDescriptor appsettingsDesc = ep.GetPropertySourceDescriptor(appsettingsProvider);
 
-        var otherAppsettingsProvider = tc.Configuration.Providers.ElementAt(1);
-        var otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
+        IConfigurationProvider otherAppsettingsProvider = tc.Configuration.Providers.ElementAt(1);
+        PropertySourceDescriptor otherAppsettingsDesc = ep.GetPropertySourceDescriptor(otherAppsettingsProvider);
 
         Assert.Equal("MemoryConfigurationProvider", appsettingsDesc.Name);
-        var props = appsettingsDesc.Properties;
+        IDictionary<string, PropertyValueDescriptor> props = appsettingsDesc.Properties;
         Assert.NotNull(props);
         Assert.Equal(9, props.Count);
         Assert.Contains("management:endpoints:enabled", props.Keys);
-        var prop = props["management:endpoints:enabled"];
+        PropertyValueDescriptor prop = props["management:endpoints:enabled"];
         Assert.NotNull(prop);
         Assert.Equal("false", prop.Value);
         Assert.Null(prop.Origin);
 
-        var otherProps = otherAppsettingsDesc.Properties;
-        var appSettingsCommonProp = props["common"];
-        var otherAppSettingCommonProp = otherProps["common"];
+        IDictionary<string, PropertyValueDescriptor> otherProps = otherAppsettingsDesc.Properties;
+        PropertyValueDescriptor appSettingsCommonProp = props["common"];
+        PropertyValueDescriptor otherAppSettingCommonProp = otherProps["common"];
         Assert.Equal("appsettings", appSettingsCommonProp.Value);
         Assert.Equal("otherAppsettings", otherAppSettingCommonProp.Value);
     }
@@ -154,29 +158,31 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
         var ep = tc.GetService<IEnvEndpoint>();
-        var result = ep.GetPropertySources(tc.Configuration);
+        IList<PropertySourceDescriptor> result = ep.GetPropertySources(tc.Configuration);
         Assert.NotNull(result);
         Assert.Single(result);
 
-        var desc = result[0];
+        PropertySourceDescriptor desc = result[0];
 
         Assert.Equal("MemoryConfigurationProvider", desc.Name);
-        var props = desc.Properties;
+        IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
         Assert.Equal(6, props.Count);
         Assert.Contains("management:endpoints:cloudfoundry:validatecertificates", props.Keys);
-        var prop = props["management:endpoints:cloudfoundry:validatecertificates"];
+        PropertyValueDescriptor prop = props["management:endpoints:cloudfoundry:validatecertificates"];
         Assert.NotNull(prop);
         Assert.Equal("true", prop.Value);
         Assert.Null(prop.Origin);
@@ -192,11 +198,13 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
@@ -205,8 +213,8 @@ public class EnvEndpointTest : BaseTest
 
         var endpoint = tc.GetService<IEnvEndpoint>();
 
-        var result = endpoint.GetPropertySources(tc.Configuration);
-        var testProp = tc.Configuration["appsManagerBase"];
+        IList<PropertySourceDescriptor> result = endpoint.GetPropertySources(tc.Configuration);
+        string testProp = tc.Configuration["appsManagerBase"];
 
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
@@ -228,31 +236,33 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
         var ep = tc.GetService<IEnvEndpoint>();
-        var result = ep.Invoke();
+        EnvironmentDescriptor result = ep.Invoke();
         Assert.NotNull(result);
         Assert.Single(result.ActiveProfiles);
         Assert.Equal("EnvironmentName", result.ActiveProfiles[0]);
         Assert.Single(result.PropertySources);
 
-        var desc = result.PropertySources[0];
+        PropertySourceDescriptor desc = result.PropertySources[0];
 
         Assert.Equal("MemoryConfigurationProvider", desc.Name);
-        var props = desc.Properties;
+        IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
         Assert.Equal(6, props.Count);
         Assert.Contains("management:endpoints:loggers:enabled", props.Keys);
-        var prop = props["management:endpoints:loggers:enabled"];
+        PropertyValueDescriptor prop = props["management:endpoints:loggers:enabled"];
         Assert.NotNull(prop);
         Assert.Equal("false", prop.Value);
         Assert.Null(prop.Origin);
@@ -274,26 +284,29 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
         var ep = tc.GetService<IEnvEndpoint>();
-        var result = ep.Invoke();
+        EnvironmentDescriptor result = ep.Invoke();
         Assert.NotNull(result);
 
-        var desc = result.PropertySources[0];
+        PropertySourceDescriptor desc = result.PropertySources[0];
 
         Assert.Equal("MemoryConfigurationProvider", desc.Name);
-        var props = desc.Properties;
+        IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
-        foreach (var key in appsettings.Keys)
+
+        foreach (string key in appsettings.Keys)
         {
             Assert.Contains(key, props.Keys);
             Assert.NotNull(props[key]);
@@ -312,23 +325,25 @@ public class EnvEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(HostingHelpers.GetHostingEnvironment());
             services.AddEnvActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
         var ep = tc.GetService<IEnvEndpoint>();
-        var result = ep.Invoke();
+        EnvironmentDescriptor result = ep.Invoke();
         Assert.NotNull(result);
 
-        var desc = result.PropertySources[0];
+        PropertySourceDescriptor desc = result.PropertySources[0];
         Assert.Equal("MemoryConfigurationProvider", desc.Name);
-        var props = desc.Properties;
+        IDictionary<string, PropertyValueDescriptor> props = desc.Properties;
         Assert.NotNull(props);
         Assert.Contains("password", props.Keys);
         Assert.NotNull(props["password"]);

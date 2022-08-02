@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.Trace;
 [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
 public class TraceStartupFilter : IStartupFilter
 {
-    private MediaTypeVersion MediaTypeVersion { get; set; }
+    private MediaTypeVersion MediaTypeVersion { get; }
 
     public TraceStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
@@ -27,8 +27,12 @@ public class TraceStartupFilter : IStartupFilter
             {
                 switch (MediaTypeVersion)
                 {
-                    case MediaTypeVersion.V1: endpoints.Map<TraceEndpoint>(); break;
-                    case MediaTypeVersion.V2: endpoints.Map<HttpTraceEndpoint>(); break;
+                    case MediaTypeVersion.V1:
+                        endpoints.Map<TraceEndpoint>();
+                        break;
+                    case MediaTypeVersion.V2:
+                        endpoints.Map<HttpTraceEndpoint>();
+                        break;
                 }
             });
         };

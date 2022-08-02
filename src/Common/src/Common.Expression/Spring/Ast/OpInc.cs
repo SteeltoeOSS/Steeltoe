@@ -6,12 +6,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class OpInc : Operator
 {
-    private readonly bool _postfix;  // false means prefix
+    private readonly bool _postfix; // false means prefix
+
+    public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");
 
     public OpInc(int startPos, int endPos, bool postfix, params SpelNode[] operands)
         : base("++", startPos, endPos, operands)
     {
         _postfix = postfix;
+
         if (operands == null || operands.Length == 0)
         {
             throw new InvalidOperationException("Operands must not be empty");
@@ -20,12 +23,12 @@ public class OpInc : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var operand = LeftOperand;
-        var valueRef = operand.GetValueRef(state);
+        SpelNode operand = LeftOperand;
+        IValueRef valueRef = operand.GetValueRef(state);
 
-        var typedValue = valueRef.GetValue();
-        var value = typedValue.Value;
-        var returnValue = typedValue;
+        ITypedValue typedValue = valueRef.GetValue();
+        object value = typedValue.Value;
+        ITypedValue returnValue = typedValue;
         ITypedValue newValue = null;
 
         if (IsNumber(value))
@@ -77,10 +80,8 @@ public class OpInc : Operator
             {
                 throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotIncrementable);
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
 
         if (!_postfix)
@@ -96,6 +97,4 @@ public class OpInc : Operator
     {
         return $"{LeftOperand.ToStringAst()}++";
     }
-
-    public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");
 }

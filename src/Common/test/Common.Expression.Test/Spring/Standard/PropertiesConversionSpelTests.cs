@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Collections;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class PropertiesConversionSpelTests
 {
-    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly SpelExpressionParser Parser = new();
 
     [Fact]
     public void Props()
@@ -21,10 +21,11 @@ public class PropertiesConversionSpelTests
             { "y", "2" },
             { "z", "3" }
         };
-        var expression = Parser.ParseExpression("Foo(#props)");
+
+        IExpression expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", props);
-        var result = expression.GetValue<string>(context, new TestBean());
+        string result = expression.GetValue<string>(context, new TestBean());
         Assert.Equal("123", result);
     }
 
@@ -37,10 +38,11 @@ public class PropertiesConversionSpelTests
             { "y", "2" },
             { "z", "3" }
         };
-        var expression = Parser.ParseExpression("Foo(#props)");
+
+        IExpression expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
-        var result = expression.GetValue<string>(context, new TestBean());
+        string result = expression.GetValue<string>(context, new TestBean());
         Assert.Equal("123", result);
     }
 
@@ -54,10 +56,11 @@ public class PropertiesConversionSpelTests
             { "z", "3" },
             { "a", Guid.NewGuid() }
         };
-        var expression = Parser.ParseExpression("Foo(#props)");
+
+        IExpression expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
-        var result = expression.GetValue<string>(context, new TestBean());
+        string result = expression.GetValue<string>(context, new TestBean());
         Assert.Equal("123", result);
     }
 
@@ -70,10 +73,11 @@ public class PropertiesConversionSpelTests
             { "y", 2 },
             { "z", "3" }
         };
-        var expression = Parser.ParseExpression("Foo(#props)");
+
+        IExpression expression = Parser.ParseExpression("Foo(#props)");
         var context = new StandardEvaluationContext();
         context.SetVariable("props", map);
-        var result = expression.GetValue<string>(context, new TestBean());
+        string result = expression.GetValue<string>(context, new TestBean());
         Assert.Equal("123", result);
     }
 

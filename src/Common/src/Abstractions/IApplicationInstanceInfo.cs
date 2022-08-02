@@ -66,8 +66,14 @@ public interface IApplicationInstanceInfo
     /// <summary>
     /// Gets the name to use to represent the app instance in the context of a given Steeltoe component.
     /// </summary>
-    /// <param name="steeltoeComponent">The Steeltoe component requesting the app's name.</param>
-    /// <param name="additionalSearchPath">One additional config key to consider, used as top priority in search.</param>
-    /// <returns>The name of the application.</returns>
+    /// <param name="steeltoeComponent">
+    /// The Steeltoe component requesting the app's name.
+    /// </param>
+    /// <param name="additionalSearchPath">
+    /// One additional config key to consider, used as top priority in search.
+    /// </param>
+    /// <returns>
+    /// The name of the application.
+    /// </returns>
     string ApplicationNameInContext(SteeltoeComponent steeltoeComponent, string additionalSearchPath = null);
 }

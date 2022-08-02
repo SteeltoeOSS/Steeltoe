@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Utils.IO;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Common.Test;
@@ -15,7 +15,7 @@ public class ApplicationInstanceInfoTest
     public void ConstructorSetsDefaults()
     {
         var builder = new ConfigurationBuilder();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var options = new ApplicationInstanceInfo(config, true);
         Assert.Null(options.ApplicationId);
@@ -37,7 +37,7 @@ public class ApplicationInstanceInfoTest
     [Fact]
     public void ConstructorReadsApplicationConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
             {
                 ""Application"" : {
                     ""Name"": ""my-app"",
@@ -51,13 +51,13 @@ public class ApplicationInstanceInfoTest
             }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", configJson);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", configJson);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var options = new ApplicationInstanceInfo(config, true);
 

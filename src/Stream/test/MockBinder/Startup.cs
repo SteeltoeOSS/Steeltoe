@@ -7,24 +7,29 @@ using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder;
+using Steeltoe.Stream.MockBinder;
 
-[assembly: Binder("mock", typeof(Steeltoe.Stream.MockBinder.Startup))]
+[assembly: Binder("mock", typeof(Startup))]
 
 namespace Steeltoe.Stream.MockBinder;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; }
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
 
-    public IConfiguration Configuration { get; }
-
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        var mock = new Mock<IBinder<object>> { DefaultValue = DefaultValue.Mock };
+        var mock = new Mock<IBinder<object>>
+        {
+            DefaultValue = DefaultValue.Mock
+        };
+
         mock.Setup(b => b.ServiceName).Returns("mock");
         services.AddSingleton(mock.Object);
         services.AddSingleton<IBinder>(p => p.GetRequiredService<IBinder<object>>());

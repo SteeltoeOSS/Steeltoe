@@ -8,6 +8,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<bool>
 {
+    protected override string CacheKey => null;
+
     public NoRequestCacheTimeoutWithoutFallback(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
@@ -29,11 +31,6 @@ internal sealed class NoRequestCacheTimeoutWithoutFallback : TestHystrixCommand<
         }
 
         return true;
-    }
-
-    protected override string CacheKey
-    {
-        get { return null; }
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)

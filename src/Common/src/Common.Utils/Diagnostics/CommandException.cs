@@ -9,13 +9,13 @@ namespace Steeltoe.Common.Utils.Diagnostics;
 /// </summary>
 public class CommandException : Exception
 {
-    /// <inheritdoc cref="Exception"/>
+    /// <inheritdoc cref="Exception" />
     public CommandException(string message)
         : base(message)
     {
     }
 
-    /// <inheritdoc cref="Exception"/>
+    /// <inheritdoc cref="Exception" />
     public CommandException(string message, Exception innerException)
         : base(message, innerException)
     {

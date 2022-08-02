@@ -8,11 +8,11 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class StatusChangedEventArgs : EventArgs
 {
-    public InstanceStatus Previous { get; private set; }
+    public InstanceStatus Previous { get; }
 
-    public InstanceStatus Current { get; private set; }
+    public InstanceStatus Current { get; }
 
-    public string InstanceId { get; private set; }
+    public string InstanceId { get; }
 
     public StatusChangedEventArgs(InstanceStatus previous, InstanceStatus current, string instanceId)
     {

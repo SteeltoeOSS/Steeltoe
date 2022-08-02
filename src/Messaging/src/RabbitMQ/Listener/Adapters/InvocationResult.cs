@@ -2,22 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal;
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class InvocationResult
 {
-    public InvocationResult(object result, IExpression sendTo, Type returnType, object instance, MethodInfo method)
-    {
-        ReturnValue = result;
-        SendTo = sendTo;
-        ReturnType = returnType;
-        Instance = instance;
-        Method = method;
-    }
-
     public object ReturnValue { get; }
 
     public IExpression SendTo { get; }
@@ -27,6 +18,15 @@ public class InvocationResult
     public object Instance { get; }
 
     public MethodInfo Method { get; }
+
+    public InvocationResult(object result, IExpression sendTo, Type returnType, object instance, MethodInfo method)
+    {
+        ReturnValue = result;
+        SendTo = sendTo;
+        ReturnType = returnType;
+        Instance = instance;
+        Method = method;
+    }
 
     public override string ToString()
     {

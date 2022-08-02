@@ -12,9 +12,9 @@ namespace Steeltoe.Stream.Binder;
 public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     where TBinder : AbstractBinder<IMessageChannel>
 {
-    protected HashSet<string> queues = new ();
+    protected HashSet<string> queues = new();
 
-    protected HashSet<string> exchanges = new ();
+    protected HashSet<string> exchanges = new();
 
     public Type TargetType => typeof(IMessageChannel);
 
@@ -23,19 +23,16 @@ public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     public TBinder Binder
     {
         get => CoreBinder;
-        set
-        {
-            // value.Initialize();
-            CoreBinder = value;
-        }
+        set => CoreBinder = value;
     }
 
-    public IApplicationContext ApplicationContext
+    public IApplicationContext ApplicationContext => Binder?.ApplicationContext;
+
+    public string ServiceName
     {
-        get { return Binder?.ApplicationContext; }
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
     }
-
-    public string ServiceName { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
     public virtual IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
     {
@@ -76,7 +73,8 @@ public abstract class AbstractTestBinder<TBinder> : IBinder<IMessageChannel>
     {
         if (messageChannel is AbstractSubscribableChannel subChan && !options.UseNativeDecoding && subChan.ChannelInterceptors.Count == 0)
         {
-            throw new InvalidOperationException("'messageChannel' appears to be misconfigured. Consider creating channel via AbstractBinderTest.createBindableChannel(..)");
+            throw new InvalidOperationException(
+                "'messageChannel' appears to be misconfigured. Consider creating channel via AbstractBinderTest.createBindableChannel(..)");
         }
     }
 }

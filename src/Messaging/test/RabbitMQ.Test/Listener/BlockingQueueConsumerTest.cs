@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Moq;
+using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -84,34 +85,28 @@ public class BlockingQueueConsumerTest
         connection.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
         var throws = new AtomicBoolean(false);
-        channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>()))
-            .Callback<string>(arg => throws.Value = arg != "good")
-            .Returns(() =>
-            {
-                if (throws.Value)
-                {
-                    throw new RC.Exceptions.OperationInterruptedException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, 0, "Expected"));
-                }
 
-                return new RC.QueueDeclareOk("any", 0, 0);
-            });
-        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Returns("consumerTag");
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory.Object,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            20,
-            null,
-            "good",
-            "bad")
+        channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Callback<string>(arg => throws.Value = arg != "good").Returns(() =>
+        {
+            if (throws.Value)
+            {
+                throw new OperationInterruptedException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, 0, "Expected"));
+            }
+
+            return new RC.QueueDeclareOk("any", 0, 0);
+        });
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+            It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>())).Returns("consumerTag");
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 20, null, "good", "bad")
         {
             DeclarationRetries = 1,
             RetryDeclarationInterval = 10,
             FailedDeclarationRetryInterval = 10
         };
+
         blockingQueueConsumer.Start();
         channel.Verify(c => c.BasicQos(It.IsAny<uint>(), 20, It.IsAny<bool>()));
         blockingQueueConsumer.Stop();
@@ -128,23 +123,17 @@ public class BlockingQueueConsumerTest
         connection.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
 
-        var queue = "testQ";
-        var noLocal = true;
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory.Object,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            true,
-            null,
-            noLocal,
-            false,
-            null,
-            queue);
+        string queue = "testQ";
+        bool noLocal = true;
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, true, null, noLocal, false, null, queue);
+
         blockingQueueConsumer.Start();
-        channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.Auto.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()));
+
+        channel.Verify(c => c.BasicConsume("testQ", AcknowledgeMode.Auto.IsAutoAck(), string.Empty, noLocal, false, It.IsAny<IDictionary<string, object>>(),
+            It.IsAny<RC.IBasicConsumer>()));
+
         blockingQueueConsumer.Stop();
     }
 
@@ -161,29 +150,26 @@ public class BlockingQueueConsumerTest
         var n = new AtomicInteger();
         var consumerCaptor = new AtomicReference<RC.IBasicConsumer>();
         var consumerLatch = new CountdownEvent(2);
-        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, a7) =>
             {
                 consumerCaptor.Value = a7;
                 consumerLatch.Signal();
-            })
-            .Returns($"consumer{n.IncrementAndGet()}");
-        channel.Setup(c => c.BasicCancel("consumer2"))
-            .Throws(new Exception("Intentional cancel fail"));
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory.Object,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            false,
-            1,
-            null,
-            "testQ1",
-            "testQ2");
+            }).Returns($"consumer{n.IncrementAndGet()}");
+
+        channel.Setup(c => c.BasicCancel("consumer2")).Throws(new Exception("Intentional cancel fail"));
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, false, 1, null, "testQ1", "testQ2");
+
         var latch = new CountdownEvent(1);
+
         Task.Run(() =>
         {
             blockingQueueConsumer.Start();
+
             while (true)
             {
                 try
@@ -205,8 +191,9 @@ public class BlockingQueueConsumerTest
                 }
             }
         });
+
         Assert.True(consumerLatch.Wait(TimeSpan.FromSeconds(10)));
-        var consumer = consumerCaptor.Value;
+        RC.IBasicConsumer consumer = consumerCaptor.Value;
         consumer.HandleBasicCancel("consumer1");
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
     }
@@ -215,15 +202,10 @@ public class BlockingQueueConsumerTest
     {
         var connectionFactory = new Mock<IConnectionFactory>();
         var channel = new Mock<RC.IModel>();
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory.Object,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            null,
-            "testQ");
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, null, "testQ");
+
         TestRequeueOrNotGuts(ex, expectedRequeue, channel, blockingQueueConsumer);
     }
 
@@ -231,16 +213,9 @@ public class BlockingQueueConsumerTest
     {
         var connectionFactory = new Mock<IConnectionFactory>();
         var channel = new Mock<RC.IModel>();
-        var blockingQueueConsumer = new BlockingQueueConsumer(
-            connectionFactory.Object,
-            new DefaultMessageHeadersConverter(),
-            new ActiveObjectCounter<BlockingQueueConsumer>(),
-            AcknowledgeMode.Auto,
-            true,
-            1,
-            false,
-            null,
-            "testQ");
+
+        var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
+            new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, false, null, "testQ");
 
         TestRequeueOrNotGuts(ex, expectedRequeue, channel, blockingQueueConsumer);
     }
@@ -248,10 +223,12 @@ public class BlockingQueueConsumerTest
     private void TestRequeueOrNotGuts(Exception ex, bool expectedRequeue, Mock<RC.IModel> channel, BlockingQueueConsumer blockingQueueConsumer)
     {
         blockingQueueConsumer.Channel = channel.Object;
+
         var deliveryTags = new HashSet<ulong>
         {
             1UL
         };
+
         blockingQueueConsumer.DeliveryTags = deliveryTags;
         blockingQueueConsumer.RollbackOnExceptionIfNecessary(ex);
         channel.Verify(c => c.BasicNack(1UL, true, expectedRequeue));

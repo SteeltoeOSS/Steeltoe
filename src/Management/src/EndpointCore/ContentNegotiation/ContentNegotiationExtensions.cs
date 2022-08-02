@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Headers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 
 namespace Steeltoe.Management.Endpoint.ContentNegotiation;
 
@@ -18,23 +19,24 @@ public static class ContentNegotiationExtensions
     public static void LogContentType(this ILogger logger, IHeaderDictionary requestHeaders, string contentType)
     {
         logger?.LogTrace("setting contentType to {0}", contentType);
-        var logTrace = logger?.IsEnabled(LogLevel.Trace);
+        bool? logTrace = logger?.IsEnabled(LogLevel.Trace);
 
         if (logTrace.GetValueOrDefault())
         {
-            foreach (var header in requestHeaders)
+            foreach (KeyValuePair<string, StringValues> header in requestHeaders)
             {
                 logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
             }
         }
     }
 
-    public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger, MediaTypeVersion version = MediaTypeVersion.V2)
+    public static void SetContentType(this IHeaderDictionary responseHeaders, IHeaderDictionary requestHeaders, ILogger logger,
+        MediaTypeVersion version = MediaTypeVersion.V2)
     {
         var headers = new RequestHeaders(requestHeaders);
-        var acceptMediaTypes = headers.Accept?.Select(x => x.MediaType.Value).ToList();
+        List<string> acceptMediaTypes = headers.Accept?.Select(x => x.MediaType.Value).ToList();
 
-        var contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
+        string contentType = ActuatorMediaTypes.GetContentHeaders(acceptMediaTypes, version);
 
         responseHeaders.Add("Content-Type", contentType);
 

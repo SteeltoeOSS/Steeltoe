@@ -14,7 +14,11 @@ public interface IMessageHandlingDecorator
     /// <summary>
     /// Decorate the incoming message handling runnable (task).
     /// </summary>
-    /// <param name="messageHandlingRunnable">incoming message handling task.</param>
-    /// <returns>the newly decorated task.</returns>
+    /// <param name="messageHandlingRunnable">
+    /// incoming message handling task.
+    /// </param>
+    /// <returns>
+    /// the newly decorated task.
+    /// </returns>
     IMessageHandlingRunnable Decorate(IMessageHandlingRunnable messageHandlingRunnable);
 }

@@ -8,7 +8,8 @@ namespace Steeltoe.Common.Util.Test;
 
 public class AntPathMatcherTest
 {
-    private readonly AntPathMatcher _pathMatcher = new ();
+    private static readonly Random Rng = new();
+    private readonly AntPathMatcher _pathMatcher = new();
 
     [Fact]
     public void Match()
@@ -291,11 +292,19 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVariables()
     {
-        var result = _pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
-        Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
+        IDictionary<string, string> result = _pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}", "/hotels/1");
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "hotel", "1" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/h?tels/{hotel}", "/hotels/1");
-        Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "hotel", "1" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/hotels/{hotel}/bookings/{booking}", "/hotels/1/bookings/2");
         IDictionary<string, string> expected = new Dictionary<string, string>();
@@ -304,16 +313,32 @@ public class AntPathMatcherTest
         Assert.Equal(expected, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/**/hotels/**/{hotel}", "/foo/hotels/bar/1");
-        Assert.Equal(new Dictionary<string, string> { { "hotel", "1" } }, result);
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "hotel", "1" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/{page}.html", "/42.html");
-        Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "page", "42" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/{page}.*", "/42.html");
-        Assert.Equal(new Dictionary<string, string> { { "page", "42" } }, result);
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "page", "42" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/A-{B}-C", "/A-b-C");
-        Assert.Equal(new Dictionary<string, string> { { "B", "b" } }, result);
+
+        Assert.Equal(new Dictionary<string, string>
+        {
+            { "B", "b" }
+        }, result);
 
         result = _pathMatcher.ExtractUriTemplateVariables("/{name}.{extension}", "/test.html");
         expected.Clear();
@@ -325,16 +350,13 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVariablesRegex()
     {
-        var result = _pathMatcher
-            .ExtractUriTemplateVariables(
-                "{symbolicName:[\\w\\.]+}-{version:[\\w\\.]+}.jar",
-                "com.example-1.0.0.jar");
+        IDictionary<string, string> result =
+            _pathMatcher.ExtractUriTemplateVariables("{symbolicName:[\\w\\.]+}-{version:[\\w\\.]+}.jar", "com.example-1.0.0.jar");
+
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
 
-        result = _pathMatcher.ExtractUriTemplateVariables(
-            "{symbolicName:[\\w\\.]+}-sources-{version:[\\w\\.]+}.jar",
-            "com.example-sources-1.0.0.jar");
+        result = _pathMatcher.ExtractUriTemplateVariables("{symbolicName:[\\w\\.]+}-sources-{version:[\\w\\.]+}.jar", "com.example-sources-1.0.0.jar");
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
     }
@@ -342,24 +364,24 @@ public class AntPathMatcherTest
     [Fact]
     public void ExtractUriTemplateVarsRegexQualifiers()
     {
-        var result = _pathMatcher.ExtractUriTemplateVariables(
-            "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.]+}.jar",
-            "com.example-sources-1.0.0.jar");
+        IDictionary<string, string> result = _pathMatcher.ExtractUriTemplateVariables(
+            "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.]+}.jar", "com.example-sources-1.0.0.jar");
+
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
 
-        result = _pathMatcher.ExtractUriTemplateVariables(
-            "{symbolicName:[\\w\\.]+}-sources-{version:[\\d\\.]+}-{year:\\d{4}}{month:\\d{2}}{day:\\d{2}}.jar",
+        result = _pathMatcher.ExtractUriTemplateVariables("{symbolicName:[\\w\\.]+}-sources-{version:[\\d\\.]+}-{year:\\d{4}}{month:\\d{2}}{day:\\d{2}}.jar",
             "com.example-sources-1.0.0-20100220.jar");
+
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0", result["version"]);
         Assert.Equal("2010", result["year"]);
         Assert.Equal("02", result["month"]);
         Assert.Equal("20", result["day"]);
 
-        result = _pathMatcher.ExtractUriTemplateVariables(
-            "{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.\\{\\}]+}.jar",
+        result = _pathMatcher.ExtractUriTemplateVariables("{symbolicName:[\\p{L}\\.]+}-sources-{version:[\\p{N}\\.\\{\\}]+}.jar",
             "com.example-sources-1.0.0.{12}.jar");
+
         Assert.Equal("com.example", result["symbolicName"]);
         Assert.Equal("1.0.0.{12}", result["version"]);
     }
@@ -417,7 +439,7 @@ public class AntPathMatcherTest
     [Fact]
     public void PatternComparator()
     {
-        var comparator = _pathMatcher.GetPatternComparer("/hotels/new");
+        IComparer<string> comparator = _pathMatcher.GetPatternComparer("/hotels/new");
 
         Assert.Equal(0, comparator.Compare(null, null));
         Assert.Equal(1, comparator.Compare(null, "/hotels/new"));
@@ -471,7 +493,7 @@ public class AntPathMatcherTest
     [Fact]
     public void PatternComparatorSort()
     {
-        var comparator = _pathMatcher.GetPatternComparer("/hotels/new");
+        IComparer<string> comparator = _pathMatcher.GetPatternComparer("/hotels/new");
 
         var paths = new List<string>(3);
 
@@ -566,15 +588,14 @@ public class AntPathMatcherTest
         paths.Clear();
     }
 
-    private static readonly Random Rng = new ();
-
     private static void Shuffle<T>(List<T> list)
     {
-        var n = list.Count;
+        int n = list.Count;
+
         while (n > 1)
         {
             n--;
-            var k = Rng.Next(n + 1);
+            int k = Rng.Next(n + 1);
             (list[k], list[n]) = (list[n], list[k]);
         }
     }

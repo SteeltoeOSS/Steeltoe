@@ -22,37 +22,40 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
 {
     private readonly ILogger _logger;
 
-    public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger<TestChannelBinder> logger)
-        : base(context, Array.Empty<string>(), provisioningProvider, logger)
-    {
-        _logger = logger;
-    }
-
     public IMessage LastError { get; private set; }
 
     public override string ServiceName { get; set; } = "testbinder";
 
     public IMessageSource MessageSourceDelegate { get; set; } = new MessageSource();
 
-    protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties, IMessageChannel errorChannel)
+    public TestChannelBinder(IApplicationContext context, TestChannelBinderProvisioner provisioningProvider, ILogger<TestChannelBinder> logger)
+        : base(context, Array.Empty<string>(), provisioningProvider, logger)
+    {
+        _logger = logger;
+    }
+
+    protected override IMessageHandler CreateProducerMessageHandler(IProducerDestination destination, IProducerOptions producerProperties,
+        IMessageChannel errorChannel)
     {
         var handler = new BridgeHandler(ApplicationContext)
         {
             OutputChannel = ((SpringIntegrationProducerDestination)destination).Channel
         };
+
         return handler;
     }
 
     protected override IMessageProducer CreateConsumerEndpoint(IConsumerDestination destination, string group, IConsumerOptions consumerOptions)
     {
         IErrorMessageStrategy errorMessageStrategy = new DefaultErrorMessageStrategy();
-        var siBinderInputChannel = ((SpringIntegrationConsumerDestination)destination).Channel;
+        ISubscribableChannel siBinderInputChannel = ((SpringIntegrationConsumerDestination)destination).Channel;
 
         var messageListenerContainer = new TestMessageListeningContainer();
         var endpoint = new TestMessageProducerSupportEndpoint(ApplicationContext, messageListenerContainer, _logger);
 
-        var groupName = !string.IsNullOrEmpty(group) ? group : "anonymous";
-        var errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions, _logger);
+        string groupName = !string.IsNullOrEmpty(group) ? group : "anonymous";
+        ErrorInfrastructure errorInfrastructure = RegisterErrorInfrastructure(destination, groupName, consumerOptions, _logger);
+
         if (consumerOptions.MaxAttempts > 1)
         {
             endpoint.RetryTemplate = BuildRetryTemplate(consumerOptions);
@@ -76,22 +79,23 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         return new ErrorMessageHandler(this);
     }
 
-    protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
+    protected override PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination,
+        IConsumerOptions consumerOptions)
     {
         return new PolledConsumerResources(MessageSourceDelegate, RegisterErrorInfrastructure(destination, group, consumerOptions, _logger));
     }
 
     public class ErrorMessageHandler : ILastSubscriberMessageHandler
     {
+        public TestChannelBinder Binder { get; }
+
+        public virtual string ServiceName { get; set; }
+
         public ErrorMessageHandler(TestChannelBinder binder)
         {
             Binder = binder;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
-
-        public TestChannelBinder Binder { get; }
-
-        public virtual string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -103,15 +107,21 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
     {
         public IMessage Receive()
         {
-            var message = Message.Create(
-                "polled data",
-                new MessageHeaders(new Dictionary<string, object> { { MessageHeaders.ContentType, "text/plain" } }));
+            IMessage<string> message = Message.Create("polled data", new MessageHeaders(new Dictionary<string, object>
+            {
+                { MessageHeaders.ContentType, "text/plain" }
+            }));
+
             return message;
         }
     }
 
     public class TestMessageListeningContainer : IMessageHandler
     {
+        public virtual string ServiceName { get; set; }
+
+        public Action<IMessage> MessageListener { get; set; }
+
         public TestMessageListeningContainer()
         {
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
@@ -121,16 +131,16 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
         {
             MessageListener.Invoke(message);
         }
-
-        public virtual string ServiceName { get; set; }
-
-        public Action<IMessage> MessageListener { get; set; }
     }
 
     public class TestMessageProducerSupportEndpoint : MessageProducerSupportEndpoint
     {
-        private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
+        private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new();
         private readonly TestMessageListeningContainer _messageListenerContainer;
+
+        public RetryTemplate RetryTemplate { get; set; }
+
+        public IRecoveryCallback RecoveryCallback { get; set; }
 
         public TestMessageProducerSupportEndpoint(IApplicationContext context, TestMessageListeningContainer messageListenerContainer, ILogger logger)
             : base(context, logger)
@@ -138,21 +148,17 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
             _messageListenerContainer = messageListenerContainer;
         }
 
-        public RetryTemplate RetryTemplate { get; set; }
-
-        public IRecoveryCallback RecoveryCallback { get; set; }
-
         public void Init()
         {
             if (RetryTemplate != null && ErrorChannel != null)
             {
-                throw new InvalidOperationException(
-                    "Cannot have an 'errorChannel' property when a 'RetryTemplate' is "
-                    + "provided; use an 'ErrorMessageSendingRecoverer' in the 'recoveryCallback' property to "
-                    + "send an error message when retries are exhausted");
+                throw new InvalidOperationException("Cannot have an 'errorChannel' property when a 'RetryTemplate' is " +
+                    "provided; use an 'ErrorMessageSendingRecoverer' in the 'recoveryCallback' property to " +
+                    "send an error message when retries are exhausted");
             }
 
             var messageListener = new Listener(this);
+
             if (RetryTemplate != null)
             {
                 RetryTemplate.RegisterListener(messageListener);
@@ -194,10 +200,8 @@ public class TestChannelBinder : AbstractPollableMessageSourceBinder
                 {
                     if (_adapter.ErrorChannel != null)
                     {
-                        _adapter.MessagingTemplate
-                            .Send(
-                                _adapter.ErrorChannel,
-                                _adapter.BuildErrorMessage(null, new InvalidOperationException($"Message conversion failed: {message}", e)));
+                        _adapter.MessagingTemplate.Send(_adapter.ErrorChannel,
+                            _adapter.BuildErrorMessage(null, new InvalidOperationException($"Message conversion failed: {message}", e)));
                     }
                     else
                     {

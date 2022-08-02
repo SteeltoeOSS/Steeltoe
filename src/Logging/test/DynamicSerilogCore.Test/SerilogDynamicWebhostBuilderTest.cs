@@ -2,47 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Exceptions;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
 
 public class SerilogDynamicWebHostBuilderTest
 {
-    public static ILogEventSink[] GetSinks(object logger)
-    {
-        var loggerField = logger.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
-        var logger2 = loggerField.GetValue(logger);
-        var loggersField = logger2.GetType().GetProperty("Loggers");
-        var loggersValueArray = loggersField.GetValue(logger2) as Array;
-
-        var loggersValueArrayItem = loggersValueArray.GetValue(0);
-        var dynamicLoggerField = loggersValueArrayItem.GetType().GetProperty("Logger");
-        var dynamicLogger = dynamicLoggerField.GetValue(loggersValueArrayItem) as MessageProcessingLogger;
-
-        var logger3Field = dynamicLogger.Delegate.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
-        var serilogLogger = logger3Field.GetValue(dynamicLogger.Delegate);
-
-        var loggerSinksField = serilogLogger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-        var serilogLogger2 = loggerSinksField.GetValue(serilogLogger);
-
-        var serilogLogger2SinksField = serilogLogger2.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-        var serilogLogger3 = serilogLogger2SinksField.GetValue(serilogLogger2);
-
-        var serilogLogger3SinksField = serilogLogger3.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
-        var aggregatedSinks = serilogLogger3SinksField.GetValue(serilogLogger3);
-
-        var aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
-        var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
-        return sinks;
-    }
-
     public SerilogDynamicWebHostBuilderTest()
     {
         SerilogDynamicProvider.ClearLogger();
@@ -53,21 +25,15 @@ public class SerilogDynamicWebHostBuilderTest
     {
         var testSink = new TestSink();
 
-        _ = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .AddDynamicSerilog((_, loggerConfiguration) =>
-            {
-                loggerConfiguration
-                    .MinimumLevel.Error()
-                    .Enrich.WithExceptionDetails()
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                    .WriteTo.Sink(testSink);
-            })
-            .Build();
+        _ = new WebHostBuilder().UseStartup<Startup>().AddDynamicSerilog((_, loggerConfiguration) =>
+        {
+            loggerConfiguration.MinimumLevel.Error().Enrich.WithExceptionDetails().MinimumLevel.Override("Microsoft", LogEventLevel.Warning).WriteTo
+                .Sink(testSink);
+        }).Build();
 
         Thread.Sleep(1000);
 
-        var logs = testSink.GetLogs();
+        List<string> logs = testSink.GetLogs();
 
         Assert.NotEmpty(logs);
         Assert.Contains("error", logs);
@@ -85,20 +51,45 @@ public class SerilogDynamicWebHostBuilderTest
             { "Serilog:WriteTo:Name", "TestSink" }
         };
 
-        var host = new WebHostBuilder()
-            .ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appsettings))
-            .UseStartup<Startup>()
-            .AddDynamicSerilog()
-            .Build();
+        IWebHost host = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(appsettings)).UseStartup<Startup>()
+            .AddDynamicSerilog().Build();
 
-        var logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebHostBuilderTest>));
-        var sinks = GetSinks(logger);
+        object logger = host.Services.GetService(typeof(ILogger<SerilogDynamicWebHostBuilderTest>));
+        ILogEventSink[] sinks = GetSinks(logger);
         Assert.NotNull(sinks);
         var testSink = sinks.FirstOrDefault(x => x.GetType() == typeof(TestSink)) as TestSink;
 
-        var logs = testSink.GetLogs();
+        List<string> logs = testSink.GetLogs();
         Assert.NotEmpty(logs);
         Assert.Contains("error", logs);
         Assert.DoesNotContain("info", logs);
+    }
+
+    public static ILogEventSink[] GetSinks(object logger)
+    {
+        FieldInfo loggerField = logger.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+        object logger2 = loggerField.GetValue(logger);
+        PropertyInfo loggersField = logger2.GetType().GetProperty("Loggers");
+        var loggersValueArray = loggersField.GetValue(logger2) as Array;
+
+        object loggersValueArrayItem = loggersValueArray.GetValue(0);
+        PropertyInfo dynamicLoggerField = loggersValueArrayItem.GetType().GetProperty("Logger");
+        var dynamicLogger = dynamicLoggerField.GetValue(loggersValueArrayItem) as MessageProcessingLogger;
+
+        FieldInfo logger3Field = dynamicLogger.Delegate.GetType().GetField("_logger", BindingFlags.NonPublic | BindingFlags.Instance);
+        object serilogLogger = logger3Field.GetValue(dynamicLogger.Delegate);
+
+        FieldInfo loggerSinksField = serilogLogger.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+        object serilogLogger2 = loggerSinksField.GetValue(serilogLogger);
+
+        FieldInfo serilogLogger2SinksField = serilogLogger2.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+        object serilogLogger3 = serilogLogger2SinksField.GetValue(serilogLogger2);
+
+        FieldInfo serilogLogger3SinksField = serilogLogger3.GetType().GetField("_sink", BindingFlags.NonPublic | BindingFlags.Instance);
+        object aggregatedSinks = serilogLogger3SinksField.GetValue(serilogLogger3);
+
+        FieldInfo aggregateSinksField = aggregatedSinks.GetType().GetField("_sinks", BindingFlags.NonPublic | BindingFlags.Instance);
+        var sinks = (ILogEventSink[])aggregateSinksField.GetValue(aggregatedSinks);
+        return sinks;
     }
 }

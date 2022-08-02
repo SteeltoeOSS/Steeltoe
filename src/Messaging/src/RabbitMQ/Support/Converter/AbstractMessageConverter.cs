@@ -12,14 +12,14 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 {
     protected readonly ILogger Logger;
 
+    public bool CreateMessageIds { get; set; }
+
+    public abstract string ServiceName { get; set; }
+
     protected AbstractMessageConverter(ILogger logger = null)
     {
         Logger = logger;
     }
-
-    public bool CreateMessageIds { get; set; }
-
-    public abstract string ServiceName { get; set; }
 
     public abstract object FromMessage(IMessage message, Type targetType, object conversionHint);
 
@@ -45,13 +45,13 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     public IMessage ToMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
-        var messageProperties = headers ?? new MessageHeaders();
+        IMessageHeaders messageProperties = headers ?? new MessageHeaders();
 
-        var message = CreateMessage(payload, messageProperties, conversionHint);
+        IMessage message = CreateMessage(payload, messageProperties, conversionHint);
 
         if (CreateMessageIds && message.Headers.MessageId() == null)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.MessageId = Guid.NewGuid().ToString();
         }
 

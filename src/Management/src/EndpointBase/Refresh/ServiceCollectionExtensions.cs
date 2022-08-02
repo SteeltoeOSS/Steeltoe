@@ -17,9 +17,15 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Refresh actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configuration">Reference to the configuration system.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Reference to the configuration system.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddRefreshActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)

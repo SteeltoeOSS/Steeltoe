@@ -9,6 +9,22 @@ public class TestCircuitBreaker : ICircuitBreaker
     public readonly HystrixCommandMetrics Metrics;
     private bool _forceShortCircuit;
 
+    public bool IsOpen
+    {
+        get
+        {
+            // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
+            if (_forceShortCircuit)
+            {
+                return true;
+            }
+
+            return Metrics.HealthCounts.ErrorCount >= 3;
+        }
+    }
+
+    public bool AllowRequest => !IsOpen;
+
     public TestCircuitBreaker()
     {
         Metrics = HystrixCircuitBreakerTest.GetMetrics(HystrixCommandOptionsTest.GetUnitTestOptions());
@@ -27,29 +43,8 @@ public class TestCircuitBreaker : ICircuitBreaker
         return this;
     }
 
-    public bool IsOpen
-    {
-        get
-        {
-            // output.WriteLine("metrics : " + metrics.CommandKey.Name + " : " + metrics.HealthCounts);
-            if (_forceShortCircuit)
-            {
-                return true;
-            }
-            else
-            {
-                return Metrics.HealthCounts.ErrorCount >= 3;
-            }
-        }
-    }
-
     public void MarkSuccess()
     {
         // we don't need to do anything since we're going to permanently trip the circuit
-    }
-
-    public bool AllowRequest
-    {
-        get { return !IsOpen; }
     }
 }

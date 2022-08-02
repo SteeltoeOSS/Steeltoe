@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.RegularExpressions;
+using A.B.C.D;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Serilog.Context;
 using Steeltoe.Common;
-using System.Text.RegularExpressions;
 using Xunit;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog.Test;
@@ -26,7 +27,7 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        ILogger logger = fac.CreateLogger(typeof(TestClass));
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Information));
         Assert.False(logger.IsEnabled(LogLevel.Debug));
@@ -39,7 +40,7 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        ILogger logger = fac.CreateLogger(typeof(TestClass));
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Critical));
         Assert.True(logger.IsEnabled(LogLevel.Error));
@@ -63,9 +64,9 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfiguration());
 
         // act I: with original setup
-        var childLogger = provider.CreateLogger("A.B.C");
-        var configurations = provider.GetLoggerConfigurations();
-        var tierOneNamespace = configurations.First(n => n.Name == "A");
+        ILogger childLogger = provider.CreateLogger("A.B.C");
+        ICollection<ILoggerConfiguration> configurations = provider.GetLoggerConfigurations();
+        ILoggerConfiguration tierOneNamespace = configurations.First(n => n.Name == "A");
 
         // assert I: base namespace is in the response, correctly
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -75,7 +76,7 @@ public class SerilogDynamicLoggerProviderTest
         configurations = provider.GetLoggerConfigurations();
 
         tierOneNamespace = configurations.First(n => n.Name == "A");
-        var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
+        ILoggerConfiguration tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
         // assert II:  base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -87,7 +88,7 @@ public class SerilogDynamicLoggerProviderTest
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
         tierTwoNamespace = configurations.First(n => n.Name == "A.B");
-        var grandchildLogger = provider.CreateLogger("A.B.C.D");
+        ILogger grandchildLogger = provider.CreateLogger("A.B.C.D");
 
         // assert again
         Assert.Equal(LogLevel.Error, tierOneNamespace.EffectiveLevel);
@@ -103,9 +104,9 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfiguration());
 
         // act I: with original setup
-        var firstLogger = provider.CreateLogger("A.B.C");
-        var configurations = provider.GetLoggerConfigurations();
-        var tierOneNamespace = configurations.First(n => n.Name == "A");
+        ILogger firstLogger = provider.CreateLogger("A.B.C");
+        ICollection<ILoggerConfiguration> configurations = provider.GetLoggerConfigurations();
+        ILoggerConfiguration tierOneNamespace = configurations.First(n => n.Name == "A");
 
         // assert I: base namespace is in the response, correctly
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -114,7 +115,7 @@ public class SerilogDynamicLoggerProviderTest
         provider.SetLogLevel("A.B", LogLevel.Trace);
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
-        var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
+        ILoggerConfiguration tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
         // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -126,7 +127,7 @@ public class SerilogDynamicLoggerProviderTest
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
         tierTwoNamespace = configurations.First(n => n.Name == "A.B");
-        var secondLogger = provider.CreateLogger("A.B.C.D");
+        ILogger secondLogger = provider.CreateLogger("A.B.C.D");
 
         // assert again
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -142,9 +143,9 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        fac.CreateLogger(typeof(TestClass));
 
-        var logConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> logConfig = provider.GetLoggerConfigurations();
         Assert.Equal(6, logConfig.Count);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
         Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
@@ -161,8 +162,8 @@ public class SerilogDynamicLoggerProviderTest
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
 
-        fac.CreateLogger(typeof(A.B.C.D.TestClass));
-        var logConfig = provider.GetLoggerConfigurations();
+        fac.CreateLogger(typeof(TestClass));
+        ICollection<ILoggerConfiguration> logConfig = provider.GetLoggerConfigurations();
 
         Assert.Equal(6, logConfig.Count);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
@@ -190,10 +191,10 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfiguration());
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
-        var originalLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Trace);
-        var updatedLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> updatedLogConfig = provider.GetLoggerConfigurations();
 
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
@@ -205,12 +206,12 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfiguration());
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
-        var originalLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Debug);
-        var updatedLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> updatedLogConfig = provider.GetLoggerConfigurations();
         provider.SetLogLevel("Default", null);
-        var resetConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> resetConfig = provider.GetLoggerConfigurations();
 
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Debug), updatedLogConfig);
@@ -224,24 +225,27 @@ public class SerilogDynamicLoggerProviderTest
 
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        ILogger logger = fac.CreateLogger(typeof(TestClass));
 
         // act I - log at all levels, expect Info and above to work
         using var unConsole = new ConsoleOutputBorrower();
+
         using (LogContext.PushProperty("A", 1))
         {
             logger.LogInformation("Carries property A = 1");
 
             using (LogContext.PushProperty("A", 2))
-            using (LogContext.PushProperty("B", 1))
             {
-                logger.LogInformation("Carries A = 2 and B = 1");
+                using (LogContext.PushProperty("B", 1))
+                {
+                    logger.LogInformation("Carries A = 2 and B = 1");
+                }
             }
 
             logger.LogInformation("Carries property A = 1, again");
         }
 
-        var logged = unConsole.ToString();
+        string logged = unConsole.ToString();
 
         // assert I
         Assert.Contains(@"A.B.C.D.TestClass: {A=1, Application=""Sample""}", logged);
@@ -259,13 +263,18 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfigurationFromFile());
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        ILogger logger = fac.CreateLogger(typeof(TestClass));
 
         // act I - log at all levels, expect Info and above to work
         using var unConsole = new ConsoleOutputBorrower();
-        logger.LogInformation("Info {@TestInfo}", new { Info1 = "information1", Info2 = "information2" });
 
-        var logged = unConsole.ToString();
+        logger.LogInformation("Info {@TestInfo}", new
+        {
+            Info1 = "information1",
+            Info2 = "information2"
+        });
+
+        string logged = unConsole.ToString();
 
         Assert.Contains(@"Info { Info1 = information1, Info2 = information2 }", logged);
     }
@@ -276,14 +285,14 @@ public class SerilogDynamicLoggerProviderTest
         var provider = new SerilogDynamicProvider(GetConfiguration());
         var fac = new LoggerFactory();
         fac.AddProvider(provider);
-        var logger = fac.CreateLogger(typeof(A.B.C.D.TestClass));
+        ILogger logger = fac.CreateLogger(typeof(TestClass));
 
         // act I - log at all levels, expect Info and above to work
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
 
-            var logged = unConsole.ToString();
+            string logged = unConsole.ToString();
 
             // assert I
             Assert.Contains("Critical message", logged);
@@ -296,11 +305,12 @@ public class SerilogDynamicLoggerProviderTest
 
         // act II - adjust rules, expect Error and above to work
         provider.SetLogLevel("A.B.C.D", LogLevel.Error);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
 
-            var logged2 = unConsole.ToString();
+            string logged2 = unConsole.ToString();
 
             // assert II
             Assert.Contains("Critical message", logged2);
@@ -313,11 +323,12 @@ public class SerilogDynamicLoggerProviderTest
 
         // act III - adjust rules, expect Trace and above to work
         provider.SetLogLevel("A", LogLevel.Trace);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
 
-            var logged3 = unConsole.ToString();
+            string logged3 = unConsole.ToString();
 
             // assert III
             Assert.Contains("Critical message", logged3);
@@ -330,11 +341,12 @@ public class SerilogDynamicLoggerProviderTest
 
         // act IV - adjust rules, expect nothing to work
         provider.SetLogLevel("A", LogLevel.None);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
 
-            var logged4 = unConsole.ToString();
+            string logged4 = unConsole.ToString();
 
             // assert IV
             Assert.DoesNotContain("Critical message", logged4);
@@ -347,11 +359,12 @@ public class SerilogDynamicLoggerProviderTest
 
         // act V - reset the rules, expect Info and above to work
         provider.SetLogLevel("A", null);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
 
-            var logged5 = unConsole.ToString();
+            string logged5 = unConsole.ToString();
 
             // assert V
             Assert.NotNull(provider.GetLoggerConfigurations().First(c => c.Name == "A"));
@@ -384,11 +397,11 @@ public class SerilogDynamicLoggerProviderTest
             { "Serilog:MinimumLevel:Override:Steeltoe", "Information" },
             { "Serilog:MinimumLevel:Override:A", "Information" },
             { "Serilog:MinimumLevel:Override:A.B.C", "Information" },
-            { "Serilog:WriteTo:Name", "Console" },
+            { "Serilog:WriteTo:Name", "Console" }
         };
 
-        var builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
-        var configuration = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(appSettings);
+        IConfigurationRoot configuration = builder.Build();
 
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
@@ -397,9 +410,8 @@ public class SerilogDynamicLoggerProviderTest
 
     private IOptionsMonitor<SerilogOptions> GetConfigurationFromFile()
     {
-        var builder = new ConfigurationBuilder()
-            .AddJsonFile("serilogSettings.json");
-        var configuration = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("serilogSettings.json");
+        IConfigurationRoot configuration = builder.Build();
         var serilogOptions = new SerilogOptions();
         serilogOptions.SetSerilogOptions(configuration);
         return new TestOptionsMonitor<SerilogOptions>(serilogOptions);

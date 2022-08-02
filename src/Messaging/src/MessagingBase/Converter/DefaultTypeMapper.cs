@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace Steeltoe.Messaging.Converter;
@@ -14,13 +15,14 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 
     public Type ToType(IMessageHeaders headers)
     {
-        var inferredType = GetInferredType(headers);
+        Type inferredType = GetInferredType(headers);
+
         if (inferredType != null && !inferredType.IsAbstract && !inferredType.IsInterface)
         {
             return inferredType;
         }
 
-        var typeIdHeader = RetrieveHeaderAsString(headers, ClassIdFieldName);
+        string typeIdHeader = RetrieveHeaderAsString(headers, ClassIdFieldName);
 
         if (typeIdHeader != null)
         {
@@ -44,7 +46,8 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
             AddHeader(headers, ContentClassIdFieldName, GetContentType(type));
         }
 
-        var keyType = GetKeyType(type);
+        Type keyType = GetKeyType(type);
+
         if (keyType != null)
         {
             AddHeader(headers, KeyClassIdFieldName, keyType);
@@ -63,19 +66,21 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
 
     private Type FromTypeHeader(IMessageHeaders headers, string typeIdHeader)
     {
-        var classType = GetClassIdType(typeIdHeader);
+        Type classType = GetClassIdType(typeIdHeader);
+
         if (!IsContainerType(classType) || classType.IsArray)
         {
             return classType;
         }
 
-        var contentClassType = GetClassIdType(RetrieveHeader(headers, ContentClassIdFieldName));
+        Type contentClassType = GetClassIdType(RetrieveHeader(headers, ContentClassIdFieldName));
+
         if (!HasKeyType(classType))
         {
             return ConstructCollectionType(classType, contentClassType);
         }
 
-        var keyClassType = GetClassIdType(RetrieveHeader(headers, KeyClassIdFieldName));
+        Type keyClassType = GetClassIdType(RetrieveHeader(headers, KeyClassIdFieldName));
         return ConstructDictionaryType(classType, keyClassType, contentClassType);
     }
 
@@ -105,25 +110,24 @@ public class DefaultTypeMapper : AbstractTypeMapper, ITypeMapper
         {
             return IdClassMapping[classId];
         }
-        else
-        {
-            try
-            {
-                return Type.GetType(classId, true);
-            }
-            catch (Exception)
-            {
-                foreach (var assembly in AssemblyLoadContext.Default.Assemblies)
-                {
-                    var result = assembly.GetType(classId, false);
-                    if (result != null)
-                    {
-                        return result;
-                    }
-                }
 
-                throw new MessageConversionException($"failed to resolve class name. Class not found [{classId}]");
+        try
+        {
+            return Type.GetType(classId, true);
+        }
+        catch (Exception)
+        {
+            foreach (Assembly assembly in AssemblyLoadContext.Default.Assemblies)
+            {
+                Type result = assembly.GetType(classId, false);
+
+                if (result != null)
+                {
+                    return result;
+                }
             }
+
+            throw new MessageConversionException($"failed to resolve class name. Class not found [{classId}]");
         }
     }
 }

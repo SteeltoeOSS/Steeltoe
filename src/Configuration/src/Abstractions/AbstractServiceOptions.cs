@@ -11,21 +11,6 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
 {
     public virtual string ConfigurationPrefix { get; protected set; } = "services";
 
-    // This constructor is for use with IOptions
-    protected AbstractServiceOptions()
-    {
-    }
-
-    protected AbstractServiceOptions(IConfigurationRoot root, string sectionPrefix = "")
-        : base(root, sectionPrefix)
-    {
-    }
-
-    protected AbstractServiceOptions(IConfiguration config, string sectionPrefix = "")
-        : base(config, sectionPrefix)
-    {
-    }
-
     /// <summary>
     /// Gets or sets the name of the service instance.
     /// </summary>
@@ -46,14 +31,30 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
     /// </summary>
     public string Plan { get; set; }
 
-    public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new ();
+    public Dictionary<string, IEnumerable<Service>> Services { get; set; } = new();
+
+    // This constructor is for use with IOptions
+    protected AbstractServiceOptions()
+    {
+    }
+
+    protected AbstractServiceOptions(IConfigurationRoot root, string sectionPrefix = "")
+        : base(root, sectionPrefix)
+    {
+    }
+
+    protected AbstractServiceOptions(IConfiguration config, string sectionPrefix = "")
+        : base(config, sectionPrefix)
+    {
+    }
 
     public IEnumerable<Service> GetServicesList()
     {
         var results = new List<Service>();
+
         if (Services != null)
         {
-            foreach (var kvp in Services)
+            foreach (KeyValuePair<string, IEnumerable<Service>> kvp in Services)
             {
                 results.AddRange(kvp.Value);
             }
@@ -64,7 +65,7 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
 
     public IEnumerable<Service> GetInstancesOfType(string serviceType)
     {
-        Services.TryGetValue(serviceType, out var services);
+        Services.TryGetValue(serviceType, out IEnumerable<Service> services);
         return services ?? new List<Service>();
     }
 
@@ -80,8 +81,8 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var services = configuration.GetSection(ConfigurationPrefix);
-        var section = FindServiceSection(services, serviceName);
+        IConfigurationSection services = configuration.GetSection(ConfigurationPrefix);
+        IConfigurationSection section = FindServiceSection(services, serviceName);
 
         if (section != null)
         {
@@ -91,19 +92,22 @@ public abstract class AbstractServiceOptions : AbstractOptions, IServicesInfo
 
     internal IConfigurationSection FindServiceSection(IConfigurationSection section, string serviceName)
     {
-        var children = section.GetChildren();
-        foreach (var child in children)
+        IEnumerable<IConfigurationSection> children = section.GetChildren();
+
+        foreach (IConfigurationSection child in children)
         {
-            var name = child.GetValue<string>("name");
+            string name = child.GetValue<string>("name");
+
             if (serviceName == name)
             {
                 return child;
             }
         }
 
-        foreach (var child in children)
+        foreach (IConfigurationSection child in children)
         {
-            var result = FindServiceSection(child, serviceName);
+            IConfigurationSection result = FindServiceSection(child, serviceName);
+
             if (result != null)
             {
                 return result;

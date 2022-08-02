@@ -18,7 +18,8 @@ public class ServiceReference : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var serviceResolver = state.EvaluationContext.ServiceResolver;
+        IServiceResolver serviceResolver = state.EvaluationContext.ServiceResolver;
+
         if (serviceResolver == null)
         {
             throw new SpelEvaluationException(StartPosition, SpelMessage.NoServiceResolverRegistered, _serviceName);
@@ -38,6 +39,7 @@ public class ServiceReference : SpelNode
     {
         var sb = new StringBuilder();
         sb.Append('@');
+
         if (!_serviceName.Contains("."))
         {
             sb.Append(_serviceName);

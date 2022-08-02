@@ -13,38 +13,40 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 /// </summary>
 public class ConsulServiceInstance : IServiceInstance
 {
+    /// <inheritdoc />
+    public string ServiceId { get; }
+
+    /// <inheritdoc />
+    public string Host { get; }
+
+    /// <inheritdoc />
+    public int Port { get; }
+
+    /// <inheritdoc />
+    public bool IsSecure { get; }
+
+    /// <inheritdoc />
+    public Uri Uri { get; }
+
+    /// <inheritdoc />
+    public IDictionary<string, string> Metadata { get; }
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceInstance"/> class.
+    /// Initializes a new instance of the <see cref="ConsulServiceInstance" /> class.
     /// </summary>
-    /// <param name="serviceEntry">the service entry from the Consul server.</param>
+    /// <param name="serviceEntry">
+    /// the service entry from the Consul server.
+    /// </param>
     public ConsulServiceInstance(ServiceEntry serviceEntry)
     {
         // TODO: 3.0  ID = healthService.ID;
         Host = ConsulServerUtils.FindHost(serviceEntry);
-        var metadata = ConsulServerUtils.GetMetadata(serviceEntry);
-        IsSecure = metadata.TryGetValue("secure", out var secureString) && bool.Parse(secureString);
+        IDictionary<string, string> metadata = ConsulServerUtils.GetMetadata(serviceEntry);
+        IsSecure = metadata.TryGetValue("secure", out string secureString) && bool.Parse(secureString);
         ServiceId = serviceEntry.Service.Service;
         Port = serviceEntry.Service.Port;
         Metadata = metadata;
-        var scheme = IsSecure ? "https" : "http";
+        string scheme = IsSecure ? "https" : "http";
         Uri = new Uri($"{scheme}://{Host}:{Port}");
     }
-
-    /// <inheritdoc/>
-    public string ServiceId { get; }
-
-    /// <inheritdoc/>
-    public string Host { get; }
-
-    /// <inheritdoc/>
-    public int Port { get; }
-
-    /// <inheritdoc/>
-    public bool IsSecure { get; }
-
-    /// <inheritdoc/>
-    public Uri Uri { get; }
-
-    /// <inheritdoc/>
-    public IDictionary<string, string> Metadata { get; }
 }

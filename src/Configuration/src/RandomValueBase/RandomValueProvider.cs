@@ -8,8 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Extensions.Configuration.RandomValue;
 
 /// <summary>
-/// Configuration provider that provides random values.
-/// Note: This code was inspired by the Spring Boot equivalent class.
+/// Configuration provider that provides random values. Note: This code was inspired by the Spring Boot equivalent class.
 /// </summary>
 public class RandomValueProvider : ConfigurationProvider
 {
@@ -18,29 +17,38 @@ public class RandomValueProvider : ConfigurationProvider
     internal string Prefix;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="RandomValueProvider"/> class.
-    /// The new placeholder resolver wraps the provided configuration.
+    /// Initializes a new instance of the <see cref="RandomValueProvider" /> class. The new placeholder resolver wraps the provided configuration.
     /// </summary>
-    /// <param name="prefix">key prefix to use to match random number keys.</param>
-    /// <param name="logFactory">the logger factory to use.</param>
+    /// <param name="prefix">
+    /// key prefix to use to match random number keys.
+    /// </param>
+    /// <param name="logFactory">
+    /// the logger factory to use.
+    /// </param>
     public RandomValueProvider(string prefix, ILoggerFactory logFactory = null)
     {
-        this.Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
+        Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
         Logger = logFactory?.CreateLogger<RandomValueProvider>();
         Random = new Random();
     }
 
     /// <summary>
-    /// Tries to get a configuration value for the specified key. If the key starts with the
-    /// configured prefix (default random:), then the key will be parsed and the appropriate
-    /// random value will be generated.
+    /// Tries to get a configuration value for the specified key. If the key starts with the configured prefix (default random:), then the key will be parsed
+    /// and the appropriate random value will be generated.
     /// </summary>
-    /// <param name="key">The key which should start with prefix.</param>
-    /// <param name="value">The random value returned.</param>
-    /// <returns><c>True</c> if a value for the specified key was found, otherwise <c>false</c>.</returns>
+    /// <param name="key">
+    /// The key which should start with prefix.
+    /// </param>
+    /// <param name="value">
+    /// The random value returned.
+    /// </param>
+    /// <returns>
+    /// <c>True</c> if a value for the specified key was found, otherwise <c>false</c>.
+    /// </returns>
     public override bool TryGet(string key, out string value)
     {
         value = null;
+
         if (!key.StartsWith(Prefix))
         {
             return false;
@@ -55,7 +63,9 @@ public class RandomValueProvider : ConfigurationProvider
     /// Sets a configuration value for the specified key. Currently ignored.
     /// </summary>
     /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
+    /// <param name="value">
+    /// The value.
+    /// </param>
     public override void Set(string key, string value)
     {
         // for future use
@@ -72,20 +82,28 @@ public class RandomValueProvider : ConfigurationProvider
     /// <summary>
     /// Returns an empty list.
     /// </summary>
-    /// <param name="earlierKeys">The child keys returned by the preceding providers for the same parent path.</param>
-    /// <param name="parentPath">The parent path.</param>
-    /// <returns>The child keys.</returns>
+    /// <param name="earlierKeys">
+    /// The child keys returned by the preceding providers for the same parent path.
+    /// </param>
+    /// <param name="parentPath">
+    /// The parent path.
+    /// </param>
+    /// <returns>
+    /// The child keys.
+    /// </returns>
     public override IEnumerable<string> GetChildKeys(IEnumerable<string> earlierKeys, string parentPath)
     {
         if (string.IsNullOrEmpty(parentPath))
         {
-            var list = new List<string> { Prefix.Substring(0, Prefix.Length - 1) };
-            return list.Concat(earlierKeys)
-                .OrderBy(k => k, ConfigurationKeyComparer.Instance);
+            var list = new List<string>
+            {
+                Prefix.Substring(0, Prefix.Length - 1)
+            };
+
+            return list.Concat(earlierKeys).OrderBy(k => k, ConfigurationKeyComparer.Instance);
         }
 
-        return earlierKeys
-            .OrderBy(k => k, ConfigurationKeyComparer.Instance);
+        return earlierKeys.OrderBy(k => k, ConfigurationKeyComparer.Instance);
     }
 
     internal string GetRandomValue(string type)
@@ -103,7 +121,8 @@ public class RandomValueProvider : ConfigurationProvider
         }
 
         // random:int(10), random:int(10,20), random:int[10], random:int[10,20]
-        var range = GetRange(type, "int");
+        string range = GetRange(type, "int");
+
         if (range != null)
         {
             return GetNextIntInRange(range).ToString();
@@ -111,6 +130,7 @@ public class RandomValueProvider : ConfigurationProvider
 
         // random:long(10), random:long(10,20), random:long[10], random:long[10,20]
         range = GetRange(type, "long");
+
         if (range != null)
         {
             return GetNextLongInRange(range).ToString();
@@ -134,7 +154,8 @@ public class RandomValueProvider : ConfigurationProvider
     {
         if (type.StartsWith(prefix))
         {
-            var startIndex = prefix.Length + 1;
+            int startIndex = prefix.Length + 1;
+
             if (type.Length > startIndex)
             {
                 return type.Substring(startIndex, type.Length - 1 - startIndex);
@@ -146,35 +167,37 @@ public class RandomValueProvider : ConfigurationProvider
 
     internal int GetNextIntInRange(string range)
     {
-        var tokens = range.Split(',');
-        int.TryParse(tokens[0], out var start);
+        string[] tokens = range.Split(',');
+        int.TryParse(tokens[0], out int start);
+
         if (tokens.Length == 1)
         {
             return Random.Next(start);
         }
 
-        int.TryParse(tokens[1], out var max);
+        int.TryParse(tokens[1], out int max);
         return Random.Next(start, max);
     }
 
     internal long GetNextLongInRange(string range)
     {
-        var tokens = range.Split(',');
-        long.TryParse(tokens[0], out var start);
+        string[] tokens = range.Split(',');
+        long.TryParse(tokens[0], out long start);
+
         if (tokens.Length == 1)
         {
             return Math.Abs(GetLong() % start);
         }
 
-        var lowerBound = start;
-        long.TryParse(tokens[1], out var upperBound);
+        long lowerBound = start;
+        long.TryParse(tokens[1], out long upperBound);
         upperBound -= lowerBound;
         return lowerBound + Math.Abs(GetLong() % upperBound);
     }
 
     internal string GetRandomBytes()
     {
-        var bytes = new byte[16];
+        byte[] bytes = new byte[16];
         Random.NextBytes(bytes);
         return BitConverter.ToString(bytes).Replace("-", string.Empty);
     }

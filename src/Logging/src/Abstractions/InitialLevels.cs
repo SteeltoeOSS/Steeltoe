@@ -8,7 +8,7 @@ using Filter = System.Func<string, Microsoft.Extensions.Logging.LogLevel, bool>;
 namespace Steeltoe.Extensions.Logging;
 
 /// <summary>
-/// Initial set of LogLevels, Filters and DefaultFilter to initialize a <see cref="IDynamicLoggerProvider"/>.
+/// Initial set of LogLevels, Filters and DefaultFilter to initialize a <see cref="IDynamicLoggerProvider" />.
 /// </summary>
 public class InitialLevels
 {

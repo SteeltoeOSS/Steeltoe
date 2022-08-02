@@ -26,6 +26,41 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     private volatile bool _throwExceptionOnLateReply;
 
+    public virtual int SendTimeout
+    {
+        get => _sendTimeout;
+
+        set => _sendTimeout = value;
+    }
+
+    public virtual int ReceiveTimeout
+    {
+        get => _receiveTimeout;
+
+        set => _receiveTimeout = value;
+    }
+
+    public virtual string SendTimeoutHeader
+    {
+        get => _sendTimeoutHeader;
+
+        set => _sendTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "SendTimeoutHeader cannot be null");
+    }
+
+    public virtual string ReceiveTimeoutHeader
+    {
+        get => _receiveTimeoutHeader;
+
+        set => _receiveTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "ReceiveTimeoutHeader cannot be null");
+    }
+
+    public virtual bool ThrowExceptionOnLateReply
+    {
+        get => _throwExceptionOnLateReply;
+
+        set => _throwExceptionOnLateReply = value;
+    }
+
     public MessageChannelTemplate(ILogger logger = null)
         : base(null)
     {
@@ -38,88 +73,20 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         _logger = logger;
     }
 
-    public virtual int SendTimeout
-    {
-        get
-        {
-            return _sendTimeout;
-        }
-
-        set
-        {
-            _sendTimeout = value;
-        }
-    }
-
-    public virtual int ReceiveTimeout
-    {
-        get
-        {
-            return _receiveTimeout;
-        }
-
-        set
-        {
-            _receiveTimeout = value;
-        }
-    }
-
-    public virtual string SendTimeoutHeader
-    {
-        get
-        {
-            return _sendTimeoutHeader;
-        }
-
-        set
-        {
-            _sendTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "SendTimeoutHeader cannot be null");
-        }
-    }
-
-    public virtual string ReceiveTimeoutHeader
-    {
-        get
-        {
-            return _receiveTimeoutHeader;
-        }
-
-        set
-        {
-            _receiveTimeoutHeader = value ?? throw new ArgumentNullException(nameof(value), "ReceiveTimeoutHeader cannot be null");
-        }
-    }
-
-    public virtual bool ThrowExceptionOnLateReply
-    {
-        get
-        {
-            return _throwExceptionOnLateReply;
-        }
-
-        set
-        {
-            _throwExceptionOnLateReply = value;
-        }
-    }
-
     protected virtual IMessage ProcessMessageBeforeSend(IMessage message)
     {
-        var messageToSend = message;
-        var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+        IMessage messageToSend = message;
+        MessageHeaderAccessor accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+
         if (accessor != null && accessor.IsMutable)
         {
             accessor.RemoveHeader(_sendTimeoutHeader);
             accessor.RemoveHeader(_receiveTimeoutHeader);
             accessor.SetImmutable();
         }
-        else if (message.Headers.ContainsKey(_sendTimeoutHeader)
-                 || message.Headers.ContainsKey(_receiveTimeoutHeader))
+        else if (message.Headers.ContainsKey(_sendTimeoutHeader) || message.Headers.ContainsKey(_receiveTimeoutHeader))
         {
-            messageToSend = MessageBuilder.FromMessage(message)
-                .SetHeader(_sendTimeoutHeader, null)
-                .SetHeader(_receiveTimeoutHeader, null)
-                .Build();
+            messageToSend = MessageBuilder.FromMessage(message).SetHeader(_sendTimeoutHeader, null).SetHeader(_receiveTimeoutHeader, null).Build();
         }
 
         return messageToSend;
@@ -137,8 +104,8 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             throw new ArgumentNullException(nameof(channel));
         }
 
-        var messageToSend = ProcessMessageBeforeSend(message);
-        var sent = channel.Send(messageToSend, timeout);
+        IMessage messageToSend = ProcessMessageBeforeSend(message);
+        bool sent = channel.Send(messageToSend, timeout);
 
         if (!sent)
         {
@@ -163,8 +130,8 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     protected async Task DoSendInternalAsync(IMessageChannel channel, IMessage message, int timeout, CancellationToken cancellationToken = default)
     {
-        var messageToSend = ProcessMessageBeforeSend(message);
-        var sent = false;
+        IMessage messageToSend = ProcessMessageBeforeSend(message);
+        bool sent = false;
 
         if (cancellationToken == default)
         {
@@ -183,7 +150,10 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         }
     }
 
-    protected override IMessage DoReceive(IMessageChannel destination) => DoReceive(destination, ReceiveTimeout);
+    protected override IMessage DoReceive(IMessageChannel destination)
+    {
+        return DoReceive(destination, ReceiveTimeout);
+    }
 
     protected IMessage DoReceive(IMessageChannel channel, int timeout)
     {
@@ -197,7 +167,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             throw new InvalidOperationException("A PollableChannel is required to receive messages");
         }
 
-        var message = pollableChannel.Receive(timeout);
+        IMessage message = pollableChannel.Receive(timeout);
 
         if (message == null)
         {
@@ -207,7 +177,10 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         return message;
     }
 
-    protected override Task<IMessage> DoReceiveAsync(IMessageChannel destination, CancellationToken cancellationToken) => DoReceiveAsync(destination, ReceiveTimeout, cancellationToken);
+    protected override Task<IMessage> DoReceiveAsync(IMessageChannel destination, CancellationToken cancellationToken)
+    {
+        return DoReceiveAsync(destination, ReceiveTimeout, cancellationToken);
+    }
 
     protected Task<IMessage> DoReceiveAsync(IMessageChannel channel, int timeout, CancellationToken cancellationToken = default)
     {
@@ -257,19 +230,19 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         return DoSendAndReceiveInternalAsync(destination, requestMessage, cancellationToken);
     }
 
-    protected async Task<IMessage> DoSendAndReceiveInternalAsync(IMessageChannel channel, IMessage requestMessage, CancellationToken cancellationToken = default)
+    protected async Task<IMessage> DoSendAndReceiveInternalAsync(IMessageChannel channel, IMessage requestMessage,
+        CancellationToken cancellationToken = default)
     {
-        var originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
-        var originalErrorChannelHeader = requestMessage.Headers.ErrorChannel;
+        object originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
+        object originalErrorChannelHeader = requestMessage.Headers.ErrorChannel;
 
-        var sendTimeout = GetSendTimeout(requestMessage);
-        var receiveTimeout = GetReceiveTimeout(requestMessage);
+        int sendTimeout = GetSendTimeout(requestMessage);
+        int receiveTimeout = GetReceiveTimeout(requestMessage);
 
         var tempReplyChannel = new TemporaryReplyChannel(_throwExceptionOnLateReply);
-        requestMessage = MessageBuilder.FromMessage(requestMessage).SetReplyChannel(tempReplyChannel)
-            .SetHeader(_sendTimeoutHeader, null)
-            .SetHeader(_receiveTimeoutHeader, null)
-            .SetErrorChannel(tempReplyChannel).Build();
+
+        requestMessage = MessageBuilder.FromMessage(requestMessage).SetReplyChannel(tempReplyChannel).SetHeader(_sendTimeoutHeader, null)
+            .SetHeader(_receiveTimeoutHeader, null).SetErrorChannel(tempReplyChannel).Build();
 
         try
         {
@@ -281,13 +254,12 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             throw;
         }
 
-        var replyMessage = await DoReceiveAsync(tempReplyChannel, receiveTimeout, cancellationToken);
+        IMessage replyMessage = await DoReceiveAsync(tempReplyChannel, receiveTimeout, cancellationToken);
+
         if (replyMessage != null)
         {
-            replyMessage = MessageBuilder.FromMessage(replyMessage)
-                .SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
-                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader)
-                .Build();
+            replyMessage = MessageBuilder.FromMessage(replyMessage).SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
+                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader).Build();
         }
 
         return replyMessage;
@@ -300,17 +272,16 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             throw new ArgumentNullException(nameof(destination));
         }
 
-        var originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
-        var originalErrorChannelHeader = requestMessage.Headers.ErrorChannel;
+        object originalReplyChannelHeader = requestMessage.Headers.ReplyChannel;
+        object originalErrorChannelHeader = requestMessage.Headers.ErrorChannel;
 
-        var sendTimeout = GetSendTimeout(requestMessage);
-        var receiveTimeout = GetReceiveTimeout(requestMessage);
+        int sendTimeout = GetSendTimeout(requestMessage);
+        int receiveTimeout = GetReceiveTimeout(requestMessage);
 
         var tempReplyChannel = new TemporaryReplyChannel(_throwExceptionOnLateReply);
-        requestMessage = MessageBuilder.FromMessage(requestMessage).SetReplyChannel(tempReplyChannel)
-            .SetHeader(_sendTimeoutHeader, null)
-            .SetHeader(_receiveTimeoutHeader, null)
-            .SetErrorChannel(tempReplyChannel).Build();
+
+        requestMessage = MessageBuilder.FromMessage(requestMessage).SetReplyChannel(tempReplyChannel).SetHeader(_sendTimeoutHeader, null)
+            .SetHeader(_receiveTimeoutHeader, null).SetErrorChannel(tempReplyChannel).Build();
 
         try
         {
@@ -322,13 +293,12 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             throw;
         }
 
-        var replyMessage = DoReceive(tempReplyChannel, receiveTimeout);
+        IMessage replyMessage = DoReceive(tempReplyChannel, receiveTimeout);
+
         if (replyMessage != null)
         {
-            replyMessage = MessageBuilder.FromMessage(replyMessage)
-                .SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
-                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader)
-                .Build();
+            replyMessage = MessageBuilder.FromMessage(replyMessage).SetHeader(MessageHeaders.ReplyChannelName, originalReplyChannelHeader)
+                .SetHeader(MessageHeaders.ErrorChannelName, originalErrorChannelHeader).Build();
         }
 
         return replyMessage;
@@ -340,21 +310,21 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         {
             return intValue;
         }
-        else if (headerValue is string stringValue)
+
+        if (headerValue is string stringValue)
         {
             return int.Parse(stringValue);
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private int GetSendTimeout(IMessage requestMessage)
     {
-        if (requestMessage.Headers.TryGetValue(_sendTimeoutHeader, out var headerValue))
+        if (requestMessage.Headers.TryGetValue(_sendTimeoutHeader, out object headerValue))
         {
-            var result = HeaderToInt(headerValue);
+            int? result = HeaderToInt(headerValue);
+
             if (result.HasValue)
             {
                 return result.Value;
@@ -366,9 +336,10 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     private int GetReceiveTimeout(IMessage requestMessage)
     {
-        if (requestMessage.Headers.TryGetValue(_receiveTimeoutHeader, out var headerValue))
+        if (requestMessage.Headers.TryGetValue(_receiveTimeoutHeader, out object headerValue))
         {
-            var result = HeaderToInt(headerValue);
+            int? result = HeaderToInt(headerValue);
+
             if (result.HasValue)
             {
                 return result.Value;
@@ -380,16 +351,11 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
     private sealed class TemporaryReplyChannel : IPollableChannel
     {
-        private readonly CountdownEvent _replyLatch = new (1);
+        private readonly CountdownEvent _replyLatch = new(1);
 
         private readonly bool _throwExceptionOnLateReply;
 
         private volatile IMessage _replyMessage;
-
-        public TemporaryReplyChannel(bool throwExceptionOnLateReply)
-        {
-            _throwExceptionOnLateReply = throwExceptionOnLateReply;
-        }
 
         public bool SendFailed { get; set; }
 
@@ -398,6 +364,11 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
         public bool HasReceived { get; set; }
 
         public string ServiceName { get; set; } = "TempReplyChannel";
+
+        public TemporaryReplyChannel(bool throwExceptionOnLateReply)
+        {
+            _throwExceptionOnLateReply = throwExceptionOnLateReply;
+        }
 
         public IMessage Receive()
         {
@@ -438,6 +409,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             try
             {
                 _replyLatch.Wait(cancellationToken);
+
                 if (cancellationToken.IsCancellationRequested)
                 {
                     TimedOut = true;
@@ -462,9 +434,10 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
 
         public bool Send(IMessage message, int timeout)
         {
-            var alreadyReceivedReply = HasReceived;
+            bool alreadyReceivedReply = HasReceived;
 
             string errorDescription = null;
+
             if (TimedOut)
             {
                 errorDescription = "Reply message received but the receiving thread has exited due to a timeout";
@@ -475,8 +448,7 @@ public class MessageChannelTemplate : AbstractDestinationResolvingMessagingTempl
             }
             else if (SendFailed)
             {
-                errorDescription = "Reply message received but the receiving thread has exited due to " +
-                                   "an exception while sending the request message";
+                errorDescription = "Reply message received but the receiving thread has exited due to " + "an exception while sending the request message";
             }
             else
             {

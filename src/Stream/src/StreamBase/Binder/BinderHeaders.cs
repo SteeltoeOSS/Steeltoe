@@ -9,6 +9,7 @@ namespace Steeltoe.Stream.Binder;
 
 public static class BinderHeaders
 {
+    private const string Prefix = "scst_";
     public const string BinderOriginalContentType = "originalContentType";
 
     public const string PartitionHeader = $"{Prefix}partition";
@@ -25,6 +26,4 @@ public static class BinderHeaders
         MessageHeaders.ContentType,
         BinderOriginalContentType
     };
-
-    private const string Prefix = "scst_";
 }

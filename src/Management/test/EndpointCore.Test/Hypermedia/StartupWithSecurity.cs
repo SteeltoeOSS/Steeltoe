@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Hypermedia.Test;
 
 public class StartupWithSecurity
 {
+    public IConfiguration Configuration { get; set; }
+
     public StartupWithSecurity(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -28,6 +28,7 @@ public class StartupWithSecurity
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<ActuatorEndpoint>();

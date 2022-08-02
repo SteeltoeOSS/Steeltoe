@@ -2,19 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using System.Collections.Concurrent;
+using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
 {
-    protected BlockingCollection<Task> workQueue;
-
     [ThreadStatic]
     private static bool _isHystrixThreadPoolThread;
 
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
+    protected BlockingCollection<Task> workQueue;
+
+    public override int CurrentQueueSize => workQueue.Count;
+
+    public override bool IsQueueSpaceAvailable => workQueue.Count < queueSizeRejectionThreshold;
 
     public HystrixQueuedTaskScheduler(IHystrixThreadPoolOptions options)
         : base(options)
@@ -35,19 +38,6 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
         runningThreads = 1;
     }
 
-    public override int CurrentQueueSize
-    {
-        get
-        {
-            return workQueue.Count;
-        }
-    }
-
-    public override bool IsQueueSpaceAvailable
-    {
-        get { return workQueue.Count < queueSizeRejectionThreshold; }
-    }
-
     protected override IEnumerable<Task> GetScheduledTasks()
     {
         return workQueue.ToList();
@@ -55,7 +45,8 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
 
     protected override void QueueTask(Task task)
     {
-        var isCommand = task.AsyncState is IHystrixInvokable;
+        bool isCommand = task.AsyncState is IHystrixInvokable;
+
         if (!isCommand)
         {
             RunContinuation(task);
@@ -98,43 +89,42 @@ public class HystrixQueuedTaskScheduler : HystrixTaskScheduler
 
     protected void StartThreadPoolWorker()
     {
-        System.Threading.ThreadPool.QueueUserWorkItem(
-            _ =>
-            {
+        System.Threading.ThreadPool.QueueUserWorkItem(_ =>
+        {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
-                _isHystrixThreadPoolThread = true;
+            _isHystrixThreadPoolThread = true;
 #pragma warning restore S2696 // Instance members should not write to "static" fields
-                try
+            try
+            {
+                while (!shutdown)
                 {
-                    while (!shutdown)
-                    {
-                        workQueue.TryTake(out var item, 250);
+                    workQueue.TryTake(out Task item, 250);
 
-                        if (item != null)
+                    if (item != null)
+                    {
+                        try
                         {
-                            try
-                            {
-                                Interlocked.Increment(ref runningTasks);
-                                TryExecuteTask(item);
-                            }
-                            catch (Exception)
-                            {
-                                // Log
-                            }
-                            finally
-                            {
-                                Interlocked.Decrement(ref runningTasks);
-                                Interlocked.Increment(ref completedTasks);
-                            }
+                            Interlocked.Increment(ref runningTasks);
+                            TryExecuteTask(item);
+                        }
+                        catch (Exception)
+                        {
+                            // Log
+                        }
+                        finally
+                        {
+                            Interlocked.Decrement(ref runningTasks);
+                            Interlocked.Increment(ref completedTasks);
                         }
                     }
                 }
-                finally
-                {
-                    Interlocked.Decrement(ref runningThreads);
-                    _isHystrixThreadPoolThread = false;
-                }
-            }, null);
+            }
+            finally
+            {
+                Interlocked.Decrement(ref runningThreads);
+                _isHystrixThreadPoolThread = false;
+            }
+        }, null);
     }
 
     protected override bool TryExecuteTaskInline(Task task, bool taskWasPreviouslyQueued)

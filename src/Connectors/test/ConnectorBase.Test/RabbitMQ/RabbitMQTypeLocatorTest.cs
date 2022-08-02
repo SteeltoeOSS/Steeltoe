@@ -12,9 +12,9 @@ public class RabbitMQTypeLocatorTest
     public void Property_Can_Locate_ConnectionTypes()
     {
         // arrange -- handled by including a compatible RabbitMQ NuGet package
-        var interfaceType = RabbitMQTypeLocator.ConnectionFactoryInterface;
-        var implementationType = RabbitMQTypeLocator.ConnectionFactory;
-        var connectionType = RabbitMQTypeLocator.ConnectionInterface;
+        Type interfaceType = RabbitMQTypeLocator.ConnectionFactoryInterface;
+        Type implementationType = RabbitMQTypeLocator.ConnectionFactory;
+        Type connectionType = RabbitMQTypeLocator.ConnectionInterface;
 
         Assert.NotNull(interfaceType);
         Assert.NotNull(implementationType);
@@ -24,8 +24,12 @@ public class RabbitMQTypeLocatorTest
     [Fact]
     public void Throws_When_ConnectionType_NotFound()
     {
-        var types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
-        RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new[] { "something-Wrong" };
+        string[] types = RabbitMQTypeLocator.ConnectionInterfaceTypeNames;
+
+        RabbitMQTypeLocator.ConnectionInterfaceTypeNames = new[]
+        {
+            "something-Wrong"
+        };
 
         var exception = Assert.Throws<TypeLoadException>(() => RabbitMQTypeLocator.ConnectionFactoryInterface);
 

@@ -9,7 +9,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 internal sealed class TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand : HystrixCommand<bool>
 {
     public TestEarlyUnsubscribeDuringExecutionViaToObservableAsyncCommand()
-        : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+        : base(new HystrixCommandOptions
+        {
+            GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC")
+        })
     {
     }
 

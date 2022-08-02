@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Util;
 using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Util;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -16,22 +16,34 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 public class SpelReproTests : AbstractExpressionTests
 {
     [Fact]
-    public void NPE_SPR5661() => Evaluate("JoinThreeStrings('a',null,'c')", "ac", typeof(string));
+    public void NPE_SPR5661()
+    {
+        Evaluate("JoinThreeStrings('a',null,'c')", "ac", typeof(string));
+    }
 
     [Fact]
-    public void SWF1086() => Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
+    public void SWF1086()
+    {
+        Evaluate("PrintDouble(T(Decimal).Parse('14.35'))", "14.35", typeof(string));
+    }
 
     [Fact]
-    public void DoubleCoercion() => Evaluate("PrintDouble(14.35)", "14.35", typeof(string));
+    public void DoubleCoercion()
+    {
+        Evaluate("PrintDouble(14.35)", "14.35", typeof(string));
+    }
 
     [Fact]
-    public void DoubleArrayCoercion() => Evaluate("PrintDoubles(GetDoublesAsStringList())", "{14.35, 15.45}", typeof(string));
+    public void DoubleArrayCoercion()
+    {
+        Evaluate("PrintDoubles(GetDoublesAsStringList())", "{14.35, 15.45}", typeof(string));
+    }
 
     [Fact]
     public void SPR5899()
     {
         var context = new StandardEvaluationContext(new Spr5899Class());
-        var expr = new SpelExpressionParser().ParseRaw("TryToInvokeWithNull(12)");
+        IExpression expr = new SpelExpressionParser().ParseRaw("TryToInvokeWithNull(12)");
         Assert.Equal(12, expr.GetValue(context));
         expr = new SpelExpressionParser().ParseRaw("TryToInvokeWithNull(null)");
         Assert.Equal(0, expr.GetValue(context));
@@ -70,7 +82,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         // Expression expr = new SpelExpressionParser().ParseRaw("T(java.util.Map$Entry)");
         // Assert.Equal(typeof(), expr.GetValue(context)).isEqualTo(typeof(Map.Entry));
-        var expr = new SpelExpressionParser().ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner).Run()");
+        IExpression expr = new SpelExpressionParser().ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner).Run()");
         Assert.Equal(12, expr.GetValue(context));
 
         expr = new SpelExpressionParser().ParseRaw("new Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$Outer$Inner().Run2()");
@@ -80,10 +92,14 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR5804()
     {
-        var m = new Dictionary<string, string> { { "foo", "bar" } };
-        var context = new StandardEvaluationContext(m);  // root is a map instance
+        var m = new Dictionary<string, string>
+        {
+            { "foo", "bar" }
+        };
+
+        var context = new StandardEvaluationContext(m); // root is a map instance
         context.AddPropertyAccessor(new MapAccessor());
-        var expr = new SpelExpressionParser().ParseRaw("['foo']");
+        IExpression expr = new SpelExpressionParser().ParseRaw("['foo']");
         Assert.Equal("bar", expr.GetValue(context));
     }
 
@@ -127,8 +143,8 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void NPE_SPR5673()
     {
-        var hashes = TemplateExpressionParsingTests.HashDelimitedParserContextSingleton;
-        var dollars = TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton;
+        IParserContext hashes = TemplateExpressionParsingTests.HashDelimitedParserContextSingleton;
+        IParserContext dollars = TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton;
 
         CheckTemplateParsing("abc${'def'} ghi", "abcdef ghi");
 
@@ -152,11 +168,17 @@ public class SpelReproTests : AbstractExpressionTests
         CheckTemplateParsingError("Hello ${ ( ", "No ending suffix '}' for expression starting at character 6: ${ ( ");
         CheckTemplateParsingError("Hello ${ ( }", "Found closing '}' at position 11 but most recent opening is '(' at position 9");
         CheckTemplateParsing("#{'Unable to render embedded object: File ({#this == 2}'}", hashes, "Unable to render embedded object: File ({#this == 2}");
-        CheckTemplateParsing("This is the last odd number in the list: ${ListOfNumbersUpToTen.$[#this%2==1]}", dollars, "This is the last odd number in the list: 9");
+
+        CheckTemplateParsing("This is the last odd number in the list: ${ListOfNumbersUpToTen.$[#this%2==1]}", dollars,
+            "This is the last odd number in the list: 9");
+
         CheckTemplateParsing("Hello ${'here is a curly bracket }'}", dollars, "Hello here is a curly bracket }");
         CheckTemplateParsing("He${'${'}llo ${'here is a curly bracket }'}}", dollars, "He${llo here is a curly bracket }}");
         CheckTemplateParsing("Hello ${'()()()}{}{}{][]{}{][}[][][}{()()'} World", dollars, "Hello ()()()}{}{}{][]{}{][}[][][}{()() World");
-        CheckTemplateParsing("Hello ${'inner literal that''s got {[(])]}an escaped quote in it'} World", "Hello inner literal that's got {[(])]}an escaped quote in it World");
+
+        CheckTemplateParsing("Hello ${'inner literal that''s got {[(])]}an escaped quote in it'} World",
+            "Hello inner literal that's got {[(])]}an escaped quote in it World");
+
         CheckTemplateParsingError("Hello ${", "No ending suffix '}' for expression starting at character 6: ${");
     }
 
@@ -164,7 +186,7 @@ public class SpelReproTests : AbstractExpressionTests
     public void PropertyAccessOnNullTarget_SPR5663()
     {
         var accessor = new ReflectivePropertyAccessor();
-        var context = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
         Assert.False(accessor.CanRead(context, null, "abc"));
         Assert.False(accessor.CanWrite(context, null, "abc"));
         Assert.Throws<ArgumentNullException>(() => accessor.Read(context, null, "abc"));
@@ -175,8 +197,8 @@ public class SpelReproTests : AbstractExpressionTests
     public void NestedProperties_SPR6923()
     {
         var context = new StandardEvaluationContext(new Foo());
-        var expr = new SpelExpressionParser().ParseRaw("Resource.Resource.Server");
-        var name = expr.GetValue<string>(context);
+        IExpression expr = new SpelExpressionParser().ParseRaw("Resource.Resource.Server");
+        string name = expr.GetValue<string>(context);
         Assert.Equal("abc", name);
     }
 
@@ -344,6 +366,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         // bean name will cause AccessException
         expr = new SpelExpressionParser().ParseRaw("@goo");
+
         try
         {
             Assert.Null(expr.GetValue<string>(context));
@@ -414,8 +437,16 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void MapOfMap_SPR7244()
     {
-        var map = new Dictionary<string, object> { { "uri", "http:" } };
-        var nameMap = new Dictionary<string, string> { { "givenName", "Arthur" } };
+        var map = new Dictionary<string, object>
+        {
+            { "uri", "http:" }
+        };
+
+        var nameMap = new Dictionary<string, string>
+        {
+            { "givenName", "Arthur" }
+        };
+
         map.Add("value", nameMap);
 
         var context = new StandardEvaluationContext(map);
@@ -425,9 +456,9 @@ public class SpelReproTests : AbstractExpressionTests
         // var exp = parser.ParseExpression(el1);
         // var evaluated = exp.GetValue(context);
         // Assert.Equal("Arthur", evaluated);
-        var el2 = "#root['value']['givenName']";
-        var exp = parser.ParseExpression(el2);
-        var evaluated = exp.GetValue(context);
+        string el2 = "#root['value']['givenName']";
+        IExpression exp = parser.ParseExpression(el2);
+        object evaluated = exp.GetValue(context);
         Assert.Equal("Arthur", evaluated);
     }
 
@@ -436,13 +467,13 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        var el1 = "Ls.![#this.Equals('abc')]";
-        var exp = parser.ParseRaw(el1);
+        string el1 = "Ls.![#this.Equals('abc')]";
+        IExpression exp = parser.ParseRaw(el1);
         var value = (List<object>)exp.GetValue(context);
 
         // value is list containing [true,false]
         Assert.IsType<bool>(value[0]);
-        var evaluated = exp.GetValueType(context);
+        Type evaluated = exp.GetValueType(context);
         Assert.Equal(typeof(List<object>), evaluated);
     }
 
@@ -451,13 +482,13 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        var el1 = "As.![#this.Equals('abc')]";
-        var exp = parser.ParseRaw(el1);
-        var value = (bool[])exp.GetValue(context);
+        string el1 = "As.![#this.Equals('abc')]";
+        IExpression exp = parser.ParseRaw(el1);
+        bool[] value = (bool[])exp.GetValue(context);
 
         // value is array containing [true,false]
         Assert.IsType<bool>(value[0]);
-        var evaluated = exp.GetValueType(context);
+        Type evaluated = exp.GetValueType(context);
         Assert.Equal(typeof(bool[]), evaluated);
     }
 
@@ -466,13 +497,13 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        var el1 = "Ms.![Key.Equals('abc')]";
-        var exp = parser.ParseRaw(el1);
+        string el1 = "Ms.![Key.Equals('abc')]";
+        IExpression exp = parser.ParseRaw(el1);
         var value = (List<object>)exp.GetValue(context);
 
         // value is list containing [true,false]
         Assert.IsType<bool>(value[0]);
-        var evaluated = exp.GetValueType(context);
+        Type evaluated = exp.GetValueType(context);
         Assert.Equal(typeof(List<object>), evaluated);
     }
 
@@ -481,30 +512,30 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var list = new List<D>
         {
-            new ("aaa"),
-            new ("bbb"),
-            new (null),
-            new ("ccc"),
-            new (null),
-            new ("zzz")
+            new("aaa"),
+            new("bbb"),
+            new(null),
+            new("ccc"),
+            new(null),
+            new("zzz")
         };
 
         var context = new StandardEvaluationContext(list);
         var parser = new SpelExpressionParser();
 
-        var el1 = "#root.?[A < 'hhh']";
-        var exp = parser.ParseRaw(el1);
+        string el1 = "#root.?[A < 'hhh']";
+        IExpression exp = parser.ParseRaw(el1);
         var value = exp.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(aaa),D(bbb),D(),D(ccc),D()", string.Join(",", value));
 
-        var el2 = "#root.?[A > 'hhh']";
-        var exp2 = parser.ParseRaw(el2);
+        string el2 = "#root.?[A > 'hhh']";
+        IExpression exp2 = parser.ParseRaw(el2);
         var value2 = exp2.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(zzz)", string.Join(",", value2));
 
         // trim out the nulls first
-        var el3 = "#root.?[A!=null].?[A < 'hhh']";
-        var exp3 = parser.ParseRaw(el3);
+        string el3 = "#root.?[A!=null].?[A < 'hhh']";
+        IExpression exp3 = parser.ParseRaw(el3);
         var value3 = exp3.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(aaa),D(bbb),D(ccc)", string.Join(",", value3));
     }
@@ -512,32 +543,35 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void ConversionPriority_SPR8224()
     {
-        var integer = 7;
+        int integer = 7;
 
         var emptyEvalContext = new StandardEvaluationContext();
 
-        var args = new List<Type> { typeof(int) };
+        var args = new List<Type>
+        {
+            typeof(int)
+        };
 
         var target = new ConversionPriority1();
-        var me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
+        IMethodExecutor me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
 
         // MethodInvoker chooses getX(int i) when passing Integer
-        var actual = (int)me.Execute(emptyEvalContext, target, 42).Value;
+        int actual = (int)me.Execute(emptyEvalContext, target, 42).Value;
 
         // Compiler chooses getX(Number i) when passing Integer
-        var compiler = target.GetX(integer);
+        int compiler = target.GetX(integer);
 
         // Fails!
         Assert.Equal(compiler, actual);
 
         var target2 = new ConversionPriority2();
-        var me2 = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target2, "GetX", args);
+        IMethodExecutor me2 = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target2, "GetX", args);
 
         // MethodInvoker chooses getX(int i) when passing Integer
-        var actual2 = (int)me2.Execute(emptyEvalContext, target2, 42).Value;
+        int actual2 = (int)me2.Execute(emptyEvalContext, target2, 42).Value;
 
         // Compiler chooses getX(Number i) when passing Integer
-        var compiler2 = target2.GetX(integer);
+        int compiler2 = target2.GetX(integer);
 
         // Fails!
         Assert.Equal(compiler2, actual2);
@@ -546,16 +580,19 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void WideningPrimitiveConversion_SPR8224()
     {
-        var integerValue = 7;
+        int integerValue = 7;
         var target = new WideningPrimitiveConversion();
         var emptyEvalContext = new StandardEvaluationContext();
 
-        var args = new List<Type> { typeof(int) };
+        var args = new List<Type>
+        {
+            typeof(int)
+        };
 
-        var me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
-        var actual = (int)me.Execute(emptyEvalContext, target, integerValue).Value;
+        IMethodExecutor me = new ReflectiveMethodResolver(true).Resolve(emptyEvalContext, target, "GetX", args);
+        int actual = (int)me.Execute(emptyEvalContext, target, integerValue).Value;
 
-        var compiler = target.GetX(integerValue);
+        int compiler = target.GetX(integerValue);
         Assert.Equal(compiler, actual);
     }
 
@@ -601,9 +638,14 @@ public class SpelReproTests : AbstractExpressionTests
 #pragma warning restore S2699 // Tests should include assertions
     {
         var emptyEvalContext = new StandardEvaluationContext();
-        var args = new List<Type> { typeof(long) };
+
+        var args = new List<Type>
+        {
+            typeof(long)
+        };
+
         var ru = new ReflectionUtil<int>();
-        var me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
+        IMethodExecutor me = new ReflectiveMethodResolver().Resolve(emptyEvalContext, ru, "MethodToCall", args);
         me.Execute(emptyEvalContext, ru, 1);
 
         args[0] = typeof(int);
@@ -650,9 +692,9 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new Reserver());
         var parser = new SpelExpressionParser();
-        var ex = "GetReserver().NE";
-        var exp = parser.ParseRaw(ex);
-        var value = exp.GetValue<string>(context);
+        string ex = "GetReserver().NE";
+        IExpression exp = parser.ParseRaw(ex);
+        string value = exp.GetValue<string>(context);
         Assert.Equal("abc", value);
 
         ex = "GetReserver().ne";
@@ -682,8 +724,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).Const");
-        var value = expression.GetValue(context);
+        IExpression expression = parser.ParseRaw("T(Steeltoe.Common.Expression.Internal.Spring.TestResources.le.div.mod.reserved.Reserver).Const");
+        object value = expression.GetValue(context);
         Assert.Equal(TestResources.le.div.mod.reserved.Reserver.Const, value);
     }
 
@@ -709,12 +751,17 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var methodResolvers = new List<IMethodResolver> { new ParseReflectiveMethodResolver() };
+
+        var methodResolvers = new List<IMethodResolver>
+        {
+            new ParseReflectiveMethodResolver()
+        };
+
         context.MethodResolvers = methodResolvers;
         context.SetVariable("parseFormat", NumberStyles.HexNumber);
-        var expression = parser.ParseExpression("-Parse('FF', #parseFormat)");
+        IExpression expression = parser.ParseExpression("-Parse('FF', #parseFormat)");
 
-        var result = expression.GetValue<int>(context, typeof(int));
+        int result = expression.GetValue<int>(context, typeof(int));
         Assert.Equal(-255, result);
     }
 
@@ -751,101 +798,101 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatFunctionResolver()
     {
-        var expectedResult = Math.Abs(-10.2f);
+        float expectedResult = Math.Abs(-10.2f);
         var parser = new SpelExpressionParser();
         var testObject = new FunctionsClass();
 
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("Abs(-10.2f)");
-        var result = expression.GetValue<float>(context, testObject);
+        IExpression expression = parser.ParseExpression("Abs(-10.2f)");
+        float result = expression.GetValue<float>(context, testObject);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_AddFloatWithDouble()
     {
-        var expectedNumber = 10.21f + 10.2;
+        double expectedNumber = 10.21f + 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f + 10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f + 10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_AddFloatWithFloat()
     {
-        var expectedNumber = 10.21f + 10.2f;
+        float expectedNumber = 10.21f + 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f + 10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f + 10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_SubtractFloatWithDouble()
     {
-        var expectedNumber = 10.21f - 10.2;
+        double expectedNumber = 10.21f - 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f - 10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f - 10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_SubtractFloatWithFloat()
     {
-        var expectedNumber = 10.21f - 10.2f;
+        float expectedNumber = 10.21f - 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f - 10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f - 10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_MultiplyFloatWithDouble()
     {
-        var expectedNumber = 10.21f * 10.2;
+        double expectedNumber = 10.21f * 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f * 10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f * 10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_MultiplyFloatWithFloat()
     {
-        var expectedNumber = 10.21f * 10.2f;
+        float expectedNumber = 10.21f * 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f * 10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f * 10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatDivideByFloat()
     {
-        var expectedNumber = -10.21f / -10.2f;
+        float expectedNumber = -10.21f / -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f / -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f / -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatDivideByDouble()
     {
-        var expectedNumber = -10.21f / -10.2;
+        double expectedNumber = -10.21f / -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f / -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f / -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
@@ -854,8 +901,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f == -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f == -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(false, result);
     }
 
@@ -864,8 +911,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f == -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f == -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(false, result);
     }
 
@@ -874,8 +921,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.215f == 10.2109f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.215f == 10.2109f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(false, result);
     }
 
@@ -884,8 +931,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.215f == 10.2109");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.215f == 10.2109");
+        object result = expression.GetValue(context, null);
         Assert.Equal(false, result);
     }
 
@@ -894,8 +941,8 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.215f != 10.2109f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.215f != 10.2109f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(true, result);
     }
 
@@ -904,140 +951,140 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.215f != 10.2109");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.215f != 10.2109");
+        object result = expression.GetValue(context, null);
         Assert.Equal(true, result);
     }
 
     [Fact]
     public void SPR9486_FloatLessThanFloat()
     {
-        var expectedNumber = -10.21f < -10.2f;
+        bool expectedNumber = -10.21f < -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f < -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f < -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatLessThanDouble()
     {
-        var expectedNumber = -10.21f < -10.2;
+        bool expectedNumber = -10.21f < -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f < -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f < -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatLessThanOrEqualFloat()
     {
-        var expectedNumber = -10.21f <= -10.22f;
+        bool expectedNumber = -10.21f <= -10.22f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f <= -10.22f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f <= -10.22f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatLessThanOrEqualDouble()
     {
-        var expectedNumber = -10.21f <= -10.2;
+        bool expectedNumber = -10.21f <= -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f <= -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f <= -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatGreaterThanFloat()
     {
-        var expectedNumber = -10.21f > -10.2f;
+        bool expectedNumber = -10.21f > -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f > -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f > -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatGreaterThanDouble()
     {
-        var expectedResult = -10.21f > -10.2;
+        bool expectedResult = -10.21f > -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f > -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f > -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_FloatGreaterThanOrEqualFloat()
     {
-        var expectedNumber = -10.21f >= -10.2f;
+        bool expectedNumber = -10.21f >= -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f >= -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f >= -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedNumber, result);
     }
 
     [Fact]
     public void SPR9486_FloatGreaterThanEqualDouble()
     {
-        var expectedResult = -10.21f >= -10.2;
+        bool expectedResult = -10.21f >= -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("-10.21f >= -10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("-10.21f >= -10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_FloatModulusFloat()
     {
-        var expectedResult = 10.21f % 10.2f;
+        float expectedResult = 10.21f % 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f % 10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f % 10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_FloatModulusDouble()
     {
-        var expectedResult = 10.21f % 10.2;
+        double expectedResult = 10.21f % 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f % 10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f % 10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_FloatPowerFloat()
     {
-        var expectedResult = Math.Pow(10.21f, -10.2f);
+        double expectedResult = Math.Pow(10.21f, -10.2f);
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f ^ -10.2f");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f ^ -10.2f");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
     [Fact]
     public void SPR9486_FloatPowerDouble()
     {
-        var expectedResult = Math.Pow(10.21f, 10.2);
+        double expectedResult = Math.Pow(10.21f, 10.2);
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var expression = parser.ParseExpression("10.21f ^ 10.2");
-        var result = expression.GetValue(context, null);
+        IExpression expression = parser.ParseExpression("10.21f ^ 10.2");
+        object result = expression.GetValue(context, null);
         Assert.Equal(expectedResult, result);
     }
 
@@ -1046,7 +1093,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var evaluationContext = new StandardEvaluationContext(new BooleanHolder());
-        var valueType = parser.ParseExpression("SimpleProperty").GetValueType(evaluationContext);
+        Type valueType = parser.ParseExpression("SimpleProperty").GetValueType(evaluationContext);
         Assert.Equal(typeof(bool), valueType);
     }
 
@@ -1055,7 +1102,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var evaluationContext = new StandardEvaluationContext(new BooleanHolder());
-        var value = parser.ParseExpression("SimpleProperty").GetValue(evaluationContext);
+        object value = parser.ParseExpression("SimpleProperty").GetValue(evaluationContext);
         Assert.IsType<bool>(value);
     }
 
@@ -1064,7 +1111,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var evaluationContext = new StandardEvaluationContext(new BooleanHolder());
-        var valueType = parser.ParseExpression("PrimitiveProperty").GetValueType(evaluationContext);
+        Type valueType = parser.ParseExpression("PrimitiveProperty").GetValueType(evaluationContext);
         Assert.Equal(typeof(bool), valueType);
     }
 
@@ -1073,7 +1120,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var evaluationContext = new StandardEvaluationContext(new BooleanHolder());
-        var value = parser.ParseExpression("PrimitiveProperty").GetValue(evaluationContext);
+        object value = parser.ParseExpression("PrimitiveProperty").GetValue(evaluationContext);
         Assert.IsType<bool>(value);
     }
 
@@ -1117,7 +1164,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext();
         context.SetVariable("bridgeExample", new SPR10210.D());
-        var parseExpression = Parser.ParseExpression("#bridgeExample.BridgeMethod()");
+        IExpression parseExpression = Parser.ParseExpression("#bridgeExample.BridgeMethod()");
         parseExpression.GetValue(context);
     }
 
@@ -1135,10 +1182,10 @@ public class SpelReproTests : AbstractExpressionTests
         var parser = new SpelExpressionParser(configuration);
 
         var context = new StandardEvaluationContext();
-        var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
+        IExpression spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
         context.SetVariable("enumType", typeof(Abc));
-        var result = spel.GetValue(context);
+        object result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
@@ -1163,10 +1210,10 @@ public class SpelReproTests : AbstractExpressionTests
         var parser = new SpelExpressionParser(configuration);
 
         var context = new StandardEvaluationContext();
-        var spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
+        IExpression spel = parser.ParseExpression("T(Enum).GetValues(#enumType)");
 
         context.SetVariable("enumType", typeof(Abc));
-        var result = spel.GetValue(context);
+        object result = spel.GetValue(context);
         Assert.NotNull(result);
         Assert.True(result.GetType().IsArray);
         var asArray = result as Array;
@@ -1190,8 +1237,8 @@ public class SpelReproTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var rootObject = new Spr10486();
-        var classNameExpression = parser.ParseExpression("GetType().FullName");
-        var nameExpression = parser.ParseExpression("Name");
+        IExpression classNameExpression = parser.ParseExpression("GetType().FullName");
+        IExpression nameExpression = parser.ParseExpression("Name");
         Assert.Equal(typeof(Spr10486).FullName, classNameExpression.GetValue(context, rootObject));
         Assert.Equal("name", nameExpression.GetValue(context, rootObject));
     }
@@ -1202,7 +1249,7 @@ public class SpelReproTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         var rootObject = new Spr11142();
-        var expression = parser.ParseExpression("Something");
+        IExpression expression = parser.ParseExpression("Something");
         var ex = Assert.Throws<SpelEvaluationException>(() => expression.GetValue(context, rootObject));
         Assert.Contains("''Something'' cannot be found", ex.Message);
     }
@@ -1212,22 +1259,31 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var one = new TestClass2("abc");
         var two = new TestClass2("abc");
-        var map = new Dictionary<string, TestClass2> { { "one", one }, { "two", two } };
+
+        var map = new Dictionary<string, TestClass2>
+        {
+            { "one", one },
+            { "two", two }
+        };
 
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("['one'] == ['two']");
+        IExpression expr = parser.ParseExpression("['one'] == ['two']");
         Assert.True(expr.GetValue<bool>(map));
     }
 
     [Fact]
     public void SPR11348()
     {
-        var coll = new HashSet<string> { "one", "two" };
+        var coll = new HashSet<string>
+        {
+            "one",
+            "two"
+        };
 
         // coll = Collections.unmodifiableCollection(coll);
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("new System.Collections.ArrayList(#root)");
-        var value = expr.GetValue(coll);
+        IExpression expr = parser.ParseExpression("new System.Collections.ArrayList(#root)");
+        object value = expr.GetValue(coll);
         Assert.IsType<ArrayList>(value);
 
         var list = (ArrayList)value;
@@ -1239,15 +1295,19 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR11445_Simple()
     {
         var context = new StandardEvaluationContext(new Spr11445Class());
-        var expr = new SpelExpressionParser().ParseRaw("Echo(Parameter())");
+        IExpression expr = new SpelExpressionParser().ParseRaw("Echo(Parameter())");
         Assert.Equal(1, expr.GetValue(context));
     }
 
     [Fact]
     public void SPR11445_BeanReference()
     {
-        var context = new StandardEvaluationContext { ServiceResolver = new Spr11445Class() };
-        var expr = new SpelExpressionParser().ParseRaw("@bean.Echo(@bean.Parameter())");
+        var context = new StandardEvaluationContext
+        {
+            ServiceResolver = new Spr11445Class()
+        };
+
+        IExpression expr = new SpelExpressionParser().ParseRaw("@bean.Echo(@bean.Parameter())");
         Assert.Equal(1, expr.GetValue(context));
     }
 
@@ -1256,25 +1316,34 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var sec = new StandardEvaluationContext();
         sec.AddPropertyAccessor(new MapAccessor());
-        var exp = new SpelExpressionParser().ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
+        IExpression exp = new SpelExpressionParser().ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$MapWithConstant).X");
         Assert.Equal(1, exp.GetValue(sec));
     }
 
     [Fact]
     public void SPR9735()
     {
-        var item = new Item { Name = "parent" };
+        var item = new Item
+        {
+            Name = "parent"
+        };
 
-        var item1 = new Item { Name = "child1" };
+        var item1 = new Item
+        {
+            Name = "child1"
+        };
 
-        var item2 = new Item { Name = "child2" };
+        var item2 = new Item
+        {
+            Name = "child2"
+        };
 
         item.Add(item1);
         item.Add(item2);
 
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
-        var exp = parser.ParseExpression("#item[0].Name");
+        IExpression exp = parser.ParseExpression("#item[0].Name");
         context.SetVariable("item", item);
 
         Assert.Equal("child1", exp.GetValue(context));
@@ -1284,7 +1353,7 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR12502()
     {
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("#root.GetType().Name");
+        IExpression expression = parser.ParseExpression("#root.GetType().Name");
         Assert.Equal(nameof(UnnamedUser), expression.GetValue(new UnnamedUser()));
         Assert.Equal(nameof(NamedUser), expression.GetValue(new NamedUser()));
     }
@@ -1293,8 +1362,8 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR12522()
     {
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("T(Array).CreateInstance(T(String), 0)");
-        var value = expression.GetValue();
+        IExpression expression = parser.ParseExpression("T(Array).CreateInstance(T(String), 0)");
+        object value = expression.GetValue();
         Assert.True(value is IList);
         Assert.Empty((IList)value);
     }
@@ -1323,7 +1392,7 @@ public class SpelReproTests : AbstractExpressionTests
     public void SPR12808()
     {
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$DistanceEnforcer).From(#no)");
+        IExpression expression = parser.ParseExpression("T(Steeltoe.Common.Expression.Internal.Spring.SpelReproTests$DistanceEnforcer).From(#no)");
         var sec = new StandardEvaluationContext();
         sec.SetVariable("no", 1);
         Assert.StartsWith("Integer", expression.GetValue(sec).ToString());
@@ -1355,8 +1424,8 @@ public class SpelReproTests : AbstractExpressionTests
 
         var parser = new SpelExpressionParser();
 
-        var ex = "#root.![T(String).Join(',', #this.Values)]";
-        var res = parser.ParseExpression(ex).GetValue<string>(context);
+        string ex = "#root.![T(String).Join(',', #this.Values)]";
+        string res = parser.ParseExpression(ex).GetValue<string>(context);
         Assert.Equal("test11,test12,test21,test22", res);
 
         res = parser.ParseExpression("#root.![#this.Values]").GetValue<string>(context);
@@ -1369,8 +1438,12 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void AccessingFactoryBean_spr9511()
     {
-        var context = new StandardEvaluationContext { ServiceResolver = new MyBeanResolver() };
-        var expr = new SpelExpressionParser().ParseRaw("@foo");
+        var context = new StandardEvaluationContext
+        {
+            ServiceResolver = new MyBeanResolver()
+        };
+
+        IExpression expr = new SpelExpressionParser().ParseRaw("@foo");
         Assert.Equal("custard", expr.GetValue(context));
         expr = new SpelExpressionParser().ParseRaw("&foo");
         Assert.Equal("foo factory", expr.GetValue(context));
@@ -1389,10 +1462,10 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
 
-        var expression1 = parser.ParseExpression("List.?[ Value>2 ].Count!=0");
+        IExpression expression1 = parser.ParseExpression("List.?[ Value>2 ].Count!=0");
         Assert.True(expression1.GetValue<bool>(new BeanClass(new ListOf(1.1), new ListOf(2.2))));
 
-        var expression2 = parser.ParseExpression("List.?[ T(Math).Abs(Value) > 2 ].Count!=0");
+        IExpression expression2 = parser.ParseExpression("List.?[ T(Math).Abs(Value) > 2 ].Count!=0");
         Assert.True(expression2.GetValue<bool>(new BeanClass(new ListOf(1.1), new ListOf(-2.2))));
     }
 
@@ -1402,7 +1475,7 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         var parser = new SpelExpressionParser();
 
-        var ex = parser.ParseExpression("{'a':'y','b':'n'}.![Value=='y'?Key:null]");
+        IExpression ex = parser.ParseExpression("{'a':'y','b':'n'}.![Value=='y'?Key:null]");
         Assert.Equal("a,", string.Join(",", ex.GetValue<IEnumerable<string>>(context)));
 
         ex = parser.ParseExpression("{2:4,3:6}.![T(Math).Abs(#this.Key) + 5]");
@@ -1415,14 +1488,25 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR10417()
     {
-        var list1 = new ArrayList { "a", "b", "x" };
-        var list2 = new ArrayList { "c", "x" };
+        var list1 = new ArrayList
+        {
+            "a",
+            "b",
+            "x"
+        };
+
+        var list2 = new ArrayList
+        {
+            "c",
+            "x"
+        };
+
         var context = new StandardEvaluationContext();
         context.SetVariable("list1", list1);
         context.SetVariable("list2", list2);
 
         // #this should be the element from list1
-        var ex = Parser.ParseExpression("#list1.?[#list2.Contains(#this)]");
+        IExpression ex = Parser.ParseExpression("#list1.?[#list2.Contains(#this)]");
         var result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("x", string.Join(",", result));
 
@@ -1431,7 +1515,13 @@ public class SpelReproTests : AbstractExpressionTests
         result = ex.GetValue<IEnumerable<string>>(context);
         Assert.Equal("x", string.Join(",", result));
 
-        var list3 = new ArrayList { 1, 2, 3, 4 };
+        var list3 = new ArrayList
+        {
+            1,
+            2,
+            3,
+            4
+        };
 
         context = new StandardEvaluationContext();
         context.SetVariable("list3", list3);
@@ -1447,15 +1537,24 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR10417_maps()
     {
-        var map1 = new Dictionary<string, int> { { "A", 65 }, { "B", 66 }, { "X", 66 } };
-        var map2 = new Dictionary<string, int> { { "X", 66 } };
+        var map1 = new Dictionary<string, int>
+        {
+            { "A", 65 },
+            { "B", 66 },
+            { "X", 66 }
+        };
+
+        var map2 = new Dictionary<string, int>
+        {
+            { "X", 66 }
+        };
 
         var context = new StandardEvaluationContext();
         context.SetVariable("map1", map1);
         context.SetVariable("map2", map2);
 
         // #this should be the element from list1
-        var ex = Parser.ParseExpression("#map1.?[#map2.ContainsKey(#this.Key)]");
+        IExpression ex = Parser.ParseExpression("#map1.?[#map2.ContainsKey(#this.Key)]");
         var result = ex.GetValue<IDictionary>(context);
         Assert.Single(result);
         Assert.Equal(66, result["X"]);
@@ -1472,8 +1571,8 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.SetVariable("encoding", "UTF-8");
 
-        var ex = Parser.ParseExpression("T(System.Text.Encoding).GetEncoding(#encoding)");
-        var result = ex.GetValue(context);
+        IExpression ex = Parser.ParseExpression("T(System.Text.Encoding).GetEncoding(#encoding)");
+        object result = ex.GetValue(context);
         Assert.Equal(Encoding.UTF8, result);
     }
 
@@ -1483,9 +1582,14 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.SetVariable("str", "a\0b");
 
-        var ex = Parser.ParseExpression("#str?.Split('\0')");
-        var result = ex.GetValue(context);
-        Assert.True(ObjectUtils.NullSafeEquals(result, new[] { "a", "b" }));
+        IExpression ex = Parser.ParseExpression("#str?.Split('\0')");
+        object result = ex.GetValue(context);
+
+        Assert.True(ObjectUtils.NullSafeEquals(result, new[]
+        {
+            "a",
+            "b"
+        }));
     }
 
     private void DoTestSpr10146(string expression, string expectedMessage)
@@ -1494,22 +1598,29 @@ public class SpelReproTests : AbstractExpressionTests
         Assert.Contains(expectedMessage, ex.Message);
     }
 
-    private void CheckTemplateParsing(string expression, string expectedValue) => CheckTemplateParsing(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedValue);
+    private void CheckTemplateParsing(string expression, string expectedValue)
+    {
+        CheckTemplateParsing(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedValue);
+    }
 
     private void CheckTemplateParsing(string expression, IParserContext context, string expectedValue)
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression(expression, context);
+        IExpression expr = parser.ParseExpression(expression, context);
         Assert.Equal(expectedValue, expr.GetValue(TestScenarioCreator.GetTestEvaluationContext()));
     }
 
-    private void CheckTemplateParsingError(string expression, string expectedMessage) => CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedMessage);
+    private void CheckTemplateParsingError(string expression, string expectedMessage)
+    {
+        CheckTemplateParsingError(expression, TemplateExpressionParsingTests.DefaultTemplateParserContextSingleton, expectedMessage);
+    }
 
     private void CheckTemplateParsingError(string expression, IParserContext context, string expectedMessage)
     {
         var parser = new SpelExpressionParser();
         var ex = Assert.Throws<ParseException>(() => parser.ParseExpression(expression, context));
-        var message = ex.Message;
+        string message = ex.Message;
+
         if (ex is ExpressionException exception)
         {
             message = exception.SimpleMessage;
@@ -1520,25 +1631,43 @@ public class SpelReproTests : AbstractExpressionTests
 
     public static class FooLists
     {
-        public static List<T> NewArrayList<T>(IEnumerable<T> iterable) => new (iterable);
+        public static List<T> NewArrayList<T>(IEnumerable<T> iterable)
+        {
+            return new List<T>(iterable);
+        }
 
-        public static List<T> NewArrayList<T>(params object[] elements) => throw new InvalidOperationException();
+        public static List<T> NewArrayList<T>(params object[] elements)
+        {
+            throw new InvalidOperationException();
+        }
     }
 
     public static class DistanceEnforcer
     {
-        public static string From(ValueType no) => $"ValueType:{no}";
+        public static string From(ValueType no)
+        {
+            return $"ValueType:{no}";
+        }
 
-        public static string From(int no) => $"Integer:{no}";
+        public static string From(int no)
+        {
+            return $"Integer:{no}";
+        }
 
-        public static string From(object no) => $"Object:{no}";
+        public static string From(object no)
+        {
+            return $"Object:{no}";
+        }
     }
 
 #pragma warning disable SA1307 // Accessible fields should begin with upper-case letter
 #pragma warning disable IDE1006 // Naming Styles
     public class ValuesMethodResolver : IMethodResolver
     {
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes) => new ValuesMethodExecutor();
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+        {
+            return new ValuesMethodExecutor();
+        }
     }
 
     public class ValuesMethodExecutor : IMethodExecutor
@@ -1547,8 +1676,16 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                var method = typeof(Enum).GetMethod(nameof(Enum.GetValues), new[] { typeof(Type) });
-                var value = method.Invoke(null, new object[] { typeof(Xyz) });
+                MethodInfo method = typeof(Enum).GetMethod(nameof(Enum.GetValues), new[]
+                {
+                    typeof(Type)
+                });
+
+                object value = method.Invoke(null, new object[]
+                {
+                    typeof(Xyz)
+                });
+
                 return new TypedValue(value, value == null ? typeof(object) : value.GetType());
             }
             catch (Exception ex)
@@ -1564,7 +1701,14 @@ public class SpelReproTests : AbstractExpressionTests
         {
             try
             {
-                return new[] { typeof(int).GetMethod(nameof(int.Parse), new[] { typeof(string), typeof(NumberStyles) }) };
+                return new[]
+                {
+                    typeof(int).GetMethod(nameof(int.Parse), new[]
+                    {
+                        typeof(string),
+                        typeof(NumberStyles)
+                    })
+                };
             }
             catch (Exception)
             {
@@ -1575,35 +1719,56 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class Reserver
     {
-        public Reserver GetReserver() => this;
-
         public string NE = "abc";
         public string ne = "def";
         public int DIV = 1;
 
         public int div = 3;
-        public Dictionary<string, string> M = new ();
+        public Dictionary<string, string> M = new();
 
-        public Reserver() => M.Add("NE", "xyz");
+        public Reserver()
+        {
+            M.Add("NE", "xyz");
+        }
+
+        public Reserver GetReserver()
+        {
+            return this;
+        }
     }
 
     public class WideningPrimitiveConversion
     {
-        public int GetX(long i) => 10;
+        public int GetX(long i)
+        {
+            return 10;
+        }
     }
 
     public class ConversionPriority1
     {
-        public int GetX(ValueType i) => 20;
+        public int GetX(ValueType i)
+        {
+            return 20;
+        }
 
-        public int GetX(int i) => 10;
+        public int GetX(int i)
+        {
+            return 10;
+        }
     }
 
     public class ConversionPriority2
     {
-        public int GetX(int i) => 10;
+        public int GetX(int i)
+        {
+            return 10;
+        }
 
-        public int GetX(ValueType i) => 20;
+        public int GetX(ValueType i)
+        {
+            return 20;
+        }
     }
 
     public class DollarSquareTemplateParserContext : IParserContext
@@ -1647,14 +1812,21 @@ public class SpelReproTests : AbstractExpressionTests
         {
         }
 
-        public int TryToInvokeWithNull(object value) => value == null ? default : (int)value;
+        public int TryToInvokeWithNull(object value)
+        {
+            return value == null ? default : (int)value;
+        }
 
-        public int TryToInvokeWithNull2(int i) => i;
+        public int TryToInvokeWithNull2(int i)
+        {
+            return i;
+        }
 
         public string TryToInvokeWithNull3(object value, params string[] strings)
         {
             var sb = new StringBuilder();
-            foreach (var str in strings)
+
+            foreach (string str in strings)
             {
                 sb.Append(str ?? "null");
             }
@@ -1662,14 +1834,17 @@ public class SpelReproTests : AbstractExpressionTests
             return sb.ToString();
         }
 
-        public override string ToString() => "instance";
+        public override string ToString()
+        {
+            return "instance";
+        }
     }
 
     public class TestProperties
     {
-        public Dictionary<string, string> JdbcProperties = new ();
+        public Dictionary<string, string> JdbcProperties = new();
 
-        public Dictionary<string, string> Foo = new ();
+        public Dictionary<string, string> Foo = new();
 
         public TestProperties()
         {
@@ -1682,24 +1857,48 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class MapAccessor : IPropertyAccessor
     {
-        public IList<Type> GetSpecificTargetClasses() => new List<Type> { typeof(IDictionary) };
+        public IList<Type> GetSpecificTargetClasses()
+        {
+            return new List<Type>
+            {
+                typeof(IDictionary)
+            };
+        }
 
-        public bool CanRead(IEvaluationContext context, object target, string name) => ((IDictionary)target).Contains(name);
+        public bool CanRead(IEvaluationContext context, object target, string name)
+        {
+            return ((IDictionary)target).Contains(name);
+        }
 
-        public ITypedValue Read(IEvaluationContext context, object target, string name) => new TypedValue(((IDictionary)target)[name]);
+        public ITypedValue Read(IEvaluationContext context, object target, string name)
+        {
+            return new TypedValue(((IDictionary)target)[name]);
+        }
 
-        public bool CanWrite(IEvaluationContext context, object target, string name) => true;
+        public bool CanWrite(IEvaluationContext context, object target, string name)
+        {
+            return true;
+        }
 
-        public void Write(IEvaluationContext context, object target, string name, object newValue) => ((IDictionary)target).Add(name, newValue);
+        public void Write(IEvaluationContext context, object target, string name, object newValue)
+        {
+            ((IDictionary)target).Add(name, newValue);
+        }
     }
 
     public class Outer
     {
         public class Inner
         {
-            public static int Run() => 12;
+            public static int Run()
+            {
+                return 12;
+            }
 
-            public int Run2() => 13;
+            public int Run2()
+            {
+                return 13;
+            }
         }
     }
 
@@ -1709,7 +1908,14 @@ public class SpelReproTests : AbstractExpressionTests
 
         public string Floo = "bar";
 
-        public XX() => M = new Dictionary<string, string> { { "$foo", "wibble" }, { "bar", "siddle" } };
+        public XX()
+        {
+            M = new Dictionary<string, string>
+            {
+                { "$foo", "wibble" },
+                { "bar", "siddle" }
+            };
+        }
     }
 
     public class MyBeanResolver : IServiceResolver
@@ -1720,15 +1926,18 @@ public class SpelReproTests : AbstractExpressionTests
             {
                 return "custard";
             }
-            else if (serviceName.Equals("foo.bar"))
+
+            if (serviceName.Equals("foo.bar"))
             {
                 return "trouble";
             }
-            else if (serviceName.Equals("&foo"))
+
+            if (serviceName.Equals("&foo"))
             {
                 return "foo factory";
             }
-            else if (serviceName.Equals("goo"))
+
+            if (serviceName.Equals("goo"))
             {
                 throw new AccessException("DONT ASK ME ABOUT GOO");
             }
@@ -1747,10 +1956,23 @@ public class SpelReproTests : AbstractExpressionTests
 
         public C()
         {
-            Ls = new List<string> { "abc", "def" };
+            Ls = new List<string>
+            {
+                "abc",
+                "def"
+            };
 
-            As = new[] { "abc", "def" };
-            Ms = new Dictionary<string, string> { ["abc"] = "xyz", ["def"] = "pqr" };
+            As = new[]
+            {
+                "abc",
+                "def"
+            };
+
+            Ms = new Dictionary<string, string>
+            {
+                ["abc"] = "xyz",
+                ["def"] = "pqr"
+            };
         }
     }
 
@@ -1758,9 +1980,15 @@ public class SpelReproTests : AbstractExpressionTests
     {
         public string A;
 
-        public D(string s) => A = s;
+        public D(string s)
+        {
+            A = s;
+        }
 
-        public override string ToString() => $"D({A})";
+        public override string ToString()
+        {
+            return $"D({A})";
+        }
     }
 
     public class Resource
@@ -1770,19 +1998,25 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class ResourceSummary
     {
-        public ResourceSummary() => Resource = new Resource();
-
         public Resource Resource { get; }
+
+        public ResourceSummary()
+        {
+            Resource = new Resource();
+        }
     }
 
     public class Foo
     {
-        public ResourceSummary Resource = new ();
+        public ResourceSummary Resource = new();
     }
 
     public class Foo2
     {
-        public void Execute(string str) => Console.WriteLine($"Value: {str}");
+        public void Execute(string str)
+        {
+            Console.WriteLine($"Value: {str}");
+        }
     }
 
     public class Message
@@ -1792,7 +2026,7 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class Goo
     {
-        public static Goo Instance = new ();
+        public static Goo Instance = new();
 
         public string Bar = "Key";
 
@@ -1800,19 +2034,29 @@ public class SpelReproTests : AbstractExpressionTests
 
         public string Wibble = "wobble";
 
-        public string Key { get => "hello"; set => Value = value; }
+        public string Key
+        {
+            get => "hello";
+            set => Value = value;
+        }
     }
 
     public class Holder
     {
-        public Dictionary<string, string> Map = new ();
+        public Dictionary<string, string> Map = new();
     }
 
     public class FunctionsClass // SPR9486
     {
-        public int Abs(int value) => Math.Abs(value);
+        public int Abs(int value)
+        {
+            return Math.Abs(value);
+        }
 
-        public float Abs(float value) => Math.Abs(value);
+        public float Abs(float value)
+        {
+            return Math.Abs(value);
+        }
     }
 
     public interface IVarargsInterface
@@ -1822,7 +2066,10 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class VarargsReceiver : IVarargsInterface
     {
-        public string Process(params string[] args) => "OK";
+        public string Process(params string[] args)
+        {
+            return "OK";
+        }
     }
 
     public class ReflectionUtil<T>
@@ -1910,34 +2157,55 @@ public class SpelReproTests : AbstractExpressionTests
     {
         private readonly string _mapName;
 
-        public TestPropertyAccessor(string mapName) => _mapName = mapName;
+        public TestPropertyAccessor(string mapName)
+        {
+            _mapName = mapName;
+        }
 
         public Dictionary<string, string> GetMap(object target)
         {
-            var f = target.GetType().GetField(_mapName);
+            FieldInfo f = target.GetType().GetField(_mapName);
             return (Dictionary<string, string>)f.GetValue(target);
         }
 
-        public bool CanRead(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
+        public bool CanRead(IEvaluationContext context, object target, string name)
+        {
+            return GetMap(target).ContainsKey(name);
+        }
 
-        public bool CanWrite(IEvaluationContext context, object target, string name) => GetMap(target).ContainsKey(name);
+        public bool CanWrite(IEvaluationContext context, object target, string name)
+        {
+            return GetMap(target).ContainsKey(name);
+        }
 
-        public IList<Type> GetSpecificTargetClasses() => new List<Type> { typeof(ContextObject) };
+        public IList<Type> GetSpecificTargetClasses()
+        {
+            return new List<Type>
+            {
+                typeof(ContextObject)
+            };
+        }
 
-        public ITypedValue Read(IEvaluationContext context, object target, string name) => new TypedValue(GetMap(target)[name]);
+        public ITypedValue Read(IEvaluationContext context, object target, string name)
+        {
+            return new TypedValue(GetMap(target)[name]);
+        }
 
-        public void Write(IEvaluationContext context, object target, string name, object newValue) => GetMap(target)[name] = (string)newValue;
+        public void Write(IEvaluationContext context, object target, string name, object newValue)
+        {
+            GetMap(target)[name] = (string)newValue;
+        }
     }
 
     public class ContextObject
     {
-        public Dictionary<string, string> FirstContext = new ();
+        public Dictionary<string, string> FirstContext = new();
 
-        public Dictionary<string, string> SecondContext = new ();
+        public Dictionary<string, string> SecondContext = new();
 
-        public Dictionary<string, string> ThirdContext = new ();
+        public Dictionary<string, string> ThirdContext = new();
 
-        public Dictionary<string, string> FourthContext = new ();
+        public Dictionary<string, string> FourthContext = new();
 
         public ContextObject()
         {
@@ -1961,14 +2229,20 @@ public class SpelReproTests : AbstractExpressionTests
     {
         public double Value { get; }
 
-        public ListOf(double v) => Value = v;
+        public ListOf(double v)
+        {
+            Value = v;
+        }
     }
 
     public class BeanClass
     {
         public List<ListOf> List { get; }
 
-        public BeanClass(params ListOf[] list) => List = new List<ListOf>(list);
+        public BeanClass(params ListOf[] list)
+        {
+            List = new List<ListOf>(list);
+        }
     }
 
     public enum Abc
@@ -2047,22 +2321,40 @@ public class SpelReproTests : AbstractExpressionTests
         // SPR-9194
         private readonly string _str;
 
-        public TestClass2(string str) => _str = str;
+        public TestClass2(string str)
+        {
+            _str = str;
+        }
 
-        public override bool Equals(object obj) => ReferenceEquals(this, obj) || (obj is TestClass2 other && _str.Equals(other._str));
+        public override bool Equals(object obj)
+        {
+            return ReferenceEquals(this, obj) || (obj is TestClass2 other && _str.Equals(other._str));
+        }
 
-        public override int GetHashCode() => _str.GetHashCode();
+        public override int GetHashCode()
+        {
+            return _str.GetHashCode();
+        }
     }
 
     public class Spr11445Class : IServiceResolver
     {
-        private readonly AtomicInteger _counter = new ();
+        private readonly AtomicInteger _counter = new();
 
-        public int Echo(int invocation) => invocation;
+        public int Echo(int invocation)
+        {
+            return invocation;
+        }
 
-        public int Parameter() => _counter.IncrementAndGet();
+        public int Parameter()
+        {
+            return _counter.IncrementAndGet();
+        }
 
-        public object Resolve(IEvaluationContext context, string serviceName) => serviceName.Equals("bean") ? this : null;
+        public object Resolve(IEvaluationContext context, string serviceName)
+        {
+            return serviceName.Equals("bean") ? this : null;
+        }
     }
 
     public class MapWithConstant : Hashtable
@@ -2072,11 +2364,7 @@ public class SpelReproTests : AbstractExpressionTests
 
     public class Item : IList<Item>, IList
     {
-        private readonly List<Item> _children = new ();
-
-        public Item this[int index] { get => _children[index]; set => _children[index] = value; }
-
-        object IList.this[int index] { get => _children[index]; set => _children[index] = (Item)value; }
+        private readonly List<Item> _children = new();
 
         public string Name { get; set; }
 
@@ -2090,37 +2378,97 @@ public class SpelReproTests : AbstractExpressionTests
 
         public object SyncRoot => ((IList)_children).SyncRoot;
 
-        public void Add(Item item) => _children.Add(item);
+        object IList.this[int index]
+        {
+            get => _children[index];
+            set => _children[index] = (Item)value;
+        }
 
-        public int Add(object value) => throw new NotImplementedException();
+        public Item this[int index]
+        {
+            get => _children[index];
+            set => _children[index] = value;
+        }
 
-        public void Clear() => _children.Clear();
+        public void Add(Item item)
+        {
+            _children.Add(item);
+        }
 
-        public bool Contains(Item o) => _children.Contains(o);
+        public int Add(object value)
+        {
+            throw new NotImplementedException();
+        }
 
-        public bool Contains(object value) => ((IList)_children).Contains(value);
+        public void Clear()
+        {
+            _children.Clear();
+        }
 
-        public void CopyTo(Item[] array, int arrayIndex) => _children.CopyTo(array, arrayIndex);
+        public bool Contains(Item o)
+        {
+            return _children.Contains(o);
+        }
 
-        public void CopyTo(Array array, int index) => ((IList)_children).CopyTo(array, index);
+        public bool Contains(object value)
+        {
+            return ((IList)_children).Contains(value);
+        }
 
-        public IEnumerator<Item> GetEnumerator() => _children.GetEnumerator();
+        public void CopyTo(Item[] array, int arrayIndex)
+        {
+            _children.CopyTo(array, arrayIndex);
+        }
 
-        public int IndexOf(Item item) => _children.IndexOf(item);
+        public void CopyTo(Array array, int index)
+        {
+            ((IList)_children).CopyTo(array, index);
+        }
 
-        public int IndexOf(object value) => ((IList)_children).IndexOf(value);
+        public IEnumerator<Item> GetEnumerator()
+        {
+            return _children.GetEnumerator();
+        }
 
-        public void Insert(int index, Item item) => _children.Insert(index, item);
+        public int IndexOf(Item item)
+        {
+            return _children.IndexOf(item);
+        }
 
-        public void Insert(int index, object value) => ((IList)_children).Insert(index, value);
+        public int IndexOf(object value)
+        {
+            return ((IList)_children).IndexOf(value);
+        }
 
-        public bool Remove(Item item) => _children.Remove(item);
+        public void Insert(int index, Item item)
+        {
+            _children.Insert(index, item);
+        }
 
-        public void Remove(object value) => ((IList)_children).Remove(value);
+        public void Insert(int index, object value)
+        {
+            ((IList)_children).Insert(index, value);
+        }
 
-        public void RemoveAt(int index) => _children.RemoveAt(index);
+        public bool Remove(Item item)
+        {
+            return _children.Remove(item);
+        }
 
-        IEnumerator IEnumerable.GetEnumerator() => _children.GetEnumerator();
+        public void Remove(object value)
+        {
+            ((IList)_children).Remove(value);
+        }
+
+        public void RemoveAt(int index)
+        {
+            _children.RemoveAt(index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return _children.GetEnumerator();
+        }
     }
 
     public class UnnamedUser

@@ -34,25 +34,19 @@ public class ConsulHeartbeatOptions
     /// <summary>
     /// Gets the time to live setting.
     /// </summary>
-    public string Ttl
-    {
-        get
-        {
-            return TtlValue + TtlUnit;
-        }
-    }
+    public string Ttl => TtlValue + TtlUnit;
 
     internal TimeSpan ComputeHeartbeatInterval()
     {
-        var second = TimeSpan.FromSeconds(1);
+        TimeSpan second = TimeSpan.FromSeconds(1);
         var ttl = DateTimeConversions.ToTimeSpan(TtlValue, TtlUnit);
 
         // heartbeat rate at ratio * ttl, but no later than ttl -1s and, (under lesser priority),
         // no sooner than 1s from now
-        var interval = TimeSpan.FromMilliseconds(ttl.TotalMilliseconds * IntervalRatio);
-        var max = interval > second ? interval : second;
-        var ttlMinus1Sec = ttl - second;
-        var min = ttlMinus1Sec < max ? ttlMinus1Sec : max;
+        TimeSpan interval = TimeSpan.FromMilliseconds(ttl.TotalMilliseconds * IntervalRatio);
+        TimeSpan max = interval > second ? interval : second;
+        TimeSpan ttlMinus1Sec = ttl - second;
+        TimeSpan min = ttlMinus1Sec < max ? ttlMinus1Sec : max;
         return min;
     }
 }

@@ -11,7 +11,20 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 
 public abstract class CommandStreamTest : HystrixTestBase
 {
-    private static readonly AtomicInteger UniqueId = new (0);
+    private static readonly AtomicInteger UniqueId = new(0);
+
+    protected static bool HasData(long[] eventCounts)
+    {
+        foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
+        {
+            if (eventCounts[(int)eventType] > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     public class Command : HystrixCommand<int>
     {
@@ -20,13 +33,10 @@ public abstract class CommandStreamTest : HystrixTestBase
         private readonly HystrixEventType _fallbackExecutionResult;
         private readonly int _fallbackExecutionLatency;
 
-        private Command(
-            HystrixCommandOptions setter,
-            HystrixEventType executionResult,
-            int executionLatency,
-            string arg,
-            HystrixEventType fallbackExecutionResult,
-            int fallbackExecutionLatency)
+        protected override string CacheKey { get; }
+
+        private Command(HystrixCommandOptions setter, HystrixEventType executionResult, int executionLatency, string arg,
+            HystrixEventType fallbackExecutionResult, int fallbackExecutionLatency)
             : base(setter)
         {
             _executionResult2 = executionResult;
@@ -47,56 +57,32 @@ public abstract class CommandStreamTest : HystrixTestBase
             return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread);
         }
 
-        public static Command From(
-            IHystrixCommandGroupKey groupKey,
-            IHystrixCommandKey key,
-            HystrixEventType desiredEventType,
-            int latency,
+        public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
             HystrixEventType desiredFallbackEventType)
         {
             return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread, desiredFallbackEventType);
         }
 
-        public static Command From(
-            IHystrixCommandGroupKey groupKey,
-            IHystrixCommandKey key,
-            HystrixEventType desiredEventType,
-            int latency,
-            HystrixEventType desiredFallbackEventType,
-            int fallbackLatency)
+        public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
+            HystrixEventType desiredFallbackEventType, int fallbackLatency)
         {
             return From(groupKey, key, desiredEventType, latency, ExecutionIsolationStrategy.Thread, desiredFallbackEventType, fallbackLatency);
         }
 
-        public static Command From(
-            IHystrixCommandGroupKey groupKey,
-            IHystrixCommandKey key,
-            HystrixEventType desiredEventType,
-            int latency,
+        public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
             ExecutionIsolationStrategy isolationStrategy)
         {
             return From(groupKey, key, desiredEventType, latency, isolationStrategy, HystrixEventType.FallbackSuccess, 0);
         }
 
-        public static Command From(
-            IHystrixCommandGroupKey groupKey,
-            IHystrixCommandKey key,
-            HystrixEventType desiredEventType,
-            int latency,
-            ExecutionIsolationStrategy isolationStrategy,
-            HystrixEventType desiredFallbackEventType)
+        public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
+            ExecutionIsolationStrategy isolationStrategy, HystrixEventType desiredFallbackEventType)
         {
             return From(groupKey, key, desiredEventType, latency, isolationStrategy, desiredFallbackEventType, 0);
         }
 
-        public static Command From(
-            IHystrixCommandGroupKey groupKey,
-            IHystrixCommandKey key,
-            HystrixEventType desiredEventType,
-            int latency,
-            ExecutionIsolationStrategy isolationStrategy,
-            HystrixEventType desiredFallbackEventType,
-            int fallbackLatency)
+        public static Command From(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key, HystrixEventType desiredEventType, int latency,
+            ExecutionIsolationStrategy isolationStrategy, HystrixEventType desiredFallbackEventType, int fallbackLatency)
         {
             var options = new HystrixThreadPoolOptions
             {
@@ -136,12 +122,14 @@ public abstract class CommandStreamTest : HystrixTestBase
                     return new Command(setter, HystrixEventType.Failure, latency, uniqueArg, desiredFallbackEventType, fallbackLatency);
                 case HystrixEventType.Timeout:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
-                    return new Command(setter, HystrixEventType.Success, 1000, uniqueArg, desiredFallbackEventType, fallbackLatency); // use 1000 so that it always times out (at 600ms)
+
+                    return new Command(setter, HystrixEventType.Success, 1000, uniqueArg, desiredFallbackEventType,
+                        fallbackLatency); // use 1000 so that it always times out (at 600ms)
                 case HystrixEventType.BadRequest:
                     uniqueArg = UniqueId.IncrementAndGet() + string.Empty;
                     return new Command(setter, HystrixEventType.BadRequest, latency, uniqueArg, desiredFallbackEventType, 0);
                 case HystrixEventType.ResponseFromCache:
-                    var arg = UniqueId.Value + string.Empty;
+                    string arg = UniqueId.Value + string.Empty;
                     return new Command(setter, HystrixEventType.Success, 0, arg, desiredFallbackEventType, 0);
                 default:
                     throw new Exception("not supported yet");
@@ -150,13 +138,15 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         public static List<Command> GetCommandsWithResponseFromCache(IHystrixCommandGroupKey groupKey, IHystrixCommandKey key)
         {
-            var cmd1 = From(groupKey, key, HystrixEventType.Success);
-            var cmd2 = From(groupKey, key, HystrixEventType.ResponseFromCache);
+            Command cmd1 = From(groupKey, key, HystrixEventType.Success);
+            Command cmd2 = From(groupKey, key, HystrixEventType.ResponseFromCache);
+
             var commands = new List<Command>
             {
                 cmd1,
                 cmd2
             };
+
             return commands;
         }
 
@@ -174,7 +164,7 @@ public abstract class CommandStreamTest : HystrixTestBase
                 HystrixEventType.Success => 1,
                 HystrixEventType.Failure => throw new Exception("induced failure"),
                 HystrixEventType.BadRequest => throw new HystrixBadRequestException("induced bad request"),
-                _ => throw new Exception($"unhandled HystrixEventType : {ExecutionResult}"),
+                _ => throw new Exception($"unhandled HystrixEventType : {ExecutionResult}")
             };
         }
 
@@ -187,19 +177,27 @@ public abstract class CommandStreamTest : HystrixTestBase
                 HystrixEventType.FallbackSuccess => -1,
                 HystrixEventType.FallbackFailure => throw new Exception("induced failure"),
                 HystrixEventType.FallbackMissing => throw new InvalidOperationException("fallback not defined"),
-                _ => throw new Exception($"unhandled HystrixEventType : {_fallbackExecutionResult}"),
+                _ => throw new Exception($"unhandled HystrixEventType : {_fallbackExecutionResult}")
             };
         }
-
-        protected override string CacheKey { get; }
     }
 
     public class Collapser : HystrixCollapser<List<int>, int, int>
     {
-        public bool CommandCreated;
-
         private readonly int _arg;
         private readonly ITestOutputHelper _output;
+        public bool CommandCreated;
+
+        protected override string CacheKey => _arg.ToString();
+
+        public override int RequestArgument => _arg;
+
+        private Collapser(ITestOutputHelper output, IHystrixCollapserKey key, int arg)
+            : base(Options(key, 100))
+        {
+            _arg = arg;
+            _output = output;
+        }
 
         public static Collapser From(ITestOutputHelper output, int arg)
         {
@@ -211,31 +209,21 @@ public abstract class CommandStreamTest : HystrixTestBase
             return new Collapser(output, key, arg);
         }
 
-        private Collapser(ITestOutputHelper output, IHystrixCollapserKey key, int arg)
-            : base(Options(key, 100))
-        {
-            _arg = arg;
-            _output = output;
-        }
-
         private static HystrixCollapserOptions Options(IHystrixCollapserKey key, int timerDelay)
         {
             var opts = new HystrixCollapserOptions(key)
             {
                 TimerDelayInMilliseconds = timerDelay
             };
-            return opts;
-        }
 
-        public override int RequestArgument
-        {
-            get { return _arg; }
+            return opts;
         }
 
         protected override HystrixCommand<List<int>> CreateCommand(ICollection<ICollapsedRequest<int, int>> requests)
         {
             var args = new List<int>();
-            foreach (var collapsedReq in requests)
+
+            foreach (ICollapsedRequest<int, int> collapsedReq in requests)
             {
                 args.Add(collapsedReq.Argument);
             }
@@ -247,16 +235,11 @@ public abstract class CommandStreamTest : HystrixTestBase
 
         protected override void MapResponseToRequests(List<int> batchResponse, ICollection<ICollapsedRequest<int, int>> requests)
         {
-            foreach (var collapsedReq in requests)
+            foreach (ICollapsedRequest<int, int> collapsedReq in requests)
             {
                 collapsedReq.Response = collapsedReq.Argument;
                 collapsedReq.Complete = true;
             }
-        }
-
-        protected override string CacheKey
-        {
-            get { return _arg.ToString(); }
         }
     }
 
@@ -277,18 +260,5 @@ public abstract class CommandStreamTest : HystrixTestBase
             _output.WriteLine(Time.CurrentTimeMillis + " " + Thread.CurrentThread.ManagedThreadId + " : Executing batch of : " + _args.Count);
             return _args;
         }
-    }
-
-    protected static bool HasData(long[] eventCounts)
-    {
-        foreach (var eventType in HystrixEventTypeHelper.Values)
-        {
-            if (eventCounts[(int)eventType] > 0)
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

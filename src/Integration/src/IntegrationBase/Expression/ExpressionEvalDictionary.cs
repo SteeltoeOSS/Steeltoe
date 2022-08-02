@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using Steeltoe.Common.Expression.Internal;
 
 namespace Steeltoe.Integration.Expression;
 
@@ -12,6 +12,34 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 {
     private readonly IDictionary<string, IExpression> _original;
     private readonly IEvaluationCallback _evaluationCallback;
+
+    public ICollection<string> Keys => _original.Keys;
+
+    public ICollection<object> Values
+    {
+        get
+        {
+            var list = new List<object>(_original.Count);
+            ICollection<string> keys = _original.Keys;
+
+            foreach (string key in keys)
+            {
+                list.Add(Get(key));
+            }
+
+            return list;
+        }
+    }
+
+    public int Count => _original.Count;
+
+    public bool IsReadOnly => true;
+
+    public object this[string key]
+    {
+        get => Get(key);
+        set => throw new NotImplementedException();
+    }
 
     private ExpressionEvalDictionary(IDictionary<string, IExpression> original, IEvaluationCallback evaluationCallback = null)
     {
@@ -28,29 +56,6 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
         return new ExpressionEvalDictionaryBuilder(expressions);
     }
-
-    public object this[string key] { get => Get(key); set => throw new NotImplementedException(); }
-
-    public ICollection<string> Keys => _original.Keys;
-
-    public ICollection<object> Values
-    {
-        get
-        {
-            var list = new List<object>(_original.Count);
-            var keys = _original.Keys;
-            foreach (var key in keys)
-            {
-                list.Add(Get(key));
-            }
-
-            return list;
-        }
-    }
-
-    public int Count => _original.Count;
-
-    public bool IsReadOnly => true;
 
     public void Add(string key, object value)
     {
@@ -85,9 +90,10 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
     public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
     {
         var results = new List<KeyValuePair<string, object>>();
-        foreach (var entry in _original)
+
+        foreach (KeyValuePair<string, IExpression> entry in _original)
         {
-            var value = Get(entry.Key);
+            object value = Get(entry.Key);
             results.Add(new KeyValuePair<string, object>(entry.Key, value));
         }
 
@@ -123,7 +129,8 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
     public object Get(string key)
     {
-        _original.TryGetValue(key, out var expression);
+        _original.TryGetValue(key, out IExpression expression);
+
         if (expression != null)
         {
             return _evaluationCallback.Evaluate(expression);
@@ -158,10 +165,8 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
                 {
                     return expression.GetValue(_context, _root, _returnType);
                 }
-                else
-                {
-                    return expression.GetValue(_context, _returnType);
-                }
+
+                return expression.GetValue(_context, _returnType);
             }
 
             return expression.GetValue(_root, _returnType);
@@ -235,12 +240,12 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
 
         private class ExpressionEvalMapFinalBuilderImpl : IExpressionEvalMapFinalBuilder
         {
+            protected ExpressionEvalDictionaryBuilder Builder { get; }
+
             public ExpressionEvalMapFinalBuilderImpl(ExpressionEvalDictionaryBuilder builder)
             {
                 Builder = builder;
             }
-
-            protected ExpressionEvalDictionaryBuilder Builder { get; }
 
             public ExpressionEvalDictionary Build()
             {
@@ -248,12 +253,9 @@ public class ExpressionEvalDictionary : IDictionary<string, object>
                 {
                     return new ExpressionEvalDictionary(Builder.Expressions, Builder.EvaluationCallback);
                 }
-                else
-                {
-                    return new ExpressionEvalDictionary(
-                        Builder.Expressions,
-                        new ComponentsEvaluationCallback(Builder.EvaluationContext, Builder.Root, Builder.RootExplicitlySet, Builder.ReturnType));
-                }
+
+                return new ExpressionEvalDictionary(Builder.Expressions,
+                    new ComponentsEvaluationCallback(Builder.EvaluationContext, Builder.Root, Builder.RootExplicitlySet, Builder.ReturnType));
             }
         }
 

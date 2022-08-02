@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -21,36 +23,33 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
-using System.Collections.Concurrent;
-using System.Text;
 using RC = RabbitMQ.Client;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
 
-public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
+public class RabbitTemplate
+    : AbstractMessagingTemplate<RabbitDestination>, IRabbitTemplate, IMessageListener, IListenerContainerAware, IPublisherCallbackChannel.IListener, IDisposable
 {
-    public const string DefaultServiceName = "rabbitTemplate";
-
-    internal readonly object Lock = new ();
-    internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> PublisherConfirmChannels = new ();
-    internal readonly ConcurrentDictionary<string, PendingReply> ReplyHolder = new ();
-    internal readonly Dictionary<IConnectionFactory, DirectReplyToMessageListenerContainer> DirectReplyToContainers = new ();
-    internal readonly AsyncLocal<RC.IModel> DedicatedChannels = new ();
-    internal readonly IOptionsMonitor<RabbitOptions> OptionsMonitor;
-    internal bool EvaluatedFastReplyTo;
-    internal bool UsingFastReplyTo;
-
-    protected readonly ILogger Logger;
-
     private const string ReturnCorrelationKey = "spring_request_return_correlation";
     private const string DefaultExchange = "";
     private const string DefaultRoutingKey = "";
     private const int DefaultReplyTimeout = 5000;
     private const int DefaultConsumeTimeout = 10000;
+    public const string DefaultServiceName = "rabbitTemplate";
 
-    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly SpelExpressionParser Parser = new();
 
     private readonly RabbitOptions _options;
+
+    internal readonly object Lock = new();
+    internal readonly ConcurrentDictionary<RC.IModel, RabbitTemplate> PublisherConfirmChannels = new();
+    internal readonly ConcurrentDictionary<string, PendingReply> ReplyHolder = new();
+    internal readonly Dictionary<IConnectionFactory, DirectReplyToMessageListenerContainer> DirectReplyToContainers = new();
+    internal readonly AsyncLocal<RC.IModel> DedicatedChannels = new();
+    internal readonly IOptionsMonitor<RabbitOptions> OptionsMonitor;
+
+    protected readonly ILogger Logger;
     private int _activeTemplateCallbacks;
     private int _messageTagProvider;
     private int _containerInstance;
@@ -58,59 +57,20 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     private bool? _confirmsOrReturnsCapable;
     private bool _publisherConfirms;
     private string _replyAddress;
+    internal bool EvaluatedFastReplyTo;
+    internal bool UsingFastReplyTo;
 
-    [ActivatorUtilitiesConstructor]
-    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+    protected internal RabbitOptions Options
     {
-        OptionsMonitor = optionsMonitor;
-        ConnectionFactory = connectionFactory;
-        MessageConverter = messageConverter ?? new Support.Converter.SimpleMessageConverter();
-        Logger = logger;
-        Configure(Options);
-    }
+        get
+        {
+            if (OptionsMonitor != null)
+            {
+                return OptionsMonitor.CurrentValue;
+            }
 
-    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
-    {
-        _options = options;
-        ConnectionFactory = connectionFactory;
-        MessageConverter = messageConverter ?? new Support.Converter.SimpleMessageConverter();
-        Logger = logger;
-        Configure(Options);
-    }
-
-    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILogger logger = null)
-    {
-        OptionsMonitor = optionsMonitor;
-        ConnectionFactory = connectionFactory;
-        MessageConverter = new Support.Converter.SimpleMessageConverter();
-        Logger = logger;
-        Configure(Options);
-    }
-
-    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ILogger logger = null)
-    {
-        _options = options;
-        ConnectionFactory = connectionFactory;
-        MessageConverter = new Support.Converter.SimpleMessageConverter();
-        Logger = logger;
-        Configure(Options);
-    }
-
-    public RabbitTemplate(IConnectionFactory connectionFactory, ILogger logger = null)
-    {
-        ConnectionFactory = connectionFactory;
-        MessageConverter = new Support.Converter.SimpleMessageConverter();
-        DefaultSendDestination = $"{string.Empty}/{string.Empty}";
-        DefaultReceiveDestination = null;
-        Logger = logger;
-    }
-
-    public RabbitTemplate(ILogger logger = null)
-    {
-        MessageConverter = new Support.Converter.SimpleMessageConverter();
-        DefaultSendDestination = $"{string.Empty}/{string.Empty}";
-        DefaultReceiveDestination = null;
-        Logger = logger;
+            return _options;
+        }
     }
 
     public virtual IConnectionFactory ConnectionFactory { get; set; }
@@ -141,10 +101,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual string ReplyAddress
     {
-        get
-        {
-            return _replyAddress;
-        }
+        get => _replyAddress;
 
         set
         {
@@ -165,25 +122,16 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool Mandatory
     {
-        get
-        {
-            return MandatoryExpression.GetValue<bool>();
-        }
+        get => MandatoryExpression.GetValue<bool>();
 
-        set
-        {
-            MandatoryExpression = new ValueExpression<bool>(value);
-        }
+        set => MandatoryExpression = new ValueExpression<bool>(value);
     }
 
     public virtual IExpression MandatoryExpression { get; set; } = new ValueExpression<bool>(false);
 
     public virtual string MandatoryExpressionString
     {
-        get
-        {
-            return MandatoryExpression?.ToString();
-        }
+        get => MandatoryExpression?.ToString();
 
         set
         {
@@ -222,15 +170,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual string UserIdExpressionString
     {
-        get
-        {
-            return UserIdExpression?.ToString();
-        }
+        get => UserIdExpression?.ToString();
 
-        set
-        {
-            UserIdExpression = Parser.ParseExpression(value);
-        }
+        set => UserIdExpression = Parser.ParseExpression(value);
     }
 
     public virtual string ServiceName { get; set; } = DefaultServiceName;
@@ -249,8 +191,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         {
             lock (DirectReplyToContainers)
             {
-                return DirectReplyToContainers.Values
-                    .Any(c => c.IsRunning);
+                return DirectReplyToContainers.Values.Any(c => c.IsRunning);
             }
         }
     }
@@ -261,17 +202,59 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool IsReturnListener => true;
 
-    protected internal RabbitOptions Options
+    [ActivatorUtilitiesConstructor]
+    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
+        ILogger logger = null)
     {
-        get
-        {
-            if (OptionsMonitor != null)
-            {
-                return OptionsMonitor.CurrentValue;
-            }
+        OptionsMonitor = optionsMonitor;
+        ConnectionFactory = connectionFactory;
+        MessageConverter = messageConverter ?? new SimpleMessageConverter();
+        Logger = logger;
+        Configure(Options);
+    }
 
-            return _options;
-        }
+    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter, ILogger logger = null)
+    {
+        _options = options;
+        ConnectionFactory = connectionFactory;
+        MessageConverter = messageConverter ?? new SimpleMessageConverter();
+        Logger = logger;
+        Configure(Options);
+    }
+
+    public RabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILogger logger = null)
+    {
+        OptionsMonitor = optionsMonitor;
+        ConnectionFactory = connectionFactory;
+        MessageConverter = new SimpleMessageConverter();
+        Logger = logger;
+        Configure(Options);
+    }
+
+    public RabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ILogger logger = null)
+    {
+        _options = options;
+        ConnectionFactory = connectionFactory;
+        MessageConverter = new SimpleMessageConverter();
+        Logger = logger;
+        Configure(Options);
+    }
+
+    public RabbitTemplate(IConnectionFactory connectionFactory, ILogger logger = null)
+    {
+        ConnectionFactory = connectionFactory;
+        MessageConverter = new SimpleMessageConverter();
+        DefaultSendDestination = $"{string.Empty}/{string.Empty}";
+        DefaultReceiveDestination = null;
+        Logger = logger;
+    }
+
+    public RabbitTemplate(ILogger logger = null)
+    {
+        MessageConverter = new SimpleMessageConverter();
+        DefaultSendDestination = $"{string.Empty}/{string.Empty}";
+        DefaultReceiveDestination = null;
+        Logger = logger;
     }
 
     public virtual void SetBeforePublishPostProcessors(params IMessagePostProcessor[] beforePublishPostProcessors)
@@ -301,8 +284,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new ArgumentNullException(nameof(beforePublishPostProcessors));
         }
 
-        var existing = BeforePublishPostProcessors;
+        IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
         var newList = new List<IMessagePostProcessor>(beforePublishPostProcessors);
+
         if (existing != null)
         {
             newList.AddRange(existing);
@@ -319,11 +303,12 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new ArgumentNullException(nameof(beforePublishPostProcessor));
         }
 
-        var existing = BeforePublishPostProcessors;
+        IList<IMessagePostProcessor> existing = BeforePublishPostProcessors;
+
         if (existing != null && existing.Contains(beforePublishPostProcessor))
         {
             var copy = new List<IMessagePostProcessor>(existing);
-            var result = copy.Remove(beforePublishPostProcessor);
+            bool result = copy.Remove(beforePublishPostProcessor);
             BeforePublishPostProcessors = copy;
             return result;
         }
@@ -358,8 +343,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new ArgumentNullException(nameof(afterReceivePostProcessors));
         }
 
-        var existing = AfterReceivePostProcessors;
+        IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
         var newList = new List<IMessagePostProcessor>(afterReceivePostProcessors);
+
         if (existing != null)
         {
             newList.AddRange(existing);
@@ -376,11 +362,12 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new ArgumentNullException(nameof(afterReceivePostProcessor));
         }
 
-        var existing = AfterReceivePostProcessors;
+        IList<IMessagePostProcessor> existing = AfterReceivePostProcessors;
+
         if (existing != null && existing.Contains(afterReceivePostProcessor))
         {
             var copy = new List<IMessagePostProcessor>(existing);
-            var result = copy.Remove(afterReceivePostProcessor);
+            bool result = copy.Remove(afterReceivePostProcessor);
             AfterReceivePostProcessors = copy;
             return result;
         }
@@ -398,15 +385,18 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual void HandleReturn(int replyCode, string replyText, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
     {
-        var callback = ReturnCallback;
+        IReturnCallback callback = ReturnCallback;
+
         if (callback == null)
         {
-            var messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
-            var messageTagHeader = messageProperties.Get<string>(ReturnCorrelationKey);
+            IMessageHeaders messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
+            string messageTagHeader = messageProperties.Get<string>(ReturnCorrelationKey);
+
             if (messageTagHeader != null)
             {
-                var messageTag = messageTagHeader;
-                if (ReplyHolder.TryGetValue(messageTag, out var pendingReply))
+                string messageTag = messageTagHeader;
+
+                if (ReplyHolder.TryGetValue(messageTag, out PendingReply pendingReply))
                 {
                     callback = new PendingReplyReturn(pendingReply);
                 }
@@ -424,8 +414,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         if (callback != null)
         {
             properties.Headers.Remove(PublisherCallbackChannel.ReturnListenerCorrelationKey);
-            var messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
-            var returnedMessage = Message.Create(body, messageProperties);
+            IMessageHeaders messageProperties = MessagePropertiesConverter.ToMessageHeaders(properties, null, Encoding);
+            IMessage<byte[]> returnedMessage = Message.Create(body, messageProperties);
             callback.ReturnedMessage(returnedMessage, replyCode, replyText, exchange, routingKey);
         }
     }
@@ -445,6 +435,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         Logger?.LogTrace("Message received {message}", message);
         object messageTag;
+
         if (CorrelationKey == null)
         {
             // using standard correlationId property
@@ -460,37 +451,38 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new RabbitRejectAndDoNotRequeueException("No correlation header in reply");
         }
 
-        if (!ReplyHolder.TryGetValue((string)messageTag, out var pendingReply))
+        if (!ReplyHolder.TryGetValue((string)messageTag, out PendingReply pendingReply))
         {
             Logger?.LogWarning("Reply received after timeout for " + messageTag);
             throw new RabbitRejectAndDoNotRequeueException("Reply received after timeout");
         }
-        else
-        {
-            RestoreProperties(message, pendingReply);
-            pendingReply.Reply(message);
-        }
+
+        RestoreProperties(message, pendingReply);
+        pendingReply.Reply(message);
     }
 
     public virtual List<string> GetExpectedQueueNames()
     {
         _isListener = true;
         List<string> replyQueue = null;
+
         if (ReplyAddress == null || ReplyAddress == Address.AmqRabbitMQReplyTo)
         {
             throw new InvalidOperationException("A listener container must not be provided when using direct reply-to");
         }
+
+        var address = new Address(ReplyAddress);
+
+        if (address.ExchangeName == string.Empty)
+        {
+            replyQueue = new List<string>
+            {
+                address.RoutingKey
+            };
+        }
         else
         {
-            var address = new Address(ReplyAddress);
-            if (address.ExchangeName == string.Empty)
-            {
-                replyQueue = new List<string> { address.RoutingKey };
-            }
-            else
-            {
-                Logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: {replyAddress}", ReplyAddress);
-            }
+            Logger?.LogInformation("Cannot verify reply queue because 'replyAddress' is not a simple queue name: {replyAddress}", ReplyAddress);
         }
 
         return replyQueue;
@@ -508,14 +500,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual void Send(string exchange, string routingKey, IMessage message, CorrelationData correlationData)
     {
-        var mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id)))
-                        && MandatoryExpression.GetValue<bool>(EvaluationContext, message);
-        Execute<object>(
-            channel =>
-            {
-                DoSend(channel, exchange, routingKey, message, mandatory, correlationData, default);
-                return null;
-            }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
+        bool mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))) &&
+            MandatoryExpression.GetValue<bool>(EvaluationContext, message);
+
+        Execute<object>(channel =>
+        {
+            DoSend(channel, exchange, routingKey, message, mandatory, correlationData, default);
+            return null;
+        }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
     }
 
     public virtual Task SendAsync(string routingKey, IMessage message, CancellationToken cancellationToken = default)
@@ -528,17 +520,17 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return SendAsync(exchange, routingKey, message, null, cancellationToken);
     }
 
-    public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task SendAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
-        var mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id)))
-                        && MandatoryExpression.GetValue<bool>(EvaluationContext, message);
-        return Task.Run(
-            () => Execute<object>(
-                channel =>
-                {
-                    DoSend(channel, exchange, routingKey, message, mandatory, correlationData, cancellationToken);
-                    return null;
-                }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message)), cancellationToken);
+        bool mandatory = (ReturnCallback != null || (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))) &&
+            MandatoryExpression.GetValue<bool>(EvaluationContext, message);
+
+        return Task.Run(() => Execute<object>(channel =>
+        {
+            DoSend(channel, exchange, routingKey, message, mandatory, correlationData, cancellationToken);
+            return null;
+        }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message)), cancellationToken);
     }
 
     public virtual void ConvertAndSend(object message, IMessagePostProcessor messagePostProcessor)
@@ -586,9 +578,11 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         ConvertAndSend(exchange, routingKey, message, messagePostProcessor, null);
     }
 
-    public virtual void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+    public virtual void ConvertAndSend(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData)
     {
-        var messageToSend = ConvertMessageIfNecessary(message);
+        IMessage messageToSend = ConvertMessageIfNecessary(message);
+
         if (messagePostProcessor != null)
         {
             messageToSend = messagePostProcessor.PostProcessMessage(messageToSend, correlationData);
@@ -602,7 +596,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
     }
@@ -617,12 +612,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
     }
@@ -632,19 +629,23 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertAndSendAsync(exchange, routingKey, message, null, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(exchange, routingKey, message, null, correlationData, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, CancellationToken cancellationToken = default)
     {
-        var messageToSend = ConvertMessageIfNecessary(message);
+        IMessage messageToSend = ConvertMessageIfNecessary(message);
+
         if (messagePostProcessor != null)
         {
             messageToSend = messagePostProcessor.PostProcessMessage(messageToSend, correlationData);
@@ -684,10 +685,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         {
             return DoReceiveNoWait(queueName);
         }
-        else
-        {
-            return DoReceive(queueName, timeoutInMilliseconds, default);
-        }
+
+        return DoReceive(queueName, timeoutInMilliseconds, default);
     }
 
     public virtual T ReceiveAndConvert<T>(int timeoutMillis)
@@ -785,7 +784,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ReceiveAndReply(GetRequiredQueue(), callback, replyToAddressCallback);
     }
 
-    public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback)
+    public virtual bool ReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback,
+        Func<IMessage, TReply, Address> replyToAddressCallback)
     {
         return DoReceiveAndReply(queueName, callback, replyToAddressCallback);
     }
@@ -825,7 +825,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return SendAndReceiveAsync(GetDefaultExchange(), routingKey, message, null, cancellationToken);
     }
@@ -835,7 +836,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return SendAndReceiveAsync(exchange, routingKey, message, null, cancellationToken);
     }
 
-    public virtual Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<IMessage> SendAndReceiveAsync(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return Task.Run(() => DoSendAndReceive(exchange, routingKey, message, correlationData, cancellationToken), cancellationToken);
     }
@@ -890,7 +892,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, null, typeof(T));
     }
 
-    public virtual T ConvertSendAndReceive<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+    public virtual T ConvertSendAndReceive<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData)
     {
         return (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T));
     }
@@ -900,12 +903,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, cancellationToken);
     }
@@ -915,17 +920,20 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, null, correlationData, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, cancellationToken);
     }
@@ -935,20 +943,23 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, null, correlationData, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(exchange, routingKey, message, messagePostProcessor, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, CancellationToken cancellationToken = default)
     {
-        return Task.Run(
-            () => (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T)), cancellationToken);
+        return Task.Run(() => (T)ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, correlationData, typeof(T)),
+            cancellationToken);
     }
 
     public virtual object ConvertSendAndReceiveAsType(object message, Type type)
@@ -986,7 +997,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, type);
     }
 
-    public virtual object ConvertSendAndReceiveAsType(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type)
+    public virtual object ConvertSendAndReceiveAsType(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, Type type)
     {
         return ConvertSendAndReceiveAsType(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, type);
     }
@@ -1006,19 +1018,19 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsType(exchange, routingKey, message, messagePostProcessor, null, type);
     }
 
-    public virtual object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type)
+    public virtual object ConvertSendAndReceiveAsType(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, Type type)
     {
-        var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
+        IMessage replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
+
         if (replyMessage == null)
         {
             return default;
         }
 
-        var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
+        object value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-        return value is Exception exception && ThrowReceivedExceptions
-            ? throw exception
-            : value;
+        return value is Exception exception && ThrowReceivedExceptions ? throw exception : value;
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, Type type, CancellationToken cancellationToken = default)
@@ -1026,19 +1038,23 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, CorrelationData correlationData, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, null, correlationData, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData,
+        Type type, CancellationToken cancellationToken = default)
     {
-        return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, type, cancellationToken);
+        return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), GetDefaultRoutingKey(), message, messagePostProcessor, correlationData, type,
+            cancellationToken);
     }
 
     public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, Type type, CancellationToken cancellationToken = default)
@@ -1046,55 +1062,62 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, CorrelationData correlationData, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, null, correlationData, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(GetDefaultExchange(), routingKey, message, messagePostProcessor, correlationData, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, CorrelationData correlationData, Type type,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, null, correlationData, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        Type type, CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsTypeAsync(exchange, routingKey, message, messagePostProcessor, null, type, cancellationToken);
     }
 
-    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
+    public virtual Task<object> ConvertSendAndReceiveAsTypeAsync(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData, Type type, CancellationToken cancellationToken = default)
     {
-        return Task.Run(
-            () =>
+        return Task.Run(() =>
+        {
+            IMessage replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
+
+            if (replyMessage == null)
             {
-                var replyMessage = ConvertSendAndReceiveRaw(exchange, routingKey, message, messagePostProcessor, correlationData);
-                if (replyMessage == null)
-                {
-                    return default;
-                }
+                return default;
+            }
 
-                var value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
+            object value = GetRequiredSmartMessageConverter().FromMessage(replyMessage, type);
 
-                return value switch
-                {
-                    Exception exception when ThrowReceivedExceptions => throw exception,
-                    _ => value,
-                };
-            }, cancellationToken);
+            return value switch
+            {
+                Exception exception when ThrowReceivedExceptions => throw exception,
+                _ => value
+            };
+        }, cancellationToken);
     }
 
     public virtual void CorrelationConvertAndSend(object message, CorrelationData correlationData)
@@ -1105,13 +1128,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     public virtual ICollection<CorrelationData> GetUnconfirmed(long age)
     {
         var unconfirmed = new HashSet<CorrelationData>();
-        var cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - age;
-        foreach (var channel in PublisherConfirmChannels.Keys)
+        long cutoffTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() - age;
+
+        foreach (RC.IModel channel in PublisherConfirmChannels.Keys)
         {
             if (channel is IPublisherCallbackChannel pubCallbackChan)
             {
-                var confirms = pubCallbackChan.Expire(this, cutoffTime);
-                foreach (var confirm in confirms)
+                IList<PendingConfirm> confirms = pubCallbackChan.Expire(this, cutoffTime);
+
+                foreach (PendingConfirm confirm in confirms)
                 {
                     unconfirmed.Add(confirm.CorrelationInfo);
                 }
@@ -1123,27 +1148,24 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual int GetUnconfirmedCount()
     {
-        return PublisherConfirmChannels.Keys
-            .Select(m =>
+        return PublisherConfirmChannels.Keys.Select(m =>
+        {
+            if (m is IPublisherCallbackChannel pubCallbackChan)
             {
-                if (m is IPublisherCallbackChannel pubCallbackChan)
-                {
-                    return pubCallbackChan.GetPendingConfirmsCount(this);
-                }
+                return pubCallbackChan.GetPendingConfirmsCount(this);
+            }
 
-                return 0;
-            })
-            .Sum();
+            return 0;
+        }).Sum();
     }
 
     public virtual void Execute(Action<RC.IModel> action)
     {
-        _ = Execute<object>(
-            channel =>
-            {
-                action(channel);
-                return null;
-            }, ConnectionFactory);
+        _ = Execute<object>(channel =>
+        {
+            action(channel);
+            return null;
+        }, ConnectionFactory);
     }
 
     public virtual T Execute<T>(Func<RC.IModel, T> channelCallback)
@@ -1155,9 +1177,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         if (channel is IPublisherCallbackChannel publisherCallbackChannel)
         {
-            var key = channel is IChannelProxy proxy
-                ? proxy.TargetChannel
-                : channel;
+            RC.IModel key = channel is IChannelProxy proxy ? proxy.TargetChannel : channel;
+
             if (PublisherConfirmChannels.TryAdd(key, this))
             {
                 publisherCallbackChannel.AddListener(this);
@@ -1177,7 +1198,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual T Invoke<T>(Func<IRabbitTemplate, T> operationsCallback, Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks)
     {
-        var currentChannel = DedicatedChannels.Value;
+        RC.IModel currentChannel = DedicatedChannels.Value;
+
         if (currentChannel != null)
         {
             throw new InvalidOperationException($"Nested invoke() calls are not supported; channel '{currentChannel}' is already associated with this thread");
@@ -1187,11 +1209,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         RabbitResourceHolder resourceHolder = null;
         IConnection connection = null;
         RC.IModel channel;
-        var connectionFactory = ConnectionFactory;
+        IConnectionFactory connectionFactory = ConnectionFactory;
+
         if (IsChannelTransacted)
         {
             resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(connectionFactory, true, UsePublisherConnection);
             channel = resourceHolder.GetChannel();
+
             if (channel == null)
             {
                 ConnectionFactoryUtils.ReleaseResources(resourceHolder);
@@ -1206,6 +1230,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
 
             connection = connectionFactory.CreateConnection();
+
             if (connection == null)
             {
                 throw new InvalidOperationException("Connection factory returned a null connection");
@@ -1214,6 +1239,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             try
             {
                 channel = connection.CreateChannel();
+
                 if (channel == null)
                 {
                     throw new InvalidOperationException("Connection returned a null channel");
@@ -1234,7 +1260,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        var listener = AddConfirmListener(acks, nacks, channel);
+        ConfirmListener listener = AddConfirmListener(acks, nacks, channel);
+
         try
         {
             return operationsCallback(this);
@@ -1247,7 +1274,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual bool WaitForConfirms(int timeoutInMilliseconds)
     {
-        var channel = DedicatedChannels.Value;
+        RC.IModel channel = DedicatedChannels.Value;
+
         if (channel == null)
         {
             throw new InvalidOperationException("This operation is only available within the scope of an invoke operation");
@@ -1266,7 +1294,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     public virtual void WaitForConfirmsOrDie(int timeoutInMilliseconds)
     {
-        var channel = DedicatedChannels.Value;
+        RC.IModel channel = DedicatedChannels.Value;
+
         if (channel == null)
         {
             throw new InvalidOperationException("This operation is only available within the scope of an invoke operation");
@@ -1317,7 +1346,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     {
         lock (DirectReplyToContainers)
         {
-            foreach (var c in DirectReplyToContainers.Values)
+            foreach (DirectReplyToMessageListenerContainer c in DirectReplyToContainers.Values)
             {
                 if (c.IsRunning)
                 {
@@ -1341,70 +1370,74 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return GetRequiredMessageConverter().ToMessage(message, new MessageHeaders());
     }
 
-    protected internal virtual IMessage DoSendAndReceiveWithTemporary(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
+    protected internal virtual IMessage DoSendAndReceiveWithTemporary(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken)
     {
-        return Execute(
-            channel =>
+        return Execute(channel =>
+        {
+            if (message.Headers.ReplyTo() != null)
             {
-                if (message.Headers.ReplyTo() != null)
+                throw new ArgumentException("Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var pendingReply = new PendingReply();
+            string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
+            ReplyHolder.TryAdd(messageTag, pendingReply);
+            string replyTo;
+
+            if (UsingFastReplyTo)
+            {
+                replyTo = Address.AmqRabbitMQReplyTo;
+            }
+            else
+            {
+                RC.QueueDeclareOk queueDeclaration = RC.IModelExensions.QueueDeclare(channel);
+                replyTo = queueDeclaration.QueueName;
+            }
+
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            accessor.ReplyTo = replyTo;
+
+            string consumerTag = Guid.NewGuid().ToString();
+
+            var consumer = new DoSendAndReceiveTemplateConsumer(this, channel, pendingReply);
+
+            channel.ModelShutdown += (_, args) =>
+            {
+                if (!RabbitUtils.IsNormalChannelClose(args))
                 {
-                    throw new ArgumentException("Send-and-receive methods can only be used if the Message does not already have a replyTo property.");
+                    var exception = new ShutdownSignalException(args);
+                    pendingReply.CompleteExceptionally(exception);
                 }
+            };
 
-                cancellationToken.ThrowIfCancellationRequested();
+            channel.BasicConsume(replyTo, true, consumerTag, NoLocalReplyConsumer, true, null, consumer);
+            IMessage reply = null;
 
-                var pendingReply = new PendingReply();
-                var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
-                ReplyHolder.TryAdd(messageTag, pendingReply);
-                string replyTo;
-                if (UsingFastReplyTo)
+            try
+            {
+                reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag, cancellationToken);
+            }
+            finally
+            {
+                ReplyHolder.TryRemove(messageTag, out _);
+
+                if (channel.IsOpen)
                 {
-                    replyTo = Address.AmqRabbitMQReplyTo;
+                    CancelConsumerQuietly(channel, consumer);
                 }
-                else
-                {
-                    var queueDeclaration = RC.IModelExensions.QueueDeclare(channel);
-                    replyTo = queueDeclaration.QueueName;
-                }
+            }
 
-                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-                accessor.ReplyTo = replyTo;
-
-                var consumerTag = Guid.NewGuid().ToString();
-
-                var consumer = new DoSendAndReceiveTemplateConsumer(this, channel, pendingReply);
-
-                channel.ModelShutdown += (_, args) =>
-                {
-                    if (!RabbitUtils.IsNormalChannelClose(args))
-                    {
-                        var exception = new ShutdownSignalException(args);
-                        pendingReply.CompleteExceptionally(exception);
-                    }
-                };
-
-                channel.BasicConsume(replyTo, true, consumerTag, NoLocalReplyConsumer, true, null, consumer);
-                IMessage reply = null;
-                try
-                {
-                    reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag, cancellationToken);
-                }
-                finally
-                {
-                    ReplyHolder.TryRemove(messageTag, out _);
-                    if (channel.IsOpen)
-                    {
-                        CancelConsumerQuietly(channel, consumer);
-                    }
-                }
-
-                return reply;
-            }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
+            return reply;
+        }, ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
     }
 
     protected virtual object DoReceiveAndConvert(string queueName, int timeoutMillis, Type type, CancellationToken cancellationToken = default)
     {
-        var response = timeoutMillis == 0 ? DoReceiveNoWait(queueName) : DoReceive(queueName, timeoutMillis, cancellationToken);
+        IMessage response = timeoutMillis == 0 ? DoReceiveNoWait(queueName) : DoReceive(queueName, timeoutMillis, cancellationToken);
+
         if (response != null)
         {
             return GetRequiredSmartMessageConverter().FromMessage(response, type);
@@ -1415,33 +1448,31 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     protected virtual IMessage DoReceive(string queueName, int timeoutMillis, CancellationToken cancellationToken)
     {
-        var message = Execute(
-            channel =>
-            {
-                var delivery = ConsumeDelivery(channel, queueName, timeoutMillis, cancellationToken);
-                if (delivery == null)
-                {
-                    return null;
-                }
-                else
-                {
-                    if (IsChannelLocallyTransacted(channel))
-                    {
-                        channel.BasicAck(delivery.Envelope.DeliveryTag, false);
-                        channel.TxCommit();
-                    }
-                    else if (IsChannelTransacted)
-                    {
-                        ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, delivery.Envelope.DeliveryTag);
-                    }
-                    else
-                    {
-                        channel.BasicAck(delivery.Envelope.DeliveryTag, false);
-                    }
+        IMessage message = Execute(channel =>
+        {
+            Delivery delivery = ConsumeDelivery(channel, queueName, timeoutMillis, cancellationToken);
 
-                    return BuildMessageFromDelivery(delivery);
-                }
-            });
+            if (delivery == null)
+            {
+                return null;
+            }
+
+            if (IsChannelLocallyTransacted(channel))
+            {
+                channel.BasicAck(delivery.Envelope.DeliveryTag, false);
+                channel.TxCommit();
+            }
+            else if (IsChannelTransacted)
+            {
+                ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, delivery.Envelope.DeliveryTag);
+            }
+            else
+            {
+                channel.BasicAck(delivery.Envelope.DeliveryTag, false);
+            }
+
+            return BuildMessageFromDelivery(delivery);
+        });
 
         LogReceived(message);
         return message;
@@ -1453,10 +1484,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         {
             return DoReceiveNoWait(destination.QueueName);
         }
-        else
-        {
-            return DoReceive(destination.QueueName, ReceiveTimeout, default);
-        }
+
+        return DoReceive(destination.QueueName, ReceiveTimeout, default);
     }
 
     protected override Task<IMessage> DoReceiveAsync(RabbitDestination destination, CancellationToken cancellationToken)
@@ -1469,7 +1498,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return SendAsync(destination.ExchangeName, destination.RoutingKey, message, cancellationToken);
     }
 
-    protected override Task<IMessage> DoSendAndReceiveAsync(RabbitDestination destination, IMessage requestMessage, CancellationToken cancellationToken = default)
+    protected override Task<IMessage> DoSendAndReceiveAsync(RabbitDestination destination, IMessage requestMessage,
+        CancellationToken cancellationToken = default)
     {
         return SendAndReceiveAsync(destination.ExchangeName, destination.RoutingKey, requestMessage, cancellationToken);
     }
@@ -1479,7 +1509,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return DoSendAndReceive(destination.ExchangeName, destination.RoutingKey, requestMessage, null, default);
     }
 
-    protected virtual IMessage DoSendAndReceive(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
+    protected virtual IMessage DoSendAndReceive(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken)
     {
         if (!EvaluatedFastReplyTo)
         {
@@ -1496,36 +1527,38 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         {
             return DoSendAndReceiveWithDirect(exchange, routingKey, message, correlationData, cancellationToken);
         }
-        else if (ReplyAddress == null || UsingFastReplyTo)
+
+        if (ReplyAddress == null || UsingFastReplyTo)
         {
             return DoSendAndReceiveWithTemporary(exchange, routingKey, message, correlationData, cancellationToken);
         }
-        else
-        {
-            return DoSendAndReceiveWithFixed(exchange, routingKey, message, correlationData, cancellationToken);
-        }
+
+        return DoSendAndReceiveWithFixed(exchange, routingKey, message, correlationData, cancellationToken);
     }
 
-    protected virtual IMessage DoSendAndReceiveWithFixed(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken)
+    protected virtual IMessage DoSendAndReceiveWithFixed(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken)
     {
         if (!_isListener)
         {
             throw new InvalidOperationException($"RabbitTemplate is not configured as MessageListener - cannot use a 'replyAddress': {ReplyAddress}");
         }
 
-        return Execute(
-            channel => DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken), ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
+        return Execute(channel => DoSendAndReceiveAsListener(exchange, routingKey, message, correlationData, channel, cancellationToken),
+            ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message));
     }
 
-    protected virtual IMessage DoSendAndReceiveWithDirect(string exchange, string routingKey, IMessage message, CorrelationData correlationData, CancellationToken cancellationToken = default)
+    protected virtual IMessage DoSendAndReceiveWithDirect(string exchange, string routingKey, IMessage message, CorrelationData correlationData,
+        CancellationToken cancellationToken = default)
     {
-        var connectionFactory = ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message);
+        IConnectionFactory connectionFactory = ObtainTargetConnectionFactory(SendConnectionFactorySelectorExpression, message);
+
         if (UsePublisherConnection && connectionFactory.PublisherConnectionFactory != null)
         {
             connectionFactory = connectionFactory.PublisherConnectionFactory;
         }
 
-        if (!DirectReplyToContainers.TryGetValue(connectionFactory, out var container))
+        if (!DirectReplyToContainers.TryGetValue(connectionFactory, out DirectReplyToMessageListenerContainer container))
         {
             lock (DirectReplyToContainers)
             {
@@ -1545,6 +1578,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                     }
 
                     container.NoLocal = NoLocalReplyConsumer;
+
                     if (ReplyErrorHandler != null)
                     {
                         container.ErrorHandler = ReplyErrorHandler;
@@ -1557,10 +1591,12 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
         }
 
-        var channelHolder = container.GetChannelHolder();
+        DirectReplyToMessageListenerContainer.ChannelHolder channelHolder = container.GetChannelHolder();
+
         try
         {
-            var channel = channelHolder.Channel;
+            RC.IModel channel = channelHolder.Channel;
+
             if (_confirmsOrReturnsCapable.HasValue && _confirmsOrReturnsCapable.Value)
             {
                 AddListener(channel);
@@ -1580,53 +1616,55 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     protected virtual IMessage DoReceiveNoWait(string queueName, CancellationToken cancellationToken = default)
     {
-        var message = Execute(
-            channel =>
+        IMessage message = Execute(channel =>
+        {
+            if (!cancellationToken.IsCancellationRequested)
             {
-                if (!cancellationToken.IsCancellationRequested)
+                RC.BasicGetResult response = channel.BasicGet(queueName, !IsChannelTransacted);
+
+                // Response can be null is the case that there is no message on the queue.
+                if (response != null)
                 {
-                    var response = channel.BasicGet(queueName, !IsChannelTransacted);
+                    ulong deliveryTag = response.DeliveryTag;
 
-                    // Response can be null is the case that there is no message on the queue.
-                    if (response != null)
+                    if (IsChannelLocallyTransacted(channel))
                     {
-                        var deliveryTag = response.DeliveryTag;
-                        if (IsChannelLocallyTransacted(channel))
-                        {
-                            channel.BasicAck(deliveryTag, false);
-                            channel.TxCommit();
-                        }
-                        else if (IsChannelTransacted)
-                        {
-                            // Not locally transacted but it is transacted so it
-                            // could be synchronized with an external transaction
-                            ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, deliveryTag);
-                        }
-
-                        return BuildMessageFromResponse(response);
+                        channel.BasicAck(deliveryTag, false);
+                        channel.TxCommit();
                     }
-                }
+                    else if (IsChannelTransacted)
+                    {
+                        // Not locally transacted but it is transacted so it
+                        // could be synchronized with an external transaction
+                        ConnectionFactoryUtils.RegisterDeliveryTag(ConnectionFactory, channel, deliveryTag);
+                    }
 
-                return null;
-            }, ObtainTargetConnectionFactory(ReceiveConnectionFactorySelectorExpression, queueName));
+                    return BuildMessageFromResponse(response);
+                }
+            }
+
+            return null;
+        }, ObtainTargetConnectionFactory(ReceiveConnectionFactorySelectorExpression, queueName));
 
         LogReceived(message);
         return message;
     }
 
-    protected virtual void DoSend(RC.IModel channel, string exchangeArg, string routingKeyArg, IMessage message, bool mandatory, CorrelationData correlationData, CancellationToken cancellationToken)
+    protected virtual void DoSend(RC.IModel channel, string exchangeArg, string routingKeyArg, IMessage message, bool mandatory,
+        CorrelationData correlationData, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var exchange = exchangeArg;
-        var rKey = routingKeyArg;
+        string exchange = exchangeArg;
+        string rKey = routingKeyArg;
         exchange ??= GetDefaultExchange();
         rKey ??= GetDefaultRoutingKey();
 
         Logger?.LogTrace("Original message to publish: {message}", message);
 
-        var messageToUse = message;
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(messageToUse);
+        IMessage messageToUse = message;
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(messageToUse);
+
         if (mandatory)
         {
             accessor.SetHeader(PublisherCallbackChannel.ReturnListenerCorrelationKey, Uuid);
@@ -1634,17 +1672,20 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         if (BeforePublishPostProcessors != null)
         {
-            var processors = BeforePublishPostProcessors;
-            foreach (var processor in processors)
+            IList<IMessagePostProcessor> processors = BeforePublishPostProcessors;
+
+            foreach (IMessagePostProcessor processor in processors)
             {
                 messageToUse = processor.PostProcessMessage(messageToUse, correlationData);
             }
         }
 
         SetupConfirm(channel, messageToUse, correlationData);
+
         if (UserIdExpression != null && accessor.UserId == null)
         {
-            var userId = UserIdExpression.GetValue<string>(EvaluationContext, messageToUse);
+            string userId = UserIdExpression.GetValue<string>(EvaluationContext, messageToUse);
+
             if (userId != null)
             {
                 accessor.UserId = userId;
@@ -1674,7 +1715,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new InvalidOperationException("Unable to publish IMessage, payload must be a byte[]");
         }
 
-        var convertedMessageProperties = channel.CreateBasicProperties();
+        RC.IBasicProperties convertedMessageProperties = channel.CreateBasicProperties();
         MessagePropertiesConverter.FromMessageHeaders(message.Headers, convertedMessageProperties, Encoding);
         channel.BasicPublish(exchange, routingKey, mandatory, convertedMessageProperties, body);
     }
@@ -1699,9 +1740,11 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         return RabbitExceptionTranslator.ConvertRabbitAccessException(ex);
     }
 
-    protected IMessage ConvertSendAndReceiveRaw(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor, CorrelationData correlationData)
+    protected IMessage ConvertSendAndReceiveRaw(string exchange, string routingKey, object message, IMessagePostProcessor messagePostProcessor,
+        CorrelationData correlationData)
     {
-        var requestMessage = ConvertMessageIfNecessary(message);
+        IMessage requestMessage = ConvertMessageIfNecessary(message);
+
         if (messagePostProcessor != null)
         {
             requestMessage = messagePostProcessor.PostProcessMessage(requestMessage, correlationData);
@@ -1790,30 +1833,25 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             return;
         }
 
-        var templateOptions = options.Template;
+        RabbitOptions.TemplateOptions templateOptions = options.Template;
         Mandatory = templateOptions.Mandatory || options.PublisherReturns;
 
         if (templateOptions.Retry.Enabled)
         {
-            RetryTemplate = new PollyRetryTemplate(
-                new Dictionary<Type, bool>(),
-                templateOptions.Retry.MaxAttempts,
-                true,
-                (int)templateOptions.Retry.InitialInterval.TotalMilliseconds,
-                (int)templateOptions.Retry.MaxInterval.TotalMilliseconds,
-                templateOptions.Retry.Multiplier,
-                Logger);
+            RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), templateOptions.Retry.MaxAttempts, true,
+                (int)templateOptions.Retry.InitialInterval.TotalMilliseconds, (int)templateOptions.Retry.MaxInterval.TotalMilliseconds,
+                templateOptions.Retry.Multiplier, Logger);
         }
 
         if (templateOptions.ReceiveTimeout.HasValue)
         {
-            var asMillis = (int)templateOptions.ReceiveTimeout.Value.TotalMilliseconds;
+            int asMillis = (int)templateOptions.ReceiveTimeout.Value.TotalMilliseconds;
             ReceiveTimeout = asMillis;
         }
 
         if (templateOptions.ReplyTimeout.HasValue)
         {
-            var asMillis = (int)templateOptions.ReplyTimeout.Value.TotalMilliseconds;
+            int asMillis = (int)templateOptions.ReplyTimeout.Value.TotalMilliseconds;
             ReplyTimeout = asMillis;
         }
 
@@ -1823,11 +1861,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private void RestoreProperties(IMessage message, PendingReply pendingReply)
     {
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+
         if (!UserCorrelationId)
         {
             // Restore the inbound correlation data
-            var savedCorrelation = pendingReply.SavedCorrelation;
+            string savedCorrelation = pendingReply.SavedCorrelation;
+
             if (CorrelationKey == null)
             {
                 accessor.CorrelationId = savedCorrelation;
@@ -1846,8 +1886,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
 
         // Restore any inbound replyTo
-        var savedReplyTo = pendingReply.SavedReplyTo;
+        string savedReplyTo = pendingReply.SavedReplyTo;
         accessor.ReplyTo = savedReplyTo;
+
         if (savedReplyTo != null)
         {
             Logger?.LogDebug("Restored replyTo to: {replyTo} ", savedReplyTo);
@@ -1861,12 +1902,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private IMessage BuildMessageFromResponse(RC.BasicGetResult response)
     {
-        return BuildMessage(new Envelope(response.DeliveryTag, response.Redelivered, response.Exchange, response.RoutingKey), response.BasicProperties, response.Body, response.MessageCount);
+        return BuildMessage(new Envelope(response.DeliveryTag, response.Redelivered, response.Exchange, response.RoutingKey), response.BasicProperties,
+            response.Body, response.MessageCount);
     }
 
     private IMessage BuildMessage(Envelope envelope, RC.IBasicProperties properties, byte[] body, uint? msgCount)
     {
-        var messageProps = MessagePropertiesConverter.ToMessageHeaders(properties, envelope, Encoding);
+        IMessageHeaders messageProps = MessagePropertiesConverter.ToMessageHeaders(properties, envelope, Encoding);
+
         if (msgCount.HasValue)
         {
             var accessor = MessageHeaderAccessor.GetAccessor<RabbitHeaderAccessor>(messageProps);
@@ -1874,11 +1917,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
 
         IMessage message = Message.Create(body, messageProps);
+
         if (AfterReceivePostProcessors != null)
         {
-            var processors = AfterReceivePostProcessors;
-            var postProcessed = message;
-            foreach (var processor in processors)
+            IList<IMessagePostProcessor> processors = AfterReceivePostProcessors;
+            IMessage postProcessed = message;
+
+            foreach (IMessagePostProcessor processor in processors)
             {
                 postProcessed = processor.PostProcessMessage(postProcessed);
             }
@@ -1891,7 +1936,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private IMessageConverter GetRequiredMessageConverter()
     {
-        var converter = MessageConverter;
+        IMessageConverter converter = MessageConverter;
+
         if (converter == null)
         {
             throw new RabbitIllegalStateException("No 'messageConverter' specified. Check configuration of RabbitTemplate.");
@@ -1901,11 +1947,15 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     }
 
     private ISmartMessageConverter GetRequiredSmartMessageConverter()
-        => GetRequiredMessageConverter() as ISmartMessageConverter ?? throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
+    {
+        return GetRequiredMessageConverter() as ISmartMessageConverter ??
+            throw new RabbitIllegalStateException("template's message converter must be a SmartMessageConverter");
+    }
 
     private string GetRequiredQueue()
     {
-        var name = DefaultReceiveDestination;
+        RabbitDestination name = DefaultReceiveDestination;
+
         if (name == null)
         {
             throw new RabbitIllegalStateException("No 'queue' specified. Check configuration of RabbitTemplate.");
@@ -1916,14 +1966,17 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private Address GetReplyToAddress(IMessage request)
     {
-        var replyTo = request.Headers.ReplyToAddress();
+        Address replyTo = request.Headers.ReplyToAddress();
+
         if (replyTo == null)
         {
-            var exchange = GetDefaultExchange();
-            var routingKey = GetDefaultRoutingKey();
+            string exchange = GetDefaultExchange();
+            string routingKey = GetDefaultRoutingKey();
+
             if (exchange == null)
             {
-                throw new RabbitException("Cannot determine ReplyTo message property value: Request message does not contain reply-to property, and no default Exchange was set.");
+                throw new RabbitException(
+                    "Cannot determine ReplyTo message property value: Request message does not contain reply-to property, and no default Exchange was set.");
             }
 
             replyTo = new Address(exchange, routingKey);
@@ -1934,14 +1987,22 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private void SetupConfirm(RC.IModel channel, IMessage message, CorrelationData correlationDataArg)
     {
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+
         if ((_publisherConfirms || ConfirmCallback != null) && channel is IPublisherCallbackChannel callbackChannel)
         {
-            var publisherCallbackChannel = callbackChannel;
-            var correlationData = CorrelationDataPostProcessor != null ? CorrelationDataPostProcessor.PostProcess(message, correlationDataArg) : correlationDataArg;
-            var nextPublishSeqNo = channel.NextPublishSeqNo;
+            IPublisherCallbackChannel publisherCallbackChannel = callbackChannel;
+
+            CorrelationData correlationData = CorrelationDataPostProcessor != null
+                ? CorrelationDataPostProcessor.PostProcess(message, correlationDataArg)
+                : correlationDataArg;
+
+            ulong nextPublishSeqNo = channel.NextPublishSeqNo;
             accessor.PublishSequenceNumber = nextPublishSeqNo;
-            publisherCallbackChannel.AddPendingConfirm(this, nextPublishSeqNo, new PendingConfirm(correlationData, DateTimeOffset.Now.ToUnixTimeMilliseconds()));
+
+            publisherCallbackChannel.AddPendingConfirm(this, nextPublishSeqNo,
+                new PendingConfirm(correlationData, DateTimeOffset.Now.ToUnixTimeMilliseconds()));
+
             if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
             {
                 accessor.SetHeader(PublisherCallbackChannel.ReturnedMessageCorrelationKey, correlationData.Id);
@@ -1949,20 +2010,22 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
         else if (channel is IChannelProxy proxy && proxy.IsConfirmSelected)
         {
-            var nextPublishSeqNo = channel.NextPublishSeqNo;
+            ulong nextPublishSeqNo = channel.NextPublishSeqNo;
             accessor.PublishSequenceNumber = nextPublishSeqNo;
         }
     }
 
-    private IMessage DoSendAndReceiveAsListener(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel, CancellationToken cancellationToken)
+    private IMessage DoSendAndReceiveAsListener(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel,
+        CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var pendingReply = new PendingReply();
-        var messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
+        string messageTag = Interlocked.Increment(ref _messageTagProvider).ToString();
+
         if (UserCorrelationId)
         {
-            var correlationId = CorrelationKey != null ? message.Headers.Get<object>(CorrelationKey) : message.Headers.CorrelationId();
+            object correlationId = CorrelationKey != null ? message.Headers.Get<object>(CorrelationKey) : message.Headers.CorrelationId();
 
             if (correlationId == null)
             {
@@ -1982,14 +2045,17 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         Logger?.LogDebug("Sending message with tag {tag}", messageTag);
         IMessage reply = null;
+
         try
         {
             reply = ExchangeMessages(exchange, routingKey, message, correlationData, channel, pendingReply, messageTag, cancellationToken);
+
             if (reply != null && AfterReceivePostProcessors != null)
             {
-                var processors = AfterReceivePostProcessors;
-                var postProcessed = reply;
-                foreach (var processor in processors)
+                IList<IMessagePostProcessor> processors = AfterReceivePostProcessors;
+                IMessage postProcessed = reply;
+
+                foreach (IMessagePostProcessor processor in processors)
                 {
                     postProcessed = processor.PostProcessMessage(postProcessed);
                 }
@@ -2008,22 +2074,27 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     private void SaveAndSetProperties(IMessage message, PendingReply pendingReply, string messageTag)
     {
         // Save any existing replyTo and correlation data
-        var savedReplyTo = message.Headers.ReplyTo();
+        string savedReplyTo = message.Headers.ReplyTo();
         pendingReply.SavedReplyTo = savedReplyTo;
+
         if (!string.IsNullOrEmpty(savedReplyTo))
         {
-            Logger?.LogDebug("Replacing replyTo header: {savedReplyTo} in favor of template's configured reply-queue: {replyAddress}", savedReplyTo, ReplyAddress);
+            Logger?.LogDebug("Replacing replyTo header: {savedReplyTo} in favor of template's configured reply-queue: {replyAddress}", savedReplyTo,
+                ReplyAddress);
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ReplyTo = ReplyAddress;
+
         if (!UserCorrelationId)
         {
             object savedCorrelation = null;
+
             if (CorrelationKey == null)
             {
                 // using standard correlationId property
-                var correlationId = accessor.CorrelationId;
+                string correlationId = accessor.CorrelationId;
+
                 if (correlationId != null)
                 {
                     savedCorrelation = correlationId;
@@ -2035,6 +2106,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             }
 
             pendingReply.SavedCorrelation = (string)savedCorrelation;
+
             if (CorrelationKey == null)
             {
                 // using standard correlationId property
@@ -2047,11 +2119,13 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
-    private IMessage ExchangeMessages(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel, PendingReply pendingReply, string messageTag, CancellationToken cancellationToken)
+    private IMessage ExchangeMessages(string exchange, string routingKey, IMessage message, CorrelationData correlationData, RC.IModel channel,
+        PendingReply pendingReply, string messageTag, CancellationToken cancellationToken)
     {
         IMessage reply;
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
-        var mandatory = IsMandatoryFor(message);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        bool mandatory = IsMandatoryFor(message);
+
         if (mandatory && ReturnCallback == null)
         {
             accessor.SetHeader(ReturnCorrelationKey, messageTag);
@@ -2061,6 +2135,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         reply = ReplyTimeout < 0 ? pendingReply.Get() : pendingReply.Get(ReplyTimeout);
         Logger?.LogDebug("Reply: {reply} ", reply);
+
         if (reply == null)
         {
             ReplyTimedOut(accessor.CorrelationId);
@@ -2076,33 +2151,35 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private bool DoReceiveAndReply<TReceive, TReply>(string queueName, Func<TReceive, TReply> callback, Func<IMessage, TReply, Address> replyToAddressCallback)
     {
-        var result = Execute(
-            channel =>
-            {
-                var receiveMessage = ReceiveForReply(queueName, channel, default);
-                if (receiveMessage != null)
-                {
-                    return SendReply(callback, replyToAddressCallback, channel, receiveMessage);
-                }
+        bool result = Execute(channel =>
+        {
+            IMessage receiveMessage = ReceiveForReply(queueName, channel, default);
 
-                return false;
-            }, ObtainTargetConnectionFactory(ReceiveConnectionFactorySelectorExpression, queueName));
+            if (receiveMessage != null)
+            {
+                return SendReply(callback, replyToAddressCallback, channel, receiveMessage);
+            }
+
+            return false;
+        }, ObtainTargetConnectionFactory(ReceiveConnectionFactorySelectorExpression, queueName));
+
         return result;
     }
 
     private IMessage ReceiveForReply(string queueName, RC.IModel channel, CancellationToken cancellationToken)
     {
-        var channelTransacted = IsChannelTransacted;
-        var channelLocallyTransacted = IsChannelLocallyTransacted(channel);
+        bool channelTransacted = IsChannelTransacted;
+        bool channelLocallyTransacted = IsChannelLocallyTransacted(channel);
         IMessage receiveMessage = null;
+
         if (ReceiveTimeout == 0)
         {
-            var response = channel.BasicGet(queueName, !channelTransacted);
+            RC.BasicGetResult response = channel.BasicGet(queueName, !channelTransacted);
 
             // Response can be null in the case that there is no message on the queue.
             if (response != null)
             {
-                var deliveryTag1 = response.DeliveryTag;
+                ulong deliveryTag1 = response.DeliveryTag;
 
                 if (channelLocallyTransacted)
                 {
@@ -2120,10 +2197,12 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
         else
         {
-            var delivery = ConsumeDelivery(channel, queueName, ReceiveTimeout, cancellationToken);
+            Delivery delivery = ConsumeDelivery(channel, queueName, ReceiveTimeout, cancellationToken);
+
             if (delivery != null)
             {
-                var deliveryTag2 = delivery.Envelope.DeliveryTag;
+                ulong deliveryTag2 = delivery.Envelope.DeliveryTag;
+
                 if (channelTransacted && !channelLocallyTransacted)
                 {
                     // Not locally transacted but it is transacted so it could be
@@ -2150,9 +2229,10 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         var future = new TaskCompletionSource<Delivery>();
 
         RC.DefaultBasicConsumer consumer = null;
+
         try
         {
-            var consumeTimeout = timeoutMillis < 0 ? DefaultConsumeTimeout : timeoutMillis;
+            int consumeTimeout = timeoutMillis < 0 ? DefaultConsumeTimeout : timeoutMillis;
             consumer = CreateConsumer(queueName, channel, future, consumeTimeout, cancellationToken);
 
             if (timeoutMillis < 0)
@@ -2175,7 +2255,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
         catch (AggregateException e)
         {
-            var cause = e.InnerExceptions.FirstOrDefault();
+            Exception cause = e.InnerExceptions.FirstOrDefault();
 
             Logger?.LogError(cause, "Consumer {consumer} failed to receive message", consumer);
             exception = RabbitExceptionTranslator.ConvertRabbitAccessException(cause);
@@ -2204,9 +2284,11 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
     }
 
-    private bool SendReply<TReceive, TReply>(Func<TReceive, TReply> receiveAndReplyCallback, Func<IMessage, TReply, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage)
+    private bool SendReply<TReceive, TReply>(Func<TReceive, TReply> receiveAndReplyCallback, Func<IMessage, TReply, Address> replyToAddressCallback,
+        RC.IModel channel, IMessage receiveMessage)
     {
         object receive = receiveMessage;
+
         if (receive is not TReceive)
         {
             receive = GetRequiredMessageConverter().FromMessage(receiveMessage, typeof(TReceive));
@@ -2217,7 +2299,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             throw new ArgumentException($"'receiveAndReplyCallback' can't handle received object '{receive.GetType()}'");
         }
 
-        var reply = receiveAndReplyCallback(messageAsR);
+        TReply reply = receiveAndReplyCallback(messageAsR);
 
         if (reply != null)
         {
@@ -2233,21 +2315,22 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     private void DoSendReply<TReply>(Func<IMessage, TReply, Address> replyToAddressCallback, RC.IModel channel, IMessage receiveMessage, TReply reply)
     {
-        var replyTo = replyToAddressCallback(receiveMessage, reply);
+        Address replyTo = replyToAddressCallback(receiveMessage, reply);
 
-        var replyMessage = ConvertMessageIfNecessary(reply);
+        IMessage replyMessage = ConvertMessageIfNecessary(reply);
 
-        var receiveMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(receiveMessage);
-        var replyMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
+        RabbitHeaderAccessor receiveMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(receiveMessage);
+        RabbitHeaderAccessor replyMessageAccessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
 
-        var correlation = CorrelationKey == null ? receiveMessageAccessor.CorrelationId : receiveMessageAccessor.GetHeader(CorrelationKey);
+        object correlation = CorrelationKey == null ? receiveMessageAccessor.CorrelationId : receiveMessageAccessor.GetHeader(CorrelationKey);
 
         if (CorrelationKey == null || correlation == null)
         {
             // using standard correlationId property
             if (correlation == null)
             {
-                var messageId = receiveMessageAccessor.MessageId;
+                string messageId = receiveMessageAccessor.MessageId;
+
                 if (messageId != null)
                 {
                     correlation = messageId;
@@ -2265,7 +2348,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         DoSend(channel, replyTo.ExchangeName, replyTo.RoutingKey, replyMessage, ReturnCallback != null && IsMandatoryFor(replyMessage), null, default);
     }
 
-    private RC.DefaultBasicConsumer CreateConsumer(string queueName, RC.IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis, CancellationToken cancellationToken)
+    private RC.DefaultBasicConsumer CreateConsumer(string queueName, RC.IModel channel, TaskCompletionSource<Delivery> future, int timeoutMillis,
+        CancellationToken cancellationToken)
     {
         channel.BasicQos(0, 1, false);
         var latch = new CountdownEvent(1);
@@ -2280,7 +2364,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 asProxy.TargetChannel.Close();
             }
 
-            future.TrySetException(new ConsumeOkNotReceivedException($"Blocking receive, consumer failed to consume within  ms: {timeoutMillis} for consumer {consumer}"));
+            future.TrySetException(
+                new ConsumeOkNotReceivedException($"Blocking receive, consumer failed to consume within  ms: {timeoutMillis} for consumer {consumer}"));
         }
 
         return consumer;
@@ -2295,18 +2380,20 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 return routingConnectionFactory.DetermineTargetConnectionFactory();
             }
 
-            var lookupKey = rootObject != null
+            object lookupKey = rootObject != null
                 ? SendConnectionFactorySelectorExpression.GetValue(EvaluationContext, rootObject)
                 : SendConnectionFactorySelectorExpression.GetValue(EvaluationContext);
 
             if (lookupKey != null)
             {
-                var connectionFactory = routingConnectionFactory.GetTargetConnectionFactory(lookupKey);
+                IConnectionFactory connectionFactory = routingConnectionFactory.GetTargetConnectionFactory(lookupKey);
+
                 if (connectionFactory != null)
                 {
                     return connectionFactory;
                 }
-                else if (!routingConnectionFactory.LenientFallback)
+
+                if (!routingConnectionFactory.LenientFallback)
                 {
                     throw new InvalidOperationException($"Cannot determine target ConnectionFactory for lookup key [{lookupKey}]");
                 }
@@ -2322,9 +2409,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         {
             try
             {
-                return RetryTemplate.Execute(
-                    _ => DoExecute(action, connectionFactory),
-                    (IRecoveryCallback<T>)RecoveryCallback);
+                return RetryTemplate.Execute(_ => DoExecute(action, connectionFactory), (IRecoveryCallback<T>)RecoveryCallback);
             }
             catch (Exception e)
             {
@@ -2332,10 +2417,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 throw RabbitExceptionTranslator.ConvertRabbitAccessException(e);
             }
         }
-        else
-        {
-            return DoExecute(action, connectionFactory);
-        }
+
+        return DoExecute(action, connectionFactory);
     }
 
     private T DoExecute<T>(Func<RC.IModel, T> channelCallback, IConnectionFactory connectionFactory)
@@ -2346,7 +2429,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         }
 
         RC.IModel channel = null;
-        var invokeScope = false;
+        bool invokeScope = false;
 
         // No need to check the thread local if we know that no invokes are in process
         if (_activeTemplateCallbacks > 0)
@@ -2356,12 +2439,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
         RabbitResourceHolder resourceHolder = null;
         IConnection connection = null;
+
         if (channel == null)
         {
             if (IsChannelTransacted)
             {
                 resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(connectionFactory, true, UsePublisherConnection);
                 channel = resourceHolder.GetChannel();
+
                 if (channel == null)
                 {
                     ConnectionFactoryUtils.ReleaseResources(resourceHolder);
@@ -2371,6 +2456,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             else
             {
                 connection = ConnectionFactoryUtils.CreateConnection(connectionFactory, UsePublisherConnection);
+
                 if (connection == null)
                 {
                     throw new InvalidOperationException("Connection factory returned a null connection");
@@ -2379,6 +2465,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 try
                 {
                     channel = connection.CreateChannel();
+
                     if (channel == null)
                     {
                         throw new InvalidOperationException("Connection returned a null channel");
@@ -2433,9 +2520,9 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     }
 
     private ConfirmListener AddConfirmListener(Action<object, BasicAckEventArgs> acks, Action<object, BasicNackEventArgs> nacks, RC.IModel channel)
-        => acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected
-            ? new ConfirmListener(acks, nacks, channel)
-            : null;
+    {
+        return acks != null && nacks != null && channel is IChannelProxy proxy && proxy.IsConfirmSelected ? new ConfirmListener(acks, nacks, channel) : null;
+    }
 
     private void CleanUpAfterAction(RC.IModel channel, bool invokeScope, RabbitResourceHolder resourceHolder, IConnection connection)
     {
@@ -2477,6 +2564,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
     private bool ShouldRethrow(RabbitException ex)
     {
         Exception cause = ex;
+
         while (cause != null && cause is not ShutdownSignalException && cause is not ProtocolException)
         {
             cause = cause.InnerException;
@@ -2505,7 +2593,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
 
     protected internal sealed class PendingReply
     {
-        private readonly TaskCompletionSource<IMessage> _future = new ();
+        private readonly TaskCompletionSource<IMessage> _future = new();
 
         public string SavedReplyTo { get; set; }
 
@@ -2531,10 +2619,8 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
                 {
                     return _future.Task.Result;
                 }
-                else
-                {
-                    return null;
-                }
+
+                return null;
             }
             catch (Exception e)
             {
@@ -2570,18 +2656,22 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             _pendingReply = pendingReply;
         }
 
-        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
+        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
+            RC.IBasicProperties properties, byte[] body)
         {
-            var messageProperties = _template
-                .MessagePropertiesConverter
-                .ToMessageHeaders(properties, new Envelope(deliveryTag, redelivered, exchange, routingKey), _template.Encoding);
-            var reply = Message.Create(body, messageProperties);
+            IMessageHeaders messageProperties =
+                _template.MessagePropertiesConverter.ToMessageHeaders(properties, new Envelope(deliveryTag, redelivered, exchange, routingKey),
+                    _template.Encoding);
+
+            IMessage<byte[]> reply = Message.Create(body, messageProperties);
             _template.Logger?.LogTrace("Message received {reply}", reply);
+
             if (_template.AfterReceivePostProcessors != null)
             {
-                var processors = _template.AfterReceivePostProcessors;
+                IList<IMessagePostProcessor> processors = _template.AfterReceivePostProcessors;
                 IMessage postProcessed = reply;
-                foreach (var processor in processors)
+
+                foreach (IMessagePostProcessor processor in processors)
                 {
                     postProcessed = processor.PostProcessMessage(postProcessed);
                 }
@@ -2593,6 +2683,7 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
         {
             base.HandleModelShutdown(model, reason);
+
             if (!RabbitUtils.IsNormalChannelClose(reason))
             {
                 _pendingReply.CompleteExceptionally(new ShutdownSignalException(reason));
@@ -2610,12 +2701,14 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
         private readonly TaskCompletionSource<Delivery> _completionSource;
         private readonly string _queueName;
 
-        public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName, CancellationToken cancellationToken)
+        public DefaultTemplateConsumer(RC.IModel channel, CountdownEvent latch, TaskCompletionSource<Delivery> completionSource, string queueName,
+            CancellationToken cancellationToken)
             : base(channel)
         {
             _latch = latch;
             _completionSource = completionSource;
             _queueName = queueName;
+
             cancellationToken.Register(() =>
             {
                 Signal();
@@ -2636,16 +2729,21 @@ public class RabbitTemplate : AbstractMessagingTemplate<RabbitDestination>, IRab
             base.HandleBasicConsumeOk(consumerTag);
         }
 
-        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey, RC.IBasicProperties properties, byte[] body)
+        public override void HandleBasicDeliver(string consumerTag, ulong deliveryTag, bool redelivered, string exchange, string routingKey,
+            RC.IBasicProperties properties, byte[] body)
         {
             base.HandleBasicDeliver(consumerTag, deliveryTag, redelivered, exchange, routingKey, properties, body);
-            _completionSource.TrySetResult(new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, _queueName));
+
+            _completionSource.TrySetResult(
+                new Delivery(consumerTag, new Envelope(deliveryTag, redelivered, exchange, routingKey), properties, body, _queueName));
+
             Signal();
         }
 
         public override void HandleModelShutdown(object model, RC.ShutdownEventArgs reason)
         {
             base.HandleModelShutdown(model, reason);
+
             if (!RabbitUtils.IsNormalChannelClose(reason))
             {
                 _completionSource.TrySetException(new ShutdownSignalException(reason));

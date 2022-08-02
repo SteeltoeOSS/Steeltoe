@@ -25,14 +25,15 @@ public class EurekaPostConfigurerTest
     public void UpdateConfiguration_WithInstDefaults_UpdatesCorrectly()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "bar" },
             { "spring:application:instance_id", "instance" },
-            { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
         });
 
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         var instOpts = new EurekaInstanceOptions();
         EurekaPostConfigurer.UpdateConfiguration(root, instOpts, new ApplicationInstanceInfo(root));
@@ -48,14 +49,15 @@ public class EurekaPostConfigurerTest
     public void UpdateConfiguration_UpdatesCorrectly()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "bar" },
             { "spring:application:instance_id", "instance" },
-            { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
         });
 
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         var instOpts = new EurekaInstanceOptions
         {
@@ -77,13 +79,14 @@ public class EurekaPostConfigurerTest
     public void UpdateConfiguration_UpdatesCorrectly2()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:name", "bar" },
-            { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
         });
 
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         var instOpts = new EurekaInstanceOptions();
 
@@ -100,13 +103,14 @@ public class EurekaPostConfigurerTest
     public void UpdateConfiguration_UpdatesCorrectly3()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:application:instance_id", "instance" },
-            { "spring:cloud:discovery:registrationMethod", "registrationMethod" },
+            { "spring:cloud:discovery:registrationMethod", "registrationMethod" }
         });
 
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         var instOpts = new EurekaInstanceOptions
         {
@@ -127,7 +131,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_NoServiceInfo_ConfiguresEurekaDiscovery_Correctly()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -179,20 +183,21 @@ public class EurekaPostConfigurerTest
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
         configurationBuilder.AddJsonFile(Path.GetFileName(path));
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, null, clientOpts);
 
-        var co = clientOpts;
+        EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
         Assert.Equal("proxyHost", co.ProxyHost);
         Assert.Equal(100, co.ProxyPort);
@@ -210,12 +215,12 @@ public class EurekaPostConfigurerTest
         Assert.True(co.ShouldRegisterWithEureka);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, null, instOpts, null);
 
-        var ro = instOpts;
+        EurekaInstanceOptions ro = instOpts;
 
         Assert.Equal("instanceId", ro.InstanceId);
         Assert.Equal("appName", ro.AppName);
@@ -240,7 +245,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
 
-        var map = ro.MetadataMap;
+        IDictionary<string, string> map = ro.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(2, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -260,7 +265,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
     {
-        var vcap_application = @"
+        string vcap_application = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -283,7 +288,8 @@ public class EurekaPostConfigurerTest
                     ""application_id"": ""ac923014-93a5-4aee-b934-a043b241868b"",
                     ""instance_id"": ""instance_id""
                 }";
-        var vcap_services = @"
+
+        string vcap_services = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -324,7 +330,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -382,33 +388,34 @@ public class EurekaPostConfigurerTest
                         }
                     }
                 }";
+
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var sis = config.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> sis = config.GetServiceInfos<EurekaServiceInfo>();
         Assert.Single(sis);
-        var si = sis.First();
+        EurekaServiceInfo si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
 
-        var co = clientOpts;
+        EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
         Assert.Equal("proxyHost", co.ProxyHost);
         Assert.Equal(100, co.ProxyPort);
@@ -429,12 +436,12 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
-        var ro = instOpts;
+        EurekaInstanceOptions ro = instOpts;
 
         Assert.Equal("hostname", ro.RegistrationMethod);
         Assert.Equal("myhostname:instance_id", ro.InstanceId);
@@ -460,7 +467,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
 
-        var map = ro.MetadataMap;
+        IDictionary<string, string> map = ro.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -474,7 +481,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
     {
-        var vcap_application = @"
+        string vcap_application = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -497,7 +504,8 @@ public class EurekaPostConfigurerTest
                     ""application_id"": ""ac923014-93a5-4aee-b934-a043b241868b"",
                     ""instance_id"": ""instance_id""
                 }";
-        var vcap_services = @"
+
+        string vcap_services = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -537,7 +545,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -589,32 +597,33 @@ public class EurekaPostConfigurerTest
                         }
                     }
                 }";
+
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var sis = config.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> sis = config.GetServiceInfos<EurekaServiceInfo>();
         Assert.Single(sis);
-        var si = sis.First();
+        EurekaServiceInfo si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
 
-        var co = clientOpts;
+        EurekaClientOptions co = clientOpts;
         Assert.NotNull(co);
         Assert.Equal("proxyHost", co.ProxyHost);
         Assert.Equal(100, co.ProxyPort);
@@ -635,12 +644,12 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
-        var ro = instOpts;
+        EurekaInstanceOptions ro = instOpts;
 
         Assert.Equal("route", ro.RegistrationMethod);
         Assert.Equal("foo.apps.testcloud.com:instance_id", ro.InstanceId);
@@ -666,7 +675,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
 
-        var map = ro.MetadataMap;
+        IDictionary<string, string> map = ro.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -680,7 +689,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
     {
-        var vcap_application = @"
+        string vcap_application = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -703,7 +712,8 @@ public class EurekaPostConfigurerTest
                     ""application_id"": ""ac923014-93a5-4aee-b934-a043b241868b"",
                     ""instance_id"": ""instance_id""
                 }";
-        var vcap_services = @"
+
+        string vcap_services = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -743,7 +753,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -796,32 +806,33 @@ public class EurekaPostConfigurerTest
                         }
                     }
                 }";
+
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var sis = config.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> sis = config.GetServiceInfos<EurekaServiceInfo>();
         Assert.Single(sis);
-        var si = sis.First();
+        EurekaServiceInfo si = sis.First();
 
         var clientOpts = new EurekaClientOptions();
-        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         clientSection.Bind(clientOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOpts);
 
-        var co = clientOpts;
+        EurekaClientOptions co = clientOpts;
 
         Assert.NotNull(co);
         Assert.Equal("proxyHost", co.ProxyHost);
@@ -843,12 +854,12 @@ public class EurekaPostConfigurerTest
         Assert.Equal("dCsdoiuklicS", co.ClientSecret);
 
         var instOpts = new EurekaInstanceOptions();
-        var instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instSection.Bind(instOpts);
 
         EurekaPostConfigurer.UpdateConfiguration(config, si, instOpts, si.ApplicationInfo);
 
-        var ro = instOpts;
+        EurekaInstanceOptions ro = instOpts;
 
         Assert.Equal("hostname", ro.RegistrationMethod);
         Assert.Equal("myhostname:instance_id", ro.InstanceId);
@@ -874,7 +885,7 @@ public class EurekaPostConfigurerTest
         Assert.Equal("healthCheckUrl", ro.HealthCheckUrl);
         Assert.Equal("secureHealthCheckUrl", ro.SecureHealthCheckUrl);
 
-        var map = ro.MetadataMap;
+        IDictionary<string, string> map = ro.MetadataMap;
         Assert.NotNull(map);
         Assert.Equal(6, map.Count);
         Assert.Equal("bar", map["foo"]);
@@ -897,6 +908,7 @@ public class EurekaPostConfigurerTest
                     ""application_id"": ""ac923014"",
                     ""instance_id"": ""instance_id""
                 }";
+
         const string vcapServices = @"
                 {
                     ""p-service-registry"": [{
@@ -916,14 +928,14 @@ public class EurekaPostConfigurerTest
         Environment.SetEnvironmentVariable("CF_INSTANCE_INDEX", "1");
         Environment.SetEnvironmentVariable("CF_INSTANCE_GUID", "ac923014-93a5-4aee-b934-a043b241868b");
         using var sandbox = new Sandbox();
-        var config = new ConfigurationBuilder().AddCloudFoundry().Build();
-        var si = config.GetServiceInfos<EurekaServiceInfo>().First();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        EurekaServiceInfo si = config.GetServiceInfos<EurekaServiceInfo>().First();
 
         var clientOptions = new EurekaClientOptions();
         EurekaPostConfigurer.UpdateConfiguration(config, si, clientOptions);
 
         var instanceOptions = new EurekaInstanceOptions();
-        var instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
+        IConfigurationSection instanceConfigSection = config.GetSection(EurekaInstanceOptions.EurekaInstanceConfigurationPrefix);
         instanceConfigSection.Bind(instanceOptions);
 
         void ConfigureAction()
@@ -931,7 +943,7 @@ public class EurekaPostConfigurerTest
             EurekaPostConfigurer.UpdateConfiguration(config, si, instanceOptions, si.ApplicationInfo);
         }
 
-        var configureAction = ConfigureAction;
+        Action configureAction = ConfigureAction;
 
         configureAction.Should().NotThrow("UpdateConfiguration should not throw for no Uri");
     }
@@ -939,7 +951,11 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfigurationFindsUrls()
     {
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" } }).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "urls", "https://myapp:1234;http://0.0.0.0:1233;http://::1233;http://*:1233" }
+        }).Build();
+
         var instOpts = new EurekaInstanceOptions();
         var appInfo = new ApplicationInstanceInfo(config);
 
@@ -960,7 +976,7 @@ public class EurekaPostConfigurerTest
 
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", "true");
 
-        var ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, null, clientOptions));
+        Exception ex = Record.Exception(() => EurekaPostConfigurer.UpdateConfiguration(null, null, clientOptions));
         Assert.Null(ex);
 
         Environment.SetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER", null);

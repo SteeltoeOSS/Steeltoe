@@ -33,7 +33,7 @@ public class OpPlusTests
 
         var realLiteral = new RealLiteral("123.00", -1, -1, 123.0);
         var o = new OpPlus(-1, -1, realLiteral);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
 
         Assert.Equal(typeof(double), value.TypeDescriptor);
         Assert.Equal(typeof(double), value.TypeDescriptor);
@@ -47,7 +47,7 @@ public class OpPlusTests
 
         var longLiteral = new LongLiteral("123", -1, -1, 123L);
         var o = new OpPlus(-1, -1, longLiteral);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
 
         Assert.Equal(typeof(long), value.TypeDescriptor);
         Assert.Equal(typeof(long), value.TypeDescriptor);
@@ -61,7 +61,7 @@ public class OpPlusTests
 
         var intLiteral = new IntLiteral("123", -1, -1, 123);
         var o = new OpPlus(-1, -1, intLiteral);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
 
         Assert.Equal(typeof(int), value.TypeDescriptor);
         Assert.Equal(typeof(int), value.TypeDescriptor);
@@ -76,7 +76,7 @@ public class OpPlusTests
         var n1 = new RealLiteral("123.00", -1, -1, 123.0);
         var n2 = new RealLiteral("456.00", -1, -1, 456.0);
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
 
         Assert.Equal(typeof(double), value.TypeDescriptor);
         Assert.Equal(typeof(double), value.TypeDescriptor);
@@ -91,7 +91,7 @@ public class OpPlusTests
         var n1 = new LongLiteral("123", -1, -1, 123L);
         var n2 = new LongLiteral("456", -1, -1, 456L);
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
         Assert.Equal(typeof(long), value.TypeDescriptor);
         Assert.Equal(typeof(long), value.TypeDescriptor);
         Assert.Equal(123L + 456L, value.Value);
@@ -105,7 +105,7 @@ public class OpPlusTests
         var n1 = new IntLiteral("123", -1, -1, 123);
         var n2 = new IntLiteral("456", -1, -1, 456);
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
         Assert.Equal(typeof(int), value.TypeDescriptor);
         Assert.Equal(typeof(int), value.TypeDescriptor);
         Assert.Equal(123 + 456, value.Value);
@@ -119,7 +119,7 @@ public class OpPlusTests
         var n1 = new StringLiteral("\"foo\"", -1, -1, "\"foo\"");
         var n2 = new StringLiteral("\"bar\"", -1, -1, "\"bar\"");
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
 
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal(typeof(string), value.TypeDescriptor);
@@ -134,7 +134,7 @@ public class OpPlusTests
         var n1 = new StringLiteral("\"number is \"", -1, -1, "\"number is \"");
         var n2 = new LongLiteral("123", -1, -1, 123);
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal("number is 123", value.Value);
@@ -148,7 +148,7 @@ public class OpPlusTests
         var n1 = new LongLiteral("123", -1, -1, 123);
         var n2 = new StringLiteral("\" is a number\"", -1, -1, "\" is a number\"");
         var o = new OpPlus(-1, -1, n1, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal("123 is a number", value.Value);
@@ -165,7 +165,7 @@ public class OpPlusTests
 
         var n2 = new StringLiteral("\" is now\"", -1, -1, "\" is now\"");
         var o = new OpPlus(-1, -1, var, n2);
-        var value = o.GetValueInternal(expressionState);
+        ITypedValue value = o.GetValueInternal(expressionState);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal(typeof(string), value.TypeDescriptor);
         Assert.Equal($"{time} is now", value.Value);

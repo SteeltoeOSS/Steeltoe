@@ -25,7 +25,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
         Assert.Contains(nameof(services), ex.Message);
@@ -42,7 +42,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;
-        var connectionConfig = new ConfigurationBuilder().Build();
+        IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config));
         Assert.Contains(nameof(config), ex.Message);
@@ -58,7 +58,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_ThrowsIfServiceNameNull()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddDistributedRedisCache(config, serviceName));
@@ -69,7 +69,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_NoVCAPs_AddsDistributedCache()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddDistributedRedisCache(config);
         var service = services.BuildServiceProvider().GetService<IDistributedCache>();
@@ -84,7 +84,7 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddDistributedRedisCache(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
@@ -98,11 +98,11 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<RedisConnectionInfo>();
-        services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+        Connection ci = cm.Get<RedisConnectionInfo>();
+        services.AddHealthChecks().AddRedis(ci.ConnectionString, ci.Name);
 
         services.AddDistributedRedisCache(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
@@ -116,13 +116,13 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<RedisConnectionInfo>();
-        services.AddHealthChecks().AddRedis(ci.ConnectionString, name: ci.Name);
+        Connection ci = cm.Get<RedisConnectionInfo>();
+        services.AddHealthChecks().AddRedis(ci.ConnectionString, ci.Name);
 
-        services.AddDistributedRedisCache(config, addSteeltoeHealthChecks: true);
+        services.AddDistributedRedisCache(config, true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
 
         Assert.NotNull(healthContributor);
@@ -132,7 +132,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddDistributedRedisCache_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -151,7 +151,7 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDistributedRedisCache(config));
         Assert.Contains("Multiple", ex.Message);
@@ -164,7 +164,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_ThrowsIfServiceCollectionNull()
     {
         const IServiceCollection services = null;
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
         Assert.Contains(nameof(services), ex.Message);
@@ -181,7 +181,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;
-        var connectionConfig = new ConfigurationBuilder().Build();
+        IConfigurationRoot connectionConfig = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddRedisConnectionMultiplexer(config));
         Assert.Contains(nameof(config), ex.Message);
@@ -218,7 +218,7 @@ public class RedisCacheServiceCollectionExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         IServiceCollection services2 = new ServiceCollection();
@@ -243,7 +243,7 @@ public class RedisCacheServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRedisConnectionMultiplexer(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RedisHealthContributor;
@@ -256,16 +256,18 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcap);
+
         var appsettings = new Dictionary<string, string>
         {
             ["redis:client:AbortOnConnectFail"] = "false",
             ["redis:client:connectTimeout"] = "1"
         };
+
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRedisConnectionMultiplexer(config);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
@@ -282,15 +284,17 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBroker);
+
         var appsettings = new Dictionary<string, string>
         {
-            ["redis:client:AbortOnConnectFail"] = "false",
+            ["redis:client:AbortOnConnectFail"] = "false"
         };
+
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRedisConnectionMultiplexer(config);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
@@ -307,16 +311,18 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerEnterpriseVcap);
+
         var appsettings = new Dictionary<string, string>
         {
             ["redis:client:AbortOnConnectFail"] = "false",
             ["redis:client:connectTimeout"] = "1"
         };
+
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRedisConnectionMultiplexer(config);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
@@ -333,12 +339,17 @@ public class RedisCacheServiceCollectionExtensionsTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.SingleServerVcapAzureBrokerSecure);
-        var appsettings = new Dictionary<string, string> { ["redis:client:AbortOnConnectFail"] = "false" };
+
+        var appsettings = new Dictionary<string, string>
+        {
+            ["redis:client:AbortOnConnectFail"] = "false"
+        };
+
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRedisConnectionMultiplexer(config);
         var service = services.BuildServiceProvider().GetService<IConnectionMultiplexer>();
@@ -355,7 +366,7 @@ public class RedisCacheServiceCollectionExtensionsTest
     public void AddRedisConnectionMultiplexer_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddRedisConnectionMultiplexer(config, "foobar"));
         Assert.Contains("foobar", ex.Message);

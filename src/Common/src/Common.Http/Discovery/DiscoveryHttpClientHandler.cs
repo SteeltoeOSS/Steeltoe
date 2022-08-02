@@ -9,7 +9,7 @@ using Steeltoe.Discovery;
 namespace Steeltoe.Common.Discovery;
 
 /// <summary>
-/// An <see cref="HttpClientHandler"/> implementation that performs Service Discovery.
+/// An <see cref="HttpClientHandler" /> implementation that performs Service Discovery.
 /// </summary>
 public class DiscoveryHttpClientHandler : HttpClientHandler
 {
@@ -17,11 +17,17 @@ public class DiscoveryHttpClientHandler : HttpClientHandler
     private readonly DiscoveryHttpClientHandlerBase _discoveryBase;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="DiscoveryHttpClientHandler"/> class.
+    /// Initializes a new instance of the <see cref="DiscoveryHttpClientHandler" /> class.
     /// </summary>
-    /// <param name="discoveryClient">Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration).</param>
-    /// <param name="logger">ILogger for capturing logs from Discovery operations.</param>
-    /// <param name="loadBalancer">The load balancer to use.</param>
+    /// <param name="discoveryClient">
+    /// Service discovery client to use - provided by calling services.AddDiscoveryClient(Configuration).
+    /// </param>
+    /// <param name="logger">
+    /// ILogger for capturing logs from Discovery operations.
+    /// </param>
+    /// <param name="loadBalancer">
+    /// The load balancer to use.
+    /// </param>
     public DiscoveryHttpClientHandler(IDiscoveryClient discoveryClient, ILogger logger = null, ILoadBalancer loadBalancer = null)
     {
         _discoveryBase = new DiscoveryHttpClientHandlerBase(discoveryClient, logger, loadBalancer);
@@ -31,7 +37,8 @@ public class DiscoveryHttpClientHandler : HttpClientHandler
     /// <inheritdoc />
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var current = request.RequestUri;
+        Uri current = request.RequestUri;
+
         try
         {
             request.RequestUri = await _discoveryBase.LookupServiceAsync(current).ConfigureAwait(false);

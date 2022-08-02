@@ -13,12 +13,22 @@ public class NativeMessageHeaderAccessorTest
     {
         var inputNativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } },
-            { "bar", new List<string> { "baz" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            },
+            {
+                "bar", new List<string>
+                {
+                    "baz"
+                }
+            }
         };
 
         var headerAccessor = new NativeMessageHeaderAccessor(inputNativeHeaders);
-        var actual = headerAccessor.ToDictionary();
+        IDictionary<string, object> actual = headerAccessor.ToDictionary();
 
         Assert.Single(actual);
         Assert.NotNull(actual[NativeMessageHeaderAccessor.NativeHeaders]);
@@ -31,8 +41,18 @@ public class NativeMessageHeaderAccessorTest
     {
         var inputNativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } },
-            { "bar", new List<string> { "baz" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            },
+            {
+                "bar", new List<string>
+                {
+                    "baz"
+                }
+            }
         };
 
         var inputHeaders = new Dictionary<string, object>
@@ -41,9 +61,9 @@ public class NativeMessageHeaderAccessorTest
             { NativeMessageHeaderAccessor.NativeHeaders, inputNativeHeaders }
         };
 
-        var message = Message.Create("p", inputHeaders);
+        IMessage<string> message = Message.Create("p", inputHeaders);
         var headerAccessor = new NativeMessageHeaderAccessor(message);
-        var actual = headerAccessor.ToDictionary();
+        IDictionary<string, object> actual = headerAccessor.ToDictionary();
 
         Assert.Equal(2, actual.Count);
         Assert.Equal("b", actual["a"]);
@@ -57,10 +77,10 @@ public class NativeMessageHeaderAccessorTest
     {
         var headerAccessor = new NativeMessageHeaderAccessor((IMessage)null);
 
-        var actual = headerAccessor.ToDictionary();
+        IDictionary<string, object> actual = headerAccessor.ToDictionary();
         Assert.Empty(actual);
 
-        var actualNativeHeaders = headerAccessor.ToNativeHeaderDictionary();
+        IDictionary<string, List<string>> actualNativeHeaders = headerAccessor.ToNativeHeaderDictionary();
         Assert.Empty(actualNativeHeaders);
     }
 
@@ -69,8 +89,18 @@ public class NativeMessageHeaderAccessorTest
     {
         var inputNativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } },
-            { "bar", new List<string> { "baz" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            },
+            {
+                "bar", new List<string>
+                {
+                    "baz"
+                }
+            }
         };
 
         var nativeHeaders = new Dictionary<string, object>
@@ -79,23 +109,30 @@ public class NativeMessageHeaderAccessorTest
             { NativeMessageHeaderAccessor.NativeHeaders, inputNativeHeaders }
         };
 
-        var message = Message.Create("p", nativeHeaders);
+        IMessage<string> message = Message.Create("p", nativeHeaders);
 
         var headerAccessor = new NativeMessageHeaderAccessor(message);
         headerAccessor.SetHeader("a", "B");
         headerAccessor.SetNativeHeader("foo", "BAR");
 
-        var actual = headerAccessor.ToDictionary();
+        IDictionary<string, object> actual = headerAccessor.ToDictionary();
 
         Assert.Equal(2, actual.Count);
         Assert.Equal("B", actual["a"]);
 
-        var actualNativeHeaders =
-            (IDictionary<string, List<string>>)actual[NativeMessageHeaderAccessor.NativeHeaders];
+        var actualNativeHeaders = (IDictionary<string, List<string>>)actual[NativeMessageHeaderAccessor.NativeHeaders];
 
         Assert.NotNull(actualNativeHeaders);
-        Assert.Equal(new List<string> { "BAR" }, actualNativeHeaders["foo"]);
-        Assert.Equal(new List<string> { "baz" }, actualNativeHeaders["bar"]);
+
+        Assert.Equal(new List<string>
+        {
+            "BAR"
+        }, actualNativeHeaders["foo"]);
+
+        Assert.Equal(new List<string>
+        {
+            "baz"
+        }, actualNativeHeaders["bar"]);
     }
 
     [Fact]
@@ -103,13 +140,21 @@ public class NativeMessageHeaderAccessorTest
     {
         var nativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            }
         };
 
         var headers = new NativeMessageHeaderAccessor(nativeHeaders);
         headers.SetNativeHeader("foo", "baz");
 
-        Assert.Equal(new List<string> { "baz" }, headers.GetNativeHeader("foo"));
+        Assert.Equal(new List<string>
+        {
+            "baz"
+        }, headers.GetNativeHeader("foo"));
     }
 
     [Fact]
@@ -117,7 +162,12 @@ public class NativeMessageHeaderAccessorTest
     {
         var nativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            }
         };
 
         var headers = new NativeMessageHeaderAccessor(nativeHeaders);
@@ -132,7 +182,10 @@ public class NativeMessageHeaderAccessorTest
         var headerAccessor = new NativeMessageHeaderAccessor();
         headerAccessor.SetNativeHeader("foo", "baz");
 
-        Assert.Equal(new List<string> { "baz" }, headerAccessor.GetNativeHeader("foo"));
+        Assert.Equal(new List<string>
+        {
+            "baz"
+        }, headerAccessor.GetNativeHeader("foo"));
     }
 
     [Fact]
@@ -160,13 +213,22 @@ public class NativeMessageHeaderAccessorTest
     {
         var nativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            }
         };
 
         var headers = new NativeMessageHeaderAccessor(nativeHeaders);
         headers.AddNativeHeader("foo", "baz");
 
-        Assert.Equal(new List<string> { "bar", "baz" }, headers.GetNativeHeader("foo"));
+        Assert.Equal(new List<string>
+        {
+            "bar",
+            "baz"
+        }, headers.GetNativeHeader("foo"));
     }
 
     [Fact]
@@ -174,13 +236,21 @@ public class NativeMessageHeaderAccessorTest
     {
         var nativeHeaders = new Dictionary<string, List<string>>
         {
-            { "foo", new List<string> { "bar" } }
+            {
+                "foo", new List<string>
+                {
+                    "bar"
+                }
+            }
         };
 
         var headers = new NativeMessageHeaderAccessor(nativeHeaders);
         headers.AddNativeHeader("foo", null);
 
-        Assert.Equal(new List<string> { "bar" }, headers.GetNativeHeader("foo"));
+        Assert.Equal(new List<string>
+        {
+            "bar"
+        }, headers.GetNativeHeader("foo"));
     }
 
     [Fact]
@@ -189,7 +259,10 @@ public class NativeMessageHeaderAccessorTest
         var headerAccessor = new NativeMessageHeaderAccessor();
         headerAccessor.AddNativeHeader("foo", "bar");
 
-        Assert.Equal(new List<string> { "bar" }, headerAccessor.GetNativeHeader("foo"));
+        Assert.Equal(new List<string>
+        {
+            "bar"
+        }, headerAccessor.GetNativeHeader("foo"));
     }
 
     [Fact]

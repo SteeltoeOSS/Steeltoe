@@ -14,12 +14,12 @@ namespace Steeltoe.Management.Endpoint;
 
 public class AllActuatorsStartupFilter : IStartupFilter
 {
+    private readonly Action<IEndpointConventionBuilder> _configureConventions;
+
     public AllActuatorsStartupFilter(Action<IEndpointConventionBuilder> configureConventions = null)
     {
         _configureConventions = configureConventions;
     }
-
-    private readonly Action<IEndpointConventionBuilder> _configureConventions;
 
     public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next)
     {

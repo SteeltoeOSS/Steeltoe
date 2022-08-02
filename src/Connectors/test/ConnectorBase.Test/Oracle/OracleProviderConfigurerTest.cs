@@ -13,6 +13,7 @@ public class OracleProviderConfigurerTest
     public void UpdateConfiguration_WithNullOracleServiceInfo_ReturnsExpected()
     {
         var configurer = new OracleProviderConfigurer();
+
         var config = new OracleProviderConnectorOptions
         {
             Server = "localhost",
@@ -21,6 +22,7 @@ public class OracleProviderConfigurerTest
             Password = "password",
             ServiceName = "orcl"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Server);
@@ -35,6 +37,7 @@ public class OracleProviderConfigurerTest
     public void UpdateConfiguration_WithOracleServiceInfo_ReturnsExpected()
     {
         var configurer = new OracleProviderConfigurer();
+
         var config = new OracleProviderConnectorOptions
         {
             Server = "localhost",
@@ -43,6 +46,7 @@ public class OracleProviderConfigurerTest
             Password = "password",
             ServiceName = "orcl"
         };
+
         var si = new OracleServiceInfo("MyId", "oracle://user:pwd@localhost:1521/orclpdb1");
 
         configurer.UpdateConfiguration(si, config);
@@ -68,9 +72,11 @@ public class OracleProviderConfigurerTest
         };
 
         var configurer = new OracleProviderConfigurer();
-        var opts = configurer.Configure(null, config);
-        var connectionString =
+        string opts = configurer.Configure(null, config);
+
+        string connectionString =
             $"User Id={config.Username};Password={config.Password};Data Source={config.Server}:{config.Port}/{config.ServiceName};Connection Timeout={config.ConnectionTimeout}";
+
         Assert.StartsWith(connectionString, opts);
     }
 

@@ -2,14 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Diagnostics.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Diagnostics;
 
 public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, IDiagnosticsManager
 {
+    private static readonly Lazy<DiagnosticsManager> AsSingleton = new(() => new DiagnosticsManager());
+
+    private bool _isDisposed;
     internal IDisposable ListenersSubscription;
     internal ILogger<DiagnosticsManager> Logger;
     internal IList<IDiagnosticObserver> InnerObservers;
@@ -18,15 +21,15 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     internal bool WorkerThreadShutdown;
     internal int Started;
-    private static readonly Lazy<DiagnosticsManager> AsSingleton = new (() => new DiagnosticsManager());
 
     public static DiagnosticsManager Instance => AsSingleton.Value;
 
-    public DiagnosticsManager(
-        IEnumerable<IRuntimeDiagnosticSource> runtimeSources,
-        IEnumerable<IDiagnosticObserver> observers,
-        IEnumerable<EventListener> eventListeners,
-        ILogger<DiagnosticsManager> logger = null)
+    public IList<IDiagnosticObserver> Observers => InnerObservers;
+
+    public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
+
+    public DiagnosticsManager(IEnumerable<IRuntimeDiagnosticSource> runtimeSources, IEnumerable<IDiagnosticObserver> observers,
+        IEnumerable<EventListener> eventListeners, ILogger<DiagnosticsManager> logger = null)
     {
         if (observers == null)
         {
@@ -46,10 +49,6 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         InnerSources = new List<IRuntimeDiagnosticSource>();
     }
 
-    public IList<IDiagnosticObserver> Observers => InnerObservers;
-
-    public IList<IRuntimeDiagnosticSource> Sources => InnerSources;
-
     public void OnCompleted()
     {
         // for future use
@@ -62,7 +61,7 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
 
     public void OnNext(DiagnosticListener value)
     {
-        foreach (var listener in InnerObservers)
+        foreach (IDiagnosticObserver listener in InnerObservers)
         {
             listener.Subscribe(value);
         }
@@ -82,14 +81,12 @@ public class DiagnosticsManager : IObserver<DiagnosticListener>, IDisposable, ID
         {
             WorkerThreadShutdown = true;
 
-            foreach (var listener in InnerObservers)
+            foreach (IDiagnosticObserver listener in InnerObservers)
             {
                 listener.Dispose();
             }
         }
     }
-
-    private bool _isDisposed;
 
     public void Dispose()
     {

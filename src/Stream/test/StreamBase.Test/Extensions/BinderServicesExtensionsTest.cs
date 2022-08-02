@@ -20,11 +20,11 @@ public class BinderServicesExtensionsTest
         var container = new ServiceCollection();
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddSingleton<IApplicationContext, GenericApplicationContext>();
         container.AddBinderServices(config);
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
 
         Assert.NotNull(serviceProvider.GetService<IBinderFactory>());
         Assert.NotNull(serviceProvider.GetService<IBinderTypeRegistry>());

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Connector.Services;
 using System.Data.SqlClient;
+using Steeltoe.Connector.Services;
 using Xunit;
 
 namespace Steeltoe.Connector.SqlServer.Test;
@@ -29,9 +29,10 @@ public class SqlServerProviderConnectorFactoryTest
             Username = "username",
             Database = "database"
         };
+
         var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "user", "pass");
         var factory = new SqlServerProviderConnectorFactory(si, config, typeof(SqlConnection));
-        var connection = factory.Create(null);
+        object connection = factory.Create(null);
         Assert.NotNull(connection);
     }
 }

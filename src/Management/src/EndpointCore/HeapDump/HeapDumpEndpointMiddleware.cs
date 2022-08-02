@@ -12,8 +12,9 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 {
     private readonly RequestDelegate _next;
 
-    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions, ILogger<HeapDumpEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public HeapDumpEndpointMiddleware(RequestDelegate next, HeapDumpEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<HeapDumpEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
@@ -30,7 +31,7 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
 
     protected internal async Task HandleHeapDumpRequestAsync(HttpContext context)
     {
-        var filename = endpoint.Invoke();
+        string filename = endpoint.Invoke();
         logger?.LogDebug("Returning: {0}", filename);
         context.Response.Headers.Add("Content-Type", "application/octet-stream");
 
@@ -40,8 +41,8 @@ public class HeapDumpEndpointMiddleware : EndpointMiddleware<string>
             return;
         }
 
-        var gzFilename = $"{filename}.gz";
-        var result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
+        string gzFilename = $"{filename}.gz";
+        Stream result = await Utils.CompressFileAsync(filename, gzFilename).ConfigureAwait(false);
 
         if (result != null)
         {

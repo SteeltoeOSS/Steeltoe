@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Utils.Diagnostics;
 
-/// <inheritdoc/>
+/// <inheritdoc />
 public class CommandExecutor : ICommandExecutor
 {
     private static int _commandCounter;
@@ -16,21 +16,29 @@ public class CommandExecutor : ICommandExecutor
     private readonly ILogger<CommandExecutor> _logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="CommandExecutor"/> class.
+    /// Initializes a new instance of the <see cref="CommandExecutor" /> class.
     /// </summary>
-    /// <param name="logger">Injected logger.</param>
+    /// <param name="logger">
+    /// Injected logger.
+    /// </param>
     public CommandExecutor(ILogger<CommandExecutor> logger = null)
     {
         _logger = logger;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task<CommandResult> ExecuteAsync(string command, string workingDirectory = null, int timeout = -1)
     {
-        var commandId = NextCommandId();
+        int commandId = NextCommandId();
         using var process = new Process();
-        var arguments = command.Split(new[] { ' ' }, 2);
+
+        string[] arguments = command.Split(new[]
+        {
+            ' '
+        }, 2);
+
         process.StartInfo.FileName = arguments[0];
+
         if (arguments.Length > 1)
         {
             process.StartInfo.Arguments = arguments[1];
@@ -49,6 +57,7 @@ public class CommandExecutor : ICommandExecutor
 
         var output = new StringBuilder();
         var outputCloseEvent = new TaskCompletionSource<bool>();
+
         process.OutputDataReceived += (_, e) =>
         {
             if (e.Data is null)
@@ -63,6 +72,7 @@ public class CommandExecutor : ICommandExecutor
 
         var error = new StringBuilder();
         var errorCloseEvent = new TaskCompletionSource<bool>();
+
         process.ErrorDataReceived += (_, e) =>
         {
             if (e.Data is null)
@@ -76,6 +86,7 @@ public class CommandExecutor : ICommandExecutor
         };
 
         _logger?.LogDebug("[{CommandId}] command: {Command}", commandId, command);
+
         try
         {
             if (!process.Start())
@@ -94,15 +105,20 @@ public class CommandExecutor : ICommandExecutor
         process.BeginErrorReadLine();
 
         // ReSharper disable once AccessToDisposedClosure
-        var waitForExit = Task.Run(() => process.WaitForExit(timeout));
-        var processTask = Task.WhenAll(waitForExit, outputCloseEvent.Task, errorCloseEvent.Task);
+        Task<bool> waitForExit = Task.Run(() => process.WaitForExit(timeout));
+        Task<bool[]> processTask = Task.WhenAll(waitForExit, outputCloseEvent.Task, errorCloseEvent.Task);
+
         if (await Task.WhenAny(Task.Delay(timeout), processTask) == processTask && waitForExit.Result)
         {
             var result = new CommandResult
             {
-                ExitCode = process.ExitCode, Output = output.ToString(), Error = error.ToString(),
+                ExitCode = process.ExitCode,
+                Output = output.ToString(),
+                Error = error.ToString()
             };
+
             _logger?.LogDebug("[{CommandId}] exit code: {ExitCode}", commandId, result.ExitCode);
+
             if (result.Output.Length > 0)
             {
                 _logger?.LogDebug("[{CommandId}] stdout:\n{Output}", commandId, result.Output);

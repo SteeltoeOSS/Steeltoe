@@ -10,12 +10,12 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
 {
     private readonly ICloudFoundrySettingsReader _settingsReader;
 
+    internal IDictionary<string, string> Properties => Data;
+
     public CloudFoundryConfigurationProvider(ICloudFoundrySettingsReader settingsReader)
     {
         _settingsReader = settingsReader ?? throw new ArgumentNullException(nameof(settingsReader));
     }
-
-    internal IDictionary<string, string> Properties => Data;
 
     public override void Load()
     {
@@ -57,13 +57,14 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
     {
         var data = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        var appJson = _settingsReader.ApplicationJson;
+        string appJson = _settingsReader.ApplicationJson;
+
         if (!string.IsNullOrEmpty(appJson))
         {
-            var memStream = GetMemoryStream(appJson);
+            MemoryStream memStream = GetMemoryStream(appJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(memStream));
-            var applicationData = builder.Build();
+            IConfigurationRoot applicationData = builder.Build();
 
             if (applicationData != null)
             {
@@ -72,13 +73,14 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
             }
         }
 
-        var appServicesJson = _settingsReader.ServicesJson;
+        string appServicesJson = _settingsReader.ServicesJson;
+
         if (!string.IsNullOrEmpty(appServicesJson))
         {
-            var memStream = GetMemoryStream(appServicesJson);
+            MemoryStream memStream = GetMemoryStream(appServicesJson);
             var builder = new ConfigurationBuilder();
             builder.Add(new JsonStreamConfigurationSource(memStream));
-            var servicesData = builder.Build();
+            IConfigurationRoot servicesData = builder.Build();
 
             if (servicesData != null)
             {
@@ -96,7 +98,7 @@ public class CloudFoundryConfigurationProvider : ConfigurationProvider
             return;
         }
 
-        foreach (var section in sections)
+        foreach (IConfigurationSection section in sections)
         {
             LoadSection(prefix, section, data);
             LoadData(prefix, section.GetChildren(), data);

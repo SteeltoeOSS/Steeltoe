@@ -6,11 +6,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 
 public class HystrixCollapserConfiguration
 {
-    public HystrixCollapserConfiguration(
-        IHystrixCollapserKey collapserKey,
-        int maxRequestsInBatch,
-        int timerDelayInMilliseconds,
-        bool requestCacheEnabled,
+    public IHystrixCollapserKey CollapserKey { get; }
+
+    public int MaxRequestsInBatch { get; }
+
+    public int TimerDelayInMilliseconds { get; }
+
+    public bool IsRequestCacheEnabled { get; }
+
+    public CollapserMetricsConfig CollapserMetricsConfiguration { get; }
+
+    public HystrixCollapserConfiguration(IHystrixCollapserKey collapserKey, int maxRequestsInBatch, int timerDelayInMilliseconds, bool requestCacheEnabled,
         CollapserMetricsConfig collapserMetricsConfig)
     {
         CollapserKey = collapserKey;
@@ -22,47 +28,16 @@ public class HystrixCollapserConfiguration
 
     public static HystrixCollapserConfiguration Sample(IHystrixCollapserKey collapserKey, IHystrixCollapserOptions collapserProperties)
     {
-        var collapserMetricsConfig = new CollapserMetricsConfig(
-            collapserProperties.MetricsRollingPercentileWindowBuckets,
-            collapserProperties.MetricsRollingPercentileWindowInMilliseconds,
-            collapserProperties.MetricsRollingPercentileEnabled,
-            collapserProperties.MetricsRollingStatisticalWindowBuckets,
-            collapserProperties.MetricsRollingStatisticalWindowInMilliseconds);
+        var collapserMetricsConfig = new CollapserMetricsConfig(collapserProperties.MetricsRollingPercentileWindowBuckets,
+            collapserProperties.MetricsRollingPercentileWindowInMilliseconds, collapserProperties.MetricsRollingPercentileEnabled,
+            collapserProperties.MetricsRollingStatisticalWindowBuckets, collapserProperties.MetricsRollingStatisticalWindowInMilliseconds);
 
-        return new HystrixCollapserConfiguration(
-            collapserKey,
-            collapserProperties.MaxRequestsInBatch,
-            collapserProperties.TimerDelayInMilliseconds,
-            collapserProperties.RequestCacheEnabled,
-            collapserMetricsConfig);
+        return new HystrixCollapserConfiguration(collapserKey, collapserProperties.MaxRequestsInBatch, collapserProperties.TimerDelayInMilliseconds,
+            collapserProperties.RequestCacheEnabled, collapserMetricsConfig);
     }
-
-    public IHystrixCollapserKey CollapserKey { get; }
-
-    public int MaxRequestsInBatch { get; }
-
-    public int TimerDelayInMilliseconds { get; }
-
-    public bool IsRequestCacheEnabled { get; }
-
-    public CollapserMetricsConfig CollapserMetricsConfiguration { get; }
 
     public class CollapserMetricsConfig
     {
-        public CollapserMetricsConfig(
-            int rollingPercentileNumberOfBuckets,
-            int rollingPercentileBucketSizeInMilliseconds,
-            bool rollingPercentileEnabled,
-            int rollingCounterNumberOfBuckets,
-            int rollingCounterBucketSizeInMilliseconds)
-        {
-            RollingPercentileNumberOfBuckets = rollingCounterNumberOfBuckets;
-            RollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
-            IsRollingPercentileEnabled = rollingPercentileEnabled;
-            RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
-            RollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
-        }
-
         public int RollingPercentileNumberOfBuckets { get; }
 
         public int RollingPercentileBucketSizeInMilliseconds { get; }
@@ -72,5 +47,15 @@ public class HystrixCollapserConfiguration
         public int RollingCounterNumberOfBuckets { get; }
 
         public int RollingCounterBucketSizeInMilliseconds { get; }
+
+        public CollapserMetricsConfig(int rollingPercentileNumberOfBuckets, int rollingPercentileBucketSizeInMilliseconds, bool rollingPercentileEnabled,
+            int rollingCounterNumberOfBuckets, int rollingCounterBucketSizeInMilliseconds)
+        {
+            RollingPercentileNumberOfBuckets = rollingCounterNumberOfBuckets;
+            RollingPercentileBucketSizeInMilliseconds = rollingPercentileBucketSizeInMilliseconds;
+            IsRollingPercentileEnabled = rollingPercentileEnabled;
+            RollingCounterNumberOfBuckets = rollingCounterNumberOfBuckets;
+            RollingCounterBucketSizeInMilliseconds = rollingCounterBucketSizeInMilliseconds;
+        }
     }
 }

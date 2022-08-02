@@ -8,11 +8,16 @@ namespace Steeltoe.Stream.Binding;
 
 public abstract class AbstractBindingLifecycle : ISmartLifecycle
 {
+    private readonly List<IBindable> _bindables;
     protected readonly IBindingService BindingService;
 
-    private readonly List<IBindable> _bindables;
-
     private volatile bool _running;
+
+    public virtual bool IsRunning => _running;
+
+    public virtual bool IsAutoStartup => true;
+
+    public virtual int Phase => int.MaxValue;
 
     protected AbstractBindingLifecycle(IBindingService bindingService, IEnumerable<IBindable> bindables)
     {
@@ -24,7 +29,7 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
     {
         if (!_running)
         {
-            foreach (var bindable in _bindables)
+            foreach (IBindable bindable in _bindables)
             {
                 await Task.Run(() => DoStartWithBindable(bindable)).ConfigureAwait(false);
             }
@@ -33,23 +38,11 @@ public abstract class AbstractBindingLifecycle : ISmartLifecycle
         }
     }
 
-    public virtual bool IsRunning
-    {
-        get { return _running; }
-    }
-
-    public virtual bool IsAutoStartup
-    {
-        get { return true; }
-    }
-
-    public virtual int Phase => int.MaxValue;
-
     public virtual async Task Stop()
     {
         if (_running)
         {
-            foreach (var bindable in _bindables)
+            foreach (IBindable bindable in _bindables)
             {
                 await Task.Run(() => DoStopWithBindable(bindable)).ConfigureAwait(false);
             }

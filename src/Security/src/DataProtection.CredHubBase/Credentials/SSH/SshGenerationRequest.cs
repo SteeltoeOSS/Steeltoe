@@ -6,15 +6,24 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 
 public class SshGenerationRequest : CredHubGenerateRequest
 {
-    private readonly SshGenerationParameters _defaultParams = new () { KeyLength = CertificateKeyLength.Length2048, SshComment = null };
+    private readonly SshGenerationParameters _defaultParams = new()
+    {
+        KeyLength = CertificateKeyLength.Length2048,
+        SshComment = null
+    };
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SshGenerationRequest"/> class.
-    /// Use to request a new SSH Credential.
+    /// Initializes a new instance of the <see cref="SshGenerationRequest" /> class. Use to request a new SSH Credential.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="parameters">Optional parameters (defaults to key length 2048 and no SSH Comment).</param>
-    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="parameters">
+    /// Optional parameters (defaults to key length 2048 and no SSH Comment).
+    /// </param>
+    /// <param name="overwriteMode">
+    /// Overwrite existing credential (default: no-overwrite).
+    /// </param>
     public SshGenerationRequest(string credentialName, SshGenerationParameters parameters = null, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         Name = credentialName;

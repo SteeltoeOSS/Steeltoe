@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -64,16 +65,16 @@ public class PlaceholderResolverProviderTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var providers = builder.Build().Providers.ToList();
+        List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
         var holder = new PlaceholderResolverProvider(providers);
 
-        Assert.False(holder.TryGet("nokey", out var val));
+        Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
@@ -92,16 +93,16 @@ public class PlaceholderResolverProviderTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var providers = builder.Build().Providers.ToList();
+        List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
         var holder = new PlaceholderResolverProvider(providers);
 
-        Assert.False(holder.TryGet("nokey", out var val));
+        Assert.False(holder.TryGet("nokey", out string val));
         Assert.True(holder.TryGet("key1", out val));
         Assert.Equal("value1", val);
         Assert.True(holder.TryGet("key2", out val));
@@ -123,7 +124,7 @@ public class PlaceholderResolverProviderTest
     [Trait("Category", "SkipOnMacOS")]
     public void GetReloadToken_ReturnsExpected_NotifyChanges()
     {
-        var appsettings1 = @"
+        string appsettings1 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -137,7 +138,7 @@ public class PlaceholderResolverProviderTest
                     }
                 }";
 
-        var appsettings2 = @"
+        string appsettings2 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -152,22 +153,22 @@ public class PlaceholderResolverProviderTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings1);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings1);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName, false, true);
 
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var holder = new PlaceholderResolverProvider(new List<IConfigurationProvider>(config.Providers));
-        var token = holder.GetReloadToken();
+        IChangeToken token = holder.GetReloadToken();
         Assert.NotNull(token);
         Assert.False(token.HasChanged);
 
-        Assert.True(holder.TryGet("spring:cloud:config:name", out var val));
+        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
         File.WriteAllText(path, appsettings2);
@@ -189,12 +190,12 @@ public class PlaceholderResolverProviderTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var providers = builder.Build().Providers.ToList();
+        List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
         var holder = new PlaceholderResolverProvider(providers);
         Assert.Null(holder.Configuration);
@@ -208,7 +209,7 @@ public class PlaceholderResolverProviderTest
     [Trait("Category", "SkipOnMacOS")]
     public void Load_ReloadsConfiguration()
     {
-        var appsettings1 = @"
+        string appsettings1 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -222,7 +223,7 @@ public class PlaceholderResolverProviderTest
                     }
                 }";
 
-        var appsettings2 = @"
+        string appsettings2 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -237,22 +238,22 @@ public class PlaceholderResolverProviderTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings1);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings1);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName, false, true);
 
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var holder = new PlaceholderResolverProvider(config);
-        Assert.True(holder.TryGet("spring:cloud:config:name", out var val));
+        Assert.True(holder.TryGet("spring:cloud:config:name", out string val));
         Assert.Equal("myName", val);
 
         File.WriteAllText(path, appsettings2);
-        Thread.Sleep(1000);  // There is a 250ms delay
+        Thread.Sleep(1000); // There is a 250ms delay
 
         holder.Load();
 
@@ -266,18 +267,18 @@ public class PlaceholderResolverProviderTest
         var settings = new Dictionary<string, string>
         {
             { "spring:bar:name", "myName" },
-            { "spring:cloud:name", "${spring:bar:name?noname}" },
+            { "spring:cloud:name", "${spring:bar:name?noname}" }
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var providers = builder.Build().Providers.ToList();
+        List<IConfigurationProvider> providers = builder.Build().Providers.ToList();
 
         var holder = new PlaceholderResolverProvider(providers);
-        var result = holder.GetChildKeys(Array.Empty<string>(), "spring");
+        IEnumerable<string> result = holder.GetChildKeys(Array.Empty<string>(), "spring");
 
         Assert.NotNull(result);
-        var list = result.ToList();
+        List<string> list = result.ToList();
 
         Assert.Equal(2, list.Count);
         Assert.Contains("bar", list);
@@ -288,14 +289,27 @@ public class PlaceholderResolverProviderTest
     public void AdjustConfigManagerBuilder_CorrectlyReflectNewValues()
     {
         var manager = new ConfigurationManager();
-        var template = new Dictionary<string, string> { { "placeholder", "${value}" } };
-        var valueProviderA = new Dictionary<string, string> { { "value", "a" } };
-        var valueProviderB = new Dictionary<string, string> { { "value", "b" } };
+
+        var template = new Dictionary<string, string>
+        {
+            { "placeholder", "${value}" }
+        };
+
+        var valueProviderA = new Dictionary<string, string>
+        {
+            { "value", "a" }
+        };
+
+        var valueProviderB = new Dictionary<string, string>
+        {
+            { "value", "b" }
+        };
+
         manager.AddInMemoryCollection(template);
         manager.AddInMemoryCollection(valueProviderA);
         manager.AddInMemoryCollection(valueProviderB);
         manager.AddPlaceholderResolver();
-        var result = manager.GetValue<string>("placeholder");
+        string result = manager.GetValue<string>("placeholder");
         Assert.Equal("b", result);
 
         // TODO: Investigate and fix caching issue with IConfiguration

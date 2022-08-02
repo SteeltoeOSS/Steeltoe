@@ -11,14 +11,14 @@ public class HeapDumpEndpoint : AbstractEndpoint<string>, IHeapDumpEndpoint
     private readonly ILogger<HeapDumpEndpoint> _logger;
     private readonly IHeapDumper _heapDumper;
 
+    public new IHeapDumpOptions Options => options as IHeapDumpOptions;
+
     public HeapDumpEndpoint(IHeapDumpOptions options, IHeapDumper heapDumper, ILogger<HeapDumpEndpoint> logger = null)
         : base(options)
     {
         _heapDumper = heapDumper ?? throw new ArgumentNullException(nameof(heapDumper));
         _logger = logger;
     }
-
-    public new IHeapDumpOptions Options => options as IHeapDumpOptions;
 
     public override string Invoke()
     {

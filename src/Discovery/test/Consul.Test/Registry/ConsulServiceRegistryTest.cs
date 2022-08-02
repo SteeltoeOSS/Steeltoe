@@ -48,12 +48,13 @@ public class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        var builder = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            });
-        var config = builder.Build();
+
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        });
+
+        IConfigurationRoot config = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
         await reg.RegisterAsync(registration);
 
@@ -91,12 +92,13 @@ public class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
-        var builder = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            });
-        var config = builder.Build();
+
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        });
+
+        IConfigurationRoot config = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
         await reg.RegisterAsync(registration);
 
@@ -136,12 +138,12 @@ public class ConsulServiceRegistryTest
         var opts = new ConsulDiscoveryOptions();
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
-        var builder = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            });
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        });
+
+        IConfigurationRoot config = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
@@ -159,12 +161,12 @@ public class ConsulServiceRegistryTest
         var opts = new ConsulDiscoveryOptions();
         var sch = new TtlScheduler(opts, clientMoq.Object);
 
-        var builder = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            });
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        });
+
+        IConfigurationRoot config = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
@@ -193,12 +195,13 @@ public class ConsulServiceRegistryTest
     public async Task GetStatusAsync_ReturnsExpected()
     {
         var opts = new ConsulDiscoveryOptions();
-        var builder = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            });
-        var config = builder.Build();
+
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        });
+
+        IConfigurationRoot config = builder.Build();
         var registration = ConsulRegistration.CreateRegistration(opts, new ApplicationInstanceInfo(config));
 
         var queryResult = new QueryResult<HealthCheck[]>
@@ -217,7 +220,8 @@ public class ConsulServiceRegistryTest
                 }
             }
         };
-        var result = Task.FromResult(queryResult);
+
+        Task<QueryResult<HealthCheck[]>> result = Task.FromResult(queryResult);
 
         var clientMoq = new Mock<IConsulClient>();
         var healthMoq = new Mock<IHealthEndpoint>();
@@ -228,7 +232,7 @@ public class ConsulServiceRegistryTest
         var sch = new TtlScheduler(opts, clientMoq.Object);
         var reg = new ConsulServiceRegistry(clientMoq.Object, opts, sch);
 
-        var ret = await reg.GetStatusAsync(registration);
+        object ret = await reg.GetStatusAsync(registration);
         Assert.Equal("OUT_OF_SERVICE", ret);
     }
 }

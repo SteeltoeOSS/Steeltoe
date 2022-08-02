@@ -6,24 +6,25 @@ namespace Steeltoe.Common.Order;
 
 public class OrderComparer : IComparer<IOrdered>
 {
-    public static OrderComparer Instance { get; } = new ();
+    public static OrderComparer Instance { get; } = new();
 
     public int Compare(IOrdered o1, IOrdered o2)
     {
-        var p1 = o1 is IPriorityOrdered;
-        var p2 = o2 is IPriorityOrdered;
+        bool p1 = o1 is IPriorityOrdered;
+        bool p2 = o2 is IPriorityOrdered;
 
         if (p1 && !p2)
         {
             return -1;
         }
-        else if (p2 && !p1)
+
+        if (p2 && !p1)
         {
             return 1;
         }
 
-        var i1 = GetOrder(o1);
-        var i2 = GetOrder(o2);
+        int i1 = GetOrder(o1);
+        int i2 = GetOrder(o2);
 
         return GetOrder(i1, i2);
     }

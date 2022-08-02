@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
 using Steeltoe.Security.Authentication.Mtls;
-using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -16,7 +16,8 @@ public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOption
     private readonly IOptionsMonitor<CertificateOptions> _containerIdentityOptions;
     private readonly ILogger<CloudFoundryInstanceCertificate> _logger;
 
-    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions, ILogger<CloudFoundryInstanceCertificate> logger = null)
+    public MutualTlsAuthenticationOptionsPostConfigurer(IOptionsMonitor<CertificateOptions> containerIdentityOptions,
+        ILogger<CloudFoundryInstanceCertificate> logger = null)
     {
         _containerIdentityOptions = containerIdentityOptions;
         _logger = logger;
@@ -25,14 +26,18 @@ public class MutualTlsAuthenticationOptionsPostConfigurer : IPostConfigureOption
     public void PostConfigure(string name, MutualTlsAuthenticationOptions options)
     {
         options.IssuerChain = _containerIdentityOptions.CurrentValue.IssuerChain;
+
         options.Events = new CertificateAuthenticationEvents
         {
             OnCertificateValidated = context =>
             {
                 var claims = new List<Claim>(context.Principal.Claims);
-                if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out var cfCert, _logger))
+
+                if (CloudFoundryInstanceCertificate.TryParse(context.ClientCertificate, out CloudFoundryInstanceCertificate cfCert, _logger))
                 {
-                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
+                    claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryInstanceId, cfCert.InstanceId, ClaimValueTypes.String,
+                        context.Options.ClaimsIssuer));
+
                     claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryAppId, cfCert.AppId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
                     claims.Add(new Claim(ApplicationClaimTypes.CloudFoundrySpaceId, cfCert.SpaceId, ClaimValueTypes.String, context.Options.ClaimsIssuer));
                     claims.Add(new Claim(ApplicationClaimTypes.CloudFoundryOrgId, cfCert.OrgId, ClaimValueTypes.String, context.Options.ClaimsIssuer));

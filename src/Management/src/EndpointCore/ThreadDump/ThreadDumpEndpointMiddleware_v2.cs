@@ -12,8 +12,9 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
 {
     private readonly RequestDelegate _next;
 
-    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions, ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public ThreadDumpEndpointMiddlewareV2(RequestDelegate next, ThreadDumpEndpointV2 endpoint, IManagementOptions managementOptions,
+        ILogger<ThreadDumpEndpointMiddlewareV2> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
@@ -30,7 +31,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
 
     protected internal Task HandleThreadDumpRequestAsync(HttpContext context)
     {
-        var serialInfo = HandleRequest();
+        string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {0}", serialInfo);
         context.Response.Headers.Add("Content-Type", "application/vnd.spring-boot.actuator.v2+json");
         return context.Response.WriteAsync(serialInfo);

@@ -10,6 +10,8 @@ public class TransactionTemplate : DefaultTransactionDefinition
 {
     private readonly ILogger _logger;
 
+    public IPlatformTransactionManager TransactionManager { get; set; }
+
     public TransactionTemplate(ILogger logger = null)
     {
         _logger = logger;
@@ -28,8 +30,6 @@ public class TransactionTemplate : DefaultTransactionDefinition
         TransactionManager = transactionManager;
     }
 
-    public IPlatformTransactionManager TransactionManager { get; set; }
-
     public void Execute(Action<ITransactionStatus> action)
     {
         Execute<object>(s =>
@@ -45,30 +45,29 @@ public class TransactionTemplate : DefaultTransactionDefinition
         {
             throw new InvalidOperationException("No PlatformTransactionManager set");
         }
-        else
-        {
-            var status = TransactionManager.GetTransaction(this);
-            T result;
-            try
-            {
-                result = action(status);
-            }
-            catch (Exception ex)
-            {
-                // Transactional code threw application exception -> rollback
-                RollbackOnException(status, ex);
-                throw;
-            }
 
-            // catch (Throwable ex)
-            //    {
-            //        // Transactional code threw unexpected exception -> rollback
-            //        rollbackOnException(status, ex);
-            //        throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
-            //    }
-            TransactionManager.Commit(status);
-            return result;
+        ITransactionStatus status = TransactionManager.GetTransaction(this);
+        T result;
+
+        try
+        {
+            result = action(status);
         }
+        catch (Exception ex)
+        {
+            // Transactional code threw application exception -> rollback
+            RollbackOnException(status, ex);
+            throw;
+        }
+
+        // catch (Throwable ex)
+        //    {
+        //        // Transactional code threw unexpected exception -> rollback
+        //        rollbackOnException(status, ex);
+        //        throw new UndeclaredThrowableException(ex, "TransactionCallback threw undeclared checked exception");
+        //    }
+        TransactionManager.Commit(status);
+        return result;
     }
 
     public override bool Equals(object obj)
@@ -81,7 +80,10 @@ public class TransactionTemplate : DefaultTransactionDefinition
         return base.Equals(obj) && (obj is not TransactionTemplate otherTemplate || TransactionManager == otherTemplate.TransactionManager);
     }
 
-    public override int GetHashCode() => base.GetHashCode();
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 
     private void RollbackOnException(ITransactionStatus status, Exception ex)
     {
@@ -91,6 +93,7 @@ public class TransactionTemplate : DefaultTransactionDefinition
         }
 
         _logger?.LogDebug(ex, "Initiating transaction rollback on application exception");
+
         try
         {
             TransactionManager.Rollback(status);

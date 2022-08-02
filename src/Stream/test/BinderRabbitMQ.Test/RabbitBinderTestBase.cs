@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.ExceptionServices;
 using Steeltoe.Common;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Retry;
@@ -14,7 +15,6 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 using Steeltoe.Stream.Binder.Rabbit.Config;
-using System.Runtime.ExceptionServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,7 +23,7 @@ namespace Steeltoe.Stream.Binder.Rabbit;
 public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitTestBinder, RabbitMessageChannelBinder>, IDisposable
 {
     protected const string TestPrefix = "bindertest.";
-    private static readonly string BigExceptionMessage = new ('x', 10_000);
+    private static readonly string BigExceptionMessage = new('x', 10_000);
     private bool _isDisposed;
 
     protected RabbitTestBinder testBinder;
@@ -45,6 +45,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
     {
         var template = new RabbitTemplate(GetResource());
         template.SetAfterReceivePostProcessors(new DelegatingDecompressingPostProcessor());
+
         return new Spy
         {
             Receive = expectNull =>
@@ -56,7 +57,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
                 }
 
                 object bar = null;
-                var n = 0;
+                int n = 0;
 
                 while (n++ < 100 && bar == null)
                 {
@@ -87,7 +88,8 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
             {
                 PublisherReturns = true
             };
-            var ccf = GetResource();
+
+            CachingConnectionFactory ccf = GetResource();
             var rabbitOptions = new TestOptionsMonitor<RabbitOptions>(options);
             var binderOptions = new TestOptionsMonitor<RabbitBinderOptions>(null);
             var rabbitBindingsOptions = new TestOptionsMonitor<RabbitBindingsOptions>(bindingsOptions ?? new RabbitBindingsOptions());
@@ -129,7 +131,7 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
         try
         {
-            var capturedException = innerException ?? new Exception(BigExceptionMessage);
+            Exception capturedException = innerException ?? new Exception(BigExceptionMessage);
             ExceptionDispatchInfo.Capture(capturedException).Throw();
         }
         catch (Exception ex)
@@ -185,12 +187,12 @@ public abstract class RabbitBinderTestBase : PartitionCapableBinderTests<RabbitT
 
     public class TestPartitionSupport : IPartitionKeyExtractorStrategy, IPartitionSelectorStrategy
     {
+        public string ServiceName { get; set; }
+
         public TestPartitionSupport(string serviceName)
         {
             ServiceName = serviceName;
         }
-
-        public string ServiceName { get; set; }
 
         public object ExtractKey(IMessage message)
         {

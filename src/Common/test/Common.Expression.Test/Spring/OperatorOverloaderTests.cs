@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -15,7 +16,7 @@ public class OperatorOverloaderTests : AbstractExpressionTests
         // no built in support for this:
         EvaluateAndCheckError("'abc'-true", SpelMessage.OperatorNotSupportedBetweenTypes);
 
-        var eContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
         eContext.OperatorOverloader = new StringAndBooleanAddition();
 
         var expr = (SpelExpression)Parser.ParseExpression("'abc'+true");
@@ -36,10 +37,8 @@ public class OperatorOverloaderTests : AbstractExpressionTests
             {
                 return (string)leftOperand + (bool)rightOperand;
             }
-            else
-            {
-                return leftOperand;
-            }
+
+            return leftOperand;
         }
 
         public bool OverridesOperation(Operation operation, object leftOperand, object rightOperand)

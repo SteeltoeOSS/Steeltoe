@@ -22,6 +22,7 @@ public class DefaultMessageChannelResolver : IDestinationResolver<IMessageChanne
     public virtual IMessageChannel ResolveDestination(string name)
     {
         var result = _context.GetService<IMessageChannel>(name);
+
         if (result != null)
         {
             return result;
@@ -29,7 +30,8 @@ public class DefaultMessageChannelResolver : IDestinationResolver<IMessageChanne
 
         if (_registry != null)
         {
-            var channel = _registry.ChannelNameToChannel(name);
+            IMessageChannel channel = _registry.ChannelNameToChannel(name);
+
             if (channel != null)
             {
                 return channel;

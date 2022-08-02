@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -24,7 +24,10 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
         UseDefaultResolution = useDefaultResolution;
     }
 
-    public virtual bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || UseDefaultResolution;
+    public virtual bool SupportsParameter(ParameterInfo parameter)
+    {
+        return parameter.GetCustomAttribute<PayloadAttribute>() != null || UseDefaultResolution;
+    }
 
     public virtual object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
@@ -35,50 +38,51 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
             throw new InvalidOperationException("Payload expressions not supported by this resolver");
         }
 
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (IsEmptyPayload(payload))
         {
             if (ann == null || ann.Required)
             {
-                var paramName = GetParameterName(parameter);
+                string paramName = GetParameterName(parameter);
                 throw new MethodArgumentNotValidException(message, parameter, $"Payload value must not be empty when binding to: {paramName}");
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
-        var targetClass = ResolveTargetClass(parameter, message);
-        var payloadClass = payload.GetType();
+        Type targetClass = ResolveTargetClass(parameter, message);
+        Type payloadClass = payload.GetType();
+
         if (targetClass.IsAssignableFrom(payloadClass))
         {
             Validate(message, parameter, payload);
             return payload;
         }
+
+        if (Converter is ISmartMessageConverter smartConverter)
+        {
+            payload = smartConverter.FromMessage(message, targetClass, parameter);
+        }
         else
         {
-            if (Converter is ISmartMessageConverter smartConverter)
-            {
-                payload = smartConverter.FromMessage(message, targetClass, parameter);
-            }
-            else
-            {
-                payload = Converter.FromMessage(message, targetClass);
-            }
-
-            if (payload == null)
-            {
-                throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
-            }
-
-            Validate(message, parameter, payload);
-
-            return payload;
+            payload = Converter.FromMessage(message, targetClass);
         }
+
+        if (payload == null)
+        {
+            throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
+        }
+
+        Validate(message, parameter, payload);
+
+        return payload;
     }
 
-    protected virtual Type ResolveTargetClass(ParameterInfo parameter, IMessage message) => parameter.ParameterType;
+    protected virtual Type ResolveTargetClass(ParameterInfo parameter, IMessage message)
+    {
+        return parameter.ParameterType;
+    }
 
     protected virtual bool IsEmptyPayload(object payload)
     {
@@ -95,5 +99,8 @@ public class PayloadMethodArgumentResolver : IHandlerMethodArgumentResolver
     {
     }
 
-    private string GetParameterName(ParameterInfo param) => param.Name ?? $"Arg {param.Position}";
+    private string GetParameterName(ParameterInfo param)
+    {
+        return param.Name ?? $"Arg {param.Position}";
+    }
 }

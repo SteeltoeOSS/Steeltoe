@@ -18,7 +18,7 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
     public override IMessage DoPreSend(IMessage message, IMessageChannel channel)
     {
         var messageHeaders = message.Headers as MessageHeaders;
-        var contentType = MimeType;
+        MimeType contentType = MimeType;
 
         /*
          * NOTE: The below code for BINDER_ORIGINAL_CONTENT_TYPE is to support legacy
@@ -28,7 +28,8 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
 
         if (message.Headers.ContainsKey(BinderHeaders.BinderOriginalContentType))
         {
-            var ct = message.Headers.Get<object>(BinderHeaders.BinderOriginalContentType);
+            object ct = message.Headers.Get<object>(BinderHeaders.BinderOriginalContentType);
+
             switch (ct)
             {
                 case string stringValue:
@@ -40,6 +41,7 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
             }
 
             messageHeaders.RawHeaders.Remove(BinderHeaders.BinderOriginalContentType);
+
             if (messageHeaders.RawHeaders.ContainsKey(MessageHeaders.ContentType))
             {
                 messageHeaders.RawHeaders.Remove(MessageHeaders.ContentType);
@@ -50,7 +52,7 @@ internal sealed class InboundContentTypeEnhancingInterceptor : AbstractContentTy
         {
             messageHeaders.RawHeaders.Add(MessageHeaders.ContentType, contentType);
         }
-        else if (message.Headers.TryGetValue(MessageHeaders.ContentType, out var header) && header is string stringHeader)
+        else if (message.Headers.TryGetValue(MessageHeaders.ContentType, out object header) && header is string stringHeader)
         {
             messageHeaders.RawHeaders[MessageHeaders.ContentType] = MimeType.ToMimeType(stringHeader);
         }

@@ -30,7 +30,7 @@ public class NumberToStringConverter : AbstractGenericConverter
             (typeof(ushort), typeof(string)),
             (typeof(decimal), typeof(string)),
             (typeof(byte), typeof(string)),
-            (typeof(sbyte), typeof(string)),
+            (typeof(sbyte), typeof(string))
         };
     }
 }

@@ -19,7 +19,7 @@ public class DispatcherHasNoSubscribersTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         _provider = services.BuildServiceProvider();
@@ -30,8 +30,9 @@ public class DispatcherHasNoSubscribersTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
+
         try
         {
             noSubscribersChannel.Send(Message.Create("Hello, world!"));
@@ -48,11 +49,17 @@ public class DispatcherHasNoSubscribersTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var noSubscribersChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var subscribedChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>()) { OutputChannel = noSubscribersChannel };
+
+        var bridgeHandler = new BridgeHandler(provider.GetService<IApplicationContext>())
+        {
+            OutputChannel = noSubscribersChannel
+        };
+
         subscribedChannel.Subscribe(bridgeHandler);
+
         try
         {
             subscribedChannel.Send(Message.Create("Hello, world!"));

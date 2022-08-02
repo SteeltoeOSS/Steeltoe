@@ -14,8 +14,14 @@ public interface IAsyncHandlerMethodReturnValueHandler : IHandlerMethodReturnVal
     /// <summary>
     /// Check if async return value.
     /// </summary>
-    /// <param name="returnValue">the value.</param>
-    /// <param name="parameterInfo">the return type info.</param>
-    /// <returns>true if the return type represents a async value.</returns>
+    /// <param name="returnValue">
+    /// the value.
+    /// </param>
+    /// <param name="parameterInfo">
+    /// the return type info.
+    /// </param>
+    /// <returns>
+    /// true if the return type represents a async value.
+    /// </returns>
     bool IsAsyncReturnValue(object returnValue, ParameterInfo parameterInfo);
 }

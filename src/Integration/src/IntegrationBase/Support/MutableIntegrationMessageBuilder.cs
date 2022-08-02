@@ -13,6 +13,62 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
     protected IDictionary<string, object> headers;
 
+    protected override List<List<object>> SequenceDetails
+    {
+        get
+        {
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceDetails, out object result))
+            {
+                return (List<List<object>>)result;
+            }
+
+            return null;
+        }
+    }
+
+    protected override object CorrelationId
+    {
+        get
+        {
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out object result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+    }
+
+    protected override object SequenceNumber
+    {
+        get
+        {
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out object result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+    }
+
+    protected override object SequenceSize
+    {
+        get
+        {
+            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out object result))
+            {
+                return result;
+            }
+
+            return null;
+        }
+    }
+
+    public override object Payload => mutableMessage.Payload;
+
+    public override IDictionary<string, object> Headers => headers;
+
     protected MutableIntegrationMessageBuilder()
     {
     }
@@ -29,15 +85,14 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         headers = mutableMessage.RawHeaders;
     }
 
-    public override object Payload => mutableMessage.Payload;
-
-    public override IDictionary<string, object> Headers => headers;
-
-    public static MutableIntegrationMessageBuilder WithPayload(object payload) => WithPayload(payload, true);
+    public static MutableIntegrationMessageBuilder WithPayload(object payload)
+    {
+        return WithPayload(payload, true);
+    }
 
     public static MutableIntegrationMessageBuilder WithPayload(object payload, bool generateHeaders)
     {
-        var message = generateHeaders
+        MutableMessage message = generateHeaders
             ? new MutableMessage(payload)
             : new MutableMessage(payload, new MutableMessageHeaders(null, MessageHeaders.IdValueNone, -1L));
 
@@ -86,7 +141,8 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     public override IMessageBuilder RemoveHeaders(params string[] headerPatterns)
     {
         var headersToRemove = new List<string>();
-        foreach (var pattern in headerPatterns)
+
+        foreach (string pattern in headerPatterns)
         {
             if (!string.IsNullOrEmpty(pattern))
             {
@@ -101,7 +157,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
             }
         }
 
-        foreach (var headerToRemove in headersToRemove)
+        foreach (string headerToRemove in headersToRemove)
         {
             RemoveHeader(headerToRemove);
         }
@@ -123,7 +179,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         if (headersToCopy != null)
         {
-            foreach (var header in headersToCopy)
+            foreach (KeyValuePair<string, object> header in headersToCopy)
             {
                 headers.Add(header);
             }
@@ -136,7 +192,7 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
     {
         if (headersToCopy != null)
         {
-            foreach (var entry in headersToCopy)
+            foreach (KeyValuePair<string, object> entry in headersToCopy)
             {
                 SetHeaderIfAbsent(entry.Key, entry.Value);
             }
@@ -145,66 +201,18 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
         return this;
     }
 
-    protected override List<List<object>> SequenceDetails
+    public override IMessage Build()
     {
-        get
-        {
-            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceDetails, out var result))
-            {
-                return (List<List<object>>)result;
-            }
-
-            return null;
-        }
+        return mutableMessage;
     }
-
-    protected override object CorrelationId
-    {
-        get
-        {
-            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.CorrelationId, out var result))
-            {
-                return result;
-            }
-
-            return null;
-        }
-    }
-
-    protected override object SequenceNumber
-    {
-        get
-        {
-            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var result))
-            {
-                return result;
-            }
-
-            return null;
-        }
-    }
-
-    protected override object SequenceSize
-    {
-        get
-        {
-            if (headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out var result))
-            {
-                return result;
-            }
-
-            return null;
-        }
-    }
-
-    public override IMessage Build() => mutableMessage;
 
     protected List<string> GetMatchingHeaderNames(string pattern, IDictionary<string, object> headers)
     {
         var matchingHeaderNames = new List<string>();
+
         if (headers != null)
         {
-            foreach (var header in headers)
+            foreach (KeyValuePair<string, object> header in headers)
             {
                 if (PatternMatchUtils.SimpleMatch(pattern, header.Key))
                 {
@@ -219,6 +227,8 @@ public class MutableIntegrationMessageBuilder : AbstractMessageBuilder
 
 public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuilder, IMessageBuilder<T>
 {
+    public new T Payload => (T)mutableMessage.Payload;
+
     private MutableIntegrationMessageBuilder(IMessage<T> message)
     {
         if (message == null)
@@ -231,13 +241,14 @@ public class MutableIntegrationMessageBuilder<T> : MutableIntegrationMessageBuil
         headers = mutableMessage.RawHeaders;
     }
 
-    public new T Payload => (T)mutableMessage.Payload;
-
-    public static MutableIntegrationMessageBuilder<T> WithPayload(T payload) => WithPayload(payload, true);
+    public static MutableIntegrationMessageBuilder<T> WithPayload(T payload)
+    {
+        return WithPayload(payload, true);
+    }
 
     public static MutableIntegrationMessageBuilder<T> WithPayload(T payload, bool generateHeaders)
     {
-        var message = generateHeaders
+        MutableMessage<T> message = generateHeaders
             ? new MutableMessage<T>(payload)
             : new MutableMessage<T>(payload, new MutableMessageHeaders(null, MessageHeaders.IdValueNone, -1L));
 

@@ -15,12 +15,15 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new (MetricStatistic.TotalTime, 100.00)
+            new(MetricStatistic.TotalTime, 100.00)
         };
 
         var tags = new List<MetricTag>
         {
-            new ("tag", new HashSet<string> { "tagValue" })
+            new("tag", new HashSet<string>
+            {
+                "tagValue"
+            })
         };
 
         var resp = new MetricsResponse("foo.bar", samples, tags);
@@ -34,16 +37,22 @@ public class MetricsResponseTest : BaseTest
     {
         var samples = new List<MetricSample>
         {
-            new (MetricStatistic.TotalTime, 100.1)
+            new(MetricStatistic.TotalTime, 100.1)
         };
 
         var tags = new List<MetricTag>
         {
-            new ("tag", new HashSet<string> { "tagValue" })
+            new("tag", new HashSet<string>
+            {
+                "tagValue"
+            })
         };
 
         var resp = new MetricsResponse("foo.bar", samples, tags);
-        var result = Serialize(resp);
-        Assert.Equal("{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}", result);
+        string result = Serialize(resp);
+
+        Assert.Equal(
+            "{\"name\":\"foo.bar\",\"measurements\":[{\"statistic\":\"TOTAL_TIME\",\"value\":100.1}],\"availableTags\":[{\"tag\":\"tag\",\"values\":[\"tagValue\"]}]}",
+            result);
     }
 }

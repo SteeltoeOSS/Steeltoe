@@ -9,12 +9,13 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 /// <summary>
-/// Extension methods for adding <see cref="ConfigServerConfigurationProvider"/>.
+/// Extension methods for adding <see cref="ConfigServerConfigurationProvider" />.
 /// </summary>
 public static class ConfigServerConfigurationBuilderExtensionsCore
 {
     [Obsolete("IHostingEnvironment is obsolete")]
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment, ILoggerFactory logFactory = null)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostingEnvironment environment,
+        ILoggerFactory logFactory = null)
     {
         if (environment == null)
         {
@@ -25,7 +26,8 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
     }
 
     [Obsolete("IHostingEnvironment is obsolete")]
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder,
+        Microsoft.AspNetCore.Hosting.IHostingEnvironment environment, ILoggerFactory logFactory = null)
     {
         if (environment == null)
         {
@@ -35,7 +37,8 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
         return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
     }
 
-    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment, ILoggerFactory logFactory = null)
+    public static IConfigurationBuilder AddConfigServer(this IConfigurationBuilder configurationBuilder, IHostEnvironment environment,
+        ILoggerFactory logFactory = null)
     {
         if (environment == null)
         {
@@ -45,7 +48,8 @@ public static class ConfigServerConfigurationBuilderExtensionsCore
         return DoAddConfigServer(configurationBuilder, environment.ApplicationName, environment.EnvironmentName, logFactory);
     }
 
-    private static IConfigurationBuilder DoAddConfigServer(IConfigurationBuilder configurationBuilder, string applicationName, string environmentName, ILoggerFactory logFactory)
+    private static IConfigurationBuilder DoAddConfigServer(IConfigurationBuilder configurationBuilder, string applicationName, string environmentName,
+        ILoggerFactory logFactory)
     {
         if (configurationBuilder == null)
         {

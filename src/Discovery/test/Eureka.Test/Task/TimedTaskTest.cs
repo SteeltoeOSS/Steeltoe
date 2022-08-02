@@ -9,6 +9,8 @@ namespace Steeltoe.Discovery.Eureka.Task.Test;
 
 public class TimedTaskTest : AbstractBaseTest
 {
+    private volatile int _timerFuncCount;
+
     [Fact]
     public void Run_Enforces_SingleActiveTask()
     {
@@ -20,8 +22,6 @@ public class TimedTaskTest : AbstractBaseTest
 
         timer.Dispose();
     }
-
-    private volatile int _timerFuncCount;
 
     private void TimerFunc()
     {

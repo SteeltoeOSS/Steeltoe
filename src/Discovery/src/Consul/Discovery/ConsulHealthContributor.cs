@@ -20,8 +20,6 @@ public class ConsulHealthContributor : IHealthContributor
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
-    public string Id => "consul";
-
     internal ConsulDiscoveryOptions Options
     {
         get
@@ -35,12 +33,20 @@ public class ConsulHealthContributor : IHealthContributor
         }
     }
 
+    public string Id => "consul";
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulHealthContributor"/> class.
+    /// Initializes a new instance of the <see cref="ConsulHealthContributor" /> class.
     /// </summary>
-    /// <param name="client">a Consul client to use for health checks.</param>
-    /// <param name="options">configuration options.</param>
-    /// <param name="logger">optional logger.</param>
+    /// <param name="client">
+    /// a Consul client to use for health checks.
+    /// </param>
+    /// <param name="options">
+    /// configuration options.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
     public ConsulHealthContributor(IConsulClient client, ConsulDiscoveryOptions options, ILogger<ConsulHealthContributor> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -49,11 +55,17 @@ public class ConsulHealthContributor : IHealthContributor
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulHealthContributor"/> class.
+    /// Initializes a new instance of the <see cref="ConsulHealthContributor" /> class.
     /// </summary>
-    /// <param name="client">a Consul client to use for health checks.</param>
-    /// <param name="optionsMonitor">configuration options.</param>
-    /// <param name="logger">optional logger.</param>
+    /// <param name="client">
+    /// a Consul client to use for health checks.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// configuration options.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
     public ConsulHealthContributor(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILogger<ConsulHealthContributor> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
@@ -64,12 +76,14 @@ public class ConsulHealthContributor : IHealthContributor
     /// <summary>
     /// Compute the health of the Consul server connection.
     /// </summary>
-    /// <returns>the health check result.</returns>
+    /// <returns>
+    /// the health check result.
+    /// </returns>
     public HealthCheckResult Health()
     {
         var result = new HealthCheckResult();
-        var leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
-        var services = GetCatalogServicesAsync().GetAwaiter().GetResult();
+        string leaderStatus = GetLeaderStatusAsync().GetAwaiter().GetResult();
+        Dictionary<string, string[]> services = GetCatalogServicesAsync().GetAwaiter().GetResult();
         result.Status = HealthStatus.Up;
         result.Details.Add("leader", leaderStatus);
         result.Details.Add("services", services);
@@ -83,7 +97,7 @@ public class ConsulHealthContributor : IHealthContributor
 
     internal async Task<Dictionary<string, string[]>> GetCatalogServicesAsync()
     {
-        var result = await _client.Catalog.Services(QueryOptions.Default).ConfigureAwait(false);
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(QueryOptions.Default).ConfigureAwait(false);
         return result.Response;
     }
 }

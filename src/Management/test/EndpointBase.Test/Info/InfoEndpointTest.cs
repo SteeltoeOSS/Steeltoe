@@ -34,7 +34,7 @@ public class InfoEndpointTest : BaseTest
 
         var ep = tc.GetService<IInfoEndpoint>();
 
-        var info = ep.Invoke();
+        Dictionary<string, object> info = ep.Invoke();
         Assert.NotNull(info);
         Assert.Empty(info);
     }
@@ -43,7 +43,13 @@ public class InfoEndpointTest : BaseTest
     public void Invoke_CallsAllContributors()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IInfoContributor> { new TestContrib(), new TestContrib(), new TestContrib() };
+
+        var contributors = new List<IInfoContributor>
+        {
+            new TestContrib(),
+            new TestContrib(),
+            new TestContrib()
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -55,7 +61,7 @@ public class InfoEndpointTest : BaseTest
 
         ep.Invoke();
 
-        foreach (var contrib in contributors)
+        foreach (IInfoContributor contrib in contributors)
         {
             var tcc = (TestContrib)contrib;
             Assert.True(tcc.Called);
@@ -66,7 +72,13 @@ public class InfoEndpointTest : BaseTest
     public void Invoke_HandlesExceptions()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IInfoContributor> { new TestContrib(), new TestContrib(true), new TestContrib() };
+
+        var contributors = new List<IInfoContributor>
+        {
+            new TestContrib(),
+            new TestContrib(true),
+            new TestContrib()
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -78,9 +90,10 @@ public class InfoEndpointTest : BaseTest
 
         ep.Invoke();
 
-        foreach (var contrib in contributors)
+        foreach (IInfoContributor contrib in contributors)
         {
             var tcc = (TestContrib)contrib;
+
             if (tcc.Throws)
             {
                 Assert.False(tcc.Called);

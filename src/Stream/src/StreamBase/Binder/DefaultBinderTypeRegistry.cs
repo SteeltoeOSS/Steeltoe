@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Stream.Attributes;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using Steeltoe.Stream.Attributes;
 
 namespace Steeltoe.Stream.Binder;
 
@@ -13,11 +13,14 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     private static readonly string ThisAssemblyName = typeof(DefaultBinderTypeRegistry).Assembly.GetName().Name;
     private readonly Dictionary<string, IBinderType> _binderTypes;
 
+    internal List<string> SearchDirectories { get; }
+
     public DefaultBinderTypeRegistry()
     {
         var searchDirectories = new List<string>();
-        var executingDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+        string executingDirectory = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
         searchDirectories.Add(executingDirectory);
+
         if (executingDirectory != Environment.CurrentDirectory)
         {
             searchDirectories.Add(Environment.CurrentDirectory);
@@ -39,11 +42,9 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         _binderTypes = binderTypes;
     }
 
-    internal List<string> SearchDirectories { get; }
-
     public IBinderType Get(string name)
     {
-        _binderTypes.TryGetValue(name, out var result);
+        _binderTypes.TryGetValue(name, out IBinderType result);
         return result;
     }
 
@@ -61,14 +62,15 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         return binderTypes;
     }
 
-    internal static void ParseBinderConfigurations(List<string> searchDirectories, Dictionary<string, IBinderType> registrations, bool checkLoadedAssemblies = true)
+    internal static void ParseBinderConfigurations(List<string> searchDirectories, Dictionary<string, IBinderType> registrations,
+        bool checkLoadedAssemblies = true)
     {
         if (checkLoadedAssemblies)
         {
             AddBinderTypes(AppDomain.CurrentDomain.GetAssemblies(), registrations);
         }
 
-        foreach (var path in searchDirectories)
+        foreach (string path in searchDirectories)
         {
             AddBinderTypes(path, registrations);
         }
@@ -76,9 +78,10 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static void AddBinderTypes(Assembly[] assemblies, Dictionary<string, IBinderType> registrations)
     {
-        foreach (var assembly in assemblies)
+        foreach (Assembly assembly in assemblies)
         {
-            var binderType = CheckAssembly(assembly);
+            IBinderType binderType = CheckAssembly(assembly);
+
             if (binderType != null)
             {
                 registrations.TryAdd(binderType.Name, binderType);
@@ -91,13 +94,14 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
         var context = new MetadataLoadContext(GetAssemblyResolver(directory));
         var directoryInfo = new DirectoryInfo(directory);
 
-        foreach (var file in directoryInfo.EnumerateFiles("*.dll"))
+        foreach (FileInfo file in directoryInfo.EnumerateFiles("*.dll"))
         {
             try
             {
                 if (ShouldCheckFile(file))
                 {
-                    var reg = LoadAndCheckAssembly(context, file.FullName);
+                    IBinderType reg = LoadAndCheckAssembly(context, file.FullName);
+
                     if (reg != null)
                     {
                         registrations.TryAdd(reg.Name, reg);
@@ -115,7 +119,8 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static bool ShouldCheckFile(FileInfo file)
     {
-        var fileName = Path.GetFileNameWithoutExtension(file.Name);
+        string fileName = Path.GetFileNameWithoutExtension(file.Name);
+
         if (fileName.Equals(ThisAssemblyName, StringComparison.InvariantCultureIgnoreCase))
         {
             return false;
@@ -127,9 +132,11 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     internal static IBinderType LoadAndCheckAssembly(MetadataLoadContext context, string assemblyPath)
     {
         BinderType result = null;
+
         try
         {
-            var assembly = context.LoadFromAssemblyPath(assemblyPath);
+            Assembly assembly = context.LoadFromAssemblyPath(assemblyPath);
+
             if (assembly != null)
             {
                 return CheckAssembly(assembly);
@@ -145,7 +152,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static IBinderType CheckAssembly(Assembly assembly)
     {
-        foreach (var data in assembly.GetCustomAttributesData())
+        foreach (CustomAttributeData data in assembly.GetCustomAttributesData())
         {
             if (data.AttributeType.FullName == typeof(BinderAttribute).FullName)
             {
@@ -177,7 +184,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
     internal static T GetNamedArgument<T>(IList<CustomAttributeNamedArgument> namedArguments, string name)
         where T : class
     {
-        foreach (var arg in namedArguments)
+        foreach (CustomAttributeNamedArgument arg in namedArguments)
         {
             if (arg.MemberName == name)
             {
@@ -190,7 +197,7 @@ public class DefaultBinderTypeRegistry : IBinderTypeRegistry
 
     internal static string GetConfigureClass(CustomAttributeData data)
     {
-        var type = data.ConstructorArguments[1].Value as Type ?? GetNamedArgument<Type>(data.NamedArguments, "ConfigureClass");
+        Type type = data.ConstructorArguments[1].Value as Type ?? GetNamedArgument<Type>(data.NamedArguments, "ConfigureClass");
 
         return type?.AssemblyQualifiedName;
     }

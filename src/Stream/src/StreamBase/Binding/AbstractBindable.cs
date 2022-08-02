@@ -11,6 +11,12 @@ public abstract class AbstractBindable : IBindable
     private static readonly ICollection<IBinding> Bindings = new List<IBinding>();
     private static readonly ICollection<string> Empty = new List<string>();
 
+    public virtual Type BindingType { get; }
+
+    public virtual ICollection<string> Inputs => Empty;
+
+    public virtual ICollection<string> Outputs => Empty;
+
     protected AbstractBindable()
     {
     }
@@ -19,12 +25,6 @@ public abstract class AbstractBindable : IBindable
     {
         BindingType = binding;
     }
-
-    public virtual Type BindingType { get; }
-
-    public virtual ICollection<string> Inputs => Empty;
-
-    public virtual ICollection<string> Outputs => Empty;
 
     public virtual ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)
     {

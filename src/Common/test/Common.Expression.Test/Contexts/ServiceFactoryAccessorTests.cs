@@ -19,7 +19,7 @@ public class ServiceFactoryAccessorTests
 
     public ServiceFactoryAccessorTests()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         var collection = new ServiceCollection();
         collection.AddSingleton<IConfiguration>(config);
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
@@ -32,12 +32,13 @@ public class ServiceFactoryAccessorTests
     public void TestServiceAccess()
     {
         var appContext = _serviceProvider.GetService<IApplicationContext>();
+
         var context = new StandardEvaluationContext
         {
             ServiceResolver = new ServiceFactoryResolver(appContext)
         };
 
-        var expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Color");
+        IExpression expr = new SpelExpressionParser().ParseRaw("@'T(Steeltoe.Common.Expression.Internal.Contexts.ServiceFactoryAccessorTests$Car)car'.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
         expr = new SpelExpressionParser().ParseRaw("@car.Color");
         Assert.Equal("red", expr.GetValue<string>(context));
@@ -47,7 +48,7 @@ public class ServiceFactoryAccessorTests
         expr = new SpelExpressionParser().ParseRaw("@boat.Color");
         Assert.Equal("blue", expr.GetValue<string>(context));
 
-        var noServiceExpr = new SpelExpressionParser().ParseRaw("@truck");
+        IExpression noServiceExpr = new SpelExpressionParser().ParseRaw("@truck");
         Assert.Throws<SpelEvaluationException>(() => noServiceExpr.GetValue(context));
     }
 

@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Attributes;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -15,11 +15,8 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
     private readonly List<IStreamListenerResultAdapter> _streamListenerResultAdapters;
     private readonly StreamListenerAttributeProcessor _processor;
 
-    public DefaultStreamListenerSetupMethodOrchestrator(
-        StreamListenerAttributeProcessor processor,
-        IApplicationContext context,
-        IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters,
-        IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters)
+    public DefaultStreamListenerSetupMethodOrchestrator(StreamListenerAttributeProcessor processor, IApplicationContext context,
+        IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters, IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters)
         : base(context)
     {
         _streamListenerParameterAdapters = streamListenerParameterAdapters.ToList();
@@ -29,16 +26,17 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
 
     public override void OrchestrateStreamListener(StreamListenerAttribute streamListener, MethodInfo method, Type implementationType)
     {
-        var methodAnnotatedInboundName = streamListener.Target;
+        string methodAnnotatedInboundName = streamListener.Target;
 
         var streamListenerMethod = new StreamListenerMethodValidator(method, Context, _streamListenerParameterAdapters);
         streamListenerMethod.Validate(methodAnnotatedInboundName, streamListener.Condition);
 
-        var isDeclarative = streamListenerMethod.CheckDeclarativeMethod(methodAnnotatedInboundName);
+        bool isDeclarative = streamListenerMethod.CheckDeclarativeMethod(methodAnnotatedInboundName);
+
         if (isDeclarative)
         {
-            var methodAnnotatedOutboundName = streamListenerMethod.GetOutboundBindingTargetName();
-            var adaptedInboundArguments = AdaptAndRetrieveInboundArguments(method, methodAnnotatedInboundName, _streamListenerParameterAdapters.ToArray());
+            string methodAnnotatedOutboundName = streamListenerMethod.GetOutboundBindingTargetName();
+            object[] adaptedInboundArguments = AdaptAndRetrieveInboundArguments(method, methodAnnotatedInboundName, _streamListenerParameterAdapters.ToArray());
             InvokeStreamListenerResultAdapter(method, implementationType, methodAnnotatedOutboundName, adaptedInboundArguments);
         }
         else
@@ -54,20 +52,24 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
 
     private void InvokeStreamListenerResultAdapter(MethodInfo method, Type implementation, string outboundName, params object[] arguments)
     {
-        var bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementation);
+        object bean = ActivatorUtilities.CreateInstance(Context.ServiceProvider, implementation);
+
         if (typeof(void).Equals(method.ReturnType))
         {
             method.Invoke(bean, arguments);
         }
         else
         {
-            var result = method.Invoke(bean, arguments);
+            object result = method.Invoke(bean, arguments);
+
             if (string.IsNullOrEmpty(outboundName))
             {
-                var parameters = method.GetParameters();
-                foreach (var methodParameter in parameters)
+                ParameterInfo[] parameters = method.GetParameters();
+
+                foreach (ParameterInfo methodParameter in parameters)
                 {
                     var attr = methodParameter.GetCustomAttribute<OutputAttribute>();
+
                     if (attr != null)
                     {
                         outboundName = attr.Name;
@@ -75,8 +77,9 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
                 }
             }
 
-            var targetBean = BindingHelpers.GetBindableTarget(Context, outboundName);
-            foreach (var streamListenerResultAdapter in _streamListenerResultAdapters)
+            object targetBean = BindingHelpers.GetBindableTarget(Context, outboundName);
+
+            foreach (IStreamListenerResultAdapter streamListenerResultAdapter in _streamListenerResultAdapters)
             {
                 if (streamListenerResultAdapter.Supports(result.GetType(), targetBean.GetType()))
                 {
@@ -87,16 +90,18 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
         }
     }
 
-    private void RegisterHandlerMethodOnListenedChannel(StreamListenerMethodValidator streamListenerMethod, StreamListenerAttribute streamListener, Type implementation)
+    private void RegisterHandlerMethodOnListenedChannel(StreamListenerMethodValidator streamListenerMethod, StreamListenerAttribute streamListener,
+        Type implementation)
     {
         if (string.IsNullOrEmpty(streamListener.Target))
         {
             throw new ArgumentException("The binding target name cannot be null");
         }
 
-        var method = streamListenerMethod.Method;
+        MethodInfo method = streamListenerMethod.Method;
 
-        var defaultOutputChannel = streamListenerMethod.GetOutboundBindingTargetName();
+        string defaultOutputChannel = streamListenerMethod.GetOutboundBindingTargetName();
+
         if (typeof(void).Equals(method.ReturnType))
         {
             if (!string.IsNullOrEmpty(defaultOutputChannel))
@@ -114,6 +119,7 @@ public class DefaultStreamListenerSetupMethodOrchestrator : AbstractStreamListen
 
         streamListenerMethod.ValidateStreamListenerMessageHandler();
 
-        _processor.AddMappedListenerMethod(streamListener.Target, new StreamListenerHandlerMethodMapping(implementation, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
+        _processor.AddMappedListenerMethod(streamListener.Target,
+            new StreamListenerHandlerMethodMapping(implementation, method, streamListener.Condition, defaultOutputChannel, streamListener.CopyHeaders));
     }
 }

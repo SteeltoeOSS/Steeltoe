@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Serilog;
+using Serilog.Core;
 using Serilog.Events;
 
 namespace Steeltoe.Extensions.Logging.DynamicSerilog;
@@ -13,25 +15,32 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 /// </summary>
 public class SerilogOptions : ISerilogOptions
 {
-    public string ConfigPath => "Serilog";
-
     private LoggerConfiguration _serilogConfiguration;
 
+    public string ConfigPath => "Serilog";
+
     /// <summary>
-    /// Gets or sets the minimum level for the root logger (and the "Default").
-    /// Limits the verbosity of all other overrides to this setting.
+    /// Gets or sets the minimum level for the root logger (and the "Default"). Limits the verbosity of all other overrides to this setting.
     /// </summary>
     public MinimumLevel MinimumLevel { get; set; }
 
+    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+    public IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
+
+    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
+    public IEnumerable<string> FullNameExclusions => new List<string>();
+
     public void SetSerilogOptions(IConfiguration configuration)
     {
-        var section = configuration.GetSection(ConfigPath);
+        IConfigurationSection section = configuration.GetSection(ConfigPath);
         section.Bind(this);
+
         if (MinimumLevel == null || MinimumLevel.Default == (LogEventLevel)(-1))
         {
             var defaultLevel = LogEventLevel.Information;
 
-            var strMinLevel = section.GetValue<string>("MinimumLevel");
+            string strMinLevel = section.GetValue<string>("MinimumLevel");
+
             if (!string.IsNullOrEmpty(strMinLevel))
             {
                 Enum.TryParse(strMinLevel, out defaultLevel);
@@ -39,7 +48,7 @@ public class SerilogOptions : ISerilogOptions
 
             MinimumLevel = new MinimumLevel
             {
-                Default = defaultLevel,
+                Default = defaultLevel
             };
         }
 
@@ -50,15 +59,15 @@ public class SerilogOptions : ISerilogOptions
     // Capture Serilog configuration provided programmatically using reflection
     public void SetSerilogOptions(LoggerConfiguration loggerConfiguration)
     {
-        var minLevelProperty = loggerConfiguration.GetType().GetField("_minimumLevel", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        FieldInfo minLevelProperty = loggerConfiguration.GetType().GetField("_minimumLevel", BindingFlags.NonPublic | BindingFlags.Instance);
         var minimumLevel = (LogEventLevel)minLevelProperty.GetValue(loggerConfiguration);
 
-        var overridesProperty = loggerConfiguration.GetType().GetField("_overrides", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        var overrideSwitches = (Dictionary<string, Serilog.Core.LoggingLevelSwitch>)overridesProperty.GetValue(loggerConfiguration);
+        FieldInfo overridesProperty = loggerConfiguration.GetType().GetField("_overrides", BindingFlags.NonPublic | BindingFlags.Instance);
+        var overrideSwitches = (Dictionary<string, LoggingLevelSwitch>)overridesProperty.GetValue(loggerConfiguration);
 
-        Dictionary<string, LogEventLevel> overrideLevels = new ();
+        Dictionary<string, LogEventLevel> overrideLevels = new();
 
-        foreach (var overrideSwitch in overrideSwitches)
+        foreach (KeyValuePair<string, LoggingLevelSwitch> overrideSwitch in overrideSwitches)
         {
             overrideLevels.Add(overrideSwitch.Key, overrideSwitch.Value.MinimumLevel);
         }
@@ -72,11 +81,9 @@ public class SerilogOptions : ISerilogOptions
         _serilogConfiguration = loggerConfiguration.ClearLevels(MinimumLevel);
     }
 
-    public LoggerConfiguration GetSerilogConfiguration() => _serilogConfiguration; // Method, so it won't `Bind` to anything
-
-    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> SubLoggerConfigKeyExclusions { get; set; }
-
-    [Obsolete("No longer needed with current implementation. Will be removed in next major release")]
-    public IEnumerable<string> FullNameExclusions => new List<string>();
+    public LoggerConfiguration GetSerilogConfiguration()
+    {
+        // Method, so it won't `Bind` to anything
+        return _serilogConfiguration;
+    }
 }

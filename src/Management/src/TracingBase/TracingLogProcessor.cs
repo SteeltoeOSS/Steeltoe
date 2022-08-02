@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System.Text;
 
 namespace Steeltoe.Management.Tracing;
 
@@ -20,16 +20,18 @@ public class TracingLogProcessor : IDynamicMessageProcessor
 
     public string Process(string inputLogMessage)
     {
-        var currentSpan = GetCurrentSpan();
+        TelemetrySpan currentSpan = GetCurrentSpan();
+
         if (currentSpan != null)
         {
-            var context = currentSpan.Context;
+            SpanContext context = currentSpan.Context;
 
             var sb = new StringBuilder(" [");
             sb.Append(_options.Name);
             sb.Append(',');
 
-            var traceId = context.TraceId.ToHexString();
+            string traceId = context.TraceId.ToHexString();
+
             if (traceId.Length > 16 && _options.UseShortTraceIds)
             {
                 traceId = traceId.Substring(traceId.Length - 16, 16);
@@ -57,7 +59,8 @@ public class TracingLogProcessor : IDynamicMessageProcessor
 
     protected internal TelemetrySpan GetCurrentSpan()
     {
-        var span = Tracer.CurrentSpan;
+        TelemetrySpan span = Tracer.CurrentSpan;
+
         if (span == null || !span.Context.IsValid)
         {
             return null;

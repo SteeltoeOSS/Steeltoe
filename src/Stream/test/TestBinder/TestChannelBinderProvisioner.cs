@@ -12,8 +12,12 @@ namespace Steeltoe.Stream.TestBinder;
 
 public class TestChannelBinderProvisioner : IProvisioningProvider
 {
-    private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new ();
+    private readonly Dictionary<string, ISubscribableChannel> _provisionedDestinations = new();
     private readonly IApplicationContext _context;
+
+    public InputDestination InputDestination { get; }
+
+    public OutputDestination OutputDestination { get; }
 
     public TestChannelBinderProvisioner(IApplicationContext context, InputDestination inputDestination, OutputDestination outputDestination)
     {
@@ -22,20 +26,17 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         _context = context;
     }
 
-    public InputDestination InputDestination { get; }
-
-    public OutputDestination OutputDestination { get; }
-
     public IProducerDestination ProvisionProducerDestination(string name, IProducerOptions options)
     {
-        var destination = ProvisionDestination(name, true);
+        ISubscribableChannel destination = ProvisionDestination(name, true);
         OutputDestination.Channel = destination;
         return new SpringIntegrationProducerDestination(name, destination);
     }
 
     public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
     {
-        var destination = ProvisionDestination(name, false);
+        ISubscribableChannel destination = ProvisionDestination(name, false);
+
         if (InputDestination != null)
         {
             InputDestination.Channel = destination;
@@ -46,8 +47,9 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
 
     private ISubscribableChannel ProvisionDestination(string name, bool pubSub)
     {
-        var destinationName = $"{name}.destination";
-        _provisionedDestinations.TryGetValue(destinationName, out var destination);
+        string destinationName = $"{name}.destination";
+        _provisionedDestinations.TryGetValue(destinationName, out ISubscribableChannel destination);
+
         if (destination == null)
         {
             if (pubSub)
@@ -68,6 +70,10 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
 
     internal sealed class SpringIntegrationConsumerDestination : IConsumerDestination
     {
+        public ISubscribableChannel Channel { get; }
+
+        public string Name { get; }
+
         public SpringIntegrationConsumerDestination(string name, ISubscribableChannel channel)
         {
             Name = name;
@@ -78,14 +84,14 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         {
             return Name + partition;
         }
-
-        public ISubscribableChannel Channel { get; }
-
-        public string Name { get; }
     }
 
     internal sealed class SpringIntegrationProducerDestination : IProducerDestination
     {
+        public ISubscribableChannel Channel { get; }
+
+        public string Name { get; }
+
         public SpringIntegrationProducerDestination(string name, ISubscribableChannel channel)
         {
             Name = name;
@@ -96,9 +102,5 @@ public class TestChannelBinderProvisioner : IProvisioningProvider
         {
             return Name + partition;
         }
-
-        public ISubscribableChannel Channel { get; }
-
-        public string Name { get; }
     }
 }

@@ -2,27 +2,26 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Diagnostics;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 {
-    internal ConcurrentQueue<TraceResult> Queue = new ();
-
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "TraceDiagnosticObserver";
     private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     private readonly ITraceOptions _options;
+    internal ConcurrentQueue<TraceResult> Queue = new();
 
     public TraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
         : base(DefaultObserverName, DiagnosticName, logger)
@@ -33,7 +32,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     public List<TraceResult> GetTraces()
     {
-        var traces = Queue.ToArray();
+        TraceResult[] traces = Queue.ToArray();
         return new List<TraceResult>(traces);
     }
 
@@ -44,7 +43,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             return;
         }
 
-        var current = Activity.Current;
+        Activity current = Activity.Current;
+
         if (current == null)
         {
             return;
@@ -55,11 +55,11 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
             return;
         }
 
-        GetProperty(value, out var context);
+        GetProperty(value, out HttpContext context);
 
         if (context != null)
         {
-            var trace = MakeTrace(context, current.Duration);
+            TraceResult trace = MakeTrace(context, current.Duration);
             Queue.Enqueue(trace);
 
             if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
@@ -71,8 +71,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal TraceResult MakeTrace(HttpContext context, TimeSpan duration)
     {
-        var request = context.Request;
-        var response = context.Response;
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
 
         var details = new Dictionary<string, object>
         {
@@ -138,7 +138,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal long GetJavaTime(long ticks)
     {
-        var javaTicks = ticks - BaseTime.Ticks;
+        long javaTicks = ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
@@ -150,7 +150,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal string GetTimeTaken(TimeSpan duration)
     {
-        var timeInMilliseconds = (long)duration.TotalMilliseconds;
+        long timeInMilliseconds = (long)duration.TotalMilliseconds;
         return timeInMilliseconds.ToString();
     }
 
@@ -162,16 +162,18 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal Dictionary<string, string[]> GetRequestParameters(HttpRequest request)
     {
         var parameters = new Dictionary<string, string[]>();
-        var query = request.Query;
-        foreach (var p in query)
+        IQueryCollection query = request.Query;
+
+        foreach (KeyValuePair<string, StringValues> p in query)
         {
             parameters.Add(p.Key, p.Value.ToArray());
         }
 
         if (request.HasFormContentType && request.Form != null)
         {
-            var formData = request.Form;
-            foreach (var p in formData)
+            IFormCollection formData = request.Form;
+
+            foreach (KeyValuePair<string, StringValues> p in formData)
             {
                 parameters.Add(p.Key, p.Value.ToArray());
             }
@@ -202,7 +204,7 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
 
     protected internal Dictionary<string, object> GetHeaders(int status, IHeaderDictionary headers)
     {
-        var result = GetHeaders(headers);
+        Dictionary<string, object> result = GetHeaders(headers);
         result.Add("status", status.ToString());
         return result;
     }
@@ -210,7 +212,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal Dictionary<string, object> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, object>();
-        foreach (var h in headers)
+
+        foreach (KeyValuePair<string, StringValues> h in headers)
         {
             // Add filtering
             result.Add(h.Key.ToLowerInvariant(), GetHeaderValue(h.Value));
@@ -222,7 +225,8 @@ public class TraceDiagnosticObserver : DiagnosticObserver, ITraceRepository
     protected internal object GetHeaderValue(StringValues values)
     {
         var result = new List<string>();
-        foreach (var v in values)
+
+        foreach (string v in values)
         {
             result.Add(v);
         }

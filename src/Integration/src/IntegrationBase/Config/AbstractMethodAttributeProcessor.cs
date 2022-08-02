@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
 using Steeltoe.Common.Contexts;
@@ -13,7 +14,6 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System.Reflection;
 
 namespace Steeltoe.Integration.Config;
 
@@ -24,7 +24,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
     protected const string InputChannelPropertyName = "InputChannel";
     private readonly ILogger _logger;
 
-    protected virtual List<string> MessageHandlerProperties { get; } = new ();
+    protected virtual List<string> MessageHandlerProperties { get; } = new();
 
     protected IApplicationContext ApplicationContext { get; }
 
@@ -49,18 +49,19 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     public object PostProcess(object service, string serviceName, MethodInfo method, List<Attribute> attributes)
     {
-        GetSourceHandlerFromContext(method, out var sourceHandler, out var skipEndpointCreation);
+        GetSourceHandlerFromContext(method, out object sourceHandler, out bool skipEndpointCreation);
 
         if (skipEndpointCreation)
         {
             return null;
         }
 
-        var handler = GetHandler(service, method, attributes);
+        IMessageHandler handler = GetHandler(service, method, attributes);
 
         if (handler != sourceHandler)
         {
-            var handlerServiceName = GenerateHandlerServiceName(serviceName, method);
+            string handlerServiceName = GenerateHandlerServiceName(serviceName, method);
+
             if (handler is ReplyProducingMessageHandlerWrapper && !string.IsNullOrEmpty(MessagingAttributeUtils.EndpointIdValue(method)))
             {
                 handlerServiceName += ".wrapper";
@@ -70,27 +71,29 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
             handler = (IMessageHandler)ApplicationContext.GetService(handlerServiceName);
         }
 
-        var endpoint = CreateEndpoint(handler, method, attributes);
+        AbstractEndpoint endpoint = CreateEndpoint(handler, method, attributes);
+
         if (endpoint != null)
         {
             return endpoint;
         }
-        else
-        {
-            return handler;
-        }
+
+        return handler;
     }
 
     public virtual bool ShouldCreateEndpoint(MethodInfo method, List<Attribute> attributes)
     {
-        var inputChannel = MessagingAttributeUtils.ResolveAttribute<string>(attributes, InputChannelProperty);
-        var createEndpoint = !string.IsNullOrEmpty(inputChannel);
+        string inputChannel = MessagingAttributeUtils.ResolveAttribute<string>(attributes, InputChannelProperty);
+        bool createEndpoint = !string.IsNullOrEmpty(inputChannel);
+
         if (!createEndpoint && ServiceAnnotationAware())
         {
-            var isService = method.GetCustomAttribute<ServiceAttribute>() != null;
+            bool isService = method.GetCustomAttribute<ServiceAttribute>() != null;
+
             if (isService)
             {
-                throw new InvalidOperationException($"A channel name in '{InputChannelProperty}' is required when {AnnotationType} is used on '[Service]' methods.");
+                throw new InvalidOperationException(
+                    $"A channel name in '{InputChannelProperty}' is required when {AnnotationType} is used on '[Service]' methods.");
             }
         }
 
@@ -105,13 +108,16 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
     protected virtual AbstractEndpoint CreateEndpoint(IMessageHandler handler, MethodInfo method, List<Attribute> annotations)
     {
         AbstractEndpoint endpoint = null;
-        var inputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, InputChannelProperty);
+        string inputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, InputChannelProperty);
+
         if (!string.IsNullOrEmpty(inputChannelName))
         {
             IMessageChannel inputChannel;
+
             try
             {
                 inputChannel = ChannelResolver.ResolveDestination(inputChannelName);
+
                 if (inputChannel == null)
                 {
                     inputChannel = new DirectChannel(ApplicationContext, inputChannelName);
@@ -142,14 +148,16 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual string GenerateHandlerServiceName(string originalServiceName, MethodInfo method)
     {
-        var name = MessagingAttributeUtils.EndpointIdValue(method);
+        string name = MessagingAttributeUtils.EndpointIdValue(method);
+
         if (string.IsNullOrEmpty(name))
         {
             originalServiceName ??= method.DeclaringType.Name;
 
-            var baseName = $"{originalServiceName}.{method.Name}.{AnnotationType.Name}";
+            string baseName = $"{originalServiceName}.{method.Name}.{AnnotationType.Name}";
             name = baseName;
-            var count = 1;
+            int count = 1;
+
             while (ApplicationContext.ContainsService(name))
             {
                 name = $"{baseName}#{++count}";
@@ -161,7 +169,8 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual void SetOutputChannelIfPresent(List<Attribute> annotations, AbstractReplyProducingMessageHandler handler)
     {
-        var outputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, "OutputChannel");
+        string outputChannelName = MessagingAttributeUtils.ResolveAttribute<string>(annotations, "OutputChannel");
+
         if (!string.IsNullOrEmpty(outputChannelName))
         {
             handler.OutputChannelName = outputChannelName;
@@ -170,14 +179,15 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected virtual object ResolveTargetServiceFromMethodWithServiceAnnotation(MethodInfo method)
     {
-        var id = ResolveTargetServiceName(method);
+        string id = ResolveTargetServiceName(method);
         return ApplicationContext.GetService(id);
     }
 
     protected virtual string ResolveTargetServiceName(MethodInfo method)
     {
-        var id = method.Name;
-        var name = method.GetCustomAttribute<ServiceAttribute>().Name;
+        string id = method.Name;
+        string name = method.GetCustomAttribute<ServiceAttribute>().Name;
+
         if (string.IsNullOrEmpty(name))
         {
             return id;
@@ -203,11 +213,12 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     protected void CheckMessageHandlerAttributes(string handlerServiceName, List<Attribute> annotations)
     {
-        foreach (var property in MessageHandlerProperties)
+        foreach (string property in MessageHandlerProperties)
         {
-            foreach (var annotation in annotations)
+            foreach (Attribute annotation in annotations)
             {
-                var value = AttributeUtils.GetValue(annotation, property);
+                object value = AttributeUtils.GetValue(annotation, property);
+
                 if (MessagingAttributeUtils.HasValue(value))
                 {
                     throw new InvalidOperationException(
@@ -223,17 +234,20 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
 
     private IMessageHandler GetHandler(object service, MethodInfo method, List<Attribute> attributes)
     {
-        var handler = CreateHandler(service, method, attributes);
+        IMessageHandler handler = CreateHandler(service, method, attributes);
 
         if (handler is AbstractMessageProducingHandler)
         {
-            var sendTimeout = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "SendTimeout");
+            string sendTimeout = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "SendTimeout");
+
             if (sendTimeout != null)
             {
-                var resolvedValue = ApplicationContext.ResolveEmbeddedValue(sendTimeout);
+                string resolvedValue = ApplicationContext.ResolveEmbeddedValue(sendTimeout);
+
                 if (resolvedValue != null)
                 {
-                    var value = int.Parse(resolvedValue);
+                    int value = int.Parse(resolvedValue);
+
                     if (handler is AbstractMessageProducingHandler abstractHandler)
                     {
                         abstractHandler.SendTimeout = value;
@@ -249,6 +263,7 @@ public abstract class AbstractMethodAttributeProcessor<TAttribute> : IMethodAttr
     {
         skipEndpointCreation = false;
         sourceHandler = null;
+
         if (ServiceAnnotationAware() && method.GetCustomAttribute<ServiceAttribute>() != null)
         {
             if (!ApplicationContext.ContainsService(ResolveTargetServiceName(method)))

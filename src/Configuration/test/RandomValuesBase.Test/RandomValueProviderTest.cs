@@ -18,7 +18,7 @@ public class RandomValueProviderTest
     public void TryGet_Ignores()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("foo:bar", out var value);
+        prov.TryGet("foo:bar", out string value);
         Assert.Null(value);
     }
 
@@ -26,7 +26,7 @@ public class RandomValueProviderTest
     public void TryGet_String()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:string", out var value);
+        prov.TryGet("random:string", out string value);
         Assert.NotNull(value);
     }
 
@@ -34,7 +34,7 @@ public class RandomValueProviderTest
     public void TryGet_Uuid()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:uuid", out var value);
+        prov.TryGet("random:uuid", out string value);
         Assert.NotNull(value);
     }
 
@@ -42,7 +42,7 @@ public class RandomValueProviderTest
     public void TryGet_RandomInt()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:int", out var value);
+        prov.TryGet("random:int", out string value);
         Assert.NotNull(value);
     }
 
@@ -50,9 +50,9 @@ public class RandomValueProviderTest
     public void TryGet_RandomIntRange()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:int[4,10]", out var value);
+        prov.TryGet("random:int[4,10]", out string value);
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
     }
 
@@ -60,9 +60,9 @@ public class RandomValueProviderTest
     public void TryGet_RandomIntMax()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:int(10)", out var value);
+        prov.TryGet("random:int(10)", out string value);
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 0, 10);
     }
 
@@ -70,7 +70,7 @@ public class RandomValueProviderTest
     public void TryGet_RandomLong()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:long", out var value);
+        prov.TryGet("random:long", out string value);
         Assert.NotNull(value);
     }
 
@@ -78,9 +78,9 @@ public class RandomValueProviderTest
     public void TryGet_RandomLongRange()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:long[4,10]", out var value);
+        prov.TryGet("random:long[4,10]", out string value);
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 4, 10);
     }
 
@@ -88,9 +88,9 @@ public class RandomValueProviderTest
     public void TryGet_RandomLongMax()
     {
         var prov = new RandomValueProvider("random:");
-        prov.TryGet("random:long(10)", out var value);
+        prov.TryGet("random:long(10)", out string value);
         Assert.NotNull(value);
-        var val = int.Parse(value);
+        int val = int.Parse(value);
         Assert.InRange(val, 0, 10);
     }
 }

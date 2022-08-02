@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 internal static class ConfigUtils
 {
-    private static readonly Regex Regex = new (@"\s+");
+    private static readonly Regex Regex = new(@"\s+");
 
     public static bool IsExpression(string expression)
     {

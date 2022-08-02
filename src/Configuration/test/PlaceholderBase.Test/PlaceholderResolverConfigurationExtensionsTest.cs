@@ -34,8 +34,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
 
         configurationBuilder.AddPlaceholderResolver();
 
-        var placeholderSource =
-            configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
+        PlaceholderResolverSource placeholderSource = configurationBuilder.Sources.OfType<PlaceholderResolverSource>().SingleOrDefault();
         Assert.NotNull(placeholderSource);
     }
 
@@ -46,10 +45,9 @@ public class PlaceholderResolverConfigurationExtensionsTest
         var loggerFactory = new LoggerFactory();
 
         configurationBuilder.AddPlaceholderResolver(loggerFactory);
-        var configuration = configurationBuilder.Build();
+        IConfigurationRoot configuration = configurationBuilder.Build();
 
-        var provider =
-            configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
+        PlaceholderResolverProvider provider = configuration.Providers.OfType<PlaceholderResolverProvider>().SingleOrDefault();
 
         Assert.NotNull(provider);
         Assert.NotNull(provider.Logger);
@@ -60,7 +58,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -75,16 +73,16 @@ public class PlaceholderResolverConfigurationExtensionsTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
@@ -94,7 +92,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
     {
-        var appsettings = @"
+        string appsettings = @"
 <settings>
     <spring>
         <bar>
@@ -107,17 +105,18 @@ public class PlaceholderResolverConfigurationExtensionsTest
       </cloud>
     </spring>
 </settings>";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddXmlFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
@@ -127,23 +126,24 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
     {
-        var appsettings = @"
+        string appsettings = @"
 [spring:bar]
     name=myName
 [spring:cloud:config]
     name=${spring:bar:name?noName}
 ";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddIniFile(fileName, false, false);
 
         configurationBuilder.AddPlaceholderResolver();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
@@ -151,7 +151,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_CommandLineAppSettingsResolvesPlaceholders()
     {
-        var appsettings = new[]
+        string[] appsettings = new[]
         {
             "spring:bar:name=myName",
             "--spring:cloud:config:name=${spring:bar:name?noName}"
@@ -161,7 +161,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddCommandLine(appsettings);
 
         configurationBuilder.AddPlaceholderResolver();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
@@ -171,7 +171,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
     {
-        var appsettingsJson = @"
+        string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -185,7 +185,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
                     }
                 }";
 
-        var appsettingsXml = @"
+        string appsettingsXml = @"
 <settings>
     <spring>
         <xml>
@@ -194,23 +194,25 @@ public class PlaceholderResolverConfigurationExtensionsTest
     </spring>
 </settings>";
 
-        var appsettingsIni = @"
+        string appsettingsIni = @"
 [spring:ini]
     name=${spring:line:name?noName}
 ";
-        var appsettingsLine = new[]
+
+        string[] appsettingsLine = new[]
         {
             "--spring:line:name=${spring:json:name?noName}"
         };
-        using var sandbox = new Sandbox();
-        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonFileName = Path.GetFileName(jsonPath);
-        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlFileName = Path.GetFileName(xmlPath);
-        var iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
-        var iniFileName = Path.GetFileName(iniPath);
 
-        var directory = Path.GetDirectoryName(jsonPath);
+        using var sandbox = new Sandbox();
+        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        string jsonFileName = Path.GetFileName(jsonPath);
+        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        string xmlFileName = Path.GetFileName(xmlPath);
+        string iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
+        string iniFileName = Path.GetFileName(iniPath);
+
+        string directory = Path.GetDirectoryName(jsonPath);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
@@ -220,7 +222,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
         configurationBuilder.AddCommandLine(appsettingsLine);
 
         configurationBuilder.AddPlaceholderResolver();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
@@ -233,7 +235,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
 
         var builder = new ConfigurationBuilder();
@@ -241,10 +243,10 @@ public class PlaceholderResolverConfigurationExtensionsTest
         builder.AddPlaceholderResolver();
 
         Assert.Single(builder.Sources);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         Assert.Single(config.Providers);
-        var provider = config.Providers.ToList()[0];
+        IConfigurationProvider provider = config.Providers.ToList()[0];
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }
 
@@ -256,19 +258,19 @@ public class PlaceholderResolverConfigurationExtensionsTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var config1 = builder.Build();
+        IConfigurationRoot config1 = builder.Build();
 
-        var config2 = config1.AddPlaceholderResolver();
+        IConfiguration config2 = config1.AddPlaceholderResolver();
         Assert.NotSame(config1, config2);
 
         var root2 = config2 as IConfigurationRoot;
         Assert.Single(root2.Providers);
-        var provider = root2.Providers.ToList()[0];
+        IConfigurationProvider provider = root2.Providers.ToList()[0];
         Assert.IsType<PlaceholderResolverProvider>(provider);
 
         Assert.Null(config2["nokey"]);

@@ -10,40 +10,22 @@ public class BinderConfiguration
 {
     private readonly IBinderOptions _options;
 
-    public BinderConfiguration(string binderType, string binderAssemblyPath, IBinderOptions options)
-    {
-        ConfigureClass = binderType ?? throw new ArgumentNullException(nameof(binderType));
-        ConfigureAssembly = binderAssemblyPath;
-        _options = options ?? throw new ArgumentNullException(nameof(options));
-    }
-
     public string ConfigureClass { get; }
 
     public string ConfigureAssembly { get; }
 
     public string ResolvedAssembly { get; set; }
 
-    public IDictionary<string, object> Properties
-    {
-        get
-        {
-            return _options.Environment;
-        }
-    }
+    public IDictionary<string, object> Properties => _options.Environment;
 
-    public bool IsInheritEnvironment
-    {
-        get
-        {
-            return _options.InheritEnvironment;
-        }
-    }
+    public bool IsInheritEnvironment => _options.InheritEnvironment;
 
-    public bool IsDefaultCandidate
+    public bool IsDefaultCandidate => _options.DefaultCandidate;
+
+    public BinderConfiguration(string binderType, string binderAssemblyPath, IBinderOptions options)
     {
-        get
-        {
-            return _options.DefaultCandidate;
-        }
+        ConfigureClass = binderType ?? throw new ArgumentNullException(nameof(binderType));
+        ConfigureAssembly = binderAssemblyPath;
+        _options = options ?? throw new ArgumentNullException(nameof(options));
     }
 }

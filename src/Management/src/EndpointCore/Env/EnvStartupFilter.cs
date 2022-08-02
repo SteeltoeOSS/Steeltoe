@@ -15,6 +15,7 @@ public class EnvStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<EnvEndpoint>();

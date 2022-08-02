@@ -25,10 +25,14 @@ public class EurekaHealthCheckHandlerTest
     public void DoHealthChecks_ReturnsExpected()
     {
         var handler = new EurekaHealthCheckHandler();
-        var result = handler.DoHealthChecks(new List<IHealthContributor>());
+        List<HealthCheckResult> result = handler.DoHealthChecks(new List<IHealthContributor>());
         Assert.Empty(result);
 
-        result = handler.DoHealthChecks(new List<IHealthContributor> { new TestContributor() });
+        result = handler.DoHealthChecks(new List<IHealthContributor>
+        {
+            new TestContributor()
+        });
+
         Assert.Empty(result);
     }
 
@@ -42,66 +46,72 @@ public class EurekaHealthCheckHandlerTest
 
         results = new List<HealthCheckResult>
         {
-            new ()
+            new()
             {
                 Status = HealthStatus.Down
             },
-            new ()
+            new()
             {
                 Status = HealthStatus.Up
             }
         };
-        Assert.Equal(HealthStatus.Down, handler.AggregateStatus(results));
-        results = new List<HealthCheckResult>
-        {
-            new ()
-            {
-                Status = HealthStatus.Up
-            },
-            new ()
-            {
-                Status = HealthStatus.Down
-            }
-        };
+
         Assert.Equal(HealthStatus.Down, handler.AggregateStatus(results));
 
         results = new List<HealthCheckResult>
         {
-            new ()
+            new()
             {
                 Status = HealthStatus.Up
             },
-            new ()
+            new()
+            {
+                Status = HealthStatus.Down
+            }
+        };
+
+        Assert.Equal(HealthStatus.Down, handler.AggregateStatus(results));
+
+        results = new List<HealthCheckResult>
+        {
+            new()
+            {
+                Status = HealthStatus.Up
+            },
+            new()
             {
                 Status = HealthStatus.OutOfService
             }
         };
+
         Assert.Equal(HealthStatus.OutOfService, handler.AggregateStatus(results));
 
         results = new List<HealthCheckResult>
         {
-            new ()
+            new()
             {
                 Status = HealthStatus.Up
             },
-            new ()
+            new()
             {
                 Status = HealthStatus.Warning
             }
         };
 
         Assert.Equal(HealthStatus.Up, handler.AggregateStatus(results));
+
         results = new List<HealthCheckResult>
         {
-            new ()
+            new()
             {
                 Status = HealthStatus.Warning
             },
-            new ()
+            new()
             {
                 Status = HealthStatus.Warning
             }
         };
+
         Assert.Equal(HealthStatus.Unknown, handler.AggregateStatus(results));
     }
 

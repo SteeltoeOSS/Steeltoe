@@ -26,7 +26,7 @@ public static class RabbitUtils
     public const ushort ConnectionCloseClassId = 10;
     public const ushort ConnectionCloseMethodId = 50;
 
-    private static readonly AsyncLocal<bool?> PhysicalCloseRequired = new ();
+    private static readonly AsyncLocal<bool?> PhysicalCloseRequired = new();
 
     public static void CloseConnection(IConnection connection, ILogger logger = null)
     {
@@ -118,7 +118,7 @@ public static class RabbitUtils
 
         try
         {
-            foreach (var consumerTag in consumerTags)
+            foreach (string consumerTag in consumerTags)
             {
                 Cancel(channel, consumerTag);
             }
@@ -180,7 +180,8 @@ public static class RabbitUtils
 
     public static bool IsPhysicalCloseRequired()
     {
-        var mustClose = PhysicalCloseRequired.Value;
+        bool? mustClose = PhysicalCloseRequired.Value;
+
         if (mustClose == null)
         {
             mustClose = false;
@@ -196,40 +197,27 @@ public static class RabbitUtils
     public static bool IsNormalChannelClose(RC.ShutdownEventArgs args)
     {
         return IsNormalShutdown(args) ||
-               (args.ClassId == ChannelCloseClassId
-                && args.MethodId == ChannelCloseMethodId
-                && args.ReplyCode == ReplySuccess
-                && args.ReplyText == "OK") ||
-               (args.Initiator == RC.ShutdownInitiator.Application
-                && args.ClassId == 0 && args.MethodId == 0
-                && args.ReplyText == "Goodbye");
+            (args.ClassId == ChannelCloseClassId && args.MethodId == ChannelCloseMethodId && args.ReplyCode == ReplySuccess && args.ReplyText == "OK") ||
+            (args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 && args.ReplyText == "Goodbye");
     }
 
     public static bool IsNormalShutdown(ShutdownSignalException sig)
     {
-        return (sig.ClassId == ConnectionCloseClassId
-                && sig.MethodId == ConnectionCloseMethodId
-                && sig.ReplyCode == ReplySuccess
-                && sig.ReplyText == "OK") ||
-               (sig.Initiator == RC.ShutdownInitiator.Application
-                && sig.ClassId == 0 && sig.MethodId == 0
-                && sig.ReplyText == "Goodbye");
+        return (sig.ClassId == ConnectionCloseClassId && sig.MethodId == ConnectionCloseMethodId && sig.ReplyCode == ReplySuccess && sig.ReplyText == "OK") ||
+            (sig.Initiator == RC.ShutdownInitiator.Application && sig.ClassId == 0 && sig.MethodId == 0 && sig.ReplyText == "Goodbye");
     }
 
     public static bool IsNormalShutdown(RC.ShutdownEventArgs args)
     {
-        return (args.ClassId == ConnectionCloseClassId
-                && args.MethodId == ConnectionCloseMethodId
-                && args.ReplyCode == ReplySuccess
-                && args.ReplyText == "OK") ||
-               (args.Initiator == RC.ShutdownInitiator.Application
-                && args.ClassId == 0 && args.MethodId == 0
-                && args.ReplyText == "Goodbye");
+        return (args.ClassId == ConnectionCloseClassId && args.MethodId == ConnectionCloseMethodId && args.ReplyCode == ReplySuccess &&
+            args.ReplyText == "OK") || (args.Initiator == RC.ShutdownInitiator.Application && args.ClassId == 0 && args.MethodId == 0 &&
+            args.ReplyText == "Goodbye");
     }
 
     public static bool IsPassiveDeclarationChannelClose(Exception exception)
     {
         RC.ShutdownEventArgs cause = null;
+
         switch (exception)
         {
             case ShutdownSignalException shutdownSignalException:
@@ -242,9 +230,7 @@ public static class RabbitUtils
 
         if (cause != null)
         {
-            return (cause.ClassId == ExchangeClassId || cause.ClassId == QueueClassId)
-                   && cause.MethodId == DeclareMethodId
-                   && cause.ReplyCode == NotFound;
+            return (cause.ClassId == ExchangeClassId || cause.ClassId == QueueClassId) && cause.MethodId == DeclareMethodId && cause.ReplyCode == NotFound;
         }
 
         return false;
@@ -252,8 +238,9 @@ public static class RabbitUtils
 
     public static bool IsMismatchedQueueArgs(Exception exception)
     {
-        var cause = exception;
+        Exception cause = exception;
         RC.ShutdownEventArgs args = null;
+
         while (cause != null && args == null)
         {
             if (cause is ShutdownSignalException exception1)
@@ -273,17 +260,13 @@ public static class RabbitUtils
         {
             return false;
         }
-        else
-        {
-            return IsMismatchedQueueArgs(args);
-        }
+
+        return IsMismatchedQueueArgs(args);
     }
 
     public static bool IsMismatchedQueueArgs(RC.ShutdownEventArgs args)
     {
-        return args.ClassId == QueueClassId
-               && args.MethodId == DeclareMethodId
-               && args.ReplyCode == PreconditionFailed;
+        return args.ClassId == QueueClassId && args.MethodId == DeclareMethodId && args.ReplyCode == PreconditionFailed;
     }
 
     public static int GetMaxFrame(IConnectionFactory connectionFactory)
@@ -304,6 +287,7 @@ public static class RabbitUtils
     {
         Exception cause = e;
         RC.ShutdownEventArgs args = null;
+
         while (cause != null && args == null)
         {
             if (cause is OperationInterruptedException exception)
@@ -319,8 +303,6 @@ public static class RabbitUtils
             return false;
         }
 
-        return args.ClassId == ExchangeClassId &&
-               args.MethodId == DeclareMethodId &&
-               args.ReplyCode == CommandInvalid;
+        return args.ClassId == ExchangeClassId && args.MethodId == DeclareMethodId && args.ReplyCode == CommandInvalid;
     }
 }

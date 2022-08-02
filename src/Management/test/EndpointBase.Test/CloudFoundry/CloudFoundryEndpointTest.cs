@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
@@ -32,6 +33,7 @@ public class CloudFoundryEndpointTest : BaseTest
     public void Invoke_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddInfoActuatorServices(configuration);
@@ -43,7 +45,7 @@ public class CloudFoundryEndpointTest : BaseTest
 
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -57,9 +59,11 @@ public class CloudFoundryEndpointTest : BaseTest
     public void Invoke_OnlyCloudFoundryEndpoint_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddCloudFoundryActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new CloudFoundryManagementOptions();
@@ -68,9 +72,10 @@ public class CloudFoundryEndpointTest : BaseTest
                 return options;
             });
         };
+
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -82,10 +87,12 @@ public class CloudFoundryEndpointTest : BaseTest
     public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddCloudFoundryActuatorServices(configuration);
             services.AddInfoActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new CloudFoundryManagementOptions();
@@ -95,6 +102,7 @@ public class CloudFoundryEndpointTest : BaseTest
                 return options;
             });
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
@@ -102,9 +110,10 @@ public class CloudFoundryEndpointTest : BaseTest
                 { "management:endpoints:enabled", "true" }
             });
         };
+
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -117,10 +126,12 @@ public class CloudFoundryEndpointTest : BaseTest
     public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddCloudFoundryActuatorServices(configuration);
             services.AddInfoActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new CloudFoundryManagementOptions();
@@ -130,6 +141,7 @@ public class CloudFoundryEndpointTest : BaseTest
                 return options;
             });
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
@@ -141,7 +153,7 @@ public class CloudFoundryEndpointTest : BaseTest
 
         var ep = tc.GetService<ICloudFoundryEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.Empty(info._links);

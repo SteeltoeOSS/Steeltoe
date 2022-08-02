@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
@@ -17,25 +18,18 @@ using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListener
 {
-    protected readonly ILogger Logger;
-
     private const string DefaultEncoding = "UTF-8";
 
-    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly SpelExpressionParser Parser = new();
     private static readonly IParserContext ParserContext = new TemplateParserContext("!{", "}");
-
-    protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
-    {
-        Logger = logger;
-        MessageConverter = new RabbitMQ.Support.Converter.SimpleMessageConverter();
-        ApplicationContext = context;
-    }
+    protected readonly ILogger Logger;
 
     public IApplicationContext ApplicationContext { get; set; }
 
@@ -63,13 +57,20 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     public virtual bool IsManualAck => ContainerAckMode == AcknowledgeMode.Manual;
 
-    public virtual StandardEvaluationContext EvalContext { get; set; } = new ();
+    public virtual StandardEvaluationContext EvalContext { get; set; } = new();
 
     public virtual IMessageHeadersConverter MessagePropertiesConverter { get; set; } = new DefaultMessageHeadersConverter();
 
     public virtual IExpression ResponseExpression { get; set; }
 
     public virtual IReplyPostProcessor ReplyPostProcessor { get; set; }
+
+    protected AbstractMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
+    {
+        Logger = logger;
+        MessageConverter = new SimpleMessageConverter();
+        ApplicationContext = context;
+    }
 
     public virtual void SetResponseAddress(string defaultReplyTo)
     {
@@ -97,7 +98,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
             throw new ArgumentNullException(nameof(beforeSendReplyPostProcessors));
         }
 
-        foreach (var elem in beforeSendReplyPostProcessors)
+        foreach (IMessagePostProcessor elem in beforeSendReplyPostProcessors)
         {
             if (elem == null)
             {
@@ -127,7 +128,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected internal virtual IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
     {
-        var converter = MessageConverter;
+        ISmartMessageConverter converter = MessageConverter;
+
         if (converter != null && result is not IMessage<byte[]>)
         {
             result = converter.ToMessage(result, new MessageHeaders(), genericType);
@@ -148,7 +150,8 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected virtual object ExtractMessage(IMessage message)
     {
-        var converter = MessageConverter;
+        ISmartMessageConverter converter = MessageConverter;
+
         if (converter != null)
         {
             return converter.FromMessage(message, null);
@@ -170,23 +173,22 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
             {
                 if (!IsManualAck)
                 {
-                    Logger?.LogWarning("Container AcknowledgeMode must be MANUAL for a Future<?> return type; "
-                                        + "otherwise the container will ack the message immediately");
+                    Logger?.LogWarning("Container AcknowledgeMode must be MANUAL for a Future<?> return type; " +
+                        "otherwise the container will ack the message immediately");
                 }
 
-                asTask.ContinueWith(
-                    t =>
+                asTask.ContinueWith(t =>
+                {
+                    if (t.IsCompletedSuccessfully)
                     {
-                        if (t.IsCompletedSuccessfully)
-                        {
-                            AsyncSuccess(resultArg, request, channel, source, GetReturnValue(t));
-                            BasicAck(request, channel);
-                        }
-                        else
-                        {
-                            AsyncFailure(request, channel, t.Exception);
-                        }
-                    });
+                        AsyncSuccess(resultArg, request, channel, source, GetReturnValue(t));
+                        BasicAck(request, channel);
+                    }
+                    else
+                    {
+                        AsyncFailure(request, channel, t.Exception);
+                    }
+                });
             }
             else
             {
@@ -195,22 +197,22 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         else
         {
-            Logger?.LogWarning("Listener method returned result [" + resultArg
-                                                                    + "]: not generating response message for it because no Rabbit Channel given");
+            Logger?.LogWarning("Listener method returned result [" + resultArg + "]: not generating response message for it because no Rabbit Channel given");
         }
     }
 
     protected virtual void DoHandleResult(InvocationResult resultArg, IMessage request, RC.IModel channel, object source)
     {
         Logger?.LogDebug("Listener method returned result [{result}] - generating response message for it", resultArg);
+
         try
         {
-            var response = BuildMessage(channel, resultArg.ReturnValue, resultArg.ReturnType);
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(response);
+            IMessage<byte[]> response = BuildMessage(channel, resultArg.ReturnValue, resultArg.ReturnType);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(response);
             accessor.Target = resultArg.Instance;
             accessor.TargetMethod = resultArg.Method;
             PostProcessResponse(request, response);
-            var replyTo = GetReplyToAddress(request, source, resultArg);
+            Address replyTo = GetReplyToAddress(request, source, resultArg);
             SendResponse(channel, replyTo, response);
         }
         catch (Exception ex)
@@ -226,24 +228,26 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected virtual void PostProcessResponse(IMessage request, IMessage response)
     {
-        var correlation = request.Headers.CorrelationId();
+        string correlation = request.Headers.CorrelationId();
 
         if (correlation == null)
         {
-            var messageId = request.Headers.MessageId();
+            string messageId = request.Headers.MessageId();
+
             if (messageId != null)
             {
                 correlation = messageId;
             }
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(response);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(response);
         accessor.CorrelationId = correlation;
     }
 
     protected virtual Address GetReplyToAddress(IMessage request, object source, InvocationResult result)
     {
-        var replyTo = request.Headers.ReplyToAddress();
+        Address replyTo = request.Headers.ReplyToAddress();
+
         if (replyTo == null)
         {
             if (ResponseAddress == null && ResponseExchange != null)
@@ -265,9 +269,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
             }
             else if (ResponseAddress == null)
             {
-                throw new RabbitException(
-                    "Cannot determine ReplyTo message property value: " +
-                    "Request message does not contain reply-to property, " +
+                throw new RabbitException("Cannot determine ReplyTo message property value: " + "Request message does not contain reply-to property, " +
                     "and no default response Exchange was set.");
             }
             else
@@ -281,17 +283,20 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected void SendResponse(RC.IModel channel, Address replyTo, IMessage<byte[]> messageIn)
     {
-        var message = messageIn;
+        IMessage<byte[]> message = messageIn;
+
         if (BeforeSendReplyPostProcessors != null)
         {
-            var processors = BeforeSendReplyPostProcessors;
+            List<IMessagePostProcessor> processors = BeforeSendReplyPostProcessors;
             IMessage postProcessed = message;
-            foreach (var postProcessor in processors)
+
+            foreach (IMessagePostProcessor postProcessor in processors)
             {
                 postProcessed = postProcessor.PostProcessMessage(postProcessed);
             }
 
             message = postProcessed as IMessage<byte[]>;
+
             if (message == null)
             {
                 throw new InvalidOperationException("A BeforeSendReplyPostProcessors failed to return IMessage<byte[]>");
@@ -303,33 +308,31 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         try
         {
             Logger?.LogDebug("Publishing response to exchange = [{exchange}], routingKey = [{routingKey}]", replyTo.ExchangeName, replyTo.RoutingKey);
+
             if (RetryTemplate == null)
             {
                 DoPublish(channel, replyTo, message);
             }
             else
             {
-                var messageToSend = message;
-                RetryTemplate.Execute<object>(
-                    _ =>
+                IMessage<byte[]> messageToSend = message;
+
+                RetryTemplate.Execute<object>(_ =>
+                {
+                    DoPublish(channel, replyTo, messageToSend);
+                    return null;
+                }, ctx =>
+                {
+                    if (RecoveryCallback != null)
                     {
-                        DoPublish(channel, replyTo, messageToSend);
+                        ctx.SetAttribute(SendRetryContextAccessor.Message, messageToSend);
+                        ctx.SetAttribute(SendRetryContextAccessor.Address, replyTo);
+                        RecoveryCallback.Recover(ctx);
                         return null;
-                    },
-                    ctx =>
-                    {
-                        if (RecoveryCallback != null)
-                        {
-                            ctx.SetAttribute(SendRetryContextAccessor.Message, messageToSend);
-                            ctx.SetAttribute(SendRetryContextAccessor.Address, replyTo);
-                            RecoveryCallback.Recover(ctx);
-                            return null;
-                        }
-                        else
-                        {
-                            throw RabbitExceptionTranslator.ConvertRabbitAccessException(ctx.LastException);
-                        }
-                    });
+                    }
+
+                    throw RabbitExceptionTranslator.ConvertRabbitAccessException(ctx.LastException);
+                });
             }
         }
         catch (Exception ex)
@@ -340,7 +343,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected virtual void DoPublish(RC.IModel channel, Address replyTo, IMessage<byte[]> message)
     {
-        var props = channel.CreateBasicProperties();
+        RC.IBasicProperties props = channel.CreateBasicProperties();
         MessagePropertiesConverter.FromMessageHeaders(message.Headers, props, EncodingUtils.GetEncoding(Encoding));
         channel.BasicPublish(replyTo.ExchangeName, replyTo.RoutingKey, MandatoryPublish, props, message.Payload);
     }
@@ -351,25 +354,28 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     private static object GetReturnValue(Task task)
     {
-        var taskType = task.GetType();
+        Type taskType = task.GetType();
+
         if (!taskType.IsGenericType)
         {
             return null;
         }
 
-        var property = taskType.GetProperty("Result");
+        PropertyInfo property = taskType.GetProperty("Result");
         return property.GetValue(task);
     }
 
     private Address EvaluateReplyTo(IMessage request, object source, object result, IExpression expression)
     {
-        var value = expression.GetValue(EvalContext, new ReplyExpressionRoot(request, source, result));
-        var replyTo = value switch
+        object value = expression.GetValue(EvalContext, new ReplyExpressionRoot(request, source, result));
+
+        Address replyTo = value switch
         {
             not string and not Address => throw new ArgumentException("response expression must evaluate to a String or Address"),
             string sValue => new Address(sValue),
-            _ => (Address)value,
+            _ => (Address)value
         };
+
         return replyTo;
     }
 
@@ -381,10 +387,12 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
         }
         else
         {
-            var returnType = resultArg.ReturnType;
+            Type returnType = resultArg.ReturnType;
+
             if (returnType != null)
             {
-                var actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : Array.Empty<Type>();
+                Type[] actualTypeArguments = returnType.ContainsGenericParameters ? returnType.GetGenericArguments() : Array.Empty<Type>();
+
                 if (actualTypeArguments.Length > 0)
                 {
                     returnType = actualTypeArguments[0];
@@ -404,8 +412,9 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     private void BasicAck(IMessage request, RC.IModel channel)
     {
-        var tag = request.Headers.DeliveryTag();
-        var deliveryTag = tag ?? 0;
+        ulong? tag = request.Headers.DeliveryTag();
+        ulong deliveryTag = tag ?? 0;
+
         try
         {
             channel.BasicAck(deliveryTag, false);
@@ -419,6 +428,7 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
     private void AsyncFailure(IMessage request, RC.IModel channel, Exception exception)
     {
         Logger?.LogError(exception, "Async method was completed with an exception for {request} ", request);
+
         try
         {
             channel.BasicNack(request.Headers.DeliveryTag().Value, false, ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, Logger));
@@ -431,17 +441,17 @@ public abstract class AbstractMessageListenerAdapter : IChannelAwareMessageListe
 
     protected class ReplyExpressionRoot
     {
+        public IMessage Request { get; }
+
+        public object Source { get; }
+
+        public object Result { get; }
+
         public ReplyExpressionRoot(IMessage request, object source, object result)
         {
             Request = request;
             Source = source;
             Result = result;
         }
-
-        public IMessage Request { get; }
-
-        public object Source { get; }
-
-        public object Result { get; }
     }
 }

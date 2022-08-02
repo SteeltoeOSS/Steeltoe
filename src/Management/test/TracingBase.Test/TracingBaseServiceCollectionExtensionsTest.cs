@@ -23,9 +23,9 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracing_ConfiguresExpectedDefaults()
     {
-        var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing().BuildServiceProvider();
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
@@ -35,9 +35,9 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracing_WiresIncludedExporters()
     {
-        var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -51,15 +51,23 @@ public class TracingBaseServiceCollectionExtensionsTest : TestBase
     public void AddDistributedTracing_ConfiguresSamplers()
     {
         // test AlwaysOn
-        var services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string> { { "Management:Tracing:AlwaysSample", "true" } }));
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        {
+            { "Management:Tracing:AlwaysSample", "true" }
+        }));
+
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);
 
         // test AlwaysOff
-        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string> { { "Management:Tracing:NeverSample", "true" } }));
+        services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        {
+            { "Management:Tracing:NeverSample", "true" }
+        }));
+
         serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);

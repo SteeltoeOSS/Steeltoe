@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.Hypermedia;
 
@@ -14,8 +16,9 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 {
     private readonly RequestDelegate _next;
 
-    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions, ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public ActuatorHypermediaEndpointMiddleware(RequestDelegate next, ActuatorEndpoint endpoint, ActuatorManagementOptions managementOptions,
+        ILogger<ActuatorHypermediaEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
@@ -26,7 +29,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {
-            var serialInfo = HandleRequest(endpoint, GetRequestUri(context.Request), logger);
+            string serialInfo = HandleRequest(endpoint, GetRequestUri(context.Request), logger);
             logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(logger);
@@ -38,9 +41,9 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
 
     private static string GetRequestUri(HttpRequest request)
     {
-        var scheme = request.Scheme;
+        string scheme = request.Scheme;
 
-        if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
+        if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
         {
             scheme = headerScheme.ToString();
         }
@@ -51,15 +54,13 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
         {
             return $"{scheme}://{request.Host.Host}{request.PathBase}{request.Path}";
         }
-        else
-        {
-            return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
-        }
+
+        return $"{scheme}://{request.Host}{request.PathBase}{request.Path}";
     }
 
     private static string HandleRequest(IEndpoint<Links, string> endpoint, string requestUri, ILogger logger)
     {
-        var result = endpoint.Invoke(requestUri);
+        Links result = endpoint.Invoke(requestUri);
         return Serialize(result, logger);
     }
 
@@ -70,7 +71,7 @@ public class ActuatorHypermediaEndpointMiddleware : EndpointMiddleware<Links, st
             var serializeOptions = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             };
 
             return JsonSerializer.Serialize(result, serializeOptions);

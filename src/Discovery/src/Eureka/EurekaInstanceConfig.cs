@@ -21,46 +21,6 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
     protected string thisHostAddress;
     protected string thisHostName;
 
-    public EurekaInstanceConfig()
-    {
-#pragma warning disable S1699 // Constructors should only call non-overridable methods
-        thisHostName = GetHostName(true);
-        thisHostAddress = GetHostAddress(true);
-#pragma warning restore S1699 // Constructors should only call non-overridable methods
-
-        IsInstanceEnabledOnInit = false;
-        NonSecurePort = DefaultNonSecurePort;
-        SecurePort = DefaultSecurePort;
-        IsNonSecurePortEnabled = true;
-        SecurePortEnabled = false;
-        LeaseRenewalIntervalInSeconds = DefaultLeaseRenewalIntervalInSeconds;
-        LeaseExpirationDurationInSeconds = DefaultLeaseExpirationDurationInSeconds;
-        VirtualHostName = $"{thisHostName}:{NonSecurePort}";
-        SecureVirtualHostName = $"{thisHostName}:{SecurePort}";
-        IpAddress = thisHostAddress;
-        AppName = DefaultAppName;
-        StatusPageUrlPath = DefaultStatusPageUrlPath;
-        HomePageUrlPath = DefaultHomePageUrlPath;
-        HealthCheckUrlPath = DefaultHealthCheckUrlPath;
-        MetadataMap = new Dictionary<string, string>();
-        DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
-        PreferIpAddress = false;
-    }
-
-    public void ApplyNetUtils()
-    {
-        if (UseNetUtils && NetUtils != null)
-        {
-            var host = NetUtils.FindFirstNonLoopbackHostInfo();
-            if (host.Hostname != null)
-            {
-                thisHostName = host.Hostname;
-            }
-
-            IpAddress = host.IpAddress;
-        }
-    }
-
     // eureka:instance:instanceId, spring:application:instance_id, null
     public virtual string InstanceId { get; set; }
 
@@ -139,6 +99,47 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
 
     public InetUtils NetUtils { get; set; }
 
+    public EurekaInstanceConfig()
+    {
+#pragma warning disable S1699 // Constructors should only call non-overridable methods
+        thisHostName = GetHostName(true);
+        thisHostAddress = GetHostAddress(true);
+#pragma warning restore S1699 // Constructors should only call non-overridable methods
+
+        IsInstanceEnabledOnInit = false;
+        NonSecurePort = DefaultNonSecurePort;
+        SecurePort = DefaultSecurePort;
+        IsNonSecurePortEnabled = true;
+        SecurePortEnabled = false;
+        LeaseRenewalIntervalInSeconds = DefaultLeaseRenewalIntervalInSeconds;
+        LeaseExpirationDurationInSeconds = DefaultLeaseExpirationDurationInSeconds;
+        VirtualHostName = $"{thisHostName}:{NonSecurePort}";
+        SecureVirtualHostName = $"{thisHostName}:{SecurePort}";
+        IpAddress = thisHostAddress;
+        AppName = DefaultAppName;
+        StatusPageUrlPath = DefaultStatusPageUrlPath;
+        HomePageUrlPath = DefaultHomePageUrlPath;
+        HealthCheckUrlPath = DefaultHealthCheckUrlPath;
+        MetadataMap = new Dictionary<string, string>();
+        DataCenterInfo = new DataCenterInfo(DataCenterName.MyOwn);
+        PreferIpAddress = false;
+    }
+
+    public void ApplyNetUtils()
+    {
+        if (UseNetUtils && NetUtils != null)
+        {
+            HostInfo host = NetUtils.FindFirstNonLoopbackHostInfo();
+
+            if (host.Hostname != null)
+            {
+                thisHostName = host.Hostname;
+            }
+
+            IpAddress = host.IpAddress;
+        }
+    }
+
     public virtual string GetHostName(bool refresh)
     {
         if (refresh || string.IsNullOrEmpty(thisHostName))
@@ -147,10 +148,8 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
             {
                 return NetUtils.FindFirstNonLoopbackHostInfo().Hostname;
             }
-            else
-            {
-                thisHostName = DnsTools.ResolveHostName();
-            }
+
+            thisHostName = DnsTools.ResolveHostName();
         }
 
         return thisHostName;
@@ -166,7 +165,8 @@ public class EurekaInstanceConfig : IEurekaInstanceConfig
             }
             else
             {
-                var hostName = GetHostName(refresh);
+                string hostName = GetHostName(refresh);
+
                 if (!string.IsNullOrEmpty(hostName))
                 {
                     thisHostAddress = DnsTools.ResolveHostAddress(hostName);

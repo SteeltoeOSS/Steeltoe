@@ -14,13 +14,12 @@ namespace Steeltoe.Stream.Config;
 
 public class StreamMessageHandlerMethodFactory : DefaultMessageHandlerMethodFactory
 {
-    public StreamMessageHandlerMethodFactory(
-        IApplicationContext applicationContext,
-        ISmartMessageConverter compositeMessageConverter,
+    public StreamMessageHandlerMethodFactory(IApplicationContext applicationContext, ISmartMessageConverter compositeMessageConverter,
         IConversionService conversionService)
         : base(conversionService, compositeMessageConverter)
     {
         MessageConverter = compositeMessageConverter;
+
         var resolvers = new List<IHandlerMethodArgumentResolver>
         {
             new SmartPayloadArgumentResolver(compositeMessageConverter),

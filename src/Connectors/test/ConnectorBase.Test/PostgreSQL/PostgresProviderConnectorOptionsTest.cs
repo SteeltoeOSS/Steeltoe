@@ -33,7 +33,7 @@ public class PostgresProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new PostgresProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Host);
@@ -51,9 +51,10 @@ public class PostgresProviderConnectorOptionsTest
         {
             ["postgres:client:ConnectionString"] = "Server=fake;Database=test;User Id=steeltoe;Password=password;"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new PostgresProviderConnectorOptions(config);
 
@@ -70,12 +71,15 @@ public class PostgresProviderConnectorOptionsTest
             ["postgres:client:Username"] = "fakeUsername",
             ["postgres:client:Password"] = "fakePassword",
             ["postgres:client:Database"] = "fakeDB",
-            ["postgres:client:SearchPath"] = "fakeSchema",
+            ["postgres:client:SearchPath"] = "fakeSchema"
         };
-        var expected = "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
+
+        string expected =
+            "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new PostgresProviderConnectorOptions(config);
 
@@ -100,7 +104,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new PostgresProviderConnectorOptions(config);
 
@@ -126,7 +130,7 @@ public class PostgresProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new PostgresProviderConnectorOptions(config);
 

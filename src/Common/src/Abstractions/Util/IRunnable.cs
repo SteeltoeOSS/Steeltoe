@@ -12,6 +12,8 @@ public interface IRunnable
     /// <summary>
     /// Run this object.
     /// </summary>
-    /// <returns>returns success or failure.</returns>
+    /// <returns>
+    /// returns success or failure.
+    /// </returns>
     bool Run();
 }

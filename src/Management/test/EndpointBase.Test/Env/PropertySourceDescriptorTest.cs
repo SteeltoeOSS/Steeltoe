@@ -15,8 +15,9 @@ public class PropertySourceDescriptorTest : BaseTest
         var properties = new Dictionary<string, PropertyValueDescriptor>
         {
             { "key1", new PropertyValueDescriptor("value") },
-            { "key2", new PropertyValueDescriptor(false) },
+            { "key2", new PropertyValueDescriptor(false) }
         };
+
         var propDesc = new PropertySourceDescriptor("name", properties);
         Assert.Equal("name", propDesc.Name);
         Assert.Same(properties, propDesc.Properties);
@@ -28,10 +29,11 @@ public class PropertySourceDescriptorTest : BaseTest
         var properties = new Dictionary<string, PropertyValueDescriptor>
         {
             { "key1", new PropertyValueDescriptor("value") },
-            { "key2", new PropertyValueDescriptor(false) },
+            { "key2", new PropertyValueDescriptor(false) }
         };
+
         var propDesc = new PropertySourceDescriptor("name", properties);
-        var result = Serialize(propDesc);
+        string result = Serialize(propDesc);
         Assert.Equal("{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}", result);
     }
 }

@@ -11,7 +11,7 @@ namespace Steeltoe.Common.Http.LoadBalancer.Test;
 /// </summary>
 internal sealed class FakeLoadBalancer : ILoadBalancer
 {
-    internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new ();
+    internal List<Tuple<Uri, Uri, TimeSpan, Exception>> Stats = new();
 
     public Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {

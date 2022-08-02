@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection.Emit;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
-using System.Reflection.Emit;
 using static Steeltoe.Common.Expression.Internal.Spring.Standard.SpelCompiledExpression;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
@@ -15,7 +15,13 @@ public class SpelCompiler
     private readonly ILogger<SpelCompiler> _logger;
 
     // Counter suffix for generated classes within this SpelCompiler instance
-    private readonly AtomicInteger _suffixId = new (1);
+    private readonly AtomicInteger _suffixId = new(1);
+
+    private SpelCompiler(ILoggerFactory loggerFactory = null)
+    {
+        _loggerFactory = loggerFactory;
+        _logger = _loggerFactory?.CreateLogger<SpelCompiler>();
+    }
 
     public static SpelCompiler GetCompiler(ILoggerFactory loggerFactory = null)
     {
@@ -47,25 +53,28 @@ public class SpelCompiler
         return null;
     }
 
-    private SpelCompiler(ILoggerFactory loggerFactory = null)
-    {
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory?.CreateLogger<SpelCompiler>();
-    }
-
     private CompiledExpression CreateExpressionClass(ISpelNode expressionToCompile)
     {
         var compiledExpression = new SpelCompiledExpression(_loggerFactory);
-        var methodName = $"SpelExpression{_suffixId.GetAndIncrement()}";
-        var method = new DynamicMethod(methodName, typeof(object), new[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
-        var ilGenerator = method.GetILGenerator(4096);
+        string methodName = $"SpelExpression{_suffixId.GetAndIncrement()}";
+
+        var method = new DynamicMethod(methodName, typeof(object), new[]
+        {
+            typeof(SpelCompiledExpression),
+            typeof(object),
+            typeof(IEvaluationContext)
+        }, typeof(SpelCompiledExpression));
+
+        ILGenerator ilGenerator = method.GetILGenerator(4096);
         var cf = new CodeFlow(compiledExpression);
+
         try
         {
             expressionToCompile.GenerateCode(ilGenerator, cf);
 
-            var lastDescriptor = cf.LastDescriptor();
+            TypeDescriptor lastDescriptor = cf.LastDescriptor();
             CodeFlow.InsertBoxIfNecessary(ilGenerator, lastDescriptor);
+
             if (lastDescriptor == TypeDescriptor.V)
             {
                 ilGenerator.Emit(OpCodes.Ldnull);
@@ -73,7 +82,8 @@ public class SpelCompiler
 
             ilGenerator.Emit(OpCodes.Ret);
             compiledExpression.MethodDelegate = method.CreateDelegate(typeof(SpelExpressionDelegate));
-            var initMethod = cf.Finish(_suffixId.Value);
+            DynamicMethod initMethod = cf.Finish(_suffixId.Value);
+
             if (initMethod != null)
             {
                 compiledExpression.InitDelegate = initMethod.CreateDelegate(typeof(SpelExpressionInitDelegate));

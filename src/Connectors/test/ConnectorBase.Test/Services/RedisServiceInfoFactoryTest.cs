@@ -15,7 +15,11 @@ public class RedisServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-redis",
-            Tags = new[] { "redis", "pivotal" },
+            Tags = new[]
+            {
+                "redis",
+                "pivotal"
+            },
             Name = "myRedisService",
             Plan = "shared-vm",
             Credentials = new Credential
@@ -25,6 +29,7 @@ public class RedisServiceInfoFactoryTest
                 { "port", new Credential("60287") }
             }
         };
+
         var factory = new RedisServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -35,7 +40,11 @@ public class RedisServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-redis",
-            Tags = new[] { "foobar", "pivotal" },
+            Tags = new[]
+            {
+                "foobar",
+                "pivotal"
+            },
             Name = "myRedisService",
             Plan = "shared-vm",
             Credentials = new Credential
@@ -45,6 +54,7 @@ public class RedisServiceInfoFactoryTest
                 { "port", new Credential("60287") }
             }
         };
+
         var factory = new RedisServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -55,7 +65,11 @@ public class RedisServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-redis",
-            Tags = new[] { "redis", "pivotal" },
+            Tags = new[]
+            {
+                "redis",
+                "pivotal"
+            },
             Name = "myRedisService",
             Plan = "shared-vm",
             Credentials = new Credential
@@ -65,6 +79,7 @@ public class RedisServiceInfoFactoryTest
                 { "port", new Credential("60287") }
             }
         };
+
         var factory = new RedisServiceInfoFactory();
         var info = factory.Create(s) as RedisServiceInfo;
         Assert.NotNull(info);
@@ -81,7 +96,11 @@ public class RedisServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p.redis",
-            Tags = new[] { "redis", "pivotal" },
+            Tags = new[]
+            {
+                "redis",
+                "pivotal"
+            },
             Name = "myRedisService",
             Plan = "cache-small",
             Credentials = new Credential

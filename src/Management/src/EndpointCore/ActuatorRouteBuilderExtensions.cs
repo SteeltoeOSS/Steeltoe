@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +30,8 @@ public static class ActuatorRouteBuilderExtensions
     {
         return endpointType switch
         {
-            not null when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware), typeof(IActuatorHypermediaOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(ActuatorEndpoint)) => (typeof(ActuatorHypermediaEndpointMiddleware),
+                typeof(IActuatorHypermediaOptions)),
             not null when endpointType.IsAssignableFrom(typeof(DbMigrationsEndpoint)) => (typeof(DbMigrationsEndpointMiddleware), typeof(IDbMigrationsOptions)),
             not null when endpointType.IsAssignableFrom(typeof(EnvEndpoint)) => (typeof(EnvEndpointMiddleware), typeof(IEnvOptions)),
             not null when endpointType.IsAssignableFrom(typeof(HealthEndpointCore)) => (typeof(HealthEndpointMiddleware), typeof(IHealthOptions)),
@@ -38,24 +40,33 @@ public static class ActuatorRouteBuilderExtensions
             not null when endpointType.IsAssignableFrom(typeof(LoggersEndpoint)) => (typeof(LoggersEndpointMiddleware), typeof(ILoggersOptions)),
             not null when endpointType.IsAssignableFrom(typeof(MappingsEndpoint)) => (typeof(MappingsEndpointMiddleware), typeof(IMappingsOptions)),
             not null when endpointType.IsAssignableFrom(typeof(MetricsEndpoint)) => (typeof(MetricsEndpointMiddleware), typeof(IMetricsEndpointOptions)),
-            not null when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)) => (typeof(PrometheusScraperEndpointMiddleware), typeof(IPrometheusEndpointOptions)),
+            not null when endpointType.IsAssignableFrom(typeof(PrometheusScraperEndpoint)) => (typeof(PrometheusScraperEndpointMiddleware),
+                typeof(IPrometheusEndpointOptions)),
             not null when endpointType.IsAssignableFrom(typeof(RefreshEndpoint)) => (typeof(RefreshEndpointMiddleware), typeof(IRefreshOptions)),
             not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpoint)) => (typeof(ThreadDumpEndpointMiddleware), typeof(IThreadDumpOptions)),
             not null when endpointType.IsAssignableFrom(typeof(ThreadDumpEndpointV2)) => (typeof(ThreadDumpEndpointMiddlewareV2), typeof(IThreadDumpOptions)),
             not null when endpointType.IsAssignableFrom(typeof(TraceEndpoint)) => (typeof(TraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(HttpTraceEndpoint)) => (typeof(HttpTraceEndpointMiddleware), typeof(ITraceOptions)),
             not null when endpointType.IsAssignableFrom(typeof(CloudFoundryEndpoint)) => (typeof(CloudFoundryEndpointMiddleware), typeof(ICloudFoundryOptions)),
-            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} "),
+            _ => throw new InvalidOperationException($"Could not find middleware for Type: {endpointType.Name} ")
         };
     }
 
     /// <summary>
     /// Generic route builder extension for Actuators.
     /// </summary>
-    /// <param name="endpoints">IEndpointRouteBuilder to Map route.</param>
-    /// <param name="convention">A convention builder action that applies a convention to the whole collection. </param>
-    /// <typeparam name="TEndpoint">Middleware for which the route is mapped.</typeparam>
-    /// <exception cref="InvalidOperationException">When T is not found in service container.</exception>
+    /// <param name="endpoints">
+    /// IEndpointRouteBuilder to Map route.
+    /// </param>
+    /// <param name="convention">
+    /// A convention builder action that applies a convention to the whole collection.
+    /// </param>
+    /// <typeparam name="TEndpoint">
+    /// Middleware for which the route is mapped.
+    /// </typeparam>
+    /// <exception cref="InvalidOperationException">
+    /// When T is not found in service container.
+    /// </exception>
     public static void Map<TEndpoint>(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention = null)
         where TEndpoint : IEndpoint
     {
@@ -63,13 +74,17 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>.
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection" />.
     /// </summary>
-    /// <param name="endpoints">The endpoint builder.</param>
-    /// <param name="convention">The convention action to apply.</param>
+    /// <param name="endpoints">
+    /// The endpoint builder.
+    /// </param>
+    /// <param name="convention">
+    /// The convention action to apply.
+    /// </param>
     public static void MapAllActuators(this IEndpointRouteBuilder endpoints, Action<IEndpointConventionBuilder> convention)
     {
-        foreach (var endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
+        foreach (EndpointMappingEntry endpointEntry in endpoints.ServiceProvider.GetServices<EndpointMappingEntry>())
         {
             // Some actuators only work on some platforms. i.e. Windows and Linux
             // Some actuators have different implementation depending on the MediaTypeVersion
@@ -84,13 +99,19 @@ public static class ActuatorRouteBuilderExtensions
     }
 
     /// <summary>
-    /// Maps all actuators that have been registered in <see cref="IServiceCollection"/>.
+    /// Maps all actuators that have been registered in <see cref="IServiceCollection" />.
     /// </summary>
-    /// <param name="endpoints">The endpoint builder.</param>
-    /// <param name="version">Media Version.</param>
+    /// <param name="endpoints">
+    /// The endpoint builder.
+    /// </param>
+    /// <param name="version">
+    /// Media Version.
+    /// </param>
     [Obsolete("MediaTypeVersion parameter is not used")]
     public static void MapAllActuators(this IEndpointRouteBuilder endpoints, MediaTypeVersion version)
-        => endpoints.MapAllActuators(null);
+    {
+        endpoints.MapAllActuators(null);
+    }
 
     internal static void MapActuatorEndpoint(this IEndpointRouteBuilder endpoints, Type typeEndpoint, Action<IEndpointConventionBuilder> convention)
     {
@@ -101,30 +122,33 @@ public static class ActuatorRouteBuilderExtensions
 
         ConnectEndpointOptionsWithManagementOptions(endpoints);
 
-        var (middleware, optionsType) = LookupMiddleware(typeEndpoint);
+        (Type middleware, Type optionsType) = LookupMiddleware(typeEndpoint);
         var options = endpoints.ServiceProvider.GetService(optionsType) as IEndpointOptions;
-        var managementOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
+        IEnumerable<IManagementOptions> managementOptionsCollection = endpoints.ServiceProvider.GetServices<IManagementOptions>();
 
-        foreach (var managementOptions in managementOptionsCollection)
+        foreach (IManagementOptions managementOptions in managementOptionsCollection)
         {
-            if ((managementOptions is CloudFoundryManagementOptions && options is IActuatorHypermediaOptions)
-                || (managementOptions is ActuatorManagementOptions && options is ICloudFoundryOptions))
+            if ((managementOptions is CloudFoundryManagementOptions && options is IActuatorHypermediaOptions) ||
+                (managementOptions is ActuatorManagementOptions && options is ICloudFoundryOptions))
             {
                 continue;
             }
 
-            var fullPath = options.GetContextPath(managementOptions);
+            string fullPath = options.GetContextPath(managementOptions);
 
-            var pattern = RoutePatternFactory.Parse(fullPath);
+            RoutePattern pattern = RoutePatternFactory.Parse(fullPath);
 
             // only add middleware if the route hasn't already been mapped
             if (!endpoints.DataSources.Any(d => d.Endpoints.Any(ep => ep is RouteEndpoint endpoint && endpoint.RoutePattern.RawText == pattern.RawText)))
             {
-                var pipeline = endpoints.CreateApplicationBuilder()
-                    .UseMiddleware(middleware, managementOptions)
-                    .Build();
-                var allowedVerbs = options.AllowedVerbs ?? new List<string> { "Get" };
-                var conventionBuilder = endpoints.MapMethods(fullPath, allowedVerbs, pipeline);
+                RequestDelegate pipeline = endpoints.CreateApplicationBuilder().UseMiddleware(middleware, managementOptions).Build();
+
+                IEnumerable<string> allowedVerbs = options.AllowedVerbs ?? new List<string>
+                {
+                    "Get"
+                };
+
+                IEndpointConventionBuilder conventionBuilder = endpoints.MapMethods(fullPath, allowedVerbs, pipeline);
                 convention?.Invoke(conventionBuilder);
             }
         }
@@ -132,16 +156,15 @@ public static class ActuatorRouteBuilderExtensions
 
     private static void ConnectEndpointOptionsWithManagementOptions(IEndpointRouteBuilder endpoints)
     {
-        var serviceProvider = endpoints.ServiceProvider;
-        var managementOptions = serviceProvider.GetServices<IManagementOptions>();
+        IServiceProvider serviceProvider = endpoints.ServiceProvider;
+        IEnumerable<IManagementOptions> managementOptions = serviceProvider.GetServices<IManagementOptions>();
 
-        foreach (var endpointOption in serviceProvider.GetServices<IEndpointOptions>())
+        foreach (IEndpointOptions endpointOption in serviceProvider.GetServices<IEndpointOptions>())
         {
-            foreach (var managementOption in managementOptions)
+            foreach (IManagementOptions managementOption in managementOptions)
             {
                 // hypermedia endpoint is not exposed when running cloudfoundry
-                if (managementOption is CloudFoundryManagementOptions &&
-                    endpointOption is HypermediaEndpointOptions)
+                if (managementOption is CloudFoundryManagementOptions && endpointOption is HypermediaEndpointOptions)
                 {
                     continue;
                 }

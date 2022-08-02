@@ -8,6 +8,10 @@ namespace Steeltoe.Integration.Rabbit;
 
 public class MockRabbitBasicProperties : IBasicProperties
 {
+    string IContentHeader.ProtocolClassName => string.Empty;
+
+    int IContentHeader.ProtocolClassId => 0;
+
     public string AppId { get; set; }
 
     public string ClusterId { get; set; }
@@ -39,10 +43,6 @@ public class MockRabbitBasicProperties : IBasicProperties
     public string Type { get; set; }
 
     public string UserId { get; set; }
-
-    string IContentHeader.ProtocolClassName => string.Empty;
-
-    int IContentHeader.ProtocolClassId => 0;
 
     public void ClearAppId()
     {

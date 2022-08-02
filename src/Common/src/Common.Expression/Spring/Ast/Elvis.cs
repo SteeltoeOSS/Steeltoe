@@ -2,15 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class Elvis : SpelNode
 {
-    private static readonly MethodInfo EqualsMethod = typeof(object).GetMethod(nameof(Equals), new[] { typeof(object) });
+    private static readonly MethodInfo EqualsMethod = typeof(object).GetMethod(nameof(Equals), new[]
+    {
+        typeof(object)
+    });
 
     public Elvis(int startPos, int endPos, params SpelNode[] args)
         : base(startPos, endPos, args)
@@ -19,19 +22,17 @@ public class Elvis : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var value = children[0].GetValueInternal(state);
+        ITypedValue value = children[0].GetValueInternal(state);
 
         // If this check is changed, the generateCode method will need changing too
         if (!(value.Value == null || string.Empty.Equals(value.Value)))
         {
             return value;
         }
-        else
-        {
-            var result = children[1].GetValueInternal(state);
-            ComputeExitTypeDescriptor();
-            return result;
-        }
+
+        ITypedValue result = children[1].GetValueInternal(state);
+        ComputeExitTypeDescriptor();
+        return result;
     }
 
     public override string ToStringAst()
@@ -41,10 +42,9 @@ public class Elvis : SpelNode
 
     public override bool IsCompilable()
     {
-        var condition = children[0];
-        var ifNullValue = children[1];
-        return condition.IsCompilable() && ifNullValue.IsCompilable() &&
-               condition.ExitDescriptor != null && ifNullValue.ExitDescriptor != null;
+        SpelNode condition = children[0];
+        SpelNode ifNullValue = children[1];
+        return condition.IsCompilable() && ifNullValue.IsCompilable() && condition.ExitDescriptor != null && ifNullValue.ExitDescriptor != null;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
@@ -54,7 +54,8 @@ public class Elvis : SpelNode
         cf.EnterCompilationScope();
 
         children[0].GenerateCode(gen, cf);
-        var lastDesc = cf.LastDescriptor();
+        TypeDescriptor lastDesc = cf.LastDescriptor();
+
         if (lastDesc == null)
         {
             throw new InvalidOperationException("No last descriptor");
@@ -64,15 +65,15 @@ public class Elvis : SpelNode
         CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
         cf.ExitCompilationScope();
 
-        var ifResult = gen.DeclareLocal(typeof(bool));
-        var finalResult = gen.DeclareLocal(exitTypeDescriptor.Value);
-        var loadFinalResult = gen.DefineLabel();
+        LocalBuilder ifResult = gen.DeclareLocal(typeof(bool));
+        LocalBuilder finalResult = gen.DeclareLocal(exitTypeDescriptor.Value);
+        Label loadFinalResult = gen.DefineLabel();
 
         // Save off child1 result
-        var child1Result = gen.DeclareLocal(typeof(object));
+        LocalBuilder child1Result = gen.DeclareLocal(typeof(object));
         gen.Emit(OpCodes.Stloc, child1Result);
 
-        var child1IsNull = gen.DefineLabel();
+        Label child1IsNull = gen.DefineLabel();
         gen.Emit(OpCodes.Ldloc, child1Result);
 
         // br if child1 null
@@ -87,7 +88,7 @@ public class Elvis : SpelNode
 
         // save empty string result
         gen.Emit(OpCodes.Stloc, ifResult);
-        var loadCheckIfResults = gen.DefineLabel();
+        Label loadCheckIfResults = gen.DefineLabel();
         gen.Emit(OpCodes.Br, loadCheckIfResults);
 
         // Child1 null, load false for if result
@@ -101,7 +102,7 @@ public class Elvis : SpelNode
 
         // Load if results;
         gen.Emit(OpCodes.Ldloc, ifResult);
-        var callChild2 = gen.DefineLabel();
+        Label callChild2 = gen.DefineLabel();
 
         // If failed, call child2 for results
         gen.Emit(OpCodes.Brfalse, callChild2);
@@ -118,6 +119,7 @@ public class Elvis : SpelNode
         if (!CodeFlow.IsValueType(exitTypeDescriptor))
         {
             lastDesc = cf.LastDescriptor();
+
             if (lastDesc == null)
             {
                 throw new InvalidOperationException("No last descriptor");
@@ -146,8 +148,9 @@ public class Elvis : SpelNode
     {
         if (exitTypeDescriptor == null && children[0].ExitDescriptor != null && children[1].ExitDescriptor != null)
         {
-            var conditionDescriptor = children[0].ExitDescriptor;
-            var ifNullValueDescriptor = children[1].ExitDescriptor;
+            TypeDescriptor conditionDescriptor = children[0].ExitDescriptor;
+            TypeDescriptor ifNullValueDescriptor = children[1].ExitDescriptor;
+
             if (ObjectUtils.NullSafeEquals(conditionDescriptor, ifNullValueDescriptor))
             {
                 exitTypeDescriptor = conditionDescriptor;

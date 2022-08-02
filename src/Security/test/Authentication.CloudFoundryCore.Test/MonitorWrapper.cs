@@ -8,12 +8,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class MonitorWrapper<T> : IOptionsMonitor<T>
 {
+    public T CurrentValue { get; }
+
     public MonitorWrapper(T options)
     {
         CurrentValue = options;
     }
-
-    public T CurrentValue { get; private set; }
 
     public T Get(string name)
     {

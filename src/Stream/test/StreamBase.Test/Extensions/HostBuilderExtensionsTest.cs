@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,14 +14,14 @@ using Xunit;
 
 namespace Steeltoe.Stream.Extensions;
 
-public partial class HostBuilderExtensionsTest
+public class HostBuilderExtensionsTest
 {
     [Fact]
     public void HostBuilderExtensionTest()
     {
-        var hostBuilder = Host.CreateDefaultBuilder().AddStreamServices<SampleSink>();
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder().AddStreamServices<SampleSink>();
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
-        var host = hostBuilder.Build();
+        IHost host = hostBuilder.Build();
         var configRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
@@ -31,9 +32,12 @@ public partial class HostBuilderExtensionsTest
     [Fact]
     public void WebHostBuilderExtensionTest()
     {
-        var hostBuilder = WebHost.CreateDefaultBuilder().Configure(_ => { }).AddStreamServices<SampleSink>();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().Configure(_ =>
+        {
+        }).AddStreamServices<SampleSink>();
+
         hostBuilder.ConfigureServices(services => services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot));
-        var host = hostBuilder.Build();
+        IWebHost host = hostBuilder.Build();
         var configRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));
@@ -44,9 +48,9 @@ public partial class HostBuilderExtensionsTest
     [Fact]
     public void WebApplicationBuilderExtensionTest()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder().AddStreamServices<SampleSink>();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder().AddStreamServices<SampleSink>();
         hostBuilder.Services.AddSingleton(isp => isp.GetRequiredService<IConfiguration>() as IConfigurationRoot);
-        var host = hostBuilder.Build();
+        WebApplication host = hostBuilder.Build();
         var configRoot = host.Services.GetService<IConfigurationRoot>();
         Assert.NotNull(hostBuilder);
         Assert.Single(host.Services.GetServices<IHostedService>().Where(svc => svc is StreamLifeCycleService));

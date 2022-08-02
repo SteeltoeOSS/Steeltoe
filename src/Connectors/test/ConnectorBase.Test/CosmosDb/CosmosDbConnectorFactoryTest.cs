@@ -33,15 +33,19 @@ public class CosmosDbConnectorFactoryTest
         };
 
         var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(CosmosClient));
-        var connection = factory.Create(null);
+        object connection = factory.Create(null);
         Assert.NotNull(connection);
     }
 
     [Fact]
     public void Create_ReturnsCosmosDbConnection_v3()
     {
-        var optionsTypes = CosmosDbTypeLocator.ClientOptionsTypeNames;
-        CosmosDbTypeLocator.ClientOptionsTypeNames = new[] { CosmosDbTypeLocator.ClientOptionsTypeNames[0] };
+        string[] optionsTypes = CosmosDbTypeLocator.ClientOptionsTypeNames;
+
+        CosmosDbTypeLocator.ClientOptionsTypeNames = new[]
+        {
+            CosmosDbTypeLocator.ClientOptionsTypeNames[0]
+        };
 
         var si = new CosmosDbServiceInfo("MyId")
         {
@@ -53,7 +57,7 @@ public class CosmosDbConnectorFactoryTest
         };
 
         var factory = new CosmosDbConnectorFactory(si, new CosmosDbConnectorOptions(), typeof(CosmosClient));
-        var connection = factory.Create(null);
+        object connection = factory.Create(null);
         Assert.NotNull(connection);
         CosmosDbTypeLocator.ClientOptionsTypeNames = optionsTypes;
     }

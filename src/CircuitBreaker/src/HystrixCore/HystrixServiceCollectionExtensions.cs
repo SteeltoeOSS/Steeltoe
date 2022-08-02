@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -29,11 +30,11 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
-        var commandKey = HystrixCommandKeyDefault.AsKey(typeof(TImplementation).Name);
-        var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+        IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey(typeof(TImplementation).Name);
+        IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
 
         IHystrixCommandOptions opts = new HystrixCommandOptions(commandKey, null, dynOpts)
         {
@@ -45,7 +46,8 @@ public static class HystrixServiceCollectionExtensions
         services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
     }
 
-    public static void AddHystrixCommand<TService, TImplementation>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey, IConfiguration config)
+    public static void AddHystrixCommand<TService, TImplementation>(this IServiceCollection services, IHystrixCommandGroupKey groupKey,
+        IHystrixCommandKey commandKey, IConfiguration config)
         where TService : class
         where TImplementation : class, TService
     {
@@ -69,16 +71,17 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
-        var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+        IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
 
         IHystrixCommandOptions opts = new HystrixCommandOptions(commandKey, null, dynOpts)
         {
             GroupKey = groupKey,
             ThreadPoolKey = threadPoolKey
         };
+
         opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
         services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
     }
@@ -101,22 +104,24 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
-        var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
-        var commandKey = HystrixCommandKeyDefault.AsKey(typeof(TService).Name);
+        IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+        IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey(typeof(TService).Name);
 
         IHystrixCommandOptions opts = new HystrixCommandOptions(commandKey, null, dynOpts)
         {
             GroupKey = groupKey,
             ThreadPoolKey = threadPoolKey
         };
+
         opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
         services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
     }
 
-    public static void AddHystrixCommand<TService>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey, IConfiguration config)
+    public static void AddHystrixCommand<TService>(this IServiceCollection services, IHystrixCommandGroupKey groupKey, IHystrixCommandKey commandKey,
+        IConfiguration config)
         where TService : class
     {
         if (services == null)
@@ -139,16 +144,17 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
-        var threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
+        IHystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKeyDefault.AsKey(groupKey.Name);
 
         IHystrixCommandOptions opts = new HystrixCommandOptions(commandKey, null, dynOpts)
         {
             GroupKey = groupKey,
             ThreadPoolKey = threadPoolKey
         };
+
         opts.ThreadPoolOptions = new HystrixThreadPoolOptions(threadPoolKey, null, dynOpts);
         services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
     }
@@ -246,10 +252,12 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey), config);
+        AddHystrixCommand<TService, TImplementation>(services, HystrixCommandGroupKeyDefault.AsKey(groupKey), HystrixCommandKeyDefault.AsKey(commandKey),
+            config);
     }
 
-    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey, IConfiguration config)
+    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey,
+        IConfiguration config)
         where TService : class
         where TImplementation : class, TService
     {
@@ -268,15 +276,16 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
         var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
         services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
     }
 
-    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
+    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, IHystrixCollapserKey collapserKey,
+        RequestCollapserScope scope, IConfiguration config)
         where TService : class
         where TImplementation : class, TService
     {
@@ -295,8 +304,8 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
         var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
         services.AddTransient<TService, TImplementation>(p => (TImplementation)ActivatorUtilities.CreateInstance(p, typeof(TImplementation), opts));
@@ -320,15 +329,16 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
         var opts = new HystrixCollapserOptions(collapserKey, null, dynOpts);
 
         services.AddTransient(p => (TService)ActivatorUtilities.CreateInstance(p, typeof(TService), opts));
     }
 
-    public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope, IConfiguration config)
+    public static void AddHystrixCollapser<TService>(this IServiceCollection services, IHystrixCollapserKey collapserKey, RequestCollapserScope scope,
+        IConfiguration config)
         where TService : class
     {
         if (services == null)
@@ -346,8 +356,8 @@ public static class HystrixServiceCollectionExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var strategy = HystrixPlugins.OptionsStrategy;
-        var dynOpts = strategy.GetDynamicOptions(config);
+        HystrixOptionsStrategy strategy = HystrixPlugins.OptionsStrategy;
+        IHystrixDynamicOptions dynOpts = strategy.GetDynamicOptions(config);
 
         var opts = new HystrixCollapserOptions(collapserKey, scope, null, dynOpts);
 
@@ -418,7 +428,8 @@ public static class HystrixServiceCollectionExtensions
         AddHystrixCollapser<TService, TImplementation>(services, HystrixCollapserKeyDefault.AsKey(collapserKey), config);
     }
 
-    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, string collapserKey, RequestCollapserScope scope, IConfiguration config)
+    public static void AddHystrixCollapser<TService, TImplementation>(this IServiceCollection services, string collapserKey, RequestCollapserScope scope,
+        IConfiguration config)
         where TService : class
         where TImplementation : class, TService
     {

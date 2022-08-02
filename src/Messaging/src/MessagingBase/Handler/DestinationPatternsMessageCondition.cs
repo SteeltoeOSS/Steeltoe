@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler;
 
@@ -11,6 +11,8 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 {
     public const string LookupDestinationHeader = "lookupDestination";
     private readonly IRouteMatcher _routeMatcher;
+
+    public ISet<string> Patterns { get; }
 
     public DestinationPatternsMessageCondition(params string[] patterns)
         : this(patterns, (IPathMatcher)null)
@@ -35,11 +37,13 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     private static ISet<string> PrependLeadingSlash(string[] patterns, IRouteMatcher routeMatcher)
     {
-        var slashSeparator = routeMatcher.Combine("a", "a").Equals("a/a");
+        bool slashSeparator = routeMatcher.Combine("a", "a").Equals("a/a");
         ISet<string> result = new HashSet<string>();
-        foreach (var pat in patterns)
+
+        foreach (string pat in patterns)
         {
-            var pattern = pat;
+            string pattern = pat;
+
             if (slashSeparator && !string.IsNullOrEmpty(pattern) && !pattern.StartsWith("/"))
             {
                 pattern = $"/{pattern}";
@@ -51,16 +55,15 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
         return result;
     }
 
-    public ISet<string> Patterns { get; }
-
     public override DestinationPatternsMessageCondition Combine(DestinationPatternsMessageCondition other)
     {
         ISet<string> result = new HashSet<string>();
+
         if (Patterns.Count > 0 && other.Patterns.Count > 0)
         {
-            foreach (var pattern1 in Patterns)
+            foreach (string pattern1 in Patterns)
             {
-                foreach (var pattern2 in other.Patterns)
+                foreach (string pattern2 in other.Patterns)
                 {
                     result.Add(_routeMatcher.Combine(pattern1, pattern2));
                 }
@@ -84,7 +87,8 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     public override DestinationPatternsMessageCondition GetMatchingCondition(IMessage message)
     {
-        message.Headers.TryGetValue(LookupDestinationHeader, out var destination);
+        message.Headers.TryGetValue(LookupDestinationHeader, out object destination);
+
         if (destination == null)
         {
             return null;
@@ -96,7 +100,8 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
         }
 
         List<string> matches = null;
-        foreach (var pattern in Patterns)
+
+        foreach (string pattern in Patterns)
         {
             if (pattern.Equals(destination) || MatchPattern(pattern, destination))
             {
@@ -117,18 +122,21 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
 
     public override int CompareTo(DestinationPatternsMessageCondition other, IMessage message)
     {
-        message.Headers.TryGetValue(LookupDestinationHeader, out var destination);
+        message.Headers.TryGetValue(LookupDestinationHeader, out object destination);
+
         if (destination == null)
         {
             return 0;
         }
 
-        var patternComparator = GetPatternComparer(destination);
-        using var iterator = Patterns.GetEnumerator();
-        using var iteratorOther = other.Patterns.GetEnumerator();
+        IComparer<string> patternComparator = GetPatternComparer(destination);
+        using IEnumerator<string> iterator = Patterns.GetEnumerator();
+        using IEnumerator<string> iteratorOther = other.Patterns.GetEnumerator();
+
         while (iterator.MoveNext() && iteratorOther.MoveNext())
         {
-            var result = patternComparator.Compare(iterator.Current, iteratorOther.Current);
+            int result = patternComparator.Compare(iterator.Current, iteratorOther.Current);
+
             if (result != 0)
             {
                 return result;
@@ -139,27 +147,36 @@ public class DestinationPatternsMessageCondition : AbstractMessageCondition<Dest
         {
             return -1;
         }
-        else if (iteratorOther.MoveNext())
+
+        if (iteratorOther.MoveNext())
         {
             return 1;
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
-    protected override IList GetContent() => Patterns.ToList();
+    protected override IList GetContent()
+    {
+        return Patterns.ToList();
+    }
 
-    protected override string GetToStringInfix() => " || ";
+    protected override string GetToStringInfix()
+    {
+        return " || ";
+    }
 
     private bool MatchPattern(string pattern, object destination)
-        => destination is IRoute route
+    {
+        return destination is IRoute route
             ? _routeMatcher.Match(pattern, route)
             : ((SimpleRouteMatcher)_routeMatcher).PathMatcher.Match(pattern, (string)destination);
+    }
 
     private IComparer<string> GetPatternComparer(object destination)
-        => destination is IRoute route
+    {
+        return destination is IRoute route
             ? _routeMatcher.GetPatternComparer(route)
             : ((SimpleRouteMatcher)_routeMatcher).PathMatcher.GetPatternComparer((string)destination);
+    }
 }

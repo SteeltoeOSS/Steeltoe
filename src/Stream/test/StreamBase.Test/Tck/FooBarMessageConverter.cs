@@ -2,16 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using System.Text;
 
 namespace Steeltoe.Stream.Tck;
 
 public class FooBarMessageConverter : AbstractMessageConverter
 {
     public const string DefaultServiceName = nameof(FooBarMessageConverter);
+
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public FooBarMessageConverter()
         : this(MimeType.ToMimeType("foo/bar"))
@@ -22,8 +24,6 @@ public class FooBarMessageConverter : AbstractMessageConverter
         : base(supportedMimeType)
     {
     }
-
-    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz)
     {

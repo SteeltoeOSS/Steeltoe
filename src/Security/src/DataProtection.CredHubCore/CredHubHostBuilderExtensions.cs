@@ -13,31 +13,39 @@ public static class CredHubHostBuilderExtensions
     /// <summary>
     /// Reach out to a CredHub server to interpolate credentials found in VCAP_SERVICES.
     /// </summary>
-    /// <param name="webHostBuilder">Your app's host builder.</param>
-    /// <param name="loggerFactory">To enable logging in the credhub client, pass in a loggerfactory.</param>
-    /// <returns>Your application's host builder with credentials interpolated.</returns>
+    /// <param name="webHostBuilder">
+    /// Your app's host builder.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// To enable logging in the credhub client, pass in a loggerfactory.
+    /// </param>
+    /// <returns>
+    /// Your application's host builder with credentials interpolated.
+    /// </returns>
     public static IWebHostBuilder UseCredHubInterpolation(this IWebHostBuilder webHostBuilder, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
         ILogger credHubLogger = null;
+
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
             credHubLogger = loggerFactory.CreateLogger<CredHubClient>();
         }
 
-        var vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
+        string vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
 
         // don't bother interpolating if there aren't any credhub references
         if (vcapServices != null && vcapServices.Contains("credhub-ref"))
         {
             webHostBuilder.ConfigureAppConfiguration((_, config) =>
             {
-                var builtConfig = config.Build();
+                IConfigurationRoot builtConfig = config.Build();
                 CredHubClient credHubClient;
 
                 var credHubOptions = builtConfig.GetSection("CredHubClient").Get<CredHubOptions>();
                 credHubOptions.Validate();
+
                 try
                 {
                     startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);
@@ -54,7 +62,7 @@ public static class CredHubHostBuilderExtensions
                 try
                 {
                     // send the interpolate request to CredHub
-                    var interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).GetAwaiter().GetResult();
+                    string interpolated = credHubClient.InterpolateServiceDataAsync(vcapServices).GetAwaiter().GetResult();
 
                     // update the environment variable for this process
                     Environment.SetEnvironmentVariable("VCAP_SERVICES", interpolated);

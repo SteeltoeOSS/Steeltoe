@@ -25,7 +25,7 @@ public class CharacterToNumberConverter : AbstractToNumberConverter
             (typeof(char), typeof(ushort)),
             (typeof(char), typeof(decimal)),
             (typeof(char), typeof(byte)),
-            (typeof(char), typeof(sbyte)),
+            (typeof(char), typeof(sbyte))
         };
     }
 }

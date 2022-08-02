@@ -14,11 +14,24 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public static class EndpointServiceCollectionExtensions
 {
+    internal static Type[] DefaultHealthContributors =>
+        new[]
+        {
+            typeof(DiskSpaceContributor),
+            typeof(LivenessHealthContributor),
+            typeof(ReadinessHealthContributor)
+        };
+
     /// <summary>
     /// Adds components of the Health actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add health to.</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health).</param>
+    /// <param name="services">
+    /// Service collection to add health to.
+    /// </param>
+    /// <param name="config">
+    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
+    /// management:endpoints:health).
+    /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null)
     {
         services.AddHealthActuator(config, new HealthRegistrationsAggregator(), DefaultHealthContributors);
@@ -27,9 +40,16 @@ public static class EndpointServiceCollectionExtensions
     /// <summary>
     /// Adds components of the Health actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add health to.</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health).</param>
-    /// <param name="contributors">Contributors to application health.</param>
+    /// <param name="services">
+    /// Service collection to add health to.
+    /// </param>
+    /// <param name="config">
+    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
+    /// management:endpoints:health).
+    /// </param>
+    /// <param name="contributors">
+    /// Contributors to application health.
+    /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config = null, params Type[] contributors)
     {
         if (services is null)
@@ -43,10 +63,19 @@ public static class EndpointServiceCollectionExtensions
     /// <summary>
     /// Adds components of the Health actuator to the D/I container.
     /// </summary>
-    /// <param name="services">Service collection to add health to.</param>
-    /// <param name="config">Application configuration. Retrieved from the <see cref="IServiceCollection"/> if not provided (this actuator looks for a settings starting with management:endpoints:health).</param>
-    /// <param name="aggregator">Custom health aggregator.</param>
-    /// <param name="contributors">Contributors to application health.</param>
+    /// <param name="services">
+    /// Service collection to add health to.
+    /// </param>
+    /// <param name="config">
+    /// Application configuration. Retrieved from the <see cref="IServiceCollection" /> if not provided (this actuator looks for a settings starting with
+    /// management:endpoints:health).
+    /// </param>
+    /// <param name="aggregator">
+    /// Custom health aggregator.
+    /// </param>
+    /// <param name="contributors">
+    /// Contributors to application health.
+    /// </param>
     public static void AddHealthActuator(this IServiceCollection services, IConfiguration config, IHealthAggregator aggregator, params Type[] contributors)
     {
         if (services == null)
@@ -55,6 +84,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
@@ -79,13 +109,12 @@ public static class EndpointServiceCollectionExtensions
     public static void AddHealthContributors(IServiceCollection services, params Type[] contributors)
     {
         var descriptors = new List<ServiceDescriptor>();
-        foreach (var c in contributors)
+
+        foreach (Type c in contributors)
         {
             descriptors.Add(new ServiceDescriptor(typeof(IHealthContributor), c, ServiceLifetime.Scoped));
         }
 
         services.TryAddEnumerable(descriptors);
     }
-
-    internal static Type[] DefaultHealthContributors => new[] { typeof(DiskSpaceContributor), typeof(LivenessHealthContributor), typeof(ReadinessHealthContributor) };
 }

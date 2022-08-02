@@ -5,13 +5,14 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Discovery.Client;
+using Steeltoe.Discovery.Consul.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Test;
 
 public class ConsulDiscoveryClientBuilderExtensionsTest
 {
-    private readonly Dictionary<string, string> _appsettings = new ()
+    private readonly Dictionary<string, string> _appsettings = new()
     {
         { "spring:application:name", "myName" },
         { "spring:cloud:inet:defaulthostname", "fromtest" },
@@ -25,15 +26,15 @@ public class ConsulDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void UseConsulUsesConsul()
     {
-        var config = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(_appsettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.AddServiceDiscovery(options => options.UseConsul());
 
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var client = provider.GetRequiredService<IDiscoveryClient>();
         Assert.NotNull(client);
-        Assert.IsType<Discovery.ConsulDiscoveryClient>(client);
+        Assert.IsType<ConsulDiscoveryClient>(client);
     }
 }

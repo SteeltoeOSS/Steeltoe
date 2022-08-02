@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
 public class StartupWithSecurity
 {
+    public IConfiguration Configuration { get; set; }
+
     public StartupWithSecurity(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -31,6 +31,7 @@ public class StartupWithSecurity
     {
         app.UseCloudFoundrySecurity();
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<CloudFoundryEndpoint>();

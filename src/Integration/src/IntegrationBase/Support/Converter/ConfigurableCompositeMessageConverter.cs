@@ -45,7 +45,7 @@ public class ConfigurableCompositeMessageConverter : CompositeMessageConverter
 
     private static ICollection<IMessageConverter> InitDefaults(IEnumerable<IMessageConverter> extras = null)
     {
-        var converters = extras != null ? new List<IMessageConverter>(extras) : new List<IMessageConverter>();
+        List<IMessageConverter> converters = extras != null ? new List<IMessageConverter>(extras) : new List<IMessageConverter>();
 
         converters.Add(new NewtonJsonMessageConverter());
         converters.Add(new ByteArrayMessageConverter());

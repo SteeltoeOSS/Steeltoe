@@ -18,6 +18,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
@@ -36,6 +37,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));

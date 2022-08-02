@@ -67,7 +67,7 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
@@ -78,7 +78,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
     {
-        var environment2 = @"
+        string environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -160,7 +160,7 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(config);
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(2, creator.ServiceInfos.Count);
@@ -171,21 +171,21 @@ public class CloudFoundryServiceInfoCreatorTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(config);
-        var result = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result = creator.GetServiceInfos<RedisServiceInfo>();
         Assert.NotNull(result);
         Assert.Empty(result);
 
-        var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
         Assert.NotNull(result2);
         Assert.Empty(result2);
 
-        var result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfos<RedisServiceInfo>();
         Assert.NotNull(result3);
         Assert.Empty(result3);
 
-        var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
         Assert.NotNull(result4);
         Assert.Empty(result4);
 
@@ -195,7 +195,7 @@ public class CloudFoundryServiceInfoCreatorTest
         var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
         Assert.Null(result6);
 
-        var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
+        IServiceInfo result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
         Assert.Null(result7);
 
         var result8 = creator.GetServiceInfo<RedisServiceInfo>("spring-cloud-broker-db2");
@@ -205,7 +205,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
     {
-        var environment2 = @"
+        string environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -254,20 +254,20 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(config);
 
-        var result = creator.GetServiceInfos<MySqlServiceInfo>();
+        IEnumerable<MySqlServiceInfo> result = creator.GetServiceInfos<MySqlServiceInfo>();
         Assert.Equal(2, result.Count(si => si != null));
 
-        var result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
+        IEnumerable<IServiceInfo> result2 = creator.GetServiceInfos(typeof(MySqlServiceInfo));
         Assert.Equal(2, result2.Count(si => si is MySqlServiceInfo));
 
-        var result3 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result3 = creator.GetServiceInfos<RedisServiceInfo>();
         Assert.NotNull(result3);
         Assert.Empty(result3);
 
-        var result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
+        IEnumerable<IServiceInfo> result4 = creator.GetServiceInfos(typeof(RedisServiceInfo));
         Assert.NotNull(result4);
         Assert.Empty(result4);
 
@@ -277,7 +277,7 @@ public class CloudFoundryServiceInfoCreatorTest
         var result6 = creator.GetServiceInfo<MySqlServiceInfo>("spring-cloud-broker-db2");
         Assert.NotNull(result6);
 
-        var result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
+        IServiceInfo result7 = creator.GetServiceInfo("spring-cloud-broker-db2");
         Assert.NotNull(result7);
         Assert.True(result7 is MySqlServiceInfo);
 
@@ -288,7 +288,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMongoBinding_BuildsExpected()
     {
-        var environment2 = @"
+        string environment2 = @"
                 {
                     ""p-redis"": [{
                         ""credentials"": {
@@ -404,22 +404,22 @@ public class CloudFoundryServiceInfoCreatorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var creator = CloudFoundryServiceInfoCreator.Instance(config);
         Assert.NotNull(creator.ServiceInfos);
         Assert.Equal(4, creator.ServiceInfos.Count);
 
-        var result1 = creator.GetServiceInfos<RedisServiceInfo>();
+        IEnumerable<RedisServiceInfo> result1 = creator.GetServiceInfos<RedisServiceInfo>();
         Assert.NotNull(result1);
         Assert.Single(result1);
 
-        var redis1 = result1.First();
+        RedisServiceInfo redis1 = result1.First();
         Assert.Equal("10.66.32.54", redis1.Host);
 
-        var result2 = creator.GetServiceInfos<MongoDbServiceInfo>();
+        IEnumerable<MongoDbServiceInfo> result2 = creator.GetServiceInfos<MongoDbServiceInfo>();
         Assert.Equal(2, result2.Count());
 
-        var result3 = creator.GetServiceInfos<EurekaServiceInfo>();
+        IEnumerable<EurekaServiceInfo> result3 = creator.GetServiceInfos<EurekaServiceInfo>();
         Assert.Single(result3);
         Assert.Equal("eureka-a015d976-af2e-430c-81f6-4f99272ccd24.apps.preprdpcf01.foo.com", result3.First().Host);
     }

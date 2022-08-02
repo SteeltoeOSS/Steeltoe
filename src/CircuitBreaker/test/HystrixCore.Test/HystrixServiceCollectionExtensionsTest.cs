@@ -16,24 +16,42 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     [Fact]
     public void AddHystrixCommand_ThrowsIfServiceContainerNull()
     {
-        var stringKey = "DummyCommand";
+        string stringKey = "DummyCommand";
         const string servicesParameterName = "services";
 
         var ex = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, null));
         Assert.Contains(servicesParameterName, ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, null));
+
+        var ex2 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, null));
+
         Assert.Contains(servicesParameterName, ex2.Message);
         var ex3 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, stringKey, null));
         Assert.Contains(servicesParameterName, ex3.Message);
-        var ex4 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, null));
+
+        var ex4 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, null));
+
         Assert.Contains(servicesParameterName, ex4.Message);
-        var ex5 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, _commandKey, null));
+
+        var ex5 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, _commandKey, null));
+
         Assert.Contains(servicesParameterName, ex5.Message);
-        var ex6 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, _commandKey, null));
+
+        var ex6 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, _groupKey, _commandKey, null));
+
         Assert.Contains(servicesParameterName, ex6.Message);
-        var ex7 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, stringKey, stringKey, null));
+
+        var ex7 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, stringKey, stringKey, null));
+
         Assert.Contains(servicesParameterName, ex7.Message);
-        var ex8 = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, stringKey, null));
+
+        var ex8 = Assert.Throws<ArgumentNullException>(() =>
+            HystrixServiceCollectionExtensions.AddHystrixCommand<IDummyCommand, DummyCommand>(null, stringKey, stringKey, null));
+
         Assert.Contains(servicesParameterName, ex8.Message);
     }
 
@@ -41,7 +59,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfGroupKeyNull()
     {
         IServiceCollection services = new ServiceCollection();
-        var stringKey = "DummyCommand";
+        string stringKey = "DummyCommand";
         const string groupKeyParameterName = "groupKey";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((IHystrixCommandGroupKey)null, null));
@@ -66,7 +84,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfConfigNull()
     {
         IServiceCollection services = new ServiceCollection();
-        var stringKey = "DummyCommand";
+        string stringKey = "DummyCommand";
         const string configParameterName = "config";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null));
@@ -91,7 +109,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfCommandKeyNull()
     {
         IServiceCollection services = new ServiceCollection();
-        var stringKey = "DummyCommand";
+        string stringKey = "DummyCommand";
         const string commandKeyParameterName = "commandKey";
 
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null, null));
@@ -110,15 +128,15 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         IServiceCollection services = new ServiceCollection();
         IConfiguration config = new ConfigurationBuilder().Build();
         services.AddHystrixCommand<DummyCommand>(_groupKey, config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
         Assert.Equal(_groupKey, command.CommandGroup);
-        var expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
+        IHystrixCommandKey expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
         Assert.NotNull(command.Options.Dynamic);
-        var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
+        IHystrixThreadPoolKey expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);
@@ -272,15 +290,15 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
         IServiceCollection services = new ServiceCollection();
         IConfiguration config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         services.AddHystrixCommand<DummyCommand>(_groupKey, config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var command = provider.GetService<DummyCommand>();
         Assert.NotNull(command);
         Assert.Equal(_groupKey, command.CommandGroup);
-        var expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
+        IHystrixCommandKey expectedCommandKey = HystrixCommandKeyDefault.AsKey(nameof(DummyCommand));
         Assert.Equal(expectedCommandKey, command.CommandKey);
         Assert.NotNull(command.Options);
         Assert.NotNull(command.Options.Dynamic);
-        var expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
+        IHystrixThreadPoolKey expectedThreadPoolKey = HystrixThreadPoolKeyDefault.AsKey(_groupKey.Name);
         Assert.Equal(expectedThreadPoolKey, command.Options.ThreadPoolKey);
         var threadOptions = command.Options.ThreadPoolOptions as HystrixThreadPoolOptions;
         Assert.NotNull(threadOptions);

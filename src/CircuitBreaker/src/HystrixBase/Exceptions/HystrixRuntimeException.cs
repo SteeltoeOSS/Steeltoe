@@ -9,6 +9,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 [Serializable]
 public class HystrixRuntimeException : Exception
 {
+    public FailureType FailureType { get; }
+
+    public Exception FallbackException { get; }
+
+    public Type ImplementingClass { get; }
+
     public HystrixRuntimeException(FailureType failureCause, Type commandClass, string message)
         : base(message)
     {
@@ -43,10 +49,4 @@ public class HystrixRuntimeException : Exception
         : base(info, context)
     {
     }
-
-    public FailureType FailureType { get; }
-
-    public Exception FallbackException { get; }
-
-    public Type ImplementingClass { get; }
 }

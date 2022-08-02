@@ -6,18 +6,18 @@ namespace Steeltoe.Stream.Binder;
 
 public class BinderType : IBinderType
 {
+    public string Name { get; }
+
+    public string ConfigureClass { get; }
+
+    public string AssemblyPath { get; }
+
     public BinderType(string name, string configurationClass, string assemblyPath)
     {
         Name = name;
         ConfigureClass = configurationClass;
         AssemblyPath = assemblyPath;
     }
-
-    public string Name { get; }
-
-    public string ConfigureClass { get; }
-
-    public string AssemblyPath { get; }
 
     public override bool Equals(object obj)
     {

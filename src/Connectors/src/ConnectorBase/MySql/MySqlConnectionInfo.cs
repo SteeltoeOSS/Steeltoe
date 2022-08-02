@@ -11,18 +11,27 @@ public class MySqlConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        MySqlServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<MySqlServiceInfo>()
             : configuration.GetRequiredServiceInfo<MySqlServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((MySqlServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((MySqlServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) => serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("mysql", StringComparison.InvariantCultureIgnoreCase);
+    }
 
-    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MySqlServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+    {
+        return serviceInfo is MySqlServiceInfo;
+    }
 
     private Connection GetConnection(MySqlServiceInfo info, IConfiguration configuration)
     {

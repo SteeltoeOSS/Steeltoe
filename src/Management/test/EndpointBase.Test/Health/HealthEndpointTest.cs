@@ -36,6 +36,7 @@ public class HealthEndpointTest : BaseTest
     public void Invoke_NoContributors_ReturnsExpectedHealth()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton(new List<IHealthContributor>());
@@ -45,7 +46,7 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        var health = ep.Invoke(null);
+        HealthEndpointResponse health = ep.Invoke(null);
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
@@ -54,7 +55,13 @@ public class HealthEndpointTest : BaseTest
     public void Invoke_CallsAllContributors()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IHealthContributor> { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new TestContrib("h1"),
+            new TestContrib("h2"),
+            new TestContrib("h3")
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -66,7 +73,7 @@ public class HealthEndpointTest : BaseTest
         var ep = tc.GetService<IHealthEndpoint>();
         ep.Invoke(null);
 
-        foreach (var contrib in contributors)
+        foreach (IHealthContributor contrib in contributors)
         {
             var tcc = (TestContrib)contrib;
             Assert.True(tcc.Called);
@@ -77,7 +84,13 @@ public class HealthEndpointTest : BaseTest
     public void Invoke_HandlesExceptions_ReturnsExpectedHealth()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IHealthContributor> { new TestContrib("h1"), new TestContrib("h2"), new TestContrib("h3") };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new TestContrib("h1"),
+            new TestContrib("h2"),
+            new TestContrib("h3")
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -88,11 +101,12 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        var info = ep.Invoke(null);
+        HealthEndpointResponse info = ep.Invoke(null);
 
-        foreach (var contrib in contributors)
+        foreach (IHealthContributor contrib in contributors)
         {
             var tcc = (TestContrib)contrib;
+
             if (tcc.Throws)
             {
                 Assert.False(tcc.Called);
@@ -110,7 +124,11 @@ public class HealthEndpointTest : BaseTest
     public void GetStatusCode_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IHealthContributor> { new DiskSpaceContributor() };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new DiskSpaceContributor()
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -121,10 +139,25 @@ public class HealthEndpointTest : BaseTest
 
         var ep = tc.GetService<IHealthEndpoint>();
 
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Down }));
-        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.OutOfService }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Up }));
-        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult { Status = HealthStatus.Unknown }));
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult
+        {
+            Status = HealthStatus.Down
+        }));
+
+        Assert.Equal(503, ep.GetStatusCode(new HealthCheckResult
+        {
+            Status = HealthStatus.OutOfService
+        }));
+
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult
+        {
+            Status = HealthStatus.Up
+        }));
+
+        Assert.Equal(200, ep.GetStatusCode(new HealthCheckResult
+        {
+            Status = HealthStatus.Unknown
+        }));
     }
 
     [Fact]
@@ -132,7 +165,12 @@ public class HealthEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
         var appAvailability = new ApplicationAvailability();
-        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new LivenessHealthContributor(appAvailability) };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new DiskSpaceContributor(),
+            new LivenessHealthContributor(appAvailability)
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -144,10 +182,17 @@ public class HealthEndpointTest : BaseTest
         var ep = tc.GetService<IHealthEndpoint>();
 
         var context = Substitute.For<ISecurityContext>();
-        context.GetRequestComponents().Returns(new[] { "cloudfoundryapplication", "health", "liVeness" });
+
+        context.GetRequestComponents().Returns(new[]
+        {
+            "cloudfoundryapplication",
+            "health",
+            "liVeness"
+        });
+
         appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
 
-        var result = ep.Invoke(context);
+        HealthEndpointResponse result = ep.Invoke(context);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -159,7 +204,13 @@ public class HealthEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
         var appAvailability = new ApplicationAvailability();
-        var contributors = new List<IHealthContributor> { new UnknownContributor(), new UpContributor(), new ReadinessHealthContributor(appAvailability) };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new UnknownContributor(),
+            new UpContributor(),
+            new ReadinessHealthContributor(appAvailability)
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -171,10 +222,17 @@ public class HealthEndpointTest : BaseTest
         var ep = tc.GetService<IHealthEndpoint>();
 
         var context = Substitute.For<ISecurityContext>();
-        context.GetRequestComponents().Returns(new[] { "actuator", "health", "readiness" });
+
+        context.GetRequestComponents().Returns(new[]
+        {
+            "actuator",
+            "health",
+            "readiness"
+        });
+
         appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
-        var result = ep.Invoke(context);
+        HealthEndpointResponse result = ep.Invoke(context);
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.True(result.Details.Keys.Count == 1);
@@ -185,7 +243,14 @@ public class HealthEndpointTest : BaseTest
     public void InvokeWithInvalidGroupReturnsAllContributors()
     {
         using var tc = new TestContext(_output);
-        var contributors = new List<IHealthContributor> { new DiskSpaceContributor(), new OutOfServiceContributor(), new UnknownContributor(), new UpContributor() };
+
+        var contributors = new List<IHealthContributor>
+        {
+            new DiskSpaceContributor(),
+            new OutOfServiceContributor(),
+            new UnknownContributor(),
+            new UpContributor()
+        };
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -197,9 +262,14 @@ public class HealthEndpointTest : BaseTest
         var ep = tc.GetService<IHealthEndpoint>();
 
         var context = Substitute.For<ISecurityContext>();
-        context.GetRequestComponents().Returns(new[] { "health", "iNvAlId" });
 
-        var result = ep.Invoke(context);
+        context.GetRequestComponents().Returns(new[]
+        {
+            "health",
+            "iNvAlId"
+        });
+
+        HealthEndpointResponse result = ep.Invoke(context);
 
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.True(result.Details.Keys.Count == 4);

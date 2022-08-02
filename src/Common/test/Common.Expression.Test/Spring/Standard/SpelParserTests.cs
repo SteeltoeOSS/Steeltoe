@@ -27,7 +27,7 @@ public class SpelParserTests
     {
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
-        var c = parser.ParseRaw("2").GetValueType();
+        Type c = parser.ParseRaw("2").GetValueType();
         Assert.Equal(typeof(int), c);
         c = parser.ParseRaw("12").GetValueType(ctx);
         Assert.Equal(typeof(int), c);
@@ -35,7 +35,7 @@ public class SpelParserTests
         Assert.Null(c);
         c = parser.ParseRaw("null").GetValueType(ctx);
         Assert.Null(c);
-        var o = parser.ParseRaw("null").GetValue(ctx, typeof(object));
+        object o = parser.ParseRaw("null").GetValue(ctx, typeof(object));
         Assert.Null(o);
     }
 
@@ -43,7 +43,7 @@ public class SpelParserTests
     public void Whitespace()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseRaw("2      +    3");
+        IExpression expr = parser.ParseRaw("2      +    3");
         Assert.Equal(5, expr.GetValue());
         expr = parser.ParseRaw("2	+	3");
         Assert.Equal(5, expr.GetValue());
@@ -67,7 +67,7 @@ public class SpelParserTests
     public void ArithmeticPlus2()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseRaw("37+41");
+        IExpression expr = parser.ParseRaw("37+41");
         Assert.Equal(78, expr.GetValue());
     }
 
@@ -87,7 +87,7 @@ public class SpelParserTests
     public void ArithmeticPrecedence1()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseRaw("2*3+5");
+        IExpression expr = parser.ParseRaw("2*3+5");
         Assert.Equal(11, expr.GetValue());
     }
 
@@ -99,6 +99,7 @@ public class SpelParserTests
             var parser = new SpelExpressionParser();
             parser.ParseRaw("new String");
         });
+
         ParseExceptionRequirements(ex, SpelMessage.MissingConstructorArgs, 10);
 
         ex = Assert.Throws<SpelParseException>(() =>
@@ -130,6 +131,7 @@ public class SpelParserTests
             var parser = new SpelExpressionParser();
             parser.ParseRaw("\"abc");
         });
+
         ParseExceptionRequirements(ex, SpelMessage.NonTerminatingDoubleQuotedString, 0);
 
         ex = Assert.Throws<SpelParseException>(() =>
@@ -137,6 +139,7 @@ public class SpelParserTests
             var parser = new SpelExpressionParser();
             parser.ParseRaw("'abc");
         });
+
         ParseExceptionRequirements(ex, SpelMessage.NonTerminatingQuotedString, 0);
     }
 
@@ -144,42 +147,42 @@ public class SpelParserTests
     public void ArithmeticPrecedence2()
     {
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseRaw("2+3*5");
+        IExpression expr = parser.ParseRaw("2+3*5");
         Assert.Equal(17, expr.GetValue());
     }
 
     [Fact]
     public void ArithmeticPrecedence3()
     {
-        var expr = new SpelExpressionParser().ParseRaw("3+10/2");
+        IExpression expr = new SpelExpressionParser().ParseRaw("3+10/2");
         Assert.Equal(8, expr.GetValue());
     }
 
     [Fact]
     public void ArithmeticPrecedence4()
     {
-        var expr = new SpelExpressionParser().ParseRaw("10/2+3");
+        IExpression expr = new SpelExpressionParser().ParseRaw("10/2+3");
         Assert.Equal(8, expr.GetValue());
     }
 
     [Fact]
     public void ArithmeticPrecedence5()
     {
-        var expr = new SpelExpressionParser().ParseRaw("(4+10)/2");
+        IExpression expr = new SpelExpressionParser().ParseRaw("(4+10)/2");
         Assert.Equal(7, expr.GetValue());
     }
 
     [Fact]
     public void ArithmeticPrecedence6()
     {
-        var expr = new SpelExpressionParser().ParseRaw("(3+2)*2");
+        IExpression expr = new SpelExpressionParser().ParseRaw("(3+2)*2");
         Assert.Equal(10, expr.GetValue());
     }
 
     [Fact]
     public void BooleanOperators()
     {
-        var expr = new SpelExpressionParser().ParseRaw("true");
+        IExpression expr = new SpelExpressionParser().ParseRaw("true");
         Assert.True(expr.GetValue<bool>());
         expr = new SpelExpressionParser().ParseRaw("false");
         Assert.False(expr.GetValue<bool>());
@@ -198,7 +201,7 @@ public class SpelParserTests
     [Fact]
     public void BooleanOperators_symbolic_spr9614()
     {
-        var expr = new SpelExpressionParser().ParseRaw("true");
+        IExpression expr = new SpelExpressionParser().ParseRaw("true");
         Assert.True(expr.GetValue<bool>());
         expr = new SpelExpressionParser().ParseRaw("false");
         Assert.False(expr.GetValue<bool>());
@@ -217,7 +220,7 @@ public class SpelParserTests
     [Fact]
     public void StringLiterals()
     {
-        var expr = new SpelExpressionParser().ParseRaw("'howdy'");
+        IExpression expr = new SpelExpressionParser().ParseRaw("'howdy'");
         Assert.Equal("howdy", expr.GetValue());
         expr = new SpelExpressionParser().ParseRaw("'hello '' world'");
         Assert.Equal("hello ' world", expr.GetValue());
@@ -226,14 +229,14 @@ public class SpelParserTests
     [Fact]
     public void StringLiterals2()
     {
-        var expr = new SpelExpressionParser().ParseRaw("'howdy'.Substring(0,2)");
+        IExpression expr = new SpelExpressionParser().ParseRaw("'howdy'.Substring(0,2)");
         Assert.Equal("ho", expr.GetValue());
     }
 
     [Fact]
     public void TestStringLiterals_DoubleQuotes_spr9620()
     {
-        var expr = new SpelExpressionParser().ParseRaw("\"double quote: \"\".\"");
+        IExpression expr = new SpelExpressionParser().ParseRaw("\"double quote: \"\".\"");
         Assert.Equal("double quote: \".", expr.GetValue());
         expr = new SpelExpressionParser().ParseRaw("\"hello \"\" world\"");
         Assert.Equal("hello \" world", expr.GetValue());
@@ -252,10 +255,10 @@ public class SpelParserTests
     public void PositionalInformation()
     {
         var expr = new SpelExpressionParser().ParseRaw("true and true or false") as SpelExpression;
-        var rootAst = expr.Ast;
+        ISpelNode rootAst = expr.Ast;
         var operatorOr = (OpOr)rootAst;
         var operatorAnd = (OpAnd)operatorOr.LeftOperand;
-        var rightOrOperand = operatorOr.RightOperand;
+        SpelNode rightOrOperand = operatorOr.RightOperand;
 
         // check position for final 'false'
         Assert.Equal(17, rightOrOperand.StartPosition);
@@ -281,7 +284,7 @@ public class SpelParserTests
     [Fact]
     public void Test_TokenKind()
     {
-        var tk = TokenKind.Not;
+        TokenKind tk = TokenKind.Not;
         Assert.False(tk.HasPayload);
         Assert.Equal("NOT(!)", tk.ToString());
 
@@ -377,7 +380,7 @@ public class SpelParserTests
         {
             var parser = new SpelExpressionParser();
             var expr = parser.ParseRaw(expression) as SpelExpression;
-            var exprVal = expr.GetValue();
+            object exprVal = expr.GetValue();
             Assert.Equal(value, exprVal);
             Assert.Equal(type, exprVal.GetType());
         }

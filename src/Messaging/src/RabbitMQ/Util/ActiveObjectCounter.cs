@@ -8,7 +8,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Util;
 
 public class ActiveObjectCounter<T>
 {
-    private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new ();
+    private readonly ConcurrentDictionary<T, CountdownEvent> _locks = new();
+
+    public int Count => _locks.Count;
+
+    public bool IsActive { get; private set; } = true;
 
     public void Add(T activeObject)
     {
@@ -18,7 +22,7 @@ public class ActiveObjectCounter<T>
 
     public void Release(T activeObject)
     {
-        if (_locks.TryRemove(activeObject, out var remove))
+        if (_locks.TryRemove(activeObject, out CountdownEvent remove))
         {
             remove.Signal();
         }
@@ -26,8 +30,9 @@ public class ActiveObjectCounter<T>
 
     public bool Wait(TimeSpan timeout)
     {
-        var t0 = DateTimeOffset.Now.Ticks;
-        var t1 = t0 + timeout.Ticks;
+        long t0 = DateTimeOffset.Now.Ticks;
+        long t1 = t0 + timeout.Ticks;
+
         while (DateTimeOffset.Now.Ticks <= t1)
         {
             if (_locks.Count == 0)
@@ -36,9 +41,10 @@ public class ActiveObjectCounter<T>
             }
 
             var objects = new HashSet<T>(_locks.Keys);
-            foreach (var activeObject in objects)
+
+            foreach (T activeObject in objects)
             {
-                if (!_locks.TryGetValue(activeObject, out var latch))
+                if (!_locks.TryGetValue(activeObject, out CountdownEvent latch))
                 {
                     continue;
                 }
@@ -60,11 +66,10 @@ public class ActiveObjectCounter<T>
         return false;
     }
 
-    public int Count => _locks.Count;
-
-    public bool IsActive { get; private set; } = true;
-
-    public void Deactivate() => IsActive = false;
+    public void Deactivate()
+    {
+        IsActive = false;
+    }
 
     public void Reset()
     {

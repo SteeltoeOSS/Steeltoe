@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reflection;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
@@ -16,6 +16,7 @@ public class ReflectiveConstructorExecutor : IConstructorExecutor
     public ReflectiveConstructorExecutor(ConstructorInfo ctor)
     {
         Constructor = ctor;
+
         if (ctor.IsVarArgs())
         {
             _varargsPosition = ctor.GetParameters().Length - 1;
@@ -31,6 +32,7 @@ public class ReflectiveConstructorExecutor : IConstructorExecutor
         try
         {
             ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, Constructor, _varargsPosition);
+
             if (Constructor.IsVarArgs())
             {
                 arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(Constructor), arguments);

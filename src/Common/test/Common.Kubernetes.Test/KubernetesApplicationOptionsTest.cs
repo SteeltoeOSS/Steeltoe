@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
@@ -14,7 +14,7 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void ConstructorBindsValuesFromConfig()
     {
-        var json = @"
+        string json = @"
             {
                 ""spring"": {
                     ""application"": {
@@ -55,7 +55,8 @@ public class KubernetesApplicationOptionsTest
                     }
                 }
             }";
-        var config = new ConfigurationBuilder().AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(json))).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(new MemoryStream(Encoding.UTF8.GetBytes(json))).Build();
 
         var appInfo = new KubernetesApplicationOptions(config);
 
@@ -80,7 +81,10 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void Spring_Application_Name__UsedInAppName()
     {
-        var config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:application:name", "springappname" } }).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "springappname" }
+        }).Build();
 
         var appInfo = new KubernetesApplicationOptions(config);
 
@@ -90,7 +94,7 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void AssemblyNameIsDefaultAppName()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var appInfo = new KubernetesApplicationOptions(config);
 

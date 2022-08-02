@@ -9,10 +9,10 @@ namespace Steeltoe.Common.Availability;
 
 public abstract class AvailabilityHealthContributor : IHealthContributor
 {
-    public virtual string Id => throw new NotImplementedException();
-
     private readonly Dictionary<IAvailabilityState, HealthStatus> _stateMappings;
     private readonly ILogger _logger;
+
+    public virtual string Id => throw new NotImplementedException();
 
     protected AvailabilityHealthContributor(Dictionary<IAvailabilityState, HealthStatus> stateMappings, ILogger logger = null)
     {
@@ -23,7 +23,7 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
     public HealthCheckResult Health()
     {
         var health = new HealthCheckResult();
-        var currentHealth = GetState();
+        IAvailabilityState currentHealth = GetState();
 
         if (currentHealth == null)
         {
@@ -47,5 +47,8 @@ public abstract class AvailabilityHealthContributor : IHealthContributor
         return health;
     }
 
-    protected virtual IAvailabilityState GetState() => throw new NotImplementedException();
+    protected virtual IAvailabilityState GetState()
+    {
+        throw new NotImplementedException();
+    }
 }

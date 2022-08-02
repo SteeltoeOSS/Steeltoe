@@ -2,20 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Diagnostics;
 
 public abstract class DiagnosticObserver : IDiagnosticObserver
 {
-    public string ListenerName { get; }
-
-    public string ObserverName { get; }
-
     protected ILogger Logger { get; }
 
     protected IDisposable Subscription { get; set; }
+
+    public string ListenerName { get; }
+
+    public string ObserverName { get; }
 
     protected DiagnosticObserver(string name, string listenerName, ILogger logger = null)
     {

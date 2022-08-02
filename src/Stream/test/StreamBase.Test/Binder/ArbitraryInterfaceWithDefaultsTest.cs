@@ -16,20 +16,21 @@ public class ArbitraryInterfaceWithDefaultsTest : AbstractTest
     [Fact]
     public async Task TestArbitraryInterfaceChannelsBound()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock")
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock")
             .BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null, typeof(IMessageChannel));
+        IBinder binder = factory.GetBinder(null, typeof(IMessageChannel));
         Assert.NotNull(binder);
         var fooChannels = provider.GetService<IFooChannels>();
         Assert.NotNull(fooChannels);
 
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("Foo", null, fooChannels.Foo, It.IsAny<ConsumerOptions>()));
         mock.Verify(b => b.BindConsumer("Bar", null, fooChannels.Bar, It.IsAny<ConsumerOptions>()));
 

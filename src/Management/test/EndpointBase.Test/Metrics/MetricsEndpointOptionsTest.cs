@@ -33,11 +33,12 @@ public class MetricsEndpointOptionsTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/management",
             ["management:endpoints:metrics:enabled"] = "false",
-            ["management:endpoints:metrics:id"] = "metricsmanagement",
+            ["management:endpoints:metrics:id"] = "metricsmanagement"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new MetricsEndpointOptions(config);
         Assert.False(opts.Enabled);

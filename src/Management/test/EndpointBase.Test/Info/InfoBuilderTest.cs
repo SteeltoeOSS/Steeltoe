@@ -14,7 +14,7 @@ public class InfoBuilderTest : BaseTest
     public void ReturnsEmptyDictionary()
     {
         var builder = new InfoBuilder();
-        var built = builder.Build();
+        Dictionary<string, object> built = builder.Build();
         Assert.NotNull(built);
         Assert.Empty(built);
     }
@@ -24,7 +24,7 @@ public class InfoBuilderTest : BaseTest
     {
         var builder = new InfoBuilder();
         builder.WithInfo("foo", "bar");
-        var built = builder.Build();
+        Dictionary<string, object> built = builder.Build();
         Assert.NotNull(built);
         Assert.Single(built);
         Assert.Equal("bar", built["foo"]);
@@ -34,13 +34,15 @@ public class InfoBuilderTest : BaseTest
     public void WithInfoDictionaryAddsValues()
     {
         var builder = new InfoBuilder();
+
         var items = new Dictionary<string, object>
         {
             { "foo", "bar" },
             { "bar", 100 }
         };
+
         builder.WithInfo(items);
-        var built = builder.Build();
+        Dictionary<string, object> built = builder.Build();
         Assert.NotNull(built);
         Assert.Equal(2, built.Count);
         Assert.Equal("bar", built["foo"]);

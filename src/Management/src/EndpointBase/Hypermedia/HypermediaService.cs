@@ -21,7 +21,7 @@ public class HypermediaService
 
     public Links Invoke(string baseUrl)
     {
-        var endpointOptions = _managementOptions.EndpointOptions;
+        List<IEndpointOptions> endpointOptions = _managementOptions.EndpointOptions;
         var links = new Links();
 
         if (!_options.IsEnabled(_managementOptions))
@@ -31,7 +31,7 @@ public class HypermediaService
 
         _logger?.LogTrace("Processing hypermedia for  {ManagementOptions} ", _managementOptions);
 
-        foreach (var opt in endpointOptions)
+        foreach (IEndpointOptions opt in endpointOptions)
         {
             if (!opt.IsEnabled(_managementOptions) || !opt.IsExposed(_managementOptions))
             {
@@ -48,7 +48,7 @@ public class HypermediaService
                 {
                     if (!links._links.ContainsKey(opt.Id))
                     {
-                        var linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
+                        string linkPath = $"{baseUrl.TrimEnd('/')}/{opt.Path}";
                         links._links.Add(opt.Id, new Link(linkPath));
                     }
                     else if (links._links.ContainsKey(opt.Id))

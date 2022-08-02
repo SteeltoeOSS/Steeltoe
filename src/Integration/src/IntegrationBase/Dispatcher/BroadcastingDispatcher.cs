@@ -16,6 +16,25 @@ public class BroadcastingDispatcher : AbstractDispatcher
 
     private IMessageBuilderFactory _messageBuilderFactory;
 
+    internal IMessageBuilderFactory MessageBuilderFactory
+    {
+        get
+        {
+            _messageBuilderFactory ??= IntegrationServices.MessageBuilderFactory;
+            return _messageBuilderFactory;
+        }
+
+        set => _messageBuilderFactory = value;
+    }
+
+    internal ILogger Logger => InnerLogger;
+
+    public virtual bool IgnoreFailures { get; set; }
+
+    public virtual bool ApplySequence { get; set; }
+
+    public virtual int MinSubscribers { get; set; }
+
     public BroadcastingDispatcher(IApplicationContext context, ILogger logger = null)
         : this(context, null, false, logger)
     {
@@ -37,41 +56,19 @@ public class BroadcastingDispatcher : AbstractDispatcher
         _requireSubscribers = requireSubscribers;
     }
 
-    public virtual bool IgnoreFailures { get; set; }
-
-    public virtual bool ApplySequence { get; set; }
-
-    public virtual int MinSubscribers { get; set; }
-
-    internal IMessageBuilderFactory MessageBuilderFactory
-    {
-        get
-        {
-            _messageBuilderFactory ??= IntegrationServices.MessageBuilderFactory;
-            return _messageBuilderFactory;
-        }
-
-        set
-        {
-            _messageBuilderFactory = value;
-        }
-    }
-
-    internal ILogger Logger => InnerLogger;
-
     protected override bool DoDispatch(IMessage message, CancellationToken cancellationToken)
     {
-        var dispatched = 0;
-        var sequenceNumber = 1;
-        var handlers = base.handlers;
+        int dispatched = 0;
+        int sequenceNumber = 1;
+        List<IMessageHandler> handlers = this.handlers;
 
         if (_requireSubscribers && handlers.Count == 0)
         {
             throw new MessageDispatchingException(message, "Dispatcher has no subscribers");
         }
 
-        var sequenceSize = handlers.Count;
-        var messageToSend = message;
+        int sequenceSize = handlers.Count;
+        IMessage messageToSend = message;
         string sequenceId = null;
 
         if (ApplySequence)
@@ -79,14 +76,12 @@ public class BroadcastingDispatcher : AbstractDispatcher
             sequenceId = message.Headers.Id;
         }
 
-        foreach (var handler in handlers)
+        foreach (IMessageHandler handler in handlers)
         {
             if (ApplySequence)
             {
-                messageToSend = MessageBuilderFactory
-                    .FromMessage(message)
-                    .PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize)
-                    .Build();
+                messageToSend = MessageBuilderFactory.FromMessage(message).PushSequenceDetails(sequenceId, sequenceNumber++, sequenceSize).Build();
+
                 if (message is IMessageDecorator decorator)
                 {
                     messageToSend = decorator.DecorateMessage(messageToSend);
@@ -95,7 +90,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
 
             if (Executor != null)
             {
-                var task = CreateMessageHandlingTask(handler, messageToSend);
+                IMessageHandlingRunnable task = CreateMessageHandlingTask(handler, messageToSend);
                 Factory.StartNew(() => task.Run(), cancellationToken);
                 dispatched++;
             }
@@ -108,9 +103,7 @@ public class BroadcastingDispatcher : AbstractDispatcher
 
         if (dispatched == 0 && MinSubscribers == 0)
         {
-            Logger?.LogDebug(sequenceSize > 0
-                ? "No subscribers received message, default behavior is ignore"
-                : "No subscribers, default behavior is ignore");
+            Logger?.LogDebug(sequenceSize > 0 ? "No subscribers received message, default behavior is ignore" : "No subscribers, default behavior is ignore");
         }
 
         return dispatched >= MinSubscribers;
@@ -160,6 +153,10 @@ public class BroadcastingDispatcher : AbstractDispatcher
     {
         private readonly BroadcastingDispatcher _dispatcher;
 
+        public IMessage Message { get; }
+
+        public IMessageHandler MessageHandler { get; }
+
         public MessageHandlingRunnable(BroadcastingDispatcher dispatcher, IMessageHandler handler, IMessage message)
         {
             _dispatcher = dispatcher;
@@ -172,9 +169,5 @@ public class BroadcastingDispatcher : AbstractDispatcher
             _dispatcher.InvokeHandler(MessageHandler, Message);
             return true;
         }
-
-        public IMessage Message { get; }
-
-        public IMessageHandler MessageHandler { get; }
     }
 }

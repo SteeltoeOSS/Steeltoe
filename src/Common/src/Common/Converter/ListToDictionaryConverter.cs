@@ -7,7 +7,10 @@ namespace Steeltoe.Common.Converter;
 public class ListToDictionaryConverter : CollectionToObjectConverter
 {
     public ListToDictionaryConverter(IConversionService conversionService)
-        : base(conversionService, new HashSet<(Type Source, Type Target)> { (typeof(IList<object>), typeof(IDictionary<string, object>)) })
+        : base(conversionService, new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(IList<object>), typeof(IDictionary<string, object>))
+        })
     {
     }
 }

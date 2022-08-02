@@ -12,11 +12,11 @@ public class CloudFoundryOAuthBuilderTest
     [Fact]
     public async Task ShouldKeepDefaultServiceUrlsIfAuthDomainNotPresent()
     {
-        var expectedAuthorizationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
+        string expectedAuthorizationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
         using var webApplicationFactory = new TestApplicationFactory<TestServerStartup>();
-        var client = webApplicationFactory.CreateDefaultClient();
-        var result = await client.GetAsync("http://localhost/");
-        var location = result.Headers.Location.ToString();
+        HttpClient client = webApplicationFactory.CreateDefaultClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        string location = result.Headers.Location.ToString();
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         Assert.StartsWith(expectedAuthorizationUrl, location, StringComparison.OrdinalIgnoreCase);
@@ -25,9 +25,9 @@ public class CloudFoundryOAuthBuilderTest
     [Fact]
     public async Task ShouldAddAuthDomainToServiceUrlsIfPresent()
     {
-        var authDomain = "http://this-config-server-url";
-        var expectedAuthorizationUrl = $"{authDomain}/oauth/authorize";
-        var expectedClientId = Guid.NewGuid().ToString();
+        string authDomain = "http://this-config-server-url";
+        string expectedAuthorizationUrl = $"{authDomain}/oauth/authorize";
+        string expectedClientId = Guid.NewGuid().ToString();
 
         var configuration = new Dictionary<string, string>
         {
@@ -37,9 +37,9 @@ public class CloudFoundryOAuthBuilderTest
         };
 
         using var webApplicationFactory = new TestApplicationFactory<TestServerStartup>(configuration);
-        var client = webApplicationFactory.CreateDefaultClient();
-        var result = await client.GetAsync("http://localhost/");
-        var location = result.Headers.Location.ToString();
+        HttpClient client = webApplicationFactory.CreateDefaultClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/");
+        string location = result.Headers.Location.ToString();
 
         Assert.Equal(HttpStatusCode.Redirect, result.StatusCode);
         Assert.StartsWith(expectedAuthorizationUrl, location, StringComparison.OrdinalIgnoreCase);

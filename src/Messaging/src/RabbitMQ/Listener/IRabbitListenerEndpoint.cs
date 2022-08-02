@@ -20,8 +20,6 @@ public interface IRabbitListenerEndpoint
 
     IApplicationContext ApplicationContext { get; set; }
 
-    void SetupListenerContainer(IMessageListenerContainer listenerContainer);
-
     ISmartMessageConverter MessageConverter { get; set; }
 
     bool BatchListener { get; set; }
@@ -33,4 +31,6 @@ public interface IRabbitListenerEndpoint
     IReplyPostProcessor ReplyPostProcessor { get; set; }
 
     string Group { get; set; }
+
+    void SetupListenerContainer(IMessageListenerContainer listenerContainer);
 }

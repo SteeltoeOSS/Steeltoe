@@ -21,9 +21,8 @@ public class AbstractMessageChannelBinderTest : AbstractTest
 
     public AbstractMessageChannelBinderTest()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        _serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+        _serviceProvider = CreateStreamsContainerWithDefaultBindings(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder").BuildServiceProvider();
     }
 
     [Fact]
@@ -36,10 +35,12 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         {
             MaxAttempts = 1
         };
+
         consumerProperties.PostProcess("testbinding");
 
         // IBinding<IMessageChannel> consumerBinding = await binder.BindConsumer("foo", "fooGroup",  new DirectChannel(serviceProvider),  consumerProperties);
-        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), consumerProperties);
+        IBinding consumerBinding =
+            binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), consumerProperties);
 
         var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
         Assert.NotNull(defaultBinding);
@@ -59,7 +60,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
         var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
         Assert.NotNull(dispatcher);
-        var handlers = dispatcher.Handlers;
+        List<IMessageHandler> handlers = dispatcher.Handlers;
         Assert.True(handlers[0] is BridgeHandler);
         Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 
@@ -82,10 +83,11 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         {
             ErrorChannelEnabled = true
         };
+
         producerProps.PostProcess("testbinding");
 
         // IBinding<IMessageChannel> producerBinding = await binder.BindProducer("bar", new DirectChannel(serviceProvider), producerProps);
-        var producerBinding = binder.BindProducer("bar", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), producerProps);
+        IBinding producerBinding = binder.BindProducer("bar", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), producerProps);
         Assert.True(registry.ContainsService<IMessageChannel>("bar.errors"));
         Assert.True(registry.ContainsService<IMessageHandler>("bar.errors.bridge"));
 
@@ -99,7 +101,10 @@ public class AbstractMessageChannelBinderTest : AbstractTest
     {
         var binder = _serviceProvider.GetService<IBinder>() as TestChannelBinder;
         Assert.NotNull(binder);
-        var consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()), GetConsumerOptions("testbinding"));
+
+        IBinding consumerBinding = binder.BindConsumer("foo", "fooGroup", new DirectChannel(_serviceProvider.GetService<IApplicationContext>()),
+            GetConsumerOptions("testbinding"));
+
         var defaultBinding = consumerBinding as DefaultBinding<IMessageChannel>;
         Assert.NotNull(defaultBinding);
 
@@ -121,7 +126,7 @@ public class AbstractMessageChannelBinderTest : AbstractTest
         Assert.Equal(2, errorChannel.Dispatcher.HandlerCount);
         var dispatcher = errorChannel.Dispatcher as AbstractDispatcher;
         Assert.NotNull(dispatcher);
-        var handlers = dispatcher.Handlers;
+        List<IMessageHandler> handlers = dispatcher.Handlers;
         Assert.True(handlers[0] is BridgeHandler);
         Assert.True(handlers[1] is ILastSubscriberMessageHandler);
 

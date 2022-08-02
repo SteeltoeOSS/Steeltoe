@@ -8,15 +8,22 @@ namespace Steeltoe.Common.Availability;
 
 public class LivenessHealthContributor : AvailabilityHealthContributor
 {
-    public override string Id => "liveness";
-
     private readonly ApplicationAvailability _availability;
 
+    public override string Id => "liveness";
+
     public LivenessHealthContributor(ApplicationAvailability availability)
-        : base(new Dictionary<IAvailabilityState, HealthStatus> { { LivenessState.Correct, HealthStatus.Up }, { LivenessState.Broken, HealthStatus.Down } })
+        : base(new Dictionary<IAvailabilityState, HealthStatus>
+        {
+            { LivenessState.Correct, HealthStatus.Up },
+            { LivenessState.Broken, HealthStatus.Down }
+        })
     {
         _availability = availability;
     }
 
-    protected override IAvailabilityState GetState() => _availability.GetLivenessState();
+    protected override IAvailabilityState GetState()
+    {
+        return _availability.GetLivenessState();
+    }
 }

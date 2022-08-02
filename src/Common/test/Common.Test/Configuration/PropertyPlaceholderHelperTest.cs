@@ -13,116 +13,131 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesSinglePlaceholder()
     {
-        var text = "foo=${foo}";
+        string text = "foo=${foo}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "foo", "bar" }
         };
-        builder.AddInMemoryCollection(dic1);
-        var config = builder.Build();
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        builder.AddInMemoryCollection(dic1);
+        IConfigurationRoot config = builder.Build();
+
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=bar", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
     {
-        var text = "foo=${foo.bar}";
+        string text = "foo=${foo.bar}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "foo:bar", "bar" }
         };
-        builder.AddInMemoryCollection(dic1);
-        var config = builder.Build();
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        builder.AddInMemoryCollection(dic1);
+        IConfigurationRoot config = builder.Build();
+
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=bar", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
     {
-        var text = "foo=${foo},bar=${bar}";
+        string text = "foo=${foo},bar=${bar}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "foo", "bar" },
             { "bar", "baz" }
         };
+
         builder.AddInMemoryCollection(dic1);
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
         Assert.Equal("foo=bar,bar=baz", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
     {
-        var text = "foo=${foo.boo},bar=${bar.far}";
+        string text = "foo=${foo.boo},bar=${bar.far}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "foo:boo", "bar" },
             { "bar:far", "baz" }
         };
+
         builder.AddInMemoryCollection(dic1);
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, builder.Build());
         Assert.Equal("foo=bar,bar=baz", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursivePlaceholders()
     {
-        var text = "foo=${bar}";
+        string text = "foo=${bar}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "bar", "${baz}" },
             { "baz", "bar" }
         };
-        builder.AddInMemoryCollection(dic1);
-        var config = builder.Build();
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        builder.AddInMemoryCollection(dic1);
+        IConfigurationRoot config = builder.Build();
+
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=bar", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
     {
-        var text = "foo=${bar.boo}";
+        string text = "foo=${bar.boo}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "bar:boo", "${baz.faz}" },
             { "baz:faz", "bar" }
         };
-        builder.AddInMemoryCollection(dic1);
-        var config = builder.Build();
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        builder.AddInMemoryCollection(dic1);
+        IConfigurationRoot config = builder.Build();
+
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=bar", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
     {
-        var text1 = "foo=${b${inner}}";
+        string text1 = "foo=${b${inner}}";
         var builder1 = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "bar", "bar" },
             { "inner", "ar" }
         };
-        builder1.AddInMemoryCollection(dic1);
-        var config1 = builder1.Build();
 
-        var text2 = "${top}";
+        builder1.AddInMemoryCollection(dic1);
+        IConfigurationRoot config1 = builder1.Build();
+
+        string text2 = "${top}";
         var builder2 = new ConfigurationBuilder();
+
         var dic2 = new Dictionary<string, string>
         {
             { "top", "${child}+${child}" },
@@ -130,30 +145,34 @@ public class PropertyPlaceholderHelperTest
             { "differentiator", "first" },
             { "first.grandchild", "actualValue" }
         };
-        builder2.AddInMemoryCollection(dic2);
-        var config2 = builder2.Build();
 
-        var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
+        builder2.AddInMemoryCollection(dic2);
+        IConfigurationRoot config2 = builder2.Build();
+
+        string result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
         Assert.Equal("foo=bar", result1);
-        var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
+        string result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
         Assert.Equal("actualValue+actualValue", result2);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
     {
-        var text1 = "foo=${b${inner.placeholder}}";
+        string text1 = "foo=${b${inner.placeholder}}";
         var builder1 = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "bar", "bar" },
             { "inner:placeholder", "ar" }
         };
-        builder1.AddInMemoryCollection(dic1);
-        var config1 = builder1.Build();
 
-        var text2 = "${top}";
+        builder1.AddInMemoryCollection(dic1);
+        IConfigurationRoot config1 = builder1.Build();
+
+        string text2 = "${top}";
         var builder2 = new ConfigurationBuilder();
+
         var dic2 = new Dictionary<string, string>
         {
             { "top", "${child}+${child}" },
@@ -161,35 +180,38 @@ public class PropertyPlaceholderHelperTest
             { "differentiator", "first" },
             { "first:grandchild", "actualValue" }
         };
-        builder2.AddInMemoryCollection(dic2);
-        var config2 = builder2.Build();
 
-        var result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
+        builder2.AddInMemoryCollection(dic2);
+        IConfigurationRoot config2 = builder2.Build();
+
+        string result1 = PropertyPlaceholderHelper.ResolvePlaceholders(text1, config1);
         Assert.Equal("foo=bar", result1);
-        var result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
+        string result2 = PropertyPlaceholderHelper.ResolvePlaceholders(text2, config2);
         Assert.Equal("actualValue+actualValue", result2);
     }
 
     [Fact]
     public void ResolvePlaceholders_UnresolvedPlaceholderIsIgnored()
     {
-        var text = "foo=${foo},bar=${bar}";
+        string text = "foo=${foo},bar=${bar}";
         var builder = new ConfigurationBuilder();
+
         var dic1 = new Dictionary<string, string>
         {
             { "foo", "bar" }
         };
-        builder.AddInMemoryCollection(dic1);
-        var config = builder.Build();
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        builder.AddInMemoryCollection(dic1);
+        IConfigurationRoot config = builder.Build();
+
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=bar,bar=${bar}", result);
     }
 
     [Fact]
     public void ResolvePlaceholders_ResolvesArrayRefPlaceholder()
     {
-        var json1 = @"
+        string json1 = @"
 {
     ""vcap"": {
         ""application"": {
@@ -216,19 +238,20 @@ public class PropertyPlaceholderHelperTest
         }
     }
 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("json", json1);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("json", json1);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
 
         builder.AddJsonFile(fileName);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        var text = "foo=${vcap:application:uris[1]}";
+        string text = "foo=${vcap:application:uris[1]}";
 
-        var result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
+        string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);
     }
 
@@ -236,14 +259,14 @@ public class PropertyPlaceholderHelperTest
     public void GetResolvedConfigurationPlaceholders_ReturnsValues_WhenResolved()
     {
         var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(
-            new Dictionary<string, string>
-            {
-                { "foo", "${bar}" },
-                { "bar", "baz" }
-            });
 
-        var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+        builder.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo", "${bar}" },
+            { "bar", "baz" }
+        });
+
+        IEnumerable<KeyValuePair<string, string>> resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
 
         Assert.Contains(resolved, f => f.Key == "foo");
         Assert.DoesNotContain(resolved, f => f.Key == "bar");
@@ -254,13 +277,13 @@ public class PropertyPlaceholderHelperTest
     public void GetResolvedConfigurationPlaceholders_ReturnsEmpty_WhenUnResolved()
     {
         var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(
-            new Dictionary<string, string>
-            {
-                { "foo", "${bar}" }
-            });
 
-        var resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
+        builder.AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "foo", "${bar}" }
+        });
+
+        IEnumerable<KeyValuePair<string, string>> resolved = PropertyPlaceholderHelper.GetResolvedConfigurationPlaceholders(builder.Build());
 
         Assert.Contains(resolved, f => f.Key == "foo");
         Assert.Equal(string.Empty, resolved.First(k => k.Key == "foo").Value);

@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -24,6 +24,7 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
     protected override NamedValueInfo CreateNamedValueInfo(ParameterInfo parameter)
     {
         var annotation = parameter.GetCustomAttribute<HeaderAttribute>();
+
         if (annotation == null)
         {
             throw new InvalidOperationException("No Header annotation");
@@ -34,8 +35,8 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
 
     protected override object ResolveArgumentInternal(ParameterInfo parameter, IMessage message, string name)
     {
-        message.Headers.TryGetValue(name, out var headerValue);
-        var nativeHeaderValue = GetNativeHeaderValue(message, name);
+        message.Headers.TryGetValue(name, out object headerValue);
+        object nativeHeaderValue = GetNativeHeaderValue(message, name);
 
         if (headerValue != null && nativeHeaderValue != null)
         {
@@ -57,7 +58,8 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
 
     private object GetNativeHeaderValue(IMessage message, string name)
     {
-        var nativeHeaders = GetNativeHeaders(message);
+        IDictionary<string, List<string>> nativeHeaders = GetNativeHeaders(message);
+
         if (name.StartsWith("nativeHeaders."))
         {
             name = name.Substring("nativeHeaders.".Length);
@@ -68,7 +70,8 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
             return null;
         }
 
-        nativeHeaders.TryGetValue(name, out var nativeHeaderValues);
+        nativeHeaders.TryGetValue(name, out List<string> nativeHeaderValues);
+
         if (nativeHeaderValues.Count == 1)
         {
             return nativeHeaderValues[0];
@@ -79,7 +82,7 @@ public class HeaderMethodArgumentResolver : AbstractNamedValueMethodArgumentReso
 
     private IDictionary<string, List<string>> GetNativeHeaders(IMessage message)
     {
-        message.Headers.TryGetValue(NativeMessageHeaderAccessor.NativeHeaders, out var result);
+        message.Headers.TryGetValue(NativeMessageHeaderAccessor.NativeHeaders, out object result);
         return (IDictionary<string, List<string>>)result;
     }
 

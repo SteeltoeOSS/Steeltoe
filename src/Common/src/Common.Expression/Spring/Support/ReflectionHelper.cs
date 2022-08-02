@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections;
 using System.Reflection;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
@@ -18,10 +18,11 @@ public static class ReflectionHelper
         }
 
         ArgumentsMatchKind? match = ArgumentsMatchKind.Exact;
-        for (var i = 0; i < expectedArgTypes.Count && match != null; i++)
+
+        for (int i = 0; i < expectedArgTypes.Count && match != null; i++)
         {
-            var suppliedArg = suppliedArgTypes[i];
-            var expectedArg = expectedArgTypes[i];
+            Type suppliedArg = suppliedArgTypes[i];
+            Type expectedArg = expectedArgTypes[i];
 
             // The user may supply null - and that will be ok unless a primitive is expected
             if (suppliedArg == null)
@@ -57,11 +58,13 @@ public static class ReflectionHelper
 
     public static int GetTypeDifferenceWeight(List<Type> paramTypes, List<Type> argTypes)
     {
-        var result = 0;
-        for (var i = 0; i < paramTypes.Count; i++)
+        int result = 0;
+
+        for (int i = 0; i < paramTypes.Count; i++)
         {
-            var paramType = paramTypes[i];
-            var argType = i < argTypes.Count ? argTypes[i] : null;
+            Type paramType = paramTypes[i];
+            Type argType = i < argTypes.Count ? argTypes[i] : null;
+
             if (argType == null)
             {
                 if (paramType.IsPrimitive)
@@ -71,7 +74,8 @@ public static class ReflectionHelper
             }
             else
             {
-                var paramTypeClazz = paramType;
+                Type paramTypeClazz = paramType;
+
                 if (!ClassUtils.IsAssignable(paramTypeClazz, argType))
                 {
                     return int.MaxValue;
@@ -82,7 +86,8 @@ public static class ReflectionHelper
                     paramTypeClazz = typeof(object);
                 }
 
-                var superClass = argType.BaseType;
+                Type superClass = argType.BaseType;
+
                 while (superClass != null)
                 {
                     if (paramTypeClazz.Equals(superClass))
@@ -128,11 +133,13 @@ public static class ReflectionHelper
         // Check up until the varargs argument:
 
         // Deal with the arguments up to 'expected number' - 1 (that is everything but the varargs argument)
-        var argCountUpToVarargs = expectedArgTypes.Count - 1;
-        for (var i = 0; i < argCountUpToVarargs && match != null; i++)
+        int argCountUpToVarargs = expectedArgTypes.Count - 1;
+
+        for (int i = 0; i < argCountUpToVarargs && match != null; i++)
         {
-            var suppliedArg = suppliedArgTypes[i];
-            var expectedArg = expectedArgTypes[i];
+            Type suppliedArg = suppliedArgTypes[i];
+            Type expectedArg = expectedArgTypes[i];
+
             if (suppliedArg == null)
             {
                 if (expectedArg.IsPrimitive)
@@ -169,7 +176,8 @@ public static class ReflectionHelper
             return null;
         }
 
-        if (suppliedArgTypes.Count == expectedArgTypes.Count && expectedArgTypes[expectedArgTypes.Count - 1].Equals(suppliedArgTypes[suppliedArgTypes.Count - 1]))
+        if (suppliedArgTypes.Count == expectedArgTypes.Count &&
+            expectedArgTypes[expectedArgTypes.Count - 1].Equals(suppliedArgTypes[suppliedArgTypes.Count - 1]))
         {
             // Special case: there is one parameter left and it is an array and it matches the varargs
             // expected argument - that is a match, the caller has already built the array. Proceed with it.
@@ -178,18 +186,20 @@ public static class ReflectionHelper
         {
             // Now... we have the final argument in the method we are checking as a match and we have 0
             // or more other arguments left to pass to it.
-            var varargsDesc = expectedArgTypes[expectedArgTypes.Count - 1];
+            Type varargsDesc = expectedArgTypes[expectedArgTypes.Count - 1];
+
             if (!varargsDesc.HasElementType)
             {
                 throw new InvalidOperationException("No element type");
             }
 
-            var varargsParamType = varargsDesc.GetElementType();
+            Type varargsParamType = varargsDesc.GetElementType();
 
             // All remaining parameters must be of this type or convertible to this type
-            for (var i = expectedArgTypes.Count - 1; i < suppliedArgTypes.Count; i++)
+            for (int i = expectedArgTypes.Count - 1; i < suppliedArgTypes.Count; i++)
             {
-                var suppliedArg = suppliedArgTypes[i];
+                Type suppliedArg = suppliedArgTypes[i];
+
                 if (suppliedArg == null)
                 {
                     if (varargsParamType.IsPrimitive)
@@ -240,28 +250,29 @@ public static class ReflectionHelper
     public static object[] SetupArgumentsForVarargsInvocation(Type[] requiredParameterTypes, params object[] args)
     {
         // Check if array already built for final argument
-        var parameterCount = requiredParameterTypes.Length;
-        var argumentCount = args.Length;
+        int parameterCount = requiredParameterTypes.Length;
+        int argumentCount = args.Length;
 
         // Check if repackaging is needed...
-        if (parameterCount != args.Length ||
-            requiredParameterTypes[parameterCount - 1] != args[argumentCount - 1]?.GetType())
+        if (parameterCount != args.Length || requiredParameterTypes[parameterCount - 1] != args[argumentCount - 1]?.GetType())
         {
-            var arraySize = 0;  // zero size array if nothing to pass as the varargs parameter
+            int arraySize = 0; // zero size array if nothing to pass as the varargs parameter
+
             if (argumentCount >= parameterCount)
             {
                 arraySize = argumentCount - (parameterCount - 1);
             }
 
             // Create an array for the varargs arguments
-            var newArgs = new object[parameterCount];
+            object[] newArgs = new object[parameterCount];
             Array.Copy(args, 0, newArgs, 0, newArgs.Length - 1);
 
             // Now sort out the final argument, which is the varargs one. Before entering this method,
             // the arguments should have been converted to the box form of the required type.
-            var componentType = requiredParameterTypes[parameterCount - 1].GetElementType();
+            Type componentType = requiredParameterTypes[parameterCount - 1].GetElementType();
             var repackagedArgs = Array.CreateInstance(componentType, arraySize);
-            for (var i = 0; i < arraySize; i++)
+
+            for (int i = 0; i < arraySize; i++)
             {
                 repackagedArgs.SetValue(args[parameterCount - 1 + i], i);
             }
@@ -275,13 +286,14 @@ public static class ReflectionHelper
 
     public static bool ConvertArguments(ITypeConverter converter, object[] arguments, MethodBase executable, int? varargsPosition)
     {
-        var conversionOccurred = false;
+        bool conversionOccurred = false;
+
         if (varargsPosition == null)
         {
-            for (var i = 0; i < arguments.Length; i++)
+            for (int i = 0; i < arguments.Length; i++)
             {
-                var targetType = executable.GetParameters()[i].ParameterType;
-                var argument = arguments[i];
+                Type targetType = executable.GetParameters()[i].ParameterType;
+                object argument = arguments[i];
                 arguments[i] = converter.ConvertValue(argument, argument == null ? typeof(object) : argument.GetType(), targetType);
                 conversionOccurred |= argument != arguments[i];
             }
@@ -289,23 +301,24 @@ public static class ReflectionHelper
         else
         {
             // Convert everything up to the varargs position
-            for (var i = 0; i < varargsPosition; i++)
+            for (int i = 0; i < varargsPosition; i++)
             {
-                var targetType = executable.GetParameters()[i].ParameterType;
-                var argument = arguments[i];
+                Type targetType = executable.GetParameters()[i].ParameterType;
+                object argument = arguments[i];
                 arguments[i] = converter.ConvertValue(argument, argument == null ? typeof(object) : argument.GetType(), targetType);
                 conversionOccurred |= argument != arguments[i];
             }
 
-            var vPos = varargsPosition.Value;
-            var methodParam = executable.GetParameters()[vPos];
+            int vPos = varargsPosition.Value;
+            ParameterInfo methodParam = executable.GetParameters()[vPos];
+
             if (vPos == arguments.Length - 1)
             {
                 // If the target is varargs and there is just one more argument
                 // then convert it here
-                var targetType = methodParam.ParameterType;
-                var argument = arguments[vPos];
-                var sourceType = argument == null ? typeof(object) : argument.GetType();
+                Type targetType = methodParam.ParameterType;
+                object argument = arguments[vPos];
+                Type sourceType = argument == null ? typeof(object) : argument.GetType();
                 arguments[vPos] = converter.ConvertValue(argument, sourceType, targetType);
 
                 // Three outcomes of that previous line:
@@ -320,15 +333,16 @@ public static class ReflectionHelper
             else
             {
                 // Convert remaining arguments to the varargs element type
-                var targetType = methodParam.ParameterType.GetElementType();
+                Type targetType = methodParam.ParameterType.GetElementType();
+
                 if (targetType == null)
                 {
                     throw new InvalidOperationException("No element type");
                 }
 
-                for (var i = vPos; i < arguments.Length; i++)
+                for (int i = vPos; i < arguments.Length; i++)
                 {
-                    var argument = arguments[i];
+                    object argument = arguments[i];
                     arguments[i] = converter.ConvertValue(argument, argument == null ? typeof(object) : argument.GetType(), targetType);
                     conversionOccurred |= argument != arguments[i];
                 }
@@ -355,7 +369,8 @@ public static class ReflectionHelper
 
     public static Type GetMapValueTypeDescriptor(Type targetDescriptor, object mapValue)
     {
-        var type = GetMapValueTypeDescriptor(targetDescriptor);
+        Type type = GetMapValueTypeDescriptor(targetDescriptor);
+
         if (type != null)
         {
             if (mapValue == null)
@@ -391,7 +406,8 @@ public static class ReflectionHelper
 
     public static Type GetMapKeyTypeDescriptor(Type targetDescriptor, object mapKey)
     {
-        var type = GetMapKeyTypeDescriptor(targetDescriptor);
+        Type type = GetMapKeyTypeDescriptor(targetDescriptor);
+
         if (type != null)
         {
             if (mapKey == null)
@@ -427,7 +443,8 @@ public static class ReflectionHelper
 
     public static Type GetElementTypeDescriptor(Type type, object obj)
     {
-        var elemType = GetElementTypeDescriptor(type);
+        Type elemType = GetElementTypeDescriptor(type);
+
         if (elemType != null)
         {
             if (obj == null)
@@ -463,13 +480,14 @@ public static class ReflectionHelper
             return false;
         }
 
-        var type = possibleArray.GetType();
+        Type type = possibleArray.GetType();
+
         if (!type.IsArray || ((Array)possibleArray).GetLength(0) == 0 || !ClassUtils.IsAssignableValue(type.GetElementType(), value))
         {
             return false;
         }
 
-        var arrayValue = ((Array)possibleArray).GetValue(0);
+        object arrayValue = ((Array)possibleArray).GetValue(0);
         return type.GetElementType().IsPrimitive ? arrayValue.Equals(value) : arrayValue == value;
     }
 }

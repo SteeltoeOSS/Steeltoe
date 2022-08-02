@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json.Serialization;
 using Steeltoe.Common.Http.Serialization;
 using Steeltoe.Discovery.Eureka.AppInfo;
-using System.Text.Json.Serialization;
 
 namespace Steeltoe.Discovery.Eureka.Transport;
 
@@ -90,6 +90,13 @@ internal sealed class JsonInstanceInfo
 
     internal sealed class JsonPortWrapper
     {
+        [JsonPropertyName("@enabled")]
+        [JsonConverter(typeof(BoolStringJsonConverter))]
+        public bool Enabled { get; set; }
+
+        [JsonPropertyName("$")]
+        public int Port { get; set; }
+
         public JsonPortWrapper()
         {
         }
@@ -99,17 +106,16 @@ internal sealed class JsonInstanceInfo
             Enabled = enabled;
             Port = port;
         }
-
-        [JsonPropertyName("@enabled")]
-        [JsonConverter(typeof(BoolStringJsonConverter))]
-        public bool Enabled { get; set; }
-
-        [JsonPropertyName("$")]
-        public int Port { get; set; }
     }
 
     internal sealed class JsonDataCenterInfo
     {
+        [JsonPropertyName("@class")]
+        public string ClassName { get; set; }
+
+        [JsonPropertyName("name")]
+        public string Name { get; set; }
+
         public JsonDataCenterInfo()
         {
         }
@@ -119,11 +125,5 @@ internal sealed class JsonInstanceInfo
             ClassName = classname;
             Name = name;
         }
-
-        [JsonPropertyName("@class")]
-        public string ClassName { get; set; }
-
-        [JsonPropertyName("name")]
-        public string Name { get; set; }
     }
 }

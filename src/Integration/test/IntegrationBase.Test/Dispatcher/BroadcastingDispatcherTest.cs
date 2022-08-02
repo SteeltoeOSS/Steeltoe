@@ -2,33 +2,33 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using System.Collections.Concurrent;
 using Xunit;
 
 namespace Steeltoe.Integration.Dispatcher.Test;
 
 public class BroadcastingDispatcherTest
 {
-    private readonly Mock<IMessage> _messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new();
 
-    private readonly Mock<IMessageHandler> _targetMock1 = new ();
+    private readonly Mock<IMessageHandler> _targetMock1 = new();
 
-    private readonly Mock<IMessageHandler> _targetMock2 = new ();
+    private readonly Mock<IMessageHandler> _targetMock2 = new();
 
-    private readonly Mock<IMessageHandler> _targetMock3 = new ();
+    private readonly Mock<IMessageHandler> _targetMock3 = new();
 
     private readonly IServiceProvider _provider;
 
     public BroadcastingDispatcherTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
@@ -206,8 +206,8 @@ public class BroadcastingDispatcherTest
         dispatcher.Dispatch(Message.Create("test"));
         Assert.Equal(2, messages.Count);
 
-        Assert.True(messages.TryDequeue(out var message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var value);
+        Assert.True(messages.TryDequeue(out IMessage message));
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out object value);
         Assert.Null(value);
         message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Null(value);
@@ -226,6 +226,7 @@ public class BroadcastingDispatcherTest
         {
             ApplySequence = true
         };
+
         var messages = new ConcurrentQueue<IMessage>();
         var target1 = new MessageStoringTestEndpoint(messages);
         var target2 = new MessageStoringTestEndpoint(messages);
@@ -234,12 +235,12 @@ public class BroadcastingDispatcherTest
         dispatcher.AddHandler(target2);
         dispatcher.AddHandler(target3);
         IMessage inputMessage = Message.Create("test");
-        var originalId = inputMessage.Headers.Id;
+        string originalId = inputMessage.Headers.Id;
         dispatcher.Dispatch(inputMessage);
         Assert.Equal(3, messages.Count);
 
-        Assert.True(messages.TryDequeue(out var message));
-        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out var value);
+        Assert.True(messages.TryDequeue(out IMessage message));
+        message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceNumber, out object value);
         Assert.Equal(1, value);
         message.Headers.TryGetValue(IntegrationMessageHeaderAccessor.SequenceSize, out value);
         Assert.Equal(3, value);
@@ -287,7 +288,7 @@ public class BroadcastingDispatcherTest
         var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>());
         dispatcher.AddHandler(_targetMock1.Object);
         _targetMock1.Object.HandleMessage(_messageMock.Object);
-        var doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
+        IMessage doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
         _targetMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(doNotReplaceThisMessage, "Mock Exception"));
 
         try
@@ -319,6 +320,7 @@ public class BroadcastingDispatcherTest
     public void TestNoHandlerWithRequiredSubscriber()
     {
         var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), true);
+
         try
         {
             dispatcher.Dispatch(_messageMock.Object);
@@ -334,6 +336,7 @@ public class BroadcastingDispatcherTest
     public void TestNoHandlerWithExecutorWithRequiredSubscriber()
     {
         var dispatcher = new BroadcastingDispatcher(_provider.GetService<IApplicationContext>(), TaskScheduler.Default, true);
+
         try
         {
             dispatcher.Dispatch(_messageMock.Object);
@@ -347,13 +350,13 @@ public class BroadcastingDispatcherTest
 
     private sealed class MessageStoringTestEndpoint : IMessageHandler
     {
-        public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
+        public readonly ConcurrentQueue<IMessage> MessageList;
 
-        public ConcurrentQueue<IMessage> MessageList;
+        public string ServiceName { get; set; } = nameof(MessageStoringTestEndpoint);
 
         public MessageStoringTestEndpoint(ConcurrentQueue<IMessage> messageList)
         {
-            this.MessageList = messageList;
+            MessageList = messageList;
         }
 
         public void HandleMessage(IMessage message)
@@ -379,7 +382,8 @@ public class BroadcastingDispatcherTest
 
         protected override void QueueTask(Task task)
         {
-            var val = Interlocked.Increment(ref _count);
+            int val = Interlocked.Increment(ref _count);
+
             if (val < _failures.Length && _failures[val])
             {
                 TryExecuteTask(task);

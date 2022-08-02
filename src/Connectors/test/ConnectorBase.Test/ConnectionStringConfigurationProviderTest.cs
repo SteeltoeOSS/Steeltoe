@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
 using Steeltoe.Connector.Redis.Test;
 using Xunit;
@@ -21,9 +22,13 @@ public class ConnectionStringConfigurationProviderTest
     [Fact]
     public void TryGetReadsBasicConnectorConnectionString()
     {
-        var appSettings = new Dictionary<string, string> { { "redis:client:host", "testHost" } };
+        var appSettings = new Dictionary<string, string>
+        {
+            { "redis:client:host", "testHost" }
+        };
+
         var provider = new ConnectionStringConfigurationProvider(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build().Providers);
-        Assert.True(provider.TryGet("connectionstrings:redis", out var connectionString));
+        Assert.True(provider.TryGet("connectionstrings:redis", out string connectionString));
         Assert.Equal("testHost:6379,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionString);
     }
 
@@ -32,13 +37,14 @@ public class ConnectionStringConfigurationProviderTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
-        var provider = new ConnectionStringConfigurationProvider(
-            new ConfigurationBuilder()
-                .AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary)
-                .Build()
-                .Providers);
-        Assert.True(provider.TryGet("connectionstrings:myRedisService", out var connectionString), "TryGet ConnectionStrings:myRedisService");
-        Assert.Equal("192.168.0.103:60287,password=133de7c8-9f3a-4df1-8a10-676ba7ddaa10,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionString);
+
+        var provider = new ConnectionStringConfigurationProvider(new ConfigurationBuilder()
+            .AddInMemoryCollection(RedisCacheTestHelpers.SingleServerAsDictionary).Build().Providers);
+
+        Assert.True(provider.TryGet("connectionstrings:myRedisService", out string connectionString), "TryGet ConnectionStrings:myRedisService");
+
+        Assert.Equal("192.168.0.103:60287,password=133de7c8-9f3a-4df1-8a10-676ba7ddaa10,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false",
+            connectionString);
     }
 
     [Fact]
@@ -59,17 +65,20 @@ public class ConnectionStringConfigurationProviderTest
     [Fact]
     public void ProviderSeesConfigUpdates()
     {
-        var appSettings1 = @"{ ""redis"": { ""client"": { ""host"": ""testHost"" } } }";
-        var appSettings2 = @"{ ""redis"": { ""client"": { ""host"": ""updatedTestHost"" } } }";
+        string appSettings1 = @"{ ""redis"": { ""client"": { ""host"": ""testHost"" } } }";
+        string appSettings2 = @"{ ""redis"": { ""client"": { ""host"": ""updatedTestHost"" } } }";
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appSettings1);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var baseProviders = new ConfigurationBuilder().SetBasePath(directory).AddJsonFile(fileName, false, true).Build().Providers;
-        var provider = new ConnectionStringConfigurationProvider(baseProviders);
-        var token = provider.GetReloadToken();
+        string path = sandbox.CreateFile("appsettings.json", appSettings1);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
 
-        Assert.True(provider.TryGet("connectionstrings:redis", out var connectionString));
+        IEnumerable<IConfigurationProvider> baseProviders =
+            new ConfigurationBuilder().SetBasePath(directory).AddJsonFile(fileName, false, true).Build().Providers;
+
+        var provider = new ConnectionStringConfigurationProvider(baseProviders);
+        IChangeToken token = provider.GetReloadToken();
+
+        Assert.True(provider.TryGet("connectionstrings:redis", out string connectionString));
         Assert.Equal("testHost:6379,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionString);
 
         File.WriteAllText(path, appSettings2);

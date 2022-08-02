@@ -11,7 +11,7 @@ public class JsonStreamConfigurationProviderTest
     [Fact]
     public void Load_LoadsProvidedStream()
     {
-        var environment = @"
+        string environment = @"
                 {
                     ""p-config-server"": [{
                         ""name"": ""myConfigServer"",
@@ -80,11 +80,11 @@ public class JsonStreamConfigurationProviderTest
                     }]
                 }";
 
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
         var provider = new JsonStreamConfigurationProvider(new JsonStreamConfigurationSource(memStream));
         provider.Load();
 
-        Assert.True(provider.TryGet("p-config-server:0:name", out var value));
+        Assert.True(provider.TryGet("p-config-server:0:name", out string value));
         Assert.Equal("myConfigServer", value);
 
         Assert.True(provider.TryGet("p-config-server:0:credentials:uri", out value));

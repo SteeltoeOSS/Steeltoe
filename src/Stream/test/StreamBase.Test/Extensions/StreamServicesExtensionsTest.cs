@@ -31,9 +31,9 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddStreamConfiguration(config);
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateConfigurationServices(serviceProvider);
     }
 
@@ -44,13 +44,13 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddCoreServices();
         container.AddIntegrationServices();
         container.AddBinderServices(config);
         container.AddStreamCoreServices(config);
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateCoreServices(serviceProvider);
     }
 
@@ -61,10 +61,10 @@ public class StreamServicesExtensionsTest
         container.AddOptions();
         container.AddLogging(b => b.AddConsole());
 
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         container.AddSingleton<IConfiguration>(config);
         container.AddStreamServices(config);
-        var serviceProvider = container.BuildServiceProvider();
+        ServiceProvider serviceProvider = container.BuildServiceProvider();
         ValidateConfigurationServices(serviceProvider);
         ValidateCoreServices(serviceProvider);
     }
@@ -73,12 +73,12 @@ public class StreamServicesExtensionsTest
     public void AddStreamsServicesGeneric_AddsServices()
     {
         var serviceCollection = new ServiceCollection();
-        var configuration = new ConfigurationBuilder().Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().Build();
 
         serviceCollection.AddSingleton<IConfiguration>(configuration);
         serviceCollection.AddStreamServices<SampleSink>(configuration);
 
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         Assert.True(provider.GetService<SampleSink>() != null, "SampleSink not found in Container");
 
@@ -101,7 +101,7 @@ public class StreamServicesExtensionsTest
         Assert.NotNull(serviceProvider.GetService<CompositeMessageChannelConfigurer>());
         Assert.NotNull(serviceProvider.GetService<SubscribableChannelBindingTargetFactory>());
         Assert.NotNull(serviceProvider.GetService<MessageSourceBindingTargetFactory>());
-        var factories = serviceProvider.GetServices<IBindingTargetFactory>();
+        IEnumerable<IBindingTargetFactory> factories = serviceProvider.GetServices<IBindingTargetFactory>();
         Assert.Equal(2, factories.Count());
         Assert.NotNull(serviceProvider.GetService<BinderAwareChannelResolver>());
         Assert.NotNull(serviceProvider.GetService<IDestinationResolver<IMessageChannel>>());
@@ -113,7 +113,7 @@ public class StreamServicesExtensionsTest
         Assert.NotNull(serviceProvider.GetService<IStreamListenerResultAdapter>());
         Assert.NotNull(serviceProvider.GetService<OutputBindingLifecycle>());
         Assert.NotNull(serviceProvider.GetService<InputBindingLifecycle>());
-        var lifecycles = serviceProvider.GetServices<ILifecycle>();
+        IEnumerable<ILifecycle> lifecycles = serviceProvider.GetServices<ILifecycle>();
         Assert.Equal(3, lifecycles.Count());
         Assert.NotNull(serviceProvider.GetService<StreamListenerAttributeProcessor>());
     }

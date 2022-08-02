@@ -35,17 +35,17 @@ public static class EndPointExtensions
 
     public static bool IsExposed(this IEndpointOptions options, IManagementOptions managementOptions)
     {
-        if (!string.IsNullOrEmpty(options.Id)
-            && managementOptions is ActuatorManagementOptions actOptions
-            && actOptions.Exposure != null)
+        if (!string.IsNullOrEmpty(options.Id) && managementOptions is ActuatorManagementOptions actOptions && actOptions.Exposure != null)
         {
-            var exclude = actOptions.Exposure.Exclude;
+            List<string> exclude = actOptions.Exposure.Exclude;
+
             if (exclude != null && (exclude.Contains("*") || exclude.Contains(options.Id)))
             {
                 return false;
             }
 
-            var include = actOptions.Exposure.Include;
+            List<string> include = actOptions.Exposure.Include;
+
             if (include != null && (include.Contains("*") || include.Contains(options.Id)))
             {
                 return true;
@@ -64,44 +64,42 @@ public static class EndPointExtensions
 
     public static bool ShouldInvoke(this IEndpoint endpoint, IManagementOptions options, ILogger logger = null)
     {
-        var enabled = endpoint.IsEnabled(options);
-        var exposed = endpoint.IsExposed(options);
+        bool enabled = endpoint.IsEnabled(options);
+        bool exposed = endpoint.IsExposed(options);
         logger?.LogDebug($"endpoint: {endpoint.Id}, contextPath: {options.Path}, enabled: {enabled}, exposed: {exposed}");
         return enabled && exposed;
     }
 
     public static IManagementOptions OptionsForContext(this IEnumerable<IManagementOptions> managementOptions, string requestPath, ILogger logger = null)
     {
-        var match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path));
+        IManagementOptions match = managementOptions.FirstOrDefault(option => requestPath.StartsWith(option.Path));
+
         if (match != null)
         {
             logger?.LogTrace("Request path matched base path owned by {optionsType}", match.GetType().Name);
             return match;
         }
-        else
+
+        try
         {
-            try
+            if (Platform.IsCloudFoundry)
             {
-                if (Platform.IsCloudFoundry)
-                {
-                    return managementOptions.First(option => option is CloudFoundryManagementOptions);
-                }
-                else
-                {
-                    return managementOptions.First(option => option is ActuatorManagementOptions);
-                }
+                return managementOptions.First(option => option is CloudFoundryManagementOptions);
             }
-            catch (InvalidOperationException)
-            {
-                logger?.LogError("Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
-                return managementOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
-            }
+
+            return managementOptions.First(option => option is ActuatorManagementOptions);
+        }
+        catch (InvalidOperationException)
+        {
+            logger?.LogError("Could not find IManagementOptions to match this request, returning first or default ActuatorManagementOptions");
+            return managementOptions.FirstOrDefault() ?? new ActuatorManagementOptions();
         }
     }
 
     public static string GetContextPath(this IEndpointOptions options, IManagementOptions managementOptions)
     {
-        var contextPath = managementOptions.Path;
+        string contextPath = managementOptions.Path;
+
         if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(options.Path))
         {
             contextPath += "/";

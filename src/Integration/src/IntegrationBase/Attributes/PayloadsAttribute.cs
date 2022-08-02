@@ -7,6 +7,8 @@ namespace Steeltoe.Integration.Attributes;
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Parameter)]
 public class PayloadsAttribute : Attribute
 {
+    public virtual string Expression { get; set; }
+
     public PayloadsAttribute()
     {
         Expression = string.Empty;
@@ -16,6 +18,4 @@ public class PayloadsAttribute : Attribute
     {
         Expression = expression;
     }
-
-    public virtual string Expression { get; set; }
 }

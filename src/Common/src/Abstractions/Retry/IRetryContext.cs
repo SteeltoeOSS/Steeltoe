@@ -7,8 +7,8 @@ using Steeltoe.Common.Util;
 namespace Steeltoe.Common.Retry;
 
 /// <summary>
-/// Low-level access to ongoing retry operation. Normally not needed by clients, but can be
-/// used to alter the course of the retry, e.g.force an early termination.
+/// Low-level access to ongoing retry operation. Normally not needed by clients, but can be used to alter the course of the retry, e.g.force an early
+/// termination.
 /// </summary>
 public interface IRetryContext : IAttributeAccessor
 {

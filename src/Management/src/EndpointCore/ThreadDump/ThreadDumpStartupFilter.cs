@@ -10,7 +10,7 @@ namespace Steeltoe.Management.Endpoint.ThreadDump;
 [Obsolete("This class will be removed in a future release, Use Steeltoe.Management.Endpoint.AllActuatorsStartupFilter instead")]
 public class ThreadDumpStartupFilter : IStartupFilter
 {
-    private MediaTypeVersion MediaTypeVersion { get; set; }
+    private MediaTypeVersion MediaTypeVersion { get; }
 
     public ThreadDumpStartupFilter(MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
@@ -22,12 +22,17 @@ public class ThreadDumpStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 switch (MediaTypeVersion)
                 {
-                    case MediaTypeVersion.V1: endpoints.Map<ThreadDumpEndpoint>(); break;
-                    case MediaTypeVersion.V2: endpoints.Map<ThreadDumpEndpointV2>(); break;
+                    case MediaTypeVersion.V1:
+                        endpoints.Map<ThreadDumpEndpoint>();
+                        break;
+                    case MediaTypeVersion.V2:
+                        endpoints.Map<ThreadDumpEndpointV2>();
+                        break;
                 }
             });
         };

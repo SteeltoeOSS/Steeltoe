@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.HeapDump;
 
@@ -24,7 +24,8 @@ public class LinuxHeapDumper : IHeapDumper
 
     public string DumpHeap()
     {
-        var fileName = CreateFileName();
+        string fileName = CreateFileName();
+
         if (_basePathOverride != null)
         {
             fileName = _basePathOverride + fileName;

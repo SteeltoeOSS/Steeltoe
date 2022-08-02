@@ -2,22 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
-using System.Reflection;
-using System.Text;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessageListenerAdapter : AbstractMessageListenerAdapter
 {
     public const string OriginalDefaultListenerMethod = "HandleMessage";
-    private readonly Dictionary<string, string> _queueOrTagToMethodName = new ();
+    private readonly Dictionary<string, string> _queueOrTagToMethodName = new();
 
     public string DefaultListenerMethod { get; set; } = OriginalDefaultListenerMethod;
 
@@ -50,7 +50,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
 
     public void SetQueueOrTagToMethodName(Dictionary<string, string> queueOrTagToMethodName)
     {
-        foreach (var entry in queueOrTagToMethodName)
+        foreach (KeyValuePair<string, string> entry in queueOrTagToMethodName)
         {
             _queueOrTagToMethodName[entry.Key] = entry.Value;
         }
@@ -63,7 +63,7 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
 
     public string RemoveQueueOrTagToMethodName(string queueOrTag)
     {
-        _queueOrTagToMethodName.Remove(queueOrTag, out var previous);
+        _queueOrTagToMethodName.Remove(queueOrTag, out string previous);
         return previous;
     }
 
@@ -71,7 +71,8 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
     {
         // Check whether the delegate is a IMessageListener impl itself.
         // In that case, the adapter will simply act as a pass-through.
-        var delegateListener = Instance;
+        object delegateListener = Instance;
+
         if (delegateListener != this)
         {
             switch (delegateListener)
@@ -86,18 +87,19 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         }
 
         // Regular case: find a handler method reflectively.
-        var convertedMessage = ExtractMessage(message);
-        var methodName = GetListenerMethodName(message, convertedMessage);
+        object convertedMessage = ExtractMessage(message);
+        string methodName = GetListenerMethodName(message, convertedMessage);
+
         if (methodName == null)
         {
-            throw new InvalidOperationException("No default listener method specified: "
-                                                + "Either specify a non-null value for the 'DefaultListenerMethod' property or "
-                                                + "override the 'GetListenerMethodName' method.");
+            throw new InvalidOperationException("No default listener method specified: " +
+                "Either specify a non-null value for the 'DefaultListenerMethod' property or " + "override the 'GetListenerMethodName' method.");
         }
 
         // Invoke the handler method with appropriate arguments.
-        var listenerArguments = BuildListenerArguments(convertedMessage, channel, message);
-        var result = InvokeListenerMethod(methodName, listenerArguments, message);
+        object[] listenerArguments = BuildListenerArguments(convertedMessage, channel, message);
+        object result = InvokeListenerMethod(methodName, listenerArguments, message);
+
         if (result != null)
         {
             HandleResult(new InvocationResult(result, null, null, null, null), message, channel);
@@ -109,17 +111,25 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
     }
 
     protected virtual object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
-        => BuildListenerArguments(extractedMessage);
+    {
+        return BuildListenerArguments(extractedMessage);
+    }
 
     protected virtual object[] BuildListenerArguments(object extractedMessage)
-        => new[] { extractedMessage };
+    {
+        return new[]
+        {
+            extractedMessage
+        };
+    }
 
     protected virtual string GetListenerMethodName(IMessage originalMessage, object extractedMessage)
     {
         if (_queueOrTagToMethodName.Count > 0)
         {
-            var props = originalMessage.Headers;
-            if (!_queueOrTagToMethodName.TryGetValue(props.ConsumerQueue(), out var methodName))
+            IMessageHeaders props = originalMessage.Headers;
+
+            if (!_queueOrTagToMethodName.TryGetValue(props.ConsumerQueue(), out string methodName))
             {
                 _queueOrTagToMethodName.TryGetValue(props.ConsumerTag(), out methodName);
             }
@@ -146,17 +156,17 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
         }
         catch (TargetInvocationException ex)
         {
-            var targetEx = ex.InnerException;
+            Exception targetEx = ex.InnerException;
 
-            throw new ListenerExecutionFailedException(
-                $"Listener method '{methodName}' threw exception", targetEx, originalMessage);
+            throw new ListenerExecutionFailedException($"Listener method '{methodName}' threw exception", targetEx, originalMessage);
         }
         catch (Exception ex)
         {
             var arrayClass = new List<string>();
+
             if (arguments != null)
             {
-                foreach (var argument in arguments)
+                foreach (object argument in arguments)
                 {
                     if (argument != null)
                     {
@@ -166,14 +176,16 @@ public class MessageListenerAdapter : AbstractMessageListenerAdapter
             }
 
             throw new ListenerExecutionFailedException(
-                $"Failed to invoke target method '{methodName}' with argument type = [{string.Join(",", arrayClass)}], value = [{NullSafeToString(arguments)}]", ex, originalMessage);
+                $"Failed to invoke target method '{methodName}' with argument type = [{string.Join(",", arrayClass)}], value = [{NullSafeToString(arguments)}]",
+                ex, originalMessage);
         }
     }
 
     private string NullSafeToString(object[] values)
     {
         var sb = new StringBuilder();
-        foreach (var v in values)
+
+        foreach (object v in values)
         {
             sb.Append(v);
             sb.Append(',');

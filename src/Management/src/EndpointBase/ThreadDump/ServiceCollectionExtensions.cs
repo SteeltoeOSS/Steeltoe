@@ -18,10 +18,18 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Thread Dump actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configuration">Reference to the configuration system.</param>
-    /// <param name="version">The media version to use.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Reference to the configuration system.
+    /// </param>
+    /// <param name="version">
+    /// The media version to use.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddThreadDumpActuatorServices(this IServiceCollection services, IConfiguration configuration, MediaTypeVersion version)
     {
         if (services == null)
@@ -35,6 +43,7 @@ public static partial class ServiceCollectionExtensions
         }
 
         var options = new ThreadDumpEndpointOptions(configuration);
+
         if (version == MediaTypeVersion.V1)
         {
             services.TryAddSingleton<ThreadDumpEndpoint>();

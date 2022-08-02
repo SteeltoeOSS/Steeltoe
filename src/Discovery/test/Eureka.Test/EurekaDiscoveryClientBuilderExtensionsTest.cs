@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint;
-using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -17,14 +17,14 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesNoExceptionWithoutManagementOptions()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -35,8 +35,12 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesUsesManagementOptions()
     {
-        var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        var appSettings = new Dictionary<string, string>
+        {
+            { "management:endpoints:health:path", "/non-default" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
@@ -44,7 +48,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -60,7 +64,8 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "Eureka:Client:EurekaServer:ConnectTimeoutSeconds", "1" },
             { "Eureka:Client:EurekaServer:RetryCount", "1" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
@@ -68,7 +73,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var timer = new Stopwatch();
         timer.Start();
@@ -80,7 +85,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesIgnoresCFManagementOptions()
     {
-        var vcap_services = @"
+        string vcap_services = @"
                 {
                     ""p-service-registry"": [{
                         ""credentials"": {
@@ -102,10 +107,16 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
                         ]
                     }]
                 }";
+
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
-        var appSettings = new Dictionary<string, string> { { "management:endpoints:health:path", "/non-default" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var appSettings = new Dictionary<string, string>
+        {
+            { "management:endpoints:health:path", "/non-default" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
@@ -113,7 +124,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);
@@ -129,7 +140,8 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
             { "eureka:instance:healthcheckurlpath", "/customHealth" },
             { "eureka:instance:statuspageurlpath", "/customStatus" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.RegisterDefaultApplicationInstanceInfo();
@@ -137,7 +149,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
         var extension = new EurekaDiscoveryClientExtension();
 
         extension.ApplyServices(serviceCollection);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
 
         var options = provider.GetRequiredService<IOptions<EurekaInstanceOptions>>();
         Assert.NotNull(options);

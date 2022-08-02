@@ -18,28 +18,27 @@ public class SteeltoeExporter : MetricsExporter
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
+    internal override Func<Batch<Metric>, ExportResult> OnExport { get; set; }
+
+    public override Func<int, bool> Collect { get; set; }
+
     // private List<Metric> _metricsView;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="SteeltoeExporter"/> class.
+    /// Initializes a new instance of the <see cref="SteeltoeExporter" /> class.
     /// </summary>
-    /// <param name="options">Options for the exporter.</param>
+    /// <param name="options">
+    /// Options for the exporter.
+    /// </param>
     internal SteeltoeExporter(IPullMetricsExporterOptions options)
     {
         ScrapeResponseCacheDurationMilliseconds = options?.ScrapeResponseCacheDurationMilliseconds ?? 5000;
         CollectionManager = new PullMetricsCollectionManager(this);
     }
 
-    public override Func<int, bool> Collect { get; set; }
-
     public override ExportResult Export(in Batch<Metric> metrics)
     {
         return OnExport(metrics);
-    }
-
-    internal override Func<Batch<Metric>, ExportResult> OnExport
-    {
-        get; set;
     }
 
     internal override ICollectionResponse GetCollectionResponse(Batch<Metric> metrics = default)
@@ -61,17 +60,19 @@ public class SteeltoeExporter : MetricsExporter
         return new SteeltoeCollectionResponse(response.MetricSamples, response.AvailableTags, DateTime.Now);
     }
 
-    private void GetMetricsCollection(Batch<Metric> metrics, out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
+    private void GetMetricsCollection(Batch<Metric> metrics, out MetricsCollection<List<MetricSample>> metricSamples,
+        out MetricsCollection<List<MetricTag>> availTags)
     {
         metricSamples = new MetricsCollection<List<MetricSample>>();
         availTags = new MetricsCollection<List<MetricTag>>();
 
-        foreach (var metric in metrics)
+        foreach (Metric metric in metrics)
         {
-            foreach (var metricPoint in metric.GetMetricPoints())
+            foreach (MetricPoint metricPoint in metric.GetMetricPoints())
             {
                 var tags = new List<KeyValuePair<string, string>>();
-                foreach (var tag in metricPoint.Tags)
+
+                foreach (KeyValuePair<string, object> tag in metricPoint.Tags)
                 {
                     tags.Add(new KeyValuePair<string, string>(tag.Key, tag.Value.ToString()));
                 }
@@ -80,7 +81,8 @@ public class SteeltoeExporter : MetricsExporter
 
                 if (metric.MetricType.IsHistogram())
                 {
-                    var sum = metricPoint.GetHistogramSum();
+                    double sum = metricPoint.GetHistogramSum();
+
                     if (metric.Unit == "s")
                     {
                         metricSamples[metric.Name].Add(new MetricSample(MetricStatistic.TotalTime, sum, tags));
@@ -109,10 +111,10 @@ public class SteeltoeExporter : MetricsExporter
 
     private void UpdateAvailableTags(MetricsCollection<List<MetricTag>> availTags, string name, IEnumerable<KeyValuePair<string, string>> labels)
     {
-        foreach (var label in labels)
+        foreach (KeyValuePair<string, string> label in labels)
         {
-            var currentTags = availTags[name];
-            var existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
+            List<MetricTag> currentTags = availTags[name];
+            MetricTag existingTag = currentTags.FirstOrDefault(tag => tag.Tag.Equals(label.Key, StringComparison.OrdinalIgnoreCase));
 
             if (existingTag != null)
             {
@@ -120,7 +122,10 @@ public class SteeltoeExporter : MetricsExporter
             }
             else
             {
-                currentTags.Add(new MetricTag(label.Key, new HashSet<string>(new List<string> { label.Value })));
+                currentTags.Add(new MetricTag(label.Key, new HashSet<string>(new List<string>
+                {
+                    label.Value
+                })));
             }
         }
     }

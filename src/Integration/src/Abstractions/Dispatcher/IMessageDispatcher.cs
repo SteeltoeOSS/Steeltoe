@@ -39,22 +39,36 @@ public interface IMessageDispatcher
     /// <summary>
     /// Adds a handler to the dispatcher.
     /// </summary>
-    /// <param name="handler">the handler to add.</param>
-    /// <returns>true if added.</returns>
+    /// <param name="handler">
+    /// the handler to add.
+    /// </param>
+    /// <returns>
+    /// true if added.
+    /// </returns>
     bool AddHandler(IMessageHandler handler);
 
     /// <summary>
     /// Remove the specified handler from the dispatcher.
     /// </summary>
-    /// <param name="handler">the handler to remove.</param>
-    /// <returns>true if removed.</returns>
+    /// <param name="handler">
+    /// the handler to remove.
+    /// </param>
+    /// <returns>
+    /// true if removed.
+    /// </returns>
     bool RemoveHandler(IMessageHandler handler);
 
     /// <summary>
     /// Dispatch the message to one or more handlers.
     /// </summary>
-    /// <param name="message">the message to dispatch.</param>
-    /// <param name="cancellationToken">token used to cancel the operation.</param>
-    /// <returns>the value returned from the handler.</returns>
+    /// <param name="message">
+    /// the message to dispatch.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// token used to cancel the operation.
+    /// </param>
+    /// <returns>
+    /// the value returned from the handler.
+    /// </returns>
     bool Dispatch(IMessage message, CancellationToken cancellationToken = default);
 }

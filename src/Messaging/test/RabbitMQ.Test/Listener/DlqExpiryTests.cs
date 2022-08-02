@@ -3,7 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Xunit;
 
@@ -24,9 +26,9 @@ public class DlqExpiryTests : IClassFixture<DlqStartupFixture>
     [Fact]
     public void TestExpiredDies()
     {
-        var template = _provider.GetRabbitTemplate();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
         var listener = _provider.GetService<Listener>();
-        var context = _provider.GetApplicationContext();
+        IApplicationContext context = _provider.GetApplicationContext();
         var queue1 = context.GetService<IQueue>("test.expiry.main");
 
         template.ConvertAndSend(queue1.QueueName, "foo");

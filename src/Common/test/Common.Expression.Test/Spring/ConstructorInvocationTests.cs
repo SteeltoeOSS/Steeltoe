@@ -32,13 +32,13 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         // On 3 it will exit normally
         // In each case it increments the Tester field 'counter' when invoked
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.ConstructorInvocationTests$Tester(#bar).I");
+        IExpression expr = parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.ConstructorInvocationTests$Tester(#bar).I");
 
         // Normal exit
-        var eContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
         eContext.SetRootObject(new Tester());
         eContext.SetVariable("bar", 3);
-        var o = expr.GetValue(eContext);
+        object o = expr.GetValue(eContext);
         Assert.Equal(3, o);
         Assert.Equal(1, parser.ParseExpression("Counter").GetValue(eContext));
 
@@ -88,7 +88,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective constructor accessor is the only one by default
-        var constructorResolvers = ctx.ConstructorResolvers;
+        List<IConstructorResolver> constructorResolvers = ctx.ConstructorResolvers;
         Assert.Single(constructorResolvers);
 
         var dummy = new DummyConstructorResolver();
@@ -150,7 +150,6 @@ public class ConstructorInvocationTests : AbstractExpressionTests
     }
 
     [Fact(Skip = "Currently failing as with new ObjectToArray converter closest constructor")]
-
     public void TestArgumentConversion01()
     {
         // Closest ctor will be new String(String) and converter supports Double>String
@@ -185,6 +184,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
         public Tester(int i)
         {
             Counter++;
+
             if (i == 1)
             {
                 throw new ArgumentException("ArgumentException for 1");
@@ -200,7 +200,7 @@ public class ConstructorInvocationTests : AbstractExpressionTests
                 throw new TestException();
             }
 
-            this.I = i;
+            I = i;
         }
 
         public Tester(PlaceOfBirth pob)

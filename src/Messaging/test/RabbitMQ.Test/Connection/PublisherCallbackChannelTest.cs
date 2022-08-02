@@ -5,7 +5,7 @@
 using Moq;
 using Steeltoe.Common.Util;
 using Xunit;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -16,18 +16,19 @@ public class PublisherCallbackChannelTest
     {
         var mockChannel = new Mock<RC.IModel>();
         var npe = new AtomicBoolean();
-        mockChannel.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
-            .Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
+
+        mockChannel.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>()).Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
+        {
+            try
             {
-                try
-                {
-                    handler.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty));
-                }
-                catch (NullReferenceException)
-                {
-                    npe.Value = true;
-                }
-            });
+                handler.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty));
+            }
+            catch (NullReferenceException)
+            {
+                npe.Value = true;
+            }
+        });
+
         var channel = new PublisherCallbackChannel(mockChannel.Object);
         Assert.False(npe.Value);
         channel.Close();

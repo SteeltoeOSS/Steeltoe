@@ -30,10 +30,7 @@ public abstract class AbstractExpressionEvaluator
             return _evaluationContext;
         }
 
-        set
-        {
-            _evaluationContext = value;
-        }
+        set => _evaluationContext = value;
     }
 
     public IIntegrationServices IntegrationServices
@@ -53,10 +50,7 @@ public abstract class AbstractExpressionEvaluator
             return _messageBuilderFactory;
         }
 
-        set
-        {
-            _messageBuilderFactory = value;
-        }
+        set => _messageBuilderFactory = value;
     }
 
     public ITypeConverter TypeConverter { get; set; } = new ServiceFactoryTypeConverter();
@@ -91,6 +85,7 @@ public abstract class AbstractExpressionEvaluator
             if (ApplicationContext != null)
             {
                 var conversionService = ApplicationContext.GetService<IConversionService>(IntegrationUtils.IntegrationConversionServiceBeanName);
+
                 if (conversionService != null)
                 {
                     TypeConverter.ConversionService = conversionService;
@@ -115,12 +110,16 @@ public abstract class AbstractExpressionEvaluator
         catch (Exception ex)
         {
             Exception cause = null;
+
             if (ex is EvaluationException)
             {
                 cause = ex.InnerException;
             }
 
-            var wrapped = IntegrationServicesUtils.WrapInHandlingExceptionIfNecessary(message, $"Expression evaluation failed: {expression.ExpressionString}", cause ?? ex);
+            Exception wrapped =
+                IntegrationServicesUtils.WrapInHandlingExceptionIfNecessary(message, $"Expression evaluation failed: {expression.ExpressionString}",
+                    cause ?? ex);
+
             if (wrapped != ex)
             {
                 throw wrapped;

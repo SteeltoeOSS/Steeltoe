@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -58,12 +58,12 @@ public class MethodInvocationTests : AbstractExpressionTests
         // On 3 it will exit normally
         // In each case it increments the Inventor field 'counter' when invoked
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("ThrowException(#bar)");
+        IExpression expr = parser.ParseExpression("ThrowException(#bar)");
 
         // Normal exit
-        var eContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
         eContext.SetVariable("bar", 3);
-        var o = expr.GetValue(eContext);
+        object o = expr.GetValue(eContext);
         Assert.Equal(3, o);
         Assert.Equal(1, parser.ParseExpression("Counter").GetValue(eContext));
 
@@ -109,7 +109,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         // On 3 it will exit normally
         // In each case it increments the Inventor field 'counter' when invoked
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("ThrowException(#bar)");
+        IExpression expr = parser.ParseExpression("ThrowException(#bar)");
 
         Context.SetVariable("bar", 2);
         var ex = Assert.Throws<SystemException>(() => expr.GetValue(Context));
@@ -125,7 +125,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         // On 3 it will exit normally
         // In each case it increments the Inventor field 'counter' when invoked
         var parser = new SpelExpressionParser();
-        var expr = parser.ParseExpression("ThrowException(#bar)");
+        IExpression expr = parser.ParseExpression("ThrowException(#bar)");
 
         Context.SetVariable("bar", 4);
         var ex = Assert.Throws<ExpressionInvocationTargetException>(() => expr.GetValue(Context));
@@ -143,7 +143,7 @@ public class MethodInvocationTests : AbstractExpressionTests
 
         // Filter will be called but not do anything, so first doit() will be invoked
         var expr = (SpelExpression)parser.ParseExpression("DoIt(1)");
-        var result = expr.GetValue<string>(context);
+        string result = expr.GetValue<string>(context);
         Assert.Equal("1", result);
         Assert.True(filter.FilterCalled);
 
@@ -179,7 +179,7 @@ public class MethodInvocationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective method accessor is the only one by default
-        var methodResolvers = ctx.MethodResolvers;
+        List<IMethodResolver> methodResolvers = ctx.MethodResolvers;
         Assert.Single(methodResolvers);
 
         var dummy = new DummyMethodResolver();
@@ -232,27 +232,29 @@ public class MethodInvocationTests : AbstractExpressionTests
     [Fact]
     public void TestMethodOfClass()
     {
-        var expression = Parser.ParseExpression("FullName");
-        var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
+        IExpression expression = Parser.ParseExpression("FullName");
+        object value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
         Assert.Equal("System.String", value);
     }
 
     [Fact]
     public void InvokeMethodWithoutConversion()
     {
-        var bytes = new byte[100];
+        byte[] bytes = new byte[100];
+
         var context = new StandardEvaluationContext(bytes)
         {
             ServiceResolver = new TestServiceResolver()
         };
-        var expression = Parser.ParseExpression("@service.HandleBytes(#root)");
-        var outBytes = expression.GetValue<byte[]>(context);
+
+        IExpression expression = Parser.ParseExpression("@service.HandleBytes(#root)");
+        byte[] outBytes = expression.GetValue<byte[]>(context);
         Assert.Same(bytes, outBytes);
     }
 
     public class TestServiceResolver : IServiceResolver
     {
-        public BytesService Service => new ();
+        public BytesService Service => new();
 
         public object Resolve(IEvaluationContext context, string serviceName)
         {
@@ -270,7 +272,8 @@ public class MethodInvocationTests : AbstractExpressionTests
         {
             FilterCalled = true;
             var forRemoval = new List<MethodInfo>();
-            foreach (var method in methods)
+
+            foreach (MethodInfo method in methods)
             {
                 if (RemoveIfNotAnnotated && !IsAnnotated(method))
                 {
@@ -278,7 +281,7 @@ public class MethodInvocationTests : AbstractExpressionTests
                 }
             }
 
-            foreach (var method in forRemoval)
+            foreach (MethodInfo method in forRemoval)
             {
                 methods.Remove(method);
             }

@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Collections;
-using System.Text;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 
@@ -38,6 +38,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
     public virtual void FromMessageHeaders(IMessageHeaders source, RC.IBasicProperties target, Encoding charset)
     {
         target.Headers = ConvertHeadersIfNecessary(source);
+
         if (source.Timestamp.HasValue)
         {
             target.Timestamp = new RC.AmqpTimestamp(source.Timestamp.Value);
@@ -97,13 +98,15 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             target.ContentEncoding = source.ContentEncoding();
         }
 
-        var correlationId = source.CorrelationId();
+        string correlationId = source.CorrelationId();
+
         if (!string.IsNullOrEmpty(correlationId))
         {
             target.CorrelationId = correlationId;
         }
 
-        var replyTo = source.ReplyTo();
+        string replyTo = source.ReplyTo();
+
         if (replyTo != null)
         {
             target.ReplyTo = replyTo;
@@ -113,15 +116,18 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
     public virtual IMessageHeaders ToMessageHeaders(RC.IBasicProperties source, Envelope envelope, Encoding charset)
     {
         var target = new RabbitHeaderAccessor();
-        var headers = source.Headers;
+        IDictionary<string, object> headers = source.Headers;
+
         if (headers?.Count > 0)
         {
-            foreach (var entry in headers)
+            foreach (KeyValuePair<string, object> entry in headers)
             {
-                var key = entry.Key;
+                string key = entry.Key;
+
                 if (RabbitMessageHeaders.XDelay.Equals(key))
                 {
-                    var value = entry.Value;
+                    object value = entry.Value;
+
                     if (value is int intVal)
                     {
                         target.ReceivedDelay = intVal;
@@ -140,7 +146,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         target.AppId = source.AppId;
         target.ClusterId = source.ClusterId;
         target.Type = source.Type;
-        var deliveryMode = (int)source.DeliveryMode;
+        int deliveryMode = (int)source.DeliveryMode;
         target.ReceivedDeliveryMode = (MessageDeliveryMode)Enum.ToObject(typeof(MessageDeliveryMode), deliveryMode);
         target.DeliveryMode = null;
         target.Expiration = source.Expiration;
@@ -149,13 +155,15 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         target.ContentType = source.ContentType;
 
         target.ContentEncoding = source.ContentEncoding;
-        var correlationId = source.CorrelationId;
+        string correlationId = source.CorrelationId;
+
         if (!string.IsNullOrEmpty(correlationId))
         {
             target.CorrelationId = correlationId;
         }
 
-        var replyTo = source.ReplyTo;
+        string replyTo = source.ReplyTo;
+
         if (replyTo != null)
         {
             target.ReplyTo = replyTo;
@@ -181,12 +189,11 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         }
 
         var writableHeaders = new Dictionary<string, object>();
-        foreach (var entry in source)
+
+        foreach (KeyValuePair<string, object> entry in source)
         {
-            if (!entry.Key.StartsWith(MessageHeaders.Internal) &&
-                !entry.Key.StartsWith(RabbitMessageHeaders.RabbitProperty) &&
-                entry.Key != MessageHeaders.IdName &&
-                entry.Key != MessageHeaders.TimestampName)
+            if (!entry.Key.StartsWith(MessageHeaders.Internal) && !entry.Key.StartsWith(RabbitMessageHeaders.RabbitProperty) &&
+                entry.Key != MessageHeaders.IdName && entry.Key != MessageHeaders.TimestampName)
             {
                 writableHeaders[entry.Key] = ConvertHeaderValueIfNecessary(entry.Value);
             }
@@ -197,19 +204,16 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
 
     private object ConvertHeaderValueIfNecessary(object valueArg)
     {
-        var value = valueArg;
+        object value = valueArg;
+
         if (value == null)
         {
             return null;
         }
 
-        var valid = value is string || value is byte[]
-                                    || value is bool || value is byte || value is sbyte
-                                    || value is uint || value is int || value is long
-                                    || value is float || value is double || value is decimal
-                                    || value is short || value is RC.AmqpTimestamp
-                                    || value is IList || value is IDictionary || value is RC.BinaryTableValue
-                                    || value is object[] || value is Type;
+        bool valid = value is string || value is byte[] || value is bool || value is byte || value is sbyte || value is uint || value is int || value is long ||
+            value is float || value is double || value is decimal || value is short || value is RC.AmqpTimestamp || value is IList || value is IDictionary ||
+            value is RC.BinaryTableValue || value is object[] || value is Type;
 
         if (!valid)
         {
@@ -217,8 +221,9 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         }
         else if (value is object[] array)
         {
-            var writableList = new object[array.Length];
-            for (var i = 0; i < array.Length; i++)
+            object[] writableList = new object[array.Length];
+
+            for (int i = 0; i < array.Length; i++)
             {
                 writableList[i] = ConvertHeaderValueIfNecessary(array[i]);
             }
@@ -228,7 +233,8 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         else if (value is IList list)
         {
             var writableList = new List<object>();
-            foreach (var listValue in list)
+
+            foreach (object listValue in list)
             {
                 writableList.Add(ConvertHeaderValueIfNecessary(listValue));
             }
@@ -238,6 +244,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         else if (value is IDictionary originalMap)
         {
             var writableMap = new Dictionary<object, object>();
+
             foreach (DictionaryEntry entry in originalMap)
             {
                 writableMap[entry.Key] = ConvertHeaderValueIfNecessary(entry.Value);
@@ -277,7 +284,8 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             case List<object> listValue:
 
                 var convertedList = new List<object>();
-                foreach (var item in listValue)
+
+                foreach (object item in listValue)
                 {
                     convertedList.Add(ConvertLongStringIfNecessary(item, charset));
                 }
@@ -287,7 +295,8 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
             case IDictionary<string, object> dictValue:
 
                 var convertedMap = new Dictionary<string, object>();
-                foreach (var entry in dictValue)
+
+                foreach (KeyValuePair<string, object> entry in dictValue)
                 {
                     convertedMap.Add(entry.Key, ConvertLongStringIfNecessary(entry.Value, charset));
                 }

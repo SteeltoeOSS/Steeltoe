@@ -8,10 +8,10 @@ namespace Steeltoe.Integration.Channel;
 
 public class DirectChannelWriter : AbstractSubscribableChannelWriter
 {
+    public new DirectChannel Channel => (DirectChannel)channel;
+
     public DirectChannelWriter(DirectChannel channel, ILogger logger = null)
         : base(channel, logger)
     {
     }
-
-    public new DirectChannel Channel => (DirectChannel)channel;
 }

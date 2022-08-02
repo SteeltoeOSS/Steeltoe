@@ -2,16 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
-using System.Threading.Tasks;
 
 [MemoryDiagnoser]
 public class Program
 {
-    static void Main()
+    private static void Main()
     {
         BenchmarkRunner.Run<Program>();
     }
@@ -23,8 +23,9 @@ public class Program
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -37,8 +38,9 @@ public class Program
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             await channel.Writer.WriteAsync(message);
         }
@@ -56,4 +58,3 @@ public class Program
         }
     }
 }
-

@@ -13,9 +13,10 @@ public class MutableMessageTest
     public void TestMessageIdTimestampRemains()
     {
         var uuid = Guid.NewGuid();
-        var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        var payload = new object();
+        object payload = new object();
+
         var headerDictionary = new Dictionary<string, object>
         {
             { MessageHeaders.IdName, uuid },
@@ -32,7 +33,7 @@ public class MutableMessageTest
     [Fact]
     public void TestMessageHeaderIsSettable()
     {
-        var payload = new object();
+        object payload = new object();
         var headerDictionary = new Dictionary<string, object>();
         var additional = new Dictionary<string, object>();
 
@@ -51,10 +52,10 @@ public class MutableMessageTest
     [Fact]
     public void TestMessageHeaderIsSerializable()
     {
-        var payload = new object();
+        object payload = new object();
 
         var uuid = Guid.NewGuid();
-        var timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
         // UUID as string; timestamp as string
         var headerDictionaryStrings = new Dictionary<string, object>
@@ -62,13 +63,14 @@ public class MutableMessageTest
             { MessageHeaders.IdName, uuid.ToString() },
             { MessageHeaders.TimestampName, timestamp.ToString() }
         };
+
         var mutableMessageStrings = new MutableMessage<object>(payload, headerDictionaryStrings);
         Assert.Equal(uuid.ToString(), mutableMessageStrings.Headers.Id);
         Assert.Equal(timestamp, mutableMessageStrings.Headers.Timestamp);
 
         // UUID as byte[]; timestamp as Long
         var headerDictionaryByte = new Dictionary<string, object>();
-        var uuidAsBytes = uuid.ToByteArray();
+        byte[] uuidAsBytes = uuid.ToByteArray();
 
         headerDictionaryByte.Add(MessageHeaders.IdName, uuidAsBytes);
         headerDictionaryByte.Add(MessageHeaders.TimestampName, timestamp);

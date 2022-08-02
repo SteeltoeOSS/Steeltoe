@@ -2,39 +2,42 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.Common.LoadBalancer;
 
 public class RoundRobinLoadBalancer : ILoadBalancer
 {
-    public string IndexKeyPrefix = "LoadBalancerIndex-";
-    internal readonly IServiceInstanceProvider ServiceInstanceProvider;
-    internal readonly IDistributedCache DistributedCache;
-    internal readonly ConcurrentDictionary<string, int> NextIndexForService = new ();
     private readonly DistributedCacheEntryOptions _cacheOptions;
     private readonly ILogger _logger;
+    internal readonly IServiceInstanceProvider ServiceInstanceProvider;
+    internal readonly IDistributedCache DistributedCache;
+    internal readonly ConcurrentDictionary<string, int> NextIndexForService = new();
+    public string IndexKeyPrefix = "LoadBalancerIndex-";
 
-    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null, DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
+    public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null,
+        DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)
     {
-        this.ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
-        this.DistributedCache = distributedCache;
+        ServiceInstanceProvider = serviceInstanceProvider ?? throw new ArgumentNullException(nameof(serviceInstanceProvider));
+        DistributedCache = distributedCache;
         _cacheOptions = cacheEntryOptions;
         _logger = logger;
-        _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", this.DistributedCache == null);
+        _logger?.LogDebug("Distributed cache was provided to load balancer: {DistributedCacheIsNull}", DistributedCache == null);
     }
 
     public virtual async Task<Uri> ResolveServiceInstanceAsync(Uri request)
     {
-        var serviceName = request.Host;
+        string serviceName = request.Host;
         _logger?.LogTrace("ResolveServiceInstance {serviceName}", serviceName);
-        var cacheKey = IndexKeyPrefix + serviceName;
+        string cacheKey = IndexKeyPrefix + serviceName;
 
         // get instances for this service
-        var availableServiceInstances = await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions).ConfigureAwait(false);
+        IList<IServiceInstance> availableServiceInstances =
+            await ServiceInstanceProvider.GetInstancesWithCacheAsync(serviceName, DistributedCache, _cacheOptions).ConfigureAwait(false);
+
         if (!availableServiceInstances.Any())
         {
             _logger?.LogError("No service instances available for {serviceName}", serviceName);
@@ -42,14 +45,15 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         }
 
         // get next instance, or wrap back to first instance if we reach the end of the list
-        var nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
+        int nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
+
         if (nextInstanceIndex >= availableServiceInstances.Count)
         {
             nextInstanceIndex = 0;
         }
 
         // get next instance, or wrap back to first instance if we reach the end of the list
-        var serviceInstance = availableServiceInstances[nextInstanceIndex];
+        IServiceInstance serviceInstance = availableServiceInstances[nextInstanceIndex];
         _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
         await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
         return new Uri(serviceInstance.Uri, request.PathAndQuery);
@@ -62,10 +66,12 @@ public class RoundRobinLoadBalancer : ILoadBalancer
 
     private async Task<int> GetOrInitNextIndex(string cacheKey, int initValue)
     {
-        var index = initValue;
+        int index = initValue;
+
         if (DistributedCache != null)
         {
-            var cacheEntry = await DistributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+            byte[] cacheEntry = await DistributedCache.GetAsync(cacheKey).ConfigureAwait(false);
+
             if (cacheEntry != null && cacheEntry.Length > 0)
             {
                 index = BitConverter.ToInt16(cacheEntry, 0);

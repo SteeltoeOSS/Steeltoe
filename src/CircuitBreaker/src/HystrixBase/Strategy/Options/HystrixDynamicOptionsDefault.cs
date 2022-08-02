@@ -17,13 +17,14 @@ public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
 
     public bool GetBoolean(string name, bool fallback)
     {
-        var val = _configSource[name];
+        string val = _configSource[name];
+
         if (val == null)
         {
             return fallback;
         }
 
-        if (bool.TryParse(val, out var result))
+        if (bool.TryParse(val, out bool result))
         {
             return result;
         }
@@ -33,13 +34,14 @@ public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
 
     public int GetInteger(string name, int fallback)
     {
-        var val = _configSource[name];
+        string val = _configSource[name];
+
         if (val == null)
         {
             return fallback;
         }
 
-        if (int.TryParse(val, out var result))
+        if (int.TryParse(val, out int result))
         {
             return result;
         }
@@ -49,13 +51,14 @@ public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
 
     public long GetLong(string name, long fallback)
     {
-        var val = _configSource[name];
+        string val = _configSource[name];
+
         if (val == null)
         {
             return fallback;
         }
 
-        if (long.TryParse(val, out var result))
+        if (long.TryParse(val, out long result))
         {
             return result;
         }
@@ -65,7 +68,8 @@ public class HystrixDynamicOptionsDefault : IHystrixDynamicOptions
 
     public string GetString(string name, string fallback)
     {
-        var val = _configSource[name];
+        string val = _configSource[name];
+
         if (val == null)
         {
             return fallback;

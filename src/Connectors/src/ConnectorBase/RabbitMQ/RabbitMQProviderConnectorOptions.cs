@@ -9,31 +9,13 @@ namespace Steeltoe.Connector.RabbitMQ;
 
 public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string RabbitMQClientSectionPrefix = "rabbitmq:client";
+    private const string RabbitClientSectionPrefix = "rabbit:client";
     public const string DefaultScheme = "amqp";
     public const string DefaultSslScheme = "amqps";
     public const string DefaultServer = "127.0.0.1";
     public const int DefaultPort = 5672;
     public const int DefaultSslPort = 5671;
-    private const string RabbitMQClientSectionPrefix = "rabbitmq:client";
-    private const string RabbitClientSectionPrefix = "rabbit:client";
-
-    public RabbitMQProviderConnectorOptions()
-    {
-    }
-
-    public RabbitMQProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(RabbitClientSectionPrefix);
-        section.Bind(this);
-
-        var sectionMQ = config.GetSection(RabbitMQClientSectionPrefix);
-        sectionMQ.Bind(this);
-    }
 
     public bool SslEnabled { get; set; }
 
@@ -51,6 +33,24 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public string VirtualHost { get; set; }
 
+    public RabbitMQProviderConnectorOptions()
+    {
+    }
+
+    public RabbitMQProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(RabbitClientSectionPrefix);
+        section.Bind(this);
+
+        IConfigurationSection sectionMQ = config.GetSection(RabbitMQClientSectionPrefix);
+        sectionMQ.Bind(this);
+    }
+
     public override string ToString()
     {
         if (!string.IsNullOrEmpty(Uri))
@@ -58,7 +58,7 @@ public class RabbitMQProviderConnectorOptions : AbstractServiceConnectorOptions
             return Uri;
         }
 
-        var uri = SslEnabled
+        UriInfo uri = SslEnabled
             ? new UriInfo(DefaultSslScheme, Server, SslPort, Username, Password, VirtualHost)
             : new UriInfo(DefaultScheme, Server, Port, Username, Password, VirtualHost);
 

@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class HeadersExchange : AbstractExchange, IHeadersExchange
 {
+    public override string Type { get; } = ExchangeType.Headers;
+
     public HeadersExchange(string name)
         : base(name)
     {
@@ -20,6 +22,4 @@ public class HeadersExchange : AbstractExchange, IHeadersExchange
         : base(name, durable, autoDelete, arguments)
     {
     }
-
-    public override string Type { get; } = ExchangeType.Headers;
 }

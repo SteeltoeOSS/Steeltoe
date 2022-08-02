@@ -10,6 +10,10 @@ public class RabbitBindingsOptions
 {
     public const string Prefix = "spring:cloud:stream:rabbit";
 
+    public Dictionary<string, RabbitBindingOptions> Bindings { get; set; }
+
+    public RabbitBindingOptions Default { get; set; }
+
     // spring.cloud.stream.rabbit.bindings.<channelName>.consumer
     // spring.cloud.stream.rabbit.bindings.<channelName>.producer
     // spring.cloud.stream.rabbit.default.consumer   NOTE: Different from Spring
@@ -30,20 +34,17 @@ public class RabbitBindingsOptions
         PostProcess();
     }
 
-    public Dictionary<string, RabbitBindingOptions> Bindings { get; set; }
-
-    public RabbitBindingOptions Default { get; set; }
-
     public RabbitConsumerOptions GetRabbitConsumerOptions(string binding)
     {
-        var results = Default.Consumer;
+        RabbitConsumerOptions results = Default.Consumer;
 
         if (binding == null)
         {
             return results;
         }
 
-        Bindings.TryGetValue(binding, out var options);
+        Bindings.TryGetValue(binding, out RabbitBindingOptions options);
+
         if (options != null && options.Consumer != null)
         {
             results = options.Consumer;
@@ -54,8 +55,9 @@ public class RabbitBindingsOptions
 
     public RabbitProducerOptions GetRabbitProducerOptions(string binding)
     {
-        var results = Default.Producer;
-        Bindings.TryGetValue(binding, out var options);
+        RabbitProducerOptions results = Default.Producer;
+        Bindings.TryGetValue(binding, out RabbitBindingOptions options);
+
         if (options != null && options.Producer != null)
         {
             results = options.Producer;
@@ -73,9 +75,10 @@ public class RabbitBindingsOptions
         Default.Producer.PostProcess();
         Bindings ??= new Dictionary<string, RabbitBindingOptions>();
 
-        foreach (var binding in Bindings)
+        foreach (KeyValuePair<string, RabbitBindingOptions> binding in Bindings)
         {
-            var bo = binding.Value;
+            RabbitBindingOptions bo = binding.Value;
+
             if (bo.Consumer != null)
             {
                 bo.Consumer.PostProcess(Default.Consumer);

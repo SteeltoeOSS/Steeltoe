@@ -48,22 +48,23 @@ public class ExchangeBuilder : AbstractBuilder
         {
             return new DirectExchange(exchangeName);
         }
-        else if (ExchangeType.Topic.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+
+        if (ExchangeType.Topic.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new TopicExchange(exchangeName);
         }
-        else if (ExchangeType.FanOut.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+
+        if (ExchangeType.FanOut.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new FanOutExchange(exchangeName);
         }
-        else if (ExchangeType.Headers.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
+
+        if (ExchangeType.Headers.Equals(exchangeType, StringComparison.OrdinalIgnoreCase))
         {
             return new HeadersExchange(exchangeName);
         }
-        else
-        {
-            return new CustomExchange(exchangeName, exchangeType);
-        }
+
+        return new CustomExchange(exchangeName, exchangeType);
     }
 
     public ExchangeBuilder AutoDelete()
@@ -86,8 +87,9 @@ public class ExchangeBuilder : AbstractBuilder
 
     public ExchangeBuilder WithArguments(Dictionary<string, object> arguments)
     {
-        var args = GetOrCreateArguments();
-        foreach (var arg in arguments)
+        Dictionary<string, object> args = GetOrCreateArguments();
+
+        foreach (KeyValuePair<string, object> arg in arguments)
         {
             args.Add(arg.Key, arg.Value);
         }
@@ -131,7 +133,7 @@ public class ExchangeBuilder : AbstractBuilder
             throw new ArgumentNullException(nameof(admins));
         }
 
-        foreach (var a in admins)
+        foreach (object a in admins)
         {
             if (a == null)
             {
@@ -153,6 +155,7 @@ public class ExchangeBuilder : AbstractBuilder
         exchange.IsDelayed = _delayed;
         exchange.IgnoreDeclarationExceptions = _ignoreDeclarationExceptions;
         exchange.ShouldDeclare = _declare;
+
         if (_declaringAdmins != null && _declaringAdmins.Count > 0)
         {
             exchange.SetAdminsThatShouldDeclare(_declaringAdmins.ToArray());

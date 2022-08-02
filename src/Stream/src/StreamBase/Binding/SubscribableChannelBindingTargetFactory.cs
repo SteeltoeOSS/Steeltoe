@@ -26,6 +26,7 @@ public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFact
         {
             ServiceName = name
         };
+
         chan.SetAttribute("type", "input");
         _messageChannelConfigurer.ConfigureInputChannel(chan, name);
 
@@ -42,6 +43,7 @@ public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFact
         {
             ServiceName = name
         };
+
         chan.SetAttribute("type", "output");
         _messageChannelConfigurer.ConfigureOutputChannel(chan, name);
 
@@ -56,8 +58,9 @@ public class SubscribableChannelBindingTargetFactory : AbstractBindingTargetFact
     {
         if (chan is IChannelInterceptorAware aware)
         {
-            var interceptors = ApplicationContext.GetServices<IChannelInterceptor>();
-            foreach (var interceptor in interceptors)
+            IEnumerable<IChannelInterceptor> interceptors = ApplicationContext.GetServices<IChannelInterceptor>();
+
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
                 aware.AddInterceptor(interceptor);
             }

@@ -18,7 +18,7 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         _provider = services.BuildServiceProvider();
@@ -29,11 +29,11 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(channel.Send(message));
         Assert.Equal(1, handler.Count);
     }
@@ -43,11 +43,11 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
         Assert.Equal(1, handler.Count);
     }
@@ -57,13 +57,14 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(channel.Send(message));
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -76,13 +77,14 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var handler = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
@@ -95,14 +97,15 @@ public class PublishSubscribeChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var handler1 = new CounterHandler();
         var handler2 = new CounterHandler();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         channel.Subscribe(handler1);
         channel.Subscribe(handler2);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }

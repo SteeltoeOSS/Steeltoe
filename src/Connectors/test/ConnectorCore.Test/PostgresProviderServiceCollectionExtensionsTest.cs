@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Data;
 using Xunit;
 
 namespace Steeltoe.Connector.PostgreSql.Test;
@@ -63,7 +63,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_NoVCAPs_AddsPostgresConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddPostgresConnection(config);
 
@@ -75,7 +75,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
     public void AddPostgresConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -90,7 +90,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddPostgresConnection(config));
         Assert.Contains("Multiple", ex.Message);
@@ -105,13 +105,13 @@ public class PostgresProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.SingleServerVcapEdb);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddPostgresConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
         Assert.Contains("5432", connString);
         Assert.Contains("postgres.testcloud.com", connString);
@@ -131,13 +131,13 @@ public class PostgresProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddPostgresConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("Host=2980cfbe-e198-46fd-8f81-966584bb4678.postgres.database.azure.com;", connString);
         Assert.Contains("Port=5432;", connString);
         Assert.Contains("Database=g01w0qnrb7;", connString);
@@ -157,13 +157,13 @@ public class PostgresProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddPostgresConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("Host=10.194.45.174;", connString);
         Assert.Contains("Port=5432;", connString);
         Assert.Contains("Database=postgresample;", connString);
@@ -179,7 +179,7 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddPostgresConnection(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
@@ -193,10 +193,10 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<PostgresConnectionInfo>();
+        Connection ci = cm.Get<PostgresConnectionInfo>();
         services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
         services.AddPostgresConnection(config);
@@ -211,10 +211,10 @@ public class PostgresProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<PostgresConnectionInfo>();
+        Connection ci = cm.Get<PostgresConnectionInfo>();
         services.AddHealthChecks().AddNpgSql(ci.ConnectionString, name: ci.Name);
 
         services.AddPostgresConnection(config, addSteeltoeHealthChecks: true);

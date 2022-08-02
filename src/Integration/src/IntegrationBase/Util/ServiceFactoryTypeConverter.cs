@@ -10,6 +10,8 @@ namespace Steeltoe.Integration.Util;
 
 public class ServiceFactoryTypeConverter : ITypeConverter
 {
+    public IConversionService ConversionService { get; set; }
+
     public ServiceFactoryTypeConverter()
     {
         ConversionService = DefaultConversionService.Singleton;
@@ -19,8 +21,6 @@ public class ServiceFactoryTypeConverter : ITypeConverter
     {
         ConversionService = conversionService;
     }
-
-    public IConversionService ConversionService { get; set; }
 
     public bool CanConvert(Type sourceType, Type targetType)
     {
@@ -40,7 +40,7 @@ public class ServiceFactoryTypeConverter : ITypeConverter
         }
 
         if (sourceType != null && ((sourceType == typeof(IMessageHeaders) && targetType == typeof(IMessageHeaders)) ||
-                                   (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive)))
+            (targetType.IsAssignableFrom(sourceType) && sourceType.IsArray && sourceType.IsPrimitive)))
         {
             return value;
         }

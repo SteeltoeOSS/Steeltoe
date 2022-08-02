@@ -14,13 +14,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
 public class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
-    private readonly Dictionary<string, string> _quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+    private readonly Dictionary<string, string> _quickTests = new()
+    {
+        { "spring:cloud:config:timeout", "10" }
+    };
 
     [Fact]
     public void AddConfigServer_ThrowsIfConfigBuilderNull()
     {
         const IConfigurationBuilder configurationBuilder = null;
-        var environment = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
 
         var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(environment));
         Assert.Contains(nameof(configurationBuilder), ex.Message);
@@ -39,13 +42,13 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
-        var environment = HostingHelpers.GetHostingEnvironment();
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment();
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
     }
@@ -53,13 +56,13 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithLoggerFactorySucceeds()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(_quickTests);
         var loggerFactory = new LoggerFactory();
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
         configurationBuilder.AddConfigServer(environment, loggerFactory);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
         Assert.NotNull(configServerProvider.Logger);
@@ -68,7 +71,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -100,21 +103,21 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
@@ -142,7 +145,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_ValidateCertificates_DisablesCertValidation()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""cloud"": {
@@ -153,23 +156,24 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                       }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.ValidateCertificates);
     }
@@ -177,7 +181,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""cloud"": {
@@ -188,23 +192,24 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                       }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
 
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.ValidateCertificates);
     }
@@ -212,7 +217,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        var appsettings = @"
+        string appsettings = @"
 <settings>
     <spring>
       <cloud>
@@ -228,22 +233,23 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
       </cloud>
     </spring>
 </settings>";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddXmlFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
@@ -261,7 +267,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        var appsettings = @"
+        string appsettings = @"
 [spring:cloud:config]
     uri=https://foo.com:9999
     enabled=false
@@ -271,22 +277,23 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     username=myUsername
     password=myPassword
 ";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddIniFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
@@ -304,28 +311,32 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
     {
-        var appsettings = new[]
+        string[] appsettings = new[]
         {
             "spring:cloud:config:enabled=false",
             "--spring:cloud:config:failFast=false",
             "/spring:cloud:config:uri=https://foo.com:9999",
-            "--spring:cloud:config:name", "myName",
-            "/spring:cloud:config:label", "myLabel",
-            "--spring:cloud:config:username", "myUsername",
-            "--spring:cloud:config:password", "myPassword"
+            "--spring:cloud:config:name",
+            "myName",
+            "/spring:cloud:config:label",
+            "myLabel",
+            "--spring:cloud:config:username",
+            "myUsername",
+            "--spring:cloud:config:password",
+            "myPassword"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddCommandLine(appsettings);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
@@ -343,7 +354,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_HandlesPlaceHolders()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""foo"": {
                         ""bar"": {
@@ -369,22 +380,22 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
 
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
         configurationBuilder.AddJsonFile(fileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
 
         Assert.False(settings.Enabled);
         Assert.False(settings.FailFast);
@@ -399,7 +410,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
     {
-        var vcap_application = @" 
+        string vcap_application = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -427,7 +438,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        var vcap_services = @"
+        string vcap_services = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -450,7 +461,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -458,17 +469,18 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
-        var appSettingsFileName = Path.GetFileName(appsettingsPath);
+        string appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
+        string appSettingsFileName = Path.GetFileName(appsettingsPath);
 
-        var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
-        var vcapAppFileName = Path.GetFileName(vcapAppPath);
+        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
+        string vcapAppFileName = Path.GetFileName(vcapAppPath);
 
-        var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
-        var vcapServicesFileName = Path.GetFileName(vcapServicesPath);
+        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
+        string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
@@ -477,13 +489,13 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddJsonFile(vcapServicesFileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
 
         // Check settings
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
         Assert.True(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);
@@ -500,7 +512,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
     {
-        var vcap_application = @" 
+        string vcap_application = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -528,7 +540,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        var vcap_services = @"
+        string vcap_services = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -556,7 +568,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -564,17 +576,18 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
-        var appSettingsFileName = Path.GetFileName(appSettingsPath);
+        string appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
+        string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
-        var vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
-        var vcapAppFileName = Path.GetFileName(vcapAppPath);
+        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
+        string vcapAppFileName = Path.GetFileName(vcapAppPath);
 
-        var vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
-        var vcapServicesFileName = Path.GetFileName(vcapServicesPath);
+        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
+        string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(sandbox.FullPath);
@@ -583,13 +596,13 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddJsonFile(vcapServicesFileName);
 
         configurationBuilder.AddConfigServer(environment);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
 
         Assert.NotNull(configServerProvider);
 
         // Check settings
-        var settings = configServerProvider.Settings;
+        ConfigServerClientSettings settings = configServerProvider.Settings;
         Assert.True(settings.Enabled);
         Assert.False(settings.FailFast);
         Assert.Equal("https://config-ba6b6079-163b-45d2-8932-e2eca0d1e49a.wise.com", settings.Uri);

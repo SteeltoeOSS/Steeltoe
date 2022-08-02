@@ -11,6 +11,8 @@ namespace Steeltoe.Integration.Channel;
 
 public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
 {
+    protected UnicastingDispatcher UnicastingDispatcher => (UnicastingDispatcher)Dispatcher;
+
     public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILogger logger = null)
         : this(context, executor, new RoundRobinLoadBalancingStrategy(), logger)
     {
@@ -21,7 +23,8 @@ public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
     {
     }
 
-    public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, string name, ILogger logger = null)
+    public TaskSchedulerChannel(IApplicationContext context, TaskScheduler executor, ILoadBalancingStrategy loadBalancingStrategy, string name,
+        ILogger logger = null)
         : base(context, new UnicastingDispatcher(context, executor, logger), executor, name, logger)
     {
         if (executor == null)
@@ -35,6 +38,4 @@ public class TaskSchedulerChannel : AbstractTaskSchedulerChannel
         Writer = new TaskSchedulerChannelWriter(this, logger);
         Reader = new NotSupportedChannelReader();
     }
-
-    protected UnicastingDispatcher UnicastingDispatcher => (UnicastingDispatcher)Dispatcher;
 }

@@ -13,7 +13,7 @@ public static class MeterProviderBuilderExtensions
     {
         if (viewRegistry != null)
         {
-            foreach (var view in viewRegistry.Views)
+            foreach (KeyValuePair<string, MetricStreamConfiguration> view in viewRegistry.Views)
             {
                 builder.AddView(view.Key, view.Value);
             }
@@ -24,13 +24,15 @@ public static class MeterProviderBuilderExtensions
 
     public static MeterProviderBuilder AddExporters(this MeterProviderBuilder builder, IEnumerable<MetricsExporter> exporters)
     {
-        var steeltoeExporter = exporters.OfType<SteeltoeExporter>().FirstOrDefault();
+        SteeltoeExporter steeltoeExporter = exporters.OfType<SteeltoeExporter>().FirstOrDefault();
+
         if (steeltoeExporter != null)
         {
             builder = builder.AddSteeltoeExporter(steeltoeExporter);
         }
 
-        var prometheusExporter = exporters.OfType<SteeltoePrometheusExporter>().FirstOrDefault();
+        SteeltoePrometheusExporter prometheusExporter = exporters.OfType<SteeltoePrometheusExporter>().FirstOrDefault();
+
         if (prometheusExporter != null)
         {
             builder = builder.AddReader(new BaseExportingMetricReader(prometheusExporter));

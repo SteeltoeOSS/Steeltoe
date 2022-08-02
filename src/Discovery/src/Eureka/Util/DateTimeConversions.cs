@@ -6,7 +6,7 @@ namespace Steeltoe.Discovery.Eureka.Util;
 
 public static class DateTimeConversions
 {
-    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public static long ToJavaMillis(DateTime dt)
     {
@@ -20,13 +20,13 @@ public static class DateTimeConversions
             return 0;
         }
 
-        var javaTicks = dt.Ticks - BaseTime.Ticks;
+        long javaTicks = dt.Ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
     public static DateTime FromJavaMillis(long javaMillis)
     {
-        var dotNetTicks = (javaMillis * 10000) + BaseTime.Ticks;
+        long dotNetTicks = javaMillis * 10000 + BaseTime.Ticks;
         return new DateTime(dotNetTicks, DateTimeKind.Utc);
     }
 }

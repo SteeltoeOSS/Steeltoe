@@ -12,7 +12,7 @@ public class SqlServerTypeLocatorTest
     public void Property_Can_Locate_ConnectionType()
     {
         // arrange -- handled by including System.Data.SqlClient
-        var type = SqlServerTypeLocator.SqlConnection;
+        Type type = SqlServerTypeLocator.SqlConnection;
 
         Assert.NotNull(type);
     }
@@ -20,8 +20,12 @@ public class SqlServerTypeLocatorTest
     [Fact]
     public void Throws_When_ConnectionType_NotFound()
     {
-        var types = SqlServerTypeLocator.ConnectionTypeNames;
-        SqlServerTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
+        string[] types = SqlServerTypeLocator.ConnectionTypeNames;
+
+        SqlServerTypeLocator.ConnectionTypeNames = new[]
+        {
+            "something-Wrong"
+        };
 
         var exception = Assert.Throws<TypeLoadException>(() => SqlServerTypeLocator.SqlConnection);
 

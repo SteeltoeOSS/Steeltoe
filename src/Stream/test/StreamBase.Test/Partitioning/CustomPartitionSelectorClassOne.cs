@@ -8,12 +8,12 @@ namespace Steeltoe.Stream.Partitioning;
 
 public class CustomPartitionSelectorClassOne : IPartitionSelectorStrategy
 {
+    public string ServiceName { get; set; }
+
     public CustomPartitionSelectorClassOne()
     {
         ServiceName = GetType().Name;
     }
-
-    public string ServiceName { get; set; }
 
     public int SelectPartition(object key, int partitionCount)
     {

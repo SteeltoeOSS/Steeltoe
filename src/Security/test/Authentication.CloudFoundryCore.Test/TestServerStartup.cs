@@ -23,16 +23,15 @@ public class TestServerStartup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddOptions();
+
         services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            })
-            .AddCloudFoundryOAuth(Configuration);
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
+        {
+            options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+        }).AddCloudFoundryOAuth(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)

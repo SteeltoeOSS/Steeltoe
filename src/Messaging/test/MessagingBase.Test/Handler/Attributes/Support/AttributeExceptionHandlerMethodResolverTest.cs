@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class AttributeExceptionHandlerMethodResolverTest
 {
-    private AttributeExceptionHandlerMethodResolver _resolver = new (typeof(ExceptionController));
+    private AttributeExceptionHandlerMethodResolver _resolver = new(typeof(ExceptionController));
 
     [Fact]
     public void ResolveMethodFromAttribute()
@@ -123,7 +123,7 @@ public class AttributeExceptionHandlerMethodResolverTest
         [MessageExceptionHandler(typeof(BindException), typeof(ArgumentException))]
         public string Handle1(Exception ex)
         {
-            return ex.GetType().Name;  // ClassUtils.getShortName(ex.getClass());
+            return ex.GetType().Name; // ClassUtils.getShortName(ex.getClass());
         }
 
         [MessageExceptionHandler]

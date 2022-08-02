@@ -8,9 +8,15 @@ public class AtomicReferenceArray<T>
 {
     private readonly T[] _array;
 
-    public AtomicReferenceArray(int length)
+    public int Length
     {
-        _array = new T[length];
+        get
+        {
+            lock (_array)
+            {
+                return _array.Length;
+            }
+        }
     }
 
     public T this[int index]
@@ -32,22 +38,16 @@ public class AtomicReferenceArray<T>
         }
     }
 
+    public AtomicReferenceArray(int length)
+    {
+        _array = new T[length];
+    }
+
     public T[] ToArray()
     {
         lock (_array)
         {
             return (T[])_array.Clone();
-        }
-    }
-
-    public int Length
-    {
-        get
-        {
-            lock (_array)
-            {
-                return _array.Length;
-            }
         }
     }
 }

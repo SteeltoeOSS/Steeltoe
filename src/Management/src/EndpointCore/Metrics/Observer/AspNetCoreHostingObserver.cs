@@ -2,24 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class AspNetCoreHostingObserver : MetricsObserver
 {
-    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
-
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";
+    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
     private readonly string _statusTagKey = "status";
     private readonly string _exceptionTagKey = "exception";
@@ -33,7 +32,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
         : base(DefaultObserverName, DiagnosticName, options, logger)
     {
         SetPathMatcher(new Regex(options.IngressIgnorePattern));
-        var meter = OpenTelemetryMetrics.Meter;
+        Meter meter = OpenTelemetryMetrics.Meter;
 
         _viewRegistry = viewRegistry ?? throw new ArgumentNullException(nameof(viewRegistry));
         _responseTime = meter.CreateHistogram<double>("http.server.requests.seconds", "s", "measures the duration of the inbound request in seconds");
@@ -67,7 +66,8 @@ public class AspNetCoreHostingObserver : MetricsObserver
             return;
         }
 
-        var current = Activity.Current;
+        Activity current = Activity.Current;
+
         if (current == null)
         {
             return;
@@ -98,7 +98,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            var labelSets = GetLabelSets(arg);
+            IEnumerable<KeyValuePair<string, object>> labelSets = GetLabelSets(arg);
 
             _serverCount.Record(1, labelSets.AsReadonlySpan());
             _responseTime.Record(current.Duration.TotalSeconds, labelSets.AsReadonlySpan());
@@ -107,9 +107,9 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
     protected internal IEnumerable<KeyValuePair<string, object>> GetLabelSets(HttpContext arg)
     {
-        var uri = arg.Request.Path.ToString();
-        var statusCode = arg.Response.StatusCode.ToString();
-        var exception = GetException(arg);
+        string uri = arg.Request.Path.ToString();
+        string statusCode = arg.Response.StatusCode.ToString();
+        string exception = GetException(arg);
 
         return new Dictionary<string, object>
         {
@@ -123,6 +123,7 @@ public class AspNetCoreHostingObserver : MetricsObserver
     protected internal string GetException(HttpContext arg)
     {
         var exception = arg.Features.Get<IExceptionHandlerFeature>();
+
         if (exception != null && exception.Error != null)
         {
             return exception.Error.GetType().Name;

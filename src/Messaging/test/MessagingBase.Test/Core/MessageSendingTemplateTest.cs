@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System.Text;
 using Xunit;
 using HeadersDictionary = System.Collections.Generic.IDictionary<string, object>;
 
@@ -23,6 +23,7 @@ public class MessageSendingTemplateTest
     {
         _template = new TestMessageSendingTemplate();
         _postProcessor = new TestMessagePostProcessor();
+
         _headers = new Dictionary<string, object>
         {
             { "key", "value" }
@@ -32,7 +33,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public async Task SendAsync()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         _template.DefaultSendDestination = "home";
         await _template.SendAsync(message);
 
@@ -43,7 +44,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public async Task SendAsyncToDestination()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         await _template.SendAsync("somewhere", message);
 
         Assert.Equal("somewhere", _template.Destination);
@@ -53,7 +54,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public async Task SendAsyncMissingDestination()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         await Assert.ThrowsAsync<InvalidOperationException>(() => _template.SendAsync(message));
     }
 
@@ -111,12 +112,12 @@ public class MessageSendingTemplateTest
         var accessor = new MessageHeaderAccessor();
         accessor.SetHeader("foo", "bar");
         accessor.LeaveMutable = true;
-        var messageHeaders = accessor.MessageHeaders;
+        IMessageHeaders messageHeaders = accessor.MessageHeaders;
 
         _template.MessageConverter = new StringMessageConverter();
         await _template.ConvertAndSendAsync("somewhere", "payload", messageHeaders);
 
-        var actual = _template.Message.Headers;
+        IMessageHeaders actual = _template.Message.Headers;
         Assert.Same(messageHeaders, actual);
         Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.ContentType]);
         Assert.Equal("bar", actual["foo"]);
@@ -154,7 +155,11 @@ public class MessageSendingTemplateTest
     [Fact]
     public async Task ConvertAndSendAsyncNoMatchingConverter()
     {
-        var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
+        var converter = new CompositeMessageConverter(new List<IMessageConverter>
+        {
+            new NewtonJsonMessageConverter()
+        });
+
         _template.MessageConverter = converter;
 
         _headers.Add(MessageHeaders.ContentType, MimeTypeUtils.ApplicationXml);
@@ -164,7 +169,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public void Send()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         _template.DefaultSendDestination = "home";
         _template.Send(message);
 
@@ -175,7 +180,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public void SendToDestination()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         _template.Send("somewhere", message);
 
         Assert.Equal("somewhere", _template.Destination);
@@ -185,7 +190,7 @@ public class MessageSendingTemplateTest
     [Fact]
     public void SendMissingDestination()
     {
-        var message = Message.Create("payload");
+        IMessage<string> message = Message.Create("payload");
         Assert.Throws<InvalidOperationException>(() => _template.Send(message));
     }
 
@@ -243,12 +248,12 @@ public class MessageSendingTemplateTest
         var accessor = new MessageHeaderAccessor();
         accessor.SetHeader("foo", "bar");
         accessor.LeaveMutable = true;
-        var messageHeaders = accessor.MessageHeaders;
+        IMessageHeaders messageHeaders = accessor.MessageHeaders;
 
         _template.MessageConverter = new StringMessageConverter();
         _template.ConvertAndSend("somewhere", "payload", messageHeaders);
 
-        var actual = _template.Message.Headers;
+        IMessageHeaders actual = _template.Message.Headers;
         Assert.Same(messageHeaders, actual);
         Assert.Equal(new MimeType("text", "plain", Encoding.UTF8), actual[MessageHeaders.ContentType]);
         Assert.Equal("bar", actual["foo"]);
@@ -286,7 +291,11 @@ public class MessageSendingTemplateTest
     [Fact]
     public void ConvertAndSendNoMatchingConverter()
     {
-        var converter = new CompositeMessageConverter(new List<IMessageConverter> { new NewtonJsonMessageConverter() });
+        var converter = new CompositeMessageConverter(new List<IMessageConverter>
+        {
+            new NewtonJsonMessageConverter()
+        });
+
         _template.MessageConverter = converter;
 
         _headers.Add(MessageHeaders.ContentType, MimeTypeUtils.ApplicationXml);

@@ -8,22 +8,6 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public static class TestStartupExtensions
 {
-    public enum EndpointNames
-    {
-        Cloudfoundry,
-        Hypermedia,
-        Info,
-        Metrics,
-        Loggers,
-        Health,
-        Trace,
-        DbMigrations,
-        Env,
-        Mappings,
-        Refresh,
-        ThreadDump
-    }
-
     public static IWebHostBuilder StartupByEpName(this IWebHostBuilder builder, EndpointNames endpointName)
     {
         return endpointName switch
@@ -40,7 +24,23 @@ public static class TestStartupExtensions
             EndpointNames.Mappings => builder.UseStartup<MappingsStartup>(),
             EndpointNames.Refresh => builder.UseStartup<RefreshStartup>(),
             EndpointNames.ThreadDump => builder.UseStartup<ThreadDumpStartup>(),
-            _ => builder,
+            _ => builder
         };
+    }
+
+    public enum EndpointNames
+    {
+        Cloudfoundry,
+        Hypermedia,
+        Info,
+        Metrics,
+        Loggers,
+        Health,
+        Trace,
+        DbMigrations,
+        Env,
+        Mappings,
+        Refresh,
+        ThreadDump
     }
 }

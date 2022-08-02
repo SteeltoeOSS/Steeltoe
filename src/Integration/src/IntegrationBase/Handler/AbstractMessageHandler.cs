@@ -14,12 +14,6 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
 {
     private IIntegrationServices _integrationServices;
 
-    protected AbstractMessageHandler(IApplicationContext context)
-    {
-        ApplicationContext = context;
-        ServiceName = GetType().FullName;
-    }
-
     public IIntegrationServices IntegrationServices
     {
         get
@@ -31,16 +25,19 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
 
     public IApplicationContext ApplicationContext { get; }
 
-    public virtual string ComponentType
-    {
-        get { return "message-handler"; }
-    }
+    public virtual string ComponentType => "message-handler";
 
     public virtual string ServiceName { get; set; }
 
     public virtual string ComponentName { get; set; }
 
     public int Order => AbstractOrdered.LowestPrecedence - 1;
+
+    protected AbstractMessageHandler(IApplicationContext context)
+    {
+        ApplicationContext = context;
+        ServiceName = GetType().FullName;
+    }
 
     public virtual void HandleMessage(IMessage message)
     {
@@ -60,7 +57,8 @@ public abstract class AbstractMessageHandler : IMessageHandler, IOrdered
         }
         catch (Exception e)
         {
-            var wrapped = IntegrationUtils.WrapInHandlingExceptionIfNecessary(message, $"error occurred in message handler [{this}]", e);
+            Exception wrapped = IntegrationUtils.WrapInHandlingExceptionIfNecessary(message, $"error occurred in message handler [{this}]", e);
+
             if (wrapped != e)
             {
                 throw wrapped;

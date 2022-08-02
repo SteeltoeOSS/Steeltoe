@@ -2,29 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.Handler.Attributes;
-using Steeltoe.Messaging.Handler.Attributes.Support;
-using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using System.Reflection;
 using System.Text;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
+using Steeltoe.Messaging.Converter;
+using Steeltoe.Messaging.Handler.Attributes;
+using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
+using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
 {
-    public MethodRabbitListenerEndpoint(
-        IApplicationContext applicationContext,
-        MethodInfo method,
-        object instance,
-        ILoggerFactory loggerFactory = null)
-        : base(applicationContext, loggerFactory)
-    {
-        Method = method;
-        Instance = instance;
-    }
-
     public MethodInfo Method { get; set; }
 
     public object Instance { get; set; }
@@ -35,6 +26,13 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
 
     public IRabbitListenerErrorHandler ErrorHandler { get; set; }
 
+    public MethodRabbitListenerEndpoint(IApplicationContext applicationContext, MethodInfo method, object instance, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, loggerFactory)
+    {
+        Method = method;
+        Instance = instance;
+    }
+
     protected override IMessageListener CreateMessageListener(IMessageListenerContainer container)
     {
         if (MessageHandlerMethodFactory == null)
@@ -42,15 +40,17 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
             throw new InvalidOperationException("Could not create message listener - MessageHandlerMethodFactory not set");
         }
 
-        var messageListener = CreateMessageListenerInstance();
+        MessagingMessageListenerAdapter messageListener = CreateMessageListenerInstance();
         messageListener.HandlerAdapter = ConfigureListenerAdapter(messageListener);
-        var replyToAddress = GetDefaultReplyToAddress();
+        string replyToAddress = GetDefaultReplyToAddress();
+
         if (replyToAddress != null)
         {
             messageListener.SetResponseAddress(replyToAddress);
         }
 
-        var messageConverter = MessageConverter;
+        ISmartMessageConverter messageConverter = MessageConverter;
+
         if (messageConverter != null)
         {
             messageListener.MessageConverter = messageConverter;
@@ -66,7 +66,7 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
 
     protected virtual HandlerAdapter ConfigureListenerAdapter(MessagingMessageListenerAdapter messageListener)
     {
-        var invocableHandlerMethod = MessageHandlerMethodFactory.CreateInvocableHandlerMethod(Instance, Method);
+        IInvocableHandlerMethod invocableHandlerMethod = MessageHandlerMethodFactory.CreateInvocableHandlerMethod(Instance, Method);
         return new HandlerAdapter(invocableHandlerMethod);
     }
 
@@ -74,46 +74,35 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
     {
         if (BatchListener)
         {
-            return new BatchMessagingMessageListenerAdapter(
-                ApplicationContext,
-                Instance,
-                Method,
-                ReturnExceptions,
-                ErrorHandler,
-                BatchingStrategy,
+            return new BatchMessagingMessageListenerAdapter(ApplicationContext, Instance, Method, ReturnExceptions, ErrorHandler, BatchingStrategy,
                 LoggerFactory?.CreateLogger(typeof(BatchMessagingMessageListenerAdapter)));
         }
-        else
-        {
-            return new MessagingMessageListenerAdapter(
-                ApplicationContext,
-                Instance,
-                Method,
-                ReturnExceptions,
-                ErrorHandler,
-                LoggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
-        }
+
+        return new MessagingMessageListenerAdapter(ApplicationContext, Instance, Method, ReturnExceptions, ErrorHandler,
+            LoggerFactory?.CreateLogger(typeof(MessagingMessageListenerAdapter)));
     }
 
     protected override StringBuilder GetEndpointDescription()
     {
-        return base.GetEndpointDescription()
-            .Append(" | bean='").Append(Instance).Append('\'')
-            .Append(" | method='").Append(Method).Append('\'');
+        return base.GetEndpointDescription().Append(" | bean='").Append(Instance).Append('\'').Append(" | method='").Append(Method).Append('\'');
     }
 
     private string GetDefaultReplyToAddress()
     {
-        var listenerMethod = Method;
+        MethodInfo listenerMethod = Method;
+
         if (listenerMethod != null)
         {
             var ann = listenerMethod.GetCustomAttribute<SendToAttribute>();
+
             if (ann != null)
             {
-                var destinations = ann.Destinations;
+                string[] destinations = ann.Destinations;
+
                 if (destinations.Length > 1)
                 {
-                    throw new InvalidOperationException($"Invalid SendToAttribute on '{listenerMethod}' one destination must be set (got {string.Join(",", destinations)})");
+                    throw new InvalidOperationException(
+                        $"Invalid SendToAttribute on '{listenerMethod}' one destination must be set (got {string.Join(",", destinations)})");
                 }
 
                 return destinations.Length == 1 ? ResolveSendTo(destinations[0]) : string.Empty;
@@ -127,8 +116,9 @@ public class MethodRabbitListenerEndpoint : AbstractRabbitListenerEndpoint
     {
         if (ApplicationContext != null)
         {
-            var resolvedValue = ExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
-            var result = Resolver.Evaluate(resolvedValue, ExpressionContext);
+            string resolvedValue = ExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
+            object result = Resolver.Evaluate(resolvedValue, ExpressionContext);
+
             if (result is string strResult)
             {
                 return strResult;

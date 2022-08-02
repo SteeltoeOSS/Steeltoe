@@ -11,7 +11,9 @@ public class MySqlProviderConnectorFactory
 {
     private readonly MySqlServiceInfo _info;
     private readonly MySqlProviderConnectorOptions _config;
-    private readonly MySqlProviderConfigurer _configurer = new ();
+    private readonly MySqlProviderConfigurer _configurer = new();
+
+    protected Type ConnectorType { get; set; }
 
     public MySqlProviderConnectorFactory()
     {
@@ -24,12 +26,11 @@ public class MySqlProviderConnectorFactory
         ConnectorType = type;
     }
 
-    protected Type ConnectorType { get; set; }
-
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -50,6 +51,9 @@ public class MySqlProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
+        return ReflectionHelpers.CreateInstance(ConnectorType, new object[]
+        {
+            connectionString
+        });
     }
 }

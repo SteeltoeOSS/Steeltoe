@@ -2,19 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using System.Text;
 
 namespace Steeltoe.Integration.Transformer;
 
 public class JsonToObjectTransformer : AbstractTransformer
 {
-    private readonly DefaultTypeMapper _defaultTypeMapper = new ();
+    private readonly DefaultTypeMapper _defaultTypeMapper = new();
 
     public Type TargetType { get; set; }
 
@@ -32,6 +32,7 @@ public class JsonToObjectTransformer : AbstractTransformer
                 ProcessDictionaryKeys = false
             }
         };
+
         Settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
@@ -46,9 +47,10 @@ public class JsonToObjectTransformer : AbstractTransformer
 
     protected override object DoTransform(IMessage message)
     {
-        var headers = message.Headers;
-        var removeHeaders = false;
-        var targetClass = ObtainResolvableTypeFromHeadersIfAny(headers);
+        IMessageHeaders headers = message.Headers;
+        bool removeHeaders = false;
+        Type targetClass = ObtainResolvableTypeFromHeadersIfAny(headers);
+
         if (targetClass == null)
         {
             targetClass = TargetType;
@@ -58,8 +60,9 @@ public class JsonToObjectTransformer : AbstractTransformer
             removeHeaders = true;
         }
 
-        var payload = message.Payload;
+        object payload = message.Payload;
         object result;
+
         switch (payload)
         {
             case string sPayload:
@@ -67,7 +70,7 @@ public class JsonToObjectTransformer : AbstractTransformer
                 break;
             case byte[] bPayload:
             {
-                var contentAsString = DefaultCharset.GetString(bPayload);
+                string contentAsString = DefaultCharset.GetString(bPayload);
                 result = JsonConvert.DeserializeObject(contentAsString, targetClass, Settings);
                 break;
             }
@@ -78,15 +81,15 @@ public class JsonToObjectTransformer : AbstractTransformer
 
         if (removeHeaders)
         {
-            return MessageBuilderFactory
-                .WithPayload(result)
-                .CopyHeaders(headers)
-                .RemoveHeaders(MessageHeaders.TypeId, MessageHeaders.ContentTypeId, MessageHeaders.KeyTypeId)
-                .Build();
+            return MessageBuilderFactory.WithPayload(result).CopyHeaders(headers)
+                .RemoveHeaders(MessageHeaders.TypeId, MessageHeaders.ContentTypeId, MessageHeaders.KeyTypeId).Build();
         }
 
         return result;
     }
 
-    private Type ObtainResolvableTypeFromHeadersIfAny(IMessageHeaders headers) => _defaultTypeMapper.ToType(headers);
+    private Type ObtainResolvableTypeFromHeadersIfAny(IMessageHeaders headers)
+    {
+        return _defaultTypeMapper.ToType(headers);
+    }
 }

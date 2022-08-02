@@ -11,40 +11,13 @@ namespace Steeltoe.Management.Tracing;
 public class TracingOptions : ITracingOptions
 {
     internal const string ConfigPrefix = "management:tracing";
-    internal const string DefaultIngressIgnorePattern = "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
+    internal const string DefaultIngressIgnorePattern =
+        "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*";
     internal const int DefaultMaxPayloadSizeInBytes = 4096;
     private readonly IApplicationInstanceInfo _applicationInstanceInfo;
-
-    public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(ConfigPrefix);
-        if (section != null)
-        {
-            section.Bind(this);
-        }
-
-        _applicationInstanceInfo = appInfo;
-
-        if (string.IsNullOrEmpty(IngressIgnorePattern))
-        {
-            IngressIgnorePattern = DefaultIngressIgnorePattern;
-        }
-
-        if (string.IsNullOrEmpty(EgressIgnorePattern))
-        {
-            EgressIgnorePattern = DefaultEgressIgnorePattern;
-        }
-    }
-
-    internal TracingOptions()
-    {
-    }
 
     /// <inheritdoc />
     public string Name => _applicationInstanceInfo?.ApplicationNameInContext(SteeltoeComponent.Management, $"{ConfigPrefix}:name");
@@ -78,4 +51,35 @@ public class TracingOptions : ITracingOptions
 
     /// <inheritdoc />
     public Uri ExporterEndpoint { get; set; }
+
+    public TracingOptions(IApplicationInstanceInfo appInfo, IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(ConfigPrefix);
+
+        if (section != null)
+        {
+            section.Bind(this);
+        }
+
+        _applicationInstanceInfo = appInfo;
+
+        if (string.IsNullOrEmpty(IngressIgnorePattern))
+        {
+            IngressIgnorePattern = DefaultIngressIgnorePattern;
+        }
+
+        if (string.IsNullOrEmpty(EgressIgnorePattern))
+        {
+            EgressIgnorePattern = DefaultEgressIgnorePattern;
+        }
+    }
+
+    internal TracingOptions()
+    {
+    }
 }

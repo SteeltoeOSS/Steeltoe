@@ -21,7 +21,7 @@ public class CollectionAndArrayTest
     public CollectionAndArrayTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
@@ -34,12 +34,17 @@ public class CollectionAndArrayTest
     [Fact]
     public void ListWithRequestReplyHandler()
     {
-        _handler.ReturnValue = new List<string> { "foo", "bar" };
+        _handler.ReturnValue = new List<string>
+        {
+            "foo",
+            "bar"
+        };
+
         var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
-        var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
         _handler.HandleMessage(message);
-        var reply1 = channel.Receive(0);
-        var reply2 = channel.Receive(0);
+        IMessage reply1 = channel.Receive(0);
+        IMessage reply2 = channel.Receive(0);
         Assert.NotNull(reply1);
         Assert.Null(reply2);
         Assert.IsType<List<string>>(reply1.Payload);
@@ -49,12 +54,17 @@ public class CollectionAndArrayTest
     [Fact]
     public void SetWithRequestReplyHandler()
     {
-        _handler.ReturnValue = new HashSet<string>(new[] { "foo", "bar" });
+        _handler.ReturnValue = new HashSet<string>(new[]
+        {
+            "foo",
+            "bar"
+        });
+
         var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
-        var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
         _handler.HandleMessage(message);
-        var reply1 = channel.Receive(0);
-        var reply2 = channel.Receive(0);
+        IMessage reply1 = channel.Receive(0);
+        IMessage reply2 = channel.Receive(0);
         Assert.NotNull(reply1);
         Assert.Null(reply2);
         Assert.IsType<HashSet<string>>(reply1.Payload);
@@ -64,12 +74,17 @@ public class CollectionAndArrayTest
     [Fact]
     public void ArrayWithRequestReplyHandler()
     {
-        _handler.ReturnValue = new[] { "foo", "bar" };
+        _handler.ReturnValue = new[]
+        {
+            "foo",
+            "bar"
+        };
+
         var channel = new QueueChannel(_provider.GetService<IApplicationContext>());
-        var message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetReplyChannel(channel).Build();
         _handler.HandleMessage(message);
-        var reply1 = channel.Receive(0);
-        var reply2 = channel.Receive(0);
+        IMessage reply1 = channel.Receive(0);
+        IMessage reply2 = channel.Receive(0);
         Assert.NotNull(reply1);
         Assert.Null(reply2);
         Assert.IsType<string[]>(reply1.Payload);

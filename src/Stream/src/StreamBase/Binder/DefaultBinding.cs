@@ -8,11 +8,47 @@ namespace Steeltoe.Stream.Binder;
 
 public class DefaultBinding<T> : AbstractBinding
 {
+    private readonly bool _restartable;
     protected readonly T Target;
     protected readonly ILifecycle Lifecycle;
-    private readonly bool _restartable;
 
     private bool _paused;
+
+    private string RunningState => IsRunning ? "running" : "stopped";
+
+    protected internal virtual ILifecycle Endpoint => Lifecycle;
+
+    public override string Name { get; }
+
+    public virtual string Group { get; }
+
+    public override string BindingName => Name;
+
+    public virtual string State
+    {
+        get
+        {
+            string state = "N/A";
+
+            if (Lifecycle != null)
+            {
+                if (IsPausable)
+                {
+                    state = _paused ? "paused" : RunningState;
+                }
+                else
+                {
+                    state = RunningState;
+                }
+            }
+
+            return state;
+        }
+    }
+
+    public override bool IsRunning => Lifecycle != null && Lifecycle.IsRunning;
+
+    public virtual bool IsPausable => Lifecycle is IPausable;
 
     public DefaultBinding(string name, string group, T target, ILifecycle lifecycle)
     {
@@ -32,43 +68,6 @@ public class DefaultBinding<T> : AbstractBinding
         : this(name, null, target, lifecycle)
     {
         _restartable = true;
-    }
-
-    public override string Name { get; }
-
-    public virtual string Group { get; }
-
-    public override string BindingName => Name;
-
-    public virtual string State
-    {
-        get
-        {
-            var state = "N/A";
-            if (Lifecycle != null)
-            {
-                if (IsPausable)
-                {
-                    state = _paused ? "paused" : RunningState;
-                }
-                else
-                {
-                    state = RunningState;
-                }
-            }
-
-            return state;
-        }
-    }
-
-    public override bool IsRunning
-    {
-        get { return Lifecycle != null && Lifecycle.IsRunning; }
-    }
-
-    public virtual bool IsPausable
-    {
-        get { return Lifecycle is IPausable; }
     }
 
     public override Task Start()
@@ -98,10 +97,6 @@ public class DefaultBinding<T> : AbstractBinding
             await pausable.Pause();
             _paused = true;
         }
-        else
-        {
-            // this.logger.warn("Attempted to pause a component that does not support Pausable " + this.lifecycle);
-        }
     }
 
     public override async Task Resume()
@@ -111,21 +106,12 @@ public class DefaultBinding<T> : AbstractBinding
             await pausable.Resume();
             _paused = false;
         }
-        else
-        {
-            // this.logger.warn("Attempted to resume a component that does not support Pausable " + this.lifecycle);
-        }
     }
 
     public override async Task Unbind()
     {
         await Stop();
         AfterUnbind();
-    }
-
-    protected internal virtual ILifecycle Endpoint
-    {
-        get { return Lifecycle; }
     }
 
     public override string ToString()
@@ -135,10 +121,5 @@ public class DefaultBinding<T> : AbstractBinding
 
     protected virtual void AfterUnbind()
     {
-    }
-
-    private string RunningState
-    {
-        get { return IsRunning ? "running" : "stopped"; }
     }
 }

@@ -11,6 +11,11 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:heapdump";
 
+    public string HeapDumpType { get; set; }
+
+    // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
+    public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
+
     public HeapDumpEndpointOptions()
     {
         Id = "heapdump";
@@ -24,9 +29,4 @@ public class HeapDumpEndpointOptions : AbstractEndpointOptions, IHeapDumpOptions
             Id = "heapdump";
         }
     }
-
-    public string HeapDumpType { get; set; }
-
-    // Default to disabled on Linux + Cloud Foundry until PTRACE is allowed
-    public override bool DefaultEnabled { get; } = !(Platform.IsCloudFoundry && Platform.IsLinux);
 }

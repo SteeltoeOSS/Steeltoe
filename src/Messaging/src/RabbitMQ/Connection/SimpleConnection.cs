@@ -38,7 +38,8 @@ public class SimpleConnection : IConnection, RC.NetworkConnection
     {
         try
         {
-            var result = Connection.CreateModel();
+            RC.IModel result = Connection.CreateModel();
+
             if (result == null)
             {
                 throw new RabbitResourceNotAvailableException("The channelMax limit is reached. Try later.");

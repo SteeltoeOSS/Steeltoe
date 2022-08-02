@@ -20,10 +20,11 @@ public class PrimitiveConstructorExecutor : IConstructorExecutor
             throw new AccessException($"Invalid argument for primitive type:{_primitiveType}");
         }
 
-        var argType = arguments[0].GetType();
+        Type argType = arguments[0].GetType();
+
         if (argType != _primitiveType)
         {
-            var value = context.TypeConverter.ConvertValue(arguments[0], argType, _primitiveType);
+            object value = context.TypeConverter.ConvertValue(arguments[0], argType, _primitiveType);
             return new TypedValue(value, _primitiveType);
         }
 

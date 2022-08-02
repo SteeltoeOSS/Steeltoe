@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -14,7 +15,6 @@ using Steeltoe.Management.Endpoint.Metrics.Observer;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -28,6 +28,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
@@ -56,6 +57,7 @@ public static class EndpointServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
@@ -84,8 +86,12 @@ public static class EndpointServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Wavefront exporter.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddWavefrontMetrics(this IServiceCollection services)
     {
         if (services == null)
@@ -101,6 +107,7 @@ public static class EndpointServiceCollectionExtensions
             var configuration = provider.GetService<IConfiguration>();
             return new MetricsObserverOptions(configuration);
         });
+
         services.TryAddSingleton<IViewRegistry, ViewRegistry>();
 
         AddMetricsObservers(services);
@@ -121,6 +128,7 @@ public static class EndpointServiceCollectionExtensions
     {
         var configuration = services.BuildServiceProvider().GetService<IConfiguration>();
         var observerOptions = new MetricsObserverOptions(configuration);
+
         if (observerOptions.AspNetCoreHosting)
         {
             services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiagnosticObserver, AspNetCoreHostingObserver>());

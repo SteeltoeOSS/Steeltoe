@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,12 +16,16 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
 public class ConfigServerHostBuilderExtensionsTest
 {
-    private readonly Dictionary<string, string> _quickTests = new () { { "spring:cloud:config:timeout", "10" } };
+    private readonly Dictionary<string, string> _quickTests = new()
+    {
+        { "spring:cloud:config:timeout", "10" }
+    };
 
     [Fact]
     public void AddConfigServer_DefaultWebHost_AddsConfigServer()
     {
-        var hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests))
+            .UseStartup<TestConfigServerStartup>();
 
         hostBuilder.AddConfigServer();
         var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -32,7 +37,8 @@ public class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_New_WebHostBuilder_AddsConfigServer()
     {
-        var hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).UseStartup<TestConfigServerStartup>();
+        IWebHostBuilder hostBuilder = new WebHostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests))
+            .UseStartup<TestConfigServerStartup>();
 
         hostBuilder.AddConfigServer();
         var config = hostBuilder.Build().Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
@@ -44,9 +50,9 @@ public class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IHostBuilder_AddsConfigServer()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).AddConfigServer();
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(_quickTests)).AddConfigServer();
 
-        var host = hostBuilder.Build();
+        IHost host = hostBuilder.Build();
         var config = host.Services.GetServices<IConfiguration>().SingleOrDefault() as ConfigurationRoot;
 
         Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());
@@ -56,9 +62,9 @@ public class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebApplicationBuilder_AddsConfigServer()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
         hostBuilder.AddConfigServer();
-        var host = hostBuilder.Build();
+        WebApplication host = hostBuilder.Build();
 
         var config = host.Services.GetService<IConfiguration>() as IConfigurationRoot;
         Assert.Single(config.Providers.OfType<CloudFoundryConfigurationProvider>());

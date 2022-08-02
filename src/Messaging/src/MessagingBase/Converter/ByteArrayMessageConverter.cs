@@ -10,12 +10,12 @@ public class ByteArrayMessageConverter : AbstractMessageConverter
 {
     public const string DefaultServiceName = nameof(ByteArrayMessageConverter);
 
+    public override string ServiceName { get; set; } = DefaultServiceName;
+
     public ByteArrayMessageConverter()
         : base(MimeTypeUtils.ApplicationOctetStream)
     {
     }
-
-    public override string ServiceName { get; set; } = DefaultServiceName;
 
     protected override bool Supports(Type clazz)
     {

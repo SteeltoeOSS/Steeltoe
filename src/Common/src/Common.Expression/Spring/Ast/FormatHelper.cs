@@ -9,11 +9,10 @@ public static class FormatHelper
     public static string FormatMethodForMessage(string name, IList<Type> argumentTypes)
     {
         var items = new List<string>();
-        foreach (var typeDescriptor in argumentTypes)
+
+        foreach (Type typeDescriptor in argumentTypes)
         {
-            items.Add(typeDescriptor != null
-                ? FormatClassNameForMessage(typeDescriptor)
-                : FormatClassNameForMessage(null));
+            items.Add(typeDescriptor != null ? FormatClassNameForMessage(typeDescriptor) : FormatClassNameForMessage(null));
         }
 
         return $"{name}({string.Join(",", items)})";

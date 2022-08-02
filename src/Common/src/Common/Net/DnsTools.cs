@@ -12,8 +12,12 @@ public static class DnsTools
     /// <summary>
     /// Get the first listed <see cref="AddressFamily.InterNetwork" /> for the host name.
     /// </summary>
-    /// <param name="hostName">The host name or address to use.</param>
-    /// <returns>String representation of the IP Address or <see langword="null"/>.</returns>
+    /// <param name="hostName">
+    /// The host name or address to use.
+    /// </param>
+    /// <returns>
+    /// String representation of the IP Address or <see langword="null" />.
+    /// </returns>
     public static string ResolveHostAddress(string hostName)
     {
         try
@@ -30,12 +34,15 @@ public static class DnsTools
     public static string ResolveHostName()
     {
         string result = null;
+
         try
         {
             result = Dns.GetHostName();
+
             if (!string.IsNullOrEmpty(result))
             {
-                var response = Dns.GetHostEntry(result);
+                IPHostEntry response = Dns.GetHostEntry(result);
+
                 if (response != null)
                 {
                     return response.HostName;

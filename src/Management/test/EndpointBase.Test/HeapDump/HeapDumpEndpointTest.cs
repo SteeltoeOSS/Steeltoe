@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -34,6 +34,7 @@ public class HeapDumpEndpointTest : BaseTest
         if (Platform.IsWindows && RuntimeInformation.FrameworkDescription.StartsWith(".NET Core", StringComparison.InvariantCultureIgnoreCase))
         {
             using var tc = new TestContext(_output);
+
             tc.AdditionalServices = (services, configuration) =>
             {
                 services.AddHeapDumpActuatorServices(configuration);
@@ -42,7 +43,7 @@ public class HeapDumpEndpointTest : BaseTest
 
             var ep = tc.GetService<IHeapDumpEndpoint>();
 
-            var result = ep.Invoke();
+            string result = ep.Invoke();
             Assert.NotNull(result);
             Assert.True(File.Exists(result));
             File.Delete(result);
@@ -52,15 +53,18 @@ public class HeapDumpEndpointTest : BaseTest
             if (typeof(object).Assembly.GetType("System.Index") != null)
             {
                 using var tc = new TestContext(_output);
+
                 tc.AdditionalServices = (services, configuration) =>
                 {
                     services.AddHeapDumpActuatorServices(configuration);
-                    services.AddSingleton<IHeapDumper>(sp => new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
+
+                    services.AddSingleton<IHeapDumper>(sp =>
+                        new HeapDumper(new HeapDumpEndpointOptions(), logger: sp.GetRequiredService<ILogger<HeapDumper>>()));
                 };
 
                 var ep = tc.GetService<IHeapDumpEndpoint>();
 
-                var result = ep.Invoke();
+                string result = ep.Invoke();
                 Assert.NotNull(result);
                 Assert.True(File.Exists(result));
                 File.Delete(result);

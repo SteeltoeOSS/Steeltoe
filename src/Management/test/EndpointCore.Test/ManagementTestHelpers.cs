@@ -12,6 +12,10 @@ public static class ManagementTestHelpers
     {
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.AddRange(options);
-        return new List<IManagementOptions> { managementOptions };
+
+        return new List<IManagementOptions>
+        {
+            managementOptions
+        };
     }
 }

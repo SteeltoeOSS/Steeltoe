@@ -12,10 +12,6 @@ public class SpelCompiledExpression : CompiledExpression
 
     private int _initialized;
 
-    internal delegate object SpelExpressionDelegate(SpelCompiledExpression expression, object target, IEvaluationContext context);
-
-    internal delegate void SpelExpressionInitDelegate(SpelCompiledExpression expression, object target, IEvaluationContext context);
-
     internal SpelCompiledExpression(ILoggerFactory loggerFactory)
     {
         _logger = loggerFactory?.CreateLogger<SpelCompiledExpression>();
@@ -25,6 +21,7 @@ public class SpelCompiledExpression : CompiledExpression
     {
         var initDelegate = InitDelegate as SpelExpressionInitDelegate;
         var spelDelegate = MethodDelegate as SpelExpressionDelegate;
+
         try
         {
             // One time initialization call that allows expression init if needed (e.g. InlineList uses this)
@@ -34,7 +31,7 @@ public class SpelCompiledExpression : CompiledExpression
             }
 
             // Invoke the compiled expression
-            var result = spelDelegate.Invoke(this, target, context);
+            object result = spelDelegate.Invoke(this, target, context);
             return result;
         }
         catch (Exception ex)
@@ -43,4 +40,8 @@ public class SpelCompiledExpression : CompiledExpression
             throw;
         }
     }
+
+    internal delegate object SpelExpressionDelegate(SpelCompiledExpression expression, object target, IEvaluationContext context);
+
+    internal delegate void SpelExpressionInitDelegate(SpelCompiledExpression expression, object target, IEvaluationContext context);
 }

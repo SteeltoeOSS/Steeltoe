@@ -8,6 +8,14 @@ namespace Steeltoe.Messaging.RabbitMQ;
 
 public class MockRabbitBasicProperties : RC.IBasicProperties
 {
+    public ushort ProtocolClassId;
+
+    public string ProtocolClassName;
+
+    int RC.IContentHeader.ProtocolClassId => 0;
+
+    string RC.IContentHeader.ProtocolClassName => string.Empty;
+
     public string AppId { get; set; }
 
     public string ClusterId { get; set; }
@@ -39,14 +47,6 @@ public class MockRabbitBasicProperties : RC.IBasicProperties
     public string Type { get; set; }
 
     public string UserId { get; set; }
-
-    int RC.IContentHeader.ProtocolClassId => 0;
-
-    string RC.IContentHeader.ProtocolClassName => string.Empty;
-
-    public ushort ProtocolClassId;
-
-    public string ProtocolClassName;
 
     public void ClearAppId()
     {

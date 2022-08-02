@@ -6,6 +6,14 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelParserOptions
 {
+    public int MaximumAutoGrowSize { get; set; }
+
+    public bool AutoGrowCollections { get; set; }
+
+    public bool AutoGrowNullReferences { get; set; }
+
+    public SpelCompilerMode CompilerMode { get; set; }
+
     public SpelParserOptions()
         : this(null, false, false, int.MaxValue)
     {
@@ -33,12 +41,4 @@ public class SpelParserOptions
         AutoGrowCollections = autoGrowCollections;
         MaximumAutoGrowSize = maximumAutoGrowSize;
     }
-
-    public int MaximumAutoGrowSize { get; set; }
-
-    public bool AutoGrowCollections { get; set; }
-
-    public bool AutoGrowNullReferences { get; set; }
-
-    public SpelCompilerMode CompilerMode { get; set; }
 }

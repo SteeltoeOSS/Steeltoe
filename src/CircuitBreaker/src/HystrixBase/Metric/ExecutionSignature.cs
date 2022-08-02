@@ -8,7 +8,18 @@ public class ExecutionSignature
 {
     private readonly string _cacheKey;
 
-    private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount, IHystrixCollapserKey collapserKey, int collapserBatchSize)
+    public string CommandName { get; }
+
+    public ExecutionResult.EventCounts Eventcounts { get; }
+
+    public int CachedCount { get; }
+
+    public IHystrixCollapserKey CollapserKey { get; }
+
+    public int CollapserBatchSize { get; }
+
+    private ExecutionSignature(IHystrixCommandKey commandKey, ExecutionResult.EventCounts eventCounts, string cacheKey, int cachedCount,
+        IHystrixCollapserKey collapserKey, int collapserBatchSize)
     {
         CommandName = commandKey.Name;
         Eventcounts = eventCounts;
@@ -25,7 +36,8 @@ public class ExecutionSignature
 
     public static ExecutionSignature From(IHystrixInvokableInfo execution, string cacheKey, int cachedCount)
     {
-        return new ExecutionSignature(execution.CommandKey, execution.EventCounts, cacheKey, cachedCount, execution.OriginatingCollapserKey, execution.NumberCollapsed);
+        return new ExecutionSignature(execution.CommandKey, execution.EventCounts, cacheKey, cachedCount, execution.OriginatingCollapserKey,
+            execution.NumberCollapsed);
     }
 
     public override bool Equals(object obj)
@@ -47,14 +59,4 @@ public class ExecutionSignature
     {
         return HashCode.Combine(CommandName, Eventcounts, _cacheKey);
     }
-
-    public string CommandName { get; }
-
-    public ExecutionResult.EventCounts Eventcounts { get; }
-
-    public int CachedCount { get; }
-
-    public IHystrixCollapserKey CollapserKey { get; }
-
-    public int CollapserBatchSize { get; }
 }

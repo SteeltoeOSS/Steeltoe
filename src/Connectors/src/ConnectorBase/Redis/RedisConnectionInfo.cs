@@ -11,20 +11,27 @@ public class RedisConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        RedisServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<RedisServiceInfo>()
             : configuration.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((RedisServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((RedisServiceInfo)serviceInfo, configuration);
+    }
 
     public bool IsSameType(string serviceType)
-        => serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+    {
+        return serviceType.Equals("redis", StringComparison.InvariantCultureIgnoreCase);
+    }
 
     public bool IsSameType(IServiceInfo serviceInfo)
-        => serviceInfo is RedisServiceInfo;
+    {
+        return serviceInfo is RedisServiceInfo;
+    }
 
     private Connection GetConnection(RedisServiceInfo serviceInfo, IConfiguration configuration)
     {

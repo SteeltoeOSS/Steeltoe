@@ -40,18 +40,6 @@ public class CachedValuesHistogram
 
     private readonly long _totalCount;
 
-    public static LongHistogram GetNewHistogram()
-    {
-        var histogram = new LongHistogram(1, 2, NumberSignificantDigits);
-        histogram.Reset();
-        return histogram;
-    }
-
-    public static CachedValuesHistogram BackedBy(LongHistogram underlying)
-    {
-        return new CachedValuesHistogram(underlying);
-    }
-
     private CachedValuesHistogram(LongHistogram underlying)
     {
         /*
@@ -93,6 +81,18 @@ public class CachedValuesHistogram
         }
     }
 
+    public static LongHistogram GetNewHistogram()
+    {
+        var histogram = new LongHistogram(1, 2, NumberSignificantDigits);
+        histogram.Reset();
+        return histogram;
+    }
+
+    public static CachedValuesHistogram BackedBy(LongHistogram underlying)
+    {
+        return new CachedValuesHistogram(underlying);
+    }
+
     // Return the cached value only
     public int GetMean()
     {
@@ -102,7 +102,8 @@ public class CachedValuesHistogram
     // Return the cached value if available. Otherwise, we need to synchronize access to the underlying {@link Histogram}
     public int GetValueAtPercentile(double percentile)
     {
-        var permyriad = (int)percentile * 100;
+        int permyriad = (int)percentile * 100;
+
         return permyriad switch
         {
             0 => _p0,
@@ -131,7 +132,7 @@ public class CachedValuesHistogram
             9995 => _p99Dot95,
             9999 => _p99Dot99,
             10000 => _p100,
-            _ => throw new ArgumentException($"Percentile ({percentile}) is not currently cached"),
+            _ => throw new ArgumentException($"Percentile ({percentile}) is not currently cached")
         };
     }
 

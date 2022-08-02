@@ -11,6 +11,27 @@ public class EurekaServiceInstance : IServiceInstance
 {
     private readonly InstanceInfo _info;
 
+    public bool IsSecure => _info.IsSecurePortEnabled;
+
+    public IDictionary<string, string> Metadata => _info.Metadata;
+
+    public int Port => IsSecure ? _info.SecurePort : _info.Port;
+
+    public string ServiceId => _info.AppName;
+
+    public Uri Uri
+    {
+        get
+        {
+            string scheme = IsSecure ? "https" : "http";
+            return new Uri($"{scheme}://{GetHost()}:{Port}");
+        }
+    }
+
+    public string Host => GetHost();
+
+    public string InstanceId => _info.InstanceId;
+
     public EurekaServiceInstance(InstanceInfo info)
     {
         _info = info;
@@ -20,25 +41,4 @@ public class EurekaServiceInstance : IServiceInstance
     {
         return _info.HostName;
     }
-
-    public bool IsSecure => _info.IsSecurePortEnabled;
-
-    public IDictionary<string, string> Metadata => _info.Metadata;
-
-    public int Port { get => IsSecure ? _info.SecurePort : _info.Port; }
-
-    public string ServiceId => _info.AppName;
-
-    public Uri Uri
-    {
-        get
-        {
-            var scheme = IsSecure ? "https" : "http";
-            return new Uri($"{scheme}://{GetHost()}:{Port}");
-        }
-    }
-
-    public string Host => GetHost();
-
-    public string InstanceId => _info.InstanceId;
 }

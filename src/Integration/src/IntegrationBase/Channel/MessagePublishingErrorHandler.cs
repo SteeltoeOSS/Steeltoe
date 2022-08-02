@@ -14,10 +14,24 @@ namespace Steeltoe.Integration.Channel;
 
 public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandler
 {
-    public const string DefaultServiceName = nameof(MessagePublishingErrorHandler);
     private const int DefaultSendTimeout = 1000;
+    public const string DefaultServiceName = nameof(MessagePublishingErrorHandler);
 
     private static IErrorMessageStrategy DefaultErrorMessageStrategyInstance { get; } = new DefaultErrorMessageStrategy();
+
+    public string ServiceName { get; set; } = DefaultServiceName;
+
+    public IMessageChannel DefaultErrorChannel
+    {
+        get => Channel;
+        set => Channel = value;
+    }
+
+    public string DefaultErrorChannelName
+    {
+        get => ChannelName;
+        set => ChannelName = value;
+    }
 
     public MessagePublishingErrorHandler(IApplicationContext context, ILogger logger = null)
         : base(context, logger)
@@ -26,24 +40,11 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
         SendTimeout = DefaultSendTimeout;
     }
 
-    public string ServiceName { get; set; } = DefaultServiceName;
-
-    public IMessageChannel DefaultErrorChannel
-    {
-        get { return Channel; }
-        set { Channel = value; }
-    }
-
-    public string DefaultErrorChannelName
-    {
-        get { return ChannelName; }
-        set { ChannelName = value; }
-    }
-
     public bool HandleError(Exception exception)
     {
-        var errorChannel = ResolveErrorChannel(exception);
-        var sent = false;
+        IMessageChannel errorChannel = ResolveErrorChannel(exception);
+        bool sent = false;
+
         if (errorChannel != null)
         {
             try
@@ -59,7 +60,8 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
         if (!sent)
         {
-            var failedMessage = exception is MessagingException ex ? ex.FailedMessage : null;
+            IMessage failedMessage = exception is MessagingException ex ? ex.FailedMessage : null;
+
             if (failedMessage != null)
             {
                 Logger?.LogError("failure occurred in messaging task with message: " + failedMessage, exception);
@@ -75,13 +77,15 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
     private IMessageChannel ResolveErrorChannel(Exception exception)
     {
-        var actualThrowable = exception;
+        Exception actualThrowable = exception;
+
         if (exception is MessagingExceptionWrapperException)
         {
             actualThrowable = exception.InnerException;
         }
 
-        var failedMessage = actualThrowable is MessagingException ex ? ex.FailedMessage : null;
+        IMessage failedMessage = actualThrowable is MessagingException ex ? ex.FailedMessage : null;
+
         if (DefaultErrorChannel == null && ChannelResolver != null)
         {
             Channel = ChannelResolver.ResolveDestination(IntegrationContextUtils.ErrorChannelBeanName);
@@ -92,7 +96,8 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
             return DefaultErrorChannel;
         }
 
-        var errorChannelHeader = failedMessage.Headers.ErrorChannel;
+        object errorChannelHeader = failedMessage.Headers.ErrorChannel;
+
         if (errorChannelHeader is IMessageChannel channel)
         {
             return channel;
@@ -100,17 +105,16 @@ public class MessagePublishingErrorHandler : ErrorMessagePublisher, IErrorHandle
 
         if (errorChannelHeader is not string header)
         {
-            throw new ArgumentException($"Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [{errorChannelHeader.GetType()}]");
+            throw new ArgumentException(
+                $"Unsupported error channel header type. Expected IMessageChannel or String, but actual type is [{errorChannelHeader.GetType()}]");
         }
 
         if (ChannelResolver != null)
         {
             return ChannelResolver.ResolveDestination(header);
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     private sealed class DefaultErrorMessageStrategy : IErrorMessageStrategy

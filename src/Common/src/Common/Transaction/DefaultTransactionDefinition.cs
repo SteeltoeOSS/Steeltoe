@@ -13,6 +13,16 @@ public class DefaultTransactionDefinition : AbstractTransactionDefinition
     public const string PrefixTimeout = "timeout_";
     public const string ReadOnlyMarker = "readOnly";
 
+    public override int PropagationBehavior { get; set; }
+
+    public override int IsolationLevel { get; set; }
+
+    public override int Timeout { get; set; }
+
+    public override bool IsReadOnly { get; set; }
+
+    public override string Name { get; set; }
+
     public DefaultTransactionDefinition()
     {
     }
@@ -30,16 +40,6 @@ public class DefaultTransactionDefinition : AbstractTransactionDefinition
     {
         PropagationBehavior = propagationBehavior;
     }
-
-    public override int PropagationBehavior { get; set; }
-
-    public override int IsolationLevel { get; set; }
-
-    public override int Timeout { get; set; }
-
-    public override bool IsReadOnly { get; set; }
-
-    public override string Name { get; set; }
 
     public override bool Equals(object obj)
     {
@@ -62,6 +62,7 @@ public class DefaultTransactionDefinition : AbstractTransactionDefinition
         result.Append(PropagationBehavior);
         result.Append(',');
         result.Append(IsolationLevel);
+
         if (Timeout != TimeoutDefault)
         {
             result.Append(',');

@@ -18,11 +18,16 @@ public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAd
     }
 
     public bool Supports(Type resultType, Type bindingTarget)
-        => typeof(IMessageChannel).IsAssignableFrom(resultType) && typeof(IMessageChannel).IsAssignableFrom(bindingTarget);
+    {
+        return typeof(IMessageChannel).IsAssignableFrom(resultType) && typeof(IMessageChannel).IsAssignableFrom(bindingTarget);
+    }
 
     public IDisposable Adapt(IMessageChannel streamListenerResult, IMessageChannel bindingTarget)
     {
-        var handler = new BridgeHandler(_context) { OutputChannel = bindingTarget };
+        var handler = new BridgeHandler(_context)
+        {
+            OutputChannel = bindingTarget
+        };
 
         ((ISubscribableChannel)streamListenerResult).Subscribe(handler);
 
@@ -30,9 +35,11 @@ public class MessageChannelStreamListenerResultAdapter : IStreamListenerResultAd
     }
 
     public IDisposable Adapt(object streamListenerResult, object bindingTarget)
-        => streamListenerResult is IMessageChannel channel && bindingTarget is IMessageChannel channel1
+    {
+        return streamListenerResult is IMessageChannel channel && bindingTarget is IMessageChannel channel1
             ? Adapt(channel, channel1)
             : throw new ArgumentException("Invalid arguments, IMessageChannel required");
+    }
 
     public sealed class NoOpDisposable : IDisposable
     {

@@ -8,12 +8,6 @@ namespace Steeltoe.Connector;
 
 public class Connection
 {
-    public Connection(string connectionString, string serviceType, IServiceInfo serviceInfo)
-    {
-        ConnectionString = connectionString;
-        Name = serviceType + serviceInfo?.Id?.Insert(0, "-");
-    }
-
     /// <summary>
     /// Gets or sets the connection string for this connection.
     /// </summary>
@@ -27,5 +21,11 @@ public class Connection
     /// <summary>
     /// Gets a list of additional properties for this connection.
     /// </summary>
-    public Dictionary<string, string> Properties { get; } = new ();
+    public Dictionary<string, string> Properties { get; } = new();
+
+    public Connection(string connectionString, string serviceType, IServiceInfo serviceInfo)
+    {
+        ConnectionString = connectionString;
+        Name = serviceType + serviceInfo?.Id?.Insert(0, "-");
+    }
 }

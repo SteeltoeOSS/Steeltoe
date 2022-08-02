@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Info.Test;
 
 public class AppSettingsInfoContributorTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new()
     {
         ["info:application:name"] = "foobar",
         ["info:application:version"] = "1.0.0",
@@ -28,7 +28,7 @@ public class AppSettingsInfoContributorTest : BaseTest
         var contributor = new AppSettingsInfoContributor(null);
         var builder = new InfoBuilder();
         contributor.Contribute(builder);
-        var result = builder.Build();
+        Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -38,7 +38,7 @@ public class AppSettingsInfoContributorTest : BaseTest
     {
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 
         Assert.Throws<ArgumentNullException>(() => settings.Contribute(null));
@@ -51,13 +51,13 @@ public class AppSettingsInfoContributorTest : BaseTest
         _appSettings.Add("info:NET:ASPNET:version", "2.0.0");
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(_appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var settings = new AppSettingsInfoContributor(config);
 
         var builder = new InfoBuilder();
         settings.Contribute(builder);
 
-        var info = builder.Build();
+        Dictionary<string, object> info = builder.Build();
         Assert.NotNull(info);
         Assert.Equal(2, info.Count);
         Assert.True(info.ContainsKey("application"));

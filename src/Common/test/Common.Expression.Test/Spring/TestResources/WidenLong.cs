@@ -10,6 +10,6 @@ public class WidenLong
 
     public WidenLong(long l)
     {
-        this.L = l;
+        L = l;
     }
 }

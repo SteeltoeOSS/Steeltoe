@@ -11,14 +11,23 @@ public class FormatHelperTests
     [Fact]
     public void FormatMethodWithSingleArgumentForMessage()
     {
-        var message = FormatHelper.FormatMethodForMessage("foo", new List<Type> { typeof(string) });
+        string message = FormatHelper.FormatMethodForMessage("foo", new List<Type>
+        {
+            typeof(string)
+        });
+
         Assert.Equal("foo(System.String)", message);
     }
 
     [Fact]
     public void FormatMethodWithMultipleArgumentsForMessage()
     {
-        var message = FormatHelper.FormatMethodForMessage("foo", new List<Type> { typeof(string), typeof(int) });
+        string message = FormatHelper.FormatMethodForMessage("foo", new List<Type>
+        {
+            typeof(string),
+            typeof(int)
+        });
+
         Assert.Equal("foo(System.String,System.Int32)", message);
     }
 }

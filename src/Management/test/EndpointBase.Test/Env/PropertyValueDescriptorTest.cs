@@ -22,7 +22,7 @@ public class PropertyValueDescriptorTest : BaseTest
     public void JsonSerialization_ReturnsExpected()
     {
         var property = new PropertyValueDescriptor("value", "origin");
-        var result = Serialize(property);
+        string result = Serialize(property);
         Assert.Equal("{\"value\":\"value\",\"origin\":\"origin\"}", result);
     }
 }

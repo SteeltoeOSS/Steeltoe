@@ -102,11 +102,12 @@ public class TaskSchedulerSubscribableChannelTest
         Handler = mock.Object;
 
         var mock2 = new Mock<IMessageHandler>();
-        var secondHandler = mock2.Object;
+        IMessageHandler secondHandler = mock2.Object;
 
         Channel.Subscribe(Handler);
         Channel.Subscribe(secondHandler);
-        var exceptionThrown = false;
+        bool exceptionThrown = false;
+
         try
         {
             Channel.Send(Message);
@@ -140,12 +141,13 @@ public class TaskSchedulerSubscribableChannelTest
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
         var mock2 = new Mock<IMessage>();
-        var expected = mock2.Object;
+        IMessage expected = mock2.Object;
 
         var interceptor = new BeforeHandleInterceptor
         {
             MessageToReturn = expected
         };
+
         Channel.AddInterceptor(interceptor);
         Channel.Subscribe(Handler);
         Channel.Send(Message);
@@ -183,7 +185,8 @@ public class TaskSchedulerSubscribableChannelTest
         var interceptor = new BeforeHandleInterceptor();
         Channel.AddInterceptor(interceptor);
         Channel.Subscribe(Handler);
-        var exceptionThrown = false;
+        bool exceptionThrown = false;
+
         try
         {
             Channel.Send(Message);
@@ -205,6 +208,8 @@ public class TaskSchedulerSubscribableChannelTest
         private readonly TaskSchedulerSubscribableChannelTest _test;
         private readonly TaskSchedulerSubscribableChannelWriterTest _test2;
 
+        public string ServiceName { get; set; } = nameof(UnsubscribeHandler);
+
         public UnsubscribeHandler(TaskSchedulerSubscribableChannelTest test)
         {
             _test = test;
@@ -214,8 +219,6 @@ public class TaskSchedulerSubscribableChannelTest
         {
             _test2 = test;
         }
-
-        public string ServiceName { get; set; } = nameof(UnsubscribeHandler);
 
         public void HandleMessage(IMessage message)
         {
@@ -253,15 +256,9 @@ public class TaskSchedulerSubscribableChannelTest
 
         private volatile bool _afterHandledInvoked;
 
-        public int Counter
-        {
-            get { return _counter; }
-        }
+        public int Counter => _counter;
 
-        public bool WasAfterHandledInvoked
-        {
-            get { return _afterHandledInvoked; }
-        }
+        public bool WasAfterHandledInvoked => _afterHandledInvoked;
 
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {
@@ -285,6 +282,7 @@ public class TaskSchedulerSubscribableChannelTest
         public override IMessage BeforeHandled(IMessage message, IMessageChannel channel, IMessageHandler handler)
         {
             base.BeforeHandled(message, channel, handler);
+
             if (ExceptionToRaise != null)
             {
                 throw ExceptionToRaise;

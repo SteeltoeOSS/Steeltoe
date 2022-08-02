@@ -15,8 +15,6 @@ public class PojoMessageToStringMessageServiceActivator
     [ServiceActivator(InputChannel = ISink.InputName, OutputChannel = ISource.OutputName)]
     public IMessage<string> Echo(IMessage<Person> value)
     {
-        return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString())
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
-            .Build();
+        return (IMessage<string>)MessageBuilder.WithPayload(value.Payload.ToString()).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
     }
 }

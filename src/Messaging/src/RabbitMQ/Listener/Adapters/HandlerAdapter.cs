@@ -2,13 +2,30 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
+using Steeltoe.Messaging.Handler.Invocation;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class HandlerAdapter
 {
+    public IInvocableHandlerMethod InvokerHandlerMethod { get; }
+
+    public DelegatingInvocableHandler DelegatingHandler { get; }
+
+    public object Instance
+    {
+        get
+        {
+            if (InvokerHandlerMethod != null)
+            {
+                return InvokerHandlerMethod.Handler;
+            }
+
+            return DelegatingHandler.Bean;
+        }
+    }
+
     public HandlerAdapter(IInvocableHandlerMethod invokerHandlerMethod)
     {
         InvokerHandlerMethod = invokerHandlerMethod;
@@ -21,33 +38,24 @@ public class HandlerAdapter
         DelegatingHandler = delegatingHandler;
     }
 
-    public IInvocableHandlerMethod InvokerHandlerMethod { get; }
-
-    public DelegatingInvocableHandler DelegatingHandler { get; }
-
     public InvocationResult Invoke(IMessage message, params object[] providedArgs)
     {
         if (InvokerHandlerMethod != null)
         {
-            return new InvocationResult(
-                InvokerHandlerMethod.Invoke(message, providedArgs),
-                null,
-                InvokerHandlerMethod.Method.ReturnType,
-                InvokerHandlerMethod.Handler,
-                InvokerHandlerMethod.Method);
+            return new InvocationResult(InvokerHandlerMethod.Invoke(message, providedArgs), null, InvokerHandlerMethod.Method.ReturnType,
+                InvokerHandlerMethod.Handler, InvokerHandlerMethod.Method);
         }
-        else if (DelegatingHandler.HasDefaultHandler)
+
+        if (DelegatingHandler.HasDefaultHandler)
         {
             // Needed to avoid returning raw Message which matches Object
-            var args = new object[providedArgs.Length + 1];
+            object[] args = new object[providedArgs.Length + 1];
             args[0] = message.Payload;
             Array.Copy(providedArgs, 0, args, 1, providedArgs.Length);
             return DelegatingHandler.Invoke(message, args);
         }
-        else
-        {
-            return DelegatingHandler.Invoke(message, providedArgs);
-        }
+
+        return DelegatingHandler.Invoke(message, providedArgs);
     }
 
     public string GetMethodAsString(object payload)
@@ -56,10 +64,8 @@ public class HandlerAdapter
         {
             return InvokerHandlerMethod.Method.ToString();
         }
-        else
-        {
-            return DelegatingHandler.GetMethodNameFor(payload);
-        }
+
+        return DelegatingHandler.GetMethodNameFor(payload);
     }
 
     public MethodInfo GetMethodFor(object payload)
@@ -68,10 +74,8 @@ public class HandlerAdapter
         {
             return InvokerHandlerMethod.Method;
         }
-        else
-        {
-            return DelegatingHandler.GetMethodFor(payload);
-        }
+
+        return DelegatingHandler.GetMethodFor(payload);
     }
 
     public Type GetReturnTypeFor(object payload)
@@ -80,25 +84,8 @@ public class HandlerAdapter
         {
             return InvokerHandlerMethod.Method.ReturnType;
         }
-        else
-        {
-            return DelegatingHandler.GetMethodFor(payload).ReturnType;
-        }
-    }
 
-    public object Instance
-    {
-        get
-        {
-            if (InvokerHandlerMethod != null)
-            {
-                return InvokerHandlerMethod.Handler;
-            }
-            else
-            {
-                return DelegatingHandler.Bean;
-            }
-        }
+        return DelegatingHandler.GetMethodFor(payload).ReturnType;
     }
 
     public InvocationResult GetInvocationResultFor(object result, object inboundPayload)
@@ -107,9 +94,7 @@ public class HandlerAdapter
         {
             return new InvocationResult(result, null, InvokerHandlerMethod.Method.ReturnType, InvokerHandlerMethod.Handler, InvokerHandlerMethod.Method);
         }
-        else
-        {
-            return DelegatingHandler.GetInvocationResultFor(result, inboundPayload);
-        }
+
+        return DelegatingHandler.GetInvocationResultFor(result, inboundPayload);
     }
 }

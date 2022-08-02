@@ -22,15 +22,38 @@ public abstract class AbstractBinder<T> : IBinder<T>
     private IEvaluationContext _evaluationContext;
     private IExpressionParser _expressionParser;
 
+    protected virtual IEvaluationContext EvaluationContext
+    {
+        get
+        {
+            _evaluationContext ??= _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
+            return _evaluationContext;
+        }
+
+        set => _evaluationContext = value;
+    }
+
+    protected virtual IExpressionParser ExpressionParser
+    {
+        get
+        {
+            _expressionParser ??= new SpelExpressionParser();
+            return _expressionParser;
+        }
+
+        set => _expressionParser = value;
+    }
+
+    public virtual IApplicationContext ApplicationContext => _context;
+
+    public abstract string ServiceName { get; set; }
+
+    public abstract Type TargetType { get; }
+
     protected AbstractBinder(IApplicationContext context, ILogger logger)
     {
         _context = context;
         _logger = logger;
-    }
-
-    public virtual IApplicationContext ApplicationContext
-    {
-        get { return _context; }
     }
 
     public static string ApplyPrefix(string prefix, string name)
@@ -42,10 +65,6 @@ public abstract class AbstractBinder<T> : IBinder<T>
     {
         return $"{name}.dlq";
     }
-
-    public abstract string ServiceName { get; set; }
-
-    public abstract Type TargetType { get; }
 
     public virtual IBinding BindConsumer(string name, string group, T inboundTarget, IConsumerOptions consumerOptions)
     {
@@ -86,49 +105,22 @@ public abstract class AbstractBinder<T> : IBinder<T>
 
     protected abstract IBinding DoBindConsumer(string name, string group, T inputTarget, IConsumerOptions consumerOptions);
 
-    protected virtual IEvaluationContext EvaluationContext
-    {
-        get
-        {
-            _evaluationContext ??= _context.GetService<IEvaluationContext>() ?? new StandardEvaluationContext();
-            return _evaluationContext;
-        }
-
-        set
-        {
-            _evaluationContext = value;
-        }
-    }
-
-    protected virtual IExpressionParser ExpressionParser
-    {
-        get
-        {
-            _expressionParser ??= new SpelExpressionParser();
-            return _expressionParser;
-        }
-
-        set
-        {
-            _expressionParser = value;
-        }
-    }
-
     protected virtual string GroupedName(string name, string group)
     {
-        return name + GroupIndexDelimiter
-                    + (!string.IsNullOrEmpty(group) ? group : "default");
+        return name + GroupIndexDelimiter + (!string.IsNullOrEmpty(group) ? group : "default");
     }
 
     protected RetryTemplate BuildRetryTemplate(IConsumerOptions options)
     {
-        return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable, options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
+        return new PollyRetryTemplate(GetRetryableExceptions(options.RetryableExceptions), options.MaxAttempts, options.DefaultRetryable,
+            options.BackOffInitialInterval, options.BackOffMaxInterval, options.BackOffMultiplier, _logger);
     }
 
     protected Dictionary<Type, bool> GetRetryableExceptions(List<string> exceptionList)
     {
         var dict = new Dictionary<Type, bool>();
-        foreach (var exception in exceptionList)
+
+        foreach (string exception in exceptionList)
         {
             if (exception[0] == '!')
             {

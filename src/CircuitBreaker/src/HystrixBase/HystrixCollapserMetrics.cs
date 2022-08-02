@@ -2,47 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HystrixCollapserMetrics : HystrixMetrics
 {
-    private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new ();
-
-    public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
-    {
-        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCollapserMetrics(key, properties));
-    }
-
-    public static ICollection<HystrixCollapserMetrics> GetInstances()
-    {
-        var collapserMetrics = new List<HystrixCollapserMetrics>();
-        foreach (var tpm in Metrics.Values)
-        {
-            collapserMetrics.Add(tpm);
-        }
-
-        return collapserMetrics.AsReadOnly();
-    }
+    private static readonly ConcurrentDictionary<string, HystrixCollapserMetrics> Metrics = new();
 
     private static readonly IList<CollapserEventType> AllEventTypes = CollapserEventTypeHelper.Values;
 
+    private readonly RollingCollapserEventCounterStream _rollingCollapserEventCounterStream;
+    private readonly CumulativeCollapserEventCounterStream _cumulativeCollapserEventCounterStream;
+    private readonly RollingCollapserBatchSizeDistributionStream _rollingCollapserBatchSizeDistributionStream;
+
     public static Func<long[], HystrixCollapserEvent, long[]> AppendEventToBucket { get; } = (initialCountArray, collapserEvent) =>
     {
-        var eventType = collapserEvent.EventType;
-        var count = collapserEvent.Count;
+        CollapserEventType eventType = collapserEvent.EventType;
+        int count = collapserEvent.Count;
         initialCountArray[(int)eventType] += count;
         return initialCountArray;
     };
 
     public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
-        foreach (var eventType in AllEventTypes)
+        foreach (CollapserEventType eventType in AllEventTypes)
         {
             cumulativeEvents[(int)eventType] += bucketEventCounts[(int)eventType];
         }
@@ -50,17 +38,13 @@ public class HystrixCollapserMetrics : HystrixMetrics
         return cumulativeEvents;
     };
 
-    internal static void Reset()
-    {
-        RollingCollapserEventCounterStream.Reset();
-        CumulativeCollapserEventCounterStream.Reset();
-        RollingCollapserBatchSizeDistributionStream.Reset();
-        Metrics.Clear();
-    }
+    public IHystrixCollapserKey CollapserKey { get; }
 
-    private readonly RollingCollapserEventCounterStream _rollingCollapserEventCounterStream;
-    private readonly CumulativeCollapserEventCounterStream _cumulativeCollapserEventCounterStream;
-    private readonly RollingCollapserBatchSizeDistributionStream _rollingCollapserBatchSizeDistributionStream;
+    public IHystrixCollapserOptions Properties { get; }
+
+    public int BatchSizeMean => _rollingCollapserBatchSizeDistributionStream.LatestMean;
+
+    public int ShardSizeMean => 0;
 
     internal HystrixCollapserMetrics(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
         : base(null)
@@ -73,9 +57,30 @@ public class HystrixCollapserMetrics : HystrixMetrics
         _rollingCollapserBatchSizeDistributionStream = RollingCollapserBatchSizeDistributionStream.GetInstance(key, properties);
     }
 
-    public IHystrixCollapserKey CollapserKey { get; }
+    public static HystrixCollapserMetrics GetInstance(IHystrixCollapserKey key, IHystrixCollapserOptions properties)
+    {
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCollapserMetrics(key, properties));
+    }
 
-    public IHystrixCollapserOptions Properties { get; }
+    public static ICollection<HystrixCollapserMetrics> GetInstances()
+    {
+        var collapserMetrics = new List<HystrixCollapserMetrics>();
+
+        foreach (HystrixCollapserMetrics tpm in Metrics.Values)
+        {
+            collapserMetrics.Add(tpm);
+        }
+
+        return collapserMetrics.AsReadOnly();
+    }
+
+    internal static void Reset()
+    {
+        RollingCollapserEventCounterStream.Reset();
+        CumulativeCollapserEventCounterStream.Reset();
+        RollingCollapserBatchSizeDistributionStream.Reset();
+        Metrics.Clear();
+    }
 
     public long GetRollingCount(CollapserEventType collapserEventType)
     {
@@ -102,17 +107,10 @@ public class HystrixCollapserMetrics : HystrixMetrics
         return _rollingCollapserBatchSizeDistributionStream.GetLatestPercentile(percentile);
     }
 
-    public int BatchSizeMean
-    {
-        get { return _rollingCollapserBatchSizeDistributionStream.LatestMean; }
-    }
-
     public int GetShardSizePercentile(double percentile)
     {
         return 0;
     }
-
-    public int ShardSizeMean => 0;
 
     public void MarkRequestBatched()
     {

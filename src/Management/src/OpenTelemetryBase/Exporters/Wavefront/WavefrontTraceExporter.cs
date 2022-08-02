@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
-using System.Diagnostics;
 using Wavefront.SDK.CSharp.Common;
 using Wavefront.SDK.CSharp.DirectIngestion;
 
@@ -24,8 +24,9 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
     {
         _options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
 
-        var token = string.Empty;
-        var uri = _options.Uri;
+        string token = string.Empty;
+        string uri = _options.Uri;
+
         if (_options.Uri.StartsWith("proxy://"))
         {
             uri = $"http{_options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
@@ -36,36 +37,30 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
             token = _options.ApiToken ?? throw new ArgumentNullException(nameof(_options.ApiToken));
         }
 
-        var flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
+        int flushInterval = Math.Max(_options.Step / 1000, 1); // Minimum of 1 second
 
-        _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
-            .MaxQueueSize(_options.MaxQueueSize)
-            .BatchSize(_options.BatchSize)
-            .FlushIntervalSeconds(flushInterval)
-            .Build();
+        _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token).MaxQueueSize(_options.MaxQueueSize).BatchSize(_options.BatchSize)
+            .FlushIntervalSeconds(flushInterval).Build();
+
         _logger = logger;
     }
 
     public override ExportResult Export(in Batch<Activity> batch)
     {
         int spanCount = 0;
-        foreach (var activity in batch)
+
+        foreach (Activity activity in batch)
         {
             try
             {
                 if (activity.Tags.Any(t => t.Key == "http.url" && !t.Value.Contains(_options.Uri)))
                 {
-                    _wavefrontSender.SendSpan(
-                        activity.OperationName,
-                        DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc),
-                        activity.Duration.Milliseconds,
-                        _options.Source,
-                        Guid.Parse(activity.TraceId.ToString()),
-                        FromActivitySpanId(activity.SpanId),
-                        new List<Guid> { FromActivitySpanId(activity.ParentSpanId) },
-                        null,
-                        GetTags(activity.Tags),
-                        null);
+                    _wavefrontSender.SendSpan(activity.OperationName, DateTimeUtils.UnixTimeMilliseconds(activity.StartTimeUtc), activity.Duration.Milliseconds,
+                        _options.Source, Guid.Parse(activity.TraceId.ToString()), FromActivitySpanId(activity.SpanId), new List<Guid>
+                        {
+                            FromActivitySpanId(activity.ParentSpanId)
+                        }, null, GetTags(activity.Tags), null);
+
                     spanCount++;
                 }
             }
@@ -81,10 +76,10 @@ public class WavefrontTraceExporter : BaseExporter<Activity>
 
     private IList<KeyValuePair<string, string>> GetTags(IEnumerable<KeyValuePair<string, string>> inputTags)
     {
-        var tags = inputTags.ToList();
-        tags.Add(new ("application", _options.Name.ToLower()));
-        tags.Add(new ("service", _options.Service.ToLower()));
-        tags.Add(new ("component", "wavefront-trace-exporter"));
+        List<KeyValuePair<string, string>> tags = inputTags.ToList();
+        tags.Add(new KeyValuePair<string, string>("application", _options.Name.ToLower()));
+        tags.Add(new KeyValuePair<string, string>("service", _options.Service.ToLower()));
+        tags.Add(new KeyValuePair<string, string>("component", "wavefront-trace-exporter"));
         return tags;
     }
 

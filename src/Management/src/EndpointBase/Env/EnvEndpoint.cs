@@ -17,6 +17,8 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 
     private readonly IHostEnvironment _env;
 
+    public new IEnvOptions Options => options as IEnvOptions;
+
     public EnvEndpoint(IEnvOptions options, IConfiguration configuration, IHostEnvironment env, ILogger<EnvEndpoint> logger = null)
         : base(options)
     {
@@ -26,14 +28,6 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
         _sanitizer = new Sanitizer(options.KeysToSanitize);
     }
 
-    public new IEnvOptions Options
-    {
-        get
-        {
-            return options as IEnvOptions;
-        }
-    }
-
     public override EnvironmentDescriptor Invoke()
     {
         return DoInvoke(_configuration);
@@ -41,27 +35,33 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 
     public EnvironmentDescriptor DoInvoke(IConfiguration configuration)
     {
-        IList<string> activeProfiles = new List<string> { _env.EnvironmentName };
-        var propertySources = GetPropertySources(configuration);
+        IList<string> activeProfiles = new List<string>
+        {
+            _env.EnvironmentName
+        };
+
+        IList<PropertySourceDescriptor> propertySources = GetPropertySources(configuration);
         return new EnvironmentDescriptor(activeProfiles, propertySources);
     }
 
     public virtual IList<PropertySourceDescriptor> GetPropertySources(IConfiguration configuration)
     {
         var results = new List<PropertySourceDescriptor>();
+
         if (configuration is IConfigurationRoot root)
         {
-            var providers = root.Providers.ToList();
+            List<IConfigurationProvider> providers = root.Providers.ToList();
 
             if (providers.Any(p => p is IPlaceholderResolverProvider))
             {
-                var placeholderProvider = providers.First(p => p is IPlaceholderResolverProvider);
+                IConfigurationProvider placeholderProvider = providers.First(p => p is IPlaceholderResolverProvider);
                 providers.InsertRange(0, ((IPlaceholderResolverProvider)placeholderProvider).Providers);
             }
 
-            foreach (var provider in providers)
+            foreach (IConfigurationProvider provider in providers)
             {
-                var psd = GetPropertySourceDescriptor(provider);
+                PropertySourceDescriptor psd = GetPropertySourceDescriptor(provider);
+
                 if (psd != null)
                 {
                     results.Add(psd);
@@ -75,18 +75,18 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
     public virtual PropertySourceDescriptor GetPropertySourceDescriptor(IConfigurationProvider provider)
     {
         var properties = new Dictionary<string, PropertyValueDescriptor>();
-        var sourceName = GetPropertySourceName(provider);
+        string sourceName = GetPropertySourceName(provider);
 
-        foreach (var key in GetFullKeyNames(provider, null, new HashSet<string>()))
+        foreach (string key in GetFullKeyNames(provider, null, new HashSet<string>()))
         {
-            if (provider.TryGet(key, out var value))
+            if (provider.TryGet(key, out string value))
             {
                 if (provider is IPlaceholderResolverProvider placeHolderProvider && !placeHolderProvider.ResolvedKeys.Contains(key))
                 {
                     continue;
                 }
 
-                var sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
+                KeyValuePair<string, string> sanitized = _sanitizer.Sanitize(new KeyValuePair<string, string>(key, value));
                 properties.Add(sanitized.Key, new PropertyValueDescriptor(sanitized.Value));
             }
         }
@@ -96,16 +96,15 @@ public class EnvEndpoint : AbstractEndpoint<EnvironmentDescriptor>, IEnvEndpoint
 
     public virtual string GetPropertySourceName(IConfigurationProvider provider)
     {
-        return provider is FileConfigurationProvider fileProvider
-            ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]"
-            : provider.GetType().Name;
+        return provider is FileConfigurationProvider fileProvider ? $"{provider.GetType().Name}: [{fileProvider.Source.Path}]" : provider.GetType().Name;
     }
 
     private HashSet<string> GetFullKeyNames(IConfigurationProvider provider, string rootKey, HashSet<string> initialKeys)
     {
-        foreach (var key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
+        foreach (string key in provider.GetChildKeys(Enumerable.Empty<string>(), rootKey).Distinct(StringComparer.OrdinalIgnoreCase))
         {
-            var surrogateKey = key;
+            string surrogateKey = key;
+
             if (rootKey != null)
             {
                 surrogateKey = $"{rootKey}:{key}";

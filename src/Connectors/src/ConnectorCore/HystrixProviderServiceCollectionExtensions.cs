@@ -14,11 +14,20 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <summary>
     /// Adds HystrixConnectionFactory to your ServiceCollection.
     /// </summary>
-    /// <param name="services">Your Service Collection.</param>
-    /// <param name="config">Application Configuration.</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
-    /// <returns>IServiceCollection for chaining.</returns>
-    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    /// <param name="services">
+    /// Your Service Collection.
+    /// </param>
+    /// <param name="config">
+    /// Application Configuration.
+    /// </param>
+    /// <param name="contextLifetime">
+    /// Lifetime of the service to inject.
+    /// </param>
+    /// <returns>
+    /// IServiceCollection for chaining.
+    /// </returns>
+    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config,
+        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)
         {
@@ -39,12 +48,23 @@ public static class HystrixProviderServiceCollectionExtensions
     /// <summary>
     /// Adds HystrixConnectionFactory to your ServiceCollection.
     /// </summary>
-    /// <param name="services">Your Service Collection.</param>
-    /// <param name="config">Application Configuration.</param>
-    /// <param name="serviceName">Cloud Foundry service name binding.</param>
-    /// <param name="contextLifetime">Lifetime of the service to inject.</param>
-    /// <returns>IServiceCollection for chaining.</returns>
-    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName, ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
+    /// <param name="services">
+    /// Your Service Collection.
+    /// </param>
+    /// <param name="config">
+    /// Application Configuration.
+    /// </param>
+    /// <param name="serviceName">
+    /// Cloud Foundry service name binding.
+    /// </param>
+    /// <param name="contextLifetime">
+    /// Lifetime of the service to inject.
+    /// </param>
+    /// <returns>
+    /// IServiceCollection for chaining.
+    /// </returns>
+    public static IServiceCollection AddHystrixConnection(this IServiceCollection services, IConfiguration config, string serviceName,
+        ServiceLifetime contextLifetime = ServiceLifetime.Singleton)
     {
         if (services == null)
         {
@@ -69,7 +89,7 @@ public static class HystrixProviderServiceCollectionExtensions
 
     private static void DoAdd(IServiceCollection services, HystrixRabbitMQServiceInfo info, IConfiguration config, ServiceLifetime contextLifetime)
     {
-        var rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
+        Type rabbitFactory = RabbitMQTypeLocator.ConnectionFactory;
         var hystrixConfig = new HystrixProviderConnectorOptions(config);
         var factory = new HystrixProviderConnectorFactory(info, hystrixConfig, rabbitFactory);
         services.Add(new ServiceDescriptor(typeof(HystrixConnectionFactory), factory.Create, contextLifetime));

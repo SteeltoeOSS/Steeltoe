@@ -8,6 +8,8 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry.Test;
 
 public class MySqlServiceOption : CloudFoundryServicesOptions
 {
+    public MySqlCredentials Credentials { get; set; }
+
     public MySqlServiceOption()
     {
     }
@@ -16,6 +18,4 @@ public class MySqlServiceOption : CloudFoundryServicesOptions
         : base(config)
     {
     }
-
-    public MySqlCredentials Credentials { get; set; }
 }

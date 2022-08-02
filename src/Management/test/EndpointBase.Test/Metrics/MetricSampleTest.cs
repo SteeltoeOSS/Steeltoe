@@ -22,7 +22,7 @@ public class MetricSampleTest : BaseTest
     public void JsonSerialization_ReturnsExpected()
     {
         var sample = new MetricSample(MetricStatistic.Total, 100.00);
-        var result = Serialize(sample);
+        string result = Serialize(sample);
         Assert.Equal("{\"statistic\":\"TOTAL\",\"value\":100}", result);
     }
 }

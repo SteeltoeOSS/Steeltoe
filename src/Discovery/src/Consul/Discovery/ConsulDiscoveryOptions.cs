@@ -16,29 +16,6 @@ public class ConsulDiscoveryOptions
     private string _hostName;
     private string _scheme = "http";
 
-    public ConsulDiscoveryOptions()
-    {
-        if (!UseNetUtils)
-        {
-            _hostName = DnsTools.ResolveHostName();
-            IpAddress = DnsTools.ResolveHostAddress(_hostName);
-        }
-    }
-
-    public void ApplyNetUtils()
-    {
-        if (UseNetUtils && NetUtils != null)
-        {
-            var host = NetUtils.FindFirstNonLoopbackHostInfo();
-            if (host.Hostname != null)
-            {
-                _hostName = host.Hostname;
-            }
-
-            IpAddress = host.IpAddress;
-        }
-    }
-
     /// <summary>
     /// Gets or sets a value indicating whether Consul Discovery client is enabled.
     /// </summary>
@@ -56,12 +33,12 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Gets or sets values related to Heartbeat.
     /// </summary>
-    public ConsulHeartbeatOptions Heartbeat { get; set; } = new ();
+    public ConsulHeartbeatOptions Heartbeat { get; set; } = new();
 
     /// <summary>
     /// Gets or sets values related to Retrying requests.
     /// </summary>
-    public ConsulRetryOptions Retry { get; set; } = new ();
+    public ConsulRetryOptions Retry { get; set; } = new();
 
     /// <summary>
     /// Gets or sets Tag to query for in service list if one is not listed in serverListQueryTags.
@@ -69,8 +46,8 @@ public class ConsulDiscoveryOptions
     public string DefaultQueryTag { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to
-    /// /v1/health/service/serviceName. This pushes health check passing to the server.
+    /// Gets or sets a value indicating whether gets or sets Add the 'passing` parameter to /v1/health/service/serviceName. This pushes health check passing
+    /// to the server.
     /// </summary>
     public bool QueryPassing { get; set; }
 
@@ -84,8 +61,7 @@ public class ConsulDiscoveryOptions
     }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets RegisterHealthCheck in consul.
-    /// Useful during development of a service.
+    /// Gets or sets a value indicating whether gets or sets RegisterHealthCheck in consul. Useful during development of a service.
     /// </summary>
     public bool RegisterHealthCheck { get; set; } = true;
 
@@ -110,8 +86,7 @@ public class ConsulDiscoveryOptions
     public string HealthCheckTimeout { get; set; } = "10s";
 
     /// <summary>
-    /// Gets or sets Timeout to deregister services critical for longer than timeout(e.g. 30m).
-    /// Requires consul version 7.x or higher.
+    /// Gets or sets Timeout to deregister services critical for longer than timeout(e.g. 30m). Requires consul version 7.x or higher.
     /// </summary>
     public string HealthCheckCriticalTimeout { get; set; } = "30m";
 
@@ -140,8 +115,7 @@ public class ConsulDiscoveryOptions
     public int Port { get; set; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname
-    /// during registration.
+    /// Gets or sets a value indicating whether gets or sets Use ip address rather than hostname during registration.
     /// </summary>
     public bool PreferIpAddress { get; set; }
 
@@ -176,8 +150,8 @@ public class ConsulDiscoveryOptions
     public string DefaultZoneMetadataName { get; set; } = "zone";
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets FailFast Throw exceptions during
-    /// service registration if true, otherwise, log warnings(defaults to true).
+    /// Gets or sets a value indicating whether gets or sets FailFast Throw exceptions during service registration if true, otherwise, log warnings(defaults
+    /// to true).
     /// </summary>
     public bool FailFast { get; set; } = true;
 
@@ -187,8 +161,7 @@ public class ConsulDiscoveryOptions
     public bool Register { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets a value indicating whether gets or sets Deregister automatic de-registration
-    /// of service in consul.
+    /// Gets or sets a value indicating whether gets or sets Deregister automatic de-registration of service in consul.
     /// </summary>
     public bool Deregister { get; set; } = true;
 
@@ -212,6 +185,30 @@ public class ConsulDiscoveryOptions
     /// </summary>
     public bool UseAspNetCoreUrls { get; set; } = true;
 
+    public ConsulDiscoveryOptions()
+    {
+        if (!UseNetUtils)
+        {
+            _hostName = DnsTools.ResolveHostName();
+            IpAddress = DnsTools.ResolveHostAddress(_hostName);
+        }
+    }
+
+    public void ApplyNetUtils()
+    {
+        if (UseNetUtils && NetUtils != null)
+        {
+            HostInfo host = NetUtils.FindFirstNonLoopbackHostInfo();
+
+            if (host.Hostname != null)
+            {
+                _hostName = host.Hostname;
+            }
+
+            IpAddress = host.IpAddress;
+        }
+    }
+
     // public int CatalogServicesWatchDelay { get; set; } = 1000;
 
     // public int CatalogServicesWatchTimeout { get; set; } = 2;
@@ -219,8 +216,12 @@ public class ConsulDiscoveryOptions
     /// <summary>
     /// Set properties from addresses found in configuration.
     /// </summary>
-    /// <param name="addresses">A list of addresses the application is listening on.</param>
-    /// <param name="wildcardHostname">String representation of a wildcard hostname.</param>
+    /// <param name="addresses">
+    /// A list of addresses the application is listening on.
+    /// </param>
+    /// <param name="wildcardHostname">
+    /// String representation of a wildcard hostname.
+    /// </param>
     public void ApplyConfigUrls(List<Uri> addresses, string wildcardHostname)
     {
         // try to pull some values out of server config to override defaults, but only if not using NetUtils
@@ -228,7 +229,8 @@ public class ConsulDiscoveryOptions
         if (addresses.Any() && !UseNetUtils && UseAspNetCoreUrls && Port == 0)
         {
             // prefer https
-            var configAddress = addresses.FirstOrDefault(u => u.Scheme.Equals("https"));
+            Uri configAddress = addresses.FirstOrDefault(u => u.Scheme.Equals("https"));
+
             if (configAddress == null)
             {
                 configAddress = addresses.FirstOrDefault();

@@ -8,6 +8,22 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 public class Token
 {
+    public TokenKind Kind { get; }
+
+    public int StartPos { get; }
+
+    public int EndPos { get; }
+
+    public string Data { get; }
+
+    public bool IsIdentifier => Equals(Kind, TokenKind.Identifier);
+
+    public bool IsNumericRelationalOperator =>
+        Equals(Kind, TokenKind.Gt) || Equals(Kind, TokenKind.Ge) || Equals(Kind, TokenKind.Lt) || Equals(Kind, TokenKind.Le) || Equals(Kind, TokenKind.Eq) ||
+        Equals(Kind, TokenKind.Ne);
+
+    public string StringValue => Data ?? string.Empty;
+
     public Token(TokenKind tokenKind, int startPos, int endPos)
     {
         Kind = tokenKind;
@@ -19,33 +35,6 @@ public class Token
         : this(tokenKind, startPos, endPos)
     {
         Data = new string(tokenData);
-    }
-
-    public TokenKind Kind { get; }
-
-    public int StartPos { get; }
-
-    public int EndPos { get; }
-
-    public string Data { get; }
-
-    public bool IsIdentifier
-    {
-        get { return Equals(Kind, TokenKind.Identifier); }
-    }
-
-    public bool IsNumericRelationalOperator
-    {
-        get
-        {
-            return Equals(Kind, TokenKind.Gt) || Equals(Kind, TokenKind.Ge) || Equals(Kind, TokenKind.Lt) ||
-                   Equals(Kind, TokenKind.Le) || Equals(Kind, TokenKind.Eq) || Equals(Kind, TokenKind.Ne);
-        }
-    }
-
-    public string StringValue
-    {
-        get { return Data ?? string.Empty; }
     }
 
     public Token AsInstanceOfToken()
@@ -67,6 +56,7 @@ public class Token
     {
         var s = new StringBuilder();
         s.Append('[').Append(Kind);
+
         if (Kind.HasPayload)
         {
             s.Append(':').Append(Data);

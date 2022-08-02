@@ -15,7 +15,11 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Label = "elephantsql",
-            Tags = new[] { "postgresql", "relational" },
+            Tags = new[]
+            {
+                "postgresql",
+                "relational"
+            },
             Name = "postgresService",
             Plan = "free",
             Credentials = new Credential
@@ -25,10 +29,17 @@ public class PostgresServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -46,10 +57,17 @@ public class PostgresServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -69,10 +87,17 @@ public class PostgresServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -83,7 +108,11 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-foobar",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -93,10 +122,16 @@ public class PostgresServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:foobar://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:foobar://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -107,7 +142,11 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Label = "elephantsql",
-            Tags = new[] { "postgresql", "relational" },
+            Tags = new[]
+            {
+                "postgresql",
+                "relational"
+            },
             Name = "postgresService",
             Plan = "free",
             Credentials = new Credential
@@ -117,10 +156,17 @@ public class PostgresServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("postgres://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:postgres://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         var info = factory.Create(s) as PostgresServiceInfo;
         Assert.NotNull(info);
@@ -139,7 +185,11 @@ public class PostgresServiceInfoFactoryTest
         var s = new Service
         {
             Label = "elephantsql",
-            Tags = new[] { "postgresql", "relational" },
+            Tags = new[]
+            {
+                "postgresql",
+                "relational"
+            },
             Name = "postgresService",
             Plan = "free",
             Credentials = new Credential
@@ -151,6 +201,7 @@ public class PostgresServiceInfoFactoryTest
                 { "password", new Credential("7E1LxXnlH2hhlPVt") }
             }
         };
+
         var factory = new PostgresServiceInfoFactory();
         var info = factory.Create(s) as PostgresServiceInfo;
         Assert.NotNull(info);

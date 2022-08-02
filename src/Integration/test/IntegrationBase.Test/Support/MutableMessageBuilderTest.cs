@@ -12,9 +12,9 @@ public class MutableMessageBuilderTest
     [Fact]
     public void Mutable()
     {
-        var builder = MutableIntegrationMessageBuilder<string>.WithPayload("test");
-        var message1 = builder.SetHeader("foo", "bar").Build();
-        var message2 = MutableIntegrationMessageBuilder<string>.FromMessage(message1).SetHeader("another", 1).Build();
+        MutableIntegrationMessageBuilder<string> builder = MutableIntegrationMessageBuilder<string>.WithPayload("test");
+        IMessage<string> message1 = builder.SetHeader("foo", "bar").Build();
+        IMessage<string> message2 = MutableIntegrationMessageBuilder<string>.FromMessage(message1).SetHeader("another", 1).Build();
         Assert.Equal("bar", message2.Headers["foo"]);
         Assert.Equal(message1.Headers.Id, message2.Headers.Id);
         Assert.True(message2 == message1);
@@ -23,8 +23,8 @@ public class MutableMessageBuilderTest
     [Fact]
     public void MutableFromImmutable()
     {
-        var message1 = IntegrationMessageBuilder<string>.WithPayload("test").SetHeader("foo", "bar").Build();
-        var message2 = MutableIntegrationMessageBuilder<string>.FromMessage(message1).SetHeader("another", 1).Build();
+        IMessage<string> message1 = IntegrationMessageBuilder<string>.WithPayload("test").SetHeader("foo", "bar").Build();
+        IMessage<string> message2 = MutableIntegrationMessageBuilder<string>.FromMessage(message1).SetHeader("another", 1).Build();
         Assert.Equal("bar", message2.Headers["foo"]);
         Assert.Equal(message1.Headers.Id, message2.Headers.Id);
         Assert.NotEqual(message1, message2);
@@ -34,8 +34,8 @@ public class MutableMessageBuilderTest
     [Fact]
     public void MutableFromImmutableMutate()
     {
-        var message1 = IntegrationMessageBuilder<string>.WithPayload("test").SetHeader("foo", "bar").Build();
-        var message2 = new MutableIntegrationMessageBuilderFactory().FromMessage(message1).SetHeader("another", 1).Build();
+        IMessage<string> message1 = IntegrationMessageBuilder<string>.WithPayload("test").SetHeader("foo", "bar").Build();
+        IMessage<string> message2 = new MutableIntegrationMessageBuilderFactory().FromMessage(message1).SetHeader("another", 1).Build();
         Assert.Equal("bar", message2.Headers["foo"]);
         Assert.Equal(message1.Headers.Id, message2.Headers.Id);
         Assert.NotEqual(message1, message2);
@@ -45,52 +45,49 @@ public class MutableMessageBuilderTest
     [Fact]
     public void TestPushAndPopSequenceDetailsMutable()
     {
-        var message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).PushSequenceDetails("foo", 1, 2).Build();
+        IMessage<int> message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).PushSequenceDetails("foo", 1, 2).Build();
         Assert.False(message1.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
+        IMessage<int> message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
         Assert.True(message2.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
+        IMessage<int> message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
         Assert.False(message3.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
     }
 
     [Fact]
     public void TestPushAndPopSequenceDetailsWhenNoCorrelationIdMutable()
     {
-        var message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).Build();
+        IMessage<int> message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).Build();
         Assert.False(message1.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
+        IMessage<int> message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
         Assert.False(message2.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
+        IMessage<int> message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
         Assert.False(message3.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
     }
 
     [Fact]
     public void TestPopSequenceDetailsWhenNotPoppedMutable()
     {
-        var message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).Build();
+        IMessage<int> message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).Build();
         Assert.False(message1.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PopSequenceDetails().Build();
+        IMessage<int> message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PopSequenceDetails().Build();
         Assert.False(message2.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
     }
 
     [Fact]
     public void TestPushAndPopSequenceDetailsWhenNoSequenceMutable()
     {
-        var message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).SetCorrelationId("foo").Build();
+        IMessage<int> message1 = MutableIntegrationMessageBuilder<int>.WithPayload(1).SetCorrelationId("foo").Build();
         Assert.False(message1.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
+        IMessage<int> message2 = MutableIntegrationMessageBuilder<int>.FromMessage(message1).PushSequenceDetails("bar", 1, 1).Build();
         Assert.True(message2.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
-        var message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
+        IMessage<int> message3 = MutableIntegrationMessageBuilder<int>.FromMessage(message2).PopSequenceDetails().Build();
         Assert.False(message3.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceDetails));
     }
 
     [Fact]
     public void TestNoIdAndTimestampHeaders()
     {
-        var message =
-            MutableIntegrationMessageBuilder<string>.WithPayload("foo", false)
-                .PushSequenceDetails("bar", 1, 1)
-                .Build();
+        IMessage<string> message = MutableIntegrationMessageBuilder<string>.WithPayload("foo", false).PushSequenceDetails("bar", 1, 1).Build();
         Assert.True(message.Headers.ContainsKey(IntegrationMessageHeaderAccessor.CorrelationId));
         Assert.True(message.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceNumber));
         Assert.True(message.Headers.ContainsKey(IntegrationMessageHeaderAccessor.SequenceSize));

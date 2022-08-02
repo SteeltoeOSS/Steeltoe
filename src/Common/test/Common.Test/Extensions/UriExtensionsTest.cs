@@ -13,9 +13,9 @@ public class UriExtensionsTest
     public void MaskExistingBasicAuthenticationToString()
     {
         var uri = new Uri("http://username:password@www.example.com/");
-        var expected = "http://****:****@www.example.com/";
+        string expected = "http://****:****@www.example.com/";
 
-        var masked = uri.ToMaskedString();
+        string masked = uri.ToMaskedString();
 
         Assert.Equal(expected, masked);
     }
@@ -26,7 +26,7 @@ public class UriExtensionsTest
         var uri = new Uri("http://username:password@www.example.com/");
         var expected = new Uri("http://****:****@www.example.com/");
 
-        var masked = uri.ToMaskedUri();
+        Uri masked = uri.ToMaskedUri();
 
         Assert.Equal(expected, masked);
     }
@@ -35,9 +35,9 @@ public class UriExtensionsTest
     public void DoNotMaskStringIfNotBasicAuthenticationExists()
     {
         var uri = new Uri("http://www.example.com/");
-        var expected = uri.ToString();
+        string expected = uri.ToString();
 
-        var masked = uri.ToMaskedString();
+        string masked = uri.ToMaskedString();
 
         Assert.Equal(expected, masked);
     }
@@ -48,7 +48,7 @@ public class UriExtensionsTest
         var uri = new Uri("http://www.example.com/");
         var expected = new Uri(uri.ToString());
 
-        var masked = uri.ToMaskedUri();
+        Uri masked = uri.ToMaskedUri();
 
         Assert.Equal(expected, masked);
     }

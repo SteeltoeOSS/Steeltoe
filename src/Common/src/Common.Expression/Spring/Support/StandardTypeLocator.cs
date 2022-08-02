@@ -2,11 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardTypeLocator : ITypeLocator
 {
-    private readonly List<string> _knownNamespacePrefixes = new (1);
+    private readonly List<string> _knownNamespacePrefixes = new(1);
+
+    public virtual List<string> ImportPrefixes => new(_knownNamespacePrefixes);
 
     public StandardTypeLocator()
     {
@@ -23,26 +27,27 @@ public class StandardTypeLocator : ITypeLocator
         _knownNamespacePrefixes.Remove(prefix);
     }
 
-    public virtual List<string> ImportPrefixes => new (_knownNamespacePrefixes);
-
     public virtual Type FindType(string typeName)
     {
-        var loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assembly[] loadedAssemblies = AppDomain.CurrentDomain.GetAssemblies();
         Type result = null;
         typeName = typeName.Replace("$", "+"); // Handle nested type syntax  a.b.C$Nested
-        foreach (var assembly in loadedAssemblies)
+
+        foreach (Assembly assembly in loadedAssemblies)
         {
             try
             {
                 result = assembly.GetType(typeName, false);
+
                 if (result == null)
                 {
-                    foreach (var prefix in _knownNamespacePrefixes)
+                    foreach (string prefix in _knownNamespacePrefixes)
                     {
                         try
                         {
-                            var nameToLookup = $"{prefix}.{typeName}";
+                            string nameToLookup = $"{prefix}.{typeName}";
                             result = assembly.GetType(nameToLookup, false);
+
                             if (result != null)
                             {
                                 break;

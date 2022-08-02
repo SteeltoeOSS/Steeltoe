@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
@@ -18,16 +19,16 @@ public class ConfigServerClientSettingsOptionsTest
     [Fact]
     public void ConfigureConfigServerClientSettingsOptions_WithDefaults()
     {
-        var services = new ServiceCollection().AddOptions();
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IServiceCollection services = new ServiceCollection().AddOptions();
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
-        var builder = new ConfigurationBuilder().AddConfigServer(environment);
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment);
         services.AddSingleton<IConfiguration>(_ => builder.Build());
 
         services.ConfigureConfigServerClientOptions();
         var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
-        var options = service.Value;
+        ConfigServerClientSettingsOptions options = service.Value;
         Assert.NotNull(options);
         TestHelper.VerifyDefaults(options.Settings);
     }
@@ -35,8 +36,9 @@ public class ConfigServerClientSettingsOptionsTest
     [Fact]
     public void ConfigureConfigServerClientSettingsOptions_WithValues()
     {
-        var services = new ServiceCollection().AddOptions();
-        var appsettings = @"
+        IServiceCollection services = new ServiceCollection().AddOptions();
+
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -58,20 +60,21 @@ public class ConfigServerClientSettingsOptionsTest
                       }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         services.AddSingleton<IConfiguration>(config);
 
         services.ConfigureConfigServerClientOptions();
         var service = services.BuildServiceProvider().GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
-        var options = service.Value;
+        ConfigServerClientSettingsOptions options = service.Value;
         Assert.NotNull(options);
 
         Assert.Equal(ConfigServerClientSettings.DefaultProviderEnabled, options.Enabled);
@@ -101,7 +104,7 @@ public class ConfigServerClientSettingsOptionsTest
         Assert.Equal("foo", options.Headers["bar"]);
         Assert.Equal("bar", options.Headers["foo"]);
 
-        var settings = options.Settings;
+        ConfigServerClientSettings settings = options.Settings;
         Assert.NotNull(settings);
 
         Assert.Equal(ConfigServerClientSettings.DefaultProviderEnabled, settings.Enabled);

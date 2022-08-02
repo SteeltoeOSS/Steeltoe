@@ -2,20 +2,43 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Integration.Support;
-using Steeltoe.Messaging;
 using System.Collections;
 using System.Diagnostics.CodeAnalysis;
+using Steeltoe.Integration.Support;
+using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.Binder;
 
 public class MessageValues : IDictionary<string, object>
 {
+    public object Payload { get; set; }
+
+    public Dictionary<string, object> Headers { get; set; }
+
+    public ICollection<string> Keys => Headers.Keys;
+
+    public ICollection<object> Values => Headers.Values;
+
+    public int Count => Headers.Count;
+
+    public bool IsReadOnly => false;
+
+    public object this[string key]
+    {
+        get
+        {
+            Headers.TryGetValue(key, out object result);
+            return result;
+        }
+        set => Headers[key] = value;
+    }
+
     public MessageValues(IMessage message)
     {
         Payload = message.Payload;
         Headers = new Dictionary<string, object>();
-        foreach (var header in (IDictionary<string, object>)message.Headers)
+
+        foreach (KeyValuePair<string, object> header in (IDictionary<string, object>)message.Headers)
         {
             Headers.Add(header.Key, header.Value);
         }
@@ -27,10 +50,6 @@ public class MessageValues : IDictionary<string, object>
         Headers = new Dictionary<string, object>(headers);
     }
 
-    public object Payload { get; set; }
-
-    public Dictionary<string, object> Headers { get; set; }
-
     public IMessage ToMessage()
     {
         return IntegrationMessageBuilder.WithPayload(Payload).CopyHeaders(Headers).Build();
@@ -38,7 +57,7 @@ public class MessageValues : IDictionary<string, object>
 
     public void CopyHeadersIfAbsent(IDictionary<string, object> headersToCopy)
     {
-        foreach (var headersToCopyEntry in headersToCopy)
+        foreach (KeyValuePair<string, object> headersToCopyEntry in headersToCopy)
         {
             if (!ContainsKey(headersToCopyEntry.Key))
             {
@@ -46,24 +65,6 @@ public class MessageValues : IDictionary<string, object>
             }
         }
     }
-
-    public object this[string key]
-    {
-        get
-        {
-            Headers.TryGetValue(key, out var result);
-            return result;
-        }
-        set => Headers[key] = value;
-    }
-
-    public ICollection<string> Keys => Headers.Keys;
-
-    public ICollection<object> Values => Headers.Values;
-
-    public int Count => Headers.Count;
-
-    public bool IsReadOnly => false;
 
     public void Add(string key, object value)
     {

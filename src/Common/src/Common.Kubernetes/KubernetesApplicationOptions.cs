@@ -12,22 +12,6 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
 
     protected override string PlatformRoot => PlatformConfigRoot;
 
-    public KubernetesApplicationOptions()
-    {
-    }
-
-    public KubernetesApplicationOptions(IConfiguration config)
-        : base(config.GetSection(PlatformConfigRoot))
-    {
-        // override base class's use of config sub-section so that we can find spring:application:name
-        configuration = config;
-
-        Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
-        Config ??= new KubernetesConfiguration();
-        Secrets ??= new WatchableResource();
-        Reload ??= new ReloadSettings();
-    }
-
     public bool Enabled { get; set; } = true;
 
     public override string ApplicationName => Name;
@@ -53,4 +37,20 @@ public class KubernetesApplicationOptions : ApplicationInstanceInfo
     /// Gets or sets the character used to separate the app and environment names when used for retrieving config maps or secrets.
     /// </summary>
     public string NameEnvironmentSeparator { get; set; } = ".";
+
+    public KubernetesApplicationOptions()
+    {
+    }
+
+    public KubernetesApplicationOptions(IConfiguration config)
+        : base(config.GetSection(PlatformConfigRoot))
+    {
+        // override base class's use of config sub-section so that we can find spring:application:name
+        configuration = config;
+
+        Name ??= ApplicationNameInContext(SteeltoeComponent.Kubernetes);
+        Config ??= new KubernetesConfiguration();
+        Secrets ??= new WatchableResource();
+        Reload ??= new ReloadSettings();
+    }
 }

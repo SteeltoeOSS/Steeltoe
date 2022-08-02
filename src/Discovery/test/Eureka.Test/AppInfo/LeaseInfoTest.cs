@@ -33,7 +33,7 @@ public class LeaseInfoTest : AbstractBaseTest
             ServiceUpTimestamp = 1_457_973_741_708
         };
 
-        var result = LeaseInfo.FromJson(leaseInfo);
+        LeaseInfo result = LeaseInfo.FromJson(leaseInfo);
         Assert.Equal(100, result.RenewalIntervalInSecs);
         Assert.Equal(200, result.DurationInSecs);
         Assert.Equal(1_457_973_741_708, DateTimeConversions.ToJavaMillis(new DateTime(result.RegistrationTimestamp, DateTimeKind.Utc)));
@@ -47,7 +47,7 @@ public class LeaseInfoTest : AbstractBaseTest
     public void FromConfig_Correct()
     {
         var config = new EurekaInstanceConfig();
-        var info = LeaseInfo.FromConfig(config);
+        LeaseInfo info = LeaseInfo.FromConfig(config);
         Assert.Equal(config.LeaseRenewalIntervalInSeconds, info.RenewalIntervalInSecs);
         Assert.Equal(config.LeaseExpirationDurationInSeconds, info.DurationInSecs);
     }

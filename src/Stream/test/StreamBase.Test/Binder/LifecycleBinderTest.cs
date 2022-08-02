@@ -13,15 +13,12 @@ public class LifecycleBinderTest : AbstractTest
     [Fact]
     public async Task TestOnlySmartLifecyclesStarted()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithBinding(
-            searchDirectories,
-            typeof(IFooChannels),
-            "spring:cloud:stream:defaultBinder=mock");
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+        ServiceCollection container = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock");
 
         container.AddSingleton<ILifecycle, SimpleLifecycle>();
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
@@ -31,6 +28,8 @@ public class LifecycleBinderTest : AbstractTest
 
     public class SimpleLifecycle : ILifecycle
     {
+        public bool IsRunning { get; private set; }
+
         public Task Start()
         {
             IsRunning = true;
@@ -42,7 +41,5 @@ public class LifecycleBinderTest : AbstractTest
             IsRunning = false;
             return Task.CompletedTask;
         }
-
-        public bool IsRunning { get; private set; }
     }
 }

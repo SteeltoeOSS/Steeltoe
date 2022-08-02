@@ -11,19 +11,13 @@ public class HttpTraceEndpoint : AbstractEndpoint<HttpTraceResult>, IHttpTraceEn
     private readonly ILogger<HttpTraceEndpoint> _logger;
     private readonly IHttpTraceRepository _traceRepo;
 
+    public new ITraceOptions Options => options as ITraceOptions;
+
     public HttpTraceEndpoint(ITraceOptions options, IHttpTraceRepository traceRepository, ILogger<HttpTraceEndpoint> logger = null)
         : base(options)
     {
         _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
         _logger = logger;
-    }
-
-    public new ITraceOptions Options
-    {
-        get
-        {
-            return options as ITraceOptions;
-        }
     }
 
     public override HttpTraceResult Invoke()

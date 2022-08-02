@@ -6,8 +6,5 @@ namespace Steeltoe.Common.Util;
 
 public interface ITime
 {
-    long CurrentTimeInMillis
-    {
-        get;
-    }
+    long CurrentTimeInMillis { get; }
 }

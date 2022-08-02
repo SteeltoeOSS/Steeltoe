@@ -8,18 +8,18 @@ namespace Steeltoe.Stream.Binding;
 
 public class OutputBindingLifecycle : AbstractBindingLifecycle
 {
-    internal List<IBinding> OutputBindings = new ();
+    internal List<IBinding> OutputBindings = new();
+
+    public override int Phase { get; } = int.MinValue + 1000;
 
     public OutputBindingLifecycle(IBindingService bindingService, IEnumerable<IBindable> bindables)
         : base(bindingService, bindables)
     {
     }
 
-    public override int Phase { get; } = int.MinValue + 1000;
-
     protected override void DoStartWithBindable(IBindable bindable)
     {
-        var bindableBindings = bindable.CreateAndBindOutputs(BindingService);
+        ICollection<IBinding> bindableBindings = bindable.CreateAndBindOutputs(BindingService);
         OutputBindings.AddRange(bindableBindings);
     }
 

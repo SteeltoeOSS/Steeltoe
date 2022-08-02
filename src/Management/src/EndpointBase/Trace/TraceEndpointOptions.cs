@@ -11,26 +11,6 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
     private const string ManagementInfoPrefix = "management:endpoints:trace";
     private const int DefaultCapacity = 100;
 
-    public TraceEndpointOptions()
-    {
-        Id = "trace";
-        Capacity = DefaultCapacity;
-    }
-
-    public TraceEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "trace";
-        }
-
-        if (Capacity == -1)
-        {
-            Capacity = DefaultCapacity;
-        }
-    }
-
     public int Capacity { get; set; } = -1;
 
     public bool AddRequestHeaders { get; set; } = true;
@@ -52,4 +32,24 @@ public class TraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
     public bool AddSessionId { get; set; }
 
     public bool AddTimeTaken { get; set; } = true;
+
+    public TraceEndpointOptions()
+    {
+        Id = "trace";
+        Capacity = DefaultCapacity;
+    }
+
+    public TraceEndpointOptions(IConfiguration config)
+        : base(ManagementInfoPrefix, config)
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Id = "trace";
+        }
+
+        if (Capacity == -1)
+        {
+            Capacity = DefaultCapacity;
+        }
+    }
 }

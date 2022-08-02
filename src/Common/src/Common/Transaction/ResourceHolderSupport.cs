@@ -12,13 +12,7 @@ public abstract class ResourceHolderSupport : IResourceHolder
 
     public bool RollbackOnly { get; set; }
 
-    public bool HasTimeout
-    {
-        get
-        {
-            return Deadline.HasValue;
-        }
-    }
+    public bool HasTimeout => Deadline.HasValue;
 
     public DateTime? Deadline { get; private set; }
 
@@ -28,8 +22,8 @@ public abstract class ResourceHolderSupport : IResourceHolder
 
     public int GetTimeToLiveInSeconds()
     {
-        var diff = (double)GetTimeToLiveInMillis() / 1000;
-        var secs = (int)Math.Ceiling(diff);
+        double diff = (double)GetTimeToLiveInMillis() / 1000;
+        int secs = (int)Math.Ceiling(diff);
         CheckTransactionTimeout(secs <= 0);
         return secs;
     }
@@ -41,7 +35,7 @@ public abstract class ResourceHolderSupport : IResourceHolder
             throw new InvalidOperationException("No timeout specified for this resource holder");
         }
 
-        var timeToLive = (Deadline.Value.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond;
+        long timeToLive = (Deadline.Value.Ticks - DateTime.Now.Ticks) / TimeSpan.TicksPerMillisecond;
         CheckTransactionTimeout(timeToLive <= 0);
         return timeToLive;
     }

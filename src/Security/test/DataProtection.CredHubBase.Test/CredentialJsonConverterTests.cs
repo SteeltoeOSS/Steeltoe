@@ -15,7 +15,7 @@ public class CredentialJsonConverterTests
         var passwordCredential = new PasswordCredential("thisIsAPassword");
         var chClient = new CredHubClient();
 
-        var serialized = JsonSerializer.Serialize(passwordCredential, chClient.SerializerOptions);
+        string serialized = JsonSerializer.Serialize(passwordCredential, chClient.SerializerOptions);
 
         Assert.Equal("\"thisIsAPassword\"", serialized);
     }
@@ -23,7 +23,7 @@ public class CredentialJsonConverterTests
     [Fact]
     public void ValueConverter_Deserializes_StringProperty_AsClass()
     {
-        var serialized = "\"thisIsAValue\"";
+        string serialized = "\"thisIsAValue\"";
 
         var valueCredential = JsonSerializer.Deserialize<ValueCredential>(serialized);
 

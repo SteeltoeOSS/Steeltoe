@@ -8,7 +8,11 @@ public abstract class AbstractAcknowledgmentCallback : IAcknowledgmentCallback
 {
     public virtual bool IsAcknowledged { get; set; }
 
-    public virtual bool IsAutoAck { get => true; set => throw new InvalidOperationException("You cannot disable auto acknowledgment with this implementation"); }
+    public virtual bool IsAutoAck
+    {
+        get => true;
+        set => throw new InvalidOperationException("You cannot disable auto acknowledgment with this implementation");
+    }
 
     public abstract void Acknowledge(Status status);
 }

@@ -2,39 +2,40 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Order;
-using System.Collections.ObjectModel;
 
 namespace Steeltoe.Common.Transaction;
 
 public static class TransactionSynchronizationManager
 {
-    private static readonly AsyncLocal<Dictionary<object, object>> Resources = new ();
-    private static readonly AsyncLocal<ISet<ITransactionSynchronization>> Synchronizations = new ();
-    private static readonly AsyncLocal<bool> ActualTransactionActive = new ();
-    private static readonly AsyncLocal<int?> CurrentTransactionIsolationLevel = new ();
-    private static readonly AsyncLocal<string> CurrentTransactionName = new ();
-    private static readonly AsyncLocal<bool> CurrentTransactionReadOnly = new ();
+    private static readonly AsyncLocal<Dictionary<object, object>> Resources = new();
+    private static readonly AsyncLocal<ISet<ITransactionSynchronization>> Synchronizations = new();
+    private static readonly AsyncLocal<bool> ActualTransactionActive = new();
+    private static readonly AsyncLocal<int?> CurrentTransactionIsolationLevel = new();
+    private static readonly AsyncLocal<string> CurrentTransactionName = new();
+    private static readonly AsyncLocal<bool> CurrentTransactionReadOnly = new();
 
     private static readonly IDictionary<object, object> EmptyDict = new Dictionary<object, object>();
-    private static readonly List<ITransactionSynchronization> EmptyList = new ();
+    private static readonly List<ITransactionSynchronization> EmptyList = new();
 
     public static IDictionary<object, object> GetResourceMap()
     {
-        var resources = Resources.Value;
+        Dictionary<object, object> resources = Resources.Value;
         return resources != null ? new ReadOnlyDictionary<object, object>(resources) : EmptyDict;
     }
 
     public static bool HasResource(object key)
     {
-        var value = DoGetResource(key);
+        object value = DoGetResource(key);
         return value != null;
     }
 
     public static object GetResource(object key, ILogger logger = null)
     {
-        var value = DoGetResource(key);
+        object value = DoGetResource(key);
+
         if (value != null)
         {
             logger?.LogTrace("Retrieved value [{value}] for key [{key}] bound to thread [{thread}]", value, key, Thread.CurrentThread.ManagedThreadId);
@@ -50,7 +51,7 @@ public static class TransactionSynchronizationManager
             throw new ArgumentNullException(nameof(value));
         }
 
-        var map = Resources.Value;
+        Dictionary<object, object> map = Resources.Value;
 
         // set ThreadLocal Map if none found
         if (map == null)
@@ -59,7 +60,7 @@ public static class TransactionSynchronizationManager
             Resources.Value = map;
         }
 
-        map.TryGetValue(key, out var oldValue);
+        map.TryGetValue(key, out object oldValue);
         map[key] = value;
 
         // Transparently suppress a ResourceHolder that was marked as void...
@@ -78,7 +79,8 @@ public static class TransactionSynchronizationManager
 
     public static object UnbindResource(object key, ILogger logger = null)
     {
-        var value = DoUnbindResource(key, logger);
+        object value = DoUnbindResource(key, logger);
+
         if (value == null)
         {
             throw new InvalidOperationException($"No value for key [{key}] bound to thread [{Thread.CurrentThread.ManagedThreadId}]");
@@ -115,7 +117,8 @@ public static class TransactionSynchronizationManager
             throw new ArgumentNullException(nameof(synchronization));
         }
 
-        var synchs = Synchronizations.Value;
+        ISet<ITransactionSynchronization> synchs = Synchronizations.Value;
+
         if (synchs == null)
         {
             throw new InvalidOperationException("Transaction synchronization is not active");
@@ -126,7 +129,8 @@ public static class TransactionSynchronizationManager
 
     public static List<ITransactionSynchronization> GetSynchronizations()
     {
-        var synchs = Synchronizations.Value;
+        ISet<ITransactionSynchronization> synchs = Synchronizations.Value;
+
         if (synchs == null)
         {
             throw new InvalidOperationException("Transaction synchronization is not active");
@@ -139,30 +143,29 @@ public static class TransactionSynchronizationManager
         {
             return EmptyList;
         }
-        else
+
+        // Sort lazily here, not in registerSynchronization.
+        var sortedOrdered = new List<IOrdered>();
+        var unordered = new List<ITransactionSynchronization>();
+
+        foreach (ITransactionSynchronization s in synchs)
         {
-            // Sort lazily here, not in registerSynchronization.
-            var sortedOrdered = new List<IOrdered>();
-            var unordered = new List<ITransactionSynchronization>();
-            foreach (var s in synchs)
+            if (s is IOrdered)
             {
-                if (s is IOrdered)
-                {
-                    var ordered = s as IOrdered;
-                    sortedOrdered.Add(ordered);
-                }
-                else
-                {
-                    unordered.Add(s);
-                }
+                var ordered = s as IOrdered;
+                sortedOrdered.Add(ordered);
             }
-
-            sortedOrdered.Sort(OrderComparer.Instance);
-            unordered.InsertRange(0, sortedOrdered.Select(o => o as ITransactionSynchronization));
-
-            // AnnotationAwareOrderComparator.sort(sortedSynchs);
-            return unordered;
+            else
+            {
+                unordered.Add(s);
+            }
         }
+
+        sortedOrdered.Sort(OrderComparer.Instance);
+        unordered.InsertRange(0, sortedOrdered.Select(o => o as ITransactionSynchronization));
+
+        // AnnotationAwareOrderComparator.sort(sortedSynchs);
+        return unordered;
     }
 
     public static void ClearSynchronization(ILogger logger = null)
@@ -227,13 +230,14 @@ public static class TransactionSynchronizationManager
 
     private static object DoUnbindResource(object actualKey, ILogger logger = null)
     {
-        var map = Resources.Value;
+        Dictionary<object, object> map = Resources.Value;
+
         if (map == null)
         {
             return null;
         }
 
-        map.TryGetValue(actualKey, out var value);
+        map.TryGetValue(actualKey, out object value);
         map.Remove(actualKey);
 
         // Remove entire ThreadLocal if empty...
@@ -254,13 +258,14 @@ public static class TransactionSynchronizationManager
 
     private static object DoGetResource(object actualKey)
     {
-        var map = Resources.Value;
+        Dictionary<object, object> map = Resources.Value;
+
         if (map == null)
         {
             return null;
         }
 
-        map.TryGetValue(actualKey, out var value);
+        map.TryGetValue(actualKey, out object value);
 
         // Transparently remove ResourceHolder that was marked as void...
         if (value is IResourceHolder holder && holder.IsVoid)

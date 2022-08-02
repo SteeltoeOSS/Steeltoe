@@ -2,27 +2,41 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using System.Text;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixCommandCompletion : HystrixCommandEvent
 {
+    private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
     protected readonly ExecutionResult ExecutionResult;
     protected readonly HystrixRequestContext InnerRequestContext;
 
-    private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
+    public override bool IsResponseThreadPoolRejected => ExecutionResult.IsResponseThreadPoolRejected;
 
-    internal HystrixCommandCompletion(
-        ExecutionResult executionResult,
-        IHystrixCommandKey commandKey,
-        IHystrixThreadPoolKey threadPoolKey,
+    public override bool IsExecutionStart => false;
+
+    public override bool IsExecutedInThread => ExecutionResult.IsExecutedInThread;
+
+    public override bool IsCommandCompletion => true;
+
+    public HystrixRequestContext RequestContext => InnerRequestContext;
+
+    public ExecutionResult.EventCounts Eventcounts => ExecutionResult.Eventcounts;
+
+    public long ExecutionLatency => ExecutionResult.ExecutionLatency;
+
+    public long TotalLatency => ExecutionResult.UserThreadLatency;
+
+    public override bool DidCommandExecute => ExecutionResult.ExecutionOccurred;
+
+    internal HystrixCommandCompletion(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey,
         HystrixRequestContext requestContext)
         : base(commandKey, threadPoolKey)
     {
-        this.ExecutionResult = executionResult;
-        this.InnerRequestContext = requestContext;
+        ExecutionResult = executionResult;
+        InnerRequestContext = requestContext;
     }
 
     public static HystrixCommandCompletion From(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey)
@@ -30,54 +44,10 @@ public class HystrixCommandCompletion : HystrixCommandEvent
         return From(executionResult, commandKey, threadPoolKey, HystrixRequestContext.ContextForCurrentThread);
     }
 
-    public static HystrixCommandCompletion From(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, HystrixRequestContext requestContext)
+    public static HystrixCommandCompletion From(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey,
+        HystrixRequestContext requestContext)
     {
         return new HystrixCommandCompletion(executionResult, commandKey, threadPoolKey, requestContext);
-    }
-
-    public override bool IsResponseThreadPoolRejected
-    {
-        get { return ExecutionResult.IsResponseThreadPoolRejected; }
-    }
-
-    public override bool IsExecutionStart
-    {
-        get { return false; }
-    }
-
-    public override bool IsExecutedInThread
-    {
-        get { return ExecutionResult.IsExecutedInThread; }
-    }
-
-    public override bool IsCommandCompletion
-    {
-        get { return true; }
-    }
-
-    public HystrixRequestContext RequestContext
-    {
-        get { return InnerRequestContext; }
-    }
-
-    public ExecutionResult.EventCounts Eventcounts
-    {
-        get { return ExecutionResult.Eventcounts; }
-    }
-
-    public long ExecutionLatency
-    {
-        get { return ExecutionResult.ExecutionLatency; }
-    }
-
-    public long TotalLatency
-    {
-        get { return ExecutionResult.UserThreadLatency; }
-    }
-
-    public override bool DidCommandExecute
-    {
-        get { return ExecutionResult.ExecutionOccurred; }
     }
 
     public override string ToString()
@@ -86,7 +56,8 @@ public class HystrixCommandCompletion : HystrixCommandEvent
         var foundEventTypes = new List<HystrixEventType>();
 
         sb.Append(CommandKey.Name).Append('[');
-        foreach (var eventType in AllEventTypes)
+
+        foreach (HystrixEventType eventType in AllEventTypes)
         {
             if (ExecutionResult.Eventcounts.Contains(eventType))
             {
@@ -94,11 +65,13 @@ public class HystrixCommandCompletion : HystrixCommandEvent
             }
         }
 
-        var i = 0;
-        foreach (var eventType in foundEventTypes)
+        int i = 0;
+
+        foreach (HystrixEventType eventType in foundEventTypes)
         {
             sb.Append(eventType.ToString());
-            var eventCount = ExecutionResult.Eventcounts.GetCount(eventType);
+            int eventCount = ExecutionResult.Eventcounts.GetCount(eventType);
+
             if (eventCount > 1)
             {
                 sb.Append('x').Append(eventCount);

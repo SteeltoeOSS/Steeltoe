@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;
@@ -14,17 +14,15 @@ public class MessageConverterTest
     [Fact]
     public void TestHeaderEmbedding()
     {
-        var message = IntegrationMessageBuilder<byte[]>
-            .WithPayload(Encoding.UTF8.GetBytes("Hello"))
-            .SetHeader("foo", "bar")
-            .SetHeader("baz", "quxx")
-            .Build();
-        var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
+        IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar")
+            .SetHeader("baz", "quxx").Build();
+
+        byte[] embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
         Assert.Equal(0xff, embedded[0]);
-        var embeddedString = Encoding.UTF8.GetString(embedded);
+        string embeddedString = Encoding.UTF8.GetString(embedded);
         Assert.Equal("\u0002\u0003foo\u0000\u0000\u0000\u0005\"bar\"\u0003baz\u0000\u0000\u0000\u0006\"quxx\"Hello", embeddedString.Substring(1));
-        var extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
-        var extractedString = Encoding.UTF8.GetString((byte[])extracted.Payload);
+        MessageValues extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
+        string extractedString = Encoding.UTF8.GetString((byte[])extracted.Payload);
         Assert.Equal("Hello", extractedString);
         Assert.Equal("bar", extracted["foo"]);
         Assert.Equal("quxx", extracted["baz"]);
@@ -33,19 +31,19 @@ public class MessageConverterTest
     [Fact]
     public void TestConfigurableHeaders()
     {
-        var message = IntegrationMessageBuilder<byte[]>
-            .WithPayload(Encoding.UTF8.GetBytes("Hello"))
-            .SetHeader("foo", "bar")
-            .SetHeader("baz", "quxx")
-            .SetHeader("contentType", "text/plain")
-            .Build();
+        IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar")
+            .SetHeader("baz", "quxx").SetHeader("contentType", "text/plain").Build();
 
-        var headers = new[] { "foo" };
-        var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), EmbeddedHeaderUtils.HeadersToEmbed(headers));
+        string[] headers = new[]
+        {
+            "foo"
+        };
+
+        byte[] embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), EmbeddedHeaderUtils.HeadersToEmbed(headers));
         Assert.Equal(0xff, embedded[0]);
-        var embeddedString = Encoding.UTF8.GetString(embedded);
+        string embeddedString = Encoding.UTF8.GetString(embedded);
         Assert.Equal("\u0002\u000BcontentType\u0000\u0000\u0000\u000C\"text/plain\"\u0003foo\u0000\u0000\u0000\u0005\"bar\"Hello", embeddedString.Substring(1));
-        var extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
+        MessageValues extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
 
         Assert.Equal("Hello", Encoding.UTF8.GetString((byte[])extracted.Payload));
         Assert.Equal("bar", extracted["foo"]);
@@ -53,7 +51,7 @@ public class MessageConverterTest
         Assert.Equal("text/plain", extracted["contentType"]);
         Assert.Null(extracted["timestamp"]);
 
-        var extractedWithRequestHeaders = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), true);
+        MessageValues extractedWithRequestHeaders = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), true);
         Assert.Equal("bar", extractedWithRequestHeaders["foo"]);
         Assert.Null(extractedWithRequestHeaders["baz"]);
         Assert.Equal("text/plain", extractedWithRequestHeaders["contentType"]);
@@ -66,17 +64,15 @@ public class MessageConverterTest
     [Fact]
     public void TestHeaderExtractionWithDirectPayload()
     {
-        var message = IntegrationMessageBuilder<byte[]>
-            .WithPayload(Encoding.UTF8.GetBytes("Hello"))
-            .SetHeader("foo", "bar")
-            .SetHeader("baz", "quxx")
-            .Build();
-        var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
+        IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar")
+            .SetHeader("baz", "quxx").Build();
+
+        byte[] embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
         Assert.Equal(0xff, embedded[0]);
-        var embeddedString = Encoding.UTF8.GetString(embedded);
+        string embeddedString = Encoding.UTF8.GetString(embedded);
         Assert.Equal("\u0002\u0003foo\u0000\u0000\u0000\u0005\"bar\"\u0003baz\u0000\u0000\u0000\u0006\"quxx\"Hello", embeddedString.Substring(1));
 
-        var extracted = EmbeddedHeaderUtils.ExtractHeaders(embedded);
+        MessageValues extracted = EmbeddedHeaderUtils.ExtractHeaders(embedded);
         Assert.Equal("Hello", Encoding.UTF8.GetString((byte[])extracted.Payload));
         Assert.Equal("bar", extracted["foo"]);
         Assert.Equal("quxx", extracted["baz"]);
@@ -85,18 +81,15 @@ public class MessageConverterTest
     [Fact]
     public void TestUnicodeHeader()
     {
-        var message = IntegrationMessageBuilder<byte[]>
-            .WithPayload(Encoding.UTF8.GetBytes("Hello"))
-            .SetHeader("foo", "bar")
-            .SetHeader("baz", "ØØØØØØØØ")
-            .Build();
+        IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar")
+            .SetHeader("baz", "ØØØØØØØØ").Build();
 
-        var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
+        byte[] embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
         Assert.Equal(0xff, embedded[0]);
-        var embeddedString = Encoding.UTF8.GetString(embedded);
+        string embeddedString = Encoding.UTF8.GetString(embedded);
         Assert.Equal("\u0002\u0003foo\u0000\u0000\u0000\u0005\"bar\"\u0003baz\u0000\u0000\u0000\u0012\"ØØØØØØØØ\"Hello", embeddedString.Substring(1));
 
-        var extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
+        MessageValues extracted = EmbeddedHeaderUtils.ExtractHeaders(IntegrationMessageBuilder<byte[]>.WithPayload(embedded).Build(), false);
         Assert.Equal("Hello", Encoding.UTF8.GetString((byte[])extracted.Payload));
         Assert.Equal("bar", extracted["foo"]);
         Assert.Equal("ØØØØØØØØ", extracted["baz"]);
@@ -105,21 +98,23 @@ public class MessageConverterTest
     [Fact]
     public void TestHeaderEmbeddingMissingHeader()
     {
-        var message = IntegrationMessageBuilder<byte[]>
-            .WithPayload(Encoding.UTF8.GetBytes("Hello"))
-            .SetHeader("foo", "bar")
-            .Build();
-        var embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
+        IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar").Build();
+        byte[] embedded = EmbeddedHeaderUtils.EmbedHeaders(new MessageValues(message), "foo", "baz");
         Assert.Equal(0xff, embedded[0]);
-        var embeddedString = Encoding.UTF8.GetString(embedded);
+        string embeddedString = Encoding.UTF8.GetString(embedded);
         Assert.Equal("\u0001\u0003foo\u0000\u0000\u0000\u0005\"bar\"Hello", embeddedString.Substring(1));
     }
 
     [Fact]
     public void TestBadDecode()
     {
-        var bytes = new byte[] { 0xff, 99 };
-        var message = Message.Create(bytes);
+        byte[] bytes = new byte[]
+        {
+            0xff,
+            99
+        };
+
+        IMessage<byte[]> message = Message.Create(bytes);
         Assert.Throws<ArgumentOutOfRangeException>(() => EmbeddedHeaderUtils.ExtractHeaders(message, false));
     }
 }

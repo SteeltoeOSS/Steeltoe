@@ -36,9 +36,10 @@ public class ManagementEndpointOptionsTest : BaseTest
             ["management:endpoints:info:enabled"] = "true",
             ["management:endpoints:info:id"] = "/infomanagement"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new ManagementEndpointOptions(config);
         Assert.False(opts.Enabled);
@@ -52,7 +53,10 @@ public class ManagementEndpointOptionsTest : BaseTest
         {
             Exposure =
             {
-                Exclude = new[] { "*" }.ToList()
+                Exclude = new[]
+                {
+                    "*"
+                }.ToList()
             }
         };
 

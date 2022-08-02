@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using RabbitMQ.Client;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 
@@ -18,20 +19,21 @@ public class CachePropertiesTest
             ServiceName = "testChannelCache",
             ChannelCacheSize = 4
         };
-        using var c1 = channelCf.CreateConnection();
-        using var c2 = channelCf.CreateConnection();
+
+        using IConnection c1 = channelCf.CreateConnection();
+        using IConnection c2 = channelCf.CreateConnection();
         Assert.Same(c1, c2);
-        var ch1 = c1.CreateChannel();
-        var ch2 = c1.CreateChannel();
-        var ch3 = c1.CreateChannel(true);
-        var ch4 = c1.CreateChannel(true);
-        var ch5 = c1.CreateChannel(true);
+        IModel ch1 = c1.CreateChannel();
+        IModel ch2 = c1.CreateChannel();
+        IModel ch3 = c1.CreateChannel(true);
+        IModel ch4 = c1.CreateChannel(true);
+        IModel ch5 = c1.CreateChannel(true);
         ch1.Close();
         ch2.Close();
         ch3.Close();
         ch4.Close();
         ch5.Close();
-        var props = channelCf.GetCacheProperties();
+        IDictionary<string, object> props = channelCf.GetCacheProperties();
         Assert.StartsWith("testChannelCache", (string)props["connectionName"]);
         Assert.Equal(4, props["channelCacheSize"]);
         Assert.Equal(2, props["idleChannelsNotTx"]);
@@ -50,8 +52,8 @@ public class CachePropertiesTest
         ch3 = c1.CreateChannel(true);
         ch4 = c1.CreateChannel(true);
         ch5 = c1.CreateChannel(true);
-        var ch6 = c1.CreateChannel(true);
-        var ch7 = c1.CreateChannel(true); // #5
+        IModel ch6 = c1.CreateChannel(true);
+        IModel ch7 = c1.CreateChannel(true); // #5
         ch1.Close();
         ch2.Close();
         ch3.Close();
@@ -76,20 +78,21 @@ public class CachePropertiesTest
             CacheMode = CachingMode.Connection,
             ServiceName = "testConnectionCache"
         };
-        using var c1 = connectionCf.CreateConnection();
-        using var c2 = connectionCf.CreateConnection();
-        var ch1 = c1.CreateChannel();
-        var ch2 = c1.CreateChannel();
-        var ch3 = c2.CreateChannel(true);
-        var ch4 = c2.CreateChannel(true);
-        var ch5 = c2.CreateChannel();
+
+        using IConnection c1 = connectionCf.CreateConnection();
+        using IConnection c2 = connectionCf.CreateConnection();
+        IModel ch1 = c1.CreateChannel();
+        IModel ch2 = c1.CreateChannel();
+        IModel ch3 = c2.CreateChannel(true);
+        IModel ch4 = c2.CreateChannel(true);
+        IModel ch5 = c2.CreateChannel();
         ch1.Close();
         ch2.Close();
         ch3.Close();
         ch4.Close();
         ch5.Close();
         c1.Close();
-        var props = connectionCf.GetCacheProperties();
+        IDictionary<string, object> props = connectionCf.GetCacheProperties();
         Assert.Equal(10, props["channelCacheSize"]);
         Assert.Equal(5, props["connectionCacheSize"]);
         Assert.Equal(2, props["openConnections"]);
@@ -98,8 +101,8 @@ public class CachePropertiesTest
         props = connectionCf.GetCacheProperties();
         Assert.Equal(2, props["idleConnections"]);
         Assert.Equal(2, props["idleConnectionsHighWater"]);
-        var c1Port = c1.LocalPort;
-        var c2Port = c2.LocalPort;
+        int c1Port = c1.LocalPort;
+        int c2Port = c2.LocalPort;
         Assert.StartsWith("testConnectionCache:1", (string)props[$"connectionName:{c1Port}"]);
         Assert.StartsWith("testConnectionCache:2", (string)props[$"connectionName:{c2Port}"]);
         Assert.Equal(2, props[$"idleChannelsNotTx:{c1Port}"]);

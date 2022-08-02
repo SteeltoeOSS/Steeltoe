@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -90,7 +90,9 @@ public class ArrayConstructorTests : AbstractExpressionTests
     public void MultiDimensionalArray()
     {
         Evaluate("new String[2][2]", "System.String[2][2]{(0,0)=null,(0,1)=null,(1,0)=null,(1,1)=null,}", typeof(string[,]));
-        Evaluate("new String[3][2][1]", "System.String[3][2][1]{(0,0,0)=null,(0,1,0)=null,(1,0,0)=null,(1,1,0)=null,(2,0,0)=null,(2,1,0)=null,}", typeof(string[,,]));
+
+        Evaluate("new String[3][2][1]", "System.String[3][2][1]{(0,0,0)=null,(0,1,0)=null,(1,0,0)=null,(1,1,0)=null,(2,0,0)=null,(2,1,0)=null,}",
+            typeof(string[,,]));
     }
 
     [Fact]
@@ -108,15 +110,16 @@ public class ArrayConstructorTests : AbstractExpressionTests
     private void EvaluateArrayBuildingExpression(string expression, string expectedToString)
     {
         var parser = new SpelExpressionParser();
-        var e = parser.ParseExpression(expression);
-        var o = e.GetValue();
+        IExpression e = parser.ParseExpression(expression);
+        object o = e.GetValue();
         Assert.NotNull(o);
         Assert.True(o.GetType().IsArray);
         var s = new StringBuilder();
         s.Append('[');
+
         if (o is int[] iArray)
         {
-            for (var i = 0; i < iArray.Length; i++)
+            for (int i = 0; i < iArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -128,7 +131,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is bool[] bArray)
         {
-            for (var i = 0; i < bArray.Length; i++)
+            for (int i = 0; i < bArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -140,7 +143,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is char[] cArray)
         {
-            for (var i = 0; i < cArray.Length; i++)
+            for (int i = 0; i < cArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -152,7 +155,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is long[] lArray)
         {
-            for (var i = 0; i < lArray.Length; i++)
+            for (int i = 0; i < lArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -164,7 +167,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is short[] sArray)
         {
-            for (var i = 0; i < sArray.Length; i++)
+            for (int i = 0; i < sArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -176,7 +179,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is double[] dArray)
         {
-            for (var i = 0; i < dArray.Length; i++)
+            for (int i = 0; i < dArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -188,7 +191,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is float[] fArray)
         {
-            for (var i = 0; i < fArray.Length; i++)
+            for (int i = 0; i < fArray.Length; i++)
             {
                 if (i > 0)
                 {
@@ -200,7 +203,7 @@ public class ArrayConstructorTests : AbstractExpressionTests
         }
         else if (o is byte[] byArray)
         {
-            for (var i = 0; i < byArray.Length; i++)
+            for (int i = 0; i < byArray.Length; i++)
             {
                 if (i > 0)
                 {

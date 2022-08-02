@@ -9,27 +9,21 @@ public class AtomicReference<T>
 {
     private volatile T _value;
 
+    public T Value
+    {
+        get => _value;
+
+        set => _value = value;
+    }
+
     public AtomicReference()
-        : this(default(T))
+        : this(default)
     {
     }
 
     public AtomicReference(T value)
     {
         _value = value;
-    }
-
-    public T Value
-    {
-        get
-        {
-            return _value;
-        }
-
-        set
-        {
-            _value = value;
-        }
     }
 
     public bool CompareAndSet(T expected, T update)

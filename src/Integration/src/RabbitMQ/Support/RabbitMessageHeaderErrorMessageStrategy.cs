@@ -15,16 +15,15 @@ public class RabbitMessageHeaderErrorMessageStrategy : IErrorMessageStrategy
 
     public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
     {
-        var inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
+        object inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
         var headers = new Dictionary<string, object>();
+
         if (attributeAccessor != null)
         {
             headers[AmqpRawMessage] = attributeAccessor.GetAttribute(AmqpRawMessage);
             headers[IntegrationMessageHeaderAccessor.SourceData] = attributeAccessor.GetAttribute(AmqpRawMessage);
         }
 
-        return inputMessage is IMessage message
-            ? new ErrorMessage(exception, headers, message)
-            : new ErrorMessage(exception, headers);
+        return inputMessage is IMessage message ? new ErrorMessage(exception, headers, message) : new ErrorMessage(exception, headers);
     }
 }

@@ -23,18 +23,18 @@ public class ServiceInfoCreatorFactoryTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", string.Empty);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", string.Empty);
-        var serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddConnectionStrings().Build());
+        ServiceInfoCreator serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddConnectionStrings().Build());
         Assert.IsType<ServiceInfoCreator>(serviceInfoCreator);
     }
 
     [Fact]
     public void Factory_ReturnsSameInstance()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        var inst = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator inst = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
         Assert.NotNull(inst);
-        var inst2 = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
+        ServiceInfoCreator inst2 = ServiceInfoCreatorFactory.GetServiceInfoCreator(config);
         Assert.Same(inst, inst2);
     }
 
@@ -42,7 +42,7 @@ public class ServiceInfoCreatorFactoryTest
     public void FactoryReturnsCloudFoundryCreatorForCloudFoundry()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        var serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddCloudFoundry().Build());
+        ServiceInfoCreator serviceInfoCreator = ServiceInfoCreatorFactory.GetServiceInfoCreator(new ConfigurationBuilder().AddCloudFoundry().Build());
         Assert.IsType<CloudFoundryServiceInfoCreator>(serviceInfoCreator);
     }
 }

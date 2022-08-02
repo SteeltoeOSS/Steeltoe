@@ -10,9 +10,10 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters.Wavefront;
 
 public static class WavefrontTraceExtensions
 {
-    public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions, ILogger<WavefrontTraceExporter> logger = null)
+    public static TracerProviderBuilder AddWavefrontExporter(this TracerProviderBuilder builder, IWavefrontExporterOptions exporterOptions,
+        ILogger<WavefrontTraceExporter> logger = null)
     {
-        var options = exporterOptions as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(exporterOptions));
+        WavefrontExporterOptions options = exporterOptions as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(exporterOptions));
         var exporter = new WavefrontTraceExporter(exporterOptions, logger);
 
         return builder.AddProcessor(new BatchActivityExportProcessor(exporter, options.MaxQueueSize, options.Step));

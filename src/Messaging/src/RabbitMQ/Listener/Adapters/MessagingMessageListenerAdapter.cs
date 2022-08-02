@@ -2,45 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Reflection;
-using RC=RabbitMQ.Client;
+using Steeltoe.Messaging.Support;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 {
-    public MessagingMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
-        : this(context, null, null, logger)
-    {
-    }
-
-    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, ILogger logger = null)
-        : this(context, instance, method, false, null, logger)
-    {
-    }
-
-    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions, IRabbitListenerErrorHandler errorHandler, ILogger logger = null)
-        : this(context, instance, method, returnExceptions, errorHandler, false, logger)
-    {
-    }
-
-    protected MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions, IRabbitListenerErrorHandler errorHandler, bool batch, ILogger logger = null)
-        : base(context, logger)
-    {
-        Instance = instance;
-        Method = method;
-        IsBatch = batch;
-        ReturnExceptions = returnExceptions;
-        ErrorHandler = errorHandler;
-        InferredArgumentType = DetermineInferredType();
-    }
-
     public virtual object Instance { get; }
 
     public virtual MethodInfo Method { get; }
@@ -59,24 +34,57 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     public HandlerAdapter HandlerAdapter { get; set; }
 
+    public MessagingMessageListenerAdapter(IApplicationContext context, ILogger logger = null)
+        : this(context, null, null, logger)
+    {
+    }
+
+    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, ILogger logger = null)
+        : this(context, instance, method, false, null, logger)
+    {
+    }
+
+    public MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions,
+        IRabbitListenerErrorHandler errorHandler, ILogger logger = null)
+        : this(context, instance, method, returnExceptions, errorHandler, false, logger)
+    {
+    }
+
+    protected MessagingMessageListenerAdapter(IApplicationContext context, object instance, MethodInfo method, bool returnExceptions,
+        IRabbitListenerErrorHandler errorHandler, bool batch, ILogger logger = null)
+        : base(context, logger)
+    {
+        Instance = instance;
+        Method = method;
+        IsBatch = batch;
+        ReturnExceptions = returnExceptions;
+        ErrorHandler = errorHandler;
+        InferredArgumentType = DetermineInferredType();
+    }
+
     public override void OnMessage(IMessage message, RC.IModel channel)
     {
         PreProcessMessage(message);
-        var headers = message.Headers;
-        var convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
+        IMessageHeaders headers = message.Headers;
+        object convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
+
         if (convertedObject == null)
         {
             throw new MessageConversionException("Message converter returned null");
         }
 
-        var builder = convertedObject is IMessage message1 ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
-        var newMessage = builder.CopyHeadersIfAbsent(headers).Build();
+        AbstractMessageBuilder builder = convertedObject is IMessage message1
+            ? RabbitMessageBuilder.FromMessage(message1)
+            : RabbitMessageBuilder.WithPayload(convertedObject);
+
+        IMessage newMessage = builder.CopyHeadersIfAbsent(headers).Build();
         InvokeHandlerAndProcessResult(message, channel, newMessage);
     }
 
     protected internal override IMessage<byte[]> BuildMessage(RC.IModel channel, object result, Type genericType)
     {
-        var converter = MessageConverter;
+        ISmartMessageConverter converter = MessageConverter;
+
         if (converter != null)
         {
             if (result is IMessage asMessage)
@@ -101,15 +109,17 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
     {
         Logger?.LogDebug("Processing [{message}]", message);
         InvocationResult result = null;
+
         try
         {
             if (Method == null)
             {
-                var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+                RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
                 accessor.TargetMethod = HandlerAdapter.GetMethodFor(message.Payload);
             }
 
             result = InvokeHandler(amqpMessage, channel, message);
+
             if (result.ReturnValue != null)
             {
                 HandleResult(result, amqpMessage, channel, message);
@@ -125,8 +135,9 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
             {
                 try
                 {
-                    var messageWithChannel = RabbitMessageBuilder.FromMessage(message).SetHeader(RabbitMessageHeaders.Channel, channel).Build();
-                    var errorResult = ErrorHandler.HandleError(amqpMessage, messageWithChannel, e);
+                    IMessage messageWithChannel = RabbitMessageBuilder.FromMessage(message).SetHeader(RabbitMessageHeaders.Channel, channel).Build();
+                    object errorResult = ErrorHandler.HandleError(amqpMessage, messageWithChannel, e);
+
                     if (errorResult != null)
                     {
                         HandleResult(HandlerAdapter.GetInvocationResultFor(errorResult, message.Payload), amqpMessage, channel, message);
@@ -150,7 +161,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     protected void PreProcessMessage(IMessage message)
     {
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+
         if (Instance != null)
         {
             accessor.Target = Instance;
@@ -159,6 +171,7 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         if (Method != null)
         {
             accessor.TargetMethod = Method;
+
             if (InferredArgumentType != null)
             {
                 accessor.InferredArgumentType = InferredArgumentType;
@@ -179,7 +192,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         }
         catch (Exception ex)
         {
-            throw new ListenerExecutionFailedException($"Listener method '{HandlerAdapter.GetMethodAsString(message.Payload)}' threw exception", ex, amqpMessage);
+            throw new ListenerExecutionFailedException($"Listener method '{HandlerAdapter.GetMethodAsString(message.Payload)}' threw exception", ex,
+                amqpMessage);
         }
     }
 
@@ -198,15 +212,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
         try
         {
             HandleResult(
-                new InvocationResult(
-                    exceptionToReturn,
-                    null,
-                    HandlerAdapter.GetReturnTypeFor(message.Payload),
-                    HandlerAdapter.Instance,
-                    HandlerAdapter.GetMethodFor(message.Payload)),
-                amqpMessage,
-                channel,
-                message);
+                new InvocationResult(exceptionToReturn, null, HandlerAdapter.GetReturnTypeFor(message.Payload), HandlerAdapter.Instance,
+                    HandlerAdapter.GetMethodFor(message.Payload)), amqpMessage, channel, message);
         }
         catch (ReplyFailureException)
         {
@@ -214,10 +221,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
             {
                 throw exceptionToThrow;
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
     }
 
@@ -230,15 +235,14 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
         Type genericParameterType = null;
 
-        foreach (var methodParameter in Method.GetParameters())
+        foreach (ParameterInfo methodParameter in Method.GetParameters())
         {
             /*
              * We're looking for a single non-annotated parameter, or one annotated with @Payload.
              * We ignore parameters with type Message because they are not involved with conversion.
              */
-            if (IsEligibleParameter(methodParameter)
-                && (methodParameter.GetCustomAttributes(false).Length == 0
-                    || methodParameter.GetCustomAttribute(typeof(PayloadAttribute)) != null))
+            if (IsEligibleParameter(methodParameter) && (methodParameter.GetCustomAttributes(false).Length == 0 ||
+                methodParameter.GetCustomAttribute(typeof(PayloadAttribute)) != null))
             {
                 if (genericParameterType == null)
                 {
@@ -259,7 +263,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
     // Message, Message<?> and Channel.
     private bool IsEligibleParameter(ParameterInfo methodParameter)
     {
-        var parameterType = methodParameter.ParameterType;
+        Type parameterType = methodParameter.ParameterType;
+
         if (parameterType.Equals(typeof(RC.IModel)))
         {
             return false;
@@ -267,7 +272,8 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
         if (parameterType.IsGenericType)
         {
-            var typeDef = parameterType.GetGenericTypeDefinition();
+            Type typeDef = parameterType.GetGenericTypeDefinition();
+
             if (typeDef.Equals(typeof(IMessage<>)))
             {
                 return true;
@@ -279,20 +285,23 @@ public class MessagingMessageListenerAdapter : AbstractMessageListenerAdapter
 
     private Type ExtractGenericParameterTypFromMethodParameter(ParameterInfo methodParameter)
     {
-        var parameterType = methodParameter.ParameterType;
+        Type parameterType = methodParameter.ParameterType;
+
         if (parameterType.IsGenericType)
         {
-            var typeDef = parameterType.GetGenericTypeDefinition();
+            Type typeDef = parameterType.GetGenericTypeDefinition();
+
             if (typeDef.Equals(typeof(IMessage<>)))
             {
                 parameterType = parameterType.GetGenericArguments()[0];
             }
             else if (IsBatch && typeDef.Equals(typeof(List<>)))
             {
-                var paramType = parameterType.GetGenericArguments()[0];
-                var messageHasGeneric = paramType.IsGenericType && paramType.GetGenericTypeDefinition().Equals(typeof(IMessage<>));
+                Type paramType = parameterType.GetGenericArguments()[0];
+                bool messageHasGeneric = paramType.IsGenericType && paramType.GetGenericTypeDefinition().Equals(typeof(IMessage<>));
                 IsMessageList = paramType.Equals(typeof(IMessage)) || messageHasGeneric;
                 IsMessageByteArrayList = paramType.Equals(typeof(IMessage<byte[]>));
+
                 if (messageHasGeneric)
                 {
                     parameterType = paramType.GetGenericArguments()[0];

@@ -21,7 +21,11 @@ public class ConnectionStringConfigurationSourceTest
     public void Constructor_InitializesProperties()
     {
         var memSource = new MemoryConfigurationSource();
-        IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
+
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
 
         var source = new ConnectionStringConfigurationSource(sources);
         Assert.NotNull(source.Sources);
@@ -34,10 +38,14 @@ public class ConnectionStringConfigurationSourceTest
     public void Build_ReturnsProvider()
     {
         var memSource = new MemoryConfigurationSource();
-        IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
+
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
 
         var source = new ConnectionStringConfigurationSource(sources);
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<ConnectionStringConfigurationProvider>(provider);
     }
 }

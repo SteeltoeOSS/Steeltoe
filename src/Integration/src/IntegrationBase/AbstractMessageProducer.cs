@@ -12,14 +12,8 @@ public abstract class AbstractMessageProducer : IMessageProducer
 
     public string OutputChannelName
     {
-        get
-        {
-            return string.Empty;
-        }
+        get => string.Empty;
 
-        set
-        {
-            throw new InvalidOperationException("This MessageProducer does not support setting the channel by name.");
-        }
+        set => throw new InvalidOperationException("This MessageProducer does not support setting the channel by name.");
     }
 }

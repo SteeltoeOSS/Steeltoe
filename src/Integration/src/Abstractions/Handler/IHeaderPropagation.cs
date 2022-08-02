@@ -5,21 +5,20 @@
 namespace Steeltoe.Integration.Handler;
 
 /// <summary>
-/// MessageHandlers implementing this interface can propagate headers from
-/// an input message to an output message.
+/// MessageHandlers implementing this interface can propagate headers from an input message to an output message.
 /// </summary>
 public interface IHeaderPropagation
 {
     /// <summary>
-    /// Gets or sets the headers that should not be copied from inbound message if
-    /// handler is configured to copy headers.
+    /// Gets or sets the headers that should not be copied from inbound message if handler is configured to copy headers.
     /// </summary>
     IList<string> NotPropagatedHeaders { get; set; }
 
     /// <summary>
-    /// Add headers that will not be copied from the inbound message if
-    /// handler is configured to copy headers.
+    /// Add headers that will not be copied from the inbound message if handler is configured to copy headers.
     /// </summary>
-    /// <param name="headers">the headers to not copy.</param>
+    /// <param name="headers">
+    /// the headers to not copy.
+    /// </param>
     void AddNotPropagatedHeaders(params string[] headers);
 }

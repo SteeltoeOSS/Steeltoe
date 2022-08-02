@@ -23,7 +23,12 @@ public class PlaceholderResolverSourceTest
     public void Constructors_InitializesProperties()
     {
         var memSource = new MemoryConfigurationSource();
-        var sources = new List<IConfigurationSource> { memSource };
+
+        var sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
+
         var factory = new LoggerFactory();
 
         var source = new PlaceholderResolverSource(sources, factory);
@@ -38,10 +43,14 @@ public class PlaceholderResolverSourceTest
     public void Build_ReturnsProvider()
     {
         var memSource = new MemoryConfigurationSource();
-        IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
+
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
 
         var source = new PlaceholderResolverSource(sources);
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<PlaceholderResolverProvider>(provider);
     }
 }

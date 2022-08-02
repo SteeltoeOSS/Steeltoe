@@ -9,12 +9,42 @@ namespace Steeltoe.Connector.Services;
 [ServiceInfoFactory]
 public abstract class ServiceInfoFactory : IServiceInfoFactory
 {
-    private static readonly List<string> UserList = new () { "user", "username", "uid" };
-    private static readonly List<string> PasswordList = new () { "password", "pw" };
-    private static readonly List<string> HostList = new () { "hostname", "host" };
+    private static readonly List<string> UserList = new()
+    {
+        "user",
+        "username",
+        "uid"
+    };
+
+    private static readonly List<string> PasswordList = new()
+    {
+        "password",
+        "pw"
+    };
+
+    private static readonly List<string> HostList = new()
+    {
+        "hostname",
+        "host"
+    };
+
+    protected Tags ServiceInfoTags { get; set; }
+
+    protected List<string> UriKeys { get; set; } = new()
+    {
+        "uri",
+        "url"
+    };
+
+    protected IEnumerable<string> UriSchemes { get; set; }
+
+    public virtual string DefaultUriScheme => UriSchemes?.Any() == true ? UriSchemes.First() : null;
 
     protected ServiceInfoFactory(Tags tags, string scheme)
-        : this(tags, new List<string> { scheme })
+        : this(tags, new List<string>
+        {
+            scheme
+        })
     {
         if (string.IsNullOrEmpty(scheme))
         {
@@ -26,9 +56,10 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
     {
         ServiceInfoTags = tags ?? throw new ArgumentNullException(nameof(tags));
         UriSchemes = schemes;
+
         if (schemes != null)
         {
-            foreach (var s in schemes)
+            foreach (string s in schemes)
             {
                 UriKeys.Add($"{s}uri");
                 UriKeys.Add($"{s}url");
@@ -36,25 +67,22 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
         }
     }
 
-    public virtual string DefaultUriScheme => UriSchemes?.Any() == true ? UriSchemes.First() : null;
-
     public virtual bool Accepts(Service binding)
     {
-        return TagsMatch(binding) || LabelStartsWithTag(binding) ||
-               UriMatchesScheme(binding) || UriKeyMatchesScheme(binding);
+        return TagsMatch(binding) || LabelStartsWithTag(binding) || UriMatchesScheme(binding) || UriKeyMatchesScheme(binding);
     }
 
     public abstract IServiceInfo Create(Service binding);
 
-    protected Tags ServiceInfoTags { get; set; }
+    protected internal virtual bool TagsMatch(Service binding)
+    {
+        return ServiceInfoTags.ContainsOne(binding.Tags);
+    }
 
-    protected List<string> UriKeys { get; set; } = new () { "uri", "url" };
-
-    protected IEnumerable<string> UriSchemes { get; set; }
-
-    protected internal virtual bool TagsMatch(Service binding) => ServiceInfoTags.ContainsOne(binding.Tags);
-
-    protected internal virtual bool LabelStartsWithTag(Service binding) => ServiceInfoTags.StartsWith(binding.Label);
+    protected internal virtual bool LabelStartsWithTag(Service binding)
+    {
+        return ServiceInfoTags.StartsWith(binding.Label);
+    }
 
     protected internal virtual bool UriMatchesScheme(Service binding)
     {
@@ -63,16 +91,18 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             return false;
         }
 
-        var credentials = binding.Credentials;
+        Dictionary<string, Credential> credentials = binding.Credentials;
+
         if (credentials == null)
         {
             return false;
         }
 
-        var uri = GetStringFromCredentials(binding.Credentials, UriKeys);
+        string uri = GetStringFromCredentials(binding.Credentials, UriKeys);
+
         if (uri != null)
         {
-            foreach (var uriScheme in UriSchemes)
+            foreach (string uriScheme in UriSchemes)
             {
                 if (uri.StartsWith($"{uriScheme}://", StringComparison.OrdinalIgnoreCase))
                 {
@@ -91,15 +121,17 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
             return false;
         }
 
-        var credentials = binding.Credentials;
+        Dictionary<string, Credential> credentials = binding.Credentials;
+
         if (credentials == null)
         {
             return false;
         }
 
-        foreach (var uriScheme in UriSchemes)
+        foreach (string uriScheme in UriSchemes)
         {
-            if (credentials.ContainsKey($"{uriScheme}Uri") || credentials.ContainsKey($"{uriScheme}uri") || credentials.ContainsKey($"{uriScheme}Url") || credentials.ContainsKey($"{uriScheme}url"))
+            if (credentials.ContainsKey($"{uriScheme}Uri") || credentials.ContainsKey($"{uriScheme}uri") || credentials.ContainsKey($"{uriScheme}Url") ||
+                credentials.ContainsKey($"{uriScheme}url"))
             {
                 return true;
             }
@@ -109,40 +141,63 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
     }
 
     protected internal virtual string GetUsernameFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, UserList);
+    {
+        return GetStringFromCredentials(credentials, UserList);
+    }
 
     protected internal virtual string GetPasswordFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, PasswordList);
+    {
+        return GetStringFromCredentials(credentials, PasswordList);
+    }
 
     protected internal virtual int GetPortFromCredentials(Dictionary<string, Credential> credentials)
-        => GetIntFromCredentials(credentials, "port");
+    {
+        return GetIntFromCredentials(credentials, "port");
+    }
 
     protected internal virtual int GetTlsPortFromCredentials(Dictionary<string, Credential> credentials)
-        => GetIntFromCredentials(credentials, "tls_port");
+    {
+        return GetIntFromCredentials(credentials, "tls_port");
+    }
 
     protected internal virtual string GetHostFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, HostList);
+    {
+        return GetStringFromCredentials(credentials, HostList);
+    }
 
     protected internal virtual string GetUriFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, UriKeys);
+    {
+        return GetStringFromCredentials(credentials, UriKeys);
+    }
 
     protected internal virtual string GetClientIdFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, "client_id");
+    {
+        return GetStringFromCredentials(credentials, "client_id");
+    }
 
     protected internal virtual string GetClientSecretFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, "client_secret");
+    {
+        return GetStringFromCredentials(credentials, "client_secret");
+    }
 
     protected internal virtual string GetAccessTokenUriFromCredentials(Dictionary<string, Credential> credentials)
-        => GetStringFromCredentials(credentials, "access_token_uri");
+    {
+        return GetStringFromCredentials(credentials, "access_token_uri");
+    }
 
     protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, string key)
-        => GetStringFromCredentials(credentials, new List<string> { key });
+    {
+        return GetStringFromCredentials(credentials, new List<string>
+        {
+            key
+        });
+    }
 
     protected internal virtual string GetStringFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
     {
         if (credentials != null)
         {
-            foreach (var key in keys)
+            foreach (string key in keys)
             {
                 if (credentials.ContainsKey(key))
                 {
@@ -156,7 +211,8 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
 
     protected internal virtual bool GetBoolFromCredentials(Dictionary<string, Credential> credentials, string key)
     {
-        var result = false;
+        bool result = false;
+
         if (credentials != null && credentials.ContainsKey(key))
         {
             bool.TryParse(credentials[key].Value, out result);
@@ -167,16 +223,19 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
 
     protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, string key)
     {
-        return GetIntFromCredentials(credentials, new List<string> { key });
+        return GetIntFromCredentials(credentials, new List<string>
+        {
+            key
+        });
     }
 
     protected internal virtual int GetIntFromCredentials(Dictionary<string, Credential> credentials, List<string> keys)
     {
-        var result = 0;
+        int result = 0;
 
         if (credentials != null)
         {
-            foreach (var key in keys)
+            foreach (string key in keys)
             {
                 if (credentials.ContainsKey(key))
                 {
@@ -191,22 +250,21 @@ public abstract class ServiceInfoFactory : IServiceInfoFactory
     protected internal virtual List<string> GetListFromCredentials(Dictionary<string, Credential> credentials, string key)
     {
         var result = new List<string>();
+
         if (credentials != null && credentials.ContainsKey(key))
         {
-            var keyVal = credentials[key];
+            Credential keyVal = credentials[key];
+
             if (keyVal.Count > 0)
             {
-                foreach (var kvp in keyVal)
+                foreach (KeyValuePair<string, Credential> kvp in keyVal)
                 {
                     if (kvp.Value.Count != 0 || string.IsNullOrEmpty(kvp.Value.Value))
                     {
-                        throw new ConnectorException(
-                            $"Unable to extract list from credentials: key={key}, value={kvp.Key}/{kvp.Value}");
+                        throw new ConnectorException($"Unable to extract list from credentials: key={key}, value={kvp.Key}/{kvp.Value}");
                     }
-                    else
-                    {
-                        result.Add(kvp.Value.Value);
-                    }
+
+                    result.Add(kvp.Value.Value);
                 }
             }
         }

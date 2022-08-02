@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
-using Steeltoe.Common.Reflection;
 using System.Globalization;
 using System.Net;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Reflection;
 
 namespace Steeltoe.Connector.Redis;
 
@@ -16,25 +16,6 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     private const int DefaultPort = 6379;
     private const string RedisClientSectionPrefix = "redis:client";
     private readonly bool _cloudFoundryConfigFound;
-
-    public RedisCacheConnectorOptions()
-        : base(',', DefaultSeparator)
-    {
-    }
-
-    public RedisCacheConnectorOptions(IConfiguration config)
-        : base(',', DefaultSeparator)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(RedisClientSectionPrefix);
-        section.Bind(this);
-
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
-    }
 
     // Configure either a single Host/Port or optionally provide
     // a list of endpoints (ie. host1:port1,host2:port2)
@@ -80,6 +61,25 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     // This configuration option specific to https://github.com/aspnet/Caching
     public string InstanceName { get; set; }
 
+    public RedisCacheConnectorOptions()
+        : base(',', DefaultSeparator)
+    {
+    }
+
+    public RedisCacheConnectorOptions(IConfiguration config)
+        : base(',', DefaultSeparator)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(RedisClientSectionPrefix);
+        section.Bind(this);
+
+        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+    }
+
     // TODO: Add back in when https://github.com/aspnet/Caching updates to new StackExchange
     // public bool HighPrioritySocketThreads { get; set; }
     // public int ResponseTimeout { get; set; }
@@ -92,9 +92,10 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         }
 
         var sb = new StringBuilder();
+
         if (!string.IsNullOrEmpty(EndPoints))
         {
-            var endpoints = EndPoints.Trim();
+            string endpoints = EndPoints.Trim();
             sb.Append(endpoints);
             sb.Append(',');
         }
@@ -149,11 +150,15 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     /// <summary>
     /// Get a Redis configuration object for use with Microsoft.Extensions.Caching.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions.</param>
-    /// <returns>This object typed as RedisCacheOptions.</returns>
+    /// <param name="optionsType">
+    /// Expects Microsoft.Extensions.Caching.Redis.RedisCacheOptions.
+    /// </param>
+    /// <returns>
+    /// This object typed as RedisCacheOptions.
+    /// </returns>
     public object ToMicrosoftExtensionObject(Type optionsType)
     {
-        var microsoftConnection = Activator.CreateInstance(optionsType);
+        object microsoftConnection = Activator.CreateInstance(optionsType);
         microsoftConnection.GetType().GetProperty("Configuration").SetValue(microsoftConnection, ToString());
         microsoftConnection.GetType().GetProperty("InstanceName").SetValue(microsoftConnection, InstanceName);
 
@@ -163,16 +168,23 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
     /// <summary>
     /// Get a Redis configuration object for use with StackExchange.Redis.
     /// </summary>
-    /// <param name="optionsType">Expects StackExchange.Redis.ConfigurationOptions.</param>
-    /// <returns>This object typed as ConfigurationOptions.</returns>
-    /// <remarks>Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10. </remarks>
+    /// <param name="optionsType">
+    /// Expects StackExchange.Redis.ConfigurationOptions.
+    /// </param>
+    /// <returns>
+    /// This object typed as ConfigurationOptions.
+    /// </returns>
+    /// <remarks>
+    /// Includes comma in password detection and workaround for https://github.com/SteeltoeOSS/Connectors/issues/10.
+    /// </remarks>
     public object ToStackExchangeObject(Type optionsType)
     {
-        var stackObject = Activator.CreateInstance(optionsType);
+        object stackObject = Activator.CreateInstance(optionsType);
 
         // to remove this comma workaround, follow up on https://github.com/StackExchange/StackExchange.Redis/issues/680
-        var tempPassword = Password;
-        var resetPassword = false;
+        string tempPassword = Password;
+        bool resetPassword = false;
+
         if (Password?.Contains(",") == true)
         {
             Password = string.Empty;
@@ -180,8 +192,13 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         }
 
         // this return is effectively "StackExchange.Redis.ConfigurationOptions.Parse(this.ToString())"
-        var config = optionsType.GetMethod(nameof(int.Parse), new[] { typeof(string) })
-            .Invoke(stackObject, new object[] { ToString() });
+        object config = optionsType.GetMethod(nameof(int.Parse), new[]
+        {
+            typeof(string)
+        }).Invoke(stackObject, new object[]
+        {
+            ToString()
+        });
 
         if (resetPassword)
         {
@@ -225,7 +242,8 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
         string host;
         int port;
-        var i = endpoint.IndexOf(':');
+        int i = endpoint.IndexOf(':');
+
         if (i < 0)
         {
             host = endpoint;
@@ -234,7 +252,8 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
         else
         {
             host = endpoint.Substring(0, i);
-            var portAsString = endpoint.Substring(i + 1);
+            string portAsString = endpoint.Substring(i + 1);
+
             if (string.IsNullOrEmpty(portAsString))
             {
                 return null;
@@ -256,7 +275,7 @@ public class RedisCacheConnectorOptions : AbstractServiceConnectorOptions
 
     internal static EndPoint ParseEndPoint(string host, int port)
     {
-        if (IPAddress.TryParse(host, out var ip))
+        if (IPAddress.TryParse(host, out IPAddress ip))
         {
             return new IPEndPoint(ip, port);
         }

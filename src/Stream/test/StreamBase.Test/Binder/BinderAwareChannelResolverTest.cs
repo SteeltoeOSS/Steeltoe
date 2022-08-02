@@ -2,16 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
-using System.Text;
 using Xunit;
 using IntChannel = Steeltoe.Integration.Channel;
 
@@ -28,8 +27,8 @@ public class BinderAwareChannelResolverTest : AbstractTest
 
     public BinderAwareChannelResolverTest()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        var container = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+        ServiceCollection container = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:defaultBinder=testbinder");
         container.AddSingleton<IChannelInterceptor, ImmutableMessageChannelInterceptor>();
         _serviceProvider = container.BuildServiceProvider();
 
@@ -48,23 +47,24 @@ public class BinderAwareChannelResolverTest : AbstractTest
     [Fact]
     public void ResolveChannel()
     {
-        var bindables = _serviceProvider.GetServices<IBindable>();
+        IEnumerable<IBindable> bindables = _serviceProvider.GetServices<IBindable>();
         Assert.Single(bindables);
-        var bindable = bindables.Single();
+        IBindable bindable = bindables.Single();
         Assert.Empty(bindable.Inputs);
         Assert.Empty(bindable.Outputs);
-        var registered = _resolver.ResolveDestination("foo");
+        IMessageChannel registered = _resolver.ResolveDestination("foo");
 
-        var interceptors = ((IntChannel.AbstractMessageChannel)registered).ChannelInterceptors;
+        List<IChannelInterceptor> interceptors = ((IntChannel.AbstractMessageChannel)registered).ChannelInterceptors;
         Assert.Equal(2, interceptors.Count);
         Assert.IsType<ImmutableMessageChannelInterceptor>(interceptors[1]);
 
         Assert.Empty(bindable.Inputs);
         Assert.Single(bindable.Outputs);
 
-        var testChannel = new DirectChannel(_context, "INPUT");
+        var testChannel = new IntChannel.DirectChannel(_context, "INPUT");
         var latch = new CountdownEvent(1);
         IList<IMessage> received = new List<IMessage>();
+
         testChannel.Subscribe(new LatchedMessageHandler
         {
             Latch = latch,
@@ -77,14 +77,14 @@ public class BinderAwareChannelResolverTest : AbstractTest
         latch.Wait(1000);
 
         Assert.Single(received);
-        var payload = received[0].Payload as byte[];
+        byte[] payload = received[0].Payload as byte[];
         Assert.Equal("hello", Encoding.UTF8.GetString(payload));
     }
 
     [Fact]
     public void ResolveNonRegisteredChannel()
     {
-        var other = _resolver.ResolveDestination("other");
+        IMessageChannel other = _resolver.ResolveDestination("other");
         var registry = _serviceProvider.GetService<IApplicationContext>();
         var bean = registry.GetService<IMessageChannel>("other");
         Assert.Same(bean, other);
@@ -98,12 +98,12 @@ public class BinderAwareChannelResolverTest : AbstractTest
 
         public IList<IMessage> Received { get; set; }
 
+        public string ServiceName { get; set; }
+
         public LatchedMessageHandler()
         {
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
-
-        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {

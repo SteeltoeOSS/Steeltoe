@@ -7,8 +7,7 @@ using System.Security.Cryptography.X509Certificates;
 namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 /// <summary>
-/// Holds the settings used to configure the Spring Cloud Config Server provider
-/// <see cref="ConfigServerConfigurationProvider"/>.
+/// Holds the settings used to configure the Spring Cloud Config Server provider <see cref="ConfigServerConfigurationProvider" />.
 /// </summary>
 public class ConfigServerClientSettings
 {
@@ -117,34 +116,18 @@ public class ConfigServerClientSettings
     /// </summary>
     public const long DefaultHealthTimeToLive = 60 * 5 * 1000;
 
-    private static readonly char[] ColonDelimit = { ':' };
-    private static readonly char[] CommaDelimit = { ',' };
+    private static readonly char[] ColonDelimit =
+    {
+        ':'
+    };
+
+    private static readonly char[] CommaDelimit =
+    {
+        ','
+    };
 
     private string _username;
     private string _password;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConfigServerClientSettings"/> class.
-    /// </summary>
-    /// <remarks>Initialize Config Server client settings with defaults.</remarks>
-    public ConfigServerClientSettings()
-    {
-        ValidateCertificates = DefaultCertificateValidation;
-        FailFast = DefaultFailFast;
-        Environment = DefaultEnvironment;
-        Enabled = DefaultProviderEnabled;
-        Uri = DefaultUri;
-        RetryEnabled = DefaultRetryEnabled;
-        RetryInitialInterval = DefaultInitialRetryInterval;
-        RetryMaxInterval = DefaultMaxRetryInterval;
-        RetryAttempts = DefaultMaxRetryAttempts;
-        RetryMultiplier = DefaultRetryMultiplier;
-        Timeout = DefaultTimeoutMilliseconds;
-        DiscoveryEnabled = DefaultDiscoveryEnabled;
-        DiscoveryServiceId = DefaultConfigserverServiceId;
-        HealthEnabled = DefaultHealthEnabled;
-        HealthTimeToLive = DefaultHealthTimeToLive;
-    }
 
     /// <summary>
     /// Gets or sets the Config Server address.
@@ -176,26 +159,6 @@ public class ConfigServerClientSettings
     /// </summary>
     public virtual TimeSpan PollingInterval { get; set; }
 
-#pragma warning disable S4275 // Getters and setters should access the expected fields
-    /// <summary>
-    /// Gets or sets the username used when accessing the Config Server.
-    /// </summary>
-    public virtual string Username
-    {
-        get { return GetUserName(); }
-        set { _username = value; }
-    }
-
-    /// <summary>
-    /// Gets or sets the password used when accessing the Config Server.
-    /// </summary>
-    public virtual string Password
-    {
-        get { return GetPassword(); }
-        set { _password = value; }
-    }
-#pragma warning restore S4275 // Getters and setters should access the expected fields
-
     /// <summary>
     /// Gets or sets a value indicating whether enables/Disables failfast behavior.
     /// </summary>
@@ -222,7 +185,7 @@ public class ConfigServerClientSettings
     public virtual int RetryMaxInterval { get; set; }
 
     /// <summary>
-    ///  Gets or sets multiplier for next retry interval.
+    /// Gets or sets multiplier for next retry interval.
     /// </summary>
     public virtual double RetryMultiplier { get; set; }
 
@@ -255,18 +218,12 @@ public class ConfigServerClientSettings
     /// Gets returns the HttpRequestUrl, unescaped.
     /// </summary>
     [Obsolete("Will be removed, use RawUris instead")]
-    public virtual string RawUri
-    {
-        get { return GetRawUri(); }
-    }
+    public virtual string RawUri => GetRawUri();
 
     /// <summary>
     /// Gets returns HttpRequestUrls, unescaped.
     /// </summary>
-    public virtual string[] RawUris
-    {
-        get { return GetRawUris(); }
-    }
+    public virtual string[] RawUris => GetRawUris();
 
     /// <summary>
     /// Gets or sets returns the token use for Vault.
@@ -312,6 +269,31 @@ public class ConfigServerClientSettings
     /// </summary>
     public virtual Dictionary<string, string> Headers { get; set; }
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConfigServerClientSettings" /> class.
+    /// </summary>
+    /// <remarks>
+    /// Initialize Config Server client settings with defaults.
+    /// </remarks>
+    public ConfigServerClientSettings()
+    {
+        ValidateCertificates = DefaultCertificateValidation;
+        FailFast = DefaultFailFast;
+        Environment = DefaultEnvironment;
+        Enabled = DefaultProviderEnabled;
+        Uri = DefaultUri;
+        RetryEnabled = DefaultRetryEnabled;
+        RetryInitialInterval = DefaultInitialRetryInterval;
+        RetryMaxInterval = DefaultMaxRetryInterval;
+        RetryAttempts = DefaultMaxRetryAttempts;
+        RetryMultiplier = DefaultRetryMultiplier;
+        Timeout = DefaultTimeoutMilliseconds;
+        DiscoveryEnabled = DefaultDiscoveryEnabled;
+        DiscoveryServiceId = DefaultConfigserverServiceId;
+        HealthEnabled = DefaultHealthEnabled;
+        HealthTimeToLive = DefaultHealthTimeToLive;
+    }
+
     internal static bool IsMultiServerConfig(string uris)
     {
         return uris.Contains(",");
@@ -353,10 +335,12 @@ public class ConfigServerClientSettings
     {
         if (!string.IsNullOrEmpty(Uri))
         {
-            var uris = Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
-            for (var i = 0; i < uris.Length; i++)
+            string[] uris = Uri.Split(CommaDelimit, StringSplitOptions.RemoveEmptyEntries);
+
+            for (int i = 0; i < uris.Length; i++)
             {
-                var uri = GetRawUri(uris[i]);
+                string uri = GetRawUri(uris[i]);
+
                 if (string.IsNullOrEmpty(uri))
                 {
                     return Array.Empty<string>();
@@ -430,10 +414,12 @@ public class ConfigServerClientSettings
         }
 
         string result = null;
-        var userInfo = GetUserInfo(uri);
+        string userInfo = GetUserInfo(uri);
+
         if (!string.IsNullOrEmpty(userInfo))
         {
-            var info = userInfo.Split(ColonDelimit);
+            string[] info = userInfo.Split(ColonDelimit);
+
             if (info.Length > index)
             {
                 result = info[index];
@@ -442,4 +428,24 @@ public class ConfigServerClientSettings
 
         return result;
     }
+
+#pragma warning disable S4275 // Getters and setters should access the expected fields
+    /// <summary>
+    /// Gets or sets the username used when accessing the Config Server.
+    /// </summary>
+    public virtual string Username
+    {
+        get => GetUserName();
+        set => _username = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the password used when accessing the Config Server.
+    /// </summary>
+    public virtual string Password
+    {
+        get => GetPassword();
+        set => _password = value;
+    }
+#pragma warning restore S4275 // Getters and setters should access the expected fields
 }

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka;
@@ -12,34 +13,48 @@ namespace Steeltoe.Discovery.Eureka;
 public static class EurekaClientService
 {
     /// <summary>
-    /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
-    /// return all the service instances for the provided <paramref name="serviceId"/>. The Eureka client is shutdown after contacting the server.
+    /// Using the Eureka configuration values provided in <paramref name="configuration" /> contact the Eureka server and return all the service instances
+    /// for the provided <paramref name="serviceId" />. The Eureka client is shutdown after contacting the server.
     /// </summary>
-    /// <param name="configuration">configuration values used for configuring the Eureka client.</param>
-    /// <param name="serviceId">the Eureka service id to look up all instances of.</param>
-    /// <param name="logFactory">optional log factory to use for logging.</param>
-    /// <returns>service instances.</returns>
+    /// <param name="configuration">
+    /// configuration values used for configuring the Eureka client.
+    /// </param>
+    /// <param name="serviceId">
+    /// the Eureka service id to look up all instances of.
+    /// </param>
+    /// <param name="logFactory">
+    /// optional log factory to use for logging.
+    /// </param>
+    /// <returns>
+    /// service instances.
+    /// </returns>
     public static IList<IServiceInstance> GetInstances(IConfiguration configuration, string serviceId, ILoggerFactory logFactory = null)
     {
-        var config = ConfigureClientOptions(configuration);
-        var client = GetLookupClient(config, logFactory);
-        var result = client.GetInstancesInternal(serviceId);
+        EurekaClientOptions config = ConfigureClientOptions(configuration);
+        LookupClient client = GetLookupClient(config, logFactory);
+        IList<IServiceInstance> result = client.GetInstancesInternal(serviceId);
         client.ShutdownAsync().GetAwaiter().GetResult();
         return result;
     }
 
     /// <summary>
-    /// Using the Eureka configuration values provided in <paramref name="configuration"/> contact the Eureka server and
-    /// return all the registered services. The Eureka client is shutdown after contacting the server.
+    /// Using the Eureka configuration values provided in <paramref name="configuration" /> contact the Eureka server and return all the registered services.
+    /// The Eureka client is shutdown after contacting the server.
     /// </summary>
-    /// <param name="configuration">configuration values used for configuring the Eureka client.</param>
-    /// <param name="logFactory">optional log factory to use for logging.</param>
-    /// <returns>all registered services.</returns>
+    /// <param name="configuration">
+    /// configuration values used for configuring the Eureka client.
+    /// </param>
+    /// <param name="logFactory">
+    /// optional log factory to use for logging.
+    /// </param>
+    /// <returns>
+    /// all registered services.
+    /// </returns>
     public static IList<string> GetServices(IConfiguration configuration, ILoggerFactory logFactory = null)
     {
-        var config = ConfigureClientOptions(configuration);
-        var client = GetLookupClient(config, logFactory);
-        var result = client.GetServicesInternal();
+        EurekaClientOptions config = ConfigureClientOptions(configuration);
+        LookupClient client = GetLookupClient(config, logFactory);
+        IList<string> result = client.GetServicesInternal();
         client.ShutdownAsync().GetAwaiter().GetResult();
         return result;
     }
@@ -51,7 +66,7 @@ public static class EurekaClientService
 
     internal static EurekaClientOptions ConfigureClientOptions(IConfiguration configuration)
     {
-        var clientConfigSection = configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientConfigSection = configuration.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
 
         var clientOptions = new EurekaClientOptions();
         clientConfigSection.Bind(clientOptions);
@@ -74,9 +89,10 @@ public static class EurekaClientService
 
         public IList<IServiceInstance> GetInstancesInternal(string serviceId)
         {
-            var infos = GetInstancesByVipAddress(serviceId, false);
+            IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
             var instances = new List<IServiceInstance>();
-            foreach (var info in infos)
+
+            foreach (InstanceInfo info in infos)
             {
                 logger?.LogDebug($"GetInstances returning: {info}");
                 instances.Add(new EurekaServiceInstance(info));
@@ -87,15 +103,17 @@ public static class EurekaClientService
 
         public IList<string> GetServicesInternal()
         {
-            var applications = Applications;
+            Applications applications = Applications;
+
             if (applications == null)
             {
                 return new List<string>();
             }
 
-            var registered = applications.GetRegisteredApplications();
+            IList<Application> registered = applications.GetRegisteredApplications();
             var names = new List<string>();
-            foreach (var app in registered)
+
+            foreach (Application app in registered)
             {
                 if (app.Instances.Count == 0)
                 {

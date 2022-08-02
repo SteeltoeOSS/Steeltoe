@@ -8,5 +8,5 @@ public class WatchableResource
 {
     public bool Enabled { get; set; } = true;
 
-    public List<NamespacedResource> Sources { get; set; } = new ();
+    public List<NamespacedResource> Sources { get; set; } = new();
 }

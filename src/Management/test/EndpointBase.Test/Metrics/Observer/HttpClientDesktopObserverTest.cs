@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Net;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
@@ -70,8 +71,8 @@ public class HttpClientDesktopObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
 
-        var req = GetHttpRequestMessage();
-        var labels = observer.GetLabels(req, HttpStatusCode.InternalServerError).ToList();
+        HttpWebRequest req = GetHttpRequestMessage();
+        List<KeyValuePair<string, object>> labels = observer.GetLabels(req, HttpStatusCode.InternalServerError).ToList();
 
         Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), labels);
         Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), labels);
@@ -87,13 +88,17 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
-        var scraperOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = 10 };
+        var scraperOptions = new PullMetricsExporterOptions
+        {
+            ScrapeResponseCacheDurationMilliseconds = 10
+        };
+
         var observer = new HttpClientDesktopObserver(options, null, viewRegistry);
         var exporter = new SteeltoeExporter(scraperOptions);
 
-        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
+        using MeterProvider metrics = GetTestMetrics(viewRegistry, exporter, null);
 
-        var req = GetHttpRequestMessage();
+        HttpWebRequest req = GetHttpRequestMessage();
 
         var act = new Activity("Test");
         act.Start();
@@ -105,16 +110,21 @@ public class HttpClientDesktopObserverTest : BaseTest
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
+        KeyValuePair<string, List<MetricSample>>
+            timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");
+
         Assert.NotNull(timeSample.Value);
 
         Func<MetricSample, MetricSample, MetricSample> sumAgg = (x, y) => new MetricSample(x.Statistic, x.Value + y.Value, x.Tags);
 
-        var timeSummary = timeSample.Value.Aggregate(sumAgg);
-        var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
-        var countSummary = countSample.Value.Aggregate(sumAgg);
+        MetricSample timeSummary = timeSample.Value.Aggregate(sumAgg);
 
-        var average = timeSummary.Value / countSummary.Value;
+        KeyValuePair<string, List<MetricSample>> countSample =
+            collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.count");
+
+        MetricSample countSummary = countSample.Value.Aggregate(sumAgg);
+
+        double average = timeSummary.Value / countSummary.Value;
         Assert.InRange(average, 950.0, 1500.0);
 
         Assert.Equal(2, countSummary.Value);
@@ -127,7 +137,7 @@ public class HttpClientDesktopObserverTest : BaseTest
 
     private HttpWebRequest GetHttpRequestMessage()
     {
-        var m = WebRequest.CreateHttp("http://localhost:5555/foo/bar");
+        HttpWebRequest m = WebRequest.CreateHttp("http://localhost:5555/foo/bar");
         m.Method = HttpMethod.Get.Method;
         return m;
     }

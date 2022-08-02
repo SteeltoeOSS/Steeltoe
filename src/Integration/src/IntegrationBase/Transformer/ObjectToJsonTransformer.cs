@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Steeltoe.Common.Contexts;
@@ -9,13 +10,12 @@ using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System.Text;
 
 namespace Steeltoe.Integration.Transformer;
 
 public class ObjectToJsonTransformer : AbstractTransformer
 {
-    private readonly DefaultTypeMapper _defaultTypeMapper = new ();
+    private readonly DefaultTypeMapper _defaultTypeMapper = new();
 
     public Type ResultType { get; set; }
 
@@ -35,6 +35,7 @@ public class ObjectToJsonTransformer : AbstractTransformer
                 ProcessDictionaryKeys = false
             }
         };
+
         Settings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
@@ -49,41 +50,40 @@ public class ObjectToJsonTransformer : AbstractTransformer
 
     protected override object DoTransform(IMessage message)
     {
-        var payload = BuildJsonPayload(message.Payload);
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(message);
-        var contentType = accessor.ContentType;
+        object payload = BuildJsonPayload(message.Payload);
+        MessageHeaderAccessor accessor = MessageHeaderAccessor.GetMutableAccessor(message);
+        string contentType = accessor.ContentType;
+
         if (string.IsNullOrEmpty(contentType))
         {
             accessor.ContentType = ContentType;
         }
 
-        var headers = accessor.MessageHeaders;
+        IMessageHeaders headers = accessor.MessageHeaders;
         _defaultTypeMapper.FromType(message.Payload.GetType(), headers);
+
         if (ResultType == typeof(string))
         {
             return MessageBuilderFactory.WithPayload((string)payload).CopyHeaders(headers).Build();
         }
-        else
-        {
-            return MessageBuilderFactory.WithPayload((byte[])payload).CopyHeaders(headers).Build();
-        }
+
+        return MessageBuilderFactory.WithPayload((byte[])payload).CopyHeaders(headers).Build();
     }
 
     private object BuildJsonPayload(object payload)
     {
-        var jsonString = JsonConvert.SerializeObject(payload, Settings);
+        string jsonString = JsonConvert.SerializeObject(payload, Settings);
 
         if (ResultType == typeof(string))
         {
             return jsonString;
         }
-        else if (ResultType == typeof(byte[]))
+
+        if (ResultType == typeof(byte[]))
         {
             return DefaultCharset.GetBytes(jsonString);
         }
-        else
-        {
-            throw new InvalidOperationException($"Unsupported result type: {ResultType}");
-        }
+
+        throw new InvalidOperationException($"Unsupported result type: {ResultType}");
     }
 }

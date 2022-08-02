@@ -2,23 +2,32 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Health;
 using Steeltoe.Management.Endpoint.Metrics;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Middleware;
+
 public class EndpointMiddleware<TResult>
 {
     protected IEndpoint<TResult> endpoint;
     protected ILogger logger;
     protected IManagementOptions managementOptions;
 
+    public IEndpoint<TResult> Endpoint
+    {
+        get => endpoint;
+
+        set => endpoint = value;
+    }
+
     public EndpointMiddleware(IManagementOptions managementOptions, ILogger logger = null)
     {
         this.logger = logger;
         this.managementOptions = managementOptions ?? throw new ArgumentNullException(nameof(managementOptions));
+
         if (this.managementOptions is ManagementEndpointOptions options)
         {
             options.SerializerOptions = GetSerializerOptions(options.SerializerOptions);
@@ -31,16 +40,9 @@ public class EndpointMiddleware<TResult>
         this.endpoint = endpoint ?? throw new ArgumentNullException(nameof(endpoint));
     }
 
-    public IEndpoint<TResult> Endpoint
-    {
-        get => endpoint;
-
-        set => endpoint = value;
-    }
-
     public virtual string HandleRequest()
     {
-        var result = endpoint.Invoke();
+        TResult result = endpoint.Invoke();
         return Serialize(result);
     }
 
@@ -49,6 +51,7 @@ public class EndpointMiddleware<TResult>
         try
         {
             JsonSerializerOptions options;
+
             if (managementOptions is ManagementEndpointOptions endpointOptions)
             {
                 options = endpointOptions.SerializerOptions;
@@ -70,7 +73,11 @@ public class EndpointMiddleware<TResult>
 
     internal JsonSerializerOptions GetSerializerOptions(JsonSerializerOptions serializerOptions)
     {
-        serializerOptions ??= new JsonSerializerOptions() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        serializerOptions ??= new JsonSerializerOptions
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+
         serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 
         if (serializerOptions.Converters?.Any(c => c is JsonStringEnumConverter) != true)
@@ -116,7 +123,7 @@ public class EndpointMiddleware<TResult, TRequest> : EndpointMiddleware<TResult>
 
     public virtual string HandleRequest(TRequest arg)
     {
-        var result = endpoint.Invoke(arg);
+        TResult result = endpoint.Invoke(arg);
         return Serialize(result);
     }
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -18,7 +19,8 @@ public class SetRequestJsonConverter : JsonConverter<CredentialSetRequest>
     {
         writer.WriteStartObject();
         writer.WriteStartObject("value");
-        foreach (var prop in value.Value.GetType().GetProperties())
+
+        foreach (PropertyInfo prop in value.Value.GetType().GetProperties())
         {
             if (prop.GetValue(value.Value) != null || options.DefaultIgnoreCondition != JsonIgnoreCondition.WhenWritingNull)
             {

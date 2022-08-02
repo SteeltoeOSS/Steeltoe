@@ -10,12 +10,12 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer.ITest;
 
 internal sealed class TestServerStartup
 {
+    public IConfiguration Configuration { get; set; }
+
     public TestServerStartup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -28,6 +28,7 @@ internal sealed class TestServerStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");

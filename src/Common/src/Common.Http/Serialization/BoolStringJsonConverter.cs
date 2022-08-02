@@ -11,9 +11,7 @@ public class BoolStringJsonConverter : JsonConverter<bool>
 {
     public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True
-            ? reader.GetBoolean()
-            : bool.Parse(reader.GetString());
+        return reader.TokenType == JsonTokenType.False || reader.TokenType == JsonTokenType.True ? reader.GetBoolean() : bool.Parse(reader.GetString());
     }
 
     public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)

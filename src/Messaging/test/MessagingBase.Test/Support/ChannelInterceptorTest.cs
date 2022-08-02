@@ -24,16 +24,18 @@ public class ChannelInterceptorTest
     [Fact]
     public void PreSendInterceptorReturningModifiedMessage()
     {
-        var expected = new Mock<IMessage>().Object;
+        IMessage expected = new Mock<IMessage>().Object;
+
         var interceptor = new PreSendInterceptor
         {
             MessageToReturn = expected
         };
+
         _channel.AddInterceptor(interceptor);
         _channel.Send(MessageBuilder.WithPayload("test").Build());
 
         Assert.Single(_messageHandler.Messages);
-        var result = _messageHandler.Messages[0];
+        IMessage result = _messageHandler.Messages[0];
 
         Assert.NotNull(result);
         Assert.Same(expected, result);
@@ -47,7 +49,7 @@ public class ChannelInterceptorTest
         var interceptor2 = new NullReturningPreSendInterceptor();
         _channel.AddInterceptor(interceptor1);
         _channel.AddInterceptor(interceptor2);
-        var message = MessageBuilder.WithPayload("test").Build();
+        IMessage message = MessageBuilder.WithPayload("test").Build();
         _channel.Send(message);
 
         Assert.Equal(1, interceptor1.Counter);
@@ -90,6 +92,7 @@ public class ChannelInterceptorTest
         var interceptor2 = new PreSendInterceptor();
         testChannel.AddInterceptor(interceptor1);
         testChannel.AddInterceptor(interceptor2);
+
         try
         {
             testChannel.Send(MessageBuilder.WithPayload("test").Build());
@@ -107,12 +110,15 @@ public class ChannelInterceptorTest
     public void AfterCompletionWithPreSendException()
     {
         var interceptor1 = new PreSendInterceptor();
+
         var interceptor2 = new PreSendInterceptor
         {
             ExceptionToRaise = new Exception("Simulated exception")
         };
+
         _channel.AddInterceptor(interceptor1);
         _channel.AddInterceptor(interceptor2);
+
         try
         {
             _channel.Send(MessageBuilder.WithPayload("test").Build());
@@ -200,7 +206,7 @@ public class ChannelInterceptorTest
 
         public PostSendInterceptorMessageWasNotSentInterceptor(IMessageChannel expectedChannel)
         {
-            this.ExpectedChannel = expectedChannel;
+            ExpectedChannel = expectedChannel;
         }
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
@@ -232,7 +238,7 @@ public class ChannelInterceptorTest
 
         public PostSendInterceptorMessageWasSentChannelInterceptor(IMessageChannel expectedChannel)
         {
-            this.ExpectedChannel = expectedChannel;
+            ExpectedChannel = expectedChannel;
         }
 
         public override void PostSend(IMessage message, IMessageChannel channel, bool sent)
@@ -258,7 +264,7 @@ public class ChannelInterceptorTest
 
     internal sealed class TestMessageHandler : IMessageHandler
     {
-        public List<IMessage> Messages { get; } = new ();
+        public List<IMessage> Messages { get; } = new();
 
         public string ServiceName { get; set; } = nameof(TestMessageHandler);
 
@@ -274,15 +280,9 @@ public class ChannelInterceptorTest
 
         private volatile bool _afterCompletionInvoked;
 
-        public int Counter
-        {
-            get { return _counter; }
-        }
+        public int Counter => _counter;
 
-        public bool WasAfterCompletionInvoked
-        {
-            get { return _afterCompletionInvoked; }
-        }
+        public bool WasAfterCompletionInvoked => _afterCompletionInvoked;
 
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
@@ -306,6 +306,7 @@ public class ChannelInterceptorTest
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
             base.PreSend(message, channel);
+
             if (ExceptionToRaise != null)
             {
                 throw ExceptionToRaise;

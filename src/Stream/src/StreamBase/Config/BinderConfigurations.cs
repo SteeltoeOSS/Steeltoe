@@ -9,11 +9,20 @@ namespace Steeltoe.Stream.Config;
 
 public class BinderConfigurations : IBinderConfigurations
 {
-    private IBinderTypeRegistry Registry { get; set; }
-
-    private BindingServiceOptions Options { get; set; }
-
     private Dictionary<string, BinderConfiguration> _configurations;
+
+    private IBinderTypeRegistry Registry { get; }
+
+    private BindingServiceOptions Options { get; }
+
+    public Dictionary<string, BinderConfiguration> Configurations
+    {
+        get
+        {
+            _configurations ??= GetBinderConfigurations();
+            return _configurations;
+        }
+    }
 
     public BinderConfigurations(IBinderTypeRegistry binderTypeRegistry, IConfiguration config)
     {
@@ -27,22 +36,14 @@ public class BinderConfigurations : IBinderConfigurations
         Options = options;
     }
 
-    public Dictionary<string, BinderConfiguration> Configurations
-    {
-        get
-        {
-            _configurations ??= GetBinderConfigurations();
-            return _configurations;
-        }
-    }
-
     public List<string> FindMatchingConfigurationsIfAny(IBinder binder)
     {
         var results = new List<string>();
-        var registryEntry = Registry.Get(binder.ServiceName);
+        IBinderType registryEntry = Registry.Get(binder.ServiceName);
+
         if (registryEntry != null)
         {
-            foreach (var config in Configurations)
+            foreach (KeyValuePair<string, BinderConfiguration> config in Configurations)
             {
                 if (registryEntry.AssemblyPath == config.Value.ResolvedAssembly)
                 {
@@ -57,11 +58,11 @@ public class BinderConfigurations : IBinderConfigurations
     internal Dictionary<string, BinderConfiguration> GetBinderConfigurations()
     {
         var binderConfigurations = new Dictionary<string, BinderConfiguration>();
-        var declaredBinders = Options.Binders;
-        var defaultCandidatesExist = false;
+        Dictionary<string, BinderOptions> declaredBinders = Options.Binders;
+        bool defaultCandidatesExist = false;
 
         // Check to see if configuration has any declared default binders
-        foreach (var binder in declaredBinders)
+        foreach (KeyValuePair<string, BinderOptions> binder in declaredBinders)
         {
             if (binder.Value.DefaultCandidate.Value)
             {
@@ -72,13 +73,15 @@ public class BinderConfigurations : IBinderConfigurations
 
         // Go thru and match up configured binders with what was discovered in "classpath"
         var existingBinderConfigurations = new List<string>();
-        foreach (var declBinder in declaredBinders)
+
+        foreach (KeyValuePair<string, BinderOptions> declBinder in declaredBinders)
         {
-            var binderOptions = declBinder.Value;
+            BinderOptions binderOptions = declBinder.Value;
+
             if (Registry.Get(declBinder.Key) != null)
             {
                 // Declared binder also found on "classpath"
-                var binder = Registry.Get(declBinder.Key);
+                IBinderType binder = Registry.Get(declBinder.Key);
                 binderConfigurations.Add(binder.Name, new BinderConfiguration(binder.ConfigureClass, binder.AssemblyPath, binderOptions));
             }
             else
@@ -99,7 +102,7 @@ public class BinderConfigurations : IBinderConfigurations
         }
 
         // Check for a default binder in the matched up configuration
-        foreach (var configurationEntry in binderConfigurations)
+        foreach (KeyValuePair<string, BinderConfiguration> configurationEntry in binderConfigurations)
         {
             if (configurationEntry.Value.IsDefaultCandidate)
             {
@@ -110,11 +113,16 @@ public class BinderConfigurations : IBinderConfigurations
         // No Default candidate, make them all default
         if (!defaultCandidatesExist)
         {
-            foreach (var binderEntry in Registry.GetAll())
+            foreach (KeyValuePair<string, IBinderType> binderEntry in Registry.GetAll())
             {
                 if (!existingBinderConfigurations.Contains(binderEntry.Key))
                 {
-                    binderConfigurations.Add(binderEntry.Key, new BinderConfiguration(binderEntry.Value.ConfigureClass, binderEntry.Value.AssemblyPath, new BinderOptions { DefaultCandidate = true, InheritEnvironment = true }));
+                    binderConfigurations.Add(binderEntry.Key, new BinderConfiguration(binderEntry.Value.ConfigureClass, binderEntry.Value.AssemblyPath,
+                        new BinderOptions
+                        {
+                            DefaultCandidate = true,
+                            InheritEnvironment = true
+                        }));
                 }
             }
         }

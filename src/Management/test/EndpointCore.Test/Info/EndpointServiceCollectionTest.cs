@@ -18,6 +18,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddInfoActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
@@ -25,9 +26,10 @@ public class EndpointServiceCollectionTest : BaseTest
             ["management:endpoints:info:enabled"] = "false",
             ["management:endpoints:info:id"] = "infomanagement"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         services.AddInfoActuator(config);
 
@@ -36,20 +38,18 @@ public class EndpointServiceCollectionTest : BaseTest
         ILogger<InfoEndpoint> logger = new TestLogger();
         services.AddSingleton(logger);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IInfoOptions>();
         Assert.NotNull(options);
-        var contributors = serviceProvider.GetServices<IInfoContributor>();
+        IEnumerable<IInfoContributor> contributors = serviceProvider.GetServices<IInfoContributor>();
 
         Assert.NotNull(contributors);
-        var listOfContributors = contributors.ToList();
+        List<IInfoContributor> listOfContributors = contributors.ToList();
         Assert.Equal(4, listOfContributors.Count);
 
-        Assert.Contains(contributors, item =>
-            item.GetType() == typeof(GitInfoContributor) ||
-            item.GetType() == typeof(AppSettingsInfoContributor) ||
-            item.GetType() == typeof(BuildInfoContributor) ||
-            item is TestInfoContributor);
+        Assert.Contains(contributors,
+            item => item.GetType() == typeof(GitInfoContributor) || item.GetType() == typeof(AppSettingsInfoContributor) ||
+                item.GetType() == typeof(BuildInfoContributor) || item is TestInfoContributor);
 
         var ep = serviceProvider.GetService<InfoEndpoint>();
         Assert.NotNull(ep);

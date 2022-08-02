@@ -12,25 +12,6 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
     private const string SecurityClientSectionPrefix = "security:oauth2:client";
     private const string SecurityResourceSectionPrefix = "security:oauth2:resource";
 
-    public OAuthConnectorOptions()
-    {
-    }
-
-    public OAuthConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(SecurityClientSectionPrefix);
-        section.Bind(this);
-        ValidateCertificates = GetCertificateValidation(section, config, ValidateCertificates);
-
-        section = config.GetSection(SecurityResourceSectionPrefix);
-        section.Bind(this);
-    }
-
     public string OAuthServiceUrl { get; set; } = OAuthConnectorDefaults.DefaultOAuthServiceUrl;
 
     public string ClientId { get; set; } = OAuthConnectorDefaults.DefaultClientId;
@@ -50,6 +31,25 @@ public class OAuthConnectorOptions : AbstractServiceConnectorOptions
     public List<string> Scope { get; set; }
 
     public bool ValidateCertificates { get; set; } = OAuthConnectorDefaults.DefaultValidateCertificates;
+
+    public OAuthConnectorOptions()
+    {
+    }
+
+    public OAuthConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(SecurityClientSectionPrefix);
+        section.Bind(this);
+        ValidateCertificates = GetCertificateValidation(section, config, ValidateCertificates);
+
+        section = config.GetSection(SecurityResourceSectionPrefix);
+        section.Bind(this);
+    }
 
     private static bool GetCertificateValidation(IConfigurationSection configurationSection, IConfiguration resolve, bool def)
     {

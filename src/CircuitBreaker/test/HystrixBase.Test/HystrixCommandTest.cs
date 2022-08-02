@@ -2,14 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
-using Steeltoe.CircuitBreaker.Hystrix.Util;
-using Steeltoe.Common.Util;
 using System.Collections.Concurrent;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
+using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
+using Steeltoe.CircuitBreaker.Hystrix.Util;
+using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,6 +19,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 {
     private readonly ITestOutputHelper _output;
 
+    private int _uniqueNameCounter;
+
     public HystrixCommandTest(ITestOutputHelper output)
     {
         _output = output;
@@ -27,7 +29,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionSuccess()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
         Assert.Equal(FlexibleTestHystrixCommand.ExecuteValue, command.Execute());
 
         Assert.Null(command.FailedExecutionException);
@@ -44,7 +46,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionMultipleTimes()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
         Assert.False(command.IsExecutionComplete);
 
         // first should succeed
@@ -76,7 +78,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionHystrixFailureWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.HystrixFailure, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.HystrixFailure, FallbackResultTest.Unimplemented);
+
         try
         {
             command.Execute();
@@ -100,7 +103,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionFailureWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Unimplemented);
+
         try
         {
             command.Execute();
@@ -124,7 +128,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionFailureWithFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Success);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Success);
         Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, command.Execute());
         Assert.Equal("Execution Failure for TestHystrixCommand", command.FailedExecutionException.Message);
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -139,16 +143,17 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestExecutionRejectionWithFallbackException()
     {
         var threads = new List<Thread>();
-        var threadRunCount = 0;
-        var exceptionCount = 0;
+        int threadRunCount = 0;
+        int exceptionCount = 0;
 
-        for (var i = 0; i < 15; i++)
+        for (int i = 0; i < 15; i++)
         {
             var thread = new Thread(() =>
             {
                 // Run() delays 5 seconds, Fallback() throws exception
                 // Command timeout set to 3 * 5000, so doesn't timeout
                 var cmd = new BasicDelayCommand(5000, true);
+
                 try
                 {
                     Assert.Equal(5000, cmd.Execute());
@@ -168,7 +173,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         // Wait for all threads to finish, all commands completed
-        foreach (var thread in threads)
+        foreach (Thread thread in threads)
         {
             thread.Join();
         }
@@ -186,7 +191,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionFailureWithFallbackFailure()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Failure);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Failure);
+
         try
         {
             command.Execute();
@@ -212,8 +218,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestQueueSuccess()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
-        var future = command.ExecuteAsync();
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
+        Task<int> future = command.ExecuteAsync();
         Assert.Equal(FlexibleTestHystrixCommand.ExecuteValue, future.Result);
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
         Assert.True(command.IsSuccessfulExecution);
@@ -226,7 +232,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueueKnownFailureWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.HystrixFailure, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.HystrixFailure, FallbackResultTest.Unimplemented);
+
         try
         {
             await command.ExecuteAsync();
@@ -250,7 +257,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueueUnknownFailureWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Unimplemented);
+
         try
         {
             await command.ExecuteAsync();
@@ -274,10 +282,11 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestQueueFailureWithFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Success);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Success);
+
         try
         {
-            var future = command.ExecuteAsync();
+            Task<int> future = command.ExecuteAsync();
             Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, future.Result);
         }
         catch (Exception e)
@@ -297,7 +306,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueueFailureWithFallbackFailure()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Failure);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, FallbackResultTest.Failure);
+
         try
         {
             await command.ExecuteAsync();
@@ -320,7 +330,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestObserveSuccess()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
         Assert.Equal(FlexibleTestHystrixCommand.ExecuteValue, await command.Observe().SingleAsync());
         Assert.Null(command.FailedExecutionException);
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -331,45 +341,28 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         AssertSaneHystrixRequestLog(1);
     }
 
-    private sealed class TestCallbackThreadForThreadIsolationTestHystrixCommand : TestHystrixCommand<bool>
-    {
-        private readonly AtomicReference<Thread> _commandThread;
-
-        public TestCallbackThreadForThreadIsolationTestHystrixCommand(AtomicReference<Thread> commandThread, TestCommandBuilder builder)
-            : base(builder)
-        {
-            _commandThread = commandThread;
-        }
-
-        protected override bool Run()
-        {
-            _commandThread.Value = Thread.CurrentThread;
-            return true;
-        }
-    }
-
     [Fact]
     public void TestCallbackThreadForThreadIsolation()
     {
         var commandThread = new AtomicReference<Thread>();
         var subscribeThread = new AtomicReference<Thread>();
 
-        TestHystrixCommand<bool> command = new TestCallbackThreadForThreadIsolationTestHystrixCommand(commandThread, TestHystrixCommand<bool>.TestPropsBuilder());
+        TestHystrixCommand<bool> command =
+            new TestCallbackThreadForThreadIsolationTestHystrixCommand(commandThread, TestHystrixCommand<bool>.TestPropsBuilder());
+
         var latch = new CountdownEvent(1);
-        command.ToObservable().Subscribe(
-            _ =>
-            {
-                subscribeThread.Value = Thread.CurrentThread;
-            },
-            e =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(e.ToString());
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+
+        command.ToObservable().Subscribe(_ =>
+        {
+            subscribeThread.Value = Thread.CurrentThread;
+        }, e =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(e.ToString());
+        }, () =>
+        {
+            latch.SignalEx();
+        });
 
         if (!latch.Wait(2000))
         {
@@ -390,50 +383,31 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.NotEqual(commandThread.Value.ManagedThreadId, subscribeThread.Value.ManagedThreadId);
     }
 
-    private sealed class TestCallbackThreadForSemaphoreIsolationTestHystrixCommand : TestHystrixCommand<bool>
-    {
-        private readonly AtomicReference<Thread> _commandThread;
-
-        public TestCallbackThreadForSemaphoreIsolationTestHystrixCommand(AtomicReference<Thread> commandThread, TestCommandBuilder builder)
-            : base(builder)
-        {
-            _commandThread = commandThread;
-        }
-
-        protected override bool Run()
-        {
-            _commandThread.Value = Thread.CurrentThread;
-            return true;
-        }
-    }
-
     [Fact]
     public void TestCallbackThreadForSemaphoreIsolation()
     {
         var commandThread = new AtomicReference<Thread>();
         var subscribeThread = new AtomicReference<Thread>();
 
-        var builder = TestHystrixCommand<bool>.TestPropsBuilder();
-        var opts = HystrixCommandOptionsTest.GetUnitTestOptions();
+        TestCommandBuilder builder = TestHystrixCommand<bool>.TestPropsBuilder();
+        HystrixCommandOptions opts = HystrixCommandOptionsTest.GetUnitTestOptions();
         opts.ExecutionIsolationStrategy = ExecutionIsolationStrategy.Semaphore;
         builder.SetCommandOptionDefaults(opts);
         TestHystrixCommand<bool> command = new TestCallbackThreadForSemaphoreIsolationTestHystrixCommand(commandThread, builder);
 
         var latch = new CountdownEvent(1);
-        command.ToObservable().Subscribe(
-            _ =>
-            {
-                subscribeThread.Value = Thread.CurrentThread;
-            },
-            e =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(e.ToString());
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+
+        command.ToObservable().Subscribe(_ =>
+        {
+            subscribeThread.Value = Thread.CurrentThread;
+        }, e =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(e.ToString());
+        }, () =>
+        {
+            latch.SignalEx();
+        });
 
         if (!latch.Wait(2000))
         {
@@ -445,7 +419,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         _output.WriteLine("Command Thread: " + commandThread.Value);
         _output.WriteLine("Subscribe Thread: " + subscribeThread.Value);
 
-        var mainThreadId = Thread.CurrentThread.ManagedThreadId;
+        int mainThreadId = Thread.CurrentThread.ManagedThreadId;
 
         // semaphore should be on the calling thread
         Assert.True(commandThread.Value.ManagedThreadId.Equals(mainThreadId));
@@ -477,6 +451,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             CircuitBreakerForceOpen = false,
             CircuitBreakerForceClosed = true
         };
+
         var cmd = new HystrixCommand<bool>(opts, () => true, () => false);
 
         Assert.True(cmd.Execute()); // fallback should fire
@@ -487,13 +462,13 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestCircuitBreakerAcrossMultipleCommandsButSameCircuitBreaker()
     {
-        var key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("SharedCircuitBreaker");
         var circuitBreaker = new TestCircuitBreaker(key);
 
         /* fail 3 times and then it should trip the circuit and stop executing */
 
         // failure 1
-        var attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
+        TestHystrixCommand<int> attempt1 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         _output.WriteLine("COMMAND KEY (from cmd): " + attempt1.CommandKey.Name);
         await attempt1.ExecuteAsync();
 
@@ -506,7 +481,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.False(attempt1.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (1)");
 
         // failure 2 with a different command, same circuit breaker
-        var attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
+        TestHystrixCommand<int> attempt2 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt2.ExecuteAsync();
 
         // Time.Wait(100);
@@ -518,7 +493,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.False(attempt2.IsResponseShortCircuited, "CircuitBreaker unexpectedly short circuited (2)");
 
         // failure 3 of the Hystrix, 2nd for this particular HystrixCommand
-        var attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
+        TestHystrixCommand<int> attempt3 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt3.ExecuteAsync();
 
         // Time.Wait(150);
@@ -536,7 +511,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.True(attempt3.IsCircuitBreakerOpen, "CircuitBreaker unexpectedly closed (3)");
 
         // attempt 4
-        var attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
+        TestHystrixCommand<int> attempt4 = GetSharedCircuitBreakerCommand(key, ExecutionIsolationStrategy.Thread, FallbackResultTest.Success, circuitBreaker);
         await attempt4.ExecuteAsync();
 
         // Time.Wait(100);
@@ -560,7 +535,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionSuccessWithCircuitBreakerDisabled()
     {
-        var command = GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
+        TestHystrixCommand<int> command = GetCircuitBreakerDisabledCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success);
         Assert.Equal(FlexibleTestHystrixCommand.ExecuteValue, command.Execute());
 
         Assert.Equal(0, command.Builder.Metrics.CurrentConcurrentExecutionCount);
@@ -573,7 +548,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionTimeoutWithNoFallback()
     {
-        var command = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+        TestHystrixCommand<int> command =
+            GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+
         try
         {
             command.Execute();
@@ -613,7 +590,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionTimeoutWithFallback()
     {
-        var command = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
+        TestHystrixCommand<int> command = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, command.Execute());
 
         // the time should be 50+ since we timeout at 50ms
@@ -631,7 +608,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionTimeoutFallbackFailure()
     {
-        var command = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+        TestHystrixCommand<int> command = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+
         try
         {
             command.Execute();
@@ -665,7 +643,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestCountersOnExecutionTimeout()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         command.Execute();
 
         /* wait long enough for the command to have finished */
@@ -689,7 +667,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueuedExecutionTimeoutWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+
         try
         {
             await command.ExecuteAsync();
@@ -716,7 +695,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueuedExecutionTimeoutWithFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, await command.ExecuteAsync());
         AssertCommandExecutionEvents(command, HystrixEventType.Timeout, HystrixEventType.FallbackSuccess);
         Assert.NotNull(command.ExecutionException);
@@ -727,7 +706,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestQueuedExecutionTimeoutFallbackFailure()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+
         try
         {
             _ = await command.ExecuteAsync();
@@ -751,7 +731,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestObservedExecutionTimeoutWithNoFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+
         try
         {
             command.Observe().SingleAsync().Wait();
@@ -784,7 +765,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestObservedExecutionTimeoutWithFallback()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, command.Observe().SingleAsync().Wait());
 
         AssertCommandExecutionEvents(command, HystrixEventType.Timeout, HystrixEventType.FallbackSuccess);
@@ -796,7 +777,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestObservedExecutionTimeoutFallbackFailure()
     {
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Failure, 50);
+
         try
         {
             command.Observe().SingleAsync().Wait();
@@ -827,7 +809,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestShortCircuitFallbackCounter()
     {
-        var circuitBreaker = new TestCircuitBreaker().SetForceShortCircuit(true);
+        TestCircuitBreaker circuitBreaker = new TestCircuitBreaker().SetForceShortCircuit(true);
         var command1 = new KnownFailureTestCommandWithFallback(circuitBreaker);
         command1.Execute();
 
@@ -849,7 +831,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestRejectedThreadWithNoFallback()
     {
-        var key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-NoFallback");
         var circuitBreaker = new TestCircuitBreaker();
         var pool = new SingleThreadedPoolWithQueue(1);
 
@@ -858,6 +840,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestCommandRejection command1 = null;
         TestCommandRejection command2 = null;
         TestCommandRejection command3 = null;
+
         try
         {
             command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 700, TestCommandRejection.FallbackNotImplemented);
@@ -882,7 +865,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
             if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
             {
-                var de = exception;
+                HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
                 Assert.NotNull(de.ImplementingClass);
@@ -910,7 +893,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestRejectedThreadWithFallback()
     {
-        var key = HystrixCommandKeyDefault.AsKey("Rejection-Fallback");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-Fallback");
         var circuitBreaker = new TestCircuitBreaker();
         var pool = new SingleThreadedPoolWithQueue(1);
 
@@ -921,14 +904,14 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackSuccess);
         var command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackSuccess);
 
-        var result1 = command1.Observe();
-        Time.Wait(50);  // Let cmd1 get running
-        var result2 = command2.Observe();
+        IObservable<bool> result1 = command1.Observe();
+        Time.Wait(50); // Let cmd1 get running
+        IObservable<bool> result2 = command2.Observe();
 
         Time.Wait(100);
 
         // command3 should find queue filled, and get rejected
-        var result = command3.Execute();
+        bool result = command3.Execute();
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
         Assert.False(result, "Command3 returned True instead of False");
@@ -952,13 +935,19 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         var pool = new SingleThreadedPoolWithQueue(1);
-        var key = HystrixCommandKeyDefault.AsKey("Rejection-A");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-A");
 
-        var command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackFailure); // this should pass through the queue and sit in the pool
+        var command1 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600,
+            TestCommandRejection.FallbackFailure); // this should pass through the queue and sit in the pool
+
         var command2 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackSuccess); // this should sit in the queue
-        var command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackFailure); // this should observe full queue and get rejected
+
+        var command3 = new TestCommandRejection(key, circuitBreaker, pool, 500, 600,
+            TestCommandRejection.FallbackFailure); // this should observe full queue and get rejected
+
         Task<bool> f1 = null;
         Task<bool> f2 = null;
+
         try
         {
             f1 = command1.ExecuteAsync();
@@ -972,7 +961,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             // e.printStackTrace()
             if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
             {
-                var de = exception;
+                HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.False(de.FallbackException is InvalidOperationException);
                 Assert.NotNull(de.ImplementingClass);
@@ -988,16 +977,16 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         AssertCommandExecutionEvents(command1); // still in-flight, no events yet
         AssertCommandExecutionEvents(command2); // still in-flight, no events yet
         AssertCommandExecutionEvents(command3, HystrixEventType.ThreadPoolRejected, HystrixEventType.FallbackFailure);
-        var numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
+        int numInFlight = circuitBreaker.Metrics.CurrentConcurrentExecutionCount;
         Assert.True(numInFlight <= 1, "Pool-filler NOT still going"); // pool-filler still going
 
         // This is a case where we knowingly walk away from executing Hystrix threads. They should have an in-flight status ("Executed").  You should avoid this in a production environment
-        var requestLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, requestLog.AllExecutedCommands.Count);
         Assert.Contains("Executed", requestLog.GetExecutedCommandsAsString());
 
         // block on the outstanding work, so we don't inadvertently affect any other tests
-        var startTime = DateTime.Now.Ticks / 10000;
+        long startTime = DateTime.Now.Ticks / 10000;
         _ = await f1;
         _ = await f2;
         Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
@@ -1008,7 +997,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public async Task TestRejectedThreadUsingQueueSize()
     {
-        var key = HystrixCommandKeyDefault.AsKey("Rejection-B");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Rejection-B");
         var circuitBreaker = new TestCircuitBreaker();
         var pool = new SingleThreadedPoolWithQueue(10, 1);
 
@@ -1026,6 +1015,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         t2.Start(pool.GetTaskScheduler());
 
         var command = new TestCommandRejection(key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackNotImplemented);
+
         try
         {
             // this should fail as we already have 1 in the queue
@@ -1045,7 +1035,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
             if (e is HystrixRuntimeException exception && e.InnerException is RejectedExecutionException)
             {
-                var de = exception;
+                HystrixRuntimeException de = exception;
                 Assert.NotNull(de.FallbackException);
                 Assert.True(de.FallbackException is InvalidOperationException);
                 Assert.NotNull(de.ImplementingClass);
@@ -1068,7 +1058,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestDisabledTimeoutWorks()
     {
         var cmd = new CommandWithDisabledTimeout(100, 900);
-        var result = cmd.Execute();
+        bool result = cmd.Execute();
 
         Assert.True(result, "Command result was not True");
         Assert.False(cmd.IsResponseTimedOut, "Command response timed out!");
@@ -1085,14 +1075,15 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // single thread should work
         var command1 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
-        var result = command1.Execute();
+        bool result = command1.Execute();
         Assert.True(result);
 
         // 2 threads, the second should be rejected by the fallback semaphore
-        var exceptionReceived = false;
+        bool exceptionReceived = false;
         Task<bool> result2 = null;
         TestSemaphoreCommandWithSlowFallback command2 = null;
         TestSemaphoreCommandWithSlowFallback command3 = null;
+
         try
         {
             _output.WriteLine("c2 start: " + Time.CurrentTimeMillis);
@@ -1104,7 +1095,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Time.Wait(50);
             _output.WriteLine("c3 start: " + Time.CurrentTimeMillis);
             command3 = new TestSemaphoreCommandWithSlowFallback(circuitBreaker, 1, 200);
-            var result3 = command3.ExecuteAsync();
+            Task<bool> result3 = command3.ExecuteAsync();
             _output.WriteLine("c3 after queue: " + Time.CurrentTimeMillis);
             _ = await result3;
         }
@@ -1134,14 +1125,16 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // single thread should work
         var command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
-        var result = await command1.ExecuteAsync();
+        bool result = await command1.ExecuteAsync();
         Assert.True(result);
 
         var exceptionReceived = new AtomicBoolean();
 
         var semaphore = new SemaphoreSlim(1);
 
-        var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
+        var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.ResultSuccess,
+            TestSemaphoreCommand.FallbackNotImplemented);
+
         var command2Action = new ThreadStart(async () =>
         {
             try
@@ -1154,7 +1147,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             }
         });
 
-        var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
+        var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 200, TestSemaphoreCommand.ResultSuccess,
+            TestSemaphoreCommand.FallbackNotImplemented);
+
         var command3Action = new ThreadStart(async () =>
         {
             try
@@ -1198,7 +1193,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // single thread should work
         var command1 = new TestSemaphoreCommand(circuitBreaker, 1, 200, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
-        var result = command1.Execute();
+        bool result = command1.Execute();
         Assert.False(command1.IsExecutedInThread, "Command1 not executed in thread as was expected");
         Assert.True(result, "Result was false when True was expected");
 
@@ -1208,12 +1203,15 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         var semaphore = new SemaphoreSlim(1);
 
-        var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
+        var command2 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.ResultSuccess,
+            TestSemaphoreCommand.FallbackNotImplemented);
 
-        var t2Started = false;
+        bool t2Started = false;
+
         var command2Action = new ThreadStart(() =>
         {
             t2Started = true;
+
             try
             {
                 results.Add(command2.Execute());
@@ -1224,7 +1222,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             }
         });
 
-        var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.ResultSuccess, TestSemaphoreCommand.FallbackNotImplemented);
+        var command3 = new TestSemaphoreCommand(circuitBreaker, semaphore, 400, TestSemaphoreCommand.ResultSuccess,
+            TestSemaphoreCommand.FallbackNotImplemented);
+
         var command3Action = new ThreadStart(() =>
         {
             try
@@ -1275,6 +1275,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var exceptionReceived = new AtomicBoolean();
 
         var command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+
         var command1Action = new ThreadStart(() =>
         {
             try
@@ -1288,6 +1289,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         });
 
         var command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+
         var command2Action = new ThreadStart(() =>
         {
             try
@@ -1330,7 +1332,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     }
 
     [Fact]
-
     public void TestRejectedExecutionSemaphoreWithFallbackViaObserve()
     {
         var circuitBreaker = new TestCircuitBreaker();
@@ -1340,6 +1341,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var exceptionReceived = new AtomicBoolean();
 
         var command1 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+
         var command1Action = new ThreadStart(() =>
         {
             try
@@ -1353,6 +1355,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         });
 
         var command2 = new TestSemaphoreCommandWithFallback(circuitBreaker, 1, 200, false);
+
         var command2Action = new ThreadStart(() =>
         {
             try
@@ -1382,7 +1385,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.False(true, "We should have received a fallback response");
         }
 
-        var blockingList = results.Merge().ToList().SingleAsync().Wait();
+        IList<bool> blockingList = results.Merge().ToList().SingleAsync().Wait();
 
         // both threads should have returned values
         Assert.Equal(2, blockingList.Count);
@@ -1405,13 +1408,14 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var sharedSemaphore = new SemaphoreSlim(3);
 
         // used to wait until all commands have started
-        var startLatch = new CountdownEvent((sharedSemaphore.CurrentCount * 2) + 1);
+        var startLatch = new CountdownEvent(sharedSemaphore.CurrentCount * 2 + 1);
 
         // used to signal that all command can finish
         var sharedLatch = new CountdownEvent(1);
 
         // tracks failures to obtain semaphores
         var failureCount = new AtomicInteger();
+
         var sharedSemaphoreRunnable = new ThreadStart(() =>
         {
             try
@@ -1429,9 +1433,10 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // creates group of threads each using command sharing a single semaphore
         // I create extra threads and commands so that I can verify that some of them fail to obtain a semaphore
-        var sharedThreadCount = sharedSemaphore.CurrentCount * 2;
+        int sharedThreadCount = sharedSemaphore.CurrentCount * 2;
         var sharedSemaphoreThreads = new Thread[sharedThreadCount];
-        for (var i = 0; i < sharedThreadCount; i++)
+
+        for (int i = 0; i < sharedThreadCount; i++)
         {
             sharedSemaphoreThreads[i] = new Thread(sharedSemaphoreRunnable);
         }
@@ -1460,7 +1465,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Assert.Equal(3, sharedSemaphore.CurrentCount);
         Assert.Equal(1, isolatedSemaphore.CurrentCount);
 
-        for (var i = 0; i < sharedThreadCount; i++)
+        for (int i = 0; i < sharedThreadCount; i++)
         {
             sharedSemaphoreThreads[i].Start();
         }
@@ -1478,7 +1483,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         sharedLatch.SignalEx();
         isolatedLatch.SignalEx();
 
-        for (var i = 0; i < sharedThreadCount; i++)
+        for (int i = 0; i < sharedThreadCount; i++)
         {
             sharedSemaphoreThreads[i].Join();
         }
@@ -1493,7 +1498,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // verifies that some executions failed
         // Assert.Equal(sharedSemaphore.numberOfPermits.get().longValue(), failureCount.get());
-        var requestLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog requestLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Contains("SEMAPHORE_REJECTED", requestLog.GetExecutedCommandsAsString());
         Assert.Equal(0, circuitBreaker.Metrics.CurrentConcurrentExecutionCount);
     }
@@ -1533,8 +1538,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
 
         Assert.Equal("A", f1.Result);
         Assert.Equal("A", f2.Result);
@@ -1561,8 +1566,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
 
         Assert.Equal("A", f1.Result);
         Assert.Equal("B", f2.Result);
@@ -1592,9 +1597,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
-        var f3 = command3.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
+        Task<string> f3 = command3.ExecuteAsync();
         Assert.Equal("A", f1.Result);
         Assert.Equal("B", f2.Result);
         Assert.Equal("A", f3.Result);
@@ -1624,10 +1629,10 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command3 = new SlowCacheableCommand(circuitBreaker, "A", 100);
         var command4 = new SlowCacheableCommand(circuitBreaker, "A", 100);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
-        var f3 = command3.ExecuteAsync();
-        var f4 = command4.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
+        Task<string> f3 = command3.ExecuteAsync();
+        Task<string> f4 = command4.ExecuteAsync();
 
         Assert.Equal("A", f2.Result);
         Assert.Equal("A", f3.Result);
@@ -1668,9 +1673,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.True(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
-        var f3 = command3.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
+        Task<string> f3 = command3.ExecuteAsync();
 
         Assert.Equal("A", f1.Result);
         Assert.Equal("B", f2.Result);
@@ -1701,9 +1706,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.False(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
-        var f3 = command3.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
+        Task<string> f3 = command3.ExecuteAsync();
 
         Assert.Equal("A", f1.Result);
         Assert.Equal("B", f2.Result);
@@ -1735,9 +1740,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.False(command1.IsCommandRunningInThread);
 
-        var f1 = command1.ExecuteAsync();
-        var f2 = command2.ExecuteAsync();
-        var f3 = command3.ExecuteAsync();
+        Task<string> f1 = command1.ExecuteAsync();
+        Task<string> f2 = command2.ExecuteAsync();
+        Task<string> f3 = command3.ExecuteAsync();
 
         Assert.Equal("A", f1.Result);
         Assert.Equal("B", f2.Result);
@@ -1767,9 +1772,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.False(command1.IsCommandRunningInThread);
 
-        var f1 = command1.Execute();
-        var f2 = command2.Execute();
-        var f3 = command3.Execute();
+        string f1 = command1.Execute();
+        string f2 = command2.Execute();
+        string f3 = command3.Execute();
 
         Assert.Equal("A", f1);
         Assert.Equal("B", f2);
@@ -1799,9 +1804,9 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         Assert.False(command1.IsCommandRunningInThread);
 
-        var f1 = command1.Execute();
-        var f2 = command2.Execute();
-        var f3 = command3.Execute();
+        string f1 = command1.Execute();
+        string f2 = command2.Execute();
+        string f3 = command3.Execute();
 
         Assert.Equal("A", f1);
         Assert.Equal("B", f2);
@@ -1826,6 +1831,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         var r1 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             _output.WriteLine("r1 value: " + r1.Execute());
@@ -1841,6 +1847,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r2 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             r2.Execute();
@@ -1856,7 +1863,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r3 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
-        var f3 = r3.ExecuteAsync();
+        Task<bool> f3 = r3.ExecuteAsync();
+
         try
         {
             _ = f3.Result;
@@ -1875,6 +1883,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Time.Wait(500); // timeout on command is set to 200ms
 
         var r4 = new NoRequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             r4.Execute();
@@ -1899,7 +1908,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     }
 
     [Fact]
-
     public void TestRequestCacheOnTimeoutCausesNullPointerException()
     {
         var circuitBreaker = new TestCircuitBreaker();
@@ -1914,10 +1922,10 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Time.Wait(500); // timeout on command is set to 200ms
 
         var command4 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-        var value = command4.Execute(); // return from cache #3
+        bool value = command4.Execute(); // return from cache #3
         Assert.False(value);
         var command5 = new RequestCacheNullPointerExceptionCase(circuitBreaker);
-        var f = command5.ExecuteAsync(); // return from cache #4
+        Task<bool> f = command5.ExecuteAsync(); // return from cache #4
 
         // the bug is that we're getting a null Future back, rather than a Future that returns false
         Assert.NotNull(f);
@@ -1939,11 +1947,11 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     }
 
     [Fact]
-
     public void TestRequestCacheOnTimeoutThrowsException()
     {
         var circuitBreaker = new TestCircuitBreaker();
         var r1 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             _output.WriteLine("r1 value: " + r1.Execute());
@@ -1959,6 +1967,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r2 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             r2.Execute();
@@ -1974,7 +1983,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r3 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
-        var f3 = r3.ExecuteAsync();
+        Task<bool> f3 = r3.ExecuteAsync();
+
         try
         {
             _ = f3.Result;
@@ -1993,6 +2003,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         Time.Wait(500); // timeout on command is set to 200ms
 
         var r4 = new RequestCacheTimeoutWithoutFallback(circuitBreaker);
+
         try
         {
             r4.Execute();
@@ -2017,12 +2028,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     }
 
     [Fact]
-
     public async Task TestRequestCacheOnThreadRejectionThrowsException()
     {
         var circuitBreaker = new TestCircuitBreaker();
         var completionLatch = new CountdownEvent(1);
         var r1 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+
         try
         {
             _output.WriteLine("r1: " + r1.Execute());
@@ -2038,6 +2049,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r2 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+
         try
         {
             _output.WriteLine("r2: " + r2.Execute());
@@ -2054,6 +2066,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         var r3 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+
         try
         {
             _output.WriteLine("f3: " + await r3.ExecuteAsync());
@@ -2075,6 +2088,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // then another after the command has completed
         var r4 = new RequestCacheThreadRejectionWithoutFallback(circuitBreaker, completionLatch);
+
         try
         {
             _output.WriteLine("r4: " + r4.Execute());
@@ -2131,6 +2145,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         BadRequestCommand command1 = null;
+
         try
         {
             command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.Thread);
@@ -2153,6 +2168,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         BadRequestCommand command1 = null;
+
         try
         {
             command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.Thread);
@@ -2185,6 +2201,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // execute once to cache the value
         BadRequestCommand command1 = null;
+
         try
         {
             command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.Thread);
@@ -2196,6 +2213,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         BadRequestCommand command2 = null;
+
         try
         {
             command2 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.Thread);
@@ -2226,6 +2244,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         var command1 = new BadRequestCommand(circuitBreaker, ExecutionIsolationStrategy.Semaphore);
+
         try
         {
             command1.Execute();
@@ -2247,6 +2266,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         var command = new CommandWithCheckedException(circuitBreaker);
+
         try
         {
             command.Execute();
@@ -2274,19 +2294,19 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var command = new CommandWithCheckedException(circuitBreaker);
         var t = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);
+
         try
         {
-            command.Observe().Subscribe(
-                _ => { },
-                e =>
-                {
-                    t.Value = e;
-                    latch.SignalEx();
-                },
-                () =>
-                {
-                    latch.SignalEx();
-                });
+            command.Observe().Subscribe(_ =>
+            {
+            }, e =>
+            {
+                t.Value = e;
+                latch.SignalEx();
+            }, () =>
+            {
+                latch.SignalEx();
+            });
         }
         catch (Exception)
         {
@@ -2315,7 +2335,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         TestHystrixCommand<bool> cmd = new InterruptibleCommand(new TestCircuitBreaker(), false);
 
         _output.WriteLine("Starting command");
-        var timeMillis = DateTime.Now.Ticks / 10000;
+        long timeMillis = DateTime.Now.Ticks / 10000;
+
         try
         {
             cmd.Execute();
@@ -2335,7 +2356,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestRecoverableErrorWithNoFallbackThrowsError()
     {
-        var command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented);
+
         try
         {
             command.Execute();
@@ -2359,7 +2381,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestRecoverableErrorMaskedByFallbackButLogged()
     {
-        var command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
+        TestHystrixCommand<int> command = GetRecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
         Assert.Equal(FlexibleTestHystrixCommand.FallbackValue, command.Execute());
 
         Assert.True(command.ExecutionTimeInMilliseconds > -1);
@@ -2373,7 +2395,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestUnrecoverableErrorThrownWithNoFallback()
     {
-        var command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented);
+        TestHystrixCommand<int> command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented);
+
         try
         {
             command.Execute();
@@ -2397,7 +2420,8 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact] // even though fallback is implemented, that logic never fires, as this is an unrecoverable error and should be directly propagated to the caller
     public void TestUnrecoverableErrorThrownWithFallback()
     {
-        var command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
+        TestHystrixCommand<int> command = GetUnrecoverableErrorCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
+
         try
         {
             command.Execute();
@@ -2422,7 +2446,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestNonBlockingCommandQueueFiresTimeout()
     {
         // see https://github.com/Netflix/Hystrix/issues/514
-        var cmd = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
+        TestHystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Success, 50);
         cmd.IsFallbackUserDefined = true;
 
         // await cmd.ExecuteAsync();
@@ -2445,6 +2469,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     public void TestExecutionFailureWithFallbackImplementedButDisabled()
     {
         TestHystrixCommand<bool> commandEnabled = new KnownFailureTestCommandWithFallback(new TestCircuitBreaker(), true);
+
         try
         {
             Assert.False(commandEnabled.Execute());
@@ -2456,6 +2481,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }
 
         TestHystrixCommand<bool> commandDisabled = new KnownFailureTestCommandWithFallback(new TestCircuitBreaker(), false);
+
         try
         {
             Assert.False(commandDisabled.Execute());
@@ -2476,33 +2502,6 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         AssertSaneHystrixRequestLog(2);
     }
 
-    private sealed class TestExecutionTimeoutValueHystrixCommand : HystrixCommand<string>
-    {
-        public TestExecutionTimeoutValueHystrixCommand(HystrixCommandOptions commandOptions)
-            : base(commandOptions)
-        {
-        }
-
-        protected override string Run()
-        {
-            Time.WaitUntil(() => Token.IsCancellationRequested, 3000);
-            Token.ThrowIfCancellationRequested();
-            return "hello";
-        }
-
-        protected override string RunFallback()
-        {
-            if (IsResponseTimedOut)
-            {
-                return "timed-out";
-            }
-            else
-            {
-                return "abc";
-            }
-        }
-    }
-
     [Fact]
     public void TestExecutionTimeoutValue()
     {
@@ -2517,7 +2516,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             IsFallbackUserDefined = true
         };
 
-        var value = command.Execute();
+        string value = command.Execute();
         Assert.True(command.IsResponseTimedOut);
         Assert.Equal("timed-out", value);
     }
@@ -2529,26 +2528,24 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var onErrorThread = new AtomicReference<Thread>();
         var isRequestContextInitialized = new AtomicBoolean();
 
-        var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
+        TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 200, FallbackResultTest.Unimplemented, 50);
         Exception onErrorEvent = null;
-        command.ToObservable().Subscribe(
-            _ =>
-            {
-            },
-            ex =>
-            {
-                onErrorEvent = ex;
-                _output.WriteLine("onError: " + ex);
-                _output.WriteLine("onError Thread: " + Thread.CurrentThread);
-                _output.WriteLine("ThreadContext in onError: " + HystrixRequestContext.IsCurrentThreadInitialized);
-                onErrorThread.Value = Thread.CurrentThread;
-                isRequestContextInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;
-                latch.SignalEx();
-            },
-            () =>
-            {
-                latch.SignalEx();
-            });
+
+        command.ToObservable().Subscribe(_ =>
+        {
+        }, ex =>
+        {
+            onErrorEvent = ex;
+            _output.WriteLine("onError: " + ex);
+            _output.WriteLine("onError Thread: " + Thread.CurrentThread);
+            _output.WriteLine("ThreadContext in onError: " + HystrixRequestContext.IsCurrentThreadInitialized);
+            onErrorThread.Value = Thread.CurrentThread;
+            isRequestContextInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;
+            latch.SignalEx();
+        }, () =>
+        {
+            latch.SignalEx();
+        });
 
         latch.Wait(5000);
 
@@ -2581,6 +2578,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         var circuitBreaker = new TestCircuitBreaker();
         var command = new ExceptionToBadRequestByExecutionHookCommand(circuitBreaker, ExecutionIsolationStrategy.Thread);
+
         try
         {
             command.Execute();
@@ -2652,7 +2650,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         // when
         var cts = new CancellationTokenSource();
-        var f = cmd.ExecuteAsync(cts.Token);
+        Task<bool> f = cmd.ExecuteAsync(cts.Token);
         Time.Wait(500);
         cts.Cancel(true);
         Time.Wait(500);
@@ -2685,25 +2683,26 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestSemaphoreThreadSafety()
     {
-        var numPermits = 1;
+        int numPermits = 1;
         var s = new SemaphoreSlim(numPermits);
 
-        var numThreads = 10;
+        int numThreads = 10;
 
-        var numTrials = 50;
+        int numTrials = 50;
 
-        for (var t = 0; t < numTrials; t++)
+        for (int t = 0; t < numTrials; t++)
         {
             _output.WriteLine("TRIAL : " + t);
 
             var numAcquired = new AtomicInteger(0);
             var latch = new CountdownEvent(numThreads);
 
-            for (var i = 0; i < numThreads; i++)
+            for (int i = 0; i < numThreads; i++)
             {
                 var task = new Task(() =>
                 {
-                    var acquired = s.TryAcquire();
+                    bool acquired = s.TryAcquire();
+
                     if (acquired)
                     {
                         try
@@ -2723,6 +2722,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
                     latch.SignalEx();
                 });
+
                 task.Start();
             }
 
@@ -2746,19 +2746,19 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestCancelledTasksInQueueGetRemoved()
     {
-        var key = HystrixCommandKeyDefault.AsKey("Cancellation-A");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Cancellation-A");
         var circuitBreaker = new TestCircuitBreaker();
         var pool = new SingleThreadedPoolWithQueue(10, 1);
         var command1 = new TestCommandRejection(_output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackNotImplemented);
         var command2 = new TestCommandRejection(_output, key, circuitBreaker, pool, 500, 600, TestCommandRejection.FallbackNotImplemented);
 
         // this should go through the queue and into the thread pool
-        var poolFiller = command1.ExecuteAsync();
+        Task<bool> poolFiller = command1.ExecuteAsync();
         Time.Wait(30); // Let it start
 
         // this command will stay in the queue until the thread pool is empty
-        var cmdInQueue = command2.Observe();
-        var s = cmdInQueue.Subscribe();
+        IObservable<bool> cmdInQueue = command2.Observe();
+        IDisposable s = cmdInQueue.Subscribe();
         Time.Wait(30); // Let it get in queue
         Assert.Equal(1, pool.CurrentQueueSize);
         s.Dispose();
@@ -2789,10 +2789,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         var failureInjectionHook = new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
 
-        TestHystrixCommand<int> semaphoreCmd = new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.Semaphore, executionAttempted, failureInjectionHook);
+        TestHystrixCommand<int> semaphoreCmd =
+            new TestOnRunStartHookThrowsSemaphoreIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.Semaphore, executionAttempted, failureInjectionHook);
+
         try
         {
-            var result = semaphoreCmd.Execute();
+            int result = semaphoreCmd.Execute();
             _output.WriteLine("RESULT : " + result);
         }
         catch (Exception)
@@ -2818,10 +2820,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         var failureInjectionHook = new TestOnRunStartHookThrowsThreadIsolatedFailureInjectionHook(onThreadStartInvoked, onThreadCompleteInvoked);
 
-        TestHystrixCommand<int> threadCmd = new TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.Thread, executionAttempted, failureInjectionHook);
+        TestHystrixCommand<int> threadCmd =
+            new TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand(ExecutionIsolationStrategy.Thread, executionAttempted, failureInjectionHook);
+
         try
         {
-            var result = threadCmd.Execute();
+            int result = threadCmd.Execute();
             _output.WriteLine("RESULT : " + result);
         }
         catch (Exception)
@@ -2844,25 +2848,22 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 
         var latch = new CountdownEvent(1);
 
-        var o = cmd.ToObservable();
-        var s = o.
-            Finally(() =>
-            {
-                _output.WriteLine("OnUnsubscribe");
-                latch.SignalEx();
-            }).Subscribe(
-                b =>
-                {
-                    _output.WriteLine("OnNext : " + b);
-                },
-                e =>
-                {
-                    _output.WriteLine("OnError : " + e);
-                },
-                () =>
-                {
-                    _output.WriteLine("OnCompleted");
-                });
+        IObservable<bool> o = cmd.ToObservable();
+
+        IDisposable s = o.Finally(() =>
+        {
+            _output.WriteLine("OnUnsubscribe");
+            latch.SignalEx();
+        }).Subscribe(b =>
+        {
+            _output.WriteLine("OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine("OnError : " + e);
+        }, () =>
+        {
+            _output.WriteLine("OnCompleted");
+        });
 
         try
         {
@@ -2895,25 +2896,22 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         HystrixCommand<bool> cmd = new TestEarlyUnsubscribeDuringExecutionViaObserveAsyncCommand();
         var latch = new CountdownEvent(1);
 
-        var o = cmd.Observe();
-        var s = o.
-            Finally(() =>
-            {
-                _output.WriteLine("OnUnsubscribe");
-                latch.SignalEx();
-            }).Subscribe(
-                b =>
-                {
-                    _output.WriteLine("OnNext : " + b);
-                },
-                e =>
-                {
-                    _output.WriteLine("OnError : " + e);
-                },
-                () =>
-                {
-                    _output.WriteLine("OnCompleted");
-                });
+        IObservable<bool> o = cmd.Observe();
+
+        IDisposable s = o.Finally(() =>
+        {
+            _output.WriteLine("OnUnsubscribe");
+            latch.SignalEx();
+        }).Subscribe(b =>
+        {
+            _output.WriteLine("OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine("OnError : " + e);
+        }, () =>
+        {
+            _output.WriteLine("OnCompleted");
+        });
 
         try
         {
@@ -2946,26 +2944,23 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         HystrixCommand<bool> cmd = new TestEarlyUnsubscribeDuringFallbackAsyncCommand();
         var latch = new CountdownEvent(1);
 
-        var o = cmd.ToObservable();
-        var s = o.
-            Finally(() =>
-            {
-                _output.WriteLine("OnUnsubscribe");
-                latch.SignalEx();
-            }).Subscribe(
-                b =>
-                {
-                    _output.WriteLine("OnNext : " + b);
-                },
-                e =>
-                {
-                    _output.WriteLine("OnError : " + e);
-                },
-                () =>
-                {
-                    _output.WriteLine("OnCompleted");
-                    latch.SignalEx();
-                });
+        IObservable<bool> o = cmd.ToObservable();
+
+        IDisposable s = o.Finally(() =>
+        {
+            _output.WriteLine("OnUnsubscribe");
+            latch.SignalEx();
+        }).Subscribe(b =>
+        {
+            _output.WriteLine("OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine("OnError : " + e);
+        }, () =>
+        {
+            _output.WriteLine("OnCompleted");
+            latch.SignalEx();
+        });
 
         try
         {
@@ -2999,50 +2994,44 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var originalLatch = new CountdownEvent(1);
         var fromCacheLatch = new CountdownEvent(1);
 
-        var originalObservable = original.ToObservable();
-        var fromCacheObservable = fromCache.ToObservable();
+        IObservable<object> originalObservable = original.ToObservable();
+        IObservable<object> fromCacheObservable = fromCache.ToObservable();
 
         originalObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
-                originalValue.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
-                originalLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
-                originalLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+            originalValue.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+            originalLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+            originalLatch.SignalEx();
+        });
 
-        var fromCacheSubscription = fromCacheObservable.Finally(() =>
+        IDisposable fromCacheSubscription = fromCacheObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
             fromCacheLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
-                fromCacheValue.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
-                fromCacheLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
-                fromCacheLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
+            fromCacheValue.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
+            fromCacheLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
+            fromCacheLatch.SignalEx();
+        });
 
         try
         {
@@ -3073,7 +3062,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.False(fromCache.IsSuccessfulExecution);
             Assert.Equal(0, fromCache.InnerMetrics.CurrentConcurrentExecutionCount);
 
-            Assert.False(original.IsCancelled);  // underlying work
+            Assert.False(original.IsCancelled); // underlying work
             _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             AssertSaneHystrixRequestLog(2);
         }
@@ -3095,50 +3084,44 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var originalLatch = new CountdownEvent(1);
         var fromCacheLatch = new CountdownEvent(1);
 
-        var originalObservable = original.ToObservable();
-        var fromCacheObservable = fromCache.ToObservable();
+        IObservable<object> originalObservable = original.ToObservable();
+        IObservable<object> fromCacheObservable = fromCache.ToObservable();
 
-        var originalSubscription = originalObservable.Finally(() =>
+        IDisposable originalSubscription = originalObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
-                originalValue.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
-                originalLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
-                originalLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+            originalValue.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+            originalLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+            originalLatch.SignalEx();
+        });
 
         fromCacheObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache Unsubscribe");
             fromCacheLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
-                fromCacheValue.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
-                fromCacheLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
-                fromCacheLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnNext : " + b);
+            fromCacheValue.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnError : " + e);
+            fromCacheLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " FromCache OnCompleted");
+            fromCacheLatch.SignalEx();
+        });
 
         try
         {
@@ -3169,7 +3152,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.True(fromCache.IsSuccessfulExecution);
             Assert.Equal(0, fromCache.InnerMetrics.CurrentConcurrentExecutionCount);
 
-            Assert.False(original.IsCancelled);  // underlying work
+            Assert.False(original.IsCancelled); // underlying work
             _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
             AssertSaneHystrixRequestLog(2);
         }
@@ -3194,72 +3177,63 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var fromCache1Latch = new CountdownEvent(1);
         var fromCache2Latch = new CountdownEvent(1);
 
-        var originalObservable = original.ToObservable();
-        var fromCache1Observable = fromCache1.ToObservable();
-        var fromCache2Observable = fromCache2.ToObservable();
+        IObservable<object> originalObservable = original.ToObservable();
+        IObservable<object> fromCache1Observable = fromCache1.ToObservable();
+        IObservable<object> fromCache2Observable = fromCache2.ToObservable();
 
-        var originalSubscription = originalObservable.Finally(() =>
+        IDisposable originalSubscription = originalObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
-                originalValue.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
-                originalLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
-                originalLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+            originalValue.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+            originalLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+            originalLatch.SignalEx();
+        });
 
         fromCache1Observable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
             fromCache1Latch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
-                fromCache1Value.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
-                fromCache1Latch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
-                fromCache1Latch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
+            fromCache1Value.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
+            fromCache1Latch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
+            fromCache1Latch.SignalEx();
+        });
 
-        var fromCache2Subscription = fromCache2Observable.Finally(() =>
+        IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
             fromCache2Latch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
-                fromCache2Value.Value = b;
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
-                fromCache2Latch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
-                fromCache2Latch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
+            fromCache2Value.Value = b;
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
+            fromCache2Latch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
+            fromCache2Latch.SignalEx();
+        });
 
         try
         {
@@ -3283,7 +3257,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.False(original.IsSuccessfulExecution);
             AssertCommandExecutionEvents(original, HystrixEventType.Cancelled);
             Assert.Null(originalValue.Value);
-            Assert.False(original.IsCancelled);   // underlying work
+            Assert.False(original.IsCancelled); // underlying work
             Assert.Equal(0, original.InnerMetrics.CurrentConcurrentExecutionCount);
 
             Assert.Equal(fromCache1.CommandOptions.ExecutionIsolationSemaphoreMaxConcurrentRequests, fromCache1.GetExecutionSemaphore().CurrentCount);
@@ -3331,69 +3305,60 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var fromCache1Latch = new CountdownEvent(1);
         var fromCache2Latch = new CountdownEvent(1);
 
-        var originalObservable = original.ToObservable();
-        var fromCache1Observable = fromCache1.ToObservable();
-        var fromCache2Observable = fromCache2.ToObservable();
+        IObservable<object> originalObservable = original.ToObservable();
+        IObservable<object> fromCache1Observable = fromCache1.ToObservable();
+        IObservable<object> fromCache2Observable = fromCache2.ToObservable();
 
-        var originalSubscription = originalObservable.Finally(() =>
+        IDisposable originalSubscription = originalObservable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original Unsubscribe");
             originalLatch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
-                originalLatch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
-                originalLatch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnError : " + e);
+            originalLatch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.Original OnCompleted");
+            originalLatch.SignalEx();
+        });
 
-        var fromCache1Subscription = fromCache1Observable.Finally(() =>
+        IDisposable fromCache1Subscription = fromCache1Observable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 Unsubscribe");
             fromCache1Latch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
-                fromCache1Latch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
-                fromCache1Latch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnError : " + e);
+            fromCache1Latch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache1 OnCompleted");
+            fromCache1Latch.SignalEx();
+        });
 
-        var fromCache2Subscription = fromCache2Observable.Finally(() =>
+        IDisposable fromCache2Subscription = fromCache2Observable.Finally(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 Unsubscribe");
             fromCache2Latch.SignalEx();
-        }).Subscribe(
-            b =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
-            },
-            e =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
-                fromCache2Latch.SignalEx();
-            },
-            () =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
-                fromCache2Latch.SignalEx();
-            });
+        }).Subscribe(b =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnNext : " + b);
+        }, e =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnError : " + e);
+            fromCache2Latch.SignalEx();
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " Test.FromCache2 OnCompleted");
+            fromCache2Latch.SignalEx();
+        });
 
         try
         {
@@ -3411,6 +3376,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             Assert.False(original.IsExecutionComplete);
             Assert.True(original.IsExecutedInThread);
             _output.WriteLine("FEE : " + original.FailedExecutionException);
+
             if (original.FailedExecutionException != null)
             {
                 _output.WriteLine(original.FailedExecutionException.ToString());
@@ -3461,46 +3427,36 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         HystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 100, FallbackResultTest.Unimplemented);
 
-        var o = cmd.ToObservable()
-            .Do(
-                i =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnNext : " + i);
-                },
-                throwable =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnError : " + throwable);
-                },
-                () =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnCompleted");
-                })
-            .OnSubscribe(() =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnSubscribe");
-            })
-            .OnDispose(() =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnUnsubscribe");
-            })
-            .Take(1)
+        IObservable<int> o = cmd.ToObservable().Do(i =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnNext : " + i);
+        }, throwable =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnError : " + throwable);
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnCompleted");
+        }).OnSubscribe(() =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnSubscribe");
+        }).OnDispose(() =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " CMD OnUnsubscribe");
+        }).Take(1).ObserveOn(DefaultScheduler.Instance).Map(i =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Doing some more computation in the onNext!!");
 
-            .ObserveOn(DefaultScheduler.Instance)
-            .Map(i =>
+            try
             {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Doing some more computation in the onNext!!");
+                Time.Wait(100);
+            }
+            catch (Exception ex)
+            {
+                _output.WriteLine(ex.ToString());
+            }
 
-                try
-                {
-                    Time.Wait(100);
-                }
-                catch (Exception ex)
-                {
-                    _output.WriteLine(ex.ToString());
-                }
-
-                return i;
-            });
+            return i;
+        });
 
         var latch = new CountdownEvent(1);
 
@@ -3510,21 +3466,18 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         }).OnDispose(() =>
         {
             _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
-        }).Subscribe(
-            i =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + i);
-            },
-            e =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
-            },
-            () =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
-            });
+        }).Subscribe(i =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + i);
+        }, e =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+        }, () =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+        });
 
         latch.Wait(1000);
 
@@ -3540,52 +3493,44 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
 #pragma warning restore S2699 // Tests should include assertions
     {
         // this may happen in Observable chain, so Hystrix should make sure that command never executes/allocates in this situation
-        var error = Observable.Throw<string>(new Exception("foo"));
+        IObservable<string> error = Observable.Throw<string>(new Exception("foo"));
         HystrixCommand<int> cmd = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 100);
-        var cmdResult = cmd.ToObservable()
-            .Do(
-                integer =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
-                },
-                ex =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + ex);
-                },
-                () =>
-                {
-                    _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
-                })
-            .OnSubscribe(() =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribe");
-            })
-            .OnDispose(() =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
-            });
+
+        IObservable<int> cmdResult = cmd.ToObservable().Do(integer =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
+        }, ex =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + ex);
+        }, () =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+        }).OnSubscribe(() =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnSubscribe");
+        }).OnDispose(() =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnUnsubscribe");
+        });
 
         // the zip operator will subscribe to each observable.  there is a race between the error of the first
         // zipped observable terminating the zip and the subscription to the command's observable
-        var zipped = error.Zip(cmdResult, (s, integer) => s + integer);
+        IObservable<string> zipped = error.Zip(cmdResult, (s, integer) => s + integer);
 
         var latch = new CountdownEvent(1);
 
-        zipped.Subscribe(
-            s =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + s);
-            },
-            e =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
-            },
-            () =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
-            });
+        zipped.Subscribe(s =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + s);
+        }, e =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+        }, () =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+        });
 
         latch.Wait(1000);
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -3605,24 +3550,21 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         var latch = new CountdownEvent(1);
 
         _output.WriteLine(Time.CurrentTimeMillis + " : Starting");
-        var o = cmd.ToObservable().Retry(2);
+        IObservable<int> o = cmd.ToObservable().Retry(2);
         _output.WriteLine(Time.CurrentTimeMillis + " Created retried command : " + o);
 
-        o.Subscribe(
-            integer =>
-            {
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
-            },
-            e =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
-            },
-            () =>
-            {
-                latch.SignalEx();
-                _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
-            });
+        o.Subscribe(integer =>
+        {
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnNext : " + integer);
+        }, e =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnError : " + e);
+        }, () =>
+        {
+            latch.SignalEx();
+            _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : OnCompleted");
+        });
 
         latch.Wait(1000);
         _output.WriteLine(Time.CurrentTimeMillis + " ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
@@ -3631,121 +3573,114 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionHookThreadSuccess()
     {
-        AssertHooksOnSuccess(
-            () => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success),
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(1, 0, 1));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                var result = hook.ExecutionSequence.ToString();
+        AssertHooksOnSuccess(() => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success), command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(1, 0, 1));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            string result = hook.ExecutionSequence.ToString();
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionEmit - !onRunSuccess - !onComplete - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ", result);
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionEmit - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ", result);
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionEmit - !onRunSuccess - !onComplete - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ", result);
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionEmit - onEmit - onExecutionSuccess - onThreadComplete - onSuccess - ",
+                result);
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadBadRequestException()
     {
-        AssertHooksOnFailure(
-            () => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.BadRequest),
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                Assert.Equal(typeof(HystrixBadRequestException), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(HystrixBadRequestException), hook.GetExecutionException().GetType());
+        AssertHooksOnFailure(() => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.BadRequest), command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            Assert.Equal(typeof(HystrixBadRequestException), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(HystrixBadRequestException), hook.GetExecutionException().GetType());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.toString());
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadExceptionNoFallback()
     {
-        AssertHooksOnFailure(
-            () => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Unimplemented),
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
-                Assert.Null(hook.GetFallbackException());
+        AssertHooksOnFailure(() => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Unimplemented), command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
+            Assert.Null(hook.GetFallbackException());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.ToString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onError - ", hook.executionSequence.ToString());
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onError - ", hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadExceptionSuccessfulFallback()
     {
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Success);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
-                Assert.True(hook.FallbackEventsMatch(1, 0, 1));
-                Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
+        AssertHooksOnSuccess(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Success);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
+            Assert.True(hook.FallbackEventsMatch(1, 0, 1));
+            Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
+            Assert.Equal(
+                "onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadExceptionUnsuccessfulFallback()
     {
-        AssertHooksOnFailure(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Failure);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+        AssertHooksOnFailure(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 0, FallbackResultTest.Failure);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 1, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetExecutionException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onExecutionError - !onRunError - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onExecutionError - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadTimeoutNoFallbackRunSuccess()
     {
-        AssertHooksOnFailure(
-            () => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, 200),
+        AssertHooksOnFailure(() => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, 200),
             command =>
             {
-                var hook = command.Builder.ExecutionHook;
+                TestableExecutionHook hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3762,60 +3697,58 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionHookThreadTimeoutSuccessfulFallbackRunSuccess()
     {
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, 200);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(1, 0, 1));
-                _output.WriteLine("RequestLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        AssertHooksOnSuccess(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, 200);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(1, 0, 1));
+            _output.WriteLine("RequestLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
+            Assert.Equal(
+                "onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadTimeoutUnsuccessfulFallbackRunSuccess()
     {
-        AssertHooksOnFailure(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, 200);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+        AssertHooksOnFailure(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, 200);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadTimeoutNoFallbackRunFailure()
     {
-        AssertHooksOnFailure(
-            () => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Unimplemented, 200),
+        AssertHooksOnFailure(() => GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Unimplemented, 200),
             command =>
             {
-                var hook = command.Builder.ExecutionHook;
+                TestableExecutionHook hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -3831,356 +3764,377 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestExecutionHookThreadTimeoutSuccessfulFallbackRunFailure()
     {
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Success, 200);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(1, 0, 1));
+        AssertHooksOnSuccess(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Success, 200);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(1, 0, 1));
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - !onFallbackSuccess - !onComplete - onEmit - onFallbackSuccess - onSuccess - ", hook.executionSequence.toString());
+            Assert.Equal(
+                "onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadTimeoutUnsuccessfulFallbackRunFailure()
     {
-        AssertHooksOnFailure(
-            () =>
-            {
-                var command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Failure, 200);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+        AssertHooksOnFailure(() =>
+        {
+            TestHystrixCommand<int> command = GetCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Failure, 500, FallbackResultTest.Failure, 200);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(TimeoutException), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
 
-                // Steeltoe - remove deprecated!
-                // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
-                Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-            });
+            // Steeltoe - remove deprecated!
+            // Assert.Equal("onStart - onThreadStart - !onRunStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ", hook.executionSequence.toString());
+            Assert.Equal("onStart - onThreadStart - onExecutionStart - onThreadComplete - onFallbackStart - onFallbackError - onError - ",
+                hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolQueueFullNoFallback()
     {
         SingleThreadedPoolWithQueue pool = null;
-        AssertHooksOnFailFast(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithQueue(1);
-                try
-                {
-                    // fill the pool
-                    GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool, 600).Observe();
-                    Time.Wait(10); // Let it start
 
-                    // fill the queue
-                    GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool, 600).Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
+        AssertHooksOnFailFast(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithQueue(1);
 
-                return GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool, 600);
-            },
-            command =>
+            try
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
-                Assert.Null(hook.GetFallbackException());
-                Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // fill the pool
+                GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool,
+                    600).Observe();
+
+                Time.Wait(10); // Let it start
+
+                // fill the queue
+                GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool,
+                    600).Observe();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+
+            return GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool,
+                600);
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
+            Assert.Null(hook.GetFallbackException());
+            Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolQueueFullSuccessfulFallback()
     {
         SingleThreadedPoolWithQueue pool = null;
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithQueue(1);
-                try
-                {
-                    // fill the pool
-                    var lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, circuitBreaker, pool, 600);
-                    lat1.IsFallbackUserDefined = true;
-                    lat1.Observe();
-                    Time.Wait(30); // Let it start
 
-                    // fill the queue
-                    var lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, circuitBreaker, pool, 600);
-                    lat2.IsFallbackUserDefined = true;
-                    lat2.Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
+        AssertHooksOnSuccess(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithQueue(1);
 
-                var lat3 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, circuitBreaker, pool, 600);
-                lat3.IsFallbackUserDefined = true;
-                return lat3;
-            },
-            command =>
+            try
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(1, 0, 1));
-                Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // fill the pool
+                TestHystrixCommand<int> lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success,
+                    circuitBreaker, pool, 600);
+
+                lat1.IsFallbackUserDefined = true;
+                lat1.Observe();
+                Time.Wait(30); // Let it start
+
+                // fill the queue
+                TestHystrixCommand<int> lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success,
+                    circuitBreaker, pool, 600);
+
+                lat2.IsFallbackUserDefined = true;
+                lat2.Observe();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+
+            TestHystrixCommand<int> lat3 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success,
+                circuitBreaker, pool, 600);
+
+            lat3.IsFallbackUserDefined = true;
+            return lat3;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(1, 0, 1));
+            Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolQueueFullUnsuccessfulFallback()
     {
         SingleThreadedPoolWithQueue pool = null;
-        AssertHooksOnFailFast(
-            () =>
+
+        AssertHooksOnFailFast(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithQueue(1);
+
+            try
             {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithQueue(1);
-                try
-                {
-                    // fill the pool
-                    var lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, circuitBreaker, pool, 600);
-                    lat1.IsFallbackUserDefined = true;
-                    lat1.Observe();
+                // fill the pool
+                TestHystrixCommand<int> lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure,
+                    circuitBreaker, pool, 600);
 
-                    Time.Wait(10); // let it start
+                lat1.IsFallbackUserDefined = true;
+                lat1.Observe();
 
-                    // fill the queue
-                    var lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, circuitBreaker, pool, 600);
-                    lat2.IsFallbackUserDefined = true;
-                    lat2.Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
+                Time.Wait(10); // let it start
 
-                var lat3 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, circuitBreaker, pool, 600);
-                lat3.IsFallbackUserDefined = true;
-                return lat3;
-            },
-            command =>
+                // fill the queue
+                TestHystrixCommand<int> lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure,
+                    circuitBreaker, pool, 600);
+
+                lat2.IsFallbackUserDefined = true;
+                lat2.Observe();
+            }
+            catch (Exception)
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
-                Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // ignore
+            }
+
+            TestHystrixCommand<int> lat3 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure,
+                circuitBreaker, pool, 600);
+
+            lat3.IsFallbackUserDefined = true;
+            return lat3;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+            Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolFullNoFallback()
     {
         SingleThreadedPoolWithNoQueue pool = null;
-        AssertHooksOnFailFast(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithNoQueue();
-                try
-                {
-                    // fill the pool
-                    GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool, 600).Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
 
-                return GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool, 600);
-            },
-            command =>
+        AssertHooksOnFailFast(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithNoQueue();
+
+            try
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
-                Assert.Null(hook.GetFallbackException());
-                Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // fill the pool
+                GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool,
+                    600).Observe();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+
+            return GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Unimplemented, circuitBreaker, pool,
+                600);
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
+            Assert.Null(hook.GetFallbackException());
+            Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolFullSuccessfulFallback()
     {
         SingleThreadedPoolWithNoQueue pool = null;
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithNoQueue();
-                try
-                {
-                    // fill the pool
-                    var lat = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, circuitBreaker, pool, 600);
-                    lat.IsFallbackUserDefined = true;
-                    lat.Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
 
-                var lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success, circuitBreaker, pool, 600);
-                lat2.IsFallbackUserDefined = true;
-                return lat2;
-            },
-            command =>
+        AssertHooksOnSuccess(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithNoQueue();
+
+            try
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // fill the pool
+                TestHystrixCommand<int> lat = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success,
+                    circuitBreaker, pool, 600);
+
+                lat.IsFallbackUserDefined = true;
+                lat.Observe();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+
+            TestHystrixCommand<int> lat2 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Success,
+                circuitBreaker, pool, 600);
+
+            lat2.IsFallbackUserDefined = true;
+            return lat2;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadPoolFullUnsuccessfulFallback()
     {
         SingleThreadedPoolWithNoQueue pool = null;
-        AssertHooksOnFailFast(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                pool = new SingleThreadedPoolWithNoQueue();
-                try
-                {
-                    // fill the pool
-                    var lat = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, circuitBreaker, pool, 600);
-                    lat.IsFallbackUserDefined = true;
-                    lat.Observe();
-                }
-                catch (Exception)
-                {
-                    // ignore
-                }
 
-                var lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure, circuitBreaker, pool, 600);
-                lat1.IsFallbackUserDefined = true;
-                return lat1;
-            },
-            command =>
+        AssertHooksOnFailFast(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            pool = new SingleThreadedPoolWithNoQueue();
+
+            try
             {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
-                Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-                pool.Dispose();
-            });
+                // fill the pool
+                TestHystrixCommand<int> lat = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure,
+                    circuitBreaker, pool, 600);
+
+                lat.IsFallbackUserDefined = true;
+                lat.Observe();
+            }
+            catch (Exception)
+            {
+                // ignore
+            }
+
+            TestHystrixCommand<int> lat1 = GetLatentCommand(ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 500, FallbackResultTest.Failure,
+                circuitBreaker, pool, 600);
+
+            lat1.IsFallbackUserDefined = true;
+            return lat1;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(RejectedExecutionException), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+            Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
+            pool.Dispose();
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadShortCircuitNoFallback()
     {
-        AssertHooksOnFailFast(
-            () => GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented),
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 0, 0));
-                Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
-                Assert.Null(hook.GetFallbackException());
-                Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
-            });
+        AssertHooksOnFailFast(() => GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Unimplemented), command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 0, 0));
+            Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
+            Assert.Null(hook.GetFallbackException());
+            Assert.Equal("onStart - onError - ", hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadShortCircuitSuccessfulFallback()
     {
-        AssertHooksOnSuccess(
-            () =>
-            {
-                var command = GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
-                command.IsFallbackUserDefined = true;
-                return command;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(1, 0, 1));
-                Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
-            });
+        AssertHooksOnSuccess(() =>
+        {
+            TestHystrixCommand<int> command = GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Success);
+            command.IsFallbackUserDefined = true;
+            return command;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(1, 0, 1));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(1, 0, 1));
+            Assert.Equal("onStart - onFallbackStart - onFallbackEmit - onEmit - onFallbackSuccess - onSuccess - ", hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookThreadShortCircuitUnsuccessfulFallback()
     {
-        AssertHooksOnFailFast(
-            () =>
-            {
-                var circuitBreaker = new TestCircuitBreaker();
-                circuitBreaker.SetForceShortCircuit(true);
-                var cmd = GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Failure);
-                cmd.IsFallbackUserDefined = true;
-                return cmd;
-            },
-            command =>
-            {
-                var hook = command.Builder.ExecutionHook;
-                Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
-                Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
-                Assert.True(hook.FallbackEventsMatch(0, 1, 0));
-                Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
-                Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
-                Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
-            });
+        AssertHooksOnFailFast(() =>
+        {
+            var circuitBreaker = new TestCircuitBreaker();
+            circuitBreaker.SetForceShortCircuit(true);
+            TestHystrixCommand<int> cmd = GetCircuitOpenCommand(ExecutionIsolationStrategy.Thread, FallbackResultTest.Failure);
+            cmd.IsFallbackUserDefined = true;
+            return cmd;
+        }, command =>
+        {
+            TestableExecutionHook hook = command.Builder.ExecutionHook;
+            Assert.True(hook.CommandEmissionsMatch(0, 1, 0));
+            Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
+            Assert.True(hook.FallbackEventsMatch(0, 1, 0));
+            Assert.Equal(typeof(Exception), hook.GetCommandException().GetType());
+            Assert.Equal(typeof(Exception), hook.GetFallbackException().GetType());
+            Assert.Equal("onStart - onFallbackStart - onFallbackError - onError - ", hook.ExecutionSequence.ToString());
+        });
     }
 
     [Fact]
     public void TestExecutionHookResponseFromCache()
     {
-        var key = HystrixCommandKeyDefault.AsKey("Hook-Cache");
-        GetCommand(key, ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 0, FallbackResultTest.Unimplemented, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.Yes, 42, 10, 10).Observe();
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("Hook-Cache");
+
+        GetCommand(key, ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 0, FallbackResultTest.Unimplemented, 0, new TestCircuitBreaker(), null,
+            100, CacheEnabledTest.Yes, 42, 10, 10).Observe();
 
         AssertHooksOnSuccess(
-            () => GetCommand(key, ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 0, FallbackResultTest.Unimplemented, 0, new TestCircuitBreaker(), null, 100, CacheEnabledTest.Yes, 42, 10, 10),
-            command =>
+            () => GetCommand(key, ExecutionIsolationStrategy.Thread, ExecutionResultTest.Success, 0, FallbackResultTest.Unimplemented, 0,
+                new TestCircuitBreaker(), null, 100, CacheEnabledTest.Yes, 42, 10, 10), command =>
             {
-                var hook = command.Builder.ExecutionHook;
+                TestableExecutionHook hook = command.Builder.ExecutionHook;
                 Assert.True(hook.CommandEmissionsMatch(0, 0, 0));
                 Assert.True(hook.ExecutionEventsMatch(0, 0, 0));
                 Assert.True(hook.FallbackEventsMatch(0, 0, 0));
@@ -4188,13 +4142,19 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             });
     }
 
-    private int _uniqueNameCounter;
-
-    protected override TestHystrixCommand<int> GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
+    protected override TestHystrixCommand<int> GetCommand(ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult,
+        int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool,
+        int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore,
+        bool circuitBreakerDisabled)
     {
-        var commandKey = HystrixCommandKeyDefault.AsKey($"Flexible-{Interlocked.Increment(ref _uniqueNameCounter)}");
-        var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
+        IHystrixCommandKey commandKey = HystrixCommandKeyDefault.AsKey($"Flexible-{Interlocked.Increment(ref _uniqueNameCounter)}");
+
+        AbstractFlexibleTestHystrixCommand result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency,
+            fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore,
+            circuitBreakerDisabled);
+
         result.Output = _output;
+
         if (result.ExecutionHook is TestableExecutionHook testExecHook)
         {
             testExecHook.Output = _output;
@@ -4203,10 +4163,17 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
         return result;
     }
 
-    protected override TestHystrixCommand<int> GetCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy, ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore, SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
+    protected override TestHystrixCommand<int> GetCommand(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy,
+        ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker,
+        IHystrixThreadPool threadPool, int timeout, CacheEnabledTest cacheEnabled, object value, SemaphoreSlim executionSemaphore,
+        SemaphoreSlim fallbackSemaphore, bool circuitBreakerDisabled)
     {
-        var result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency, fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore, circuitBreakerDisabled);
+        AbstractFlexibleTestHystrixCommand result = FlexibleTestHystrixCommand.From(commandKey, isolationStrategy, executionResult, executionLatency,
+            fallbackResult, fallbackLatency, circuitBreaker, threadPool, timeout, cacheEnabled, value, executionSemaphore, fallbackSemaphore,
+            circuitBreakerDisabled);
+
         result.Output = _output;
+
         if (result.ExecutionHook is TestableExecutionHook testExecHook)
         {
             testExecHook.Output = _output;
@@ -4245,6 +4212,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     private void AssertExecute(TestHystrixCommand<int> command, Action<TestHystrixCommand<int>> assertion, bool isSuccess)
     {
         _output.WriteLine(Time.CurrentTimeMillis + " : " + Thread.CurrentThread.ManagedThreadId + " : Running command.execute() and then assertions...");
+
         if (isSuccess)
         {
             command.Execute();
@@ -4268,6 +4236,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     private void AssertBlockingQueue(TestHystrixCommand<int> command, Action<TestHystrixCommand<int>> assertion, bool isSuccess)
     {
         _output.WriteLine("Running command.queue(), immediately blocking and then running assertions...");
+
         if (isSuccess)
         {
             command.ExecuteAsync().GetAwaiter().GetResult();
@@ -4300,6 +4269,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     {
         _output.WriteLine("Running command.queue(), sleeping the test thread until command is complete, and then running assertions...");
         Task<int> f = null;
+
         if (failFast)
         {
             try
@@ -4359,6 +4329,65 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             {
                 throw new Exception("interrupted");
             }
+        }
+    }
+
+    private sealed class TestCallbackThreadForThreadIsolationTestHystrixCommand : TestHystrixCommand<bool>
+    {
+        private readonly AtomicReference<Thread> _commandThread;
+
+        public TestCallbackThreadForThreadIsolationTestHystrixCommand(AtomicReference<Thread> commandThread, TestCommandBuilder builder)
+            : base(builder)
+        {
+            _commandThread = commandThread;
+        }
+
+        protected override bool Run()
+        {
+            _commandThread.Value = Thread.CurrentThread;
+            return true;
+        }
+    }
+
+    private sealed class TestCallbackThreadForSemaphoreIsolationTestHystrixCommand : TestHystrixCommand<bool>
+    {
+        private readonly AtomicReference<Thread> _commandThread;
+
+        public TestCallbackThreadForSemaphoreIsolationTestHystrixCommand(AtomicReference<Thread> commandThread, TestCommandBuilder builder)
+            : base(builder)
+        {
+            _commandThread = commandThread;
+        }
+
+        protected override bool Run()
+        {
+            _commandThread.Value = Thread.CurrentThread;
+            return true;
+        }
+    }
+
+    private sealed class TestExecutionTimeoutValueHystrixCommand : HystrixCommand<string>
+    {
+        public TestExecutionTimeoutValueHystrixCommand(HystrixCommandOptions commandOptions)
+            : base(commandOptions)
+        {
+        }
+
+        protected override string Run()
+        {
+            Time.WaitUntil(() => Token.IsCancellationRequested, 3000);
+            Token.ThrowIfCancellationRequested();
+            return "hello";
+        }
+
+        protected override string RunFallback()
+        {
+            if (IsResponseTimedOut)
+            {
+                return "timed-out";
+            }
+
+            return "abc";
         }
     }
 }

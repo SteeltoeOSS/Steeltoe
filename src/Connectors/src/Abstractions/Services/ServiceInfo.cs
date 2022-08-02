@@ -8,6 +8,10 @@ namespace Steeltoe.Connector.Services;
 
 public abstract class ServiceInfo : IServiceInfo
 {
+    public string Id { get; protected set; }
+
+    public IApplicationInstanceInfo ApplicationInfo { get; set; }
+
     protected ServiceInfo(string id)
         : this(id, null)
     {
@@ -23,8 +27,4 @@ public abstract class ServiceInfo : IServiceInfo
         Id = id;
         ApplicationInfo = info;
     }
-
-    public string Id { get; protected set; }
-
-    public IApplicationInstanceInfo ApplicationInfo { get; set; }
 }

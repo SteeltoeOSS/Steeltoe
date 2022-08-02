@@ -105,7 +105,7 @@ public class ApplicationInfoManagerTest : AbstractBaseTest
         ApplicationInfoManager.Instance.Initialize(config);
 
         ApplicationInfoManager.Instance.RefreshLeaseInfo();
-        var info = ApplicationInfoManager.Instance.InstanceInfo;
+        InstanceInfo info = ApplicationInfoManager.Instance.InstanceInfo;
 
         Assert.False(info.IsDirty);
         Assert.Equal(config.LeaseExpirationDurationInSeconds, info.LeaseInfo.DurationInSecs);

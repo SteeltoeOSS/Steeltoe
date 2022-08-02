@@ -134,7 +134,7 @@ public static class StreamServicesExtensions
     public static void SafeAddRabbitMQConnection(this IServiceCollection services, IConfiguration configuration)
     {
         var loggerFactory = services.BuildServiceProvider().GetService<ILoggerFactory>();
-        var logger = loggerFactory?.CreateLogger("Steeltoe.Stream.Extensions.SafeAddRabbitMQConnection");
+        ILogger logger = loggerFactory?.CreateLogger("Steeltoe.Stream.Extensions.SafeAddRabbitMQConnection");
 
         try
         {

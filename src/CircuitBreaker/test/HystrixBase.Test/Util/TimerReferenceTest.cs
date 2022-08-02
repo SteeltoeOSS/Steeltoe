@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Diagnostics;
+using Steeltoe.Common.Util;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util.Test;
@@ -27,12 +27,12 @@ public class TimerReferenceTest
     {
         private readonly Stopwatch _stopwatch;
 
+        public int IntervalTimeInMilliseconds => throw new NotImplementedException();
+
         public TestListener(Stopwatch stopwatch)
         {
             _stopwatch = stopwatch;
         }
-
-        public int IntervalTimeInMilliseconds => throw new NotImplementedException();
 
         public void Tick()
         {

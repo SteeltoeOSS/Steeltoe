@@ -9,14 +9,13 @@ namespace Steeltoe.Integration.Handler;
 
 public class BridgeHandler : AbstractReplyProducingMessageHandler
 {
+    protected override bool ShouldCopyRequestHeaders => false;
+
+    public override string ComponentType => "bridge";
+
     public BridgeHandler(IApplicationContext context)
         : base(context)
     {
-    }
-
-    public override string ComponentType
-    {
-        get { return "bridge"; }
     }
 
     public override void Initialize()
@@ -27,10 +26,5 @@ public class BridgeHandler : AbstractReplyProducingMessageHandler
     protected override object HandleRequestMessage(IMessage requestMessage)
     {
         return requestMessage;
-    }
-
-    protected override bool ShouldCopyRequestHeaders
-    {
-        get { return false; }
     }
 }

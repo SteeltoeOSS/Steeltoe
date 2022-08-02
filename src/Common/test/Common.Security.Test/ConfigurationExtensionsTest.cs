@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
 
@@ -21,9 +22,7 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void AddPemFiles_ReadsFiles()
     {
-        var config = new ConfigurationBuilder()
-            .AddPemFiles("instance.crt", "instance.key")
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles("instance.crt", "instance.key").Build();
         Assert.NotNull(config["certificate"]);
         Assert.NotNull(config["privateKey"]);
     }
@@ -33,18 +32,17 @@ public class ConfigurationExtensionsTest
     public async Task AddPemFiles_ReloadsOnChange()
     {
         using var sandbox = new Sandbox();
-        var tempFile1 = sandbox.CreateFile("cert", "cert");
-        var tempFile2 = sandbox.CreateFile("key", "key");
+        string tempFile1 = sandbox.CreateFile("cert", "cert");
+        string tempFile2 = sandbox.CreateFile("key", "key");
 
-        var config = new ConfigurationBuilder()
-            .AddPemFiles(tempFile1, tempFile2)
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
 
         Assert.Equal("cert", config["certificate"]);
         Assert.Equal("key", config["privateKey"]);
 
         await File.WriteAllTextAsync(tempFile1, "cert2");
         await Task.Delay(2000);
+
         if (config["certificate"] == null)
         {
             // wait a little longer
@@ -59,15 +57,13 @@ public class ConfigurationExtensionsTest
     public async Task AddPemFiles_NotifiesOnChange()
     {
         using var sandbox = new Sandbox();
-        var tempFile1 = sandbox.CreateFile("cert", "cert1");
-        var tempFile2 = sandbox.CreateFile("key", "key1");
+        string tempFile1 = sandbox.CreateFile("cert", "cert1");
+        string tempFile2 = sandbox.CreateFile("key", "key1");
 
-        var config = new ConfigurationBuilder()
-            .AddPemFiles(tempFile1, tempFile2)
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddPemFiles(tempFile1, tempFile2).Build();
 
-        var changeCalled = false;
-        var token = config.GetReloadToken();
+        bool changeCalled = false;
+        IChangeToken token = config.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
         Assert.Equal("cert1", config["certificate"]);
         Assert.Equal("key1", config["privateKey"]);
@@ -99,9 +95,7 @@ public class ConfigurationExtensionsTest
     [Fact]
     public void AddCertificateFile_HoldsPath()
     {
-        var config = new ConfigurationBuilder()
-            .AddCertificateFile("instance.p12")
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
         Assert.Equal(Path.GetFullPath("instance.p12"), config["certificate"]);
     }
 
@@ -115,15 +109,13 @@ public class ConfigurationExtensionsTest
         var filename = sandbox.CreateFile("fakeCertificate.p12", "cert1");
         */
 
-        var filename = "fakeCertificate.p12";
+        string filename = "fakeCertificate.p12";
         await File.WriteAllTextAsync(filename, "cert1");
 
-        var config = new ConfigurationBuilder()
-            .AddCertificateFile(filename)
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile(filename).Build();
 
-        var changeCalled = false;
-        var token = config.GetReloadToken();
+        bool changeCalled = false;
+        IChangeToken token = config.GetReloadToken();
         token.RegisterChangeCallback(_ => changeCalled = true, "state");
         Assert.Equal("cert1", await File.ReadAllTextAsync(config["certificate"]));
 

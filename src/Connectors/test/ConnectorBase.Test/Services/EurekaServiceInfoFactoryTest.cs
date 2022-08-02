@@ -15,7 +15,13 @@ public class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-eureka",
-            Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
+            Tags = new[]
+            {
+                "eureka",
+                "discovery",
+                "registry",
+                "spring-cloud"
+            },
             Name = "eurekaService",
             Plan = "standard",
             Credentials = new Credential
@@ -23,9 +29,10 @@ public class EurekaServiceInfoFactoryTest
                 { "client_id", new Credential("clientId") },
                 { "client_secret", new Credential("clientSecret") },
                 { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
-                { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
+                { "uri", new Credential("https://username:password@192.168.0.90:1111/") }
             }
         };
+
         var factory = new EurekaServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -36,7 +43,11 @@ public class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -47,9 +58,13 @@ public class EurekaServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new EurekaServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -60,7 +75,13 @@ public class EurekaServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-eureka",
-            Tags = new[] { "eureka", "discovery", "registry", "spring-cloud" },
+            Tags = new[]
+            {
+                "eureka",
+                "discovery",
+                "registry",
+                "spring-cloud"
+            },
             Name = "eurekaService",
             Plan = "standard",
             Credentials = new Credential
@@ -68,9 +89,10 @@ public class EurekaServiceInfoFactoryTest
                 { "client_id", new Credential("clientId") },
                 { "client_secret", new Credential("clientSecret") },
                 { "access_token_uri", new Credential("https://p-spring-cloud-services.uaa.my-cf.com/oauth/token") },
-                { "uri", new Credential("https://username:password@192.168.0.90:1111/") },
+                { "uri", new Credential("https://username:password@192.168.0.90:1111/") }
             }
         };
+
         var factory = new EurekaServiceInfoFactory();
         var info = factory.Create(s) as EurekaServiceInfo;
         Assert.NotNull(info);

@@ -12,19 +12,13 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
     private readonly IList<IInfoContributor> _contributors;
     private readonly ILogger<InfoEndpoint> _logger;
 
+    public new IInfoOptions Options => options as IInfoOptions;
+
     public InfoEndpoint(IInfoOptions options, IEnumerable<IInfoContributor> contributors, ILogger<InfoEndpoint> logger = null)
         : base(options)
     {
         _logger = logger;
         _contributors = contributors.ToList();
-    }
-
-    public new IInfoOptions Options
-    {
-        get
-        {
-            return options as IInfoOptions;
-        }
     }
 
     public override Dictionary<string, object> Invoke()
@@ -35,7 +29,8 @@ public class InfoEndpoint : AbstractEndpoint<Dictionary<string, object>>, IInfoE
     protected virtual Dictionary<string, object> BuildInfo(IList<IInfoContributor> infoContributors)
     {
         IInfoBuilder builder = new InfoBuilder();
-        foreach (var contributor in infoContributors)
+
+        foreach (IInfoContributor contributor in infoContributors)
         {
             try
             {

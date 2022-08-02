@@ -7,10 +7,14 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class PasswordSetRequest : CredentialSetRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="PasswordSetRequest"/> class.
+    /// Initializes a new instance of the <see cref="PasswordSetRequest" /> class.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="password">Value of the credential to set.</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="password">
+    /// Value of the credential to set.
+    /// </param>
     public PasswordSetRequest(string credentialName, string password)
     {
         Name = credentialName;

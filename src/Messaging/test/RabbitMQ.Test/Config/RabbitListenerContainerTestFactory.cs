@@ -11,26 +11,27 @@ public class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactor
 {
     private static int _counter = 1;
 
+    public Dictionary<string, MessageListenerTestContainer> ListenerContainers { get; } = new();
+
+    public string ServiceName { get; set; }
+
     public RabbitListenerContainerTestFactory(string name = null)
     {
         ServiceName = name ?? $"RabbitListenerContainerTestFactory@{GetHashCode()}";
     }
-
-    public Dictionary<string, MessageListenerTestContainer> ListenerContainers { get; } = new ();
 
     public List<MessageListenerTestContainer> GetListenerContainers()
     {
         return new List<MessageListenerTestContainer>(ListenerContainers.Values);
     }
 
-    public string ServiceName { get; set; }
-
     public MessageListenerTestContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint)
     {
         var container = new MessageListenerTestContainer(endpoint);
+
         if (endpoint.Id == null && endpoint is AbstractRabbitListenerEndpoint)
         {
-            var id = Interlocked.Increment(ref _counter);
+            int id = Interlocked.Increment(ref _counter);
             endpoint.Id = $"endpoint#{id}";
         }
 
@@ -41,7 +42,7 @@ public class RabbitListenerContainerTestFactory : IRabbitListenerContainerFactor
 
     public MessageListenerTestContainer GetListenerContainer(string id)
     {
-        ListenerContainers.TryGetValue(id, out var result);
+        ListenerContainers.TryGetValue(id, out MessageListenerTestContainer result);
         return result;
     }
 

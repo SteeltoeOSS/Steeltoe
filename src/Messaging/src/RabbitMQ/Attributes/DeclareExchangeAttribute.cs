@@ -39,7 +39,10 @@ public class DeclareExchangeAttribute : Attribute
 
         set
         {
-            Admins = new[] { value };
+            Admins = new[]
+            {
+                value
+            };
         }
     }
 

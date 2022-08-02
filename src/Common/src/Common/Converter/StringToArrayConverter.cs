@@ -6,12 +6,18 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToArrayConverter : AbstractGenericConditionalConverter
 {
-    private readonly char[] _delimit = { ',' };
+    private readonly char[] _delimit =
+    {
+        ','
+    };
 
     private readonly IConversionService _conversionService;
 
     public StringToArrayConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(string), typeof(object[])) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(string), typeof(object[]))
+        })
     {
         _conversionService = conversionService;
     }
@@ -33,27 +39,27 @@ public class StringToArrayConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var sourceString = source as string;
-        var fields = sourceString.Split(_delimit, StringSplitOptions.RemoveEmptyEntries);
-        var targetElementType = ConversionUtils.GetElementType(targetType);
+        string sourceString = source as string;
+        string[] fields = sourceString.Split(_delimit, StringSplitOptions.RemoveEmptyEntries);
+        Type targetElementType = ConversionUtils.GetElementType(targetType);
+
         if (targetElementType == null)
         {
             throw new InvalidOperationException("No target element type");
         }
 
         // Handle string, not delimited, to char[]
-        if (fields.Length == 1 &&
-            sourceString[sourceString.Length - 1] != _delimit[0] &&
-            targetElementType == typeof(char))
+        if (fields.Length == 1 && sourceString[sourceString.Length - 1] != _delimit[0] && targetElementType == typeof(char))
         {
             return sourceString.ToCharArray();
         }
 
         var target = Array.CreateInstance(targetElementType, fields.Length);
-        for (var i = 0; i < fields.Length; i++)
+
+        for (int i = 0; i < fields.Length; i++)
         {
-            var sourceElement = fields[i];
-            var targetElement = _conversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
+            string sourceElement = fields[i];
+            object targetElement = _conversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
             target.SetValue(targetElement, i);
         }
 

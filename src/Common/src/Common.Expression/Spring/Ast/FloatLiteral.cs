@@ -22,7 +22,10 @@ public class FloatLiteral : Literal
         return _value;
     }
 
-    public override bool IsCompilable() => true;
+    public override bool IsCompilable()
+    {
+        return true;
+    }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {

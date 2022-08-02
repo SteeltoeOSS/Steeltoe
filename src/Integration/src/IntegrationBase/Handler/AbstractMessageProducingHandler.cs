@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
-using System.Collections;
 
 namespace Steeltoe.Integration.Handler;
 
@@ -18,17 +18,13 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     private IMessageChannel _outputChannel;
 
-    private List<string> _notPropagatedHeaders = new ();
+    private List<string> _notPropagatedHeaders = new();
 
     private bool _noHeadersPropagation;
 
     private bool _selectiveHeaderPropagation;
 
-    protected AbstractMessageProducingHandler(IApplicationContext context)
-        : base(context)
-    {
-        _messagingTemplate = new MessagingTemplate(context);
-    }
+    protected virtual bool ShouldCopyRequestHeaders => true;
 
     public virtual IMessageChannel OutputChannel
     {
@@ -67,15 +63,22 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
         set => UpdateNotPropagatedHeaders(value, false);
     }
 
-    public virtual void AddNotPropagatedHeaders(params string[] headers) => UpdateNotPropagatedHeaders(headers, true);
-
     public virtual int SendTimeout
     {
         get => _messagingTemplate.SendTimeout;
         set => _messagingTemplate.SendTimeout = value;
     }
 
-    protected virtual bool ShouldCopyRequestHeaders => true;
+    protected AbstractMessageProducingHandler(IApplicationContext context)
+        : base(context)
+    {
+        _messagingTemplate = new MessagingTemplate(context);
+    }
+
+    public virtual void AddNotPropagatedHeaders(params string[] headers)
+    {
+        UpdateNotPropagatedHeaders(headers, true);
+    }
 
     protected virtual void UpdateNotPropagatedHeaders(IList<string> headers, bool merge)
     {
@@ -83,7 +86,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
         if (merge && _notPropagatedHeaders.Count > 0)
         {
-            foreach (var h in _notPropagatedHeaders)
+            foreach (string h in _notPropagatedHeaders)
             {
                 headerPatterns.Add(h);
             }
@@ -91,7 +94,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
         if (headers.Count > 0)
         {
-            foreach (var h in headers)
+            foreach (string h in headers)
             {
                 if (string.IsNullOrEmpty(h))
                 {
@@ -104,11 +107,15 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
             _notPropagatedHeaders = headerPatterns.ToList();
         }
 
-        var hasAsterisk = headerPatterns.Contains("*");
+        bool hasAsterisk = headerPatterns.Contains("*");
 
         if (hasAsterisk)
         {
-            _notPropagatedHeaders = new List<string> { "*" };
+            _notPropagatedHeaders = new List<string>
+            {
+                "*"
+            };
+
             _noHeadersPropagation = true;
         }
 
@@ -128,9 +135,10 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
         if (IsEnumerable(reply))
         {
             var multiReply = (IEnumerable)reply;
+
             if (ShouldSplitOutput(multiReply))
             {
-                foreach (var r in multiReply)
+                foreach (object r in multiReply)
                 {
                     ProduceOutput(r, requestMessage);
                 }
@@ -142,8 +150,9 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     protected virtual void ProduceOutput(object reply, IMessage requestMessage)
     {
-        var requestHeaders = requestMessage.Headers;
+        IMessageHeaders requestHeaders = requestMessage.Headers;
         object replyChannel = null;
+
         if (OutputChannel == null)
         {
             replyChannel = ObtainReplyChannel(requestMessage.Headers, reply);
@@ -154,8 +163,9 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     protected virtual void SendOutput(object output, object replyChannelArg, bool useArgChannel)
     {
-        var replyChannel = replyChannelArg;
-        var outChannel = OutputChannel;
+        object replyChannel = replyChannelArg;
+        IMessageChannel outChannel = OutputChannel;
+
         if (!useArgChannel && outChannel != null)
         {
             replyChannel = outChannel;
@@ -199,7 +209,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     protected virtual bool ShouldSplitOutput(IEnumerable reply)
     {
-        foreach (var next in reply)
+        foreach (object next in reply)
         {
             if (next is IMessage)
             {
@@ -213,6 +223,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
     protected virtual IMessage CreateOutputMessage(object output, IMessageHeaders requestHeaders)
     {
         IMessageBuilder builder;
+
         if (output is IMessage outputAsMessage)
         {
             if (_noHeadersPropagation || !ShouldCopyRequestHeaders)
@@ -252,7 +263,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
 
     private object ObtainReplyChannel(IMessageHeaders requestHeaders, object reply)
     {
-        var replyChannel = requestHeaders.ReplyChannel;
+        object replyChannel = requestHeaders.ReplyChannel;
 
         if (replyChannel == null)
         {
@@ -270,5 +281,7 @@ public abstract class AbstractMessageProducingHandler : AbstractMessageHandler, 
     }
 
     private void DoProduceOutput(IMessageHeaders requestHeaders, object reply, object replyChannel)
-        => SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
+    {
+        SendOutput(CreateOutputMessage(reply, requestHeaders), replyChannel, false);
+    }
 }

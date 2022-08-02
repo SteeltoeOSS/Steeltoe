@@ -11,19 +11,13 @@ public class ThreadDumpEndpoint : AbstractEndpoint<List<ThreadInfo>>, IThreadDum
     private readonly ILogger<ThreadDumpEndpoint> _logger;
     private readonly IThreadDumper _threadDumper;
 
+    public new IThreadDumpOptions Options => options as IThreadDumpOptions;
+
     public ThreadDumpEndpoint(IThreadDumpOptions options, IThreadDumper threadDumper, ILogger<ThreadDumpEndpoint> logger = null)
         : base(options)
     {
         _threadDumper = threadDumper ?? throw new ArgumentNullException(nameof(threadDumper));
         _logger = logger;
-    }
-
-    public new IThreadDumpOptions Options
-    {
-        get
-        {
-            return options as IThreadDumpOptions;
-        }
     }
 
     public override List<ThreadInfo> Invoke()

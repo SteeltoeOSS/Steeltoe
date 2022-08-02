@@ -13,7 +13,7 @@ public class CloudFoundryServiceOptionsTest
     public void Constructor_WithNoVcapServicesConfiguration()
     {
         var builder = new ConfigurationBuilder();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryServicesOptions(config);
 
@@ -26,7 +26,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithSingleServiceConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -45,10 +45,11 @@ public class CloudFoundryServiceOptionsTest
                         }
                     }
                 }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryServicesOptions(config);
 
@@ -58,7 +59,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        var service = options.GetInstancesOfType("p-config-server").First();
+        Service service = options.GetInstancesOfType("p-config-server").First();
         Assert.Equal("p-config-server", service.Label);
         Assert.Equal("My Config Server", service.Name);
         Assert.Equal("standard", service.Plan);
@@ -79,7 +80,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithComplexSingleServiceConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -143,16 +144,17 @@ public class CloudFoundryServiceOptionsTest
                         }
                     }
                 }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryServicesOptions(config);
 
         Assert.NotNull(options.Services);
         Assert.Single(options.Services);
-        var service = options.GetInstancesOfType("p-rabbitmq").First();
+        Service service = options.GetInstancesOfType("p-rabbitmq").First();
         Assert.Equal("p-rabbitmq", service.Label);
         Assert.Equal("rabbitmq", service.Name);
         Assert.Equal("standard", service.Plan);
@@ -164,20 +166,23 @@ public class CloudFoundryServiceOptionsTest
 
         Assert.NotNull(service.Credentials);
         Assert.Equal(12, service.Credentials.Count);
-        Assert.Equal("https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["dashboard_url"].Value);
+
+        Assert.Equal("https://pivotal-rabbitmq.system.testcloud.com/#/login/268371bd-07e5-46f3-aec7-d1633ae20bbb/3fnpvbqm0djq5jl9fp6fc697f4",
+            service.Credentials["dashboard_url"].Value);
+
         Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["username"].Value);
         Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["password"].Value);
         Assert.Equal("268371bd-07e5-46f3-aec7-d1633ae20bbb", service.Credentials["protocols"]["amqp"]["username"].Value);
         Assert.Equal("3fnpvbqm0djq5jl9fp6fc697f4", service.Credentials["protocols"]["amqp"]["password"].Value);
-        Assert.Equal(
-            "amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
+
+        Assert.Equal("amqp://268371bd-07e5-46f3-aec7-d1633ae20bbb:3fnpvbqm0djq5jl9fp6fc697f4@192.168.0.97:5672/2260a117-cf28-4725-86dd-37b3b8971052",
             service.Credentials["protocols"]["amqp"]["uris"]["0"].Value);
     }
 
     [Fact]
     public void Constructor_WithMultipleSameServicesConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -215,10 +220,11 @@ public class CloudFoundryServiceOptionsTest
                         }
                     }
                 }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryServicesOptions(config);
 
@@ -228,8 +234,8 @@ public class CloudFoundryServiceOptionsTest
 
         Assert.Equal(2, options.GetServicesList().Count());
 
-        var service1 = options.GetServicesList().First(n => n.Name == "mySql1");
-        var service2 = options.GetServicesList().First(n => n.Name == "mySql2");
+        Service service1 = options.GetServicesList().First(n => n.Name == "mySql1");
+        Service service2 = options.GetServicesList().First(n => n.Name == "mySql2");
         Assert.NotNull(service1);
         Assert.NotNull(service2);
         Assert.Equal("p-mysql", service1.Label);
@@ -245,7 +251,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithIConfigurationRootBinds()
     {
-        var configJson = @"
+        string configJson = @"
 {
     ""vcap"": {
         ""services"" : {
@@ -267,10 +273,11 @@ public class CloudFoundryServiceOptionsTest
         }
     }
 }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var options = new CloudFoundryServicesOptions(config);
 
@@ -280,7 +287,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        var firstService = options.GetServicesList().First();
+        Service firstService = options.GetServicesList().First();
         Assert.Equal("p-config-server", firstService.Label);
         Assert.Equal("My Config Server", firstService.Name);
         Assert.Equal("standard", firstService.Plan);
@@ -301,7 +308,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithIConfigurationBinds()
     {
-        var configJson = @"
+        string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -323,10 +330,11 @@ public class CloudFoundryServiceOptionsTest
                         }
                     }
                 }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
         var options = new CloudFoundryServicesOptions(config);
 
         Assert.NotNull(options.Services);
@@ -335,7 +343,7 @@ public class CloudFoundryServiceOptionsTest
         Assert.NotNull(options.Services["p-config-server"]);
         Assert.Single(options.Services["p-config-server"]);
 
-        var service = options.GetServicesList().First();
+        Service service = options.GetServicesList().First();
         Assert.Equal("p-config-server", service.Label);
         Assert.Equal("My Config Server", service.Name);
         Assert.Equal("standard", service.Plan);

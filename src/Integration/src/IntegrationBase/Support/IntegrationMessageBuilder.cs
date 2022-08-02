@@ -9,12 +9,12 @@ namespace Steeltoe.Integration.Support;
 
 public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageBuilder<T>
 {
+    public new T Payload => (T)base.Payload;
+
     internal IntegrationMessageBuilder(T payload, IMessage<T> originalMessage)
         : base(payload, originalMessage)
     {
     }
-
-    public new T Payload => (T)base.Payload;
 
     public static IntegrationMessageBuilder<T> FromMessage(IMessage<T> message)
     {
@@ -75,8 +75,7 @@ public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageB
 
     public new IMessage<T> Build()
     {
-        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null
-            && !ContainsReadOnly(OriginalMessage.Headers))
+        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null && !ContainsReadOnly(OriginalMessage.Headers))
         {
             return (IMessage<T>)OriginalMessage;
         }
@@ -170,14 +169,22 @@ public class IntegrationMessageBuilder<T> : IntegrationMessageBuilder, IMessageB
 
 public class IntegrationMessageBuilder : AbstractMessageBuilder
 {
-    internal IntegrationMessageBuilder(object payload, IMessage originalMessage)
-        : base(payload, originalMessage)
-    {
-    }
+    protected override List<List<object>> SequenceDetails => (List<List<object>>)HeaderAccessor.GetHeader(IntegrationMessageHeaderAccessor.SequenceDetails);
+
+    protected override object CorrelationId => HeaderAccessor.GetCorrelationId();
+
+    protected override object SequenceNumber => HeaderAccessor.GetSequenceNumber();
+
+    protected override object SequenceSize => HeaderAccessor.GetSequenceSize();
 
     public override object Payload => InnerPayload;
 
     public override IDictionary<string, object> Headers => HeaderAccessor.ToDictionary();
+
+    internal IntegrationMessageBuilder(object payload, IMessage originalMessage)
+        : base(payload, originalMessage)
+    {
+    }
 
     public static IntegrationMessageBuilder FromMessage(IMessage message)
     {
@@ -232,9 +239,10 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
     {
         if (headersToCopy != null)
         {
-            foreach (var entry in headersToCopy)
+            foreach (KeyValuePair<string, object> entry in headersToCopy)
             {
-                var headerName = entry.Key;
+                string headerName = entry.Key;
+
                 if (!HeaderAccessor.IsReadOnly(headerName))
                 {
                     HeaderAccessor.SetHeaderIfAbsent(headerName, entry.Value);
@@ -245,25 +253,16 @@ public class IntegrationMessageBuilder : AbstractMessageBuilder
         return this;
     }
 
-    protected override List<List<object>> SequenceDetails => (List<List<object>>)HeaderAccessor.GetHeader(IntegrationMessageHeaderAccessor.SequenceDetails);
-
-    protected override object CorrelationId => HeaderAccessor.GetCorrelationId();
-
-    protected override object SequenceNumber => HeaderAccessor.GetSequenceNumber();
-
-    protected override object SequenceSize => HeaderAccessor.GetSequenceSize();
-
     public IMessageBuilder ReadOnlyHeaders(IList<string> readOnlyHeaders)
     {
-        base.readOnlyHeaders = readOnlyHeaders;
+        this.readOnlyHeaders = readOnlyHeaders;
         HeaderAccessor.SetReadOnlyHeaders(readOnlyHeaders);
         return this;
     }
 
     public override IMessage Build()
     {
-        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null
-            && !ContainsReadOnly(OriginalMessage.Headers))
+        if (!modified && !HeaderAccessor.IsModified && OriginalMessage != null && !ContainsReadOnly(OriginalMessage.Headers))
         {
             return OriginalMessage;
         }

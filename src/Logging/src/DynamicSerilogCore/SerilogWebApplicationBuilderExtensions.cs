@@ -10,18 +10,25 @@ namespace Steeltoe.Extensions.Logging.DynamicSerilog;
 public static class SerilogWebApplicationBuilderExtensions
 {
     /// <summary>
-    /// Configure Serilog as the <see cref="IDynamicLoggerProvider"/> to enable dynamically controlling log levels via management endpoints.
+    /// Configure Serilog as the <see cref="IDynamicLoggerProvider" /> to enable dynamically controlling log levels via management endpoints.
     /// </summary>
-    /// <param name="hostBuilder">The <see cref="WebApplicationBuilder"/> to configure.</param>
-    /// <param name="configureLogger">The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" />.</param>
-    /// <param name="preserveDefaultConsole">When true, do not remove Microsoft's ConsoleLoggerProvider.</param>
-    /// <returns>The <see cref="WebApplicationBuilder"/>.</returns>
-    public static WebApplicationBuilder AddDynamicSerilog(
-        this WebApplicationBuilder hostBuilder,
-        Action<WebApplicationBuilder, LoggerConfiguration> configureLogger = null,
-        bool preserveDefaultConsole = false)
+    /// <param name="hostBuilder">
+    /// The <see cref="WebApplicationBuilder" /> to configure.
+    /// </param>
+    /// <param name="configureLogger">
+    /// The delegate for configuring the <see cref="DynamicLoggerConfiguration" /> that will be used to construct a <see cref="Serilog.Core.Logger" />.
+    /// </param>
+    /// <param name="preserveDefaultConsole">
+    /// When true, do not remove Microsoft's ConsoleLoggerProvider.
+    /// </param>
+    /// <returns>
+    /// The <see cref="WebApplicationBuilder" />.
+    /// </returns>
+    public static WebApplicationBuilder AddDynamicSerilog(this WebApplicationBuilder hostBuilder,
+        Action<WebApplicationBuilder, LoggerConfiguration> configureLogger = null, bool preserveDefaultConsole = false)
     {
         LoggerConfiguration loggerConfiguration = null;
+
         if (configureLogger != null)
         {
             loggerConfiguration = new LoggerConfiguration().ReadFrom.Configuration(hostBuilder.Configuration);

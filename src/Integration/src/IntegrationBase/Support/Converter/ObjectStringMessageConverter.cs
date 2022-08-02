@@ -11,14 +11,13 @@ public class ObjectStringMessageConverter : StringMessageConverter
 {
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (payload is string || payload is byte[])
         {
             return base.ConvertFromInternal(message, targetClass, conversionHint);
         }
-        else
-        {
-            return payload.ToString();
-        }
+
+        return payload.ToString();
     }
 }

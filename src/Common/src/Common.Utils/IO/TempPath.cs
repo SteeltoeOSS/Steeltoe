@@ -10,17 +10,6 @@ namespace Steeltoe.Common.Utils.IO;
 public abstract class TempPath : IDisposable
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TempPath"/> class.
-    /// </summary>
-    /// <param name="prefix">Temporary path prefix.</param>
-    protected TempPath(string prefix = null)
-    {
-        Name = $"{prefix ?? string.Empty}{Guid.NewGuid()}";
-        FullPath = Path.Combine(Path.GetTempPath(), Name);
-        Initialize();
-    }
-
-    /// <summary>
     /// Gets the absolute path of the TempPath.
     /// </summary>
     public string FullPath { get; }
@@ -29,6 +18,19 @@ public abstract class TempPath : IDisposable
     /// Gets the name of the TempPath.
     /// </summary>
     public string Name { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TempPath" /> class.
+    /// </summary>
+    /// <param name="prefix">
+    /// Temporary path prefix.
+    /// </param>
+    protected TempPath(string prefix = null)
+    {
+        Name = $"{prefix ?? string.Empty}{Guid.NewGuid()}";
+        FullPath = Path.Combine(Path.GetTempPath(), Name);
+        Initialize();
+    }
 
     /// <summary>
     /// Ensures the temporary path is deleted.
@@ -42,7 +44,9 @@ public abstract class TempPath : IDisposable
     /// <summary>
     /// Ensures the temporary path is deleted.
     /// </summary>
-    /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
+    /// <param name="disposing">
+    /// <c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.
+    /// </param>
     protected abstract void Dispose(bool disposing);
 
     /// <summary>

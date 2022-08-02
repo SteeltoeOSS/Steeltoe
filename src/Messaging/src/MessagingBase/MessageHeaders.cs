@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging;
 
@@ -29,39 +29,37 @@ public class MessageHeaders : IMessageHeaders
     public const string TypeId = "__TypeId__";
     public const string ContentTypeId = "__ContentTypeId__";
     public const string KeyTypeId = "__KeyTypeId__";
+    private static readonly IIdGenerator DefaultIdGenerator = new DefaultIdGenerator();
 
     public static readonly string IdValueNone = string.Empty;
-
-    protected readonly IDictionary<string, object> Headers;
-    private static readonly IIdGenerator DefaultIdGenerator = new DefaultIdGenerator();
     private static volatile IIdGenerator _idGenerator;
 
-    public MessageHeaders(IDictionary<string, object> headers = null)
-        : this(headers, null, null)
+    protected readonly IDictionary<string, object> Headers;
+
+    internal static IIdGenerator IdGenerator
     {
+        get => _idGenerator ?? DefaultIdGenerator;
+
+        set => _idGenerator = value;
     }
 
-    public MessageHeaders(IDictionary<string, object> headers, string id, long? timestamp)
-    {
-        this.Headers = headers != null ? new Dictionary<string, object>(headers) : new Dictionary<string, object>();
-        UpdateHeaders(id, timestamp);
-    }
+    ICollection IDictionary.Keys => (ICollection)Keys;
 
-    public static MessageHeaders From(MessageHeaders other)
-    {
-        return new MessageHeaders(other);
-    }
+    ICollection IDictionary.Values => (ICollection)Values;
 
-    protected MessageHeaders(MessageHeaders other)
-    {
-        Headers = other.RawHeaders;
-    }
+    bool IDictionary.IsFixedSize => false;
+
+    bool ICollection.IsSynchronized => false;
+
+    object ICollection.SyncRoot => throw new NotImplementedException();
+
+    protected internal virtual IDictionary<string, object> RawHeaders => Headers;
 
     public virtual string Id
     {
         get
         {
-            if (!Headers.TryGetValue(IdName, out var result))
+            if (!Headers.TryGetValue(IdName, out object result))
             {
                 return null;
             }
@@ -74,7 +72,7 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            if (!Headers.TryGetValue(TimestampName, out var result))
+            if (!Headers.TryGetValue(TimestampName, out object result))
             {
                 return null;
             }
@@ -87,7 +85,7 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            Headers.TryGetValue(ReplyChannelName, out var chan);
+            Headers.TryGetValue(ReplyChannelName, out object chan);
             return chan;
         }
     }
@@ -96,9 +94,71 @@ public class MessageHeaders : IMessageHeaders
     {
         get
         {
-            Headers.TryGetValue(ErrorChannelName, out var chan);
+            Headers.TryGetValue(ErrorChannelName, out object chan);
             return chan;
         }
+    }
+
+    public virtual ICollection<string> Keys => Headers.Keys;
+
+    public virtual ICollection<object> Values => Headers.Values;
+
+    public virtual int Count => Headers.Count;
+
+    public virtual bool IsReadOnly => true;
+
+    public virtual bool IsSynchronized => false;
+
+    public virtual object SyncRoot => throw new InvalidOperationException();
+
+    public virtual bool IsFixedSize => true;
+
+    object IDictionary.this[object key]
+    {
+        get => Get<object>((string)key);
+        set => throw new InvalidOperationException();
+    }
+
+    public virtual object this[string key]
+    {
+        get => Get<object>(key);
+        set => throw new InvalidOperationException();
+    }
+
+    public virtual object this[object key]
+    {
+        get
+        {
+            if (key is string asString)
+            {
+                return Get<object>(asString);
+            }
+
+            return null;
+        }
+
+        set => throw new InvalidOperationException();
+    }
+
+    public MessageHeaders(IDictionary<string, object> headers = null)
+        : this(headers, null, null)
+    {
+    }
+
+    public MessageHeaders(IDictionary<string, object> headers, string id, long? timestamp)
+    {
+        Headers = headers != null ? new Dictionary<string, object>(headers) : new Dictionary<string, object>();
+        UpdateHeaders(id, timestamp);
+    }
+
+    protected MessageHeaders(MessageHeaders other)
+    {
+        Headers = other.RawHeaders;
+    }
+
+    public static MessageHeaders From(MessageHeaders other)
+    {
+        return new MessageHeaders(other);
     }
 
     public override bool Equals(object obj)
@@ -165,7 +225,7 @@ public class MessageHeaders : IMessageHeaders
     {
         if (key is string asString)
         {
-            return TryGetValue(asString, out var _);
+            return TryGetValue(asString, out object _);
         }
 
         return false;
@@ -201,53 +261,15 @@ public class MessageHeaders : IMessageHeaders
         return Headers.GetEnumerator();
     }
 
-    public virtual ICollection<string> Keys => Headers.Keys;
-
-    public virtual ICollection<object> Values => Headers.Values;
-
-    public virtual int Count => Headers.Count;
-
-    public virtual bool IsReadOnly => true;
-
-    public virtual object this[string key] { get => Get<object>(key); set => throw new InvalidOperationException(); }
-
-    public virtual object this[object key]
-    {
-        get
-        {
-            if (key is string asString)
-            {
-                return Get<object>(asString);
-            }
-
-            return null;
-        }
-
-        set
-        {
-            throw new InvalidOperationException();
-        }
-    }
-
     public virtual T Get<T>(string key)
     {
-        if (TryGetValue(key, out var val))
+        if (TryGetValue(key, out object val))
         {
             return (T)val;
         }
 
         return default;
     }
-
-    public virtual bool IsSynchronized => false;
-
-    public virtual object SyncRoot => throw new InvalidOperationException();
-
-    public virtual bool IsFixedSize => true;
-
-    ICollection IDictionary.Keys => (ICollection)Keys;
-
-    ICollection IDictionary.Values => (ICollection)Values;
 
     IDictionaryEnumerator IDictionary.GetEnumerator()
     {
@@ -259,7 +281,10 @@ public class MessageHeaders : IMessageHeaders
         return ((IEnumerable)Headers).GetEnumerator();
     }
 
-    void IDictionary.Add(object key, object value) => Add((string)key, value);
+    void IDictionary.Add(object key, object value)
+    {
+        Add((string)key, value);
+    }
 
     bool IDictionary.Contains(object key)
     {
@@ -278,14 +303,6 @@ public class MessageHeaders : IMessageHeaders
         collection.CopyTo(array, 0);
     }
 
-    bool IDictionary.IsFixedSize => false;
-
-    bool ICollection.IsSynchronized => false;
-
-    object ICollection.SyncRoot => throw new NotImplementedException();
-
-    object IDictionary.this[object key] { get => Get<object>((string)key); set => throw new InvalidOperationException(); }
-
     private bool ContentsEqual(IDictionary<string, object> other)
     {
         if (ReferenceEquals(other, null))
@@ -298,9 +315,9 @@ public class MessageHeaders : IMessageHeaders
             return false;
         }
 
-        foreach (var pair in Headers)
+        foreach (KeyValuePair<string, object> pair in Headers)
         {
-            if (!other.TryGetValue(pair.Key, out var otherValue))
+            if (!other.TryGetValue(pair.Key, out object otherValue))
             {
                 return false;
             }
@@ -312,19 +329,6 @@ public class MessageHeaders : IMessageHeaders
         }
 
         return true;
-    }
-
-    internal static IIdGenerator IdGenerator
-    {
-        get
-        {
-            return _idGenerator ?? DefaultIdGenerator;
-        }
-
-        set
-        {
-            _idGenerator = value;
-        }
     }
 
     protected void UpdateHeaders(string id, long? timestamp)
@@ -354,10 +358,5 @@ public class MessageHeaders : IMessageHeaders
         {
             Headers[TimestampName] = timestamp.Value;
         }
-    }
-
-    protected internal virtual IDictionary<string, object> RawHeaders
-    {
-        get { return Headers; }
     }
 }

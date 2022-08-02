@@ -8,6 +8,8 @@ namespace Steeltoe.Common;
 
 public class TestOptionsMonitor<T> : IOptionsMonitor<T>
 {
+    public T CurrentValue { get; }
+
     public TestOptionsMonitor(T currentValue)
     {
         CurrentValue = currentValue;
@@ -22,6 +24,4 @@ public class TestOptionsMonitor<T> : IOptionsMonitor<T>
     {
         throw new NotImplementedException();
     }
-
-    public T CurrentValue { get; }
 }

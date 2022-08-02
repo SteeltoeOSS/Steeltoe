@@ -5,6 +5,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Common.Utils.IO;
 using Xunit;
@@ -25,7 +26,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -42,18 +43,18 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var hostingEnv = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment();
         configurationBuilder.AddJsonFile(fileName);
 
         // Act and Assert (expects Spring Cloud Config server to be running)
         configurationBuilder.AddConfigServer(hostingEnv);
-        var root = configurationBuilder.Build();
+        IConfigurationRoot root = configurationBuilder.Build();
 
         Assert.Equal("spam", root["bar"]);
         Assert.Equal("from foo development", root["foo"]);
@@ -67,7 +68,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
         // These settings match the default java config server
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -85,37 +86,31 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                       }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var builder = new WebHostBuilder()
-            .UseEnvironment("development")
-            .UseStartup<TestServerStartup>()
-            .ConfigureAppConfiguration((context, config) =>
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+
+        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
+            (context, config) =>
             {
-                config.SetBasePath(directory)
-                    .AddJsonFile(fileName)
-                    .AddConfigServer(context.HostingEnvironment);
+                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
 
         // Act and Assert (TestServer expects Spring Cloud Config server to be running)
         using var server = new TestServer(builder);
-        using var client = server.CreateClient();
-        var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+        using HttpClient client = server.CreateClient();
+        string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-        Assert.Equal(
-            "spam" +
-            "from foo development" +
-            "Spring Cloud Samples" +
-            "https://github.com/spring-cloud-samples", result);
+        Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
     }
 
     [Fact]
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
-        var vcap_application = @" 
+        string vcap_application = @" 
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                     ""application_name"": ""foo"",
@@ -139,7 +134,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-        var vcap_services = @"
+        string vcap_services = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -158,10 +153,10 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     }]
                 }";
 
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
-        var appSettings = @"
+        string appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -174,35 +169,29 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appSettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var builder = new WebHostBuilder()
-            .UseEnvironment("development")
-            .UseStartup<TestServerStartup>()
-            .ConfigureAppConfiguration((context, config) =>
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+
+        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
+            (context, config) =>
             {
-                config.SetBasePath(directory)
-                    .AddJsonFile(fileName)
-                    .AddConfigServer(context.HostingEnvironment);
+                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
+
         try
         {
             // Act and Assert (TestServer expects Spring Cloud Config server to be running @ localhost:8888)
             using var server = new TestServer(builder);
-            using var client = server.CreateClient();
-            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+            using HttpClient client = server.CreateClient();
+            string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-            Assert.Equal(
-                "spam" +
-                "from foo development" +
-                "Spring Cloud Samples" +
-                "https://github.com/spring-cloud-samples", result);
+            Assert.Equal("spam" + "from foo development" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
         }
         finally
         {
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
     }
 
@@ -210,7 +199,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
     {
-        var vcap_application = @" 
+        string vcap_application = @" 
                 {
                     ""limits"": {
                     ""mem"": 1024,
@@ -233,7 +222,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""users"": null
                 }";
 
-        var vcap_services = @"
+        string vcap_services = @"
                 {
                     ""p-config-server"": [
                     {
@@ -254,10 +243,10 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ]
                 }";
 
-        System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
-        System.Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcap_application);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
 
-        var appSettings = @"
+        string appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -268,36 +257,31 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appSettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var builder = new WebHostBuilder()
-            .UseEnvironment("development")
-            .UseStartup<TestServerStartup>()
-            .ConfigureAppConfiguration((context, config) =>
+        string path = sandbox.CreateFile("appsettings.json", appSettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+
+        IWebHostBuilder builder = new WebHostBuilder().UseEnvironment("development").UseStartup<TestServerStartup>().ConfigureAppConfiguration(
+            (context, config) =>
             {
-                config.SetBasePath(directory)
-                    .AddJsonFile(fileName)
-                    .AddConfigServer(context.HostingEnvironment);
+                config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
             });
+
         try
         {
             // Act and Assert (TestServer expects Spring Cloud Config server to be running)
             using var server = new TestServer(builder);
-            using var client = server.CreateClient();
-            var result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
+            using HttpClient client = server.CreateClient();
+            string result = await client.GetStringAsync("http://localhost/Home/VerifyAsInjectedOptions");
 
-            Assert.Equal(
-                "spam" +
-                "barcelona" +
-                "Spring Cloud Samples" +
-                "https://github.com/spring-cloud-samples", result);
+            Assert.Equal("spam" + "barcelona" + "Spring Cloud Samples" + "https://github.com/spring-cloud-samples", result);
         }
         finally
         {
-            System.Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
-            System.Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
+            Environment.SetEnvironmentVariable("VCAP_APPLICATION", null);
+            Environment.SetEnvironmentVariable("VCAP_SERVICES", null);
         }
     }
 
@@ -351,7 +335,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -376,18 +360,18 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
-        var hostingEnv = HostingHelpers.GetHostingEnvironment("development");
+        IHostEnvironment hostingEnv = HostingHelpers.GetHostingEnvironment("development");
         configurationBuilder.AddJsonFile(fileName);
 
         // Act and Assert (expects Spring Cloud Config server to be running)
         configurationBuilder.AddConfigServer(hostingEnv);
-        var root = configurationBuilder.Build();
+        IConfigurationRoot root = configurationBuilder.Build();
 
         Assert.Equal("spam", root["bar"]);
         Assert.Equal("from foo development", root["foo"]);
@@ -401,7 +385,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
     {
         // These settings match the default java config server
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -419,26 +403,26 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                       }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var builder = new WebHostBuilder()
-            .UseStartup<TestServerStartup>()
-            .ConfigureAppConfiguration((context, config) =>
-            {
-                config.SetBasePath(directory)
-                    .AddJsonFile(fileName)
-                    .AddConfigServer(context.HostingEnvironment);
-            });
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestServerStartup>().ConfigureAppConfiguration((context, config) =>
+        {
+            config.SetBasePath(directory).AddJsonFile(fileName).AddConfigServer(context.HostingEnvironment);
+        });
 
         // Act and Assert (TestServer expects Spring Cloud Config server to be running)
         using var server = new TestServer(builder);
-        using var client = server.CreateClient();
-        var result = await client.GetStringAsync("http://localhost/Home/Health");
+        using HttpClient client = server.CreateClient();
+        string result = await client.GetStringAsync("http://localhost/Home/Health");
 
         // after switching to newer config server image, the health response has changed to
         // https://github.com/spring-cloud-samples/config-repo/Config resource 'file [/tmp/config-repo-4389533880216684481/application.yml' via location '' (document #0)"
-        Assert.StartsWith("UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config", result);
+        Assert.StartsWith(
+            "UP,https://github.com/spring-cloud-samples/config-repo/foo-development.properties,https://github.com/spring-cloud-samples/config-repo/foo.properties,https://github.com/spring-cloud-samples/config-repo/Config",
+            result);
     }
 }

@@ -13,14 +13,16 @@ public class ContextMappingsTest : BaseTest
     public void Constructor_SetsValues()
     {
         var mappingList = new List<MappingDescription>();
+
         var mappingDict = new Dictionary<string, IList<MappingDescription>>
         {
             { "dispatcherServlet", mappingList }
         };
+
         var contextMappings = new ContextMappings(mappingDict);
-        var contextMappingsMappings = contextMappings.Mappings;
+        IDictionary<string, IDictionary<string, IList<MappingDescription>>> contextMappingsMappings = contextMappings.Mappings;
         Assert.Contains("dispatcherServlets", contextMappingsMappings.Keys);
-        var mappings = contextMappingsMappings["dispatcherServlets"];
+        IDictionary<string, IList<MappingDescription>> mappings = contextMappingsMappings["dispatcherServlets"];
         Assert.Contains("dispatcherServlet", mappings.Keys);
         Assert.Same(mappingList, mappings["dispatcherServlet"]);
     }
@@ -30,15 +32,24 @@ public class ContextMappingsTest : BaseTest
     {
         var routeDetail = new TestRouteDetails
         {
-            HttpMethods = new List<string> { "GET" },
+            HttpMethods = new List<string>
+            {
+                "GET"
+            },
             RouteTemplate = "/Home/Index",
-            Consumes = new List<string> { "application/json" },
-            Produces = new List<string> { "application/json" }
+            Consumes = new List<string>
+            {
+                "application/json"
+            },
+            Produces = new List<string>
+            {
+                "application/json"
+            }
         };
 
         var mappingDescriptions = new List<MappingDescription>
         {
-            new ("foobar", routeDetail)
+            new("foobar", routeDetail)
         };
 
         var mappingDict = new Dictionary<string, IList<MappingDescription>>
@@ -47,7 +58,10 @@ public class ContextMappingsTest : BaseTest
         };
 
         var contextMappings = new ContextMappings(mappingDict);
-        var result = Serialize(contextMappings);
-        Assert.Equal("{\"mappings\":{\"dispatcherServlets\":{\"controllerTypeName\":[{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}]}}}", result);
+        string result = Serialize(contextMappings);
+
+        Assert.Equal(
+            "{\"mappings\":{\"dispatcherServlets\":{\"controllerTypeName\":[{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}]}}}",
+            result);
     }
 }

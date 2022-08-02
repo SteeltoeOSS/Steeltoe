@@ -11,7 +11,7 @@ public class SqlServerInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        var uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
+        string uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
         var r1 = new SqlServerServiceInfo("myId", uri, "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
 
         Assert.Equal("myId", r1.Id);
@@ -26,7 +26,7 @@ public class SqlServerInfoTest
     [Fact]
     public void SpecialCharactersInCredentials_AreHandled()
     {
-        var uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
+        string uri = "jdbc:sqlserver://192.168.0.90:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e";
         var r1 = new SqlServerServiceInfo("myId", uri, "!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", "[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~");
         Assert.Equal("!*'();:@&=+$,/?#[] \"%-.<>\\^_`{|}~", r1.UserName);
         Assert.Equal("[]!*'();:@&=+$,/?# \"%-.<>\\^_`{|}~", r1.Password);

@@ -2,28 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Stream.Attributes;
 using System.Reflection;
+using Steeltoe.Stream.Attributes;
 
 namespace Steeltoe.Stream.Config;
 
 public class StreamListenerMethod : IStreamListenerMethod
 {
-    public StreamListenerMethod(MethodInfo method, StreamListenerAttribute attribute)
-    {
-        Method = method;
-        Attribute = attribute;
-    }
-
     public MethodInfo Method { get; }
 
     public StreamListenerAttribute Attribute { get; }
 
-    public Type ImplementationType
+    public Type ImplementationType => Method.DeclaringType;
+
+    public StreamListenerMethod(MethodInfo method, StreamListenerAttribute attribute)
     {
-        get
-        {
-            return Method.DeclaringType;
-        }
+        Method = method;
+        Attribute = attribute;
     }
 }

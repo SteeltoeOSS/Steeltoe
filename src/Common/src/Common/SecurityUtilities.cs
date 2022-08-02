@@ -14,8 +14,12 @@ public static class SecurityUtilities
     /// <summary>
     /// Remove line endings and HTML-encode strings. Useful for logging (potentially) user-entered data.
     /// </summary>
-    /// <param name="inputString">Some string to sanitize.</param>
-    /// <returns>HTML-encoded version of original string with CR and LF removed.</returns>
+    /// <param name="inputString">
+    /// Some string to sanitize.
+    /// </param>
+    /// <returns>
+    /// HTML-encoded version of original string with CR and LF removed.
+    /// </returns>
     public static string SanitizeInput(string inputString)
     {
         if (string.IsNullOrEmpty(inputString))

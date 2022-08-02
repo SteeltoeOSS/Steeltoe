@@ -13,15 +13,15 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     private readonly IApplicationContext _context;
     private List<ILifecycle> _lifecycleServices;
 
+    public int TimeoutPerShutdownPhase { get; set; } = 30000;
+
+    public bool IsRunning { get; set; }
+
     public DefaultLifecycleProcessor(IApplicationContext context, ILogger logger = null)
     {
         _context = context;
         _logger = logger;
     }
-
-    public int TimeoutPerShutdownPhase { get; set; } = 30000;
-
-    public bool IsRunning { get; set; }
 
     public async Task Start()
     {
@@ -43,7 +43,10 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
         IsRunning = true;
     }
 
-    public async Task OnClose() => await Stop();
+    public async Task OnClose()
+    {
+        await Stop();
+    }
 
     public void Dispose()
     {
@@ -67,12 +70,14 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     private async Task StartServices(bool autoStartupOnly)
     {
         var phases = new Dictionary<int, LifecycleGroup>();
-        foreach (var service in _lifecycleServices)
+
+        foreach (ILifecycle service in _lifecycleServices)
         {
             if (!autoStartupOnly || (service is ISmartLifecycle lifecycle && lifecycle.IsAutoStartup))
             {
-                var phase = GetPhase(service);
-                phases.TryGetValue(phase, out var group);
+                int phase = GetPhase(service);
+                phases.TryGetValue(phase, out LifecycleGroup group);
+
                 if (group == null)
                 {
                     group = new LifecycleGroup(TimeoutPerShutdownPhase, autoStartupOnly, _logger);
@@ -87,7 +92,8 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
         {
             var keys = new List<int>(phases.Keys);
             keys.Sort();
-            foreach (var key in keys)
+
+            foreach (int key in keys)
             {
                 await phases[key].Start();
             }
@@ -97,10 +103,12 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     private async Task StopServices()
     {
         var phases = new Dictionary<int, LifecycleGroup>();
-        foreach (var service in _lifecycleServices)
+
+        foreach (ILifecycle service in _lifecycleServices)
         {
-            var phase = GetPhase(service);
-            phases.TryGetValue(phase, out var group);
+            int phase = GetPhase(service);
+            phases.TryGetValue(phase, out LifecycleGroup group);
+
             if (group == null)
             {
                 group = new LifecycleGroup(TimeoutPerShutdownPhase, false, _logger);
@@ -115,7 +123,8 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
             var keys = new List<int>(phases.Keys);
             keys.Sort();
             keys.Reverse();
-            foreach (var key in keys)
+
+            foreach (int key in keys)
             {
                 await phases[key].Stop();
             }
@@ -126,10 +135,10 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
     {
         if (_lifecycleServices == null)
         {
-            var lifeCycles = _context.GetServices<ILifecycle>().ToList();
-            var smartCycles = _context.GetServices<ISmartLifecycle>();
+            List<ILifecycle> lifeCycles = _context.GetServices<ILifecycle>().ToList();
+            IEnumerable<ISmartLifecycle> smartCycles = _context.GetServices<ISmartLifecycle>();
 
-            foreach (var smart in smartCycles)
+            foreach (ISmartLifecycle smart in smartCycles)
             {
                 if (!lifeCycles.Contains(smart))
                 {
@@ -154,8 +163,8 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 
         public int CompareTo(LifecycleGroupMember other)
         {
-            var thisPhase = GetPhase(Bean);
-            var otherPhase = GetPhase(other.Bean);
+            int thisPhase = GetPhase(Bean);
+            int otherPhase = GetPhase(other.Bean);
             return thisPhase.CompareTo(otherPhase);
         }
     }
@@ -166,7 +175,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
 
         private readonly bool _autoStartupOnly;
 
-        private readonly List<LifecycleGroupMember> _members = new ();
+        private readonly List<LifecycleGroupMember> _members = new();
 
         private readonly ILogger _logger;
 
@@ -190,7 +199,8 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
             }
 
             _members.Sort();
-            foreach (var member in _members)
+
+            foreach (LifecycleGroupMember member in _members)
             {
                 await DoStart(member.Bean);
             }
@@ -207,7 +217,8 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
             _members.Reverse();
 
             var tasks = new List<Task>();
-            foreach (var member in _members)
+
+            foreach (LifecycleGroupMember member in _members)
             {
                 tasks.Add(DoStop(member.Bean));
             }
@@ -221,7 +232,7 @@ public class DefaultLifecycleProcessor : ILifecycleProcessor
                 _logger?.LogError(e, "Exception waiting for lifecycle tasks to stop");
             }
 
-            foreach (var task in tasks)
+            foreach (Task task in tasks)
             {
                 if (!task.IsCompleted)
                 {

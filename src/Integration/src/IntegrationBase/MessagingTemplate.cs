@@ -11,29 +11,12 @@ namespace Steeltoe.Integration;
 
 public class MessagingTemplate : MessageChannelTemplate
 {
-    public MessagingTemplate(IApplicationContext context, ILogger logger = null)
-        : base(context, logger)
-    {
-    }
-
-    public MessagingTemplate(IApplicationContext context, IMessageChannel defaultChannel, ILogger logger = null)
-        : base(context, logger)
-    {
-        DefaultSendDestination = DefaultReceiveDestination = defaultChannel;
-    }
-
     public IMessageChannel DefaultDestination
     {
-        get
-        {
-            // Default Receive and Send are kept the same
-            return DefaultReceiveDestination;
-        }
+        // Default Receive and Send are kept the same
+        get => DefaultReceiveDestination;
 
-        set
-        {
-            DefaultSendDestination = DefaultReceiveDestination = value;
-        }
+        set => DefaultSendDestination = DefaultReceiveDestination = value;
     }
 
     public override IMessageChannel DefaultReceiveDestination
@@ -50,17 +33,27 @@ public class MessagingTemplate : MessageChannelTemplate
         set => base.DefaultSendDestination = DefaultReceiveDestination = value;
     }
 
+    public MessagingTemplate(IApplicationContext context, ILogger logger = null)
+        : base(context, logger)
+    {
+    }
+
+    public MessagingTemplate(IApplicationContext context, IMessageChannel defaultChannel, ILogger logger = null)
+        : base(context, logger)
+    {
+        DefaultSendDestination = DefaultReceiveDestination = defaultChannel;
+    }
+
     public object ReceiveAndConvert(IMessageChannel destination, int timeout)
     {
-        var message = DoReceive(destination, timeout);
+        IMessage message = DoReceive(destination, timeout);
+
         if (message != null)
         {
             return DoConvert<object>(message);
         }
-        else
-        {
-            return Task.FromResult<object>(null);
-        }
+
+        return Task.FromResult<object>(null);
     }
 
     public IMessage Receive(IMessageChannel destination, int timeout)

@@ -9,14 +9,17 @@ namespace Steeltoe.Management.Endpoint.Info;
 
 public class EpochSecondsDateTimeConverter : JsonConverter<DateTime>
 {
-    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options) => DateTime.Parse(reader.GetString());
+    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        return DateTime.Parse(reader.GetString());
+    }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
     {
-        var utc = value.ToUniversalTime();
-        var valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
+        DateTime utc = value.ToUniversalTime();
+        long valueToInsert = (utc.Ticks - BaseTime.Ticks) / 10000;
         writer.WriteNumberValue(valueToInsert);
     }
 }

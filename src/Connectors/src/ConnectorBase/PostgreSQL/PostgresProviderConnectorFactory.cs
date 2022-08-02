@@ -11,7 +11,7 @@ public class PostgresProviderConnectorFactory
 {
     private readonly PostgresServiceInfo _info;
     private readonly PostgresProviderConnectorOptions _config;
-    private readonly PostgresProviderConfigurer _configurer = new ();
+    private readonly PostgresProviderConfigurer _configurer = new();
     private readonly Type _type;
 
     public PostgresProviderConnectorFactory(PostgresServiceInfo serviceInfo, PostgresProviderConnectorOptions options, Type type)
@@ -27,8 +27,9 @@ public class PostgresProviderConnectorFactory
 
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -49,6 +50,9 @@ public class PostgresProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        return ReflectionHelpers.CreateInstance(_type, new object[] { connectionString });
+        return ReflectionHelpers.CreateInstance(_type, new object[]
+        {
+            connectionString
+        });
     }
 }

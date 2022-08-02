@@ -12,13 +12,6 @@ namespace Steeltoe.Messaging.Converter;
 public interface IMessageConverterFactory
 {
     /// <summary>
-    /// Obtain a message converter for the given MimeType.
-    /// </summary>
-    /// <param name="mimeType">the MimeType to obtain a converter for.</param>
-    /// <returns>a message converter or null if no converter exists.</returns>
-    IMessageConverter GetMessageConverterForType(MimeType mimeType);
-
-    /// <summary>
     /// Gets a single composite message converter for all registered converters.
     /// </summary>
     ISmartMessageConverter MessageConverterForAllRegistered { get; }
@@ -27,4 +20,15 @@ public interface IMessageConverterFactory
     /// Gets all the message converters provided by this factory.
     /// </summary>
     IList<IMessageConverter> AllRegistered { get; }
+
+    /// <summary>
+    /// Obtain a message converter for the given MimeType.
+    /// </summary>
+    /// <param name="mimeType">
+    /// the MimeType to obtain a converter for.
+    /// </param>
+    /// <returns>
+    /// a message converter or null if no converter exists.
+    /// </returns>
+    IMessageConverter GetMessageConverterForType(MimeType mimeType);
 }

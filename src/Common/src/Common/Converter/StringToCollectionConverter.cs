@@ -8,7 +8,10 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToCollectionConverter : AbstractToCollectionConverter
 {
-    private readonly char[] _delimit = { ',' };
+    private readonly char[] _delimit =
+    {
+        ','
+    };
 
     public StringToCollectionConverter(IConversionService conversionService)
         : base(GetConvertiblePairs(), conversionService)
@@ -32,19 +35,20 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
             return null;
         }
 
-        var sourceString = source as string;
-        var fields = sourceString.Split(_delimit, StringSplitOptions.RemoveEmptyEntries);
-        var targetElementType = ConversionUtils.GetElementType(targetType);
+        string sourceString = source as string;
+        string[] fields = sourceString.Split(_delimit, StringSplitOptions.RemoveEmptyEntries);
+        Type targetElementType = ConversionUtils.GetElementType(targetType);
 
-        var list = ConversionUtils.CreateCompatListFor(targetType);
+        IList list = ConversionUtils.CreateCompatListFor(targetType);
+
         if (list == null)
         {
             throw new InvalidOperationException("Unable to create compatible list");
         }
 
-        foreach (var sourceElement in fields)
+        foreach (string sourceElement in fields)
         {
-            var targetElement = ConversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
+            object targetElement = ConversionService.Convert(sourceElement.Trim(), sourceType, targetElementType);
             list.Add(targetElement);
         }
 
@@ -58,7 +62,7 @@ public class StringToCollectionConverter : AbstractToCollectionConverter
             (typeof(string), typeof(ICollection)),
             (typeof(string), typeof(ICollection<>)),
             (typeof(string), typeof(IEnumerable)),
-            (typeof(string), typeof(IEnumerable<>)),
+            (typeof(string), typeof(IEnumerable<>))
         };
     }
 }

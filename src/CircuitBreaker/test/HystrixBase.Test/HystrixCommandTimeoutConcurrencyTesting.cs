@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.Common.Util;
-using System.Reactive.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -23,9 +23,9 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     [Fact]
     public async Task TestTimeoutRace()
     {
-        var numTrials = 10;
+        int numTrials = 10;
 
-        for (var i = 0; i < numTrials; i++)
+        for (int i = 0; i < numTrials; i++)
         {
             var observables = new List<IObservable<string>>();
             HystrixRequestContext context = null;
@@ -33,16 +33,17 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
             try
             {
                 context = HystrixRequestContext.InitializeContext();
-                for (var j = 0; j < NumConcurrentCommands; j++)
+
+                for (int j = 0; j < NumConcurrentCommands; j++)
                 {
                     observables.Add(new TestCommand().Observe());
                 }
 
-                var overall = observables.Merge();
+                IObservable<string> overall = observables.Merge();
 
-                var results = await overall.ToList().FirstAsync(); // wait for all commands to complete
+                IList<string> results = await overall.ToList().FirstAsync(); // wait for all commands to complete
 
-                foreach (var s in results)
+                foreach (string s in results)
                 {
                     if (s == null)
                     {
@@ -51,7 +52,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                     }
                 }
 
-                foreach (var hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
+                foreach (IHystrixInvokableInfo hi in HystrixRequestLog.CurrentRequestLog.AllExecutedCommands)
                 {
                     if (!hi.IsResponseTimedOut)
                     {
@@ -75,6 +76,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
             finally
             {
                 _output.WriteLine(HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
                 if (context != null)
                 {
                     context.Dispose();
@@ -119,6 +121,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                 FallbackIsolationSemaphoreMaxConcurrentRequests = NumConcurrentCommands,
                 ThreadPoolOptions = GetThreadPoolOptions()
             };
+
             return opts;
         }
 
@@ -130,6 +133,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
                 MaxQueueSize = NumConcurrentCommands,
                 QueueSizeRejectionThreshold = NumConcurrentCommands
             };
+
             return opts;
         }
     }

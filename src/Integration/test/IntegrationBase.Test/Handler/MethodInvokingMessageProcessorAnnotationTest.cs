@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
@@ -16,24 +18,24 @@ namespace Steeltoe.Integration.Handler;
 public class MethodInvokingMessageProcessorAnnotationTest
 {
     private static volatile int _concurrencyFailures;
-    private readonly TestService _testService = new ();
-    private readonly Employee _employee = new ("oleg", "zhurakousky");
+    private readonly TestService _testService = new();
+    private readonly Employee _employee = new("oleg", "zhurakousky");
 
     [Fact]
     public void OptionalHeader()
     {
-        var method = typeof(TestService).GetMethod(nameof(OptionalHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(OptionalHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int?>(context, _testService, method);
-        var result = processor.ProcessMessage(Message.Create("foo"));
+        int? result = processor.ProcessMessage(Message.Create("foo"));
         Assert.Null(result);
     }
 
     [Fact]
     public void RequiredHeaderNotProvided()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
     }
@@ -41,11 +43,11 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void RequiredHeaderNotProvidedOnSecondMessage()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
-        var messageWithHeader = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
-        var messageWithoutHeader = Message.Create("foo");
+        IMessage messageWithHeader = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
+        IMessage<string> messageWithoutHeader = Message.Create("foo");
 
         processor.ProcessMessage(messageWithHeader);
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(messageWithoutHeader));
@@ -54,59 +56,53 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithRequiredHeaderProvided()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
-        var context = GetDefaultContext();
-        var message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.RequiredHeader));
+        IApplicationContext context = GetDefaultContext();
+        IMessage message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
         var processor = new MethodInvokingMessageProcessor<int>(context, _testService, method);
-        var result = processor.ProcessMessage(message);
+        int result = processor.ProcessMessage(message);
         Assert.Equal(123, result);
     }
 
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndOnlyOptionalHeaderProvided()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").Build();
+        IMessage message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").Build();
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(message));
     }
 
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndOnlyRequiredHeaderProvided()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).Build();
+        string result = processor.ProcessMessage(message);
         Assert.Equal("null123", result);
     }
 
     [Fact]
     public void FromMessageWithOptionalAndRequiredHeaderAndBothHeadersProvided()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.OptionalAndRequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<string>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("foo")
-            .SetHeader("num", 123)
-            .SetHeader("prop", "bar")
-            .Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload("foo").SetHeader("num", 123).SetHeader("prop", "bar").Build();
+        string result = processor.ProcessMessage(message);
         Assert.Equal("bar123", result);
     }
 
     [Fact]
     public void FromMessageWithMapAndObjectMethod()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.MapHeadersAndPayload));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.MapHeadersAndPayload));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("test")
-            .SetHeader("prop1", "foo")
-            .SetHeader("prop2", "bar")
-            .Build();
+        IMessage message = MessageBuilder.WithPayload("test").SetHeader("prop1", "foo").SetHeader("prop2", "bar").Build();
         var result = (IDictionary<object, object>)processor.ProcessMessage(message);
         Assert.Equal(5, result.Count);
         Assert.True(result.ContainsKey(MessageHeaders.IdName));
@@ -119,13 +115,10 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithMapMethodAndHeadersAnnotation()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.MapHeaders));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.MapHeaders));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("test")
-            .SetHeader("attrib1", 123)
-            .SetHeader("attrib2", 456)
-            .Build();
+        IMessage message = MessageBuilder.WithPayload("test").SetHeader("attrib1", 123).SetHeader("attrib2", 456).Build();
         var result = (IDictionary<string, object>)processor.ProcessMessage(message);
         Assert.Equal(123, result["attrib1"]);
         Assert.Equal(456, result["attrib2"]);
@@ -134,18 +127,17 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageWithMapMethodAndMapPayload()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.MapPayload));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.MapPayload));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
+
         var payload = new Dictionary<string, int>
         {
             { "attrib1", 88 },
             { "attrib2", 99 }
         };
-        var message = MessageBuilder.WithPayload(payload)
-            .SetHeader("attrib1", 123)
-            .SetHeader("attrib2", 456)
-            .Build();
+
+        IMessage message = MessageBuilder.WithPayload(payload).SetHeader("attrib1", 123).SetHeader("attrib2", 456).Build();
         var result = (IDictionary<string, int>)processor.ProcessMessage(message);
         Assert.Equal(2, result.Count);
         Assert.Equal(88, result["attrib1"]);
@@ -155,35 +147,35 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void HeaderAnnotationWithExpression()
     {
-        var message = GetMessage();
-        var method = typeof(TestService).GetMethod(nameof(TestService.HeaderAnnotationWithExpression));
-        var context = GetDefaultContext();
+        IMessage message = GetMessage();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.HeaderAnnotationWithExpression));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var result = processor.ProcessMessage(message);
+        object result = processor.ProcessMessage(message);
         Assert.Equal("monday", result);
     }
 
     [Fact]
     public void IrrelevantAnnotation()
     {
-        var message = MessageBuilder.WithPayload("foo").Build();
-        var method = typeof(TestService).GetMethod(nameof(TestService.IrrelevantAnnotation));
-        var context = GetDefaultContext();
+        IMessage message = MessageBuilder.WithPayload("foo").Build();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.IrrelevantAnnotation));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
-        var result = processor.ProcessMessage(message);
+        object result = processor.ProcessMessage(message);
         Assert.Equal("foo", result);
     }
 
     [Fact]
     public void MultipleAnnotatedArgs()
     {
-        var message = GetMessage();
-        var method = typeof(TestService).GetMethod(nameof(TestService.MultipleAnnotatedArguments));
-        var context = GetDefaultContext();
+        IMessage message = GetMessage();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.MultipleAnnotatedArguments));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
-        var parameters = (object[])processor.ProcessMessage(message);
+        object[] parameters = (object[])processor.ProcessMessage(message);
         Assert.NotNull(parameters);
         Assert.Equal(5, parameters.Length);
         Assert.Equal("monday", parameters[0]);
@@ -196,11 +188,11 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayload()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.MapOnly));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.MapOnly));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
-        var message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
+        IMessage message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
         var result = processor.ProcessMessage(message) as IDictionary<string, object>;
         Assert.NotNull(result);
         Assert.Equal("jkl", result["number"]);
@@ -209,12 +201,12 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayloadArg()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFirstName));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFirstName));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
-        var message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
-        var result = processor.ProcessMessage(message) as string;
+        IMessage message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
+        string result = processor.ProcessMessage(message) as string;
         Assert.NotNull(result);
         Assert.Equal("oleg", result);
     }
@@ -222,33 +214,33 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToPayloadArgs()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFullName));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.PayloadAnnotationFullName));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
 
-        var message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload(_employee).SetHeader("number", "jkl").Build();
+        object result = processor.ProcessMessage(message);
         Assert.Equal("oleg zhurakousky", result);
     }
 
     [Fact]
     public void FromMessageToPayloadArgsHeaderArgs()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.PayloadArgAndHeaderArg));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.PayloadArgAndHeaderArg));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var message = MessageBuilder.WithPayload(_employee).SetHeader("day", "monday").Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload(_employee).SetHeader("day", "monday").Build();
+        object result = processor.ProcessMessage(message);
         Assert.Equal("olegmonday", result);
     }
 
     [Fact]
     public void FromMessageInvalidMethodWithMultipleMappingAnnotations()
     {
-        var method = typeof(MultipleMappingAnnotationTestBean).GetMethod(nameof(MultipleMappingAnnotationTestBean.Test));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(MultipleMappingAnnotationTestBean).GetMethod(nameof(MultipleMappingAnnotationTestBean.Test));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("payload").SetHeader("foo", "bar").Build();
+        IMessage message = MessageBuilder.WithPayload("payload").SetHeader("foo", "bar").Build();
         Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(message));
     }
 
@@ -266,11 +258,11 @@ public class MethodInvokingMessageProcessorAnnotationTest
     [Fact]
     public void FromMessageToHyphenatedHeaderName()
     {
-        var method = typeof(TestService).GetMethod(nameof(TestService.HeaderNameWithHyphen));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.HeaderNameWithHyphen));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, _testService, method);
-        var message = MessageBuilder.WithPayload("payload").SetHeader("foo-bar", "abc").Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload("payload").SetHeader("foo-bar", "abc").Build();
+        object result = processor.ProcessMessage(message);
         Assert.Equal("ABC", result);
     }
 
@@ -285,7 +277,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     private IMessage GetMessage()
     {
-        var builder = MessageBuilder.WithPayload(_employee);
+        AbstractMessageBuilder builder = MessageBuilder.WithPayload(_employee);
         builder.SetHeader("day", "monday");
         builder.SetHeader("month", "September");
         return builder.Build();
@@ -293,7 +285,7 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class MultipleMappingAnnotationTestBean
     {
-        public void Test([Payload("payload")][Header("foo")] string s)
+        public void Test([Payload("payload")] [Header("foo")] string s)
         {
         }
     }
@@ -302,21 +294,45 @@ public class MethodInvokingMessageProcessorAnnotationTest
     {
         public ISet<string> Ids = new HashSet<string>();
 
-        public System.Collections.IDictionary MapOnly(System.Collections.IDictionary map) => map;
+        public IDictionary MapOnly(IDictionary map)
+        {
+            return map;
+        }
 
-        public string PayloadAnnotationFirstName([Payload("FirstName")] string name) => name;
+        public string PayloadAnnotationFirstName([Payload("FirstName")] string name)
+        {
+            return name;
+        }
 
-        public string PayloadAnnotationFullName([Payload("FirstName")] string first, [Payload("LastName")] string last) => $"{first} {last}";
+        public string PayloadAnnotationFullName([Payload("FirstName")] string first, [Payload("LastName")] string last)
+        {
+            return $"{first} {last}";
+        }
 
-        public string PayloadArgAndHeaderArg([Payload("FirstName")] string name, [Header] string day) => name + day;
+        public string PayloadArgAndHeaderArg([Payload("FirstName")] string name, [Header] string day)
+        {
+            return name + day;
+        }
 
-        public int? OptionalHeader([Header(Required = false)] int? num) => num;
+        public int? OptionalHeader([Header(Required = false)] int? num)
+        {
+            return num;
+        }
 
-        public int RequiredHeader([Header(Name = "num", Required = true)] int num) => num;
+        public int RequiredHeader([Header(Name = "num", Required = true)] int num)
+        {
+            return num;
+        }
 
-        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpper()")] string lastName) => $"{lastName}, {firstName}";
+        public string HeadersWithExpressions([Header("emp.FirstName")] string firstName, [Header("emp.LastName.ToUpper()")] string lastName)
+        {
+            return $"{lastName}, {firstName}";
+        }
 
-        public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num) => (prop ?? "null") + num;
+        public string OptionalAndRequiredHeader([Header(Required = false)] string prop, [Header(Name = "num", Required = true)] int num)
+        {
+            return (prop ?? "null") + num;
+        }
 
         // public Properties propertiesPayload(Properties properties)
         // {
@@ -333,14 +349,21 @@ public class MethodInvokingMessageProcessorAnnotationTest
         //    headers.put("payload", payload);
         //    return headers;
         // }
-        public System.Collections.IDictionary MapPayload(System.Collections.IDictionary map) => map;
+        public IDictionary MapPayload(IDictionary map)
+        {
+            return map;
+        }
 
-        public IDictionary<string, object> MapHeaders([Headers] IDictionary<string, object> map) => map;
+        public IDictionary<string, object> MapHeaders([Headers] IDictionary<string, object> map)
+        {
+            return map;
+        }
 
-        public object MapHeadersAndPayload(System.Collections.IDictionary headers, object payload)
+        public object MapHeadersAndPayload(IDictionary headers, object payload)
         {
             // var map = new Dictionary<string, object>(headers);
             var map = new Dictionary<object, object>();
+
             foreach (KeyValuePair<string, object> kvp in headers)
             {
                 map.Add(kvp.Key, kvp.Value);
@@ -350,16 +373,38 @@ public class MethodInvokingMessageProcessorAnnotationTest
             return map;
         }
 
-        public int IntegerMethod(int i) => i;
+        public int IntegerMethod(int i)
+        {
+            return i;
+        }
 
-        public string HeaderAnnotationWithExpression([Header("day")] string value) => value;
+        public string HeaderAnnotationWithExpression([Header("day")] string value)
+        {
+            return value;
+        }
 
-        public object[] MultipleAnnotatedArguments([Header("day")] string argA, [Header("month")] string argB, [Payload] Employee payloadArg, [Payload("FirstName")] string value, [Headers] IDictionary<string, object> headers)
-            => new object[] { argA, argB, payloadArg, value, headers };
+        public object[] MultipleAnnotatedArguments([Header("day")] string argA, [Header("month")] string argB, [Payload] Employee payloadArg,
+            [Payload("FirstName")] string value, [Headers] IDictionary<string, object> headers)
+        {
+            return new object[]
+            {
+                argA,
+                argB,
+                payloadArg,
+                value,
+                headers
+            };
+        }
 
-        public string IrrelevantAnnotation([Bogus] string value) => value;
+        public string IrrelevantAnnotation([Bogus] string value)
+        {
+            return value;
+        }
 
-        public string HeaderNameWithHyphen([Header("foo-bar")] string foobar) => foobar.ToUpper();
+        public string HeaderNameWithHyphen([Header("foo-bar")] string foobar)
+        {
+            return foobar.ToUpper();
+        }
 
         public string HeaderId(string payload, [Header("id")] string id)
         {
@@ -380,14 +425,14 @@ public class MethodInvokingMessageProcessorAnnotationTest
 
     public class Employee
     {
+        public string FirstName { get; }
+
+        public string LastName { get; }
+
         public Employee(string firstName, string lastName)
         {
             FirstName = firstName;
             LastName = lastName;
         }
-
-        public string FirstName { get; }
-
-        public string LastName { get; }
     }
 }

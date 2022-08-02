@@ -25,16 +25,10 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     private readonly IMappingsOptions _options;
     private readonly IRouteMappings _routeMappings;
 
-    public MappingsEndpointMiddleware(
-        RequestDelegate next,
-        IMappingsOptions options,
-        IManagementOptions managementOptions,
-        MappingsEndpoint endpoint,
-        IRouteMappings routeMappings = null,
-        IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
-        IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null,
-        ILogger<MappingsEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public MappingsEndpointMiddleware(RequestDelegate next, IMappingsOptions options, IManagementOptions managementOptions, MappingsEndpoint endpoint,
+        IRouteMappings routeMappings = null, IActionDescriptorCollectionProvider actionDescriptorCollectionProvider = null,
+        IEnumerable<IApiDescriptionProvider> apiDescriptionProviders = null, ILogger<MappingsEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
         _options = options;
@@ -55,8 +49,8 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     protected internal Task HandleMappingsRequestAsync(HttpContext context)
     {
-        var result = GetApplicationMappings(context);
-        var serialInfo = Serialize(result);
+        ApplicationMappings result = GetApplicationMappings(context);
+        string serialInfo = Serialize(result);
 
         logger?.LogDebug("Returning: {0}", serialInfo);
 
@@ -67,9 +61,10 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     protected internal ApplicationMappings GetApplicationMappings(HttpContext context)
     {
         IDictionary<string, IList<MappingDescription>> desc = new Dictionary<string, IList<MappingDescription>>();
+
         if (_actionDescriptorCollectionProvider != null)
         {
-            var apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
+            ApiDescriptionProviderContext apiContext = GetApiDescriptions(_actionDescriptorCollectionProvider?.ActionDescriptors?.Items);
             desc = GetMappingDescriptions(apiContext);
         }
 
@@ -85,11 +80,12 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     protected internal IDictionary<string, IList<MappingDescription>> GetMappingDescriptions(ApiDescriptionProviderContext apiContext)
     {
         IDictionary<string, IList<MappingDescription>> mappingDescriptions = new Dictionary<string, IList<MappingDescription>>();
-        foreach (var desc in apiContext.Results)
+
+        foreach (ApiDescription desc in apiContext.Results)
         {
             var descriptor = desc.ActionDescriptor as ControllerActionDescriptor;
-            var details = GetRouteDetails(desc);
-            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out var mapList);
+            IRouteDetails details = GetRouteDetails(desc);
+            mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
 
             if (mapList == null)
             {
@@ -101,17 +97,18 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
             mapList.Add(mapDesc);
         }
 
-        foreach (var desc in apiContext.Actions)
+        foreach (ActionDescriptor desc in apiContext.Actions)
         {
             if (desc is ControllerActionDescriptor descriptor)
             {
-                if (apiContext.Results.Any() && mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(descriptor.MethodInfo.ToString()))))
+                if (apiContext.Results.Any() &&
+                    mappingDescriptions.Any(description => description.Value.Any(n => n.Handler.Equals(descriptor.MethodInfo.ToString()))))
                 {
                     continue;
                 }
 
-                var details = GetRouteDetails(desc);
-                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out var mapList);
+                IRouteDetails details = GetRouteDetails(desc);
+                mappingDescriptions.TryGetValue(descriptor.ControllerTypeInfo.FullName, out IList<MappingDescription> mapList);
 
                 if (mapList == null)
                 {
@@ -145,9 +142,10 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         }
 
         var produces = new List<string>();
-        foreach (var respTypes in desc.SupportedResponseTypes)
+
+        foreach (ApiResponseType respTypes in desc.SupportedResponseTypes)
         {
-            foreach (var format in respTypes.ApiResponseFormats)
+            foreach (ApiResponseFormat format in respTypes.ApiResponseFormats)
             {
                 produces.Add(format.MediaType);
             }
@@ -156,7 +154,8 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         routeDetails.Produces = produces;
 
         var consumes = new List<string>();
-        foreach (var reqTypes in desc.SupportedRequestFormats)
+
+        foreach (ApiRequestFormat reqTypes in desc.SupportedRequestFormats)
         {
             consumes.Add(reqTypes.MediaType);
         }
@@ -170,7 +169,10 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     {
         var routeDetails = new AspNetCoreRouteDetails
         {
-            HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string> { MappingDescription.AllHttpMethods },
+            HttpMethods = desc.ActionConstraints?.OfType<HttpMethodActionConstraint>().SingleOrDefault()?.HttpMethods.ToList() ?? new List<string>
+            {
+                MappingDescription.AllHttpMethods
+            },
             Consumes = new List<string>(),
             Produces = new List<string>()
         };
@@ -185,17 +187,17 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
             routeDetails.RouteTemplate = $"/{descriptor.ControllerName}/{descriptor.ActionName}";
         }
 
-        foreach (var filter in desc.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
+        foreach (ProducesAttribute filter in desc.FilterDescriptors.Where(f => f.Filter is ProducesAttribute).Select(f => (ProducesAttribute)f.Filter))
         {
-            foreach (var format in filter.ContentTypes)
+            foreach (string format in filter.ContentTypes)
             {
                 routeDetails.Produces.Add(format);
             }
         }
 
-        foreach (var filter in desc.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
+        foreach (ConsumesAttribute filter in desc.FilterDescriptors.Where(f => f.Filter is ConsumesAttribute).Select(f => (ConsumesAttribute)f.Filter))
         {
-            foreach (var format in filter.ContentTypes)
+            foreach (string format in filter.ContentTypes)
             {
                 routeDetails.Consumes.Add(format);
             }
@@ -222,12 +224,12 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
             return;
         }
 
-        foreach (var router in routeMappings.Routers)
+        foreach (IRouter router in routeMappings.Routers)
         {
             if (router is Route route)
             {
-                var details = GetRouteDetails(route);
-                desc.TryGetValue("CoreRouteHandler", out var mapList);
+                IRouteDetails details = GetRouteDetails(route);
+                desc.TryGetValue("CoreRouteHandler", out IList<MappingDescription> mapList);
 
                 if (mapList == null)
                 {
@@ -245,7 +247,10 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
     {
         if (!string.IsNullOrEmpty(desc.HttpMethod))
         {
-            return new List<string> { desc.HttpMethod };
+            return new List<string>
+            {
+                desc.HttpMethod
+            };
         }
 
         return null;
@@ -253,8 +258,9 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
 
     private IList<string> GetHttpMethods(Route route)
     {
-        var constraints = route.Constraints;
-        if (constraints.TryGetValue("httpMethod", out var routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
+        IDictionary<string, IRouteConstraint> constraints = route.Constraints;
+
+        if (constraints.TryGetValue("httpMethod", out IRouteConstraint routeConstraint) && routeConstraint is HttpMethodRouteConstraint methodConstraint)
         {
             return methodConstraint.AllowedMethods;
         }
@@ -270,7 +276,8 @@ public class MappingsEndpointMiddleware : EndpointMiddleware<ApplicationMappings
         }
 
         var context = new ApiDescriptionProviderContext(actionDescriptors);
-        foreach (var provider in _apiDescriptionProviders)
+
+        foreach (IApiDescriptionProvider provider in _apiDescriptionProviders)
         {
             provider.OnProvidersExecuting(context);
         }

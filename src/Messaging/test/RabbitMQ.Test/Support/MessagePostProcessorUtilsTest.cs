@@ -14,7 +14,7 @@ public class MessagePostProcessorUtilsTest
     [Fact]
     public void TestOrderIng()
     {
-        var pps = new[]
+        MessagePostProcessor[] pps = new[]
         {
             new MessagePostProcessor(),
             new OrderedMessagePostProcessor().Order(3),
@@ -22,10 +22,11 @@ public class MessagePostProcessorUtilsTest
             new PriorityOrderedMessagePostProcessor().Order(6),
             new PriorityOrderedMessagePostProcessor().Order(2)
         };
+
         var list = new List<IMessagePostProcessor>();
         list.AddRange(pps);
-        var sorted = MessagePostProcessorUtils.Sort(list);
-        using var iterator = sorted.GetEnumerator();
+        List<IMessagePostProcessor> sorted = MessagePostProcessorUtils.Sort(list);
+        using List<IMessagePostProcessor>.Enumerator iterator = sorted.GetEnumerator();
 
         iterator.MoveNext();
         Assert.IsType<PriorityOrderedMessagePostProcessor>(iterator.Current);

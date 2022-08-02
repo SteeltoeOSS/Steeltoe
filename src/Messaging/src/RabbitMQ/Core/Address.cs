@@ -9,9 +9,12 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Address
 {
+    private const string AddressPattern = "^(?:.*://)?([^/]*)/?(.*)$";
     public const string AmqRabbitMQReplyTo = "amq.rabbitmq.reply-to";
 
-    private const string AddressPattern = "^(?:.*://)?([^/]*)/?(.*)$";
+    public string ExchangeName { get; }
+
+    public string RoutingKey { get; }
 
     public Address(string exchangeName, string routingKey)
     {
@@ -40,10 +43,11 @@ public class Address
         }
         else
         {
-            var matchFound = Regex.Match(address, AddressPattern);
+            Match matchFound = Regex.Match(address, AddressPattern);
+
             if (matchFound.Success)
             {
-                var groups = matchFound.Groups;
+                GroupCollection groups = matchFound.Groups;
                 ExchangeName = groups[1].Value;
                 RoutingKey = groups[2].Value;
             }
@@ -54,10 +58,6 @@ public class Address
             }
         }
     }
-
-    public string ExchangeName { get; }
-
-    public string RoutingKey { get; }
 
     public override bool Equals(object obj)
     {
@@ -81,7 +81,8 @@ public class Address
 
     public override string ToString()
     {
-        var sb = new StringBuilder(ExchangeName).Append('/');
+        StringBuilder sb = new StringBuilder(ExchangeName).Append('/');
+
         if (!string.IsNullOrEmpty(RoutingKey))
         {
             sb.Append(RoutingKey);

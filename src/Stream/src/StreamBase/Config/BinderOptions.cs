@@ -9,6 +9,10 @@ public class BinderOptions : IBinderOptions
     private const bool InheritEnvironmentDefault = true;
     private const bool DefaultCandidateDefault = true;
 
+    bool IBinderOptions.InheritEnvironment => InheritEnvironment.Value;
+
+    bool IBinderOptions.DefaultCandidate => DefaultCandidate.Value;
+
     public string ConfigureClass { get; set; }
 
     public string ConfigureAssembly { get; set; }
@@ -18,10 +22,6 @@ public class BinderOptions : IBinderOptions
     public bool? InheritEnvironment { get; set; }
 
     public bool? DefaultCandidate { get; set; }
-
-    bool IBinderOptions.InheritEnvironment => InheritEnvironment.Value;
-
-    bool IBinderOptions.DefaultCandidate => DefaultCandidate.Value;
 
     internal void PostProcess()
     {

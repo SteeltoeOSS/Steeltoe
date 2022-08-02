@@ -8,22 +8,24 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common;
 
 public class CompositeStringExpression : IExpression
 {
+    public string ExpressionString { get; }
+
+    public List<IExpression> Expressions { get; }
+
     public CompositeStringExpression(string expressionString, List<IExpression> expressions)
     {
         ExpressionString = expressionString;
         Expressions = expressions;
     }
 
-    public string ExpressionString { get; }
-
-    public List<IExpression> Expressions { get; }
-
     public string GetValue()
     {
         var sb = new StringBuilder();
-        foreach (var expression in Expressions)
+
+        foreach (IExpression expression in Expressions)
         {
-            var value = expression.GetValue(typeof(string));
+            object value = expression.GetValue(typeof(string));
+
             if (value != null)
             {
                 sb.Append(value);
@@ -40,16 +42,18 @@ public class CompositeStringExpression : IExpression
 
     public object GetValue(Type desiredResultType)
     {
-        var value = GetValue();
+        string value = GetValue();
         return ExpressionUtils.ConvertTypedValue(null, new TypedValue(value), desiredResultType);
     }
 
     public string GetValue(object rootObject)
     {
         var sb = new StringBuilder();
-        foreach (var expression in Expressions)
+
+        foreach (IExpression expression in Expressions)
         {
-            var value = expression.GetValue(rootObject, typeof(string));
+            object value = expression.GetValue(rootObject, typeof(string));
+
             if (value != null)
             {
                 sb.Append(value);
@@ -66,16 +70,18 @@ public class CompositeStringExpression : IExpression
 
     public object GetValue(object rootObject, Type desiredResultType)
     {
-        var value = GetValue(rootObject);
+        string value = GetValue(rootObject);
         return ExpressionUtils.ConvertTypedValue(null, new TypedValue(value), desiredResultType);
     }
 
     public string GetValue(IEvaluationContext context)
     {
         var sb = new StringBuilder();
-        foreach (var expression in Expressions)
+
+        foreach (IExpression expression in Expressions)
         {
-            var value = expression.GetValue(context, typeof(string));
+            object value = expression.GetValue(context, typeof(string));
+
             if (value != null)
             {
                 sb.Append(value);
@@ -92,16 +98,18 @@ public class CompositeStringExpression : IExpression
 
     public object GetValue(IEvaluationContext context, Type desiredResultType)
     {
-        var value = GetValue(context);
+        string value = GetValue(context);
         return ExpressionUtils.ConvertTypedValue(context, new TypedValue(value), desiredResultType);
     }
 
     public string GetValue(IEvaluationContext context, object rootObject)
     {
         var sb = new StringBuilder();
-        foreach (var expression in Expressions)
+
+        foreach (IExpression expression in Expressions)
         {
-            var value = expression.GetValue(context, rootObject, typeof(string));
+            object value = expression.GetValue(context, rootObject, typeof(string));
+
             if (value != null)
             {
                 sb.Append(value);
@@ -118,7 +126,7 @@ public class CompositeStringExpression : IExpression
 
     public object GetValue(IEvaluationContext context, object rootObject, Type desiredResultType)
     {
-        var value = GetValue(context, rootObject);
+        string value = GetValue(context, rootObject);
         return ExpressionUtils.ConvertTypedValue(context, new TypedValue(value), desiredResultType);
     }
 

@@ -12,7 +12,8 @@ internal sealed class DefaultPartitionSelector : IPartitionSelectorStrategy
 
     public int SelectPartition(object key, int partitionCount)
     {
-        var hashcode = key.GetHashCode();
+        int hashcode = key.GetHashCode();
+
         if (hashcode == int.MinValue)
         {
             hashcode = 0;

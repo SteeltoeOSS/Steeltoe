@@ -2,19 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public static class RabbitListenerDeclareAttributeProcessor
 {
-    private static readonly Dictionary<string, Queue> QueueMap = new ();
-    private static readonly Dictionary<string, QueueBinding> BindingMap = new ();
+    private static readonly Dictionary<string, Queue> QueueMap = new();
+    private static readonly Dictionary<string, QueueBinding> BindingMap = new();
 
     internal static void ProcessDeclareAttributes(IServiceCollection services, IConfiguration configuration, Type targetClass)
     {
@@ -23,41 +23,43 @@ public static class RabbitListenerDeclareAttributeProcessor
             throw new ArgumentNullException(nameof(targetClass));
         }
 
-        var declareQueues = GetAllAttributes<DeclareQueueAttribute>(targetClass);
-        var queues = ProcessDeclareQueues(services, configuration, declareQueues);
+        List<DeclareQueueAttribute> declareQueues = GetAllAttributes<DeclareQueueAttribute>(targetClass);
+        List<Queue> queues = ProcessDeclareQueues(services, configuration, declareQueues);
         UpdateQueueDeclarations(queues);
 
-        var declareAnonQueues = GetAllAttributes<DeclareAnonymousQueueAttribute>(targetClass);
-        var anonQueues = ProcessDeclareAnonymousQueues(services, configuration, declareAnonQueues);
+        List<DeclareAnonymousQueueAttribute> declareAnonQueues = GetAllAttributes<DeclareAnonymousQueueAttribute>(targetClass);
+        List<Queue> anonQueues = ProcessDeclareAnonymousQueues(services, configuration, declareAnonQueues);
         UpdateQueueDeclarations(anonQueues);
 
-        var declareExchanges = GetAllAttributes<DeclareExchangeAttribute>(targetClass);
+        List<DeclareExchangeAttribute> declareExchanges = GetAllAttributes<DeclareExchangeAttribute>(targetClass);
         ProcessDeclareExchanges(services, configuration, declareExchanges);
 
-        var declareBindings = GetAllAttributes<DeclareQueueBindingAttribute>(targetClass);
-        var bindings = ProcessDeclareQueueBindings(services, configuration, declareBindings);
+        List<DeclareQueueBindingAttribute> declareBindings = GetAllAttributes<DeclareQueueBindingAttribute>(targetClass);
+        List<QueueBinding> bindings = ProcessDeclareQueueBindings(services, configuration, declareBindings);
         UpdateBindingDeclarations(bindings);
     }
 
-    private static List<QueueBinding> ProcessDeclareQueueBindings(IServiceCollection services, IConfiguration config, List<DeclareQueueBindingAttribute> declareBindings)
+    private static List<QueueBinding> ProcessDeclareQueueBindings(IServiceCollection services, IConfiguration config,
+        List<DeclareQueueBindingAttribute> declareBindings)
     {
         var bindings = new List<QueueBinding>();
-        foreach (var b in declareBindings)
+
+        foreach (DeclareQueueBindingAttribute b in declareBindings)
         {
-            var bindingName = PropertyPlaceholderHelper.ResolvePlaceholders(b.Name, config);
+            string bindingName = PropertyPlaceholderHelper.ResolvePlaceholders(b.Name, config);
 
             if (b.RoutingKeys.Length > 0)
             {
-                foreach (var key in b.RoutingKeys)
+                foreach (string key in b.RoutingKeys)
                 {
-                    var binding = BuildBinding(bindingName, b, config, key);
+                    QueueBinding binding = BuildBinding(bindingName, b, config, key);
                     services.AddRabbitBinding(binding);
                     bindings.Add(binding);
                 }
             }
             else
             {
-                var binding = BuildBinding(bindingName, b, config);
+                QueueBinding binding = BuildBinding(bindingName, b, config);
                 services.AddRabbitBinding(binding);
                 bindings.Add(binding);
             }
@@ -68,10 +70,11 @@ public static class RabbitListenerDeclareAttributeProcessor
 
     private static void ProcessDeclareExchanges(IServiceCollection services, IConfiguration config, List<DeclareExchangeAttribute> declareExchanges)
     {
-        foreach (var e in declareExchanges)
+        foreach (DeclareExchangeAttribute e in declareExchanges)
         {
-            var exchangeName = PropertyPlaceholderHelper.ResolvePlaceholders(e.Name, config);
-            var exchange = CreateExchange(exchangeName, e.Type);
+            string exchangeName = PropertyPlaceholderHelper.ResolvePlaceholders(e.Name, config);
+            IExchange exchange = CreateExchange(exchangeName, e.Type);
+
             if (!string.IsNullOrEmpty(e.Durable))
             {
                 exchange.IsDurable = GetBoolean(e.Durable, config, nameof(e.Durable));
@@ -104,7 +107,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
             if (e.Admins.Length > 0)
             {
-                foreach (var a in e.Admins)
+                foreach (string a in e.Admins)
                 {
                     exchange.DeclaringAdmins.Add(a);
                 }
@@ -116,7 +119,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
     private static void UpdateBindingDeclarations(List<QueueBinding> bindings)
     {
-        foreach (var binding in bindings)
+        foreach (QueueBinding binding in bindings)
         {
             BindingMap.TryAdd(binding.ServiceName, binding);
         }
@@ -124,7 +127,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
     private static void UpdateQueueDeclarations(List<Queue> queues)
     {
-        foreach (var queue in queues)
+        foreach (Queue queue in queues)
         {
             QueueMap.TryAdd(queue.ServiceName, queue);
         }
@@ -133,19 +136,22 @@ public static class RabbitListenerDeclareAttributeProcessor
     private static QueueBinding BuildBinding(string bindingName, DeclareQueueBindingAttribute b, IConfiguration config, string routingKey = null)
     {
         var binding = new QueueBinding(bindingName);
+
         if (!string.IsNullOrEmpty(b.QueueName))
         {
-            var reference = PropertyPlaceholderHelper.ResolvePlaceholders(b.QueueName, config);
+            string reference = PropertyPlaceholderHelper.ResolvePlaceholders(b.QueueName, config);
+
             if (ConfigUtils.IsExpression(reference))
             {
                 reference = ConfigUtils.ExtractExpressionString(reference);
+
                 if (ConfigUtils.IsServiceReference(reference))
                 {
                     reference = ConfigUtils.ExtractServiceName(reference);
                 }
             }
 
-            if (QueueMap.TryGetValue(reference, out var queueRef))
+            if (QueueMap.TryGetValue(reference, out Queue queueRef))
             {
                 reference = queueRef.QueueName;
             }
@@ -169,7 +175,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
         if (b.Admins.Length > 0)
         {
-            foreach (var a in b.Admins)
+            foreach (string a in b.Admins)
             {
                 binding.DeclaringAdmins.Add(a);
             }
@@ -211,9 +217,10 @@ public static class RabbitListenerDeclareAttributeProcessor
     private static List<Queue> ProcessDeclareQueues(IServiceCollection services, IConfiguration config, List<DeclareQueueAttribute> declareQueues)
     {
         var queues = new List<Queue>();
-        foreach (var q in declareQueues)
+
+        foreach (DeclareQueueAttribute q in declareQueues)
         {
-            var queueName = PropertyPlaceholderHelper.ResolvePlaceholders(q.Name, config);
+            string queueName = PropertyPlaceholderHelper.ResolvePlaceholders(q.Name, config);
             var queue = new Queue(queueName);
             UpdateQueue(queue, q, config);
             services.AddRabbitQueue(queue);
@@ -223,12 +230,18 @@ public static class RabbitListenerDeclareAttributeProcessor
         return queues;
     }
 
-    private static List<Queue> ProcessDeclareAnonymousQueues(IServiceCollection services, IConfiguration config, List<DeclareAnonymousQueueAttribute> declareQueues)
+    private static List<Queue> ProcessDeclareAnonymousQueues(IServiceCollection services, IConfiguration config,
+        List<DeclareAnonymousQueueAttribute> declareQueues)
     {
         var queues = new List<Queue>();
-        foreach (var q in declareQueues)
+
+        foreach (DeclareAnonymousQueueAttribute q in declareQueues)
         {
-            var queue = new Queue(q.Name, false, true, true) { ServiceName = q.Id };
+            var queue = new Queue(q.Name, false, true, true)
+            {
+                ServiceName = q.Id
+            };
+
             UpdateQueue(queue, q, config);
             services.AddRabbitQueue(queue);
             queues.Add(queue);
@@ -266,7 +279,7 @@ public static class RabbitListenerDeclareAttributeProcessor
 
         if (q.Admins.Length > 0)
         {
-            foreach (var a in q.Admins)
+            foreach (string a in q.Admins)
             {
                 queue.DeclaringAdmins.Add(a);
             }
@@ -276,7 +289,8 @@ public static class RabbitListenerDeclareAttributeProcessor
     private static bool GetBoolean(string value, IConfiguration config, string name)
     {
         value = PropertyPlaceholderHelper.ResolvePlaceholders(value, config);
-        if (bool.TryParse(value, out var result))
+
+        if (bool.TryParse(value, out bool result))
         {
             return result;
         }
@@ -289,12 +303,13 @@ public static class RabbitListenerDeclareAttributeProcessor
     {
         var results = new List<T>();
 
-        var classLevel = targetClass.GetCustomAttributes<T>();
+        IEnumerable<T> classLevel = targetClass.GetCustomAttributes<T>();
         results.AddRange(classLevel);
-        var reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-        foreach (var m in reflectMethods)
+        MethodInfo[] reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (MethodInfo m in reflectMethods)
         {
-            var methodLevel = m.GetCustomAttributes<T>();
+            IEnumerable<T> methodLevel = m.GetCustomAttributes<T>();
             results.AddRange(methodLevel);
         }
 

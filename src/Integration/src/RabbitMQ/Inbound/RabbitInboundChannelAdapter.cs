@@ -18,14 +18,27 @@ using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Support;
+using Steeltoe.Messaging.Support;
 using RabbitConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
 namespace Steeltoe.Integration.Rabbit.Inbound;
 
 public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 {
-    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new ();
+    private static readonly AsyncLocal<IAttributeAccessor> AttributesHolder = new();
     private readonly ILogger _logger;
+
+    private AbstractMessageListenerContainer MessageListenerContainer { get; }
+
+    public ISmartMessageConverter MessageConverter { get; set; } = new RabbitConverter.SimpleMessageConverter();
+
+    public RetryTemplate RetryTemplate { get; set; }
+
+    public IRecoveryCallback RecoveryCallback { get; set; }
+
+    public IBatchingStrategy BatchingStrategy { get; set; } = new SimpleBatchingStrategy(0, 0, 0L);
+
+    public bool BindSourceMessage { get; set; }
 
     public RabbitInboundChannelAdapter(IApplicationContext context, AbstractMessageListenerContainer listenerContainer, ILogger logger = null)
         : base(context, logger)
@@ -38,8 +51,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         if (listenerContainer.MessageListener != null)
         {
             throw new ArgumentException("The listenerContainer provided to a RabbitMQ inbound Channel Adapter " +
-                                        "must not have a MessageListener configured since the adapter " +
-                                        "configures its own listener implementation.");
+                "must not have a MessageListener configured since the adapter " + "configures its own listener implementation.");
         }
 
         _logger = logger;
@@ -50,18 +62,6 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         MessageListenerContainer.MessageListener = messageListener;
         MessageListenerContainer.Initialize();
     }
-
-    public ISmartMessageConverter MessageConverter { get; set; } = new RabbitConverter.SimpleMessageConverter();
-
-    public RetryTemplate RetryTemplate { get; set; }
-
-    public IRecoveryCallback RecoveryCallback { get; set; }
-
-    public IBatchingStrategy BatchingStrategy { get; set; } = new SimpleBatchingStrategy(0, 0, 0L);
-
-    public bool BindSourceMessage { get; set; }
-
-    private AbstractMessageListenerContainer MessageListenerContainer { get; }
 
     protected override Task DoStart()
     {
@@ -75,21 +75,21 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 
     protected override IAttributeAccessor GetErrorMessageAttributes(IMessage message)
     {
-        var attributes = AttributesHolder.Value;
+        IAttributeAccessor attributes = AttributesHolder.Value;
+
         if (attributes == null)
         {
             return base.GetErrorMessageAttributes(message);
         }
-        else
-        {
-            return attributes;
-        }
+
+        return attributes;
     }
 
     private void SetAttributesIfNecessary(IMessage original, IMessage endMessage)
     {
-        var needHolder = ErrorChannel != null && RetryTemplate == null;
-        var needAttributes = needHolder || RetryTemplate != null;
+        bool needHolder = ErrorChannel != null && RetryTemplate == null;
+        bool needAttributes = needHolder || RetryTemplate != null;
+
         if (needHolder)
         {
             AttributesHolder.Value = ErrorMessageUtils.GetAttributeAccessor(null, null);
@@ -97,7 +97,8 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
 
         if (needAttributes)
         {
-            var attributes = RetryTemplate != null ? RetrySynchronizationManager.GetContext() : AttributesHolder.Value;
+            IAttributeAccessor attributes = RetryTemplate != null ? RetrySynchronizationManager.GetContext() : AttributesHolder.Value;
+
             if (attributes != null)
             {
                 attributes.SetAttribute(ErrorMessageUtils.InputMessageContextKey, endMessage);
@@ -111,17 +112,20 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         private readonly RabbitInboundChannelAdapter _adapter;
         private readonly ILogger _logger;
 
+        private bool IsManualAck => _adapter.MessageListenerContainer.AcknowledgeMode == AcknowledgeMode.Manual;
+
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
         public Listener(RabbitInboundChannelAdapter adapter, ILogger logger)
         {
             _adapter = adapter;
             _logger = logger;
         }
 
-        public AcknowledgeMode ContainerAckMode { get; set; }
-
         public void OnMessage(IMessage message, IModel channel)
         {
-            var retryDisabled = _adapter.RetryTemplate == null;
+            bool retryDisabled = _adapter.RetryTemplate == null;
+
             try
             {
                 if (retryDisabled)
@@ -130,24 +134,24 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                 }
                 else
                 {
-                    var toSend = CreateMessage(message, channel);
-                    _adapter.RetryTemplate.Execute(
-                        context =>
+                    IMessage toSend = CreateMessage(message, channel);
+
+                    _adapter.RetryTemplate.Execute(context =>
+                    {
+                        try
                         {
-                            try
-                            {
-                                _logger?.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
-                                var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DeliveryAttempt);
-                                deliveryAttempts?.IncrementAndGet();
-                                _adapter.SetAttributesIfNecessary(message, toSend);
-                                _adapter.SendMessage(message);
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger?.LogError(ex, ex.Message, context);
-                                throw;
-                            }
-                        }, _adapter.RecoveryCallback);
+                            _logger?.LogTrace($"RabbitInboundChannelAdapter::OnMessage Context: {context}");
+                            var deliveryAttempts = message.Headers.Get<AtomicInteger>(IntegrationMessageHeaderAccessor.DeliveryAttempt);
+                            deliveryAttempts?.IncrementAndGet();
+                            _adapter.SetAttributesIfNecessary(message, toSend);
+                            _adapter.SendMessage(message);
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger?.LogError(ex, ex.Message, context);
+                            throw;
+                        }
+                    }, _adapter.RecoveryCallback);
                 }
             }
             catch (MessageConversionException e)
@@ -155,7 +159,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                 if (_adapter.ErrorChannel != null)
                 {
                     _adapter.SetAttributesIfNecessary(message, null);
-                    var errorMessage = _adapter.BuildErrorMessage(null, EndpointUtils.CreateErrorMessagePayload(message, channel, IsManualAck, e));
+                    ErrorMessage errorMessage = _adapter.BuildErrorMessage(null, EndpointUtils.CreateErrorMessagePayload(message, channel, IsManualAck, e));
                     _adapter.MessagingTemplate.Send(_adapter.ErrorChannel, errorMessage);
                 }
                 else
@@ -187,17 +191,9 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
             throw new NotSupportedException("This listener does not support message batches");
         }
 
-        private bool IsManualAck
-        {
-            get
-            {
-                return _adapter.MessageListenerContainer.AcknowledgeMode == AcknowledgeMode.Manual;
-            }
-        }
-
         private void CreateAndSend(IMessage message, IModel channel)
         {
-            var toSend = CreateMessage(message, channel);
+            IMessage toSend = CreateMessage(message, channel);
             _adapter.SetAttributesIfNecessary(message, toSend);
             _adapter.SendMessage(toSend);
         }
@@ -205,6 +201,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         private IMessage CreateMessage(IMessage message, IModel channel)
         {
             object payload;
+
             if (_adapter.BatchingStrategy.CanDebatch(message.Headers))
             {
                 var payloads = new List<object>();
@@ -216,7 +213,8 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                 payload = _adapter.MessageConverter.FromMessage(message, null);
             }
 
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+
             if (IsManualAck)
             {
                 accessor.SetHeader(RabbitMessageHeaders.DeliveryTag, message.Headers.DeliveryTag());
@@ -233,10 +231,7 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
                 accessor.SetHeader(IntegrationMessageHeaderAccessor.SourceData, message);
             }
 
-            var messagingMessage = _adapter.IntegrationServices.MessageBuilderFactory
-                .WithPayload(payload)
-                .CopyHeaders(accessor.MessageHeaders)
-                .Build();
+            IMessage messagingMessage = _adapter.IntegrationServices.MessageBuilderFactory.WithPayload(payload).CopyHeaders(accessor.MessageHeaders).Build();
 
             return messagingMessage;
         }

@@ -17,10 +17,11 @@ public class ConfigurationAccessorTests
 
     public ConfigurationAccessorTests()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(
-                new Dictionary<string, string> { { "my.name", "myservice" } })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "my.name", "myservice" }
+        }).Build();
+
         var collection = new ServiceCollection();
         collection.AddSingleton<IConfiguration>(config);
         collection.AddSingleton<IApplicationContext>(p => new GenericApplicationContext(p, config));
@@ -38,7 +39,7 @@ public class ConfigurationAccessorTests
         var sep = new SpelExpressionParser();
 
         // basic
-        var ex = sep.ParseExpression("configuration['my.name']");
+        IExpression ex = sep.ParseExpression("configuration['my.name']");
         Assert.Equal("myservice", ex.GetValue<string>(context));
     }
 }

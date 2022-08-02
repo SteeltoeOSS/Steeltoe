@@ -16,22 +16,23 @@ public class RoundRobinDispatcherTest
 {
     private readonly UnicastingDispatcher _dispatcher;
 
-    private readonly Mock<IMessage> _messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new();
 
-    private readonly Mock<IMessageHandler> _handlerMock = new ();
+    private readonly Mock<IMessageHandler> _handlerMock = new();
 
-    private readonly Mock<IMessageHandler> _differentHandlerMock = new ();
+    private readonly Mock<IMessageHandler> _differentHandlerMock = new();
 
     private readonly IServiceProvider _provider;
 
     public RoundRobinDispatcherTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _provider = services.BuildServiceProvider();
+
         _dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>())
         {
             LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy()
@@ -62,7 +63,8 @@ public class RoundRobinDispatcherTest
     {
         _dispatcher.AddHandler(_handlerMock.Object);
         _dispatcher.AddHandler(_differentHandlerMock.Object);
-        for (var i = 0; i < 7; i++)
+
+        for (int i = 0; i < 7; i++)
         {
             _dispatcher.Dispatch(_messageMock.Object);
         }
@@ -79,7 +81,7 @@ public class RoundRobinDispatcherTest
         var balancer = _dispatcher.LoadBalancingStrategy as RoundRobinLoadBalancingStrategy;
         balancer.CurrentHandlerIndex = int.MaxValue - 5;
 
-        for (var i = 0; i < 40; i++)
+        for (int i = 0; i < 40; i++)
         {
             _dispatcher.Dispatch(_messageMock.Object);
         }
@@ -101,7 +103,7 @@ public class RoundRobinDispatcherTest
     public void TestNoExceptionEnhancement()
     {
         _dispatcher.AddHandler(_handlerMock.Object);
-        var doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
+        IMessage doNotReplaceThisMessage = IntegrationMessageBuilder.WithPayload("x").Build();
         _handlerMock.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessagingException(doNotReplaceThisMessage, "Mock Exception"));
         var ex = Assert.Throws<MessagingException>(() => _dispatcher.Dispatch(_messageMock.Object));
         Assert.Equal("Mock Exception", ex.Message);

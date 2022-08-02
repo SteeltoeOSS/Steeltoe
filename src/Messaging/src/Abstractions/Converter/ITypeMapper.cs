@@ -6,13 +6,13 @@ namespace Steeltoe.Messaging.Converter;
 
 public interface ITypeMapper
 {
+    TypePrecedence Precedence { get; set; }
+
+    Type DefaultType { get; set; }
+
     void FromType(Type type, IMessageHeaders headers);
 
     Type ToType(IMessageHeaders headers);
 
-    TypePrecedence Precedence { get; set; }
-
     Type GetInferredType(IMessageHeaders headers);
-
-    Type DefaultType { get; set; }
 }

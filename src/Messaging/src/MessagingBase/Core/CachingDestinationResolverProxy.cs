@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.Core;
 
 public class CachingDestinationResolverProxy<TDestination> : IDestinationResolver<TDestination>
 {
-    private readonly ConcurrentDictionary<string, TDestination> _resolvedDestinationCache = new ();
+    private readonly ConcurrentDictionary<string, TDestination> _resolvedDestinationCache = new();
 
     private readonly IDestinationResolver<TDestination> _targetDestinationResolver;
 
@@ -19,7 +19,8 @@ public class CachingDestinationResolverProxy<TDestination> : IDestinationResolve
 
     public TDestination ResolveDestination(string name)
     {
-        _resolvedDestinationCache.TryGetValue(name, out var destination);
+        _resolvedDestinationCache.TryGetValue(name, out TDestination destination);
+
         if (destination == null)
         {
             destination = _targetDestinationResolver.ResolveDestination(name);
@@ -31,7 +32,7 @@ public class CachingDestinationResolverProxy<TDestination> : IDestinationResolve
 
     object IDestinationResolver.ResolveDestination(string name)
     {
-        var result = ResolveDestination(name);
+        TDestination result = ResolveDestination(name);
         return result;
     }
 }

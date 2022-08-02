@@ -11,23 +11,7 @@ public class ThisServiceInstance : IServiceInstance
 {
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
-    private EurekaInstanceOptions InstConfig
-    {
-        get
-        {
-            return _instConfig.CurrentValue;
-        }
-    }
-
-    public ThisServiceInstance(IOptionsMonitor<EurekaInstanceOptions> instConfig)
-    {
-        _instConfig = instConfig;
-    }
-
-    public string GetHost()
-    {
-        return InstConfig.GetHostName(false);
-    }
+    private EurekaInstanceOptions InstConfig => _instConfig.CurrentValue;
 
     public bool IsSecure => InstConfig.SecurePortEnabled;
 
@@ -43,12 +27,22 @@ public class ThisServiceInstance : IServiceInstance
     {
         get
         {
-            var scheme = IsSecure ? "https" : "http";
-            var uriPort = IsSecure ? SecurePort : Port;
+            string scheme = IsSecure ? "https" : "http";
+            int uriPort = IsSecure ? SecurePort : Port;
             var uri = new Uri($"{scheme}://{GetHost()}:{uriPort}");
             return uri;
         }
     }
 
     public string Host => GetHost();
+
+    public ThisServiceInstance(IOptionsMonitor<EurekaInstanceOptions> instConfig)
+    {
+        _instConfig = instConfig;
+    }
+
+    public string GetHost()
+    {
+        return InstConfig.GetHostName(false);
+    }
 }

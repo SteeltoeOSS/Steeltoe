@@ -21,9 +21,7 @@ public class RabbitMQHostTest
     {
         MockRabbitHostedService hostedService;
 
-        using (var host = RabbitMQHost.CreateDefaultBuilder()
-                   .ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>())
-                   .Start())
+        using (IHost host = RabbitMQHost.CreateDefaultBuilder().ConfigureServices(svc => svc.AddSingleton<IHostedService, MockRabbitHostedService>()).Start())
         {
             Assert.NotNull(host);
             hostedService = (MockRabbitHostedService)host.Services.GetRequiredService<IHostedService>();
@@ -41,7 +39,7 @@ public class RabbitMQHostTest
     [Fact]
     public void HostShouldInitializeServices()
     {
-        using var host = RabbitMQHost.CreateDefaultBuilder().Start();
+        using IHost host = RabbitMQHost.CreateDefaultBuilder().Start();
         var lifecycleProcessor = host.Services.GetRequiredService<ILifecycleProcessor>();
         var rabbitHostService = (RabbitHostService)host.Services.GetRequiredService<IHostedService>();
 
@@ -52,14 +50,14 @@ public class RabbitMQHostTest
     [Fact]
     public void HostShouldAddRabbitOptionsConfiguration()
     {
-        var hostBuilder = RabbitMQHost.CreateDefaultBuilder();
+        IHostBuilder hostBuilder = RabbitMQHost.CreateDefaultBuilder();
 
         var appSettings = new Dictionary<string, string>
         {
             [$"{RabbitOptions.Prefix}:host"] = "ThisIsATest",
             [$"{RabbitOptions.Prefix}:port"] = "1234",
             [$"{RabbitOptions.Prefix}:username"] = "TestUser",
-            [$"{RabbitOptions.Prefix}:password"] = "TestPassword",
+            [$"{RabbitOptions.Prefix}:password"] = "TestPassword"
         };
 
         hostBuilder.ConfigureAppConfiguration(configBuilder =>
@@ -67,8 +65,8 @@ public class RabbitMQHostTest
             configBuilder.AddInMemoryCollection(appSettings);
         });
 
-        using var host = hostBuilder.Start();
-        var rabbitOptions = host.Services.GetService<IOptions<RabbitOptions>>()?.Value;
+        using IHost host = hostBuilder.Start();
+        RabbitOptions rabbitOptions = host.Services.GetService<IOptions<RabbitOptions>>()?.Value;
 
         Assert.NotNull(rabbitOptions);
         Assert.Equal("ThisIsATest", rabbitOptions.Host);
@@ -80,9 +78,12 @@ public class RabbitMQHostTest
     [Fact]
     public void HostShouldSendCommandLineArgs()
     {
-        var hostBuilder = RabbitMQHost.CreateDefaultBuilder(new[] { "RabbitHostCommandKey=RabbitHostCommandValue" });
+        IHostBuilder hostBuilder = RabbitMQHost.CreateDefaultBuilder(new[]
+        {
+            "RabbitHostCommandKey=RabbitHostCommandValue"
+        });
 
-        using var host = hostBuilder.Start();
+        using IHost host = hostBuilder.Start();
         var config = host.Services.GetService<IConfiguration>();
 
         Assert.Equal("RabbitHostCommandValue", config["RabbitHostCommandKey"]);
@@ -91,9 +92,7 @@ public class RabbitMQHostTest
     [Fact]
     public void ShouldWorkWithRabbitMQConnection()
     {
-        using var host = RabbitMQHost.CreateDefaultBuilder()
-            .ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build()))
-            .Start();
+        using IHost host = RabbitMQHost.CreateDefaultBuilder().ConfigureServices(svc => svc.AddRabbitMQConnection(new ConfigurationBuilder().Build())).Start();
         var connectionFactory = host.Services.GetRequiredService<RC.IConnectionFactory>();
 
         Assert.NotNull(connectionFactory);

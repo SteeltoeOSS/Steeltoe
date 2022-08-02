@@ -11,14 +11,13 @@ public class ProducerOptions : IProducerOptions
     private const bool UseNativeEncodingDefault = false;
     private const bool IsErrorChannelEnabledDefault = false;
 
-    public ProducerOptions()
-    {
-    }
+    bool IProducerOptions.AutoStartup => AutoStartup.Value;
 
-    public ProducerOptions(string bindingName)
-    {
-        BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
-    }
+    HeaderMode IProducerOptions.HeaderMode => HeaderMode.Value;
+
+    bool IProducerOptions.UseNativeEncoding => UseNativeEncoding.Value;
+
+    bool IProducerOptions.ErrorChannelEnabled => ErrorChannelEnabled.Value;
 
     public string BindingName { get; set; }
 
@@ -42,23 +41,16 @@ public class ProducerOptions : IProducerOptions
 
     public bool? ErrorChannelEnabled { get; set; }
 
-    public bool IsPartitioned
+    public bool IsPartitioned => PartitionKeyExpression != null || PartitionCount > 1 || PartitionKeyExtractorName != null;
+
+    public ProducerOptions()
     {
-        get
-        {
-            return PartitionKeyExpression != null
-                   || PartitionCount > 1
-                   || PartitionKeyExtractorName != null;
-        }
     }
 
-    bool IProducerOptions.AutoStartup => AutoStartup.Value;
-
-    HeaderMode IProducerOptions.HeaderMode => HeaderMode.Value;
-
-    bool IProducerOptions.UseNativeEncoding => UseNativeEncoding.Value;
-
-    bool IProducerOptions.ErrorChannelEnabled => ErrorChannelEnabled.Value;
+    public ProducerOptions(string bindingName)
+    {
+        BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
+    }
 
     public IProducerOptions Clone()
     {

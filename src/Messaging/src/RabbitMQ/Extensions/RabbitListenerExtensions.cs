@@ -17,9 +17,10 @@ public static class RabbitListenerExtensions
             throw new ArgumentNullException(nameof(services));
         }
 
-        foreach (var t in listenerServices)
+        foreach (Type t in listenerServices)
         {
             var metadata = RabbitListenerMetadata.BuildMetadata(services, t);
+
             if (metadata != null)
             {
                 services.AddSingleton(metadata);

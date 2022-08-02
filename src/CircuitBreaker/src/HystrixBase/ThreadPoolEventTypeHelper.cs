@@ -22,7 +22,7 @@ public static class ThreadPoolEventTypeHelper
         {
             HystrixRollingNumberEvent.ThreadExecution => ThreadPoolEventType.Executed,
             HystrixRollingNumberEvent.ThreadPoolRejected => ThreadPoolEventType.Rejected,
-            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.ThreadPool : {@event}"),
+            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.ThreadPool : {@event}")
         };
     }
 
@@ -35,7 +35,7 @@ public static class ThreadPoolEventTypeHelper
             HystrixEventType.Timeout => ThreadPoolEventType.Executed,
             HystrixEventType.BadRequest => ThreadPoolEventType.Executed,
             HystrixEventType.ThreadPoolRejected => ThreadPoolEventType.Rejected,
-            _ => ThreadPoolEventType.Unknown,
+            _ => ThreadPoolEventType.Unknown
         };
     }
 }

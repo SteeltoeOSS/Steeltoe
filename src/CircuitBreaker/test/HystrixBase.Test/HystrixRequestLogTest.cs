@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reactive.Linq;
 using System.Text.RegularExpressions;
+using Steeltoe.Common.Util;
 using Xunit;
 
 // TODO: Fix violations and remove the next suppression, by either:
@@ -23,7 +23,7 @@ public class HystrixRequestLogTest : HystrixTestBase
     public void TestSuccess()
     {
         new TestCommand("A", false, true).Execute();
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
@@ -41,7 +41,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         new TestCommand("A", false, true).Execute();
         new TestCommand("A", false, true).Execute();
         new TestCommand("A", false, true).Execute();
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
@@ -59,7 +59,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         new TestCommand("A", true, false).Execute();
         new TestCommand("A", true, false).Execute();
         new TestCommand("A", true, false).Execute();
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
@@ -87,7 +87,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         {
         }
 
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
@@ -102,7 +102,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         // 1 timeout
         try
         {
-            for (var i = 0; i < 1; i++)
+            for (int i = 0; i < 1; i++)
             {
                 result = new TestCommand("A", false, false, true).Observe();
             }
@@ -120,7 +120,7 @@ public class HystrixRequestLogTest : HystrixTestBase
         }
 
         // System.out.println(Thread.currentThread().getName() + " : " + System.currentTimeMillis() + " -> done with awaiting all observables");
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
@@ -130,7 +130,7 @@ public class HystrixRequestLogTest : HystrixTestBase
     [Fact]
     public void TestManyTimeouts()
     {
-        for (var i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             TestTimeout();
             Reset();
@@ -170,23 +170,26 @@ public class HystrixRequestLogTest : HystrixTestBase
         {
         }
 
-        var log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
+        string log = HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString();
 
         // strip the actual count so we can compare reliably
         log = Regex.Replace(log, DigitsRegex, "[");
-        Assert.Equal("GetData[SUCCESS][ms], PutData[SUCCESS][ms], GetValues[SUCCESS][ms], GetValues[SUCCESS, RESPONSE_FROM_CACHE][ms], TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]", log);
+
+        Assert.Equal(
+            "GetData[SUCCESS][ms], PutData[SUCCESS][ms], GetValues[SUCCESS][ms], GetValues[SUCCESS, RESPONSE_FROM_CACHE][ms], TestCommand[FAILURE, FALLBACK_FAILURE][ms], TestCommand[FAILURE, FALLBACK_FAILURE, RESPONSE_FROM_CACHE][ms]",
+            log);
     }
 
     [Fact]
     public void TestMaxLimit()
     {
-        for (var i = 0; i < HystrixRequestLog.MaxStorage; i++)
+        for (int i = 0; i < HystrixRequestLog.MaxStorage; i++)
         {
             new TestCommand("A", false, true).Execute();
         }
 
         // then execute again some more
-        for (var i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             new TestCommand("A", false, true).Execute();
         }
@@ -202,6 +205,19 @@ public class HystrixRequestLogTest : HystrixTestBase
         private readonly bool _timeout;
         private readonly bool _useFallback;
         private readonly bool _useCache;
+
+        protected override string CacheKey
+        {
+            get
+            {
+                if (_useCache)
+                {
+                    return _value;
+                }
+
+                return null;
+            }
+        }
 
         public TestCommand(string commandName, string value, bool fail, bool failOnFallback)
             : base(new HystrixCommandOptions
@@ -251,7 +267,8 @@ public class HystrixRequestLogTest : HystrixTestBase
             {
                 throw new Exception("forced failure");
             }
-            else if (_timeout)
+
+            if (_timeout)
             {
                 Time.WaitUntil(() => Token.IsCancellationRequested, 10000);
                 Token.ThrowIfCancellationRequested();
@@ -271,30 +288,11 @@ public class HystrixRequestLogTest : HystrixTestBase
                 {
                     throw new Exception("forced fallback failure");
                 }
-                else
-                {
-                    return $"{_value}-fallback";
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("no fallback implemented");
-            }
-        }
 
-        protected override string CacheKey
-        {
-            get
-            {
-                if (_useCache)
-                {
-                    return _value;
-                }
-                else
-                {
-                    return null;
-                }
+                return $"{_value}-fallback";
             }
+
+            throw new InvalidOperationException("no fallback implemented");
         }
     }
 }

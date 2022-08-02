@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class FanOutExchange : AbstractExchange, IFanOutExchange
 {
+    public override string Type { get; } = ExchangeType.FanOut;
+
     public FanOutExchange(string name)
         : base(name)
     {
@@ -20,6 +22,4 @@ public class FanOutExchange : AbstractExchange, IFanOutExchange
         : base(name, durable, autoDelete, arguments)
     {
     }
-
-    public override string Type { get; } = ExchangeType.FanOut;
 }

@@ -7,15 +7,26 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class RsaSetRequest : CredentialSetRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RsaSetRequest"/> class.
+    /// Initializes a new instance of the <see cref="RsaSetRequest" /> class.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="privateKey">Private key for the credential.</param>
-    /// <param name="publicKey">Public key for the credential.</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="privateKey">
+    /// Private key for the credential.
+    /// </param>
+    /// <param name="publicKey">
+    /// Public key for the credential.
+    /// </param>
     public RsaSetRequest(string credentialName, string privateKey, string publicKey)
     {
         Name = credentialName;
         Type = CredentialType.RSA;
-        Value = new RsaCredential { PrivateKey = privateKey, PublicKey = publicKey };
+
+        Value = new RsaCredential
+        {
+            PrivateKey = privateKey,
+            PublicKey = publicKey
+        };
     }
 }

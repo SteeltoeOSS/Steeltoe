@@ -12,7 +12,7 @@ public class PostgreSqlTypeLocatorTest
     public void Property_Can_Locate_ConnectionType()
     {
         // arrange -- handled by including a compatible PostgreSql NuGet package
-        var type = PostgreSqlTypeLocator.NpgsqlConnection;
+        Type type = PostgreSqlTypeLocator.NpgsqlConnection;
 
         Assert.NotNull(type);
     }
@@ -20,8 +20,12 @@ public class PostgreSqlTypeLocatorTest
     [Fact]
     public void Throws_When_ConnectionType_NotFound()
     {
-        var types = PostgreSqlTypeLocator.ConnectionTypeNames;
-        PostgreSqlTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
+        string[] types = PostgreSqlTypeLocator.ConnectionTypeNames;
+
+        PostgreSqlTypeLocator.ConnectionTypeNames = new[]
+        {
+            "something-Wrong"
+        };
 
         var exception = Assert.Throws<TypeLoadException>(() => PostgreSqlTypeLocator.NpgsqlConnection);
 

@@ -21,11 +21,6 @@ public sealed class HystrixTimerTest : IDisposable
         _output = output;
     }
 
-    public void Dispose()
-    {
-        HystrixPlugins.Reset();
-    }
-
     [Fact]
     [Trait("Category", "FlakyOnHostedAgents")]
     public void TestSingleCommandSingleInterval()
@@ -98,7 +93,7 @@ public sealed class HystrixTimerTest : IDisposable
         timer.AddTimerListener(l1);
 
         var l2 = new TestListener(50);
-        var l2Ref = timer.AddTimerListener(l2);
+        TimerReference l2Ref = timer.AddTimerListener(l2);
 
         try
         {
@@ -150,9 +145,9 @@ public sealed class HystrixTimerTest : IDisposable
     {
         var timer = HystrixTimer.GetInstance();
         var l1 = new TestListener(50);
-        var reference = timer.AddTimerListener(l1);
+        TimerReference reference = timer.AddTimerListener(l1);
 
-        var ex = reference.TimerTask;
+        Task ex = reference.TimerTask;
 
         Assert.False(ex.IsCanceled);
 
@@ -168,9 +163,9 @@ public sealed class HystrixTimerTest : IDisposable
 
         // assert it starts up again on use
         var l2 = new TestListener(50);
-        var reference2 = timer.AddTimerListener(l2);
+        TimerReference reference2 = timer.AddTimerListener(l2);
 
-        var ex2 = reference2.TimerTask;
+        Task ex2 = reference2.TimerTask;
 
         Assert.False(ex2.IsCanceled);
 
@@ -181,9 +176,16 @@ public sealed class HystrixTimerTest : IDisposable
         HystrixTimer.Reset();
     }
 
+    public void Dispose()
+    {
+        HystrixPlugins.Reset();
+    }
+
     private sealed class TestListener : ITimerListener
     {
-        public AtomicInteger TickCount = new ();
+        public readonly AtomicInteger TickCount = new();
+
+        public int IntervalTimeInMilliseconds { get; }
 
         public TestListener(int interval)
         {
@@ -194,7 +196,5 @@ public sealed class HystrixTimerTest : IDisposable
         {
             TickCount.IncrementAndGet();
         }
-
-        public int IntervalTimeInMilliseconds { get; private set; }
     }
 }

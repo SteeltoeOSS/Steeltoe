@@ -4,8 +4,8 @@
 
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
-using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Common.Util;
+using Steeltoe.Discovery.Eureka.AppInfo;
 
 namespace Steeltoe.Discovery.Eureka;
 
@@ -15,7 +15,10 @@ public class EurekaServerHealthContributor : IHealthContributor
     private readonly EurekaApplicationInfoManager _appInfoManager;
     private readonly ILogger<EurekaServerHealthContributor> _logger;
 
-    public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, EurekaApplicationInfoManager appInfoManager, ILogger<EurekaServerHealthContributor> logger = null)
+    public string Id => "eurekaServer";
+
+    public EurekaServerHealthContributor(EurekaDiscoveryClient discoveryClient, EurekaApplicationInfoManager appInfoManager,
+        ILogger<EurekaServerHealthContributor> logger = null)
     {
         _discoveryClient = discoveryClient;
         _appInfoManager = appInfoManager;
@@ -37,11 +40,14 @@ public class EurekaServerHealthContributor : IHealthContributor
 
     internal void AddHealthStatus(HealthCheckResult result)
     {
-        var remoteStatus = AddRemoteInstanceStatus(_discoveryClient.LastRemoteInstanceStatus, result);
-        var fetchStatus = AddFetchStatus(_discoveryClient.ClientConfig, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
-        var heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfig, _appInfoManager.InstanceConfig, result, _discoveryClient.LastGoodHeartbeatTimestamp);
+        HealthStatus remoteStatus = AddRemoteInstanceStatus(_discoveryClient.LastRemoteInstanceStatus, result);
+        HealthStatus fetchStatus = AddFetchStatus(_discoveryClient.ClientConfig, result, _discoveryClient.LastGoodRegistryFetchTimestamp);
+
+        HealthStatus heartBeatStatus = AddHeartbeatStatus(_discoveryClient.ClientConfig, _appInfoManager.InstanceConfig, result,
+            _discoveryClient.LastGoodHeartbeatTimestamp);
 
         result.Status = remoteStatus;
+
         if (fetchStatus > result.Status)
         {
             result.Status = fetchStatus;
@@ -57,16 +63,18 @@ public class EurekaServerHealthContributor : IHealthContributor
 
     internal HealthStatus AddRemoteInstanceStatus(InstanceStatus lastRemoteInstanceStatus, HealthCheckResult result)
     {
-        var remoteStatus = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
+        HealthStatus remoteStatus = MakeHealthStatus(_discoveryClient.LastRemoteInstanceStatus);
         result.Details.Add("remoteInstStatus", remoteStatus.ToString());
         return remoteStatus;
     }
 
-    internal HealthStatus AddHeartbeatStatus(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, HealthCheckResult result, long lastGoodHeartbeatTimeTicks)
+    internal HealthStatus AddHeartbeatStatus(IEurekaClientConfig clientConfig, IEurekaInstanceConfig instanceConfig, HealthCheckResult result,
+        long lastGoodHeartbeatTimeTicks)
     {
         if (clientConfig != null && clientConfig.ShouldRegisterWithEureka)
         {
-            var lastGoodHeartbeatPeriod = GetLastGoodHeartbeatTimePeriod(lastGoodHeartbeatTimeTicks);
+            long lastGoodHeartbeatPeriod = GetLastGoodHeartbeatTimePeriod(lastGoodHeartbeatTimeTicks);
+
             if (lastGoodHeartbeatPeriod <= 0)
             {
                 result.Details.Add("heartbeat", "Not yet successfully connected");
@@ -74,7 +82,8 @@ public class EurekaServerHealthContributor : IHealthContributor
                 result.Details.Add("heartbeatTime", "UNKNOWN");
                 return HealthStatus.Unknown;
             }
-            else if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
+
+            if (lastGoodHeartbeatPeriod > instanceConfig.LeaseRenewalIntervalInSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("heartbeat", "Reporting failures connecting");
                 result.Details.Add("heartbeatStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -97,7 +106,8 @@ public class EurekaServerHealthContributor : IHealthContributor
     {
         if (clientConfig != null && clientConfig.ShouldFetchRegistry)
         {
-            var lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
+            long lastGoodFetchPeriod = GetLastGoodRegistryFetchTimePeriod(lastGoodFetchTimeTicks);
+
             if (lastGoodFetchPeriod <= 0)
             {
                 result.Details.Add("fetch", "Not yet successfully connected");
@@ -105,7 +115,8 @@ public class EurekaServerHealthContributor : IHealthContributor
                 result.Details.Add("fetchTime", "UNKNOWN");
                 return HealthStatus.Unknown;
             }
-            else if (lastGoodFetchPeriod > clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
+
+            if (lastGoodFetchPeriod > clientConfig.RegistryFetchIntervalSeconds * TimeSpan.TicksPerSecond * 2)
             {
                 result.Details.Add("fetch", "Reporting failures connecting");
                 result.Details.Add("fetchStatus", HealthStatus.Down.ToSnakeCaseString(SnakeCaseStyle.AllCaps));
@@ -150,8 +161,9 @@ public class EurekaServerHealthContributor : IHealthContributor
 
         if (applications != null)
         {
-            var registered = applications.GetRegisteredApplications();
-            foreach (var app in registered)
+            IList<Application> registered = applications.GetRegisteredApplications();
+
+            foreach (Application app in registered)
             {
                 if (app.Instances?.Count > 0)
                 {
@@ -179,6 +191,4 @@ public class EurekaServerHealthContributor : IHealthContributor
     {
         return lastGoodHeartbeatTimestamp <= 0L ? lastGoodHeartbeatTimestamp : DateTime.UtcNow.Ticks - lastGoodHeartbeatTimestamp;
     }
-
-    public string Id => "eurekaServer";
 }

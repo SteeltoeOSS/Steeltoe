@@ -10,6 +10,10 @@ namespace Steeltoe.Stream.Converter;
 
 public class CompositeMessageConverterFactory : IMessageConverterFactory
 {
+    public ISmartMessageConverter MessageConverterForAllRegistered => new CompositeMessageConverter(new List<IMessageConverter>(AllRegistered));
+
+    public IList<IMessageConverter> AllRegistered { get; }
+
     public CompositeMessageConverterFactory()
         : this(null)
     {
@@ -21,8 +25,12 @@ public class CompositeMessageConverterFactory : IMessageConverterFactory
 
         InitDefaultConverters();
 
-        var resolver = new DefaultContentTypeResolver { DefaultMimeType = BindingOptions.DefaultContentType };
-        foreach (var mc in AllRegistered)
+        var resolver = new DefaultContentTypeResolver
+        {
+            DefaultMimeType = BindingOptions.DefaultContentType
+        };
+
+        foreach (IMessageConverter mc in AllRegistered)
         {
             if (mc is AbstractMessageConverter converter)
             {
@@ -34,11 +42,12 @@ public class CompositeMessageConverterFactory : IMessageConverterFactory
     public IMessageConverter GetMessageConverterForType(MimeType mimeType)
     {
         var converters = new List<IMessageConverter>();
-        foreach (var converter in AllRegistered)
+
+        foreach (IMessageConverter converter in AllRegistered)
         {
             if (converter is AbstractMessageConverter abstractMessageConverter)
             {
-                foreach (var type in abstractMessageConverter.SupportedMimeTypes)
+                foreach (MimeType type in abstractMessageConverter.SupportedMimeTypes)
                 {
                     if (type.Includes(mimeType))
                     {
@@ -52,13 +61,9 @@ public class CompositeMessageConverterFactory : IMessageConverterFactory
         {
             0 => throw new ConversionException($"No message converter is registered for {mimeType}"),
             > 1 => new CompositeMessageConverter(converters),
-            _ => converters[0],
+            _ => converters[0]
         };
     }
-
-    public ISmartMessageConverter MessageConverterForAllRegistered => new CompositeMessageConverter(new List<IMessageConverter>(AllRegistered));
-
-    public IList<IMessageConverter> AllRegistered { get; }
 
     private void InitDefaultConverters()
     {

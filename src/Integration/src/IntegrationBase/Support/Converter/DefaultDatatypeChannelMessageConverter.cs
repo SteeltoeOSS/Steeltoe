@@ -14,12 +14,12 @@ public class DefaultDataTypeChannelMessageConverter : IMessageConverter
 
     private readonly IConversionService _conversionService;
 
+    public string ServiceName { get; set; } = DefaultServiceName;
+
     public DefaultDataTypeChannelMessageConverter(IConversionService conversionService = null)
     {
         _conversionService = conversionService ?? DefaultConversionService.Singleton;
     }
-
-    public string ServiceName { get; set; } = DefaultServiceName;
 
     public object FromMessage(IMessage message, Type targetType)
     {
@@ -27,10 +27,8 @@ public class DefaultDataTypeChannelMessageConverter : IMessageConverter
         {
             return _conversionService.Convert(message.Payload, message.Payload.GetType(), targetType);
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public T FromMessage<T>(IMessage message)

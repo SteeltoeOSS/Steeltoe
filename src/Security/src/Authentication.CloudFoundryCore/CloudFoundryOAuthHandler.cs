@@ -2,17 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -20,11 +22,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 {
     private readonly ILogger<CloudFoundryOAuthHandler> _logger;
 
-    public CloudFoundryOAuthHandler(
-        IOptionsMonitor<CloudFoundryOAuthOptions> options,
-        ILoggerFactory logger,
-        UrlEncoder encoder,
-        ISystemClock clock)
+    public CloudFoundryOAuthHandler(IOptionsMonitor<CloudFoundryOAuthOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)
     {
         _logger = logger?.CreateLogger<CloudFoundryOAuthHandler>();
@@ -44,7 +42,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
         _logger?.LogDebug("GetTokenInfoRequestMessage({token}) with {clientId}", tokens.AccessToken, Options.ClientId);
 
-        var tokenRequestParameters = GetTokenInfoRequestParameters(tokens);
+        Dictionary<string, string> tokenRequestParameters = GetTokenInfoRequestParameters(tokens);
 
         var requestContent = new FormUrlEncodedContent(tokenRequestParameters);
         var request = new HttpRequestMessage(HttpMethod.Post, Options.TokenInfoUrl);
@@ -71,42 +69,40 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
         _logger?.LogDebug("ExchangeCodeAsync({code}, {redirectUri})", context.Code, context.RedirectUri);
 
-        var options = Options.BaseOptions();
+        AuthServerOptions options = Options.BaseOptions();
         options.CallbackUrl = context.RedirectUri;
 
         var tEx = new TokenExchanger(options, GetHttpClient());
-        var response = await tEx.ExchangeCodeForToken(context.Code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
+        HttpResponseMessage response = await tEx.ExchangeCodeForToken(context.Code, Options.TokenEndpoint, Context.RequestAborted).ConfigureAwait(false);
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            string result = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             _logger?.LogDebug("ExchangeCodeAsync() received json: {json}", result);
-            var payload = JsonDocument.Parse(result);
-            var tokenResponse = OAuthTokenResponse.Success(payload);
+            JsonDocument payload = JsonDocument.Parse(result);
+            OAuthTokenResponse tokenResponse = OAuthTokenResponse.Success(payload);
 
             return tokenResponse;
         }
-        else
-        {
-            var error = $"OAuth token endpoint failure: {await Display(response).ConfigureAwait(false)}";
-            return OAuthTokenResponse.Failed(new Exception(error));
-        }
+
+        string error = $"OAuth token endpoint failure: {await Display(response).ConfigureAwait(false)}";
+        return OAuthTokenResponse.Failed(new Exception(error));
     }
 
-    protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties, OAuthTokenResponse tokens)
+    protected override async Task<AuthenticationTicket> CreateTicketAsync(ClaimsIdentity identity, AuthenticationProperties properties,
+        OAuthTokenResponse tokens)
     {
         _logger?.LogDebug("CreateTicketAsync()");
 
-        var request = GetTokenInfoRequestMessage(tokens);
-        var client = GetHttpClient();
+        HttpRequestMessage request = GetTokenInfoRequestMessage(tokens);
+        HttpClient client = GetHttpClient();
 
-        HttpClientHelper.ConfigureCertificateValidation(
-            Options.ValidateCertificates,
-            out var prevProtocols,
-            out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(Options.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            out RemoteCertificateValidationCallback prevValidator);
 
         HttpResponseMessage response = null;
+
         try
         {
             response = await client.SendAsync(request, Context.RequestAborted).ConfigureAwait(false);
@@ -122,10 +118,10 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
             throw new HttpRequestException($"An error occurred when retrieving token information ({response.StatusCode}).");
         }
 
-        var resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+        string resp = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
         _logger?.LogDebug("CreateTicketAsync() received json: {json}", resp);
-        var payload = JsonDocument.Parse(resp).RootElement;
+        JsonElement payload = JsonDocument.Parse(resp).RootElement;
         var context = new OAuthCreatingTicketContext(new ClaimsPrincipal(identity), properties, Context, Scheme, Options, Backchannel, tokens, payload);
         context.RunClaimActions();
         await Events.CreatingTicket(context).ConfigureAwait(false);
@@ -145,7 +141,7 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
     {
         _logger?.LogDebug("BuildChallengeUrl({redirectUri}) with {clientId}", redirectUri, Options.ClientId);
 
-        var scope = FormatScope();
+        string scope = FormatScope();
 
         var queryStrings = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -158,17 +154,17 @@ public class CloudFoundryOAuthHandler : OAuthHandler<CloudFoundryOAuthOptions>
 
         if (Options.StateDataFormat != null)
         {
-            var state = Options.StateDataFormat.Protect(properties);
+            string state = Options.StateDataFormat.Protect(properties);
             queryStrings.Add("state", state);
         }
 
-        var authorizationEndpoint = QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, queryStrings);
+        string authorizationEndpoint = QueryHelpers.AddQueryString(Options.AuthorizationEndpoint, queryStrings);
         return authorizationEndpoint;
     }
 
     private static void AddQueryString(IDictionary<string, string> queryStrings, AuthenticationProperties properties, string name, string defaultValue = null)
     {
-        if (!properties.Items.TryGetValue(name, out var value))
+        if (!properties.Items.TryGetValue(name, out string value))
         {
             value = defaultValue;
         }

@@ -25,10 +25,11 @@ public class MessageHeaderAccessorTest
             { "foo", "bar" },
             { "bar", "baz" }
         };
-        var message = Message.Create("payload", map);
+
+        IMessage<string> message = Message.Create("payload", map);
 
         var accessor = new MessageHeaderAccessor(message);
-        var actual = accessor.MessageHeaders;
+        IMessageHeaders actual = accessor.MessageHeaders;
 
         Assert.Equal(3, ((HeadersDictionary)actual).Count);
         Assert.Equal("bar", actual.Get<string>("foo"));
@@ -43,13 +44,14 @@ public class MessageHeaderAccessorTest
             { "foo", "bar" },
             { "bar", "baz" }
         };
-        var message = Message.Create("payload", map);
+
+        IMessage<string> message = Message.Create("payload", map);
 
         Thread.Sleep(50);
 
         var accessor = new MessageHeaderAccessor(message);
         accessor.SetHeader("foo", "BAR");
-        var actual = accessor.MessageHeaders;
+        IMessageHeaders actual = accessor.MessageHeaders;
 
         Assert.Equal(3, ((HeadersDictionary)actual).Count);
         Assert.NotEqual(message.Headers.Id, actual.Id);
@@ -63,17 +65,17 @@ public class MessageHeaderAccessorTest
         IMessage message = Message.Create("payload", SingletonMap("foo", "bar"));
         var accessor = new MessageHeaderAccessor(message);
         accessor.RemoveHeader("foo");
-        var headers = accessor.ToDictionary();
+        HeadersDictionary headers = accessor.ToDictionary();
         Assert.False(headers.ContainsKey("foo"));
     }
 
     [Fact]
     public void TestRemoveHeaderEvenIfNull()
     {
-        var message = Message.Create("payload", SingletonMap("foo", null));
+        IMessage<string> message = Message.Create("payload", SingletonMap("foo", null));
         var accessor = new MessageHeaderAccessor(message);
         accessor.RemoveHeader("foo");
-        var headers = accessor.ToDictionary();
+        HeadersDictionary headers = accessor.ToDictionary();
         Assert.False(headers.ContainsKey("foo"));
     }
 
@@ -85,12 +87,13 @@ public class MessageHeaderAccessorTest
             { "foo", "bar" },
             { "bar", "baz" }
         };
-        var message = Message.Create("payload", map);
+
+        IMessage<string> message = Message.Create("payload", map);
         var accessor = new MessageHeaderAccessor(message);
 
         accessor.RemoveHeaders("fo*");
 
-        var actual = accessor.MessageHeaders;
+        IMessageHeaders actual = accessor.MessageHeaders;
         Assert.Equal(2, ((HeadersDictionary)actual).Count);
         Assert.Null(actual.Get<string>("foo"));
         Assert.Equal("baz", actual.Get<string>("bar"));
@@ -103,7 +106,8 @@ public class MessageHeaderAccessorTest
         {
             { "foo", "bar" }
         };
-        var message = Message.Create("payload", map1);
+
+        IMessage<string> message = Message.Create("payload", map1);
         var accessor = new MessageHeaderAccessor(message);
 
         IDictionary<string, object> map2 = new Dictionary<string, object>
@@ -111,9 +115,10 @@ public class MessageHeaderAccessorTest
             { "foo", "BAR" },
             { "bar", "baz" }
         };
+
         accessor.CopyHeaders(map2);
 
-        var actual = accessor.MessageHeaders;
+        IMessageHeaders actual = accessor.MessageHeaders;
         Assert.Equal(3, ((HeadersDictionary)actual).Count);
         Assert.Equal("BAR", actual.Get<string>("foo"));
         Assert.Equal("baz", actual.Get<string>("bar"));
@@ -126,7 +131,8 @@ public class MessageHeaderAccessorTest
         {
             { "foo", "bar" }
         };
-        var message = Message.Create("payload", map1);
+
+        IMessage<string> message = Message.Create("payload", map1);
         var accessor = new MessageHeaderAccessor(message);
 
         IDictionary<string, object> map2 = new Dictionary<string, object>
@@ -134,9 +140,10 @@ public class MessageHeaderAccessorTest
             { "foo", "BAR" },
             { "bar", "baz" }
         };
+
         accessor.CopyHeadersIfAbsent(map2);
 
-        var actual = accessor.MessageHeaders;
+        IMessageHeaders actual = accessor.MessageHeaders;
         Assert.Equal(3, ((HeadersDictionary)actual).Count);
         Assert.Equal("bar", actual.Get<string>("foo"));
         Assert.Equal("baz", actual.Get<string>("bar"));
@@ -159,13 +166,13 @@ public class MessageHeaderAccessorTest
         var accessor = new MessageHeaderAccessor();
 
         accessor.SetHeader("foo", "bar1");
-        var map1 = accessor.ToDictionary();
+        HeadersDictionary map1 = accessor.ToDictionary();
 
         accessor.SetHeader("foo", "bar2");
-        var map2 = accessor.ToDictionary();
+        HeadersDictionary map2 = accessor.ToDictionary();
 
         accessor.SetHeader("foo", "bar3");
-        var map3 = accessor.ToDictionary();
+        HeadersDictionary map3 = accessor.ToDictionary();
 
         Assert.Equal(1, map1.Count);
         Assert.Equal(1, map2.Count);
@@ -182,8 +189,8 @@ public class MessageHeaderAccessorTest
         var accessor = new MessageHeaderAccessor();
         accessor.SetHeader("foo", "bar");
         accessor.LeaveMutable = true;
-        var headers = accessor.MessageHeaders;
-        var message = MessageBuilder.CreateMessage("payload", headers);
+        IMessageHeaders headers = accessor.MessageHeaders;
+        IMessage<string> message = MessageBuilder.CreateMessage("payload", headers);
 
         accessor.SetHeader("foo", "baz");
 
@@ -196,8 +203,8 @@ public class MessageHeaderAccessorTest
     {
         var accessor = new MessageHeaderAccessor();
         accessor.SetHeader("foo", "bar");
-        var headers = accessor.MessageHeaders;
-        var message = MessageBuilder.CreateMessage("payload", headers);
+        IMessageHeaders headers = accessor.MessageHeaders;
+        IMessage<string> message = MessageBuilder.CreateMessage("payload", headers);
 
         Assert.Throws<InvalidOperationException>(() => accessor.LeaveMutable = true);
 
@@ -211,7 +218,7 @@ public class MessageHeaderAccessorTest
     public void GetAccessor()
     {
         var expected = new MessageHeaderAccessor();
-        var message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
+        IMessage<string> message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
         Assert.Same(expected, MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor)));
     }
 
@@ -222,9 +229,10 @@ public class MessageHeaderAccessorTest
         {
             LeaveMutable = true
         };
-        var message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
 
-        var actual = MessageHeaderAccessor.GetMutableAccessor(message);
+        IMessage<string> message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
+
+        MessageHeaderAccessor actual = MessageHeaderAccessor.GetMutableAccessor(message);
         Assert.NotNull(actual);
         Assert.True(actual.IsMutable);
         Assert.Same(expected, actual);
@@ -236,9 +244,9 @@ public class MessageHeaderAccessorTest
     [Fact]
     public void GetMutableAccessorNewInstance()
     {
-        var message = MessageBuilder.WithPayload("payload").Build();
+        IMessage message = MessageBuilder.WithPayload("payload").Build();
 
-        var actual = MessageHeaderAccessor.GetMutableAccessor(message);
+        MessageHeaderAccessor actual = MessageHeaderAccessor.GetMutableAccessor(message);
         Assert.NotNull(actual);
         Assert.True(actual.IsMutable);
 
@@ -251,7 +259,7 @@ public class MessageHeaderAccessorTest
         var expected = new TestMessageHeaderAccessor();
         IMessage message = MessageBuilder.CreateMessage("payload", expected.MessageHeaders);
 
-        var actual = MessageHeaderAccessor.GetMutableAccessor(message);
+        MessageHeaderAccessor actual = MessageHeaderAccessor.GetMutableAccessor(message);
         Assert.NotNull(actual);
         Assert.True(actual.IsMutable);
         Assert.Equal(typeof(TestMessageHeaderAccessor), actual.GetType());
@@ -264,6 +272,7 @@ public class MessageHeaderAccessorTest
         {
             EnableTimestamp = true
         };
+
         Assert.NotNull(accessor.MessageHeaders.Timestamp);
     }
 
@@ -278,6 +287,7 @@ public class MessageHeaderAccessorTest
     public void IdGeneratorCustom()
     {
         var id = Guid.NewGuid();
+
         var accessor = new MessageHeaderAccessor
         {
             IdGenerator = new TestIdGenerator
@@ -285,6 +295,7 @@ public class MessageHeaderAccessorTest
                 Id = id.ToString()
             }
         };
+
         Assert.Equal(id.ToString(), accessor.MessageHeaders.Id);
     }
 
@@ -307,12 +318,14 @@ public class MessageHeaderAccessorTest
             EnableTimestamp = false,
             LeaveMutable = true
         };
-        var headers = accessor.MessageHeaders;
+
+        IMessageHeaders headers = accessor.MessageHeaders;
 
         Assert.Null(headers.Id);
         Assert.Null(headers.Timestamp);
 
         var id = Guid.NewGuid();
+
         accessor.IdGenerator = new TestIdGenerator
         {
             Id = id.ToString()
@@ -327,7 +340,10 @@ public class MessageHeaderAccessorTest
 
     private static IDictionary<string, object> SingletonMap(string key, object value)
     {
-        return new Dictionary<string, object> { { key, value } };
+        return new Dictionary<string, object>
+        {
+            { key, value }
+        };
     }
 
     private sealed class TestIdGenerator : IIdGenerator

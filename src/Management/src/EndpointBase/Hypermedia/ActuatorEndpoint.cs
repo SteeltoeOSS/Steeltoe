@@ -14,14 +14,14 @@ public class ActuatorEndpoint : AbstractEndpoint<Links, string>, IActuatorEndpoi
     private readonly ILogger<ActuatorEndpoint> _logger;
     private readonly ActuatorManagementOptions _managementOption;
 
+    protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
+
     public ActuatorEndpoint(IActuatorHypermediaOptions options, ActuatorManagementOptions managementOptions, ILogger<ActuatorEndpoint> logger = null)
         : base(options)
     {
         _managementOption = managementOptions;
         _logger = logger;
     }
-
-    protected new IActuatorHypermediaOptions Options => options as IActuatorHypermediaOptions;
 
     public override Links Invoke(string baseUrl)
     {

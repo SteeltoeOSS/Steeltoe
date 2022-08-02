@@ -13,7 +13,7 @@ public class CachingDestinationResolverTest
     public void CachedDestination()
     {
         var resolverMock = new Mock<IDestinationResolver<string>>();
-        var resolver = resolverMock.Object;
+        IDestinationResolver<string> resolver = resolverMock.Object;
         var resolverProxy = new CachingDestinationResolverProxy<string>(resolver);
         resolverMock.Setup(r => r.ResolveDestination("abcd")).Returns("dcba");
         resolverMock.Setup(r => r.ResolveDestination("1234")).Returns("4321");

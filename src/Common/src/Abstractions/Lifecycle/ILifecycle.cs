@@ -10,19 +10,23 @@ namespace Steeltoe.Common.Lifecycle;
 public interface ILifecycle
 {
     /// <summary>
+    /// Gets a value indicating whether its running.
+    /// </summary>
+    bool IsRunning { get; }
+
+    /// <summary>
     /// Start this component.
     /// </summary>
-    /// <returns>a task to signal completion.</returns>
+    /// <returns>
+    /// a task to signal completion.
+    /// </returns>
     Task Start();
 
     /// <summary>
     /// Stop this component.
     /// </summary>
-    /// <returns>a task to signal completion.</returns>
+    /// <returns>
+    /// a task to signal completion.
+    /// </returns>
     Task Stop();
-
-    /// <summary>
-    /// Gets a value indicating whether its running.
-    /// </summary>
-    bool IsRunning { get; }
 }

@@ -2,26 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using System.Text;
 
 namespace Steeltoe.Connector.CosmosDb;
 
 public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
 {
     private const string CosmosDbClientSectionPrefix = "cosmosdb:client";
-
-    public CosmosDbConnectorOptions()
-    {
-    }
-
-    public CosmosDbConnectorOptions(IConfiguration configuration)
-        : base(configuration)
-    {
-        var section = configuration.GetSection(CosmosDbClientSectionPrefix);
-        section.Bind(this);
-    }
 
     public string ConnectionString { get; set; }
 
@@ -37,6 +26,17 @@ public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
 
     public bool UseReadOnlyCredentials { get; set; }
 
+    public CosmosDbConnectorOptions()
+    {
+    }
+
+    public CosmosDbConnectorOptions(IConfiguration configuration)
+        : base(configuration)
+    {
+        IConfigurationSection section = configuration.GetSection(CosmosDbClientSectionPrefix);
+        section.Bind(this);
+    }
+
     public override string ToString()
     {
         if (!string.IsNullOrEmpty(ConnectionString) && !Platform.IsCloudFoundry)
@@ -44,15 +44,13 @@ public class CosmosDbConnectorOptions : AbstractServiceConnectorOptions
             // Connection string was provided and we don't appear to be running on a cloud platform
             return ConnectionString;
         }
-        else
-        {
-            // build a CosmosDB connection string
-            var sb = new StringBuilder();
 
-            AddKeyValue(sb, "AccountEndpoint", Host);
-            AddKeyValue(sb, "AccountKey", UseReadOnlyCredentials ? ReadOnlyKey : MasterKey);
+        // build a CosmosDB connection string
+        var sb = new StringBuilder();
 
-            return sb.ToString();
-        }
+        AddKeyValue(sb, "AccountEndpoint", Host);
+        AddKeyValue(sb, "AccountKey", UseReadOnlyCredentials ? ReadOnlyKey : MasterKey);
+
+        return sb.ToString();
     }
 }

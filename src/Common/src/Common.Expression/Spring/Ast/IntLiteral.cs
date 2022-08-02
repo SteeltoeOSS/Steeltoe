@@ -17,19 +17,26 @@ public class IntLiteral : Literal
         exitTypeDescriptor = TypeDescriptor.I;
     }
 
-    public override ITypedValue GetLiteralValue() => _value;
+    public override ITypedValue GetLiteralValue()
+    {
+        return _value;
+    }
 
-    public override bool IsCompilable() => true;
+    public override bool IsCompilable()
+    {
+        return true;
+    }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        var intVal = _value.Value;
+        object intVal = _value.Value;
+
         if (intVal == null)
         {
             throw new InvalidOperationException("No int value");
         }
 
-        var intValue = (int)intVal;
+        int intValue = (int)intVal;
 
         if (intValue == -1)
         {

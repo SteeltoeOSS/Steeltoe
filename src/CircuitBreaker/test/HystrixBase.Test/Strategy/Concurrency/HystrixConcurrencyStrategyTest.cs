@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
+using System.Reactive.Observable.Aliases;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
-using System.Reactive.Linq;
-using System.Reactive.Observable.Aliases;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -30,6 +30,7 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
 #pragma warning restore S2699 // Tests should include assertions
     {
         new SimpleCommand(_output).Execute();
+
         new SimpleCommand(_output).Observe().Map(s =>
         {
             _output.WriteLine("Map => Commands: " + HystrixRequestLog.CurrentRequestLog.AllExecutedCommands.Count);
@@ -44,18 +45,17 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     public async Task TestThreadContextOnTimeout()
     {
         var isInitialized = new AtomicBoolean();
+
         await Assert.ThrowsAsync<HystrixRuntimeException>(async () =>
         {
-            await new TimeoutCommand(_output).ToObservable()
-                .Do(
-                    n =>
-                    {
-                        _output.WriteLine("OnNext = " + n);
-                    }, _ =>
-                    {
-                        _output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
-                        isInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;
-                    }).SingleAsync();
+            await new TimeoutCommand(_output).ToObservable().Do(n =>
+            {
+                _output.WriteLine("OnNext = " + n);
+            }, _ =>
+            {
+                _output.WriteLine("OnError = " + HystrixRequestContext.IsCurrentThreadInitialized);
+                isInitialized.Value = HystrixRequestContext.IsCurrentThreadInitialized;
+            }).SingleAsync();
         });
 
         _output.WriteLine("initialized = " + HystrixRequestContext.IsCurrentThreadInitialized);
@@ -67,11 +67,13 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     public void TestNoRequestContextOnSimpleConcurrencyStrategyWithoutException()
     {
         Dispose();
+
         var opts = new HystrixCommandOptions
         {
             RequestLogEnabled = false,
             GroupKey = HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")
         };
+
         new SimpleCommand(_output, opts).Execute();
 
         Assert.True(true, "Nothing blew up");
@@ -88,7 +90,10 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
         }
 
         public SimpleCommand(ITestOutputHelper output)
-            : base(HystrixCommandGroupKeyDefault.AsKey("SimpleCommand")) => _output = output;
+            : base(HystrixCommandGroupKeyDefault.AsKey("SimpleCommand"))
+        {
+            _output = output;
+        }
 
         protected override string Run()
         {
@@ -105,6 +110,12 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
     {
         private readonly ITestOutputHelper _output;
 
+        public TimeoutCommand(ITestOutputHelper output)
+            : base(GetCommandOptions())
+        {
+            _output = output;
+        }
+
         private static IHystrixCommandOptions GetCommandOptions()
         {
             var opts = new HystrixCommandOptions
@@ -112,13 +123,8 @@ public class HystrixConcurrencyStrategyTest : HystrixTestBase
                 GroupKey = HystrixCommandGroupKeyDefault.AsKey("TimeoutTest"),
                 ExecutionTimeoutInMilliseconds = 50
             };
-            return opts;
-        }
 
-        public TimeoutCommand(ITestOutputHelper output)
-            : base(GetCommandOptions())
-        {
-            _output = output;
+            return opts;
         }
 
         protected override void Run()

@@ -10,13 +10,13 @@ public abstract class AbstractBindingTargetFactory<T> : IBindingTargetFactory
 {
     public Type BindingTargetType { get; }
 
+    public IApplicationContext ApplicationContext { get; }
+
     protected AbstractBindingTargetFactory(IApplicationContext context)
     {
         BindingTargetType = typeof(T);
         ApplicationContext = context;
     }
-
-    public IApplicationContext ApplicationContext { get; }
 
     public virtual bool CanCreate(Type type)
     {

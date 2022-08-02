@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Test;
 using Steeltoe.Messaging.Handler.Invocation.Test;
@@ -12,7 +13,7 @@ namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class DestinationVariableMethodArgumentResolverTest
 {
-    private readonly DestinationVariableMethodArgumentResolver _resolver = new (new DefaultConversionService());
+    private readonly DestinationVariableMethodArgumentResolver _resolver = new(new DefaultConversionService());
     private readonly ResolvableMethod _resolvable = ResolvableMethod.On<DestinationVariableMethodArgumentResolverTest>().Named(nameof(HandleMessage)).Build();
 
     [Fact]
@@ -31,10 +32,11 @@ public class DestinationVariableMethodArgumentResolverTest
             { "name", "value" }
         };
 
-        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).SetHeader(DestinationVariableMethodArgumentResolver.DestinationTemplateVariablesHeader, vars).Build();
+        IMessage message = MessageBuilder.WithPayload(Array.Empty<byte>())
+            .SetHeader(DestinationVariableMethodArgumentResolver.DestinationTemplateVariablesHeader, vars).Build();
 
-        var param = _resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg();
-        var result = _resolver.ResolveArgument(param, message);
+        ParameterInfo param = _resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg();
+        object result = _resolver.ResolveArgument(param, message);
         Assert.Equal("bar", result);
 
         param = _resolvable.Annotation(MessagingPredicates.DestinationVar("name")).Arg();
@@ -45,8 +47,10 @@ public class DestinationVariableMethodArgumentResolverTest
     [Fact]
     public void ResolveArgumentNotFound()
     {
-        var message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
-        Assert.Throws<MessageHandlingException>(() => _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
+        IMessage message = MessageBuilder.WithPayload(Array.Empty<byte>()).Build();
+
+        Assert.Throws<MessageHandlingException>(() =>
+            _resolver.ResolveArgument(_resolvable.Annotation(MessagingPredicates.DestinationVar().NoName()).Arg(), message));
     }
 
     private void HandleMessage([DestinationVariable] string foo, [DestinationVariable("name")] string param1, string param3)

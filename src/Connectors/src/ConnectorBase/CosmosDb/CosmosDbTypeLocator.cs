@@ -14,19 +14,30 @@ public static class CosmosDbTypeLocator
     /// <summary>
     /// Gets a list of supported CosmosDbDB assemblies.
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "Microsoft.Azure.Cosmos.Client" };
+    public static string[] Assemblies { get; internal set; } =
+    {
+        "Microsoft.Azure.Cosmos.Client"
+    };
 
     /// <summary>
     /// Gets a list of supported CosmosDbDB client types.
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClient" };
+    public static string[] ConnectionTypeNames { get; internal set; } =
+    {
+        "Microsoft.Azure.Cosmos.CosmosClient"
+    };
 
-    public static string[] ClientOptionsTypeNames { get; internal set; } = { "Microsoft.Azure.Cosmos.CosmosClientOptions" };
+    public static string[] ClientOptionsTypeNames { get; internal set; } =
+    {
+        "Microsoft.Azure.Cosmos.CosmosClientOptions"
+    };
 
     /// <summary>
     /// Gets CosmosDbClient from CosmosDbDB Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found.</exception>
+    /// <exception cref="ConnectorException">
+    /// When type is not found.
+    /// </exception>
     public static Type CosmosClient => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "CosmosClient", "a CosmosDB client");
 
     public static Type CosmosClientOptions => ReflectionHelpers.FindTypeOrThrow(Assemblies, ClientOptionsTypeNames, "CosmosClientOptions", "a CosmosDB client");

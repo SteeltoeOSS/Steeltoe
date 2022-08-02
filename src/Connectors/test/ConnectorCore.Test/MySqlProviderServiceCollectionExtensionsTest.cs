@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Data;
 using Xunit;
 
 namespace Steeltoe.Connector.MySql.Test;
@@ -63,7 +63,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_NoVCAPs_AddsMySqlConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddMySqlConnection(config);
 
@@ -75,7 +75,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
     public void AddMySqlConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -91,7 +91,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlConnection(config));
         Assert.Contains("Multiple", ex.Message);
@@ -106,12 +106,12 @@ public class MySqlProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddMySqlConnection(config, "spring-cloud-broker-db");
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("Password=7E1LxXnlH2hhlPVt", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Server=192.168.0.90;Port=3306", connString, StringComparison.InvariantCultureIgnoreCase);
         Assert.Contains("Database=cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString, StringComparison.InvariantCultureIgnoreCase);
@@ -126,13 +126,13 @@ public class MySqlProviderServiceCollectionExtensionsTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.SingleServerVcap);
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddMySqlConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", connString);
         Assert.Contains("3306", connString);
         Assert.Contains("192.168.0.90", connString);
@@ -150,18 +150,18 @@ public class MySqlProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddMySqlConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
-        Assert.Contains("ub6oyk1kkh", connString);                                      // database
-        Assert.Contains("3306", connString);                                            // port
+        string connString = service.ConnectionString;
+        Assert.Contains("ub6oyk1kkh", connString); // database
+        Assert.Contains("3306", connString); // port
         Assert.Contains("451200b4-c29d-4346-9a0a-70bc109bb6e9.mysql.database.azure.com", connString); // host
         Assert.Contains("wj7tsxai7i@451200b4-c29d-4346-9a0a-70bc109bb6e9", connString); // user
-        Assert.Contains("10PUO82Uhqk8F2ii", connString);                                // password
+        Assert.Contains("10PUO82Uhqk8F2ii", connString); // password
     }
 
     [Fact]
@@ -170,7 +170,7 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddMySqlConnection(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
@@ -184,11 +184,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<MySqlConnectionInfo>();
-        services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
+        Connection ci = cm.Get<MySqlConnectionInfo>();
+        services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
         services.AddMySqlConnection(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
@@ -202,11 +202,11 @@ public class MySqlProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<MySqlConnectionInfo>();
-        services.AddHealthChecks().AddMySql(ci.ConnectionString, name: ci.Name);
+        Connection ci = cm.Get<MySqlConnectionInfo>();
+        services.AddHealthChecks().AddMySql(ci.ConnectionString, ci.Name);
 
         services.AddMySqlConnection(config, addSteeltoeHealthChecks: true);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;

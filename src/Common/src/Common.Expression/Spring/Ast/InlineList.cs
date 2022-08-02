@@ -12,11 +12,18 @@ public class InlineList : SpelNode
 {
     private static readonly FieldInfo FieldInfo = typeof(CompiledExpression).GetField("DynamicFields", BindingFlags.NonPublic | BindingFlags.Instance);
     private static readonly MethodInfo GetItemMethod = typeof(Dictionary<string, object>).GetMethod("get_Item", BindingFlags.Public | BindingFlags.Instance);
-    private static readonly MethodInfo AddMethod = typeof(IList).GetMethod(nameof(IList.Add), new[] { typeof(object) });
+
+    private static readonly MethodInfo AddMethod = typeof(IList).GetMethod(nameof(IList.Add), new[]
+    {
+        typeof(object)
+    });
+
     private static readonly ConstructorInfo ListConstructor = typeof(List<object>).GetConstructor(Type.EmptyTypes);
 
     // If the list is purely literals, it is a constant value and can be computed and cached
     private ITypedValue _constant;
+
+    public bool IsConstant => _constant != null;
 
     public InlineList(int startPos, int endPos, params SpelNode[] args)
         : base(startPos, endPos, args)
@@ -30,33 +37,31 @@ public class InlineList : SpelNode
         {
             return _constant;
         }
-        else
-        {
-            var childCount = ChildCount;
-            var returnValue = new List<object>(childCount);
-            for (var c = 0; c < childCount; c++)
-            {
-                returnValue.Add(GetChild(c).GetValue(state));
-            }
 
-            return new TypedValue(returnValue);
+        int childCount = ChildCount;
+        var returnValue = new List<object>(childCount);
+
+        for (int c = 0; c < childCount; c++)
+        {
+            returnValue.Add(GetChild(c).GetValue(state));
         }
+
+        return new TypedValue(returnValue);
     }
 
     public override string ToStringAst()
     {
         // String ast matches input string, not the 'toString()' of the resultant collection, which would use []
         var sj = new List<string>();
-        var count = ChildCount;
-        for (var c = 0; c < count; c++)
+        int count = ChildCount;
+
+        for (int c = 0; c < count; c++)
         {
             sj.Add(GetChild(c).ToStringAst());
         }
 
         return $"{{{string.Join(",", sj)}}}";
     }
-
-    public bool IsConstant => _constant != null;
 
     public IList<object> GetConstantValue()
     {
@@ -68,13 +73,20 @@ public class InlineList : SpelNode
         return (IList<object>)_constant.Value;
     }
 
-    public override bool IsCompilable() => IsConstant;
+    public override bool IsCompilable()
+    {
+        return IsConstant;
+    }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        var constantFieldName = $"inlineList${cf.NextFieldId()}";
+        string constantFieldName = $"inlineList${cf.NextFieldId()}";
         cf.RegisterNewField(constantFieldName, new List<object>());
-        cf.RegisterNewInitGenerator((initGenerator, flow) => { GenerateInitCode(constantFieldName, initGenerator, flow); });
+
+        cf.RegisterNewInitGenerator((initGenerator, flow) =>
+        {
+            GenerateInitCode(constantFieldName, initGenerator, flow);
+        });
 
         GenerateLoadListCode(gen, constantFieldName);
         cf.PushDescriptor(new TypeDescriptor(typeof(IList)));
@@ -83,6 +95,7 @@ public class InlineList : SpelNode
     public void GenerateInitCode(string constantFieldName, ILGenerator gen, CodeFlow codeFlow, bool nested = false)
     {
         LocalBuilder listLocal = null;
+
         if (!nested)
         {
             // Get list on stack
@@ -99,8 +112,9 @@ public class InlineList : SpelNode
             gen.Emit(OpCodes.Castclass, typeof(IList));
         }
 
-        var childCount = ChildCount;
-        for (var c = 0; c < childCount; c++)
+        int childCount = ChildCount;
+
+        for (int c = 0; c < childCount; c++)
         {
             if (!nested)
             {
@@ -121,7 +135,8 @@ public class InlineList : SpelNode
             else
             {
                 children[c].GenerateCode(gen, codeFlow);
-                var lastDesc = codeFlow.LastDescriptor();
+                TypeDescriptor lastDesc = codeFlow.LastDescriptor();
+
                 if (CodeFlow.IsValueType(lastDesc))
                 {
                     CodeFlow.InsertBoxIfNecessary(gen, lastDesc);
@@ -150,10 +165,12 @@ public class InlineList : SpelNode
 
     private void CheckIfConstant()
     {
-        var isConstant = true;
+        bool isConstant = true;
+
         for (int c = 0, max = ChildCount; c < max; c++)
         {
-            var child = GetChild(c);
+            ISpelNode child = GetChild(c);
+
             if (child is not Literal)
             {
                 if (child is InlineList inlineList)
@@ -173,10 +190,12 @@ public class InlineList : SpelNode
         if (isConstant)
         {
             var constantList = new List<object>();
-            var childCount = ChildCount;
-            for (var c = 0; c < childCount; c++)
+            int childCount = ChildCount;
+
+            for (int c = 0; c < childCount; c++)
             {
-                var child = GetChild(c);
+                ISpelNode child = GetChild(c);
+
                 if (child is Literal literal)
                 {
                     constantList.Add(literal.GetLiteralValue().Value);

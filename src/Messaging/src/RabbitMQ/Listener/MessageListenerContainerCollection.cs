@@ -6,7 +6,13 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class MessageListenerContainerCollection : IMessageListenerContainerCollection
 {
-    private readonly List<IMessageListenerContainer> _containers = new ();
+    private readonly List<IMessageListenerContainer> _containers = new();
+
+    public string ServiceName { get; set; }
+
+    public string GroupName => ServiceName;
+
+    public IList<IMessageListenerContainer> Containers => new List<IMessageListenerContainer>(_containers);
 
     public MessageListenerContainerCollection(string groupName)
     {
@@ -16,18 +22,6 @@ public class MessageListenerContainerCollection : IMessageListenerContainerColle
         }
 
         ServiceName = groupName;
-    }
-
-    public string ServiceName { get; set; }
-
-    public string GroupName => ServiceName;
-
-    public IList<IMessageListenerContainer> Containers
-    {
-        get
-        {
-            return new List<IMessageListenerContainer>(_containers);
-        }
     }
 
     internal void AddContainer(IMessageListenerContainer messageListenerContainer)

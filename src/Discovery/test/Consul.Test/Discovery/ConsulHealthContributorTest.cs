@@ -4,6 +4,7 @@
 
 using Consul;
 using Moq;
+using Steeltoe.Common.HealthChecks;
 using Xunit;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
@@ -22,14 +23,14 @@ public class ConsulHealthContributorTest
     [Fact]
     public async Task GetLeaderStatusAsync_ReturnsExpected()
     {
-        var statusResult = Task.FromResult("thestatus");
+        Task<string> statusResult = Task.FromResult("thestatus");
         var clientMoq = new Mock<IConsulClient>();
         var statusMoq = new Mock<IStatusEndpoint>();
         clientMoq.Setup(c => c.Status).Returns(statusMoq.Object);
         statusMoq.Setup(s => s.Leader(default)).Returns(statusResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        var result = await contrib.GetLeaderStatusAsync();
+        string result = await contrib.GetLeaderStatusAsync();
         Assert.Equal("thestatus", result);
     }
 
@@ -40,19 +41,31 @@ public class ConsulHealthContributorTest
         {
             Response = new Dictionary<string, string[]>
             {
-                { "foo", new[] { "I1", "I2" } },
-                { "bar", new[] { "I1", "I2" } },
+                {
+                    "foo", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                },
+                {
+                    "bar", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                }
             }
         };
 
-        var catResult = Task.FromResult(queryResult);
+        Task<QueryResult<Dictionary<string, string[]>>> catResult = Task.FromResult(queryResult);
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
         clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        var result = await contrib.GetCatalogServicesAsync();
+        Dictionary<string, string[]> result = await contrib.GetCatalogServicesAsync();
         Assert.Equal(2, result.Count);
         Assert.Contains("foo", result.Keys);
         Assert.Contains("bar", result.Keys);
@@ -65,13 +78,25 @@ public class ConsulHealthContributorTest
         {
             Response = new Dictionary<string, string[]>
             {
-                { "foo", new[] { "I1", "I2" } },
-                { "bar", new[] { "I1", "I2" } },
+                {
+                    "foo", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                },
+                {
+                    "bar", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                }
             }
         };
 
-        var catResult = Task.FromResult(queryResult);
-        var statusResult = Task.FromResult("thestatus");
+        Task<QueryResult<Dictionary<string, string[]>>> catResult = Task.FromResult(queryResult);
+        Task<string> statusResult = Task.FromResult("thestatus");
 
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
@@ -82,7 +107,7 @@ public class ConsulHealthContributorTest
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(catResult);
 
         var contrib = new ConsulHealthContributor(clientMoq.Object, new ConsulDiscoveryOptions());
-        var result = contrib.Health();
+        HealthCheckResult result = contrib.Health();
 
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Equal(2, result.Details.Count);

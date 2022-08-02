@@ -2,15 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Security;
-using System.Security.Claims;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
 {
     private const string ManagementInfoPrefix = "management:endpoints:health";
+
+    public ShowDetails ShowDetails { get; set; }
+
+    public EndpointClaim Claim { get; set; }
+
+    public string Role { get; set; }
+
+    public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 
     public HealthEndpointOptions()
     {
@@ -52,20 +60,18 @@ public class HealthEndpointOptions : AbstractEndpointOptions, IHealthOptions
     {
         if (!Groups.ContainsKey("liveness"))
         {
-            Groups.Add("liveness", new HealthGroupOptions { Include = "liveness" });
+            Groups.Add("liveness", new HealthGroupOptions
+            {
+                Include = "liveness"
+            });
         }
 
         if (!Groups.ContainsKey("readiness"))
         {
-            Groups.Add("readiness", new HealthGroupOptions { Include = "readiness" });
+            Groups.Add("readiness", new HealthGroupOptions
+            {
+                Include = "readiness"
+            });
         }
     }
-
-    public ShowDetails ShowDetails { get; set; }
-
-    public EndpointClaim Claim { get; set; }
-
-    public string Role { get; set; }
-
-    public Dictionary<string, HealthGroupOptions> Groups { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
 }

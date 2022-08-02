@@ -32,12 +32,14 @@ public class PemCertificateProvider : ConfigurationProvider
     public override bool TryGet(string key, out string value)
     {
         value = _certFileProvider[key];
+
         if (!string.IsNullOrEmpty(value))
         {
             return true;
         }
 
         value = _keyFileProvider[key];
+
         if (!string.IsNullOrEmpty(value))
         {
             return true;

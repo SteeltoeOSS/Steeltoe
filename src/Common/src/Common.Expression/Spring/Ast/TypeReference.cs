@@ -28,7 +28,8 @@ public class TypeReference : SpelNode
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
         // Possible optimization here if we cache the discovered type reference, but can we do that?
-        var typeName = (string)children[0].GetValueInternal(state).Value;
+        string typeName = (string)children[0].GetValueInternal(state).Value;
+
         if (typeName == null)
         {
             throw new InvalidOperationException("No type name");
@@ -36,18 +37,19 @@ public class TypeReference : SpelNode
 
         if (!typeName.Contains(".") && char.IsLower(typeName[0]))
         {
-            var tc = SpelTypeCode.ForName(typeName.ToUpper());
+            SpelTypeCode tc = SpelTypeCode.ForName(typeName.ToUpper());
+
             if (tc != SpelTypeCode.Object)
             {
                 // It is a primitive type
-                var type = MakeArrayIfNecessary(tc.Type);
+                Type type = MakeArrayIfNecessary(tc.Type);
                 exitTypeDescriptor = TypeDescriptor.Type;
                 _type = type;
                 return new TypedValue(type);
             }
         }
 
-        var clazz = state.FindType(typeName);
+        Type clazz = state.FindType(typeName);
         clazz = MakeArrayIfNecessary(clazz);
         exitTypeDescriptor = TypeDescriptor.Type;
         _type = clazz;
@@ -58,7 +60,8 @@ public class TypeReference : SpelNode
     {
         var sb = new StringBuilder("T(");
         sb.Append(GetChild(0).ToStringAst());
-        for (var d = 0; d < _dimensions; d++)
+
+        for (int d = 0; d < _dimensions; d++)
         {
             sb.Append("[]");
         }
@@ -88,7 +91,7 @@ public class TypeReference : SpelNode
     {
         if (_dimensions != 0)
         {
-            for (var i = 0; i < _dimensions; i++)
+            for (int i = 0; i < _dimensions; i++)
             {
                 var array = Array.CreateInstance(clazz, 0);
                 clazz = array.GetType();

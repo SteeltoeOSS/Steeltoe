@@ -2,10 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common;
-using System.Net;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
@@ -17,7 +18,8 @@ public class CloudFoundrySecurityMiddleware
     private readonly IManagementOptions _managementOptions;
     private readonly SecurityBase _base;
 
-    public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundrySecurityMiddleware> logger = null)
+    public CloudFoundrySecurityMiddleware(RequestDelegate next, ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions,
+        ILogger<CloudFoundrySecurityMiddleware> logger = null)
     {
         _next = next;
         _logger = logger;
@@ -31,15 +33,15 @@ public class CloudFoundrySecurityMiddleware
     {
         _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _managementOptions.Path);
 
-        var isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
+        bool isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
 
-        if (Platform.IsCloudFoundry
-            && isEndpointExposed
-            && _base.IsCloudFoundryRequest(context.Request.Path))
+        if (Platform.IsCloudFoundry && isEndpointExposed && _base.IsCloudFoundryRequest(context.Request.Path))
         {
             if (string.IsNullOrEmpty(_options.ApplicationId))
             {
-                _logger?.LogCritical("The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
+                _logger?.LogCritical(
+                    "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
+
                 await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.ApplicationIdMissingMessage)).ConfigureAwait(false);
                 return;
             }
@@ -50,21 +52,24 @@ public class CloudFoundrySecurityMiddleware
                 return;
             }
 
-            var target = FindTargetEndpoint(context.Request.Path);
+            IEndpointOptions target = FindTargetEndpoint(context.Request.Path);
+
             if (target == null)
             {
                 await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, _base.EndpointNotConfiguredMessage)).ConfigureAwait(false);
                 return;
             }
 
-            var sr = await GetPermissions(context).ConfigureAwait(false);
+            SecurityResult sr = await GetPermissions(context).ConfigureAwait(false);
+
             if (sr.Code != HttpStatusCode.OK)
             {
                 await ReturnError(context, sr).ConfigureAwait(false);
                 return;
             }
 
-            var permissions = sr.Permissions;
+            Permissions permissions = sr.Permissions;
+
             if (!target.IsAccessAllowed(permissions))
             {
                 await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, _base.AccessDeniedMessage)).ConfigureAwait(false);
@@ -77,9 +82,10 @@ public class CloudFoundrySecurityMiddleware
 
     internal string GetAccessToken(HttpRequest request)
     {
-        if (request.Headers.TryGetValue(_base.AuthorizationHeader, out var headerVal))
+        if (request.Headers.TryGetValue(_base.AuthorizationHeader, out StringValues headerVal))
         {
-            var header = headerVal.ToString();
+            string header = headerVal.ToString();
+
             if (header.StartsWith(_base.Bearer, StringComparison.OrdinalIgnoreCase))
             {
                 return header.Substring(_base.Bearer.Length + 1);
@@ -91,7 +97,7 @@ public class CloudFoundrySecurityMiddleware
 
     internal Task<SecurityResult> GetPermissions(HttpContext context)
     {
-        var token = GetAccessToken(context.Request);
+        string token = GetAccessToken(context.Request);
         return _base.GetPermissionsAsync(token);
     }
 
@@ -100,15 +106,17 @@ public class CloudFoundrySecurityMiddleware
         List<IEndpointOptions> configEndpoints;
 
         configEndpoints = _managementOptions.EndpointOptions;
-        foreach (var ep in configEndpoints)
+
+        foreach (IEndpointOptions ep in configEndpoints)
         {
-            var contextPath = _managementOptions.Path;
+            string contextPath = _managementOptions.Path;
+
             if (!contextPath.EndsWith("/") && !string.IsNullOrEmpty(ep.Path))
             {
                 contextPath += "/";
             }
 
-            var fullPath = contextPath + ep.Path;
+            string fullPath = contextPath + ep.Path;
 
             if (ep is CloudFoundryEndpointOptions)
             {
@@ -143,9 +151,10 @@ public class CloudFoundrySecurityMiddleware
     private void LogError(HttpContext context, SecurityResult error)
     {
         _logger?.LogError("Actuator Security Error: {0} - {1}", error.Code, error.Message);
+
         if (_logger != null && _logger.IsEnabled(LogLevel.Trace))
         {
-            foreach (var header in context.Request.Headers)
+            foreach (KeyValuePair<string, StringValues> header in context.Request.Headers)
             {
                 _logger.LogTrace("Header: {0} - {1}", header.Key, header.Value);
             }

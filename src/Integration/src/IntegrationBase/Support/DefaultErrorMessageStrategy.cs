@@ -12,7 +12,8 @@ public class DefaultErrorMessageStrategy : IErrorMessageStrategy
 {
     public ErrorMessage BuildErrorMessage(Exception exception, IAttributeAccessor attributeAccessor)
     {
-        var inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
+        object inputMessage = attributeAccessor?.GetAttribute(ErrorMessageUtils.InputMessageContextKey);
+
         return inputMessage switch
         {
             IMessage iMessage => new ErrorMessage(exception, iMessage),

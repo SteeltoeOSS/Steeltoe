@@ -18,7 +18,8 @@ public class ImmutableMessageChannelInterceptor : AbstractChannelInterceptor
 
     public override IMessage PreSend(IMessage message, IMessageChannel channel)
     {
-        var accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+        MessageHeaderAccessor accessor = MessageHeaderAccessor.GetAccessor(message, typeof(MessageHeaderAccessor));
+
         if (accessor != null && accessor.IsMutable)
         {
             accessor.SetImmutable();

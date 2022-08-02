@@ -8,6 +8,13 @@ public class AtomicLong
 {
     private long _value;
 
+    public long Value
+    {
+        get => Interlocked.Read(ref _value);
+
+        set => Interlocked.Exchange(ref _value, value);
+    }
+
     public AtomicLong()
         : this(0)
     {
@@ -16,19 +23,6 @@ public class AtomicLong
     public AtomicLong(long value)
     {
         _value = value;
-    }
-
-    public long Value
-    {
-        get
-        {
-            return Interlocked.Read(ref _value);
-        }
-
-        set
-        {
-            Interlocked.Exchange(ref _value, value);
-        }
     }
 
     public bool CompareAndSet(long expected, long update)

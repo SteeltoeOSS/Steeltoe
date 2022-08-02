@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using A.B.C.D;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,7 @@ namespace Steeltoe.Extensions.Logging.Test;
 
 public class DynamicLoggingBuilderTest
 {
-    private static readonly Dictionary<string, string> Appsettings = new ()
+    private static readonly Dictionary<string, string> Appsettings = new()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:Console:LogLevel:Default"] = "Information",
@@ -32,16 +33,16 @@ public class DynamicLoggingBuilderTest
             ["Logging:LogLevel:Default"] = "Information",
             ["Logging:foo:LogLevel:A.B.C.D.TestClass"] = "None"
         };
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            })
-            .BuildServiceProvider();
 
-        var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
+
+        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Information), "Information level should be enabled");
@@ -51,16 +52,15 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void DynamicLevelSetting_WorksWith_ConsoleFilters()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            })
-            .BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
 
-        var logger = services.GetService(typeof(ILogger<A.B.C.D.TestClass>)) as ILogger<A.B.C.D.TestClass>;
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
+
+        var logger = services.GetService(typeof(ILogger<TestClass>)) as ILogger<TestClass>;
 
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Critical), "Critical level should be enabled");
@@ -78,13 +78,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void AddConsole_Works_WithAddConfiguration()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddConsole();
+        }).BuildServiceProvider();
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -96,13 +96,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_Works_WithAddConfiguration()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -114,14 +114,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void DynamicLevelSetting_ParameterlessAddDynamic_NotBrokenByAddConfiguration()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            })
-            .BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -139,14 +138,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_WithIDynamicMessageProcessor_CallsProcessMessage()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var logger = services.GetService(typeof(ILogger<DynamicLoggingBuilderTest>)) as ILogger<DynamicLoggingBuilderTest>;
 
@@ -162,17 +160,16 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_AddsAllLoggerProviders()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
-        var logProviders = services.GetServices<ILoggerProvider>();
+        IEnumerable<ILoggerProvider> logProviders = services.GetServices<ILoggerProvider>();
 
         Assert.NotNull(dynamicLoggerProvider);
         Assert.NotEmpty(logProviders);
@@ -186,14 +183,13 @@ public class DynamicLoggingBuilderTest
     public void AddDynamicConsole_AddsLoggerProvider_DisposeTwiceSucceeds()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddSingleton<IDynamicMessageProcessor, TestDynamicMessageProcessor>().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var dynamicLoggerProvider = services.GetService<IDynamicLoggerProvider>();
 
@@ -204,14 +200,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void DynamicLevelSetting_ParameterlessAddDynamic_AddsConsoleOptions()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            })
-            .BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(Appsettings).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var options = services.GetService<IOptionsMonitor<ConsoleLoggerOptions>>();
 
@@ -222,13 +217,13 @@ public class DynamicLoggingBuilderTest
     [Fact]
     public void AddDynamicConsole_DoesNotSetColorLocal()
     {
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 
@@ -239,13 +234,13 @@ public class DynamicLoggingBuilderTest
     public void AddDynamicConsole_DisablesColorOnPivotalPlatform()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "not empty");
-        var configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
-        var services = new ServiceCollection()
-            .AddLogging(builder =>
-            {
-                builder.AddConfiguration(configuration.GetSection("Logging"));
-                builder.AddDynamicConsole();
-            }).BuildServiceProvider();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>()).Build();
+
+        ServiceProvider services = new ServiceCollection().AddLogging(builder =>
+        {
+            builder.AddConfiguration(configuration.GetSection("Logging"));
+            builder.AddDynamicConsole();
+        }).BuildServiceProvider();
 
         var options = services.GetService(typeof(IOptions<ConsoleLoggerOptions>)) as IOptions<ConsoleLoggerOptions>;
 

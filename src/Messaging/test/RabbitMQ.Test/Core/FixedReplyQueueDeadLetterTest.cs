@@ -2,19 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Core.FixedReplyQueueDeadLetterTest;
 
@@ -35,7 +36,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public void Test()
     {
-        var template = _provider.GetRabbitTemplate("fixedReplyQRabbitTemplate");
+        RabbitTemplate template = _provider.GetRabbitTemplate("fixedReplyQRabbitTemplate");
         var deadListener = _provider.GetService<DeadListener>();
         Assert.Null(template.ConvertSendAndReceive<string>("foo"));
         Assert.True(deadListener.Latch.Wait(TimeSpan.FromSeconds(10)));
@@ -44,8 +45,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs1()
     {
-        var config = await GetQueueConfiguration("all.args.1");
-        var arguments = config.GetSection("arguments");
+        IConfiguration config = await GetQueueConfiguration("all.args.1");
+        IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -61,8 +62,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs2()
     {
-        var config = await GetQueueConfiguration("all.args.2");
-        var arguments = config.GetSection("arguments");
+        IConfiguration config = await GetQueueConfiguration("all.args.2");
+        IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -78,8 +79,8 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs3()
     {
-        var config = await GetQueueConfiguration("all.args.3");
-        var arguments = config.GetSection("arguments");
+        IConfiguration config = await GetQueueConfiguration("all.args.3");
+        IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
         Assert.Equal(42, arguments.GetValue<int>("x-max-length"));
@@ -91,16 +92,16 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         Assert.Equal("lazy", arguments.GetValue<string>("x-queue-mode"));
         Assert.Equal("random", arguments.GetValue<string>("x-queue-master-locator"));
 
-        var exchangeConfig = await GetExchangeConfiguration("dlx.test.requestEx");
-        var arguments2 = exchangeConfig.GetSection("arguments");
+        IConfiguration exchangeConfig = await GetExchangeConfiguration("dlx.test.requestEx");
+        IConfigurationSection arguments2 = exchangeConfig.GetSection("arguments");
         Assert.Equal("alternate", arguments2.GetValue<string>("alternate-exchange"));
     }
 
     [Fact]
     public async Task TestQuorumArgs()
     {
-        var config = await GetQueueConfiguration("test.quorum");
-        var arguments = config.GetSection("arguments");
+        IConfiguration config = await GetQueueConfiguration("test.quorum");
+        IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(10, arguments.GetValue<int>("x-delivery-limit"));
         Assert.Equal("quorum", arguments.GetValue<string>("x-queue-type"));
     }
@@ -108,11 +109,12 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     private async Task<IConfiguration> GetQueueConfiguration(string queueName)
     {
         var client = new HttpClient();
-        var authToken = Encoding.ASCII.GetBytes("guest:guest");
+        byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        var result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queueName}");
-        var n = 0;
+        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queueName}");
+        int n = 0;
+
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
@@ -121,24 +123,20 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
 
         Assert.True(n < 100);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var config = new ConfigurationBuilder()
-            .AddJsonStream(await result.Content.ReadAsStreamAsync())
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
         return config;
     }
 
     private async Task<IConfiguration> GetExchangeConfiguration(string exchangeName)
     {
         var client = new HttpClient();
-        var authToken = Encoding.ASCII.GetBytes("guest:guest");
+        byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        var result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
+        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var config = new ConfigurationBuilder()
-            .AddJsonStream(await result.Content.ReadAsStreamAsync())
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
         return config;
     }
 
@@ -175,99 +173,56 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             // services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
 
-            var requestQueue = QueueBuilder.NonDurable("dlx.test.requestQ")
-                .AutoDelete()
-                .Build();
+            IQueue requestQueue = QueueBuilder.NonDurable("dlx.test.requestQ").AutoDelete().Build();
             services.AddRabbitQueue(requestQueue);
 
-            var replyQueue = QueueBuilder.NonDurable("dlx.test.replyQ")
-                .AutoDelete()
-                .WithArgument("x-dead-letter-exchange", "reply.dlx")
-                .Build();
+            IQueue replyQueue = QueueBuilder.NonDurable("dlx.test.replyQ").AutoDelete().WithArgument("x-dead-letter-exchange", "reply.dlx").Build();
             services.AddRabbitQueue(replyQueue);
 
-            var dlq = QueueBuilder.NonDurable("dlx.test.DLQ")
-                .AutoDelete()
-                .Build();
+            IQueue dlq = QueueBuilder.NonDurable("dlx.test.DLQ").AutoDelete().Build();
             services.AddRabbitQueue(dlq);
 
-            var ex = ExchangeBuilder.DirectExchange("dlx.test.requestEx")
-                .Durable(false)
-                .AutoDelete()
-                .Alternate("alternate")
-                .Build() as DirectExchange;
+            var ex = ExchangeBuilder.DirectExchange("dlx.test.requestEx").Durable(false).AutoDelete().Alternate("alternate").Build() as DirectExchange;
             services.AddRabbitExchange(ex);
 
             var dlx = new DirectExchange("reply.dlx", false, true);
             services.AddRabbitExchange(dlx);
 
-            var allArgs1 = QueueBuilder.NonDurable("all.args.1")
-                .Ttl(1000)
-                .Expires(200000)
-                .MaxLength(42)
-                .MaxLengthBytes(10000)
-                .Overflow(QueueBuilder.OverFlow.RejectPublish)
-                .DeadLetterExchange("reply.dlx")
-                .DeadLetterRoutingKey("reply.dlrk")
-                .MaxPriority(4)
-                .Lazy()
-                .Masterlocator(QueueBuilder.MasterLocator.MinMasters)
-                .SingleActiveConsumer()
-                .Build();
+            IQueue allArgs1 = QueueBuilder.NonDurable("all.args.1").Ttl(1000).Expires(200000).MaxLength(42).MaxLengthBytes(10000)
+                .Overflow(QueueBuilder.OverFlow.RejectPublish).DeadLetterExchange("reply.dlx").DeadLetterRoutingKey("reply.dlrk").MaxPriority(4).Lazy()
+                .Masterlocator(QueueBuilder.MasterLocator.MinMasters).SingleActiveConsumer().Build();
+
             services.AddRabbitQueue(allArgs1);
 
-            var allArgs2 = QueueBuilder.NonDurable("all.args.2")
-                .Ttl(1000)
-                .Expires(200000)
-                .MaxLength(42)
-                .MaxLengthBytes(10000)
-                .Overflow(QueueBuilder.OverFlow.DropHead)
-                .DeadLetterExchange("reply.dlx")
-                .DeadLetterRoutingKey("reply.dlrk")
-                .MaxPriority(4)
-                .Lazy()
-                .Masterlocator(QueueBuilder.MasterLocator.ClientLocal)
-                .Build();
+            IQueue allArgs2 = QueueBuilder.NonDurable("all.args.2").Ttl(1000).Expires(200000).MaxLength(42).MaxLengthBytes(10000)
+                .Overflow(QueueBuilder.OverFlow.DropHead).DeadLetterExchange("reply.dlx").DeadLetterRoutingKey("reply.dlrk").MaxPriority(4).Lazy()
+                .Masterlocator(QueueBuilder.MasterLocator.ClientLocal).Build();
+
             services.AddRabbitQueue(allArgs2);
 
-            var allArgs3 = QueueBuilder.NonDurable("all.args.3")
-                .Ttl(1000)
-                .Expires(200000)
-                .MaxLength(42)
-                .MaxLengthBytes(10000)
-                .Overflow(QueueBuilder.OverFlow.RejectPublish)
-                .DeadLetterExchange("reply.dlx")
-                .DeadLetterRoutingKey("reply.dlrk")
-                .MaxPriority(4)
-                .Lazy()
-                .Masterlocator(QueueBuilder.MasterLocator.Random)
-                .Build();
+            IQueue allArgs3 = QueueBuilder.NonDurable("all.args.3").Ttl(1000).Expires(200000).MaxLength(42).MaxLengthBytes(10000)
+                .Overflow(QueueBuilder.OverFlow.RejectPublish).DeadLetterExchange("reply.dlx").DeadLetterRoutingKey("reply.dlrk").MaxPriority(4).Lazy()
+                .Masterlocator(QueueBuilder.MasterLocator.Random).Build();
+
             services.AddRabbitQueue(allArgs3);
 
-            var quorum = QueueBuilder.Durable("test.quorum")
-                .Quorum()
-                .DeliveryLimit(10)
-                .Build();
+            IQueue quorum = QueueBuilder.Durable("test.quorum").Quorum().DeliveryLimit(10).Build();
             services.AddRabbitQueue(quorum);
 
-            var dlBinding = BindingBuilder.Bind(dlq)
-                .To(dlx)
-                .With(replyQueue.QueueName);
+            IBinding dlBinding = BindingBuilder.Bind(dlq).To(dlx).With(replyQueue.QueueName);
             services.AddRabbitBinding(dlBinding);
 
-            var binding = BindingBuilder.Bind(requestQueue)
-                .To(ex)
-                .With("dlx.reply.test");
+            IBinding binding = BindingBuilder.Bind(requestQueue).To(ex).With("dlx.reply.test");
             services.AddRabbitBinding(binding);
 
             // Add a container "replyListenerContainer"
             services.AddSingleton<ILifecycle>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var factory = p.GetService<IConnectionFactory>();
                 var logFactory = p.GetService<ILoggerFactory>();
-                var queue = p.GetRabbitQueue(replyQueue.QueueName);
-                var template = p.GetRabbitTemplate("fixedReplyQRabbitTemplate");
+                IQueue queue = p.GetRabbitQueue(replyQueue.QueueName);
+                RabbitTemplate template = p.GetRabbitTemplate("fixedReplyQRabbitTemplate");
                 var container = new DirectMessageListenerContainer(context, factory, "replyListenerContainer", logFactory);
                 container.SetQueues(queue);
                 container.MessageListener = template;
@@ -277,10 +232,10 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             // Add a container "serviceListenerContainer"
             services.AddSingleton<ILifecycle>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var factory = p.GetService<IConnectionFactory>();
                 var logFactory = p.GetService<ILoggerFactory>();
-                var queue = p.GetRabbitQueue(requestQueue.QueueName);
+                IQueue queue = p.GetRabbitQueue(requestQueue.QueueName);
                 var container = new DirectMessageListenerContainer(context, factory, "serviceListenerContainer", logFactory);
                 container.SetQueues(queue);
                 var pojoListener = p.GetService<PojoListener>();
@@ -291,10 +246,10 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
             // Add a container "dlListenerContainer"
             services.AddSingleton<ILifecycle>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var factory = p.GetService<IConnectionFactory>();
                 var logFactory = p.GetService<ILoggerFactory>();
-                var q = p.GetRabbitQueue(dlq.QueueName);
+                IQueue q = p.GetRabbitQueue(dlq.QueueName);
                 var container = new DirectMessageListenerContainer(context, factory, "dlListenerContainer", logFactory);
                 container.SetQueues(q);
                 var deadListener = p.GetService<DeadListener>();
@@ -321,7 +276,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
 
         public void Dispose()
         {
-            var admin = Provider.GetRabbitAdmin();
+            RabbitAdmin admin = Provider.GetRabbitAdmin();
             admin.DeleteQueue("all.args.1");
             admin.DeleteQueue("all.args.2");
             admin.DeleteQueue("all.args.3");
@@ -341,7 +296,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
 
     public class DeadListener
     {
-        public CountdownEvent Latch { get; set; } = new (1);
+        public CountdownEvent Latch { get; set; } = new(1);
 
         public void HandleMessage(string foo)
         {

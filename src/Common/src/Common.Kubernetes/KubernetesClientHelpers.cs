@@ -11,12 +11,14 @@ namespace Steeltoe.Common.Kubernetes;
 
 public static class KubernetesClientHelpers
 {
-    public static IKubernetes GetKubernetesClient(IConfiguration configuration, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILogger logger = null)
+    public static IKubernetes GetKubernetesClient(IConfiguration configuration, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null,
+        ILogger logger = null)
     {
         return GetKubernetesClient(new KubernetesApplicationOptions(configuration), kubernetesClientConfiguration, logger);
     }
 
-    public static IKubernetes GetKubernetesClient(KubernetesApplicationOptions appInfo, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILogger logger = null)
+    public static IKubernetes GetKubernetesClient(KubernetesApplicationOptions appInfo,
+        Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILogger logger = null)
     {
         KubernetesClientConfiguration k8sConfig = null;
 
@@ -24,8 +26,8 @@ public static class KubernetesClientHelpers
         {
             if (appInfo.Config.Paths.Any())
             {
-                var delimiter = Platform.IsWindows ? ';' : ':';
-                var joinedPaths = appInfo.Config.Paths.Aggregate((i, j) => i + delimiter + j);
+                char delimiter = Platform.IsWindows ? ';' : ':';
+                string joinedPaths = appInfo.Config.Paths.Aggregate((i, j) => i + delimiter + j);
                 Environment.SetEnvironmentVariable("KUBECONFIG", joinedPaths);
             }
 
@@ -38,7 +40,11 @@ public static class KubernetesClientHelpers
         }
 
         // BuildDefaultConfig() doesn't set a host if KubeConfigException is thrown
-        k8sConfig ??= new KubernetesClientConfiguration { Host = "http://localhost:8080" };
+        k8sConfig ??= new KubernetesClientConfiguration
+        {
+            Host = "http://localhost:8080"
+        };
+
         kubernetesClientConfiguration?.Invoke(k8sConfig);
 
         return new k8s.Kubernetes(k8sConfig);

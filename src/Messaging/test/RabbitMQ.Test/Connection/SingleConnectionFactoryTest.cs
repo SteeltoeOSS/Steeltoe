@@ -24,11 +24,16 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
 
         var called = new AtomicInteger(0);
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
         var listener = new TestListener(called);
-        connectionFactory.SetChannelListeners(new List<IChannelListener> { listener });
-        var con = connectionFactory.CreateConnection();
-        var channel = con.CreateChannel();
+
+        connectionFactory.SetChannelListeners(new List<IChannelListener>
+        {
+            listener
+        });
+
+        IConnection con = connectionFactory.CreateConnection();
+        RC.IModel channel = con.CreateChannel();
         Assert.Equal(1, called.Value);
 
         channel.Close();
@@ -43,6 +48,12 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         connectionFactory.Destroy();
         mockConnection.Verify(c => c.Close(It.IsAny<int>()), Times.AtLeastOnce);
         mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()));
+    }
+
+    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+    {
+        var scf = new SingleConnectionFactory(connectionFactory, loggerFactory);
+        return scf;
     }
 
     private sealed class TestListener : IChannelListener
@@ -63,11 +74,5 @@ public class SingleConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             throw new NotImplementedException();
         }
-    }
-
-    protected override AbstractConnectionFactory CreateConnectionFactory(RC.IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-    {
-        var scf = new SingleConnectionFactory(connectionFactory, loggerFactory);
-        return scf;
     }
 }

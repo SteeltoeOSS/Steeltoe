@@ -5,7 +5,6 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
-using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
@@ -23,27 +22,22 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     private readonly IApplicationContext _autoDeclareContext;
     private readonly ILogger _logger;
 
-    private sealed class GivenNamingStrategy : INamingStrategy
-    {
-        private readonly Func<string> _strategy;
+    private bool _notOurAdminException = true; // Should be set by onApplicationEvent
 
-        public GivenNamingStrategy(Func<string> strategy)
-        {
-            _strategy = strategy;
-        }
+    private RabbitAdmin Admin { get; }
 
-        public string GenerateName()
-        {
-            return _strategy();
-        }
-    }
+    private List<RabbitConfig.IDeclarableCustomizer> Customizers { get; }
 
-    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
-        : this(connectionFactory, new List<IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
+    private RabbitBindingsOptions Options { get; }
+
+    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions,
+        IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+        : this(connectionFactory, new List<RabbitConfig.IDeclarableCustomizer>(), bindingsOptions, applicationContext, logger)
     {
     }
 
-    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<IDeclarableCustomizer> customizers, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
+    public RabbitExchangeQueueProvisioner(IConnectionFactory connectionFactory, List<RabbitConfig.IDeclarableCustomizer> customizers,
+        IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, IApplicationContext applicationContext, ILogger<RabbitExchangeQueueProvisioner> logger)
     {
         Admin = new RabbitAdmin(applicationContext, connectionFactory, logger);
 
@@ -54,14 +48,6 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         Customizers = customizers;
         Options = bindingsOptions.CurrentValue;
     }
-
-    private RabbitAdmin Admin { get; }
-
-    private bool _notOurAdminException = true; // Should be set by onApplicationEvent
-
-    private List<IDeclarableCustomizer> Customizers { get; }
-
-    private RabbitBindingsOptions Options { get; }
 
     public static string ConstructDlqName(string name)
     {
@@ -75,34 +61,39 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     public IProducerDestination ProvisionProducerDestination(string name, IProducerOptions options)
     {
-        var producerProperties = Options.GetRabbitProducerOptions(options.BindingName);
+        RabbitProducerOptions producerProperties = Options.GetRabbitProducerOptions(options.BindingName);
 
-        var exchangeName = ApplyPrefix(producerProperties.Prefix, name);
-        var exchange = BuildExchange(producerProperties, exchangeName);
+        string exchangeName = ApplyPrefix(producerProperties.Prefix, name);
+        RabbitConfig.IExchange exchange = BuildExchange(producerProperties, exchangeName);
+
         if (producerProperties.DeclareExchange.Value)
         {
             DeclareExchange(exchangeName, exchange);
         }
 
         RabbitConfig.IBinding binding = null;
-        foreach (var requiredGroupName in options.RequiredGroups)
+
+        foreach (string requiredGroupName in options.RequiredGroups)
         {
-            var baseQueueName = producerProperties.QueueNameGroupOnly.Value ? requiredGroupName : $"{exchangeName}.{requiredGroupName}";
+            string baseQueueName = producerProperties.QueueNameGroupOnly.Value ? requiredGroupName : $"{exchangeName}.{requiredGroupName}";
+
             if (!options.IsPartitioned)
             {
                 AutoBindDlq(baseQueueName, baseQueueName, producerProperties);
+
                 if (producerProperties.BindQueue.Value)
                 {
-                    var queue = new Queue(baseQueueName, true, false, false, GetQueueArgs(baseQueueName, producerProperties, false));
+                    var queue = new RabbitConfig.Queue(baseQueueName, true, false, false, GetQueueArgs(baseQueueName, producerProperties, false));
                     DeclareQueue(baseQueueName, queue);
-                    var routingKeys = BindingRoutingKeys(producerProperties);
+                    List<string> routingKeys = BindingRoutingKeys(producerProperties);
+
                     if (routingKeys == null || routingKeys.Count == 0)
                     {
                         binding = NotPartitionedBinding(exchange, queue, null, producerProperties);
                     }
                     else
                     {
-                        foreach (var routingKey in routingKeys)
+                        foreach (string routingKey in routingKeys)
                         {
                             binding = NotPartitionedBinding(exchange, queue, routingKey, producerProperties);
                         }
@@ -112,25 +103,27 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
             else
             {
                 // if the stream is partitioned, create one queue for each target partition for the default group
-                for (var i = 0; i < options.PartitionCount; i++)
+                for (int i = 0; i < options.PartitionCount; i++)
                 {
-                    var partitionSuffix = $"-{i}";
-                    var partitionQueueName = baseQueueName + partitionSuffix;
+                    string partitionSuffix = $"-{i}";
+                    string partitionQueueName = baseQueueName + partitionSuffix;
                     AutoBindDlq(baseQueueName, baseQueueName + partitionSuffix, producerProperties);
+
                     if (producerProperties.BindQueue.Value)
                     {
-                        var queue = new Queue(partitionQueueName, true, false, false, GetQueueArgs(partitionQueueName, producerProperties, false));
+                        var queue = new RabbitConfig.Queue(partitionQueueName, true, false, false, GetQueueArgs(partitionQueueName, producerProperties, false));
                         DeclareQueue(queue.QueueName, queue);
-                        var prefix = producerProperties.Prefix;
-                        var destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
-                        var routingKeys = BindingRoutingKeys(producerProperties);
+                        string prefix = producerProperties.Prefix;
+                        string destination = string.IsNullOrEmpty(prefix) ? exchangeName : exchangeName.Substring(prefix.Length);
+                        List<string> routingKeys = BindingRoutingKeys(producerProperties);
+
                         if (routingKeys == null || routingKeys.Count == 0)
                         {
                             binding = PartitionedBinding(destination, exchange, queue, null, producerProperties, i);
                         }
                         else
                         {
-                            foreach (var routingKey in routingKeys)
+                            foreach (string routingKey in routingKeys)
                             {
                                 binding = PartitionedBinding(destination, exchange, queue, routingKey, producerProperties, i);
                             }
@@ -146,6 +139,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     public IConsumerDestination ProvisionConsumerDestination(string name, string group, IConsumerOptions options)
     {
         IConsumerDestination consumerDestination;
+
         if (!options.Multiplex)
         {
             consumerDestination = DoProvisionConsumerDestination(name, group, options);
@@ -153,12 +147,13 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         else
         {
             var consumerDestinationNames = new List<string>();
-            var trimmed = name.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
-            foreach (var destination in trimmed)
+            IEnumerable<string> trimmed = name.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
+
+            foreach (string destination in trimmed)
             {
                 if (options.IsPartitioned && options.InstanceIndexList.Count > 0)
                 {
-                    foreach (var index in options.InstanceIndexList)
+                    foreach (int index in options.InstanceIndexList)
                     {
                         var temporaryOptions = options.Clone() as ConsumerOptions;
                         temporaryOptions.InstanceIndex = index;
@@ -186,7 +181,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 name = name.Trim();
                 RemoveSingleton($"{name}.binding");
                 RemoveSingleton(name);
-                var dlq = $"{name}.dlq";
+                string dlq = $"{name}.dlq";
                 RemoveSingleton($"{dlq}.binding");
                 RemoveSingleton(dlq);
             });
@@ -200,15 +195,17 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     private IConsumerDestination DoProvisionConsumerDestination(string name, string group, IConsumerOptions options)
     {
-        var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
-        var anonymous = string.IsNullOrEmpty(group);
+        RabbitConsumerOptions consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+        bool anonymous = string.IsNullOrEmpty(group);
         Base64UrlNamingStrategy anonQueueNameGenerator = null;
+
         if (anonymous)
         {
             anonQueueNameGenerator = new Base64UrlNamingStrategy(consumerProperties.AnonymousGroupPrefix ?? string.Empty);
         }
 
         string baseQueueName;
+
         if (consumerProperties.QueueNameGroupOnly.GetValueOrDefault())
         {
             baseQueueName = anonymous ? anonQueueNameGenerator.GenerateName() : group;
@@ -219,48 +216,52 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
 
         // logger.info("declaring queue for inbound: " + baseQueueName + ", bound to: " + name);
-        var prefix = consumerProperties.Prefix;
-        var exchangeName = ApplyPrefix(prefix, name);
-        var exchange = BuildExchange(consumerProperties, exchangeName);
+        string prefix = consumerProperties.Prefix;
+        string exchangeName = ApplyPrefix(prefix, name);
+        RabbitConfig.IExchange exchange = BuildExchange(consumerProperties, exchangeName);
+
         if (consumerProperties.DeclareExchange.GetValueOrDefault())
         {
             DeclareExchange(exchangeName, exchange);
         }
 
-        var queueName = ApplyPrefix(prefix, baseQueueName);
-        var partitioned = !anonymous && options.IsPartitioned;
-        var durable = !anonymous && consumerProperties.DurableSubscription.Value;
-        Queue queue;
+        string queueName = ApplyPrefix(prefix, baseQueueName);
+        bool partitioned = !anonymous && options.IsPartitioned;
+        bool durable = !anonymous && consumerProperties.DurableSubscription.Value;
+        RabbitConfig.Queue queue;
+
         if (anonymous)
         {
-            var anonQueueName = queueName;
-            queue = new AnonymousQueue(new GivenNamingStrategy(() => anonQueueName), GetQueueArgs(queueName, consumerProperties, false));
+            string anonQueueName = queueName;
+            queue = new RabbitConfig.AnonymousQueue(new GivenNamingStrategy(() => anonQueueName), GetQueueArgs(queueName, consumerProperties, false));
         }
         else
         {
             if (partitioned)
             {
-                var partitionSuffix = $"-{options.InstanceIndex}";
+                string partitionSuffix = $"-{options.InstanceIndex}";
                 queueName += partitionSuffix;
             }
 
             queue = durable
-                ? new Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false))
-                : new Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
+                ? new RabbitConfig.Queue(queueName, true, false, false, GetQueueArgs(queueName, consumerProperties, false))
+                : new RabbitConfig.Queue(queueName, false, false, true, GetQueueArgs(queueName, consumerProperties, false));
         }
 
         RabbitConfig.IBinding binding = null;
+
         if (consumerProperties.BindQueue.GetValueOrDefault())
         {
             DeclareQueue(queueName, queue);
-            var routingKeys = BindingRoutingKeys(consumerProperties);
+            List<string> routingKeys = BindingRoutingKeys(consumerProperties);
+
             if (routingKeys == null || routingKeys.Count == 0)
             {
                 binding = DeclareConsumerBindings(name, null, options, exchange, partitioned, queue);
             }
             else
             {
-                foreach (var routingKey in routingKeys)
+                foreach (string routingKey in routingKeys)
                 {
                     binding = DeclareConsumerBindings(name, routingKey, options, exchange, partitioned, queue);
                 }
@@ -275,63 +276,55 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         return new RabbitConsumerDestination(queue.QueueName, binding);
     }
 
-    private RabbitConfig.IBinding DeclareConsumerBindings(
-        string name,
-        string routingKey,
-        IConsumerOptions options,
-        IExchange exchange,
-        bool partitioned,
-        Queue queue)
+    private RabbitConfig.IBinding DeclareConsumerBindings(string name, string routingKey, IConsumerOptions options, RabbitConfig.IExchange exchange,
+        bool partitioned, RabbitConfig.Queue queue)
     {
-        var consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+        RabbitConsumerOptions consumerProperties = Options.GetRabbitConsumerOptions(options.BindingName);
+
         if (partitioned)
         {
             return PartitionedBinding(name, exchange, queue, routingKey, consumerProperties, options.InstanceIndex);
         }
-        else
-        {
-            return NotPartitionedBinding(exchange, queue, routingKey, consumerProperties);
-        }
+
+        return NotPartitionedBinding(exchange, queue, routingKey, consumerProperties);
     }
 
-    private RabbitConfig.IBinding PartitionedBinding(
-        string destination,
-        IExchange exchange,
-        Queue queue,
-        string rk,
-        RabbitCommonOptions extendedProperties,
-        int index)
+    private RabbitConfig.IBinding PartitionedBinding(string destination, RabbitConfig.IExchange exchange, RabbitConfig.Queue queue, string rk,
+        RabbitCommonOptions extendedProperties, int index)
     {
-        var bindingKey = rk ?? destination;
+        string bindingKey = rk ?? destination;
 
         bindingKey += $"-{index}";
         var arguments = new Dictionary<string, object>();
-        foreach (var entry in extendedProperties.QueueBindingArguments)
+
+        foreach (KeyValuePair<string, string> entry in extendedProperties.QueueBindingArguments)
         {
             arguments.Add(entry.Key, entry.Value);
         }
 
         switch (exchange)
         {
-            case TopicExchange topic:
+            case RabbitConfig.TopicExchange topic:
             {
-                var binding = BindingBuilder.Bind(queue).To(topic).With(bindingKey);
+                RabbitConfig.IBinding binding = RabbitConfig.BindingBuilder.Bind(queue).To(topic).With(bindingKey);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
 
-            case DirectExchange direct:
+            case RabbitConfig.DirectExchange direct:
             {
-                var binding = BindingBuilder.Bind(queue).To(direct).With(bindingKey);
+                RabbitConfig.IBinding binding = RabbitConfig.BindingBuilder.Bind(queue).To(direct).With(bindingKey);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
 
-            case FanOutExchange:
+            case RabbitConfig.FanOutExchange:
                 throw new ProvisioningException("A fan-out exchange is not appropriate for partitioned apps");
-            case HeadersExchange:
+            case RabbitConfig.HeadersExchange:
             {
-                var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.Queue, exchange.ExchangeName, string.Empty, arguments);
+                var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.Queue,
+                    exchange.ExchangeName, string.Empty, arguments);
+
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
@@ -341,46 +334,46 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
     }
 
-    private RabbitConfig.IBinding NotPartitionedBinding(
-        IExchange exchange,
-        Queue queue,
-        string rk,
+    private RabbitConfig.IBinding NotPartitionedBinding(RabbitConfig.IExchange exchange, RabbitConfig.Queue queue, string rk,
         RabbitCommonOptions extendedProperties)
     {
-        var routingKey = rk ?? "#";
+        string routingKey = rk ?? "#";
 
         var arguments = new Dictionary<string, object>();
-        foreach (var entry in extendedProperties.QueueBindingArguments)
+
+        foreach (KeyValuePair<string, string> entry in extendedProperties.QueueBindingArguments)
         {
             arguments.Add(entry.Key, entry.Value);
         }
 
         switch (exchange)
         {
-            case TopicExchange topic:
+            case RabbitConfig.TopicExchange topic:
             {
-                var binding = BindingBuilder.Bind(queue).To(topic).With(routingKey);
+                RabbitConfig.IBinding binding = RabbitConfig.BindingBuilder.Bind(queue).To(topic).With(routingKey);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
 
-            case DirectExchange direct:
+            case RabbitConfig.DirectExchange direct:
             {
-                var binding = BindingBuilder.Bind(queue).To(direct).With(routingKey);
+                RabbitConfig.IBinding binding = RabbitConfig.BindingBuilder.Bind(queue).To(direct).With(routingKey);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
 
-            case FanOutExchange fanOut:
+            case RabbitConfig.FanOutExchange fanOut:
             {
-                var binding = BindingBuilder.Bind(queue).To(fanOut);
+                RabbitConfig.IBinding binding = RabbitConfig.BindingBuilder.Bind(queue).To(fanOut);
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
 
-            case HeadersExchange:
+            case RabbitConfig.HeadersExchange:
             {
-                var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.Queue, exchange.ExchangeName, string.Empty, arguments);
+                var binding = new RabbitConfig.Binding($"{queue.QueueName}.{exchange.ExchangeName}.binding", queue.QueueName, DestinationType.Queue,
+                    exchange.ExchangeName, string.Empty, arguments);
+
                 DeclareBinding(queue.QueueName, binding);
                 return binding;
             }
@@ -395,7 +388,8 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         /*
          * When the delimiter is null, we get a String[1] containing the original.
          */
-        var delimiter = extendedProperties.BindingRoutingKeyDelimiter;
+        string delimiter = extendedProperties.BindingRoutingKeyDelimiter;
+
         if (delimiter == null)
         {
             if (extendedProperties.BindingRoutingKey == null)
@@ -403,7 +397,10 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
                 return null;
             }
 
-            return new List<string> { extendedProperties.BindingRoutingKey.Trim() };
+            return new List<string>
+            {
+                extendedProperties.BindingRoutingKey.Trim()
+            };
         }
 
         if (extendedProperties.BindingRoutingKey == null)
@@ -411,42 +408,44 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
             return null;
         }
 
-        var trimmed = extendedProperties.BindingRoutingKey.Split(delimiter, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
+        IEnumerable<string> trimmed = extendedProperties.BindingRoutingKey.Split(delimiter, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim());
         return new List<string>(trimmed);
     }
 
     private void AutoBindDlq(string baseQueueName, string routingKey, RabbitCommonOptions properties)
     {
-        var autoBindDlq = properties.AutoBindDlq.Value;
+        bool autoBindDlq = properties.AutoBindDlq.Value;
 
         _logger.LogDebug("autoBindDLQ=" + autoBindDlq + " for: " + baseQueueName);
+
         if (autoBindDlq)
         {
-            var dlqName = properties.DeadLetterQueueName ?? ConstructDlqName(baseQueueName);
+            string dlqName = properties.DeadLetterQueueName ?? ConstructDlqName(baseQueueName);
 
-            var dlq = new Queue(dlqName, true, false, false, GetQueueArgs(dlqName, properties, true));
+            var dlq = new RabbitConfig.Queue(dlqName, true, false, false, GetQueueArgs(dlqName, properties, true));
             DeclareQueue(dlqName, dlq);
-            var dlxName = GetDeadLetterExchangeName(properties);
+            string dlxName = GetDeadLetterExchangeName(properties);
+
             if (properties.DeclareDlx.Value)
             {
-                DeclareExchange(dlxName, new ExchangeBuilder(dlxName, properties.DeadLetterExchangeType).Durable(true).Build());
+                DeclareExchange(dlxName, new RabbitConfig.ExchangeBuilder(dlxName, properties.DeadLetterExchangeType).Durable(true).Build());
             }
 
             var arguments = new Dictionary<string, object>();
 
-            properties.DlqBindingArguments?.ToList().
-                ForEach(entry => arguments.Add(entry.Key, entry.Value));
+            properties.DlqBindingArguments?.ToList().ForEach(entry => arguments.Add(entry.Key, entry.Value));
 
-            var dlRoutingKey = properties.DeadLetterRoutingKey ?? routingKey;
-            var dlBindingName = $"{dlq.QueueName}.{dlxName}.{dlRoutingKey}.binding";
+            string dlRoutingKey = properties.DeadLetterRoutingKey ?? routingKey;
+            string dlBindingName = $"{dlq.QueueName}.{dlxName}.{dlRoutingKey}.binding";
             var dlqBinding = new RabbitConfig.Binding(dlBindingName, dlq.QueueName, DestinationType.Queue, dlxName, dlRoutingKey, arguments);
             DeclareBinding(dlqName, dlqBinding);
+
             if (properties is RabbitConsumerOptions options && options.RepublishToDlq.Value)
             {
                 /*
                  * Also bind with the base queue name when republishToDlq is used, which does not know about partitioning
                  */
-                var bindingName = $"{dlq.QueueName}.{dlxName}.{baseQueueName}.binding";
+                string bindingName = $"{dlq.QueueName}.{dlxName}.{baseQueueName}.binding";
                 DeclareBinding(dlqName, new RabbitConfig.Binding(bindingName, dlq.QueueName, DestinationType.Queue, dlxName, baseQueueName, arguments));
             }
         }
@@ -458,18 +457,17 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         {
             return properties.Prefix + RabbitCommonOptions.DeadLetterExchangeName;
         }
-        else
-        {
-            return properties.DeadLetterExchange;
-        }
+
+        return properties.DeadLetterExchange;
     }
 
-    private void DeclareQueue(string beanName, Queue queueArg)
+    private void DeclareQueue(string beanName, RabbitConfig.Queue queueArg)
     {
-        var queue = queueArg;
-        foreach (var customizer in Customizers)
+        RabbitConfig.Queue queue = queueArg;
+
+        foreach (RabbitConfig.IDeclarableCustomizer customizer in Customizers)
         {
-            queue = (Queue)customizer.Apply(queue);
+            queue = (RabbitConfig.Queue)customizer.Apply(queue);
         }
 
         try
@@ -497,15 +495,16 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
     private Dictionary<string, object> GetQueueArgs(string queueName, RabbitCommonOptions properties, bool isDlq)
     {
         var args = new Dictionary<string, object>();
+
         if (!isDlq)
         {
             if (properties.AutoBindDlq.Value)
             {
-                var dlx = properties.DeadLetterExchange ?? ApplyPrefix(properties.Prefix, "DLX");
+                string dlx = properties.DeadLetterExchange ?? ApplyPrefix(properties.Prefix, "DLX");
 
                 args.Add("x-dead-letter-exchange", dlx);
 
-                var dlRk = properties.DeadLetterRoutingKey ?? queueName;
+                string dlRk = properties.DeadLetterRoutingKey ?? queueName;
 
                 args.Add("x-dead-letter-routing-key", dlRk);
             }
@@ -529,15 +528,15 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     private void AddAdditionalArgs(Dictionary<string, object> args, RabbitCommonOptions properties, bool isDlq)
     {
-        var expires = isDlq ? properties.DlqExpires : properties.Expires;
-        var maxLength = isDlq ? properties.DlqMaxLength : properties.MaxLength;
-        var maxLengthBytes = isDlq ? properties.DlqMaxLengthBytes : properties.MaxLengthBytes;
-        var maxPriority = isDlq ? properties.DlqMaxPriority : properties.MaxPriority;
-        var ttl = isDlq ? properties.DlqTtl : properties.Ttl;
-        var lazy = isDlq ? properties.DlqLazy : properties.Lazy;
-        var overflow = isDlq ? properties.DlqOverflowBehavior : properties.OverflowBehavior;
-        var quorum = isDlq ? properties.DlqQuorum : properties.Quorum;
-        var singleActive = isDlq ? properties.DlqSingleActiveConsumer : properties.SingleActiveConsumer;
+        int? expires = isDlq ? properties.DlqExpires : properties.Expires;
+        int? maxLength = isDlq ? properties.DlqMaxLength : properties.MaxLength;
+        int? maxLengthBytes = isDlq ? properties.DlqMaxLengthBytes : properties.MaxLengthBytes;
+        int? maxPriority = isDlq ? properties.DlqMaxPriority : properties.MaxPriority;
+        int? ttl = isDlq ? properties.DlqTtl : properties.Ttl;
+        bool? lazy = isDlq ? properties.DlqLazy : properties.Lazy;
+        string overflow = isDlq ? properties.DlqOverflowBehavior : properties.OverflowBehavior;
+        RabbitCommonOptions.QuorumConfig quorum = isDlq ? properties.DlqQuorum : properties.Quorum;
+        bool? singleActive = isDlq ? properties.DlqSingleActiveConsumer : properties.SingleActiveConsumer;
 
         if (expires != null)
         {
@@ -577,6 +576,7 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         if (quorum != null && quorum.Enabled.Value)
         {
             args.Add("x-queue-type", "quorum");
+
             if (quorum.DeliveryLimit != null)
             {
                 args.Add("x-delivery-limit", quorum.DeliveryLimit.Value);
@@ -594,12 +594,13 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
     }
 
-    private IExchange BuildExchange(RabbitCommonOptions properties, string exchangeName)
+    private RabbitConfig.IExchange BuildExchange(RabbitCommonOptions properties, string exchangeName)
     {
         try
         {
-            var builder = new ExchangeBuilder(exchangeName, properties.ExchangeType);
+            var builder = new RabbitConfig.ExchangeBuilder(exchangeName, properties.ExchangeType);
             builder.Durable(properties.ExchangeDurable.GetValueOrDefault());
+
             if (properties.ExchangeAutoDelete.GetValueOrDefault())
             {
                 builder.AutoDelete();
@@ -618,12 +619,13 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
     }
 
-    private void DeclareExchange(string rootName, IExchange exchangeArg)
+    private void DeclareExchange(string rootName, RabbitConfig.IExchange exchangeArg)
     {
-        var exchange = exchangeArg;
-        foreach (var customizer in Customizers)
+        RabbitConfig.IExchange exchange = exchangeArg;
+
+        foreach (RabbitConfig.IDeclarableCustomizer customizer in Customizers)
         {
-            exchange = (IExchange)customizer.Apply(exchange);
+            exchange = (RabbitConfig.IExchange)customizer.Apply(exchange);
         }
 
         try
@@ -661,8 +663,9 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
 
     private void DeclareBinding(string rootName, RabbitConfig.IBinding bindingArg)
     {
-        var binding = bindingArg;
-        foreach (var customizer in Customizers)
+        RabbitConfig.IBinding binding = bindingArg;
+
+        foreach (RabbitConfig.IDeclarableCustomizer customizer in Customizers)
         {
             binding = (RabbitConfig.IBinding)customizer.Apply(binding);
         }
@@ -697,19 +700,34 @@ public class RabbitExchangeQueueProvisioner : IProvisioningProvider
         }
     }
 
+    private sealed class GivenNamingStrategy : INamingStrategy
+    {
+        private readonly Func<string> _strategy;
+
+        public GivenNamingStrategy(Func<string> strategy)
+        {
+            _strategy = strategy;
+        }
+
+        public string GenerateName()
+        {
+            return _strategy();
+        }
+    }
+
     // public void onApplicationEvent(DeclarationExceptionEvent event)
     // {
     //    this.notOurAdminException = true; // our admin doesn't have an event publisher
     // }
     private sealed class RabbitProducerDestination : IProducerDestination
     {
-        public IExchange Exchange { get; }
+        public RabbitConfig.IExchange Exchange { get; }
 
         public string Name => Exchange.ExchangeName;
 
         public RabbitConfig.IBinding Binding { get; }
 
-        public RabbitProducerDestination(IExchange exchange, RabbitConfig.IBinding binding)
+        public RabbitProducerDestination(RabbitConfig.IExchange exchange, RabbitConfig.IBinding binding)
         {
             Exchange = exchange ?? throw new ArgumentNullException(nameof(exchange));
             Binding = binding;

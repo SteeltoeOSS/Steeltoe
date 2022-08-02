@@ -38,7 +38,7 @@ public class ServiceCollectionExtensionsTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         services.AddKubernetesInfoContributor(new FakePodUtilities(null));
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var contributor = provider.GetRequiredService<IInfoContributor>();
         var podUtils = provider.GetRequiredService<IPodUtilities>();
 
@@ -58,9 +58,9 @@ public class ServiceCollectionExtensionsTest
         var utils = new FakePodUtilities(FakePodUtilities.SamplePod);
 
         services.AddKubernetesActuators(null, utils);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
-        var contributors = provider.GetServices<IInfoContributor>();
+        IEnumerable<IInfoContributor> contributors = provider.GetServices<IInfoContributor>();
         Assert.Equal(4, contributors.Count());
         Assert.Equal(1, contributors.Count(contributor => contributor.GetType().IsAssignableFrom(typeof(KubernetesInfoContributor))));
     }

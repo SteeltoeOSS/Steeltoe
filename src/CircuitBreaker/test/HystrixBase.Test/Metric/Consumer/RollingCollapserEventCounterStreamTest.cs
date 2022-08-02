@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
 using Steeltoe.Common.Util;
-using System.Reactive.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,14 +17,6 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
     private RollingCollapserEventCounterStream _stream;
     private IDisposable _latchSubscription;
 
-    private sealed class LatchedObserver : TestObserverBase<long[]>
-    {
-        public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
-            : base(output, latch)
-        {
-        }
-    }
-
     public RollingCollapserEventCounterStreamTest(ITestOutputHelper output)
     {
         _output = output;
@@ -32,24 +24,10 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         HystrixCollapserEventStream.Reset();
     }
 
-    protected override void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            _latchSubscription?.Dispose();
-            _latchSubscription = null;
-
-            _stream?.Unsubscribe();
-            _stream = null;
-        }
-
-        base.Dispose(disposing);
-    }
-
     [Fact]
     public void TestEmptyStreamProducesZeros()
     {
-        var key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-A");
+        IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-A");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -68,7 +46,7 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
     [Fact]
     public void TestCollapsed()
     {
-        var key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-B");
+        IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-B");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -77,7 +55,8 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         var cTasks = new List<Task>();
-        for (var i = 0; i < 3; i++)
+
+        for (int i = 0; i < 3; i++)
         {
             cTasks.Add(Collapser.From(_output, key, i).ExecuteAsync());
         }
@@ -87,7 +66,7 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
-        var expected = new long[CollapserEventTypeHelper.Values.Count];
+        long[] expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BatchExecuted] = 1;
         expected[(int)CollapserEventType.AddedToBatch] = 3;
         Assert.Equal(expected, _stream.Latest);
@@ -96,7 +75,7 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
     [Fact]
     public void TestCollapsedAndResponseFromCache()
     {
-        var key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-C");
+        IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-C");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -105,7 +84,8 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         var cTasks = new List<Task>();
-        for (var i = 0; i < 3; i++)
+
+        for (int i = 0; i < 3; i++)
         {
             cTasks.Add(Collapser.From(_output, key, i).ExecuteAsync());
             cTasks.Add(Collapser.From(_output, key, i).ExecuteAsync()); // same arg - should get a response from cache
@@ -117,7 +97,7 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(WaitForLatchedObserverToUpdate(observer, 1, 500, _output), "Latch took to long to update");
 
         Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
-        var expected = new long[CollapserEventTypeHelper.Values.Count];
+        long[] expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BatchExecuted] = 1;
         expected[(int)CollapserEventType.AddedToBatch] = 3;
         expected[(int)CollapserEventType.ResponseFromCache] = 6;
@@ -128,7 +108,7 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
     [Fact]
     public void TestCollapsedAndResponseFromCacheAgeOutOfRollingWindow()
     {
-        var key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-D");
+        IHystrixCollapserKey key = HystrixCollapserKeyDefault.AsKey("RollingCollapser-D");
         var latch = new CountdownEvent(1);
         var observer = new LatchedObserver(_output, latch);
 
@@ -137,7 +117,8 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(Time.WaitUntil(() => observer.StreamRunning, 1000), "Stream failed to start");
 
         var cTasks = new List<Task>();
-        for (var i = 0; i < 3; i++)
+
+        for (int i = 0; i < 3; i++)
         {
             cTasks.Add(Collapser.From(_output, key, i).ExecuteAsync());
             cTasks.Add(Collapser.From(_output, key, i).ExecuteAsync()); // same arg - should get a response from cache
@@ -149,10 +130,32 @@ public sealed class RollingCollapserEventCounterStreamTest : CommandStreamTest
         Assert.True(latch.Wait(10000), "CountdownEvent was not set!");
         _output.WriteLine("ReqLog : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
         Assert.Equal(CollapserEventTypeHelper.Values.Count, _stream.Latest.Length);
-        var expected = new long[CollapserEventTypeHelper.Values.Count];
+        long[] expected = new long[CollapserEventTypeHelper.Values.Count];
         expected[(int)CollapserEventType.BatchExecuted] = 0;
         expected[(int)CollapserEventType.AddedToBatch] = 0;
         expected[(int)CollapserEventType.ResponseFromCache] = 0;
         Assert.Equal(expected, _stream.Latest);
+    }
+
+    protected override void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            _latchSubscription?.Dispose();
+            _latchSubscription = null;
+
+            _stream?.Unsubscribe();
+            _stream = null;
+        }
+
+        base.Dispose(disposing);
+    }
+
+    private sealed class LatchedObserver : TestObserverBase<long[]>
+    {
+        public LatchedObserver(ITestOutputHelper output, CountdownEvent latch)
+            : base(output, latch)
+        {
+        }
     }
 }

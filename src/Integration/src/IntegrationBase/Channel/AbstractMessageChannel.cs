@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Order;
@@ -11,28 +12,18 @@ using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System.Threading.Channels;
 
 namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChannel, IChannelInterceptorAware
 {
     protected const int IndefiniteTimeout = -1;
+
+    protected readonly ILogger Logger;
     private IIntegrationServices _integrationServices;
     private IMessageConverter _messageConverter;
 
-    protected AbstractMessageChannel(IApplicationContext context, ILogger logger = null)
-        : this(context, null, logger)
-    {
-    }
-
-    protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
-    {
-        ApplicationContext = context;
-        this.Logger = logger;
-        ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
-        Interceptors = new ChannelInterceptorList(logger);
-    }
+    internal ChannelInterceptorList Interceptors { get; set; }
 
     public IApplicationContext ApplicationContext { get; }
 
@@ -51,7 +42,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
     public virtual string ComponentName { get; set; }
 
-    public virtual List<Type> DataTypes { get; set; } = new ();
+    public virtual List<Type> DataTypes { get; set; } = new();
 
     public virtual IMessageConverter MessageConverter
     {
@@ -61,24 +52,31 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             return _messageConverter;
         }
 
-        set
-        {
-            _messageConverter = value;
-        }
+        set => _messageConverter = value;
     }
 
     public virtual List<IChannelInterceptor> ChannelInterceptors
     {
-        get
-        {
-            return Interceptors.Interceptors;
-        }
+        get => Interceptors.Interceptors;
 
         set
         {
             value.Sort(new OrderComparer());
             Interceptors.Set(value);
         }
+    }
+
+    protected AbstractMessageChannel(IApplicationContext context, ILogger logger = null)
+        : this(context, null, logger)
+    {
+    }
+
+    protected AbstractMessageChannel(IApplicationContext context, string name, ILogger logger = null)
+    {
+        ApplicationContext = context;
+        Logger = logger;
+        ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
+        Interceptors = new ChannelInterceptorList(logger);
     }
 
     public virtual void AddInterceptor(IChannelInterceptor interceptor)
@@ -126,28 +124,22 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         return new ValueTask<bool>(DoSend(message, cancellationToken));
     }
 
-    internal ChannelInterceptorList Interceptors { get; set; }
-
-    protected readonly ILogger Logger;
-
     protected virtual bool DoSend(IMessage message, int timeout)
     {
         if (timeout <= 0)
         {
             return DoSend(message, CancellationToken.None);
         }
-        else
-        {
-            using var source = new CancellationTokenSource();
-            source.CancelAfter(timeout);
-            return DoSend(message, source.Token);
-        }
+
+        using var source = new CancellationTokenSource();
+        source.CancelAfter(timeout);
+        return DoSend(message, source.Token);
     }
 
     protected bool DoSend(IMessage message, CancellationToken cancellationToken)
     {
         Stack<IChannelInterceptor> interceptorStack = null;
-        var sent = false;
+        bool sent = false;
 
         try
         {
@@ -162,6 +154,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             {
                 interceptorStack = new Stack<IChannelInterceptor>();
                 message = Interceptors.PreSend(message, this, interceptorStack);
+
                 if (message == null)
                 {
                     return false;
@@ -187,7 +180,8 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 Interceptors.AfterSendCompletion(message, this, sent, e, interceptorStack);
             }
 
-            var wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, $"failed to send Message to channel '{ServiceName}'", e);
+            Exception wrapped = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, $"failed to send Message to channel '{ServiceName}'", e);
+
             if (wrapped != e)
             {
                 throw wrapped;
@@ -202,7 +196,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
     private IMessage ConvertPayloadIfNecessary(IMessage message)
     {
         // first pass checks if the payload type already matches any of the data types
-        foreach (var dataType in DataTypes)
+        foreach (Type dataType in DataTypes)
         {
             if (dataType.IsInstanceOfType(message.Payload))
             {
@@ -213,30 +207,39 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
         if (MessageConverter != null)
         {
             // second pass applies conversion if possible, attempting data types in order
-            foreach (var dataType in DataTypes)
+            foreach (Type dataType in DataTypes)
             {
-                var converted = MessageConverter.FromMessage(message, dataType);
+                object converted = MessageConverter.FromMessage(message, dataType);
+
                 if (converted != null)
                 {
-                    return converted as IMessage ?? IntegrationServices
-                        .MessageBuilderFactory
-                        .WithPayload(converted)
-                        .CopyHeaders(message.Headers)
-                        .Build();
+                    return converted as IMessage ?? IntegrationServices.MessageBuilderFactory.WithPayload(converted).CopyHeaders(message.Headers).Build();
                 }
             }
         }
 
-        throw new MessageDeliveryException(
-            message,
+        throw new MessageDeliveryException(message,
             $"Channel '{ServiceName}' expected one of the following data types [{string.Join(",", DataTypes)}], but received [{message.Payload.GetType()}]");
     }
 
     internal sealed class ChannelInterceptorList
     {
-        private readonly object _lock = new ();
+        private readonly object _lock = new();
         private readonly ILogger _logger;
         private IChannelInterceptor[] _interceptors = Array.Empty<IChannelInterceptor>();
+
+        public int Count { get; private set; }
+
+        public List<IChannelInterceptor> Interceptors
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return new List<IChannelInterceptor>(_interceptors);
+                }
+            }
+        }
 
         public ChannelInterceptorList(ILogger logger)
         {
@@ -252,8 +255,6 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             }
         }
 
-        public int Count { get; private set; }
-
         public bool Add(IChannelInterceptor interceptor)
         {
             lock (_lock)
@@ -262,6 +263,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 {
                     interceptor
                 };
+
                 _interceptors = interceptors.ToArray();
                 Count = _interceptors.Length;
                 return true;
@@ -284,7 +286,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             lock (_lock)
             {
                 var interceptors = new List<IChannelInterceptor>(_interceptors);
-                var result = interceptors.Remove(interceptor);
+                bool result = interceptors.Remove(interceptor);
                 _interceptors = interceptors.ToArray();
                 Count = _interceptors.Length;
                 return result;
@@ -301,7 +303,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 }
 
                 var interceptors = new List<IChannelInterceptor>(_interceptors);
-                var current = interceptors[index];
+                IChannelInterceptor current = interceptors[index];
                 interceptors.RemoveAt(index);
                 _interceptors = interceptors.ToArray();
                 Count = _interceptors.Length;
@@ -309,27 +311,17 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
             }
         }
 
-        public List<IChannelInterceptor> Interceptors
-        {
-            get
-            {
-                lock (_lock)
-                {
-                    return new List<IChannelInterceptor>(_interceptors);
-                }
-            }
-        }
-
         public IMessage PreSend(IMessage messageArg, IMessageChannel channel, Stack<IChannelInterceptor> interceptorStack)
         {
-            var message = messageArg;
+            IMessage message = messageArg;
 
-            var interceptors = _interceptors;
+            IChannelInterceptor[] interceptors = _interceptors;
 
-            foreach (var interceptor in interceptors)
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
-                var previous = message;
+                IMessage previous = message;
                 message = interceptor.PreSend(message, channel);
+
                 if (message == null)
                 {
                     AfterSendCompletion(previous, channel, false, null, interceptorStack);
@@ -344,9 +336,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         public void PostSend(IMessage message, IMessageChannel channel, bool sent)
         {
-            var interceptors = _interceptors;
+            IChannelInterceptor[] interceptors = _interceptors;
 
-            foreach (var interceptor in interceptors)
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
                 interceptor.PostSend(message, channel, sent);
             }
@@ -359,7 +351,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 return;
             }
 
-            foreach (var interceptor in interceptorStack)
+            foreach (IChannelInterceptor interceptor in interceptorStack)
             {
                 try
                 {
@@ -374,9 +366,9 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         public bool PreReceive(IMessageChannel channel, Stack<IChannelInterceptor> interceptorStack)
         {
-            var interceptors = _interceptors;
+            IChannelInterceptor[] interceptors = _interceptors;
 
-            foreach (var interceptor in interceptors)
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
                 if (!interceptor.PreReceive(channel))
                 {
@@ -392,12 +384,13 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
 
         public IMessage PostReceive(IMessage messageArg, IMessageChannel channel)
         {
-            var message = messageArg;
-            var interceptors = _interceptors;
+            IMessage message = messageArg;
+            IChannelInterceptor[] interceptors = _interceptors;
 
-            foreach (var interceptor in interceptors)
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
                 message = interceptor.PostReceive(message, channel);
+
                 if (message == null)
                 {
                     return null;
@@ -414,7 +407,7 @@ public abstract class AbstractMessageChannel : Channel<IMessage>, IMessageChanne
                 return;
             }
 
-            foreach (var interceptor in interceptorStack)
+            foreach (IChannelInterceptor interceptor in interceptorStack)
             {
                 try
                 {

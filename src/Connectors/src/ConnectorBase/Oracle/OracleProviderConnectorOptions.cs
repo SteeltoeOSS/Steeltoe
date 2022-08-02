@@ -8,28 +8,12 @@ namespace Steeltoe.Connector.Oracle;
 
 public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string OracleClientSectionPrefix = "oracle:client";
     public const string DefaultServer = "localhost";
     public const int DefaultPort = 1521;
-    private const string OracleClientSectionPrefix = "oracle:client";
     private readonly bool _cloudFoundryConfigFound;
 
-    public OracleProviderConnectorOptions()
-    {
-    }
-
-    public OracleProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(OracleClientSectionPrefix);
-
-        section.Bind(this);
-
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
-    }
+    internal Dictionary<string, string> Options { get; set; } = new();
 
     public string ConnectionString { get; set; }
 
@@ -45,7 +29,23 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public int ConnectionTimeout { get; set; } = 15;
 
-    internal Dictionary<string, string> Options { get; set; } = new ();
+    public OracleProviderConnectorOptions()
+    {
+    }
+
+    public OracleProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(OracleClientSectionPrefix);
+
+        section.Bind(this);
+
+        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+    }
 
     public override string ToString()
     {
@@ -54,7 +54,6 @@ public class OracleProviderConnectorOptions : AbstractServiceConnectorOptions
             return ConnectionString;
         }
 
-        return
-            $"User Id={Username};Password={Password};Data Source={Server}:{Port}/{ServiceName};Connection Timeout={ConnectionTimeout}";
+        return $"User Id={Username};Password={Password};Data Source={Server}:{Port}/{ServiceName};Connection Timeout={ConnectionTimeout}";
     }
 }

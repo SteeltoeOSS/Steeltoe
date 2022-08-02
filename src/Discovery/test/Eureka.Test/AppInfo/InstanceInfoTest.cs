@@ -62,7 +62,10 @@ public class InstanceInfoTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
+            Metadata = new Dictionary<string, string>
+            {
+                { "@class", "java.util.Collections$EmptyMap" }
+            },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
@@ -162,6 +165,7 @@ public class InstanceInfoTest : AbstractBaseTest
             SecurePortEnabled = true,
             IsNonSecurePortEnabled = false
         };
+
         var info = InstanceInfo.FromInstanceConfig(config);
         Assert.NotNull(info);
 
@@ -209,7 +213,7 @@ public class InstanceInfoTest : AbstractBaseTest
         var info = InstanceInfo.FromInstanceConfig(config);
         Assert.NotNull(info);
 
-        var instanceInfo = info.ToJsonInstance();
+        JsonInstanceInfo instanceInfo = info.ToJsonInstance();
 
         // Verify
         Assert.Equal(config.GetHostName(false), instanceInfo.InstanceId);
@@ -261,6 +265,7 @@ public class InstanceInfoTest : AbstractBaseTest
         {
             InstanceId = "foobar"
         };
+
         var info2 = new InstanceInfo
         {
             InstanceId = "foobar"
@@ -281,6 +286,7 @@ public class InstanceInfoTest : AbstractBaseTest
         {
             InstanceId = "foobar2"
         };
+
         Assert.False(info1.Equals(info2));
     }
 

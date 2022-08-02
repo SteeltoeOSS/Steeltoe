@@ -16,7 +16,9 @@ public static class DynamicLoggingBuilder
     /// <summary>
     /// Adds Dynamic Console Logger Provider.
     /// </summary>
-    /// <param name="builder">Your ILoggingBuilder.</param>
+    /// <param name="builder">
+    /// Your ILoggingBuilder.
+    /// </param>
     public static ILoggingBuilder AddDynamicConsole(this ILoggingBuilder builder)
     {
         if (builder == null)
@@ -28,7 +30,8 @@ public static class DynamicLoggingBuilder
         if (!builder.Services.Any(sd => sd.ServiceType == typeof(IDynamicLoggerProvider)))
         {
             // remove the original ConsoleLoggerProvider to prevent duplicate logging
-            var serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+            ServiceDescriptor serviceDescriptor = builder.Services.FirstOrDefault(descriptor => descriptor.ImplementationType == typeof(ConsoleLoggerProvider));
+
             if (serviceDescriptor != null)
             {
                 builder.Services.Remove(serviceDescriptor);
@@ -43,7 +46,11 @@ public static class DynamicLoggingBuilder
             builder.AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace);
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, DynamicConsoleLoggerProvider>());
             builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IConfigureOptions<ConsoleLoggerOptions>, ConsoleLoggerOptionsSetup>());
-            builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>, LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
+
+            builder.Services.TryAddEnumerable(ServiceDescriptor
+                .Singleton<IOptionsChangeTokenSource<ConsoleLoggerOptions>,
+                    LoggerProviderOptionsChangeTokenSource<ConsoleLoggerOptions, ConsoleLoggerProvider>>());
+
             builder.Services.AddSingleton(p => p.GetServices<ILoggerProvider>().OfType<IDynamicLoggerProvider>().SingleOrDefault());
         }
 

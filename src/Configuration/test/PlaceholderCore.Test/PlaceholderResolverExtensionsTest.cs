@@ -33,19 +33,18 @@ public class PlaceholderResolverExtensionsTest
             { "key1", "value1" },
             { "key2", "${key1?notfound}" },
             { "key3", "${nokey?notfound}" },
-            { "key4", "${nokey}" },
+            { "key4", "${nokey}" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(settings);
-        var config1 = builder.Build();
+        IConfigurationRoot config1 = builder.Build();
 
-        var hostBuilder = new WebHostBuilder()
-            .UseStartup<TestServerStartup>()
-            .UseConfiguration(config1);
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().UseConfiguration(config1);
 
         using var server = new TestServer(hostBuilder);
-        var services = TestServerStartup.ServiceProvider;
-        var config2 = services.GetServices<IConfiguration>().SingleOrDefault();
+        IServiceProvider services = TestServerStartup.ServiceProvider;
+        IConfiguration config2 = services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.NotSame(config1, config2);
 
         Assert.Null(config2["nokey"]);
@@ -58,7 +57,7 @@ public class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_WebHostBuilder_WrapsApplicationsConfiguration()
     {
-        var appsettingsJson = @"
+        string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -72,7 +71,7 @@ public class PlaceholderResolverExtensionsTest
                     }
                 }";
 
-        var appsettingsXml = @"
+        string appsettingsXml = @"
                 <settings>
                     <spring>
                         <xml>
@@ -81,46 +80,45 @@ public class PlaceholderResolverExtensionsTest
                     </spring>
                 </settings>";
 
-        var appsettingsIni = @"
+        string appsettingsIni = @"
 [spring:ini]
     name=${spring:line:name?noName}
 ";
-        var appsettingsLine = new[]
+
+        string[] appsettingsLine = new[]
         {
             "--spring:line:name=${spring:json:name?noName}"
         };
+
         using var sandbox = new Sandbox();
-        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonFileName = Path.GetFileName(jsonPath);
-        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlFileName = Path.GetFileName(xmlPath);
-        var iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
-        var iniFileName = Path.GetFileName(iniPath);
+        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        string jsonFileName = Path.GetFileName(jsonPath);
+        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        string xmlFileName = Path.GetFileName(xmlPath);
+        string iniPath = sandbox.CreateFile("appsettings.ini", appsettingsIni);
+        string iniFileName = Path.GetFileName(iniPath);
 
-        var directory = Path.GetDirectoryName(jsonPath);
+        string directory = Path.GetDirectoryName(jsonPath);
 
-        var hostBuilder = new WebHostBuilder()
-            .UseStartup<TestServerStartup1>()
-            .ConfigureAppConfiguration(configurationBuilder =>
-            {
-                configurationBuilder.SetBasePath(directory);
-                configurationBuilder.AddJsonFile(jsonFileName);
-                configurationBuilder.AddXmlFile(xmlFileName);
-                configurationBuilder.AddIniFile(iniFileName);
-                configurationBuilder.AddCommandLine(appsettingsLine);
-            })
-            .AddPlaceholderResolver();
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup1>().ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(jsonFileName);
+            configurationBuilder.AddXmlFile(xmlFileName);
+            configurationBuilder.AddIniFile(iniFileName);
+            configurationBuilder.AddCommandLine(appsettingsLine);
+        }).AddPlaceholderResolver();
 
         using var server = new TestServer(hostBuilder);
-        var services = TestServerStartup1.ServiceProvider;
-        var config = services.GetServices<IConfiguration>().SingleOrDefault();
+        IServiceProvider services = TestServerStartup1.ServiceProvider;
+        IConfiguration config = services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
 
     [Fact]
     public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
     {
-        var appsettingsJson = @"
+        string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -133,7 +131,8 @@ public class PlaceholderResolverExtensionsTest
                       }
                     }
                 }";
-        var appsettingsXml = @"
+
+        string appsettingsXml = @"
                 <settings>
                     <spring>
                         <xml>
@@ -141,31 +140,30 @@ public class PlaceholderResolverExtensionsTest
                         </xml>
                     </spring>
                 </settings>";
+
         using var sandbox = new Sandbox();
-        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonFileName = Path.GetFileName(jsonPath);
-        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlFileName = Path.GetFileName(xmlPath);
-        var directory = Path.GetDirectoryName(jsonPath);
+        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        string jsonFileName = Path.GetFileName(jsonPath);
+        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        string xmlFileName = Path.GetFileName(xmlPath);
+        string directory = Path.GetDirectoryName(jsonPath);
 
-        var hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer())
-            .ConfigureAppConfiguration(configurationBuilder =>
-            {
-                configurationBuilder.SetBasePath(directory);
-                configurationBuilder.AddJsonFile(jsonFileName);
-                configurationBuilder.AddXmlFile(xmlFileName);
-            })
-            .AddPlaceholderResolver();
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureWebHost(configure => configure.UseTestServer()).ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.SetBasePath(directory);
+            configurationBuilder.AddJsonFile(jsonFileName);
+            configurationBuilder.AddXmlFile(xmlFileName);
+        }).AddPlaceholderResolver();
 
-        using var server = hostBuilder.Build().GetTestServer();
-        var config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
+        using TestServer server = hostBuilder.Build().GetTestServer();
+        IConfiguration config = server.Services.GetServices<IConfiguration>().SingleOrDefault();
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
 
     [Fact]
     public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
     {
-        var appsettingsJson = @"
+        string appsettingsJson = @"
             {
                 ""spring"": {
                     ""json"": {
@@ -178,7 +176,8 @@ public class PlaceholderResolverExtensionsTest
                   }
                 }
             }";
-        var appsettingsXml = @"
+
+        string appsettingsXml = @"
             <settings>
                 <spring>
                     <xml>
@@ -186,21 +185,22 @@ public class PlaceholderResolverExtensionsTest
                     </xml>
                 </spring>
             </settings>";
-        using var sandbox = new Sandbox();
-        var jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
-        var jsonFileName = Path.GetFileName(jsonPath);
-        var xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
-        var xmlFileName = Path.GetFileName(xmlPath);
-        var directory = Path.GetDirectoryName(jsonPath);
 
-        var hostBuilder = WebApplication.CreateBuilder();
+        using var sandbox = new Sandbox();
+        string jsonPath = sandbox.CreateFile("appsettings.json", appsettingsJson);
+        string jsonFileName = Path.GetFileName(jsonPath);
+        string xmlPath = sandbox.CreateFile("appsettings.xml", appsettingsXml);
+        string xmlFileName = Path.GetFileName(xmlPath);
+        string directory = Path.GetDirectoryName(jsonPath);
+
+        WebApplicationBuilder hostBuilder = WebApplication.CreateBuilder();
         hostBuilder.Configuration.SetBasePath(directory);
         hostBuilder.Configuration.AddJsonFile(jsonFileName);
         hostBuilder.Configuration.AddXmlFile(xmlFileName);
         hostBuilder.AddPlaceholderResolver();
 
-        using var server = hostBuilder.Build();
-        var config = server.Services.GetServices<IConfiguration>().First();
+        using WebApplication server = hostBuilder.Build();
+        IConfiguration config = server.Services.GetServices<IConfiguration>().First();
         Assert.Equal("myName", config["spring:cloud:config:name"]);
     }
 }

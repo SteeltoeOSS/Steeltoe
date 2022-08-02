@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System.Collections;
+using System.Reflection;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
@@ -17,7 +18,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var ps = new StringWriter();
         SpelUtilities.PrintAbstractSyntaxTree(ps, expr);
         ps.Flush();
-        var s = ps.ToString();
+        string s = ps.ToString();
 
         // ===> Expression '3+4+5+6+7-2' - AST start
         //      OperatorMinus  value:(((((3 + 4) + 5) + 6) + 7) - 2)  #children:2
@@ -67,10 +68,24 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var tc = new StandardTypeConverter();
 
         // Calling foo(String) with (String) is exact match
-        CheckMatch(new[] { typeof(string) }, new[] { typeof(string) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch(new[]
+        {
+            typeof(string)
+        }, new[]
+        {
+            typeof(string)
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Calling foo(String,Integer) with (String,Integer) is exact match
-        CheckMatch(new[] { typeof(string), typeof(int) }, new[] { typeof(string), typeof(int) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch(new[]
+        {
+            typeof(string),
+            typeof(int)
+        }, new[]
+        {
+            typeof(string),
+            typeof(int)
+        }, tc, ArgumentsMatchKind.Exact);
     }
 
     [Fact]
@@ -79,13 +94,35 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var tc = new StandardTypeConverter();
 
         // Calling foo(List) with (ArrayList) is close match (no conversion required)
-        CheckMatch(new[] { typeof(ArrayList) }, new[] { typeof(IList) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(ArrayList)
+        }, new[]
+        {
+            typeof(IList)
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (Sub,String) on call to foo(Super,String) is close match
-        CheckMatch(new[] { typeof(Sub), typeof(string) }, new[] { typeof(Super), typeof(string) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(Sub),
+            typeof(string)
+        }, new[]
+        {
+            typeof(Super),
+            typeof(string)
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (String,Sub) on call to foo(String,Super) is close match
-        CheckMatch(new[] { typeof(string), typeof(Sub) }, new[] { typeof(string), typeof(Super) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(string),
+            typeof(Sub)
+        }, new[]
+        {
+            typeof(string),
+            typeof(Super)
+        }, tc, ArgumentsMatchKind.Close);
     }
 
     [Fact]
@@ -94,13 +131,37 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var tc = new StandardTypeConverter();
 
         // Calling foo(String,int) with (String,Integer) requires boxing conversion of argument one
-        CheckMatch(new[] { typeof(string), typeof(int) }, new[] { typeof(string), typeof(object) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(string),
+            typeof(int)
+        }, new[]
+        {
+            typeof(string),
+            typeof(object)
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (int,String) on call to foo(Integer,String) requires boxing conversion of argument zero
-        CheckMatch(new[] { typeof(int), typeof(string) }, new[] { typeof(object), typeof(string) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(int),
+            typeof(string)
+        }, new[]
+        {
+            typeof(object),
+            typeof(string)
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (int,Sub) on call to foo(Integer,Super) requires boxing conversion of argument zero
-        CheckMatch(new[] { typeof(int), typeof(Sub) }, new[] { typeof(object), typeof(Super) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch(new[]
+        {
+            typeof(int),
+            typeof(Sub)
+        }, new[]
+        {
+            typeof(object),
+            typeof(Super)
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (int,Sub,boolean) on call to foo(Integer,Super,Boolean) requires boxing conversion of arguments zero and two
         // TODO CheckMatch(new Type[] {Integer.TYPE, typeof(Sub), Boolean.TYPE}, new Type[] {typeof(int), typeof(Super), Boolean.class}, tc, ArgsMatchKind.REQUIRES_CONVERSION);
@@ -112,7 +173,15 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var typeConverter = new StandardTypeConverter();
 
         // Passing (Super,String) on call to foo(Sub,String) is not a match
-        CheckMatch(new[] { typeof(Super), typeof(string) }, new[] { typeof(Sub), typeof(string) }, typeConverter, null);
+        CheckMatch(new[]
+        {
+            typeof(Super),
+            typeof(string)
+        }, new[]
+        {
+            typeof(Sub),
+            typeof(string)
+        }, typeConverter, null);
     }
 
     [Fact]
@@ -121,49 +190,186 @@ public class ReflectionHelperTests : AbstractExpressionTests
         var tc = new StandardTypeConverter();
 
         // Passing (String[]) on call to (String[]) is exact match
-        CheckMatch2(new[] { typeof(string[]) }, new[] { typeof(string[]) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch2(new[]
+        {
+            typeof(string[])
+        }, new[]
+        {
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Passing (Integer, String[]) on call to (Integer, String[]) is exact match
-        CheckMatch2(new[] { typeof(int), typeof(string[]) }, new[] { typeof(int), typeof(string[]) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(string[])
+        }, new[]
+        {
+            typeof(int),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Passing (String, Integer, String[]) on call to (String, String, String[]) is exact match
-        CheckMatch2(new[] { typeof(string), typeof(int), typeof(string[]) }, new[] { typeof(string), typeof(int), typeof(string[]) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch2(new[]
+        {
+            typeof(string),
+            typeof(int),
+            typeof(string[])
+        }, new[]
+        {
+            typeof(string),
+            typeof(int),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Passing (Sub, String[]) on call to (Super, String[]) is exact match
-        CheckMatch2(new[] { typeof(Sub), typeof(string[]) }, new[] { typeof(Super), typeof(string[]) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch2(new[]
+        {
+            typeof(Sub),
+            typeof(string[])
+        }, new[]
+        {
+            typeof(Super),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (Integer, String[]) on call to (String, String[]) is exact match
-        CheckMatch2(new[] { typeof(int), typeof(string[]) }, new[] { typeof(string), typeof(string[]) }, tc, ArgumentsMatchKind.RequiresConversion);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(string[])
+        }, new[]
+        {
+            typeof(string),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.RequiresConversion);
 
         // Passing (Integer, Sub, String[]) on call to (String, Super, String[]) is exact match
-        CheckMatch2(new[] { typeof(int), typeof(Sub), typeof(string[]) }, new[] { typeof(string), typeof(Super), typeof(string[]) }, tc, ArgumentsMatchKind.RequiresConversion);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(Sub),
+            typeof(string[])
+        }, new[]
+        {
+            typeof(string),
+            typeof(Super),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.RequiresConversion);
 
         // Passing (String) on call to (String[]) is exact match
-        CheckMatch2(new[] { typeof(string) }, new[] { typeof(string[]) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch2(new[]
+        {
+            typeof(string)
+        }, new[]
+        {
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Passing (Integer,String) on call to (Integer,String[]) is exact match
-        CheckMatch2(new[] { typeof(int), typeof(string) }, new[] { typeof(int), typeof(string[]) }, tc, ArgumentsMatchKind.Exact);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(string)
+        }, new[]
+        {
+            typeof(int),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.Exact);
 
         // Passing (String) on call to (Integer[]) is conversion match (String to Integer)
-        CheckMatch2(new[] { typeof(string) }, new[] { typeof(int[]) }, tc, ArgumentsMatchKind.RequiresConversion);
+        CheckMatch2(new[]
+        {
+            typeof(string)
+        }, new[]
+        {
+            typeof(int[])
+        }, tc, ArgumentsMatchKind.RequiresConversion);
 
         // Passing (Sub) on call to (Super[]) is close match
-        CheckMatch2(new[] { typeof(Sub) }, new[] { typeof(Super[]) }, tc, ArgumentsMatchKind.Close);
+        CheckMatch2(new[]
+        {
+            typeof(Sub)
+        }, new[]
+        {
+            typeof(Super[])
+        }, tc, ArgumentsMatchKind.Close);
 
         // Passing (Super) on call to (Sub[]) is not a match
-        CheckMatch2(new[] { typeof(Super) }, new[] { typeof(Sub[]) }, tc, null);
+        CheckMatch2(new[]
+        {
+            typeof(Super)
+        }, new[]
+        {
+            typeof(Sub[])
+        }, tc, null);
 
-        CheckMatch2(new[] { typeof(Unconvertable), typeof(string) }, new[] { typeof(Sub), typeof(Super[]) }, tc, null);
+        CheckMatch2(new[]
+        {
+            typeof(Unconvertable),
+            typeof(string)
+        }, new[]
+        {
+            typeof(Sub),
+            typeof(Super[])
+        }, tc, null);
 
-        CheckMatch2(new[] { typeof(int), typeof(int), typeof(string) }, new[] { typeof(string), typeof(string), typeof(Super[]) }, tc, null);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(int),
+            typeof(string)
+        }, new[]
+        {
+            typeof(string),
+            typeof(string),
+            typeof(Super[])
+        }, tc, null);
 
-        CheckMatch2(new[] { typeof(Unconvertable), typeof(string) }, new[] { typeof(Sub), typeof(Super[]) }, tc, null);
+        CheckMatch2(new[]
+        {
+            typeof(Unconvertable),
+            typeof(string)
+        }, new[]
+        {
+            typeof(Sub),
+            typeof(Super[])
+        }, tc, null);
 
-        CheckMatch2(new[] { typeof(int), typeof(int), typeof(string) }, new[] { typeof(string), typeof(string), typeof(Super[]) }, tc, null);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(int),
+            typeof(string)
+        }, new[]
+        {
+            typeof(string),
+            typeof(string),
+            typeof(Super[])
+        }, tc, null);
 
-        CheckMatch2(new[] { typeof(int), typeof(int), typeof(Sub) }, new[] { typeof(string), typeof(string), typeof(Super[]) }, tc, ArgumentsMatchKind.RequiresConversion);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(int),
+            typeof(Sub)
+        }, new[]
+        {
+            typeof(string),
+            typeof(string),
+            typeof(Super[])
+        }, tc, ArgumentsMatchKind.RequiresConversion);
 
-        CheckMatch2(new[] { typeof(int), typeof(int), typeof(int) }, new[] { typeof(int), typeof(string[]) }, tc, ArgumentsMatchKind.RequiresConversion);
+        CheckMatch2(new[]
+        {
+            typeof(int),
+            typeof(int),
+            typeof(int)
+        }, new[]
+        {
+            typeof(int),
+            typeof(string[])
+        }, tc, ArgumentsMatchKind.RequiresConversion);
 
         // what happens on (Integer,String) passed to (Integer[]) ?
     }
@@ -172,26 +378,55 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestConvertArguments()
     {
         var tc = new StandardTypeConverter();
-        var oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[] { typeof(string) });
-        var twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[] { typeof(string), typeof(string[]) });
+
+        MethodInfo oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[]
+        {
+            typeof(string)
+        });
+
+        MethodInfo twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[]
+        {
+            typeof(string),
+            typeof(string[])
+        });
 
         // basic conversion int>String
-        var args = new object[] { 3 };
+        object[] args = new object[]
+        {
+            3
+        };
+
         ReflectionHelper.ConvertArguments(tc, args, oneArg, null);
         CheckArguments(args, "3");
 
         // varargs but nothing to convert
-        args = new object[] { 3 };
+        args = new object[]
+        {
+            3
+        };
+
         ReflectionHelper.ConvertArguments(tc, args, twoArg, 1);
         CheckArguments(args, "3");
 
         // varargs with nothing needing conversion
-        args = new object[] { 3, "abc", "abc" };
+        args = new object[]
+        {
+            3,
+            "abc",
+            "abc"
+        };
+
         ReflectionHelper.ConvertArguments(tc, args, twoArg, 1);
         CheckArguments(args, "3", "abc", "abc");
 
         // varargs with conversion required
-        args = new object[] { 3, false, 3.0d };
+        args = new object[]
+        {
+            3,
+            false,
+            3.0d
+        };
+
         ReflectionHelper.ConvertArguments(tc, args, twoArg, 1);
         CheckArguments(args, "3", "False", "3");
     }
@@ -200,26 +435,55 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestConvertArguments2()
     {
         var tc = new StandardTypeConverter();
-        var oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[] { typeof(string) });
-        var twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[] { typeof(string), typeof(string[]) });
+
+        MethodInfo oneArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.OneArg), new[]
+        {
+            typeof(string)
+        });
+
+        MethodInfo twoArg = typeof(ITestInterface).GetMethod(nameof(ITestInterface.TwoArg), new[]
+        {
+            typeof(string),
+            typeof(string[])
+        });
 
         // Simple conversion: int to string
-        var args = new object[] { 3 };
+        object[] args = new object[]
+        {
+            3
+        };
+
         ReflectionHelper.ConvertAllArguments(tc, args, oneArg);
         CheckArguments(args, "3");
 
         // varargs conversion
-        args = new object[] { 3, false, 3.0f };
+        args = new object[]
+        {
+            3,
+            false,
+            3.0f
+        };
+
         ReflectionHelper.ConvertAllArguments(tc, args, twoArg);
         CheckArguments(args, "3", "False", "3");
 
         // varargs conversion but no varargs
-        args = new object[] { 3 };
+        args = new object[]
+        {
+            3
+        };
+
         ReflectionHelper.ConvertAllArguments(tc, args, twoArg);
         CheckArguments(args, "3");
 
         // null value
-        args = new object[] { 3, null, 3.0f };
+        args = new object[]
+        {
+            3,
+            null,
+            3.0f
+        };
+
         ReflectionHelper.ConvertAllArguments(tc, args, twoArg);
         CheckArguments(args, "3", null, "3");
     }
@@ -227,12 +491,15 @@ public class ReflectionHelperTests : AbstractExpressionTests
     [Fact]
     public void TestSetupArguments()
     {
-        var newArray = ReflectionHelper.SetupArgumentsForVarargsInvocation(new[] { typeof(string[]) }, "a", "b", "c");
+        object[] newArray = ReflectionHelper.SetupArgumentsForVarargsInvocation(new[]
+        {
+            typeof(string[])
+        }, "a", "b", "c");
 
         Assert.Single(newArray);
-        var firstParam = newArray[0];
+        object firstParam = newArray[0];
         Assert.Equal(typeof(string), firstParam.GetType().GetElementType());
-        var firstParamArray = (object[])firstParam;
+        object[] firstParamArray = (object[])firstParam;
         Assert.Equal(3, firstParamArray.Length);
         Assert.Equal("a", firstParamArray[0]);
         Assert.Equal("b", firstParamArray[1]);
@@ -243,10 +510,12 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestReflectivePropertyAccessor()
     {
         var rpa = new ReflectivePropertyAccessor();
+
         var t = new Tester
         {
             Property = "hello"
         };
+
         var ctx = new StandardEvaluationContext(t);
         Assert.True(rpa.CanRead(ctx, t, "Property"));
         Assert.Equal("hello", rpa.Read(ctx, t, "Property").Value);
@@ -310,10 +579,12 @@ public class ReflectionHelperTests : AbstractExpressionTests
     public void TestOptimalReflectivePropertyAccessor()
     {
         var reflective = new ReflectivePropertyAccessor();
+
         var tester = new Tester
         {
             Property = "hello"
         };
+
         var ctx = new StandardEvaluationContext(tester);
         Assert.True(reflective.CanRead(ctx, tester, "Property"));
         Assert.Equal("hello", reflective.Read(ctx, tester, "Property").Value);
@@ -321,7 +592,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
         // cached accessor used
         Assert.Equal("hello", reflective.Read(ctx, tester, "Property").Value);
 
-        var property = reflective.CreateOptimalAccessor(ctx, tester, "Property");
+        IPropertyAccessor property = reflective.CreateOptimalAccessor(ctx, tester, "Property");
         Assert.True(property.CanRead(ctx, tester, "Property"));
         Assert.False(property.CanRead(ctx, tester, "Property2"));
         Assert.Throws<InvalidOperationException>(() => property.CanWrite(ctx, tester, "Property"));
@@ -333,7 +604,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
         Assert.Throws<InvalidOperationException>(() => property.GetSpecificTargetClasses());
         Assert.Throws<InvalidOperationException>(() => property.Write(ctx, tester, "Property", null));
 
-        var field = reflective.CreateOptimalAccessor(ctx, tester, "Field");
+        IPropertyAccessor field = reflective.CreateOptimalAccessor(ctx, tester, "Field");
         Assert.True(field.CanRead(ctx, tester, "Field"));
         Assert.False(field.CanRead(ctx, tester, "Field2"));
         Assert.Throws<InvalidOperationException>(() => field.CanWrite(ctx, tester, "Field"));
@@ -348,16 +619,15 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
     private void CheckMatch(Type[] inputTypes, Type[] expectedTypes, StandardTypeConverter typeConverter, ArgumentsMatchKind? expectedMatchKind)
     {
-        var matchInfo = ReflectionHelper.CompareArguments(GetTypeDescriptors(expectedTypes), GetTypeDescriptors(inputTypes), typeConverter);
+        ArgumentsMatchInfo matchInfo = ReflectionHelper.CompareArguments(GetTypeDescriptors(expectedTypes), GetTypeDescriptors(inputTypes), typeConverter);
+
         if (expectedMatchKind == null)
         {
             Assert.Null(matchInfo);
             return;
         }
-        else
-        {
-            Assert.NotNull(matchInfo);
-        }
+
+        Assert.NotNull(matchInfo);
 
         if (expectedMatchKind.Value == ArgumentsMatchKind.Exact)
         {
@@ -375,16 +645,16 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
     private void CheckMatch2(Type[] inputTypes, Type[] expectedTypes, StandardTypeConverter typeConverter, ArgumentsMatchKind? expectedMatchKind)
     {
-        var matchInfo = ReflectionHelper.CompareArgumentsVarargs(GetTypeDescriptors(expectedTypes), GetTypeDescriptors(inputTypes), typeConverter);
+        ArgumentsMatchInfo matchInfo =
+            ReflectionHelper.CompareArgumentsVarargs(GetTypeDescriptors(expectedTypes), GetTypeDescriptors(inputTypes), typeConverter);
+
         if (expectedMatchKind == null)
         {
             Assert.Null(matchInfo);
             return;
         }
-        else
-        {
-            Assert.NotNull(matchInfo);
-        }
+
+        Assert.NotNull(matchInfo);
 
         if (expectedMatchKind.Value == ArgumentsMatchKind.Exact)
         {
@@ -403,7 +673,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
     private void CheckArguments(object[] args, params object[] expected)
     {
         Assert.Equal(expected.Length, args.Length);
-        for (var i = 0; i < expected.Length; i++)
+
+        for (int i = 0; i < expected.Length; i++)
         {
             CheckArgument(expected[i], args[i]);
         }
@@ -417,7 +688,8 @@ public class ReflectionHelperTests : AbstractExpressionTests
     private List<Type> GetTypeDescriptors(params Type[] types)
     {
         var typeDescriptors = new List<Type>(types.Length);
-        foreach (var type in types)
+
+        foreach (Type type in types)
         {
             typeDescriptors.Add(type);
         }
@@ -454,7 +726,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
 
         public string Property2 { private get; set; }
 
-        public string Property3 { get; private set; } = "doodoo";
+        public string Property3 { get; } = "doodoo";
 
         public bool Property4 { get; }
 

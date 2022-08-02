@@ -8,6 +8,9 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class ApplicationMappings
 {
+    [JsonPropertyName("contexts")]
+    public IDictionary<string, ContextMappings> ContextMappings { get; }
+
     public ApplicationMappings(ContextMappings contextMappings)
     {
         // At this point, .NET will only ever has one application => "application"
@@ -16,7 +19,4 @@ public class ApplicationMappings
             { "application", contextMappings }
         };
     }
-
-    [JsonPropertyName("contexts")]
-    public IDictionary<string, ContextMappings> ContextMappings { get; }
 }

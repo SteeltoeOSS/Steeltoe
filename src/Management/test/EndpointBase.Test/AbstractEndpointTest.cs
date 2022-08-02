@@ -17,7 +17,12 @@ public class AbstractEndpointTest : BaseTest
     [Fact]
     public void ReturnsOptionValues()
     {
-        var ep = new TestEndpoint(new TestOptions { Id = "foo", Enabled = false });
+        var ep = new TestEndpoint(new TestOptions
+        {
+            Id = "foo",
+            Enabled = false
+        });
+
         Assert.False(ep.Enabled);
         Assert.Equal("foo", ep.Id);
         Assert.Equal(0, ep.Invoke());

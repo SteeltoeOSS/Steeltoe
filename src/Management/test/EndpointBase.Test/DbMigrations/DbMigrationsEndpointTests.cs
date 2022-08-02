@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
-using System.Reflection;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -38,10 +38,7 @@ public class DbMigrationsEndpointTests : BaseTest
     {
         var sut = new DbMigrationsEndpoint.DbMigrationsEndpointHelper();
 
-        sut.Invoking(s => s.GetMigrations(new MockDbContext()))
-            .Should()
-            .Throw<TargetInvocationException>()
-            .WithInnerException<InvalidOperationException>()
+        sut.Invoking(s => s.GetMigrations(new MockDbContext())).Should().Throw<TargetInvocationException>().WithInnerException<InvalidOperationException>()
             .WithMessage("*No database provider has been configured for this DbContext*");
     }
 
@@ -51,8 +48,16 @@ public class DbMigrationsEndpointTests : BaseTest
         using var tc = new TestContext(_output);
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
-        helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[] { "pending" });
-        helper.GetAppliedMigrations(Arg.Any<object>()).Returns(new[] { "applied" });
+
+        helper.GetPendingMigrations(Arg.Any<object>()).Returns(new[]
+        {
+            "pending"
+        });
+
+        helper.GetAppliedMigrations(Arg.Any<object>()).Returns(new[]
+        {
+            "applied"
+        });
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -62,9 +67,9 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        var result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
 
-        var contextName = nameof(MockDbContext);
+        string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
         result[contextName].AppliedMigrations.Should().Equal("applied");
         result[contextName].PendingMigrations.Should().Equal("pending");
@@ -77,7 +82,11 @@ public class DbMigrationsEndpointTests : BaseTest
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
         helper.GetPendingMigrations(Arg.Any<object>()).Throws(new SomeDbException("database doesn't exist"));
-        helper.GetMigrations(Arg.Any<object>()).Returns(new[] { "migration" });
+
+        helper.GetMigrations(Arg.Any<object>()).Returns(new[]
+        {
+            "migration"
+        });
 
         tc.AdditionalServices = (services, configuration) =>
         {
@@ -87,9 +96,9 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        var result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
 
-        var contextName = nameof(MockDbContext);
+        string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
         result[contextName].AppliedMigrations.Should().BeEmpty();
         result[contextName].PendingMigrations.Should().Equal("migration");
@@ -109,7 +118,7 @@ public class DbMigrationsEndpointTests : BaseTest
         };
 
         var sut = tc.GetService<IDbMigrationsEndpoint>();
-        var result = sut.Invoke();
+        Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
 
         result.Should().BeEmpty();
     }

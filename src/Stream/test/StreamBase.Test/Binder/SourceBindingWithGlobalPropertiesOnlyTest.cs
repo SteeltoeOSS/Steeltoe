@@ -15,23 +15,21 @@ public class SourceBindingWithGlobalPropertiesOnlyTest : AbstractTest
     [Fact]
     public async Task TestGlobalPropertiesSet()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        var provider = CreateStreamsContainerWithISourceBinding(
-                searchDirectories,
-                "spring.cloud.stream.default.contentType=application/json",
-                "spring.cloud.stream.default.producer.partitionKeyExpression=key")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.default.contentType=application/json",
+            "spring.cloud.stream.default.producer.partitionKeyExpression=key").BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
+        IBinder binder = factory.GetBinder(null);
         Assert.NotNull(binder);
 
         var bindingServiceProperties = provider.GetService<IOptions<BindingServiceOptions>>();
         Assert.NotNull(bindingServiceProperties.Value);
-        var bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
+        BindingOptions bindingProperties = bindingServiceProperties.Value.GetBindingOptions("output");
         Assert.NotNull(bindingProperties);
         Assert.Equal("application/json", bindingProperties.ContentType);
         Assert.NotNull(bindingProperties.Producer);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -13,7 +14,6 @@ using Steeltoe.Messaging.RabbitMQ;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Text;
 using Xunit;
 using R = RabbitMQ.Client;
 
@@ -24,8 +24,8 @@ public class RabbitMessageSourceTest
     [Fact]
     public void TestAck()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -39,8 +39,13 @@ public class RabbitMessageSourceTest
         connectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(connection.Object);
 
         var ccf = new CachingConnectionFactory(connectionFactory.Object);
-        var source = new RabbitMessageSource(context, ccf, "foo") { RawMessageHeader = true };
-        var received = source.Receive();
+
+        var source = new RabbitMessageSource(context, ccf, "foo")
+        {
+            RawMessageHeader = true
+        };
+
+        IMessage<object> received = source.Receive();
         var rawMessage = received.Headers.Get<IMessage>(RabbitMessageHeaderErrorMessageStrategy.AmqpRawMessage);
         var sourceData = received.Headers.Get<IMessage>(IntegrationMessageHeaderAccessor.SourceData);
         Assert.NotNull(rawMessage);
@@ -48,13 +53,13 @@ public class RabbitMessageSourceTest
         Assert.Equal("foo", received.Headers.Get<string>(RabbitMessageHeaders.ConsumerQueue));
 
         // make sure channel is not cached
-        var conn = ccf.CreateConnection();
-        var notCached = conn.CreateChannel();
+        IConnection conn = ccf.CreateConnection();
+        R.IModel notCached = conn.CreateChannel();
         connection.Verify(c => c.CreateModel(), Times.Exactly(2));
         var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.AcknowledgmentCallback);
         callback.Acknowledge(Status.Accept);
         channel.Verify(c => c.BasicAck(123ul, false));
-        var cached = conn.CreateChannel(); // should have been "closed"
+        R.IModel cached = conn.CreateChannel(); // should have been "closed"
         connection.Verify(c => c.CreateModel(), Times.Exactly(2));
         notCached.Close();
         cached.Close();
@@ -79,21 +84,26 @@ public class RabbitMessageSourceTest
     public void TestBatch()
     {
         var bs = new SimpleBatchingStrategy(2, 10_000, 10_000L);
-        var headers = new RabbitHeaderAccessor { ContentType = "test/plain" };
-        var message = Message.Create(Encoding.UTF8.GetBytes("test1"), headers.MessageHeaders);
+
+        var headers = new RabbitHeaderAccessor
+        {
+            ContentType = "test/plain"
+        };
+
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("test1"), headers.MessageHeaders);
         bs.AddToBatch("foo", "bar", message);
         message = Message.Create(Encoding.UTF8.GetBytes("test2"), headers.MessageHeaders);
-        var batched = bs.AddToBatch("foo", "bar", message);
+        MessageBatch? batched = bs.AddToBatch("foo", "bar", message);
         Assert.True(batched.HasValue);
-        var batchMessage = batched.Value.Message;
-        var batchHeaders = batchMessage.Headers;
+        IMessage batchMessage = batched.Value.Message;
+        IMessageHeaders batchHeaders = batchMessage.Headers;
         var headerConverter = new DefaultMessageHeadersConverter();
         var props = new MockRabbitBasicProperties();
         headerConverter.FromMessageHeaders(batchHeaders, props, Encoding.UTF8);
         props.ContentType = "text/plain";
 
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
         var channel = new Mock<R.IModel>();
         channel.Setup(c => c.IsOpen).Returns(true);
@@ -108,7 +118,7 @@ public class RabbitMessageSourceTest
 
         var ccf = new CachingConnectionFactory(connectionFactory.Object);
         var source = new RabbitMessageSource(context, ccf, "foo");
-        var received = source.Receive();
+        IMessage<object> received = source.Receive();
         Assert.NotNull(received);
         var asList = received.Payload as List<object>;
         Assert.NotNull(asList);
@@ -118,8 +128,8 @@ public class RabbitMessageSourceTest
 
     private void TestNackOrRequeue(bool requeue)
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var channel = new Mock<R.IModel>();
@@ -135,7 +145,7 @@ public class RabbitMessageSourceTest
 
         var ccf = new CachingConnectionFactory(connectionFactory.Object);
         var source = new RabbitMessageSource(context, ccf, "foo");
-        var received = source.Receive();
+        IMessage<object> received = source.Receive();
         connection.Verify(c => c.CreateModel());
         var callback = received.Headers.Get<IAcknowledgmentCallback>(IntegrationMessageHeaderAccessor.AcknowledgmentCallback);
         callback.Acknowledge(requeue ? Status.Requeue : Status.Reject);

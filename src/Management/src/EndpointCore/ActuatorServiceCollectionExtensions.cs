@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.Endpoint.Refresh;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -33,9 +33,12 @@ public static class ActuatorServiceCollectionExtensions
     }
 
     public static void AddAllActuators(this IServiceCollection services, IConfiguration config, Action<CorsPolicyBuilder> buildCorsPolicy)
-        => services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
+    {
+        services.AddAllActuators(config, MediaTypeVersion.V2, buildCorsPolicy);
+    }
 
-    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null, MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
+    public static IServiceCollection AddAllActuators(this IServiceCollection services, IConfiguration config = null,
+        MediaTypeVersion version = MediaTypeVersion.V2, Action<CorsPolicyBuilder> buildCorsPolicy = null)
     {
         if (services == null)
         {
@@ -43,12 +46,14 @@ public static class ActuatorServiceCollectionExtensions
         }
 
         config ??= services.BuildServiceProvider().GetService<IConfiguration>();
+
         if (config == null)
         {
             throw new ArgumentNullException(nameof(config));
         }
 
         services.AddSteeltoeCors(buildCorsPolicy);
+
         if (Platform.IsCloudFoundry)
         {
             services.AddCloudFoundryActuator(config);
@@ -74,11 +79,13 @@ public static class ActuatorServiceCollectionExtensions
     }
 
     private static IServiceCollection AddSteeltoeCors(this IServiceCollection services, Action<CorsPolicyBuilder> buildCorsPolicy = null)
-        => services.AddCors(setup =>
+    {
+        return services.AddCors(setup =>
         {
             setup.AddPolicy("SteeltoeManagement", policy =>
             {
                 policy.WithMethods("GET", "POST");
+
                 if (Platform.IsCloudFoundry)
                 {
                     policy.WithHeaders("Authorization", "X-Cf-App-Instance", "Content-Type", "Content-Disposition");
@@ -94,4 +101,5 @@ public static class ActuatorServiceCollectionExtensions
                 }
             });
         });
+    }
 }

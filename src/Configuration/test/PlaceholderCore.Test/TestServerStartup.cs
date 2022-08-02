@@ -10,9 +10,9 @@ namespace Steeltoe.Extensions.Configuration.Placeholder.Test;
 
 public class TestServerStartup
 {
-    public static IServiceProvider ServiceProvider { get; set; }
-
     private readonly IConfiguration _configuration;
+
+    public static IServiceProvider ServiceProvider { get; set; }
 
     public TestServerStartup(IConfiguration config)
     {

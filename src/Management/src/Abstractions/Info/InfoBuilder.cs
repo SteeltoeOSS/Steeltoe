@@ -6,7 +6,7 @@ namespace Steeltoe.Management.Info;
 
 public class InfoBuilder : IInfoBuilder
 {
-    private readonly Dictionary<string, object> _info = new ();
+    private readonly Dictionary<string, object> _info = new();
 
     public Dictionary<string, object> Build()
     {
@@ -27,7 +27,7 @@ public class InfoBuilder : IInfoBuilder
     {
         if (details != null)
         {
-            foreach (var pair in details)
+            foreach (KeyValuePair<string, object> pair in details)
             {
                 _info[pair.Key] = pair.Value;
             }

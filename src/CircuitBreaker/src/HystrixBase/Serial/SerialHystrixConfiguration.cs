@@ -12,6 +12,7 @@ public static class SerialHystrixConfiguration
     public static string ToJsonString(HystrixConfiguration config)
     {
         using var sw = new StringWriter();
+
         using (var writer = new JsonTextWriter(sw))
         {
             SerializeConfiguration(writer, config);
@@ -25,30 +26,33 @@ public static class SerialHystrixConfiguration
         writer.WriteStartObject();
         writer.WriteStringField("type", "HystrixConfig");
         writer.WriteObjectFieldStart("commands");
-        foreach (var entry in config.CommandConfig)
+
+        foreach (KeyValuePair<IHystrixCommandKey, HystrixCommandConfiguration> entry in config.CommandConfig)
         {
-            var key = entry.Key;
-            var commandConfig = entry.Value;
+            IHystrixCommandKey key = entry.Key;
+            HystrixCommandConfiguration commandConfig = entry.Value;
             WriteCommandConfigJson(writer, key, commandConfig);
         }
 
         writer.WriteEndObject();
 
         writer.WriteObjectFieldStart("threadpools");
-        foreach (var entry in config.ThreadPoolConfig)
+
+        foreach (KeyValuePair<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> entry in config.ThreadPoolConfig)
         {
-            var threadPoolKey = entry.Key;
-            var threadPoolConfig = entry.Value;
+            IHystrixThreadPoolKey threadPoolKey = entry.Key;
+            HystrixThreadPoolConfiguration threadPoolConfig = entry.Value;
             WriteThreadPoolConfigJson(writer, threadPoolKey, threadPoolConfig);
         }
 
         writer.WriteEndObject();
 
         writer.WriteObjectFieldStart("collapsers");
-        foreach (var entry in config.CollapserConfig)
+
+        foreach (KeyValuePair<IHystrixCollapserKey, HystrixCollapserConfiguration> entry in config.CollapserConfig)
         {
-            var collapserKey = entry.Key;
-            var collapserConfig = entry.Value;
+            IHystrixCollapserKey collapserKey = entry.Key;
+            HystrixCollapserConfiguration collapserConfig = entry.Value;
             WriteCollapserConfigJson(writer, collapserKey, collapserConfig);
         }
 
@@ -62,7 +66,7 @@ public static class SerialHystrixConfiguration
         json.WriteStringField("threadPoolKey", commandConfig.ThreadPoolKey.Name);
         json.WriteStringField("groupKey", commandConfig.GroupKey.Name);
         json.WriteObjectFieldStart("execution");
-        var executionConfig = commandConfig.ExecutionConfig;
+        HystrixCommandConfiguration.HystrixCommandExecutionConfig executionConfig = commandConfig.ExecutionConfig;
         json.WriteStringField("isolationStrategy", executionConfig.IsolationStrategy.ToString());
         json.WriteStringField("threadPoolKeyOverride", executionConfig.ThreadPoolKeyOverride);
         json.WriteBooleanField("requestCacheEnabled", executionConfig.IsRequestCacheEnabled);
@@ -75,7 +79,7 @@ public static class SerialHystrixConfiguration
         json.WriteBooleanField("threadInterruptOnTimeout", executionConfig.IsThreadInterruptOnTimeout);
         json.WriteEndObject();
         json.WriteObjectFieldStart("metrics");
-        var metricsConfig = commandConfig.MetricsConfig;
+        HystrixCommandConfiguration.HystrixCommandMetricsConfig metricsConfig = commandConfig.MetricsConfig;
         json.WriteIntegerField("healthBucketSizeInMs", metricsConfig.HealthIntervalInMilliseconds);
         json.WriteIntegerField("percentileBucketSizeInMilliseconds", metricsConfig.RollingPercentileBucketSizeInMilliseconds);
         json.WriteIntegerField("percentileBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
@@ -84,7 +88,7 @@ public static class SerialHystrixConfiguration
         json.WriteIntegerField("counterBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
         json.WriteEndObject();
         json.WriteObjectFieldStart("circuitBreaker");
-        var circuitBreakerConfig = commandConfig.CircuitBreakerConfig;
+        HystrixCommandConfiguration.HystrixCommandCircuitBreakerConfig circuitBreakerConfig = commandConfig.CircuitBreakerConfig;
         json.WriteBooleanField("enabled", circuitBreakerConfig.IsEnabled);
         json.WriteBooleanField("isForcedOpen", circuitBreakerConfig.IsForceOpen);
         json.WriteBooleanField("isForcedClosed", circuitBreakerConfig.IsForceOpen);
@@ -116,7 +120,7 @@ public static class SerialHystrixConfiguration
         json.WriteIntegerField("timerDelayInMilliseconds", collapserConfig.TimerDelayInMilliseconds);
         json.WriteBooleanField("requestCacheEnabled", collapserConfig.IsRequestCacheEnabled);
         json.WriteObjectFieldStart("metrics");
-        var metricsConfig = collapserConfig.CollapserMetricsConfiguration;
+        HystrixCollapserConfiguration.CollapserMetricsConfig metricsConfig = collapserConfig.CollapserMetricsConfiguration;
         json.WriteIntegerField("percentileBucketSizeInMilliseconds", metricsConfig.RollingPercentileBucketSizeInMilliseconds);
         json.WriteIntegerField("percentileBucketCount", metricsConfig.RollingCounterNumberOfBuckets);
         json.WriteBooleanField("percentileEnabled", metricsConfig.IsRollingPercentileEnabled);

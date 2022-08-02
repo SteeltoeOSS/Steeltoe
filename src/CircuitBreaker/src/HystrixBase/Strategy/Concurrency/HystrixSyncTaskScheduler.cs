@@ -17,6 +17,26 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     private ThreadTaskQueue[] _workQueues;
 
+    public override int CurrentQueueSize
+    {
+        get
+        {
+            int size = 0;
+
+            foreach (ThreadTaskQueue queue in _workQueues)
+            {
+                if (queue.ThreadAssigned && queue.Task != null)
+                {
+                    size++;
+                }
+            }
+
+            return size;
+        }
+    }
+
+    public override bool IsQueueSpaceAvailable => CurrentQueueSize < _workQueues.Length;
+
     public HystrixSyncTaskScheduler(IHystrixThreadPoolOptions options)
         : base(options)
     {
@@ -25,7 +45,8 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected override void QueueTask(Task task)
     {
-        var isCommand = task.AsyncState is IHystrixInvokable;
+        bool isCommand = task.AsyncState is IHystrixInvokable;
+
         if (!isCommand)
         {
             RunContinuation(task);
@@ -45,7 +66,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected virtual void StartThreadPoolWorker()
     {
-        for (var i = 0; i < corePoolSize; i++)
+        for (int i = 0; i < corePoolSize; i++)
         {
             if (!_workQueues[i].ThreadAssigned)
             {
@@ -66,55 +87,55 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
     protected virtual void StartThreadPoolWorker(ThreadTaskQueue input)
     {
         input.WorkerStartTime = Time.CurrentTimeMillis;
-        System.Threading.ThreadPool.QueueUserWorkItem(
-            queue =>
-            {
+
+        System.Threading.ThreadPool.QueueUserWorkItem(queue =>
+        {
 #pragma warning disable S2696 // Instance members should not write to "static" fields
-                _isHystrixThreadPoolThread = true;
-                _workQueue = queue as ThreadTaskQueue;
+            _isHystrixThreadPoolThread = true;
+            _workQueue = queue as ThreadTaskQueue;
 #pragma warning restore S2696 // Instance members should not write to "static" fields
-                _workQueue.ThreadStartTime = Time.CurrentTimeMillis;
+            _workQueue.ThreadStartTime = Time.CurrentTimeMillis;
 
-                try
+            try
+            {
+                while (!shutdown)
                 {
-                    while (!shutdown)
+                    Task item = null;
+                    _workQueue.Signal.Wait(250);
+
+                    item = _workQueue.Task;
+
+                    if (item != null)
                     {
-                        Task item = null;
-                        _workQueue.Signal.Wait(250);
-
-                        item = _workQueue.Task;
-
-                        if (item != null)
+                        try
                         {
-                            try
-                            {
-                                Interlocked.Increment(ref runningTasks);
-                                TryExecuteTask(item);
-                            }
-                            catch (Exception)
-                            {
-                                // log
-                            }
-                            finally
-                            {
-                                Interlocked.Decrement(ref runningTasks);
-                                Interlocked.Increment(ref completedTasks);
-                            }
-
-                            _workQueue.Signal.Reset();
-                            _workQueue.Task = null;
+                            Interlocked.Increment(ref runningTasks);
+                            TryExecuteTask(item);
                         }
+                        catch (Exception)
+                        {
+                            // log
+                        }
+                        finally
+                        {
+                            Interlocked.Decrement(ref runningTasks);
+                            Interlocked.Increment(ref completedTasks);
+                        }
+
+                        _workQueue.Signal.Reset();
+                        _workQueue.Task = null;
                     }
                 }
-                finally
-                {
-                    _isHystrixThreadPoolThread = false;
-                    _workQueue.Signal.Reset();
-                    _workQueue.ThreadAssigned = false;
-                    Interlocked.Decrement(ref runningThreads);
-                    _workQueue = null;
-                }
-            }, input);
+            }
+            finally
+            {
+                _isHystrixThreadPoolThread = false;
+                _workQueue.Signal.Reset();
+                _workQueue.ThreadAssigned = false;
+                Interlocked.Decrement(ref runningThreads);
+                _workQueue = null;
+            }
+        }, input);
     }
 
     protected override IEnumerable<Task> GetScheduledTasks()
@@ -154,7 +175,7 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
 
     protected virtual bool TryAddToAny(Task task)
     {
-        foreach (var queue in _workQueues)
+        foreach (ThreadTaskQueue queue in _workQueues)
         {
             if (queue.ThreadAssigned && queue.Task == null)
             {
@@ -176,47 +197,26 @@ public class HystrixSyncTaskScheduler : HystrixTaskScheduler
     protected void SetupWorkQueues(int size)
     {
         _workQueues = new ThreadTaskQueue[size];
-        for (var i = 0; i < size; i++)
+
+        for (int i = 0; i < size; i++)
         {
             _workQueues[i] = new ThreadTaskQueue();
         }
     }
 
-    public override int CurrentQueueSize
-    {
-        get
-        {
-            var size = 0;
-            foreach (var queue in _workQueues)
-            {
-                if (queue.ThreadAssigned && queue.Task != null)
-                {
-                    size++;
-                }
-            }
-
-            return size;
-        }
-    }
-
-    public override bool IsQueueSpaceAvailable
-    {
-        get { return CurrentQueueSize < _workQueues.Length;  }
-    }
-
     public class ThreadTaskQueue
     {
+        public ManualResetEventSlim Signal;
+        public Task Task;
+        public bool ThreadAssigned;
+        public long ThreadStartTime;
+        public long WorkerStartTime;
+
         public ThreadTaskQueue()
         {
             Signal = new ManualResetEventSlim(false);
             Task = null;
             ThreadAssigned = false;
         }
-
-        public ManualResetEventSlim Signal;
-        public Task Task;
-        public bool ThreadAssigned;
-        public long ThreadStartTime;
-        public long WorkerStartTime;
     }
 }

@@ -12,32 +12,17 @@ public class EurekaDiscoveryManager : DiscoveryManager
     private readonly IOptionsMonitor<EurekaClientOptions> _clientConfig;
     private readonly IOptionsMonitor<EurekaInstanceOptions> _instConfig;
 
+    public override IEurekaClientConfig ClientConfig => _clientConfig.CurrentValue;
+
+    public override IEurekaInstanceConfig InstanceConfig => _instConfig.CurrentValue;
+
     // Constructor used via Dependency Injection
-    public EurekaDiscoveryManager(
-        IOptionsMonitor<EurekaClientOptions> clientConfig,
-        IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaDiscoveryClient client,
-        ILoggerFactory logFactory = null)
+    public EurekaDiscoveryManager(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
+        EurekaDiscoveryClient client, ILoggerFactory logFactory = null)
     {
         logger = logFactory?.CreateLogger<DiscoveryManager>();
         _clientConfig = clientConfig;
         _instConfig = instConfig;
         Client = client;
-    }
-
-    public override IEurekaClientConfig ClientConfig
-    {
-        get
-        {
-            return _clientConfig.CurrentValue;
-        }
-    }
-
-    public override IEurekaInstanceConfig InstanceConfig
-    {
-        get
-        {
-            return _instConfig.CurrentValue;
-        }
     }
 }

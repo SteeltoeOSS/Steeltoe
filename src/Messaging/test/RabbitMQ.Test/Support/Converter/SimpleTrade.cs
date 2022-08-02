@@ -39,8 +39,7 @@ public class SimpleTrade
             return false;
         }
 
-        return AccountName == other.AccountName && BuyRequest == other.BuyRequest && OrderType == other.OrderType &&
-               Price == other.Price && Quantity == other.Quantity && RequestId == other.RequestId &&
-               Ticker == other.Ticker && UserName == other.UserName;
+        return AccountName == other.AccountName && BuyRequest == other.BuyRequest && OrderType == other.OrderType && Price == other.Price &&
+            Quantity == other.Quantity && RequestId == other.RequestId && Ticker == other.Ticker && UserName == other.UserName;
     }
 }

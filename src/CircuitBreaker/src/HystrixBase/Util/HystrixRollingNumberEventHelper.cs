@@ -6,6 +6,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 internal static class HystrixRollingNumberEventHelper
 {
+    public static IList<HystrixRollingNumberEvent> Values { get; } = new List<HystrixRollingNumberEvent>();
+
     static HystrixRollingNumberEventHelper()
     {
         Values.Add(HystrixRollingNumberEvent.Success);
@@ -31,8 +33,6 @@ internal static class HystrixRollingNumberEventHelper
         Values.Add(HystrixRollingNumberEvent.CollapserBatch);
     }
 
-    public static IList<HystrixRollingNumberEvent> Values { get; } = new List<HystrixRollingNumberEvent>();
-
     public static HystrixRollingNumberEvent From(HystrixEventType eventType)
     {
         return eventType switch
@@ -53,7 +53,7 @@ internal static class HystrixRollingNumberEventHelper
             HystrixEventType.Success => HystrixRollingNumberEvent.Success,
             HystrixEventType.ThreadPoolRejected => HystrixRollingNumberEvent.ThreadPoolRejected,
             HystrixEventType.Timeout => HystrixRollingNumberEvent.Timeout,
-            _ => throw new ArgumentOutOfRangeException($"Unknown HystrixEventType : {eventType}"),
+            _ => throw new ArgumentOutOfRangeException($"Unknown HystrixEventType : {eventType}")
         };
     }
 

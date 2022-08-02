@@ -9,6 +9,24 @@ namespace Steeltoe.Discovery.Consul.Discovery;
 
 internal sealed class ThisServiceInstance : IServiceInstance
 {
+    /// <inheritdoc />
+    public string ServiceId { get; }
+
+    /// <inheritdoc />
+    public string Host { get; }
+
+    /// <inheritdoc />
+    public int Port { get; }
+
+    /// <inheritdoc />
+    public bool IsSecure { get; }
+
+    /// <inheritdoc />
+    public Uri Uri { get; }
+
+    /// <inheritdoc />
+    public IDictionary<string, string> Metadata { get; }
+
     public ThisServiceInstance(IConsulRegistration registration)
     {
         ServiceId = registration.Service.Name;
@@ -18,22 +36,4 @@ internal sealed class ThisServiceInstance : IServiceInstance
         Metadata = registration.Metadata;
         Uri = registration.Uri;
     }
-
-    /// <inheritdoc/>
-    public string ServiceId { get; }
-
-    /// <inheritdoc/>
-    public string Host { get; }
-
-    /// <inheritdoc/>
-    public int Port { get; }
-
-    /// <inheritdoc/>
-    public bool IsSecure { get; }
-
-    /// <inheritdoc/>
-    public Uri Uri { get; }
-
-    /// <inheritdoc/>
-    public IDictionary<string, string> Metadata { get; }
 }

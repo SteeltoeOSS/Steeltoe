@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
@@ -25,8 +25,8 @@ public class CloudFoundryOAuthOptions : OAuthOptions
     /// </summary>
     public bool ValidateCertificates
     {
-        get { return Validate_Certificates; }
-        set { Validate_Certificates = value; }
+        get => Validate_Certificates;
+        set => Validate_Certificates = value;
     }
 
     /// <summary>

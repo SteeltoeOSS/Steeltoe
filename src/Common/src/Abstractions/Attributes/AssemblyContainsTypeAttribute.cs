@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Attributes;
 [AttributeUsage(AttributeTargets.Assembly)]
 public abstract class AssemblyContainsTypeAttribute : Attribute
 {
-    public Type ContainedType { get; private set; }
+    public Type ContainedType { get; }
 
     protected AssemblyContainsTypeAttribute(Type type)
     {

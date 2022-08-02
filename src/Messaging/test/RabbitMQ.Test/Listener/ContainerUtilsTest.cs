@@ -14,16 +14,13 @@ public class ContainerUtilsTest
     [Fact]
     public void TestMustRequeue()
     {
-        Assert.True(ContainerUtils.ShouldRequeue(
-            false,
-            new ListenerExecutionFailedException(string.Empty, new ImmediateRequeueException("requeue"))));
+        Assert.True(ContainerUtils.ShouldRequeue(false, new ListenerExecutionFailedException(string.Empty, new ImmediateRequeueException("requeue"))));
     }
 
     [Fact]
     public void TestMustNotRequeue()
     {
-        Assert.False(ContainerUtils.ShouldRequeue(
-            true,
+        Assert.False(ContainerUtils.ShouldRequeue(true,
             new ListenerExecutionFailedException(string.Empty, new RabbitRejectAndDoNotRequeueException("no requeue"))));
     }
 }

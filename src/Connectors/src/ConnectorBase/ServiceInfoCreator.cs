@@ -2,38 +2,41 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
 using Steeltoe.Extensions.Configuration;
-using System.Reflection;
 
 namespace Steeltoe.Connector;
 
 public class ServiceInfoCreator
 {
-    private static readonly object Lock = new ();
+    private static readonly object Lock = new();
     private static ServiceInfoCreator _me;
-
-    protected internal IConfiguration Configuration { get; }
-
-    protected ServiceInfoCreator(IConfiguration configuration) => Configuration = configuration;
 
     /// <summary>
     /// Gets a value indicating whether this ServiceInfoCreator should be used.
     /// </summary>
     public static bool IsRelevant { get; } = true;
 
+    protected internal IConfiguration Configuration { get; }
+
     /// <summary>
-    /// Gets a list of <see cref="IServiceInfo"/> that are configured in the application configuration.
+    /// Gets a list of <see cref="IServiceInfoFactory" /> available for finding <see cref="IServiceInfo" />s.
+    /// </summary>
+    protected internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
+
+    /// <summary>
+    /// Gets a list of <see cref="IServiceInfo" /> that are configured in the application configuration.
     /// </summary>
     public IList<IServiceInfo> ServiceInfos { get; } = new List<IServiceInfo>();
 
-    /// <summary>
-    /// Gets a list of <see cref="IServiceInfoFactory"/> available for finding <see cref="IServiceInfo"/>s.
-    /// </summary>
-    protected internal IList<IServiceInfoFactory> Factories { get; } = new List<IServiceInfoFactory>();
+    protected ServiceInfoCreator(IConfiguration configuration)
+    {
+        Configuration = configuration;
+    }
 
     public static ServiceInfoCreator Instance(IConfiguration config)
     {
@@ -61,33 +64,53 @@ public class ServiceInfoCreator
     /// <summary>
     /// Get all Service Infos of type.
     /// </summary>
-    /// <typeparam name="TServiceInfo">Service Info Type to retrieve.</typeparam>
-    /// <returns>List of matching Service Infos.</returns>
+    /// <typeparam name="TServiceInfo">
+    /// Service Info Type to retrieve.
+    /// </typeparam>
+    /// <returns>
+    /// List of matching Service Infos.
+    /// </returns>
     public IEnumerable<TServiceInfo> GetServiceInfos<TServiceInfo>()
         where TServiceInfo : class
-        => ServiceInfos.Where(si => si is TServiceInfo).Cast<TServiceInfo>();
+    {
+        return ServiceInfos.Where(si => si is TServiceInfo).Cast<TServiceInfo>();
+    }
 
     /// <summary>
     /// Get all Service Infos of type.
     /// </summary>
-    /// <param name="type">Service Info Type to retrieve.</param>
-    /// <returns>List of matching Service Infos.</returns>
+    /// <param name="type">
+    /// Service Info Type to retrieve.
+    /// </param>
+    /// <returns>
+    /// List of matching Service Infos.
+    /// </returns>
     public IEnumerable<IServiceInfo> GetServiceInfos(Type type)
-        => ServiceInfos.Where(info => info.GetType() == type);
+    {
+        return ServiceInfos.Where(info => info.GetType() == type);
+    }
 
     /// <summary>
     /// Get a named service.
     /// </summary>
-    /// <typeparam name="TServiceInfo">Service Info type.</typeparam>
-    /// <param name="name">Service name.</param>
-    /// <returns>Service info or null.</returns>
+    /// <typeparam name="TServiceInfo">
+    /// Service Info type.
+    /// </typeparam>
+    /// <param name="name">
+    /// Service name.
+    /// </param>
+    /// <returns>
+    /// Service info or null.
+    /// </returns>
     public TServiceInfo GetServiceInfo<TServiceInfo>(string name)
         where TServiceInfo : class
     {
-        var typed = GetServiceInfos<TServiceInfo>();
-        foreach (var si in typed)
+        IEnumerable<TServiceInfo> typed = GetServiceInfos<TServiceInfo>();
+
+        foreach (TServiceInfo si in typed)
         {
             var info = si as IServiceInfo;
+
             if (info.Id.Equals(name))
             {
                 return (TServiceInfo)info;
@@ -100,14 +123,22 @@ public class ServiceInfoCreator
     /// <summary>
     /// Get a named Service Info.
     /// </summary>
-    /// <param name="name">Name of service info.</param>
-    /// <returns>Service info.</returns>
-    public IServiceInfo GetServiceInfo(string name) => ServiceInfos.FirstOrDefault(info => info.Id.Equals(name));
+    /// <param name="name">
+    /// Name of service info.
+    /// </param>
+    /// <returns>
+    /// Service info.
+    /// </returns>
+    public IServiceInfo GetServiceInfo(string name)
+    {
+        return ServiceInfos.FirstOrDefault(info => info.Id.Equals(name));
+    }
 
     internal IServiceInfoFactory CreateServiceInfoFactory(IEnumerable<ConstructorInfo> declaredConstructors)
     {
         IServiceInfoFactory result = null;
-        foreach (var ci in declaredConstructors)
+
+        foreach (ConstructorInfo ci in declaredConstructors)
         {
             if (ci.GetParameters().Length == 0 && ci.IsPublic && !ci.IsStatic)
             {
@@ -123,10 +154,13 @@ public class ServiceInfoCreator
     {
         Factories.Clear();
 
-        var factories = ReflectionHelpers.FindTypesWithAttributeFromAssemblyAttribute<ServiceInfoFactoryAttribute, ServiceInfoFactoryAssemblyAttribute>();
-        foreach (var type in factories)
+        IEnumerable<Type> factories =
+            ReflectionHelpers.FindTypesWithAttributeFromAssemblyAttribute<ServiceInfoFactoryAttribute, ServiceInfoFactoryAssemblyAttribute>();
+
+        foreach (Type type in factories)
         {
-            var instance = CreateServiceInfoFactory(type.GetTypeInfo().DeclaredConstructors);
+            IServiceInfoFactory instance = CreateServiceInfoFactory(type.GetTypeInfo().DeclaredConstructors);
+
             if (instance != null)
             {
                 Factories.Add(instance);
@@ -136,7 +170,7 @@ public class ServiceInfoCreator
 
     protected IServiceInfoFactory FindFactory(Service s)
     {
-        foreach (var f in Factories)
+        foreach (IServiceInfoFactory f in Factories)
         {
             if (f.Accepts(s))
             {
@@ -154,9 +188,10 @@ public class ServiceInfoCreator
         var appInfo = new ApplicationInstanceInfo(Configuration, true);
         var serviceOpts = new ServicesOptions(Configuration);
 
-        foreach (var service in serviceOpts.Services.SelectMany(s => s.Value))
+        foreach (Service service in serviceOpts.Services.SelectMany(s => s.Value))
         {
-            var factory = FindFactory(service);
+            IServiceInfoFactory factory = FindFactory(service);
+
             if (factory != null && factory.Create(service) is ServiceInfo info)
             {
                 info.ApplicationInfo = appInfo;

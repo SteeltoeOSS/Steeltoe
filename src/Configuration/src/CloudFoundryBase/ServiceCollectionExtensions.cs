@@ -11,12 +11,15 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Removes any existing <see cref="IApplicationInstanceInfo"/> if found. Registers a <see cref="CloudFoundryApplicationOptions" />.
+    /// Removes any existing <see cref="IApplicationInstanceInfo" /> if found. Registers a <see cref="CloudFoundryApplicationOptions" />.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services.</param>
+    /// <param name="serviceCollection">
+    /// Collection of configured services.
+    /// </param>
     public static IServiceCollection RegisterCloudFoundryApplicationInstanceInfo(this IServiceCollection serviceCollection)
     {
-        var appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+        ServiceDescriptor appInfo = serviceCollection.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IApplicationInstanceInfo));
+
         if (appInfo?.ImplementationType?.IsAssignableFrom(typeof(CloudFoundryApplicationOptions)) != true)
         {
             if (appInfo != null)
@@ -24,7 +27,9 @@ public static class ServiceCollectionExtensions
                 serviceCollection.Remove(appInfo);
             }
 
-            serviceCollection.AddSingleton(typeof(CloudFoundryApplicationOptions), serviceProvider => new CloudFoundryApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+            serviceCollection.AddSingleton(typeof(CloudFoundryApplicationOptions),
+                serviceProvider => new CloudFoundryApplicationOptions(serviceProvider.GetRequiredService<IConfiguration>()));
+
             serviceCollection.AddSingleton<IApplicationInstanceInfo>(serviceProvider => serviceProvider.GetRequiredService<CloudFoundryApplicationOptions>());
         }
 

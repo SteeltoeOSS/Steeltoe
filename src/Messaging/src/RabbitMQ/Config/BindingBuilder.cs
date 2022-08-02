@@ -21,12 +21,23 @@ public class BindingBuilder
     private static Dictionary<string, object> CreateMapForKeys(params string[] keys)
     {
         var map = new Dictionary<string, object>();
-        foreach (var key in keys)
+
+        foreach (string key in keys)
         {
             map[key] = null;
         }
 
         return map;
+    }
+
+    public static IBinding Create(string bindingName, DestinationType type)
+    {
+        if (type == DestinationType.Exchange)
+        {
+            return new ExchangeBinding(bindingName);
+        }
+
+        return new QueueBinding(bindingName);
     }
 
     public class DestinationConfigurer
@@ -43,7 +54,7 @@ public class BindingBuilder
 
         public IBinding To(FanOutExchange exchange)
         {
-            var bindingName = $"{exchange.ExchangeName}.{Name}";
+            string bindingName = $"{exchange.ExchangeName}.{Name}";
             return Binding.Create(bindingName, Name, Type, exchange.ExchangeName, string.Empty, new Dictionary<string, object>());
         }
 
@@ -118,13 +129,9 @@ public class BindingBuilder
 
             public IBinding Exists()
             {
-                var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
-                return Binding.Create(
-                    bindingName,
-                    _configurer.Destination.Name,
-                    _configurer.Destination.Type,
-                    _configurer.Exchange.ExchangeName,
-                    string.Empty,
+                string bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
+
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.Exchange.ExchangeName, string.Empty,
                     CreateMapForKeys(_key));
             }
 
@@ -134,13 +141,10 @@ public class BindingBuilder
                 {
                     [_key] = value
                 };
-                var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
-                return Binding.Create(
-                    bindingName,
-                    _configurer.Destination.Name,
-                    _configurer.Destination.Type,
-                    _configurer.Exchange.ExchangeName,
-                    string.Empty,
+
+                string bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
+
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.Exchange.ExchangeName, string.Empty,
                     map);
             }
         }
@@ -164,13 +168,9 @@ public class BindingBuilder
 
             public IBinding Exist()
             {
-                var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
-                return Binding.Create(
-                    bindingName,
-                    _configurer.Destination.Name,
-                    _configurer.Destination.Type,
-                    _configurer.Exchange.ExchangeName,
-                    string.Empty,
+                string bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
+
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.Exchange.ExchangeName, string.Empty,
                     _headerMap);
             }
         }
@@ -191,18 +191,15 @@ public class BindingBuilder
                 {
                     ["x-match"] = matchAll ? "all" : "any"
                 };
+
                 _configurer = configurer;
             }
 
             public IBinding Match()
             {
-                var bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
-                return Binding.Create(
-                    bindingName,
-                    _configurer.Destination.Name,
-                    _configurer.Destination.Type,
-                    _configurer.Exchange.ExchangeName,
-                    string.Empty,
+                string bindingName = $"{_configurer.Exchange.ExchangeName}.{_configurer.Destination.Name}";
+
+                return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.Exchange.ExchangeName, string.Empty,
                     _headerMap);
             }
         }
@@ -230,13 +227,13 @@ public class BindingBuilder
 
         public IBinding With(string routingKey)
         {
-            var bindingName = $"{ExchangeName}.{Destination.Name}";
+            string bindingName = $"{ExchangeName}.{Destination.Name}";
             return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
         }
 
         public IBinding With(Enum routingKeyEnum)
         {
-            var bindingName = $"{ExchangeName}.{Destination.Name}";
+            string bindingName = $"{ExchangeName}.{Destination.Name}";
             return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
         }
     }
@@ -273,14 +270,16 @@ public class BindingBuilder
 
         public IBinding And(Dictionary<string, object> map)
         {
-            var bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
+            string bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
             return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, map);
         }
 
         public IBinding NoArgs()
         {
-            var bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
-            return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey, new Dictionary<string, object>());
+            string bindingName = $"{_configurer.ExchangeName}.{_configurer.Destination.Name}";
+
+            return Binding.Create(bindingName, _configurer.Destination.Name, _configurer.Destination.Type, _configurer.ExchangeName, _routingKey,
+                new Dictionary<string, object>());
         }
     }
 
@@ -293,30 +292,20 @@ public class BindingBuilder
 
         public IBinding With(string routingKey)
         {
-            var bindingName = $"{ExchangeName}.{Destination.Name}";
+            string bindingName = $"{ExchangeName}.{Destination.Name}";
             return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKey, new Dictionary<string, object>());
         }
 
         public IBinding With(Enum routingKeyEnum)
         {
-            var bindingName = $"{ExchangeName}.{Destination.Name}";
+            string bindingName = $"{ExchangeName}.{Destination.Name}";
             return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, routingKeyEnum.ToString(), new Dictionary<string, object>());
         }
 
         public IBinding WithQueueName()
         {
-            var bindingName = $"{ExchangeName}.{Destination.Name}";
+            string bindingName = $"{ExchangeName}.{Destination.Name}";
             return Binding.Create(bindingName, Destination.Name, Destination.Type, ExchangeName, Destination.Name, new Dictionary<string, object>());
         }
-    }
-
-    public static IBinding Create(string bindingName, DestinationType type)
-    {
-        if (type == DestinationType.Exchange)
-        {
-            return new ExchangeBinding(bindingName);
-        }
-
-        return new QueueBinding(bindingName);
     }
 }

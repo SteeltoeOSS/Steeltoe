@@ -39,13 +39,14 @@ public class ReflectiveMethodResolver : IMethodResolver
     {
         try
         {
-            var typeConverter = context.TypeConverter;
-            var type = targetObject as Type ?? targetObject.GetType();
+            ITypeConverter typeConverter = context.TypeConverter;
+            Type type = targetObject as Type ?? targetObject.GetType();
             var methods = new List<MethodInfo>(GetMethods(type, targetObject));
 
             // If a filter is registered for this type, call it
             IMethodFilter filter = null;
             _filters?.TryGetValue(type, out filter);
+
             if (filter != null)
             {
                 methods = filter.Filter(methods);
@@ -56,8 +57,8 @@ public class ReflectiveMethodResolver : IMethodResolver
             {
                 methods.Sort((m1, m2) =>
                 {
-                    var m1Pl = m1.GetParameters().Length;
-                    var m2Pl = m2.GetParameters().Length;
+                    int m1Pl = m1.GetParameters().Length;
+                    int m2Pl = m2.GetParameters().Length;
 
                     // vararg methods go last
                     if (m1Pl == m2Pl)
@@ -66,14 +67,13 @@ public class ReflectiveMethodResolver : IMethodResolver
                         {
                             return -1;
                         }
-                        else if (m1.IsVarArgs() && !m2.IsVarArgs())
+
+                        if (m1.IsVarArgs() && !m2.IsVarArgs())
                         {
                             return 1;
                         }
-                        else
-                        {
-                            return 0;
-                        }
+
+                        return 0;
                     }
 
                     return m1Pl.CompareTo(m2Pl);
@@ -84,24 +84,26 @@ public class ReflectiveMethodResolver : IMethodResolver
             var methodsToIterate = new HashSet<MethodInfo>(methods);
 
             MethodInfo closeMatch = null;
-            var closeMatchDistance = int.MaxValue;
+            int closeMatchDistance = int.MaxValue;
             MethodInfo matchRequiringConversion = null;
-            var multipleOptions = false;
+            bool multipleOptions = false;
 
-            foreach (var method in methodsToIterate)
+            foreach (MethodInfo method in methodsToIterate)
             {
                 if (method.Name.Equals(name))
                 {
-                    var parameters = method.GetParameters();
-                    var paramCount = parameters.Length;
+                    ParameterInfo[] parameters = method.GetParameters();
+                    int paramCount = parameters.Length;
 
                     var paramDescriptors = new List<Type>(paramCount);
-                    for (var i = 0; i < paramCount; i++)
+
+                    for (int i = 0; i < paramCount; i++)
                     {
                         paramDescriptors.Add(parameters[i].ParameterType);
                     }
 
                     ArgumentsMatchInfo matchInfo = null;
+
                     if (method.IsVarArgs() && argumentTypes.Count >= paramCount - 1)
                     {
                         // *sigh* complicated
@@ -119,11 +121,13 @@ public class ReflectiveMethodResolver : IMethodResolver
                         {
                             return new ReflectiveMethodExecutor(method);
                         }
-                        else if (matchInfo.IsCloseMatch)
+
+                        if (matchInfo.IsCloseMatch)
                         {
                             if (_useDistance)
                             {
-                                var matchDistance = ReflectionHelper.GetTypeDifferenceWeight(paramDescriptors, argumentTypes);
+                                int matchDistance = ReflectionHelper.GetTypeDifferenceWeight(paramDescriptors, argumentTypes);
+
                                 if (closeMatch == null || matchDistance < closeMatchDistance)
                                 {
                                     // This is a better match...
@@ -157,7 +161,8 @@ public class ReflectiveMethodResolver : IMethodResolver
             {
                 return new ReflectiveMethodExecutor(closeMatch);
             }
-            else if (matchRequiringConversion != null)
+
+            if (matchRequiringConversion != null)
             {
                 if (multipleOptions)
                 {
@@ -166,10 +171,8 @@ public class ReflectiveMethodResolver : IMethodResolver
 
                 return new ReflectiveMethodExecutor(matchRequiringConversion);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
         catch (EvaluationException ex)
         {
@@ -194,8 +197,9 @@ public class ReflectiveMethodResolver : IMethodResolver
             var result = new HashSet<MethodInfo>();
 
             // Add these so that static methods are invocable on the type: e.g. Float.valueOf(..)
-            var methods = GetMethods(type);
-            foreach (var method in methods)
+            MethodInfo[] methods = GetMethods(type);
+
+            foreach (MethodInfo method in methods)
             {
                 if (method.IsStatic)
                 {
@@ -204,7 +208,7 @@ public class ReflectiveMethodResolver : IMethodResolver
             }
 
             // Also expose methods from System.Type itself
-            foreach (var m in GetMethods(typeof(Type)))
+            foreach (MethodInfo m in GetMethods(typeof(Type)))
             {
                 result.Add(m);
             }
@@ -214,8 +218,9 @@ public class ReflectiveMethodResolver : IMethodResolver
         else
         {
             var result = new HashSet<MethodInfo>();
-            var methods = GetMethods(type);
-            foreach (var method in methods)
+            MethodInfo[] methods = GetMethods(type);
+
+            foreach (MethodInfo method in methods)
             {
                 if (IsCandidateForInvocation(method, type))
                 {

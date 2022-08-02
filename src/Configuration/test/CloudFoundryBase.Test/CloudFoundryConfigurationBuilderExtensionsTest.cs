@@ -29,9 +29,11 @@ public class CloudFoundryConfigurationBuilderExtensionsTest
         configurationBuilder.AddCloudFoundry();
 
         CloudFoundryConfigurationSource cloudSource = null;
-        foreach (var source in configurationBuilder.Sources)
+
+        foreach (IConfigurationSource source in configurationBuilder.Sources)
         {
             cloudSource = source as CloudFoundryConfigurationSource;
+
             if (cloudSource != null)
             {
                 break;
@@ -100,7 +102,7 @@ public class CloudFoundryConfigurationBuilderExtensionsTest
             InstancePort = "8888"
         };
 
-        var configuration = new ConfigurationBuilder().AddCloudFoundry(reader).Build();
+        IConfigurationRoot configuration = new ConfigurationBuilder().AddCloudFoundry(reader).Build();
 
         Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", configuration["vcap:application:application_id"]);
         Assert.Equal("1024", configuration["vcap:application:limits:disk"]);

@@ -26,6 +26,7 @@ public class SqlServerProviderConfigurer
         {
             configuration.Port = si.Port;
             configuration.Server = si.Host;
+
             if (!string.IsNullOrEmpty(si.Path))
             {
                 configuration.Database = si.Path;
@@ -33,9 +34,10 @@ public class SqlServerProviderConfigurer
 
             if (si.Query != null)
             {
-                foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
+                foreach (KeyValuePair<string, string> kvp in UriExtensions.ParseQuerystring(si.Query))
                 {
-                    if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) || kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
+                    if (kvp.Key.EndsWith("database", StringComparison.InvariantCultureIgnoreCase) ||
+                        kvp.Key.EndsWith("databaseName", StringComparison.InvariantCultureIgnoreCase))
                     {
                         configuration.Database = kvp.Value;
                     }

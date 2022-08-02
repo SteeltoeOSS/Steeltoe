@@ -5,14 +5,17 @@
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
+using Steeltoe.Extensions.Configuration;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
 
 namespace Steeltoe.Connector.CloudFoundry;
 
 public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
 {
-    private static readonly object Lock = new ();
+    private static readonly object Lock = new();
     private static CloudFoundryServiceInfoCreator _me;
+
+    public new static bool IsRelevant => Platform.IsCloudFoundry;
 
     private CloudFoundryServiceInfoCreator(IConfiguration configuration)
         : base(configuration)
@@ -21,7 +24,7 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         BuildServiceInfos();
     }
 
-    public static new CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
+    public new static CloudFoundryServiceInfoCreator Instance(IConfiguration configuration)
     {
         if (configuration == null)
         {
@@ -42,8 +45,6 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         return _me;
     }
 
-    public static new bool IsRelevant => Platform.IsCloudFoundry;
-
     private void BuildServiceInfos()
     {
         ServiceInfos.Clear();
@@ -51,11 +52,12 @@ public class CloudFoundryServiceInfoCreator : ServiceInfoCreator
         var appInfo = new CloudFoundryApplicationOptions(Configuration);
         var serviceOptions = new CloudFoundryServicesOptions(Configuration);
 
-        foreach (var serviceOption in serviceOptions.Services)
+        foreach (KeyValuePair<string, IEnumerable<Service>> serviceOption in serviceOptions.Services)
         {
-            foreach (var s in serviceOption.Value)
+            foreach (Service s in serviceOption.Value)
             {
-                var factory = FindFactory(s);
+                IServiceInfoFactory factory = FindFactory(s);
+
                 if (factory != null && factory.Create(s) is ServiceInfo info)
                 {
                     info.ApplicationInfo = appInfo;

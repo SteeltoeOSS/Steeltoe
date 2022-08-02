@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
@@ -16,10 +17,10 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var ctx = new StandardEvaluationContext();
-        var expr = parser.ParseRaw("HasAnyRole('MANAGER','TELLER')");
+        IExpression expr = parser.ParseRaw("HasAnyRole('MANAGER','TELLER')");
 
         ctx.SetRootObject(new Person("Ben"));
-        var value = expr.GetValue(ctx, typeof(bool));
+        object value = expr.GetValue(ctx, typeof(bool));
         Assert.False((bool)value);
 
         ctx.SetRootObject(new Manager("Luke"));
@@ -37,10 +38,10 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
         // Multiple options for supporting this expression: "p.name == principal.name"
         // (1) If the right person is the root context object then "name==principal.name" is good enough
-        var expr = parser.ParseRaw("Name == Principal.Name");
+        IExpression expr = parser.ParseRaw("Name == Principal.Name");
 
         ctx.SetRootObject(new Person("Andy"));
-        var value = expr.GetValue(ctx, typeof(bool));
+        object value = expr.GetValue(ctx, typeof(bool));
         Assert.True((bool)value);
 
         ctx.SetRootObject(new Person("Christian"));
@@ -71,7 +72,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
         // Might be better with a as a variable although it would work as a property too...
         // Variable references using a '#'
-        var expr = parser.ParseRaw("(HasRole('SUPERVISOR') or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
+        IExpression expr = parser.ParseRaw("(HasRole('SUPERVISOR') or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
 
         bool value;
 
@@ -101,7 +102,7 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         // SpelExpression expr = parser.parseExpression("(hasRole('SUPERVISOR') or (#a <  1.042)) and hasIpAddress('10.10.0.0/16')");
         ctx.AddMethodResolver(new MyMethodResolver());
 
-        var expr = parser.ParseRaw("(HasRole(3) or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
+        IExpression expr = parser.ParseRaw("(HasRole(3) or (#a <  1.042)) and HasIpAddress('10.10.0.0/16')");
 
         bool value;
 
@@ -117,12 +118,18 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
     public class Person
     {
+        public virtual string[] Roles =>
+            new[]
+            {
+                "NONE"
+            };
+
+        public virtual string Name { get; }
+
         public Person(string n)
         {
             Name = n;
         }
-
-        public virtual string[] Roles => new[] { "NONE" };
 
         public virtual bool HasAnyRole(params string[] roles)
         {
@@ -131,8 +138,9 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
                 return true;
             }
 
-            var myRoles = Roles;
-            foreach (var myRole in myRoles)
+            string[] myRoles = Roles;
+
+            foreach (string myRole in myRoles)
             {
                 if (roles.Any(role => myRole.Equals(role)))
                 {
@@ -152,47 +160,52 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         {
             return true;
         }
-
-        public virtual string Name { get; }
     }
 
     public class Manager : Person
     {
+        public override string[] Roles =>
+            new[]
+            {
+                "MANAGER"
+            };
+
         public Manager(string n)
             : base(n)
         {
         }
-
-        public override string[] Roles => new[] { "MANAGER" };
     }
 
     public class Teller : Person
     {
+        public override string[] Roles =>
+            new[]
+            {
+                "TELLER"
+            };
+
         public Teller(string n)
             : base(n)
         {
         }
-
-        public override string[] Roles => new[] { "TELLER" };
     }
 
     public class Supervisor : Person
     {
+        public override string[] Roles =>
+            new[]
+            {
+                "SUPERVISOR"
+            };
+
         public Supervisor(string n)
             : base(n)
         {
         }
-
-        public override string[] Roles => new[] { "SUPERVISOR" };
     }
 
     public class SecurityPrincipalAccessor : IPropertyAccessor
     {
-        public class Principal
-        {
-            public string Name = "Andy";
-        }
-
         public bool CanRead(IEvaluationContext context, object target, string name)
         {
             return name.Equals("Principal");
@@ -215,6 +228,11 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
         public IList<Type> GetSpecificTargetClasses()
         {
             return null;
+        }
+
+        public class Principal
+        {
+            public string Name = "Andy";
         }
     }
 
@@ -249,6 +267,16 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
 
     public class MyMethodResolver : IMethodResolver
     {
+        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
+        {
+            if (name.Equals("HasRole"))
+            {
+                return new HasRoleExecutor(context.TypeConverter);
+            }
+
+            return null;
+        }
+
         public class HasRoleExecutor : IMethodExecutor
         {
             private readonly ITypeConverter _tc;
@@ -267,8 +295,13 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
             {
                 try
                 {
-                    var m = typeof(HasRoleExecutor).GetMethod(nameof(HasRoleExecutor.HasRole), new[] { typeof(string[]) });
-                    var args = arguments;
+                    MethodInfo m = typeof(HasRoleExecutor).GetMethod(nameof(HasRole), new[]
+                    {
+                        typeof(string[])
+                    });
+
+                    object[] args = arguments;
+
                     if (args != null)
                     {
                         ReflectionHelper.ConvertAllArguments(_tc, args, m);
@@ -286,16 +319,6 @@ public class ScenariosForSpringSecurityExpressionTests : AbstractExpressionTests
                     throw new AccessException("Problem invoking hasRole", ex);
                 }
             }
-        }
-
-        public IMethodExecutor Resolve(IEvaluationContext context, object targetObject, string name, List<Type> argumentTypes)
-        {
-            if (name.Equals("HasRole"))
-            {
-                return new HasRoleExecutor(context.TypeConverter);
-            }
-
-            return null;
         }
     }
 }

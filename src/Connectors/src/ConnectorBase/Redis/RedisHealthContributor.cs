@@ -2,35 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
-using System.Reflection;
 using Steeltoe.Common.Util;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.Redis;
 
 public class RedisHealthContributor : IHealthContributor
 {
-    public static IHealthContributor GetRedisContributor(IConfiguration configuration, ILogger<RedisHealthContributor> logger = null)
-    {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        var redisImplementation = RedisTypeLocator.StackExchangeImplementation;
-        var redisOptions = RedisTypeLocator.StackExchangeOptions;
-        var initializer = RedisTypeLocator.StackExchangeInitializer;
-
-        var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
-        var redisConfig = new RedisCacheConnectorOptions(configuration);
-        var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
-        return new RedisHealthContributor(factory, redisImplementation, logger);
-    }
-
     private readonly RedisServiceConnectorFactory _factory;
     private readonly Type _implType;
     private readonly ILogger<RedisHealthContributor> _logger;
@@ -42,6 +25,8 @@ public class RedisHealthContributor : IHealthContributor
 
     private bool IsMicrosoftImplementation => _implType.FullName.Contains("Microsoft");
 
+    public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
+
     public RedisHealthContributor(RedisServiceConnectorFactory factory, Type implType, ILogger<RedisHealthContributor> logger = null)
     {
         _factory = factory;
@@ -49,7 +34,22 @@ public class RedisHealthContributor : IHealthContributor
         _logger = logger;
     }
 
-    public string Id => IsMicrosoftImplementation ? "Redis-Cache" : "Redis";
+    public static IHealthContributor GetRedisContributor(IConfiguration configuration, ILogger<RedisHealthContributor> logger = null)
+    {
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+
+        Type redisImplementation = RedisTypeLocator.StackExchangeImplementation;
+        Type redisOptions = RedisTypeLocator.StackExchangeOptions;
+        MethodInfo initializer = RedisTypeLocator.StackExchangeInitializer;
+
+        var info = configuration.GetSingletonServiceInfo<RedisServiceInfo>();
+        var redisConfig = new RedisCacheConnectorOptions(configuration);
+        var factory = new RedisServiceConnectorFactory(info, redisConfig, redisImplementation, redisOptions, initializer);
+        return new RedisHealthContributor(factory, redisImplementation, logger);
+    }
 
     public HealthCheckResult Health()
     {
@@ -93,13 +93,20 @@ public class RedisHealthContributor : IHealthContributor
 
     private void DoStackExchangeHealth(HealthCheckResult health)
     {
-        var latency = (TimeSpan)ReflectionHelpers.Invoke(_pingMethod, _database, new[] { _flags });
+        var latency = (TimeSpan)ReflectionHelpers.Invoke(_pingMethod, _database, new[]
+        {
+            _flags
+        });
+
         health.Details.Add("ping", latency.TotalMilliseconds);
     }
 
     private void DoMicrosoftHealth()
     {
-        _getMethod.Invoke(_connector, new object[] { "1" });
+        _getMethod.Invoke(_connector, new object[]
+        {
+            "1"
+        });
     }
 
     private void Connect()
@@ -107,6 +114,7 @@ public class RedisHealthContributor : IHealthContributor
         if (_connector == null)
         {
             _connector = _factory.Create(null);
+
             if (_connector == null)
             {
                 throw new ConnectorException("Unable to connect to Redis");
@@ -118,10 +126,16 @@ public class RedisHealthContributor : IHealthContributor
             }
             else
             {
-                var commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
+                Type commandFlagsEnum = RedisTypeLocator.StackExchangeCommandFlagsNames;
                 _flags = Enum.Parse(commandFlagsEnum, "None");
-                var getDatabaseMethod = ReflectionHelpers.FindMethod(_connector.GetType(), "GetDatabase");
-                _database = ReflectionHelpers.Invoke(getDatabaseMethod, _connector, new object[] { -1, null });
+                MethodInfo getDatabaseMethod = ReflectionHelpers.FindMethod(_connector.GetType(), "GetDatabase");
+
+                _database = ReflectionHelpers.Invoke(getDatabaseMethod, _connector, new object[]
+                {
+                    -1,
+                    null
+                });
+
                 _pingMethod = ReflectionHelpers.FindMethod(_database.GetType(), "Ping");
             }
         }

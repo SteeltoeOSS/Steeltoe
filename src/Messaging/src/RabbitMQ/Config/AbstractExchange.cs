@@ -8,6 +8,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public abstract class AbstractExchange : AbstractDeclarable, IExchange
 {
+    public string ServiceName { get; set; }
+
+    public string ExchangeName { get; set; }
+
+    public bool IsDurable { get; set; }
+
+    public bool IsAutoDelete { get; set; }
+
+    public bool IsDelayed { get; set; }
+
+    public bool IsInternal { get; set; }
+
+    public abstract string Type { get; }
+
     protected AbstractExchange(string exchangeName)
         : this(exchangeName, true, false)
     {
@@ -27,23 +41,8 @@ public abstract class AbstractExchange : AbstractDeclarable, IExchange
         IsAutoDelete = autoDelete;
     }
 
-    public string ServiceName { get; set; }
-
-    public string ExchangeName { get; set; }
-
-    public bool IsDurable { get; set; }
-
-    public bool IsAutoDelete { get; set; }
-
-    public bool IsDelayed { get; set; }
-
-    public bool IsInternal { get; set; }
-
-    public abstract string Type { get; }
-
     public override string ToString()
     {
-        return
-            $"Exchange [name={ExchangeName}, type={Type}, durable={IsDurable}, autoDelete={IsAutoDelete}, internal={IsInternal}, arguments={Arguments}]";
+        return $"Exchange [name={ExchangeName}, type={Type}, durable={IsDurable}, autoDelete={IsAutoDelete}, internal={IsInternal}, arguments={Arguments}]";
     }
 }

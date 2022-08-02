@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Test;
-using System.Diagnostics;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
@@ -15,7 +15,7 @@ public class DefaultHealthAggregatorTest : BaseTest
     public void Aggregate_NullContributorList_ReturnsExpectedHealth()
     {
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(null);
+        HealthCheckResult result = agg.Aggregate(null);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Unknown, result.Status);
         Assert.NotNull(result.Details);
@@ -28,8 +28,9 @@ public class DefaultHealthAggregatorTest : BaseTest
         {
             new UpContributor()
         };
+
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);
@@ -45,8 +46,9 @@ public class DefaultHealthAggregatorTest : BaseTest
             new OutOfServiceContributor(),
             new UnknownContributor()
         };
+
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Down, result.Status);
         Assert.NotNull(result.Details);
@@ -56,13 +58,14 @@ public class DefaultHealthAggregatorTest : BaseTest
     public void Aggregate_DuplicateContributor_ReturnsExpectedHealth()
     {
         var contributors = new List<IHealthContributor>();
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             contributors.Add(new UpContributor());
         }
 
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.Contains("Up-9", result.Details.Keys);
@@ -77,8 +80,9 @@ public class DefaultHealthAggregatorTest : BaseTest
             new OutOfServiceContributor(),
             new UnknownContributor()
         };
+
         var agg = new DefaultHealthAggregator();
-        var result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors);
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.OutOfService, result.Status);
         Assert.NotNull(result.Details);
@@ -88,15 +92,17 @@ public class DefaultHealthAggregatorTest : BaseTest
     public void AggregatesInParallel()
     {
         var t = new Stopwatch();
+
         var contributors = new List<IHealthContributor>
         {
             new UpContributor(500),
             new UpContributor(500),
             new UpContributor(500)
         };
+
         var agg = new DefaultHealthAggregator();
         t.Start();
-        var result = agg.Aggregate(contributors);
+        HealthCheckResult result = agg.Aggregate(contributors);
         t.Stop();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);

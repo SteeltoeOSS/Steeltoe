@@ -14,44 +14,11 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
 
     protected string path;
 
-    protected AbstractEndpointOptions()
-    {
-    }
-
-    protected AbstractEndpointOptions(string sectionName, IConfiguration config)
-    {
-        if (sectionName == null)
-        {
-            throw new ArgumentNullException(nameof(sectionName));
-        }
-
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(sectionName);
-        if (section != null)
-        {
-            section.Bind(this);
-        }
-
-        // These should not be set from configuration
-        AllowedVerbs = null;
-        ExactMatch = true;
-    }
-
     public virtual bool? Enabled
     {
-        get
-        {
-            return enabled;
-        }
+        get => enabled;
 
-        set
-        {
-            enabled = value;
-        }
+        set => enabled = value;
     }
 
     public virtual string Id { get; set; }
@@ -68,24 +35,49 @@ public abstract class AbstractEndpointOptions : IEndpointOptions
             return Id;
         }
 
-        set
-        {
-            path = value;
-        }
+        set => path = value;
     }
 
     public Permissions RequiredPermissions { get; set; } = Permissions.Undefined;
 
     public IManagementOptions Global { get; set; }
 
-    public virtual bool IsAccessAllowed(Permissions permissions)
-    {
-        return permissions >= RequiredPermissions;
-    }
-
     public virtual bool DefaultEnabled { get; } = true;
 
     public IEnumerable<string> AllowedVerbs { get; set; }
 
     public bool ExactMatch { get; set; } = true;
+
+    protected AbstractEndpointOptions()
+    {
+    }
+
+    protected AbstractEndpointOptions(string sectionName, IConfiguration config)
+    {
+        if (sectionName == null)
+        {
+            throw new ArgumentNullException(nameof(sectionName));
+        }
+
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(sectionName);
+
+        if (section != null)
+        {
+            section.Bind(this);
+        }
+
+        // These should not be set from configuration
+        AllowedVerbs = null;
+        ExactMatch = true;
+    }
+
+    public virtual bool IsAccessAllowed(Permissions permissions)
+    {
+        return permissions >= RequiredPermissions;
+    }
 }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.Handler.Invocation;
 using System.Reflection;
+using Steeltoe.Messaging.Handler.Invocation;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -17,10 +17,12 @@ public class AttributeExceptionHandlerMethodResolver : AbstractExceptionHandlerM
     private static Dictionary<Type, MethodInfo> InitExceptionMappings(Type handlerType)
     {
         var methods = new Dictionary<MethodInfo, MessageExceptionHandlerAttribute>();
-        var targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-        foreach (var method in targets)
+        MethodInfo[] targets = handlerType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
+
+        foreach (MethodInfo method in targets)
         {
             var attribute = method.GetCustomAttribute<MessageExceptionHandlerAttribute>();
+
             if (attribute != null)
             {
                 methods.Add(method, attribute);
@@ -28,24 +30,25 @@ public class AttributeExceptionHandlerMethodResolver : AbstractExceptionHandlerM
         }
 
         var result = new Dictionary<Type, MethodInfo>();
-        foreach (var entry in methods)
+
+        foreach (KeyValuePair<MethodInfo, MessageExceptionHandlerAttribute> entry in methods)
         {
-            var method = entry.Key;
+            MethodInfo method = entry.Key;
             var exceptionTypes = new List<Type>(entry.Value.Exceptions);
+
             if (exceptionTypes.Count == 0)
             {
                 exceptionTypes.AddRange(GetExceptionsFromMethodSignature(method));
             }
 
-            foreach (var exceptionType in exceptionTypes)
+            foreach (Type exceptionType in exceptionTypes)
             {
-                result.TryGetValue(exceptionType, out var oldMethod);
+                result.TryGetValue(exceptionType, out MethodInfo oldMethod);
                 result[exceptionType] = method;
 
                 if (oldMethod != null && !oldMethod.Equals(method))
                 {
-                    throw new InvalidOperationException(
-                        $"Ambiguous @ExceptionHandler method mapped for [{exceptionType}]: {{{oldMethod}, {method}}}");
+                    throw new InvalidOperationException($"Ambiguous @ExceptionHandler method mapped for [{exceptionType}]: {{{oldMethod}, {method}}}");
                 }
             }
         }

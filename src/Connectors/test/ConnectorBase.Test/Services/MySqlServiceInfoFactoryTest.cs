@@ -15,7 +15,11 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "mysql", "relational" },
+            Tags = new[]
+            {
+                "mysql",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -26,9 +30,13 @@ public class MySqlServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -47,9 +55,13 @@ public class MySqlServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -60,7 +72,7 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = System.Array.Empty<string>(),
+            Tags = Array.Empty<string>(),
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -71,9 +83,13 @@ public class MySqlServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -84,7 +100,11 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-foobar",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -94,10 +114,16 @@ public class MySqlServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:foobar://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:foobar://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -108,7 +134,11 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "mysql", "relational" },
+            Tags = new[]
+            {
+                "mysql",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -119,9 +149,13 @@ public class MySqlServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         var info = factory.Create(s) as MySqlServiceInfo;
         Assert.NotNull(info);
@@ -140,7 +174,11 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "mysql", "relational" },
+            Tags = new[]
+            {
+                "mysql",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -152,6 +190,7 @@ public class MySqlServiceInfoFactoryTest
                 { "password", new Credential("7E1LxXnlH2hhlPVt") }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         var info = factory.Create(s) as MySqlServiceInfo;
         Assert.NotNull(info);
@@ -169,15 +208,16 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "user-provided",
-            Tags = System.Array.Empty<string>(),
+            Tags = Array.Empty<string>(),
             Name = "cupsMySqlService",
             Credentials = new Credential
             {
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -188,15 +228,16 @@ public class MySqlServiceInfoFactoryTest
         var s = new Service
         {
             Label = "user-provided",
-            Tags = System.Array.Empty<string>(),
+            Tags = Array.Empty<string>(),
             Name = "cupsMySqlService",
             Credentials = new Credential
             {
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") }
             }
         };
+
         var factory = new MySqlServiceInfoFactory();
         var info = factory.Create(s) as MySqlServiceInfo;
         Assert.NotNull(info);

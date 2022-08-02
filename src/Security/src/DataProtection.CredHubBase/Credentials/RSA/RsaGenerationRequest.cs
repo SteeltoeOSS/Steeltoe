@@ -7,17 +7,28 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class RsaGenerationRequest : CredHubGenerateRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="RsaGenerationRequest"/> class.
-    /// Use to request a new RSA Credential.
+    /// Initializes a new instance of the <see cref="RsaGenerationRequest" /> class. Use to request a new RSA Credential.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="keyLength">Optional Key Length (default: 2048).</param>
-    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
-    public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length2048, OverwriteMode overwriteMode = OverwriteMode.Converge)
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="keyLength">
+    /// Optional Key Length (default: 2048).
+    /// </param>
+    /// <param name="overwriteMode">
+    /// Overwrite existing credential (default: no-overwrite).
+    /// </param>
+    public RsaGenerationRequest(string credentialName, CertificateKeyLength keyLength = CertificateKeyLength.Length2048,
+        OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
         Name = credentialName;
         Type = CredentialType.RSA;
-        Parameters = new KeyParameters { KeyLength = keyLength };
+
+        Parameters = new KeyParameters
+        {
+            KeyLength = keyLength
+        };
+
         Mode = overwriteMode;
     }
 }

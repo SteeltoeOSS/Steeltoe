@@ -12,37 +12,39 @@ public class ReflectiveConstructorResolver : IConstructorResolver
     {
         try
         {
-            var typeConverter = context.TypeConverter;
-            var type = context.TypeLocator.FindType(typeName);
+            ITypeConverter typeConverter = context.TypeConverter;
+            Type type = context.TypeLocator.FindType(typeName);
 
             if (IsPrimitive(type))
             {
                 return new PrimitiveConstructorExecutor(type);
             }
 
-            var constructors = type.GetConstructors();
+            ConstructorInfo[] constructors = type.GetConstructors();
 
             Array.Sort(constructors, (c1, c2) =>
             {
-                var c1Pl = c1.GetParameters().Length;
-                var c2Pl = c2.GetParameters().Length;
+                int c1Pl = c1.GetParameters().Length;
+                int c2Pl = c2.GetParameters().Length;
                 return c1Pl.CompareTo(c2Pl);
             });
 
             ConstructorInfo closeMatch = null;
             ConstructorInfo matchRequiringConversion = null;
 
-            foreach (var ctor in constructors)
+            foreach (ConstructorInfo ctor in constructors)
             {
-                var parameters = ctor.GetParameters();
-                var paramCount = parameters.Length;
+                ParameterInfo[] parameters = ctor.GetParameters();
+                int paramCount = parameters.Length;
                 var paramDescriptors = new List<Type>(paramCount);
-                for (var i = 0; i < paramCount; i++)
+
+                for (int i = 0; i < paramCount; i++)
                 {
                     paramDescriptors.Add(parameters[i].ParameterType);
                 }
 
                 ArgumentsMatchInfo matchInfo = null;
+
                 if (ctor.IsVarArgs() && argumentTypes.Count >= paramCount - 1)
                 {
                     // *sigh* complicated
@@ -65,7 +67,8 @@ public class ReflectiveConstructorResolver : IConstructorResolver
                     {
                         return new ReflectiveConstructorExecutor(ctor);
                     }
-                    else if (matchInfo.IsCloseMatch)
+
+                    if (matchInfo.IsCloseMatch)
                     {
                         closeMatch = ctor;
                     }
@@ -80,14 +83,13 @@ public class ReflectiveConstructorResolver : IConstructorResolver
             {
                 return new ReflectiveConstructorExecutor(closeMatch);
             }
-            else if (matchRequiringConversion != null)
+
+            if (matchRequiringConversion != null)
             {
                 return new ReflectiveConstructorExecutor(matchRequiringConversion);
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
         catch (EvaluationException ex)
         {

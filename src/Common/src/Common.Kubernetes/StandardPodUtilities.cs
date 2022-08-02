@@ -5,6 +5,7 @@
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
@@ -25,10 +26,11 @@ public class StandardPodUtilities : IPodUtilities
     public async Task<V1Pod> GetCurrentPodAsync()
     {
         V1Pod pod = null;
+
         try
         {
-            var hostname = Environment.GetEnvironmentVariable("HOSTNAME");
-            var rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
+            string hostname = Environment.GetEnvironmentVariable("HOSTNAME");
+            HttpOperationResponse<V1PodList> rsp = await _kubernetes.ListNamespacedPodWithHttpMessagesAsync(_applicationOptions.NameSpace);
             pod = rsp.Body.Items?.FirstOrDefault(p => p.Metadata.Name.Equals(hostname));
         }
         catch (Exception e)
