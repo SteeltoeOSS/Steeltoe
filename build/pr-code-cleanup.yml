@@ -15,7 +15,7 @@ jobs:
       targetType: 'inline'
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
-          throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup" in a GitHub PR comment.'
+          throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup-code" in a GitHub PR comment.'
         }
   - checkout: self
     persistCredentials: true
@@ -49,10 +49,8 @@ jobs:
         # out-of-date (which means the target branch has newer commits, and we should ignore those).
         $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
         if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
-
         $headCommitHash = git rev-parse HEAD
         if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
-
         if ($baseCommitHash -ne $headCommitHash) {
           Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
           dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
@@ -75,17 +73,14 @@ jobs:
     inputs:
       targetType: 'inline'
       script: |
-        git config --global user.email "cibuild@steeltoe.com"
+        git config --global user.email "cibuild@steeltoe.io"
         git config --global user.name "steeltoe-cibuild"
-
         Write-Output "Committing changes."
         git commit -m "Automated code cleanup from Steeltoe cibuild"
         if ($LastExitCode -ne 0) { throw "Command 'git commit' failed with exit code $LastExitCode." }
-
         Write-Output "Pushing changes."
         git push origin
         if ($LastExitCode -ne 0) { throw "Command 'git push' failed with exit code $LastExitCode." }
-
         Write-Output "##vso[task.setvariable variable=hasCommitted]True"
         exit 0
   - task: PowerShell@2
@@ -107,7 +102,6 @@ jobs:
         else {
           $statusMessage = "<samp>Code cleanup successfully reformatted files, but there were no changes to push.</samp>"
         }
-
         Write-Output "Status: $statusMessage"
         Write-Output "##vso[task.setvariable variable=statusMessage]$statusMessage"
         exit 0

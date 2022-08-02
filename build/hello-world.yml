@@ -1,7 +1,17 @@
-trigger: none
+trigger:
+  branches:
+    include:
+    - master
+    - release/*
 
+pr:
+  branches:
+    include:
+    - main
+    - release/*
+    
 jobs:
-- job: PR_Code_Cleanup
+- job: Verify_Code_Style
   variables:
     DOTNET_NOLOGO: true
     DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
@@ -9,112 +19,22 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
+  - checkout: self
+    persistCredentials: true
   - task: PowerShell@2
-    displayName: Validate preconditions
+    displayName: HelloWorld
     inputs:
       targetType: 'inline'
       script: |
         if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
-          throw 'This pipeline can only be run from pull requests. Use "/azp run cleanup" in a GitHub PR comment.'
-        }
-  - checkout: self
-    persistCredentials: true
-  - task: PowerShell@2
-    displayName: Checkout PR branch
-    inputs:
-      targetType: 'inline'
-      script: |
-        # We're going to push changes, so we need to be on the PR branch
-        # instead of the detached head that contains the merge result.
-        Write-Output "Switching to branch $env:SYSTEM_PULLREQUEST_SOURCEBRANCH"
-        git checkout $env:SYSTEM_PULLREQUEST_SOURCEBRANCH
-  - task: PowerShell@2
-    displayName: Restore tools
-    inputs:
-      targetType: 'inline'
-      script: |
-        dotnet tool restore
-  - task: PowerShell@2
-    displayName: Restore packages
-    inputs:
-      targetType: 'inline'
-      script: |
-        dotnet restore src
-  - task: PowerShell@2
-    displayName: Code cleanup
-    inputs:
-      targetType: 'inline'
-      script: |
-        # Find the most-recent common ancestor to diff against. Using the target branch name is incorrect because this PR may be
-        # out-of-date (which means the target branch has newer commits, and we should ignore those).
-        $baseCommitHash = git merge-base origin/$env:SYSTEM_PULLREQUEST_SOURCEBRANCH origin/$env:SYSTEM_PULLREQUEST_TARGETBRANCH
-        if ($LastExitCode -ne 0) { throw "Command 'git merge-base' failed with exit code $LastExitCode." }
-
-        $headCommitHash = git rev-parse HEAD
-        if ($LastExitCode -ne 0) { throw "Command 'git rev-parse' failed with exit code $LastExitCode." }
-
-        if ($baseCommitHash -ne $headCommitHash) {
-          Write-Output "Running code cleanup on commit range $baseCommitHash..$headCommitHash in pull request."
-          dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN -f commits -a $headCommitHash -b $baseCommitHash
-        }
-  - task: PowerShell@2
-    displayName: Detect changes
-    inputs:
-      targetType: 'inline'
-      script: |
-        git add -A
-        git diff-index --quiet HEAD --
-        $hasChangesToCommit = $LastExitCode -ne 0
-        Write-Output "##vso[task.setvariable variable=hasChangesToCommit]$hasChangesToCommit"
-        exit 0
-  - task: PowerShell@2
-    displayName: Push changes
-    condition: and(succeeded(), eq(variables['hasChangesToCommit'], 'True'))
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)  
-    inputs:
-      targetType: 'inline'
-      script: |
-        git config --global user.email "cibuild@steeltoe.com"
-        git config --global user.name "steeltoe-cibuild"
-
-        Write-Output "Committing changes."
-        git commit -m "Automated code cleanup from Steeltoe cibuild"
-        if ($LastExitCode -ne 0) { throw "Command 'git commit' failed with exit code $LastExitCode." }
-
-        Write-Output "Pushing changes."
-        git push origin
-        if ($LastExitCode -ne 0) { throw "Command 'git push' failed with exit code $LastExitCode." }
-
-        Write-Output "##vso[task.setvariable variable=hasCommitted]True"
-        exit 0
-  - task: PowerShell@2
-    displayName: Compose status message
-    condition: always()
-    inputs:
-      targetType: 'inline'
-      script: |
-        if ($env:HASCOMMITTED -eq 'True') {
-          $statusMessage = "<samp>Code cleanup successfully reformatted files and pushed changes.</samp>"
-        }
-        elseif ($env:AGENT_JOBSTATUS -eq "Canceled") {
-          $statusMessage = "<samp>Code cleanup was canceled, no changes were pushed.</samp>"
-        }
-        elseif ($env:AGENT_JOBSTATUS -eq "Failed") {
-          $url = "$(System.TeamFoundationCollectionUri)$(System.TeamProject)/_build/results?buildId=$(Build.BuildId)" 
-          $statusMessage = "<samp>Code cleanup failed to reformat and push changes.</samp><p>View details [here]($url).</p>"
+          Write-Output "Running from branch"
         }
         else {
-          $statusMessage = "<samp>Code cleanup successfully reformatted files, but there were no changes to push.</samp>"
+          Write-Output "Running from PR"
         }
-
-        Write-Output "Status: $statusMessage"
-        Write-Output "##vso[task.setvariable variable=statusMessage]$statusMessage"
-        exit 0
-  - task: GitHubComment@0
-    displayName: Notify status in PR comment
-    condition: and(always(), not(eq(variables['statusMessage'], '')))
+  - task: PowerShell@2
+    displayName: Verify code style
     inputs:
-      gitHubConnection: 'SteeltoeOSS (1)'
-      repositoryName: '$(Build.Repository.Name)'
-      comment: $(statusMessage)
+      targetType: 'inline'
+      script: |
+        dotnet regitlint -s src/Steeltoe.All.sln --print-command --skip-tool-check --jb-profile="Steeltoe Full Cleanup" --jb --properties:Configuration=Release --jb --verbosity=WARN --fail-on-diff --print-diff
