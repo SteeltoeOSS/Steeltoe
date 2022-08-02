@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Management.Endpoint.Security;
+using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -18,7 +19,10 @@ public class HealthEndpointCore : HealthEndpoint
     private readonly IList<IHealthContributor> _contributors;
     private readonly ILogger<HealthEndpoint> _logger;
 
-    public HealthEndpointCore(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors, IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
+    public new IHealthOptions Options => options as IHealthOptions;
+
+    public HealthEndpointCore(IHealthOptions options, IHealthAggregator aggregator, IEnumerable<IHealthContributor> contributors,
+        IOptionsMonitor<HealthCheckServiceOptions> serviceOptions, IServiceProvider provider, ILogger<HealthEndpoint> logger = null)
         : base(options, aggregator, contributors, logger)
     {
         _aggregator = aggregator ?? throw new ArgumentNullException(nameof(aggregator));
@@ -28,8 +32,6 @@ public class HealthEndpointCore : HealthEndpoint
         _logger = logger;
     }
 
-    public new IHealthOptions Options => options as IHealthOptions;
-
     public override HealthEndpointResponse Invoke(ISecurityContext securityContext)
     {
         return BuildHealth(securityContext);
@@ -37,9 +39,10 @@ public class HealthEndpointCore : HealthEndpoint
 
     protected override HealthEndpointResponse BuildHealth(ISecurityContext securityContext)
     {
-        var groupName = GetRequestedHealthGroup(securityContext);
+        string groupName = GetRequestedHealthGroup(securityContext);
         ICollection<HealthCheckRegistration> healthCheckRegistrations;
         IList<IHealthContributor> filteredContributors;
+
         if (!string.IsNullOrEmpty(groupName) && groupName != Options.Id)
         {
             filteredContributors = GetFilteredContributorList(groupName, _contributors);
@@ -51,12 +54,14 @@ public class HealthEndpointCore : HealthEndpoint
             healthCheckRegistrations = _serviceOptions.CurrentValue.Registrations;
         }
 
-        var result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
+        HealthCheckResult result = _aggregator is not IHealthRegistrationsAggregator registrationAggregator
             ? _aggregator.Aggregate(filteredContributors)
             : registrationAggregator.Aggregate(filteredContributors, healthCheckRegistrations, _provider);
+
         var response = new HealthEndpointResponse(result);
 
-        var showDetails = Options.ShowDetails;
+        ShowDetails showDetails = Options.ShowDetails;
+
         if (showDetails == ShowDetails.Never || (showDetails == ShowDetails.WhenAuthorized && !securityContext.HasClaim(Options.Claim)))
         {
             response.Details = new Dictionary<string, object>();
@@ -69,19 +74,20 @@ public class HealthEndpointCore : HealthEndpoint
         return response;
     }
 
-    private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup, IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
+    private ICollection<HealthCheckRegistration> GetFilteredHealthCheckServiceOptions(string requestedGroup,
+        IOptionsMonitor<HealthCheckServiceOptions> svcOptions)
     {
         if (!string.IsNullOrEmpty(requestedGroup))
         {
-            if (Options.Groups.TryGetValue(requestedGroup, out var groupOptions))
+            if (Options.Groups.TryGetValue(requestedGroup, out HealthGroupOptions groupOptions))
             {
-                var includedContributors = groupOptions.Include.Split(",").ToList();
-                return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.InvariantCultureIgnoreCase)).ToList();
+                List<string> includedContributors = groupOptions.Include.Split(",").ToList();
+
+                return svcOptions.CurrentValue.Registrations.Where(n => includedContributors.Contains(n.Name, StringComparer.InvariantCultureIgnoreCase))
+                    .ToList();
             }
-            else
-            {
-                _logger?.LogInformation("Health check requested for a group that is not configured");
-            }
+
+            _logger?.LogInformation("Health check requested for a group that is not configured");
         }
         else
         {

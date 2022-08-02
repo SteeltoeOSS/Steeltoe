@@ -11,7 +11,7 @@ public class OAuthConnectorFactory
 {
     private readonly SsoServiceInfo _info;
     private readonly OAuthConnectorOptions _options;
-    private readonly OAuthConfigurer _configurer = new ();
+    private readonly OAuthConfigurer _configurer = new();
 
     public OAuthConnectorFactory(SsoServiceInfo serviceInfo, OAuthConnectorOptions options)
     {
@@ -21,7 +21,7 @@ public class OAuthConnectorFactory
 
     public IOptions<OAuthServiceOptions> Create(IServiceProvider provider)
     {
-        var opts = _configurer.Configure(_info, _options);
+        IOptions<OAuthServiceOptions> opts = _configurer.Configure(_info, _options);
         return opts;
     }
 }

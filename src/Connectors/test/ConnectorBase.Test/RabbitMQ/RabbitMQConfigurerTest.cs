@@ -13,6 +13,7 @@ public class RabbitMQConfigurerTest
     public void UpdateConfiguration_WithNullRabbitMQServiceInfo_ReturnsInitialConfiguration()
     {
         var configurer = new RabbitMQProviderConfigurer();
+
         var config = new RabbitMQProviderConnectorOptions
         {
             Server = "localhost",
@@ -21,6 +22,7 @@ public class RabbitMQConfigurerTest
             Password = "password",
             VirtualHost = "vhost"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Server);
@@ -35,6 +37,7 @@ public class RabbitMQConfigurerTest
     public void UpdateConfiguration_WithRabbitMQServiceInfo_UpdatesConfigurationFromServiceInfo()
     {
         var configurer = new RabbitMQProviderConfigurer();
+
         var config = new RabbitMQProviderConnectorOptions
         {
             Server = "localhost",
@@ -43,6 +46,7 @@ public class RabbitMQConfigurerTest
             Password = "password",
             VirtualHost = "vhost"
         };
+
         var si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
 
         configurer.UpdateConfiguration(si, config);
@@ -59,6 +63,7 @@ public class RabbitMQConfigurerTest
     public void UpdateConfiguration_WithRabbitMQ_SSLServiceInfo_UpdatesConfigurationFromServiceInfo()
     {
         var configurer = new RabbitMQProviderConfigurer();
+
         var config = new RabbitMQProviderConnectorOptions
         {
             Server = "localhost",
@@ -67,6 +72,7 @@ public class RabbitMQConfigurerTest
             Password = "password",
             VirtualHost = "vhost"
         };
+
         var si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com:5671/si_vhost");
 
         configurer.UpdateConfiguration(si, config);
@@ -92,7 +98,7 @@ public class RabbitMQConfigurerTest
         };
 
         var configurer = new RabbitMQProviderConfigurer();
-        var opts = configurer.Configure(null, config);
+        string opts = configurer.Configure(null, config);
         var uri = new UriInfo(opts);
 
         Assert.False(config.SslEnabled);
@@ -118,7 +124,7 @@ public class RabbitMQConfigurerTest
         var configurer = new RabbitMQProviderConfigurer();
         var si = new RabbitMQServiceInfo("MyId", "amqp://si_username:si_password@example.com:5672/si_vhost");
 
-        var opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, config);
         var uri = new UriInfo(opts);
 
         Assert.Equal("example.com", uri.Host);
@@ -143,7 +149,7 @@ public class RabbitMQConfigurerTest
         var configurer = new RabbitMQProviderConfigurer();
         var si = new RabbitMQServiceInfo("MyId", "amqps://si_username:si_password@example.com/si_vhost");
 
-        var opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, config);
         var uri = new UriInfo(opts);
 
         Assert.Equal("example.com", uri.Host);

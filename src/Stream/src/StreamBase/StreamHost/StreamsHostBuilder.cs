@@ -14,17 +14,16 @@ public class StreamsHostBuilder<T> : IHostBuilder
 {
     private readonly IHostBuilder _hostBuilder;
 
+    public IDictionary<object, object> Properties => _hostBuilder.Properties;
+
     public StreamsHostBuilder(IHostBuilder hostBuilder)
     {
-        _hostBuilder = hostBuilder.AddSpringBootConfiguration()
-            .ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
+        _hostBuilder = hostBuilder.AddSpringBootConfiguration().ConfigureServices((context, services) => services.AddStreamServices<T>(context.Configuration));
     }
-
-    public IDictionary<object, object> Properties => _hostBuilder.Properties;
 
     public IHost Build()
     {
-        var host = _hostBuilder.Build();
+        IHost host = _hostBuilder.Build();
         return new StreamHost(host);
     }
 

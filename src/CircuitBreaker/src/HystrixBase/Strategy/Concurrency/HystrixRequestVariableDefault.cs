@@ -11,6 +11,21 @@ public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
     private readonly Action<T> _disposeAction;
     private readonly Func<T> _valueFactory;
 
+    public virtual T Value
+    {
+        get
+        {
+            // Checks to make sure HystrixRequestContext.ContextForCurrentThread.State != null
+            if (!HystrixRequestContext.IsCurrentThreadInitialized)
+            {
+                throw new InvalidOperationException(
+                    "HystrixRequestContext.InitializeContext() must be called at the beginning of each request before RequestVariable functionality can be used.");
+            }
+
+            return (T)HystrixRequestContext.ContextForCurrentThread.State.GetOrAddEx(this, _ => _valueFactory());
+        }
+    }
+
     public HystrixRequestVariableDefault(T value)
     {
         _valueFactory = () => value;
@@ -40,20 +55,6 @@ public class HystrixRequestVariableDefault<T> : IHystrixRequestVariable<T>
         if (HystrixRequestContext.ContextForCurrentThread != null)
         {
             Remove(HystrixRequestContext.ContextForCurrentThread, this);
-        }
-    }
-
-    public virtual T Value
-    {
-        get
-        {
-            // Checks to make sure HystrixRequestContext.ContextForCurrentThread.State != null
-            if (!HystrixRequestContext.IsCurrentThreadInitialized)
-            {
-                throw new InvalidOperationException("HystrixRequestContext.InitializeContext() must be called at the beginning of each request before RequestVariable functionality can be used.");
-            }
-
-            return (T)HystrixRequestContext.ContextForCurrentThread.State.GetOrAddEx(this, _ => _valueFactory());
         }
     }
 

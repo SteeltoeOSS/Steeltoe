@@ -27,6 +27,7 @@ public class TaskSchedulerSubscribableChannelWriterTest
     public async Task MessageMustNotBeNull()
     {
         Exception exception = null;
+
         try
         {
             await Channel.Writer.WriteAsync(null);
@@ -113,11 +114,12 @@ public class TaskSchedulerSubscribableChannelWriterTest
         Handler = mock.Object;
 
         var mock2 = new Mock<IMessageHandler>();
-        var secondHandler = mock2.Object;
+        IMessageHandler secondHandler = mock2.Object;
 
         Channel.Subscribe(Handler);
         Channel.Subscribe(secondHandler);
-        var exceptionThrown = false;
+        bool exceptionThrown = false;
+
         try
         {
             await Channel.Writer.WriteAsync(Message);
@@ -151,12 +153,13 @@ public class TaskSchedulerSubscribableChannelWriterTest
         var mock = new Mock<IMessageHandler>();
         Handler = mock.Object;
         var mock2 = new Mock<IMessage>();
-        var expected = mock2.Object;
+        IMessage expected = mock2.Object;
 
         var interceptor = new BeforeHandleInterceptor
         {
             MessageToReturn = expected
         };
+
         Channel.AddInterceptor(interceptor);
         Channel.Subscribe(Handler);
         await Channel.Writer.WriteAsync(Message);
@@ -194,7 +197,8 @@ public class TaskSchedulerSubscribableChannelWriterTest
         var interceptor = new BeforeHandleInterceptor();
         Channel.AddInterceptor(interceptor);
         Channel.Subscribe(Handler);
-        var exceptionThrown = false;
+        bool exceptionThrown = false;
+
         try
         {
             await Channel.Writer.WriteAsync(Message);

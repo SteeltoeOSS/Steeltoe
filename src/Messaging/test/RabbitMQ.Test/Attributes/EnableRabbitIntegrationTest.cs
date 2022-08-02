@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -24,10 +28,6 @@ using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Steeltoe.Messaging.RabbitMQ.Test;
 using Steeltoe.Messaging.Support;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Attributes.EnableRabbitIntegrationTest;
 using RC = RabbitMQ.Client;
@@ -51,8 +51,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void AutoDeclare()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.rk", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.rk", "foo");
         Assert.StartsWith("FOO", reply);
         var myService = _context.GetService<MyService>();
         Assert.NotNull(myService);
@@ -62,8 +62,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void AutoSimpleDeclare()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.simple.declare", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.simple.declare", "foo");
         Assert.StartsWith("FOO", reply);
     }
 
@@ -74,7 +74,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         var container = registry.GetListenerContainer("anonymousQueue575") as DirectMessageListenerContainer;
         Assert.Single(container.GetQueueNames());
 
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         Assert.Equal("viaAnonymous:foo", template.ConvertSendAndReceive<string>(container.GetQueueNames()[0], "foo"));
         var messageListener = container.MessageListener as MessagingMessageListenerAdapter;
         Assert.NotNull(messageListener.RetryTemplate);
@@ -112,35 +112,35 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void AutoDeclareFanOut()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("auto.exch.fanout", string.Empty, "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("auto.exch.fanout", string.Empty, "foo");
         Assert.Equal("FOOFOO", reply);
     }
 
     [Fact]
     public void AutoDeclareAnonWitAttributes()
     {
-        var template = _context.GetRabbitTemplate();
-        var received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string received = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.atts.rk", "foo");
         Assert.StartsWith("foo:", received);
         var queue = new Queue(received.Substring(4), true, true, true);
-        var admin = _context.GetRabbitAdmin();
+        IRabbitAdmin admin = _context.GetRabbitAdmin();
         admin.DeclareQueue(queue);
     }
 
     [Fact]
     public void AutoDeclareAnon()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.rk", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("auto.exch", "auto.anon.rk", "foo");
         Assert.Equal("FOO", reply);
     }
 
     [Fact]
     public void SimpleEndpoint()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.simple", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.simple", "foo");
         Assert.Equal("FOO", reply);
 
         var containers = _context.GetService<IMessageListenerContainerCollection>("testGroup");
@@ -154,8 +154,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         var container = registry.GetListenerContainer("direct") as DirectMessageListenerContainer;
         Assert.False(container.IsRunning);
         await container.Start();
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.simple.direct", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.simple.direct", "foo");
         Assert.StartsWith("FOOfoo", reply);
         Assert.Equal(2, container.ConsumersPerQueue);
     }
@@ -163,8 +163,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void SimpleDirectEndpointWithConcurrency()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.simple.direct2", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.simple.direct2", "foo");
         Assert.StartsWith("FOOfoo", reply);
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("directWithConcurrency") as DirectMessageListenerContainer;
@@ -174,29 +174,29 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void SimpleInheritanceMethod()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.inheritance", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.inheritance", "foo");
         Assert.Equal("FOO", reply);
     }
 
     [Fact]
     public void SimpleInheritanceClass()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.inheritance.class", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.inheritance.class", "foo");
         Assert.Equal("FOOBAR", reply);
     }
 
     [Fact]
     public void Commas()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test,with,commas", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test,with,commas", "foo");
         Assert.Equal("FOOfoo", reply);
         var commaContainers = _context.GetService<IMessageListenerContainerCollection>("commas");
         Assert.Single(commaContainers.Containers);
         var container = commaContainers.Containers[0] as DirectMessageListenerContainer;
-        var queueNames = container.GetQueueNames();
+        string[] queueNames = container.GetQueueNames();
         Assert.Contains("test.comma.1", queueNames);
         Assert.Contains("test.comma.2", queueNames);
         Assert.Contains("test.comma.3", queueNames);
@@ -212,22 +212,24 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
             Field = "foo"
         };
-        var template = _context.GetRabbitTemplate("jsonRabbitTemplate");
-        var reply = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", foo);
+
+        RabbitTemplate template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+        string reply = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", foo);
         Assert.Equal("FOO: foo handled by default handler", reply);
 
         var bar = new Bar
         {
             Field = "bar"
         };
+
         template.ConvertAndSend("multi.exch", "multi.rk", bar);
         template.ReceiveTimeout = 10000;
-        var reply2 = template.ReceiveAndConvert<string>("sendTo.replies");
+        string reply2 = template.ReceiveAndConvert<string>("sendTo.replies");
         Assert.Equal("BAR: bar", reply2);
 
         bar.Field = "crash";
         template.ConvertAndSend("multi.exch", "multi.rk", bar);
-        var reply3 = template.ReceiveAndConvert<string>("sendTo.replies");
+        string reply3 = template.ReceiveAndConvert<string>("sendTo.replies");
         Assert.Equal("CRASHCRASH Test reply from error handler", reply3);
         bar.Field = "bar";
 
@@ -235,18 +237,20 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
             Field = "baz"
         };
-        var reply4 = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", baz);
+
+        string reply4 = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", baz);
         Assert.Equal("BAZ: baz", reply4);
 
         var qux = new Qux
         {
             Field = "qux"
         };
+
         var beanMethodHeaders = new List<string>();
         var mpp = new MultiListenerMessagePostProcessor(beanMethodHeaders);
         template.SetAfterReceivePostProcessors(mpp);
 
-        var reply5 = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", qux);
+        string reply5 = template.ConvertSendAndReceive<string>("multi.exch", "multi.rk", qux);
         Assert.Equal("QUX: qux: multi.rk", reply5);
 
         Assert.Equal(2, beanMethodHeaders.Count);
@@ -254,9 +258,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.Equal("Qux", beanMethodHeaders[1]);
         template.RemoveAfterReceivePostProcessor(mpp);
 
-        var reply6 = template.ConvertSendAndReceive<string>("multi.exch.tx", "multi.rk.tx", bar);
+        string reply6 = template.ConvertSendAndReceive<string>("multi.exch.tx", "multi.rk.tx", bar);
         Assert.Equal("BAR: barbar", reply6);
-        var reply7 = template.ConvertSendAndReceive<string>("multi.exch.tx", "multi.rk.tx", baz);
+        string reply7 = template.ConvertSendAndReceive<string>("multi.exch.tx", "multi.rk.tx", baz);
         Assert.Equal("BAZ: bazbaz: multi.rk.tx", reply7);
         var multiBean = _context.GetService<MultiListenerService>();
         Assert.NotNull(multiBean);
@@ -270,20 +274,23 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void MultiListenerJson()
     {
-        var template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+        RabbitTemplate template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+
         var bar = new Bar
         {
             Field = "bar"
         };
-        var exchange = "multi.json.exch";
-        var routingKey = "multi.json.rk";
-        var reply = template.ConvertSendAndReceive<string>(exchange, routingKey, bar);
+
+        string exchange = "multi.json.exch";
+        string routingKey = "multi.json.rk";
+        string reply = template.ConvertSendAndReceive<string>(exchange, routingKey, bar);
         Assert.Equal("BAR: barMultiListenerJsonService", reply);
 
         var baz = new Baz
         {
             Field = "baz"
         };
+
         reply = template.ConvertSendAndReceive<string>(exchange, routingKey, baz);
         Assert.Equal("BAZ: baz", reply);
 
@@ -291,6 +298,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
             Field = "qux"
         };
+
         reply = template.ConvertSendAndReceive<string>(exchange, routingKey, qux);
         Assert.Equal("QUX: qux: multi.json.rk", reply);
 
@@ -310,10 +318,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void EndpointWithHeader()
     {
-        var template = _context.GetRabbitTemplate();
-        var properties = new MessageHeaders(new Dictionary<string, object> { { "prefix", "prefix-" } });
-        var request = MessageTestUtils.CreateTextMessage("foo", properties);
-        var reply = template.SendAndReceive("test.header", request);
+        RabbitTemplate template = _context.GetRabbitTemplate();
+
+        var properties = new MessageHeaders(new Dictionary<string, object>
+        {
+            { "prefix", "prefix-" }
+        });
+
+        IMessage<byte[]> request = MessageTestUtils.CreateTextMessage("foo", properties);
+        IMessage reply = template.SendAndReceive("test.header", request);
         Assert.Equal("prefix-FOO", MessageTestUtils.ExtractText(reply));
         Assert.True(reply.Headers.Get<bool>("replyMPPApplied"));
         Assert.Equal("MyService", reply.Headers.Get<string>("bean"));
@@ -323,22 +336,32 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void EndpointWithMessage()
     {
-        var template = _context.GetRabbitTemplate();
-        var properties = new MessageHeaders(new Dictionary<string, object> { { "prefix", "prefix-" } });
-        var request = MessageTestUtils.CreateTextMessage("foo", properties);
-        var reply = template.SendAndReceive("test.message", request);
+        RabbitTemplate template = _context.GetRabbitTemplate();
+
+        var properties = new MessageHeaders(new Dictionary<string, object>
+        {
+            { "prefix", "prefix-" }
+        });
+
+        IMessage<byte[]> request = MessageTestUtils.CreateTextMessage("foo", properties);
+        IMessage reply = template.SendAndReceive("test.message", request);
         Assert.Equal("prefix-FOO", MessageTestUtils.ExtractText(reply));
     }
 
     [Fact]
     public void EndpointWithComplexReply()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         var context = _context.GetService<IApplicationContext>();
         var strategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy") as ConsumerTagStrategy;
-        var properties = new MessageHeaders(new Dictionary<string, object> { { "foo", "fooValue" } });
-        var request = MessageTestUtils.CreateTextMessage("content", properties);
-        var reply = template.SendAndReceive("test.reply", request);
+
+        var properties = new MessageHeaders(new Dictionary<string, object>
+        {
+            { "foo", "fooValue" }
+        });
+
+        IMessage<byte[]> request = MessageTestUtils.CreateTextMessage("content", properties);
+        IMessage reply = template.SendAndReceive("test.reply", request);
         Assert.Equal("content", MessageTestUtils.ExtractText(reply));
         Assert.Equal("fooValue", reply.Headers.Get<string>("foo"));
         Assert.StartsWith(strategy.TagPrefix, reply.Headers.Get<string>("bar"));
@@ -347,10 +370,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void SimpleEndpointWithSendTo()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.sendTo", "bar");
         template.ReceiveTimeout = 10000;
-        var result = template.ReceiveAndConvert<string>("test.sendTo.reply");
+        string result = template.ReceiveAndConvert<string>("test.sendTo.reply");
         Assert.NotNull(result);
         Assert.Equal("BAR", result);
     }
@@ -358,10 +381,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void SimpleEndpointWithSendToSpel()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.sendTo.spel", "bar");
         template.ReceiveTimeout = 10000;
-        var result = template.ReceiveAndConvert<string>("test.sendTo.reply.spel");
+        string result = template.ReceiveAndConvert<string>("test.sendTo.reply.spel");
         Assert.NotNull(result);
         Assert.Equal("BARbar", result);
     }
@@ -369,10 +392,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact(Skip = "SpEL")]
     public void SimpleEndpointWithSendToSpelRuntime()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.sendTo.runtimespel", "spel");
         template.ReceiveTimeout = 10000;
-        var result = template.ReceiveAndConvert<string>("test.sendTo.reply.runtimespel");
+        string result = template.ReceiveAndConvert<string>("test.sendTo.reply.runtimespel");
         Assert.NotNull(result);
         Assert.Equal("runtimespel", result);
     }
@@ -380,10 +403,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact(Skip = "SpEL")]
     public void SimpleEndpointWithSendToSpelRuntimeMessagingMessage()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.sendTo.runtimespelsource", "spel");
         template.ReceiveTimeout = 10000;
-        var result = template.ReceiveAndConvert<string>("test.sendTo.runtimespelsource.reply");
+        string result = template.ReceiveAndConvert<string>("test.sendTo.runtimespelsource.reply");
         Assert.NotNull(result);
         Assert.Equal("sourceEval", result);
     }
@@ -391,17 +414,17 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestInvalidPojoConversion()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         _fixture.ErrorHandlerLatch.Reset();
         _fixture.ErrorHandlerError.Value = null;
         template.ConvertAndSend("test.invalidPojo", "bar");
         Assert.True(_fixture.ErrorHandlerLatch.Wait(TimeSpan.FromSeconds(10)));
-        var exception = _fixture.ErrorHandlerError.Value;
+        Exception exception = _fixture.ErrorHandlerError.Value;
         Assert.NotNull(exception);
         Assert.IsType<RabbitRejectAndDoNotRequeueException>(exception);
-        var cause = exception.InnerException;
+        Exception cause = exception.InnerException;
         Assert.IsType<ListenerExecutionFailedException>(cause);
-        var cause2 = cause.InnerException;
+        Exception cause2 = cause.InnerException;
         Assert.IsType<MessageConversionException>(cause2);
         Assert.Contains("Cannot convert from [String] to [DateTime]", cause2.Message);
     }
@@ -413,7 +436,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
             Bar = "bar"
         };
-        var template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+
+        RabbitTemplate template = _context.GetRabbitTemplate("jsonRabbitTemplate");
         var service = _context.GetService<MyService>();
         service.Latch.Reset();
         service.Foos.Clear();
@@ -436,7 +460,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
             Bar = "bar"
         };
-        var template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+
+        RabbitTemplate template = _context.GetRabbitTemplate("jsonRabbitTemplate");
         var service = _context.GetService<MyService>();
         service.Latch.Reset();
         service.Foos.Clear();
@@ -455,7 +480,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestFanOut()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.metaFanout", string.Empty, "foo");
         var service = _context.GetService<FanOutListener>();
         Assert.True(service.Latch.Wait(TimeSpan.FromSeconds(10)));
@@ -464,29 +489,29 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestHeadersExchange()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "foo", new TestHeadersExchangeMpp1());
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "foo", new TestHeadersExchangeMpp1());
         Assert.Equal("FOO", reply);
-        var reply1 = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "bar", new TestHeadersExchangeMpp2());
+        string reply1 = template.ConvertSendAndReceive<string>("auto.headers", string.Empty, "bar", new TestHeadersExchangeMpp2());
         Assert.Equal("BAR", reply1);
     }
 
     [Fact]
     public async Task DeadLetterOnDefaultExchange()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("amqp656", "foo");
-        var reply = template.ReceiveAndConvert<string>("amqp656dlq", 10000);
+        string reply = template.ReceiveAndConvert<string>("amqp656dlq", 10000);
         Assert.Equal("foo", reply);
         _ = _context.GetRabbitAdmin();
 
         var client = new HttpClient();
-        var authToken = Encoding.ASCII.GetBytes("guest:guest");
+        byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        var result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + "amqp656");
+        HttpResponseMessage result = await client.GetAsync("http://localhost:15672/api/queues/%2F/" + "amqp656");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var content = await result.Content.ReadAsStringAsync();
+        string content = await result.Content.ReadAsStringAsync();
         Assert.Contains("test-empty", content);
         Assert.Contains("test-null", content);
     }
@@ -494,7 +519,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void ReturnExceptionWithRethrowAdapter()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ThrowReceivedExceptions = true;
         var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.return.exceptions", "foo"));
         Assert.Contains("return this", e.Message);
@@ -505,15 +530,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void ListenerErrorHandler()
     {
-        var template = _context.GetRabbitTemplate();
-        var reply = template.ConvertSendAndReceive<string>("test.pojo.errors", "foo");
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        string reply = template.ConvertSendAndReceive<string>("test.pojo.errors", "foo");
         Assert.Equal("BAR", reply);
     }
 
     [Fact]
     public void ListenerErrorHandlerException()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ThrowReceivedExceptions = true;
         var e = Assert.Throws<InvalidOperationException>(() => template.ConvertSendAndReceive<string>("test.pojo.errors2", "foo"));
         Assert.Contains("from error handler", e.Message);
@@ -525,7 +550,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestGenericReturnTypes()
     {
-        var template = _context.GetRabbitTemplate("jsonRabbitTemplate");
+        RabbitTemplate template = _context.GetRabbitTemplate("jsonRabbitTemplate");
         var returned = template.ConvertSendAndReceive<List<JsonObject>>("test.generic.list", new JsonObject("baz"));
         Assert.NotNull(returned[0]);
 
@@ -537,35 +562,35 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestManualContainer()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.manual.container", "foo");
         Assert.True(_fixture.ManualContainerLatch.Wait(TimeSpan.FromSeconds(10)));
         Assert.NotNull(_fixture.Message.Value);
-        var msg = Encoding.UTF8.GetString((byte[])_fixture.Message.Value.Payload);
+        string msg = Encoding.UTF8.GetString((byte[])_fixture.Message.Value.Payload);
         Assert.Equal("foo", msg);
     }
 
     [Fact]
     public void TestNoListenerYet()
     {
-        var template = _context.GetRabbitTemplate();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         template.ConvertAndSend("test.no.listener.yet", "bar");
         Assert.True(_fixture.NoListenerLatch.Wait(TimeSpan.FromSeconds(10)));
         Assert.NotNull(_fixture.Message.Value);
-        var msg = Encoding.UTF8.GetString((byte[])_fixture.Message.Value.Payload);
+        string msg = Encoding.UTF8.GetString((byte[])_fixture.Message.Value.Payload);
         Assert.Equal("bar", msg);
     }
 
     [Fact]
     public void MessagingMessageReturned()
     {
-        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("\"messaging\""))
-            .SetHeader(MessageHeaders.ContentType, "application/json")
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("\"messaging\"")).SetHeader(MessageHeaders.ContentType, "application/json")
             .Build();
-        var template = _context.GetRabbitTemplate();
+
+        RabbitTemplate template = _context.GetRabbitTemplate();
         message = template.SendAndReceive("test.messaging.message", message);
         Assert.NotNull(message);
-        var str = Encoding.UTF8.GetString((byte[])message.Payload);
+        string str = Encoding.UTF8.GetString((byte[])message.Payload);
         Assert.Equal("{\"field\":\"MESSAGING\"}", str);
         Assert.Equal("bar", message.Headers.Get<string>("foo"));
     }
@@ -573,13 +598,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void ByteArrayMessageReturned()
     {
-        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("amqp"))
-            .SetHeader(MessageHeaders.ContentType, "text/plain")
-            .Build();
-        var template = _context.GetRabbitTemplate();
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("amqp")).SetHeader(MessageHeaders.ContentType, "text/plain").Build();
+        RabbitTemplate template = _context.GetRabbitTemplate();
         message = template.SendAndReceive("test.amqp.message", message);
         Assert.NotNull(message);
-        var str = Encoding.UTF8.GetString((byte[])message.Payload);
+        string str = Encoding.UTF8.GetString((byte[])message.Payload);
         Assert.Equal("AMQP", str);
         Assert.Equal("bar", message.Headers.Get<string>("foo"));
     }
@@ -587,12 +610,12 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     [Fact]
     public void BytesToString()
     {
-        var message = Message.Create(Encoding.UTF8.GetBytes("bytes"));
-        var template = _context.GetRabbitTemplate();
-        var returned = template.SendAndReceive("test.bytes.to.string", message);
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("bytes"));
+        RabbitTemplate template = _context.GetRabbitTemplate();
+        IMessage returned = template.SendAndReceive("test.bytes.to.string", message);
         Assert.NotNull(returned);
         Assert.IsType<byte[]>(returned.Payload);
-        var str = Encoding.UTF8.GetString((byte[])returned.Payload);
+        string str = Encoding.UTF8.GetString((byte[])returned.Payload);
         Assert.Equal("BYTES", str);
     }
 
@@ -634,7 +657,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("foo", "bar");
             accessor.SetHeader("baz", "qux");
             return message;
@@ -642,7 +665,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("foo", "bar");
             accessor.SetHeader("baz", "qux");
             return message;
@@ -653,14 +676,14 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("baz", "fiz");
             return message;
         }
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("baz", "fiz");
             return message;
         }
@@ -668,29 +691,91 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public sealed class StartupFixture : IDisposable
     {
+        public static string[] Queues =
+        {
+            "test.manual.container",
+            "test.no.listener.yet",
+            "test.simple",
+            "test.header",
+            "test.message",
+            "test.reply",
+            "test.sendTo",
+            "test.sendTo.reply",
+            "test.sendTo.spel",
+            "test.sendTo.reply.spel",
+            "test.sendTo.runtimespel",
+            "test.sendTo.reply.runtimespel",
+            "test.sendTo.runtimespelsource",
+            "test.sendTo.runtimespelsource.reply",
+            "test.intercepted",
+            "test.intercepted.withReply",
+            "test.invalidPojo",
+            "differentTypes",
+            "differentTypes2",
+            "differentTypes3",
+            "test.inheritance",
+            "test.inheritance.class",
+            "test.comma.1",
+            "test.comma.2",
+            "test.comma.3",
+            "test.comma.4",
+            "test,with,commas",
+            "test.converted",
+            "test.converted.list",
+            "test.converted.array",
+            "test.converted.args1",
+            "test.converted.args2",
+            "test.converted.message",
+            "test.notconverted.message",
+            "test.notconverted.channel",
+            "test.notconverted.messagechannel",
+            "test.notconverted.messagingmessage",
+            "test.converted.foomessage",
+            "test.notconverted.messagingmessagenotgeneric",
+            "test.simple.direct",
+            "test.simple.direct2",
+            "test.generic.list",
+            "test.generic.map",
+            "amqp656dlq",
+            "test.simple.declare",
+            "test.return.exceptions",
+            "test.pojo.errors",
+            "test.pojo.errors2",
+            "test.messaging.message",
+            "test.amqp.message",
+            "test.bytes.to.string",
+            "test.projection",
+            "manual.acks.1",
+            "manual.acks.2",
+            "erit.batch.1",
+            "erit.batch.2",
+            "erit.batch.3"
+        };
+
         private readonly CachingConnectionFactory _adminCf;
         private readonly RabbitAdmin _admin;
         private readonly IServiceCollection _services;
 
         public ServiceProvider Provider { get; set; }
 
-        public CountdownEvent ManualContainerLatch { get; set; } = new (1);
+        public CountdownEvent ManualContainerLatch { get; set; } = new(1);
 
-        public CountdownEvent NoListenerLatch { get; set; } = new (1);
+        public CountdownEvent NoListenerLatch { get; set; } = new(1);
 
-        public CountdownEvent ErrorHandlerLatch { get; set; } = new (1);
+        public CountdownEvent ErrorHandlerLatch { get; set; } = new(1);
 
-        public AtomicReference<Exception> ErrorHandlerError { get; set; } = new ();
+        public AtomicReference<Exception> ErrorHandlerError { get; set; } = new();
 
-        public AtomicReference<IMessage> Message { get; set; } = new ();
+        public AtomicReference<IMessage> Message { get; set; } = new();
 
-        public AtomicReference<RC.IModel> ErrorHandlerChannel { get; set; } = new ();
+        public AtomicReference<RC.IModel> ErrorHandlerChannel { get; set; } = new();
 
         public StartupFixture()
         {
             _adminCf = new CachingConnectionFactory("localhost");
             _admin = new RabbitAdmin(_adminCf);
-            foreach (var q in Queues)
+
+            foreach (string q in Queues)
             {
                 var queue = new Queue(q);
                 _admin.DeclareQueue(queue);
@@ -703,7 +788,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public void Dispose()
         {
-            foreach (var q in Queues)
+            foreach (string q in Queues)
             {
                 _admin.DeleteQueue(q);
             }
@@ -741,11 +826,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             {
                 var context = p.GetRequiredService<IApplicationContext>();
                 var loggerFactory = p.GetService<ILoggerFactory>();
-                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName) as DirectRabbitListenerContainerFactory;
+
+                var defFactory =
+                    context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName) as
+                        DirectRabbitListenerContainerFactory;
+
                 var listener = new TestManualContainerListener(ManualContainerLatch, Message);
                 var endpoint = new SimpleRabbitListenerEndpoint(context, listener, loggerFactory);
                 endpoint.SetQueueNames("test.manual.container");
-                var container = defFactory.CreateListenerContainer(endpoint);
+                DirectMessageListenerContainer container = defFactory.CreateListenerContainer(endpoint);
                 container.ServiceName = "factoryCreatedContainerSimpleListener";
                 container.Initialize();
                 return container;
@@ -755,7 +844,11 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddSingleton<ISmartLifecycle>(p =>
             {
                 var context = p.GetRequiredService<IApplicationContext>();
-                var defFactory = context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory.DefaultServiceName); // as DirectRabbitListenerContainerFactory;
+
+                var defFactory =
+                    context.GetService<IRabbitListenerContainerFactory>(DirectRabbitListenerContainerFactory
+                        .DefaultServiceName); // as DirectRabbitListenerContainerFactory;
+
                 var container = defFactory.CreateListenerContainer() as DirectMessageListenerContainer;
                 container.ServiceName = "factoryCreatedContainerNoListener";
                 container.SetQueueNames("test.no.listener.yet");
@@ -774,7 +867,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             // Add default container factory
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
                 f.RetryTemplate = new PollyRetryTemplate(3, 1, 1, 1);
@@ -785,7 +878,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             // Add named container factory txListenerContainerFactory
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 f.ServiceName = "txListenerContainerFactory";
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
@@ -797,7 +890,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             // Add named container factory directListenerContainerFactory
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 f.ServiceName = "directListenerContainerFactory";
                 f.ConsumersPerQueue = 2;
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
@@ -807,7 +900,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             // Add named container factory jsonListenerContainerFactory
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 f.ServiceName = "jsonListenerContainerFactory";
                 f.ErrorHandler = context.GetService<IErrorHandler>("errorHandler");
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
@@ -820,7 +913,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             // Add named container factory consumerBatchContainerFactory
             services.AddRabbitListenerContainerFactory((p, f) =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 f.ServiceName = "consumerBatchContainerFactory";
                 f.ConsumerTagStrategy = context.GetService<IConsumerTagStrategy>("consumerTagStrategy");
                 f.BatchListener = true;
@@ -864,22 +957,36 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitQueue(new Queue("sendTo.replies", false, false, false));
             services.AddRabbitQueue(new Queue("sendTo.replies.spel", false, false, false));
 
-            services.AddRabbitQueues(
-                new Queue("auto.headers1", true, false, true, new Dictionary<string, object> { { "x-message-ttl", 10000 } }),
-                new Queue("auto.headers2", true, false, true, new Dictionary<string, object> { { "x-message-ttl", 10000 } }));
-            services.AddRabbitExchange(new HeadersExchange("auto.headers", true, true));
-            services.AddRabbitBindings(
-                new QueueBinding("auto.headers1.binding", "auto.headers1", "auto.headers", string.Empty, new Dictionary<string, object> { { "x-match", "all" }, { "foo", "bar" }, { "baz", null } }),
-                new QueueBinding("auto.headers2.binding", "auto.headers2", "auto.headers", string.Empty, new Dictionary<string, object> { { "x-match", "any" }, { "foo", "bax" }, { "baz", "fiz" } }));
+            services.AddRabbitQueues(new Queue("auto.headers1", true, false, true, new Dictionary<string, object>
+            {
+                { "x-message-ttl", 10000 }
+            }), new Queue("auto.headers2", true, false, true, new Dictionary<string, object>
+            {
+                { "x-message-ttl", 10000 }
+            }));
 
-            services.AddRabbitQueues(
-                new Queue("amqp656", true, false, true, new Dictionary<string, object>
-                {
-                    { "x-dead-letter-exchange", string.Empty },
-                    { "x-dead-letter-routing-key", "amqp656dlq" },
-                    { "test-empty", string.Empty },
-                    { "test-null", string.Empty }
-                }));
+            services.AddRabbitExchange(new HeadersExchange("auto.headers", true, true));
+
+            services.AddRabbitBindings(new QueueBinding("auto.headers1.binding", "auto.headers1", "auto.headers", string.Empty, new Dictionary<string, object>
+            {
+                { "x-match", "all" },
+                { "foo", "bar" },
+                { "baz", null }
+            }), new QueueBinding("auto.headers2.binding", "auto.headers2", "auto.headers", string.Empty, new Dictionary<string, object>
+            {
+                { "x-match", "any" },
+                { "foo", "bax" },
+                { "baz", "fiz" }
+            }));
+
+            services.AddRabbitQueues(new Queue("amqp656", true, false, true, new Dictionary<string, object>
+            {
+                { "x-dead-letter-exchange", string.Empty },
+                { "x-dead-letter-routing-key", "amqp656dlq" },
+                { "test-empty", string.Empty },
+                { "test-null", string.Empty }
+            }));
+
             services.AddRabbitExchange(new TopicExchange("amqp656.topic", true, true));
             services.AddRabbitBindings(new QueueBinding("amqp656.binding", "amqp656", "amqp656.topic", "foo", null));
 
@@ -889,6 +996,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 {
                     ServiceName = "errorHandler"
                 };
+
                 return result;
             });
 
@@ -898,6 +1006,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
                 {
                     ServiceName = "consumerTagStrategy"
                 };
+
                 return result;
             });
 
@@ -906,61 +1015,47 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerErrorHandler("throwANewException", _ => new ThrowANewExceptionErrorHandler(ErrorHandlerChannel));
             return services;
         }
-
-        public static string[] Queues =
-        {
-            "test.manual.container", "test.no.listener.yet",
-            "test.simple", "test.header", "test.message", "test.reply", "test.sendTo", "test.sendTo.reply",
-            "test.sendTo.spel", "test.sendTo.reply.spel", "test.sendTo.runtimespel", "test.sendTo.reply.runtimespel",
-            "test.sendTo.runtimespelsource", "test.sendTo.runtimespelsource.reply",
-            "test.intercepted", "test.intercepted.withReply",
-            "test.invalidPojo", "differentTypes", "differentTypes2", "differentTypes3",
-            "test.inheritance", "test.inheritance.class",
-            "test.comma.1", "test.comma.2", "test.comma.3", "test.comma.4", "test,with,commas",
-            "test.converted", "test.converted.list", "test.converted.array", "test.converted.args1",
-            "test.converted.args2", "test.converted.message", "test.notconverted.message",
-            "test.notconverted.channel", "test.notconverted.messagechannel", "test.notconverted.messagingmessage",
-            "test.converted.foomessage", "test.notconverted.messagingmessagenotgeneric", "test.simple.direct",
-            "test.simple.direct2", "test.generic.list", "test.generic.map",
-            "amqp656dlq", "test.simple.declare", "test.return.exceptions", "test.pojo.errors", "test.pojo.errors2",
-            "test.messaging.message", "test.amqp.message", "test.bytes.to.string", "test.projection",
-            "manual.acks.1", "manual.acks.2", "erit.batch.1", "erit.batch.2", "erit.batch.3"
-        };
     }
 
     [DeclareExchange(Name = "test.metaFanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
     public class FanOutListener
     {
-        public CountdownEvent Latch { get; } = new (2);
+        public CountdownEvent Latch { get; } = new(2);
 
         [DeclareAnonymousQueue("fanout1")]
         [DeclareQueueBinding(Name = "fanout1.binding", ExchangeName = "test.metaFanout", QueueName = "#{@fanout1}")]
         [RabbitListener(Binding = "fanout1.binding")]
-        public void Handle1(string foo) => Latch.Signal();
+        public void Handle1(string foo)
+        {
+            Latch.Signal();
+        }
 
         [DeclareAnonymousQueue("fanout2")]
         [DeclareQueueBinding(Name = "fanout2.binding", ExchangeName = "test.metaFanout", QueueName = "#{@fanout2}")]
         [RabbitListener(Binding = "fanout2.binding")]
-        public void Handle2(string foo) => Latch.Signal();
+        public void Handle2(string foo)
+        {
+            Latch.Signal();
+        }
     }
 
     public class MyService
     {
         private readonly IApplicationContext _context;
 
-        public MyService(IApplicationContext context) => _context = context;
+        private RabbitTemplate TxRabbitTemplate => _context.GetRabbitTemplate("txRabbitTemplate");
 
         public bool? ChannelBoundOk { get; set; }
 
-        public CountdownEvent Latch { get; set; } = new (1);
+        public CountdownEvent Latch { get; set; } = new(1);
 
-        public List<object> Foos { get; set; } = new ();
+        public List<object> Foos { get; set; } = new();
 
-        public CountdownEvent Batch1Latch { get; set; } = new (1);
+        public CountdownEvent Batch1Latch { get; set; } = new(1);
 
-        public CountdownEvent Batch2Latch { get; set; } = new (1);
+        public CountdownEvent Batch2Latch { get; set; } = new(1);
 
-        public CountdownEvent Batch3Latch { get; set; } = new (1);
+        public CountdownEvent Batch3Latch { get; set; } = new(1);
 
         public List<IMessage<byte[]>> AmqpMessagesReceived { get; set; }
 
@@ -968,7 +1063,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public List<string> Batch3Strings { get; set; }
 
-        private RabbitTemplate TxRabbitTemplate => _context.GetRabbitTemplate("txRabbitTemplate");
+        public MyService(IApplicationContext context)
+        {
+            _context = context;
+        }
 
         [DeclareQueue(Name = "auto.declare", AutoDelete = "True", Admin = "rabbitAdmin")]
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
@@ -982,11 +1080,17 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         [DeclareQueue(Name = "${jjjj?test.simple.declare}", Durable = "True")]
         [RabbitListener("${jjjj?test.simple.declare}")]
-        public string HandleWithSimpleDeclare(string foo) => foo.ToUpper() + Thread.CurrentThread.Name;
+        public string HandleWithSimpleDeclare(string foo)
+        {
+            return foo.ToUpper() + Thread.CurrentThread.Name;
+        }
 
         [DeclareAnonymousQueue("myAnonymous")]
         [RabbitListener(Queue = "#{@myAnonymous}", Id = "anonymousQueue575")]
-        public string HandleWithAnonymousQueueToDeclare(string data) => $"viaAnonymous:{data}";
+        public string HandleWithAnonymousQueueToDeclare(string data)
+        {
+            return $"viaAnonymous:{data}";
+        }
 
         [DeclareAnonymousQueue("anon1", AutoDelete = "True", Exclusive = "True", Durable = "True")]
         [DeclareExchange(Name = "auto.start", AutoDelete = "True", Delayed = "${no:prop?false}")]
@@ -1000,46 +1104,77 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [DeclareExchange(Name = "auto.exch.fanout", AutoDelete = "True", Type = ExchangeType.FanOut)]
         [DeclareQueueBinding(Name = "auto.fanout.binding", QueueName = "auto.declare.fanout", ExchangeName = "auto.exch.fanout")]
         [RabbitListener(Binding = "auto.fanout.binding")]
-        public string HandleWithFanOut(string foo) => foo.ToUpper() + foo.ToUpper();
+        public string HandleWithFanOut(string foo)
+        {
+            return foo.ToUpper() + foo.ToUpper();
+        }
 
         [DeclareAnonymousQueue("anon2")]
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
         [DeclareQueueBinding(Name = "auto.exch.anon.rk", QueueName = "#{@anon2}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.rk")]
         [RabbitListener(Binding = "auto.exch.anon.rk")]
-        public string HandleWithDeclareAnon(string foo) => foo.ToUpper();
+        public string HandleWithDeclareAnon(string foo)
+        {
+            return foo.ToUpper();
+        }
 
         [DeclareAnonymousQueue("anon3", AutoDelete = "True", Exclusive = "True", Durable = "True")]
         [DeclareExchange(Name = "auto.exch", AutoDelete = "True")]
         [DeclareQueueBinding(Name = "auto.exch.anon.atts.rk", QueueName = "#{@anon3}", ExchangeName = "auto.exch", RoutingKey = "auto.anon.atts.rk")]
         [RabbitListener(Binding = "auto.exch.anon.atts.rk")]
-        public string HandleWithDeclareAnonQueueWithAttributes(string foo, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue) =>
-            $"{foo}:{queue}";
+        public string HandleWithDeclareAnonQueueWithAttributes(string foo, [Header(RabbitMessageHeaders.ConsumerQueue)] string queue)
+        {
+            return $"{foo}:{queue}";
+        }
 
         [RabbitListener("test.simple", Group = "testGroup")]
-        public string Capitalize(string foo) => foo.ToUpper();
+        public string Capitalize(string foo)
+        {
+            return foo.ToUpper();
+        }
 
         [RabbitListener("test.header", Group = "testGroup")]
-        public string CapitalizeWithHeader([Payload] string content, [Header] string prefix) => prefix + content.ToUpper();
+        public string CapitalizeWithHeader([Payload] string content, [Header] string prefix)
+        {
+            return prefix + content.ToUpper();
+        }
 
         [RabbitListener("test.simple.direct", Id = "direct", AutoStartup = "${no:property:here?False}", ContainerFactory = "directListenerContainerFactory")]
-        public string CapitalizeDirect1(string foo) => foo.ToUpper() + foo + Thread.CurrentThread.Name;
+        public string CapitalizeDirect1(string foo)
+        {
+            return foo.ToUpper() + foo + Thread.CurrentThread.Name;
+        }
 
         [RabbitListener("test.simple.direct2", Id = "directWithConcurrency", Concurrency = "${ffffx?3}", ContainerFactory = "directListenerContainerFactory")]
-        public string CapitalizeDirect2(string foo) => foo.ToUpper() + foo + Thread.CurrentThread.Name;
+        public string CapitalizeDirect2(string foo)
+        {
+            return foo.ToUpper() + foo + Thread.CurrentThread.Name;
+        }
 
         [RabbitListener("test.comma.1", "test.comma.2", "test,with,commas", "test.comma.3", "test.comma.4", Group = "commas")]
-        public string MultiQueuesConfig(string foo) => foo.ToUpper() + foo;
+        public string MultiQueuesConfig(string foo)
+        {
+            return foo.ToUpper() + foo;
+        }
 
         [RabbitListener("test.message")]
-        public string CapitalizeWithMessage(IMessage<string> message) => message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
+        public string CapitalizeWithMessage(IMessage<string> message)
+        {
+            return message.Headers.Get<string>("prefix") + message.Payload.ToUpper();
+        }
 
         [RabbitListener("test.reply")]
         public IMessage Reply(string payload, [Header] string foo, [Header(RabbitMessageHeaders.ConsumerTag)] string tag)
-            => RabbitMessageBuilder.WithPayload(payload).SetHeader("foo", foo).SetHeader("bar", tag).Build();
+        {
+            return RabbitMessageBuilder.WithPayload(payload).SetHeader("foo", foo).SetHeader("bar", tag).Build();
+        }
 
         [RabbitListener("test.sendTo")]
         [SendTo("${foo:bar?test.sendTo.reply}")]
-        public string CapitalizeAndSendTo(string foo) => foo.ToUpper();
+        public string CapitalizeAndSendTo(string foo)
+        {
+            return foo.ToUpper();
+        }
 
         [RabbitListener("test.sendTo.spel")]
         [SendTo("test.sendTo.reply.spel")]
@@ -1085,28 +1220,57 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             Latch.Signal();
         }
 
-        [RabbitListener(Bindings = new[] { "auto.headers1.binding", "auto.headers2.binding" })]
-        public string HandleWithHeadersExchange(string foo) => foo.ToUpper();
+        [RabbitListener(Bindings = new[]
+        {
+            "auto.headers1.binding",
+            "auto.headers2.binding"
+        })]
+        public string HandleWithHeadersExchange(string foo)
+        {
+            return foo.ToUpper();
+        }
 
         [RabbitListener(Id = "defaultDLX", Binding = "amqp656.binding")]
-        public string HandleWithDeadLetterDefaultExchange(string foo) => throw new RabbitRejectAndDoNotRequeueException("dlq");
+        public string HandleWithDeadLetterDefaultExchange(string foo)
+        {
+            throw new RabbitRejectAndDoNotRequeueException("dlq");
+        }
 
         [RabbitListener("test.return.exceptions", ReturnExceptions = "${some:prop?True}")]
-        public string AlwaysFails(string data) => throw new InvalidOperationException("return this");
+        public string AlwaysFails(string data)
+        {
+            throw new InvalidOperationException("return this");
+        }
 
         [RabbitListener("test.pojo.errors", ErrorHandler = "#{@alwaysBARHandler}")]
-        public string AlwaysFailsWithErrorHandler(string data) => throw new Exception("return this");
+        public string AlwaysFailsWithErrorHandler(string data)
+        {
+            throw new Exception("return this");
+        }
 
         [RabbitListener("test.pojo.errors2", ErrorHandler = "#{throwANewException}", ReturnExceptions = "True")]
-        public string AlwaysFailsWithErrorHandlerThrowAnother(string data) => throw new Exception("return this");
+        public string AlwaysFailsWithErrorHandlerThrowAnother(string data)
+        {
+            throw new Exception("return this");
+        }
 
         [RabbitListener("test.generic.list", ContainerFactory = "jsonListenerContainerFactory")]
         public List<JsonObject> GenericList(JsonObject input)
-            => new () { input };
+        {
+            return new()
+            {
+                input
+            };
+        }
 
         [RabbitListener("test.generic.map", ContainerFactory = "jsonListenerContainerFactory")]
         public Dictionary<string, JsonObject> GenericMap(JsonObject input)
-            => new () { { "key", input } };
+        {
+            return new()
+            {
+                { "key", input }
+            };
+        }
 
         [RabbitListener("test.messaging.message", ContainerFactory = "jsonListenerContainerFactory")]
         public IMessage<Bar> MessagingMessage(string input)
@@ -1115,16 +1279,27 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             {
                 Field = input.ToUpper()
             };
-            var headers = new MessageHeaders(new Dictionary<string, object> { { "foo", "bar" } });
+
+            var headers = new MessageHeaders(new Dictionary<string, object>
+            {
+                { "foo", "bar" }
+            });
+
             return Message.Create(bar, headers);
         }
 
         [RabbitListener("test.amqp.message")]
         public IMessage<byte[]> AmqpMessage(string input)
-            => (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.ContentType, "text/plain").SetHeader("foo", "bar").Build();
+        {
+            return (IMessage<byte[]>)MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(input.ToUpper())).SetHeader(MessageHeaders.ContentType, "text/plain")
+                .SetHeader("foo", "bar").Build();
+        }
 
         [RabbitListener("test.bytes.to.string")]
-        public string BytesToString(string input) => input.ToUpper();
+        public string BytesToString(string input)
+        {
+            return input.ToUpper();
+        }
 
         [RabbitListener("manual.acks.1", Id = "manual.acks.1", AckMode = "Manual")]
         public string Manual1(string input, RC.IModel channel, [Header(RabbitMessageHeaders.DeliveryTag)] ulong tag)
@@ -1148,6 +1323,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public void ConsumerBatch1(List<IMessage<byte[]>> amqpMessages)
         {
             AmqpMessagesReceived = amqpMessages;
+
             if (!Batch1Latch.IsSet)
             {
                 Batch1Latch.Signal();
@@ -1158,6 +1334,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public void ConsumerBatch2(List<IMessage> messages)
         {
             MessagingMessagesReceived = messages;
+
             if (!Batch2Latch.IsSet)
             {
                 Batch2Latch.Signal();
@@ -1168,6 +1345,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public void ConsumerBatch3(List<string> strings)
         {
             Batch3Strings = strings;
+
             if (!Batch3Latch.IsSet)
             {
                 Batch3Latch.Signal();
@@ -1183,7 +1361,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public class MyServiceInterfaceImpl : IMyServiceInterface
     {
-        public string TestAnnotationInheritance(string foo) => foo.ToUpper();
+        public string TestAnnotationInheritance(string foo)
+        {
+            return foo.ToUpper();
+        }
     }
 
     [DeclareAnonymousQueue("TxClassLevel")]
@@ -1203,9 +1384,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public class TxClassLevel : ITxClassLevel
     {
-        public string Foo(Bar bar) => $"BAR: {bar.Field}{bar.Field}";
+        public string Foo(Bar bar)
+        {
+            return $"BAR: {bar.Field}{bar.Field}";
+        }
 
-        public string Baz(Baz baz, string rk) => $"BAZ: {baz.Field}{baz.Field}: {rk}";
+        public string Baz(Baz baz, string rk)
+        {
+            return $"BAZ: {baz.Field}{baz.Field}: {rk}";
+        }
     }
 
     public class JsonObject
@@ -1216,9 +1403,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         {
         }
 
-        public JsonObject(string bar) => Bar = bar;
+        public JsonObject(string bar)
+        {
+            Bar = bar;
+        }
 
-        public override string ToString() => $"JsonObject [bar={Bar}]";
+        public override string ToString()
+        {
+            return $"JsonObject [bar={Bar}]";
+        }
     }
 
     public class Foo
@@ -1247,7 +1440,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public string Bar { get; set; }
 
-        public override string ToString() => $"bar={Bar}";
+        public override string ToString()
+        {
+            return $"bar={Bar}";
+        }
     }
 
     [DeclareAnonymousQueue("multiListenerAnon")]
@@ -1282,12 +1478,15 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         [RabbitHandler]
         public string Qux([Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk, [Payload] Qux qux)
-            => $"QUX: {qux.Field}: {rk}";
+        {
+            return $"QUX: {qux.Field}: {rk}";
+        }
 
         [RabbitHandler(true)]
-        public string DefaultHandler([Payload] object payload) => payload is Foo foo
-            ? $"FOO: {foo.Field} handled by default handler"
-            : $"{payload} handled by default handler";
+        public string DefaultHandler([Payload] object payload)
+        {
+            return payload is Foo foo ? $"FOO: {foo.Field} handled by default handler" : $"{payload} handled by default handler";
+        }
     }
 
     [RabbitListener("test.inheritance.class")]
@@ -1299,44 +1498,59 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public class MyServiceInterfaceImpl2 : IMyServiceInterface2
     {
-        public string TestAnnotationInheritance(string foo) => $"{foo.ToUpper()}BAR";
+        public string TestAnnotationInheritance(string foo)
+        {
+            return $"{foo.ToUpper()}BAR";
+        }
     }
 
     [DeclareAnonymousQueue("multiListenerJson")]
     [DeclareExchange(Name = "multi.json.exch", AutoDelete = "True")]
-    [DeclareQueueBinding(Name = "multi.exch.multi.json.listener", ExchangeName = "multi.json.exch", QueueName = "#{@multiListenerJson}", RoutingKey = "multi.json.rk")]
-    [RabbitListener(Id = "multi", Binding = "multi.exch.multi.json.listener", ErrorHandler = "alwaysBARHandler", ContainerFactory = "jsonListenerContainerFactory", ReturnExceptions = "True")]
+    [DeclareQueueBinding(Name = "multi.exch.multi.json.listener", ExchangeName = "multi.json.exch", QueueName = "#{@multiListenerJson}",
+        RoutingKey = "multi.json.rk")]
+    [RabbitListener(Id = "multi", Binding = "multi.exch.multi.json.listener", ErrorHandler = "alwaysBARHandler",
+        ContainerFactory = "jsonListenerContainerFactory", ReturnExceptions = "True")]
     public class MultiListenerJsonService
     {
         [RabbitHandler]
         [SendTo("sendTo.replies.spel")]
-        public string Bar(Bar bar, IMessage message) =>
-            $"BAR: {bar.Field}{message.Headers.Target().GetType().Name}";
+        public string Bar(Bar bar, IMessage message)
+        {
+            return $"BAR: {bar.Field}{message.Headers.Target().GetType().Name}";
+        }
 
         [RabbitHandler]
-        public string Baz(Baz baz) => $"BAZ: {baz.Field}";
+        public string Baz(Baz baz)
+        {
+            return $"BAZ: {baz.Field}";
+        }
 
         [RabbitHandler]
-        public string Qux([Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk, [Payload] Qux qux) =>
-            $"QUX: {qux.Field}: {rk}";
+        public string Qux([Header(RabbitMessageHeaders.ReceivedRoutingKey)] string rk, [Payload] Qux qux)
+        {
+            return $"QUX: {qux.Field}: {rk}";
+        }
     }
 
     public class DefaultReplyRecoveryCallback : IRecoveryCallback
     {
-        public object Recover(IRetryContext context) => null;
+        public object Recover(IRetryContext context)
+        {
+            return null;
+        }
     }
 
     public class ConditionalRejectingErrorHandler1 : ConditionalRejectingErrorHandler
     {
+        public CountdownEvent ErrorHandlerLatch { get; }
+
+        public AtomicReference<Exception> ErrorHandlerError { get; }
+
         public ConditionalRejectingErrorHandler1(CountdownEvent errorHandlerLatch, AtomicReference<Exception> errorHandlerError)
         {
             ErrorHandlerLatch = errorHandlerLatch;
             ErrorHandlerError = errorHandlerError;
         }
-
-        public CountdownEvent ErrorHandlerLatch { get; }
-
-        public AtomicReference<Exception> ErrorHandlerError { get; }
 
         public override bool HandleError(Exception exception)
         {
@@ -1347,6 +1561,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             catch (Exception e)
             {
                 ErrorHandlerError.Value = e;
+
                 if (!ErrorHandlerLatch.IsSet)
                 {
                     ErrorHandlerLatch.Signal();
@@ -1361,7 +1576,10 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public string ServiceName { get; set; } = nameof(AlwaysBarListenerErrorHandler);
 
-        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception) => "BAR";
+        public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
+        {
+            return "BAR";
+        }
     }
 
     public class UpperCaseAndRepeatListenerErrorHandler : IRabbitListenerErrorHandler
@@ -1371,18 +1589,21 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
             var barPayload = message.Payload as Bar;
-            var upperPayload = barPayload.Field.ToUpper();
+            string upperPayload = barPayload.Field.ToUpper();
             return $"{upperPayload}{upperPayload} {exception.InnerException.Message}";
         }
     }
 
     public class ThrowANewExceptionErrorHandler : IRabbitListenerErrorHandler
     {
-        public ThrowANewExceptionErrorHandler(AtomicReference<RC.IModel> errorHandlerChannel) => ErrorHandlerChannel = errorHandlerChannel;
-
         public string ServiceName { get; set; } = "throwANewException";
 
         public AtomicReference<RC.IModel> ErrorHandlerChannel { get; }
+
+        public ThrowANewExceptionErrorHandler(AtomicReference<RC.IModel> errorHandlerChannel)
+        {
+            ErrorHandlerChannel = errorHandlerChannel;
+        }
 
         public object HandleError(IMessage originalMessage, IMessage message, ListenerExecutionFailedException exception)
         {
@@ -1393,20 +1614,25 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
     public class ConsumerTagStrategy : IConsumerTagStrategy
     {
-        public string TagPrefix { get; } = Guid.NewGuid().ToString();
-
         private int _increment;
+        public string TagPrefix { get; } = Guid.NewGuid().ToString();
 
         public string ServiceName { get; set; }
 
-        public string CreateConsumerTag(string queue) => TagPrefix + Interlocked.Increment(ref _increment);
+        public string CreateConsumerTag(string queue)
+        {
+            return TagPrefix + Interlocked.Increment(ref _increment);
+        }
     }
 
     public class MultiListenerMessagePostProcessor : IMessagePostProcessor
     {
-        public MultiListenerMessagePostProcessor(List<string> serviceMethodHeaders) => ServiceMethodHeaders = serviceMethodHeaders;
-
         public List<string> ServiceMethodHeaders { get; }
+
+        public MultiListenerMessagePostProcessor(List<string> serviceMethodHeaders)
+        {
+            ServiceMethodHeaders = serviceMethodHeaders;
+        }
 
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
@@ -1427,7 +1653,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
     {
         public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("replyMPPApplied", true);
             accessor.SetHeader("bean", accessor.Target.GetType().Name);
             accessor.SetHeader("method", accessor.TargetMethod.Name);
@@ -1436,7 +1662,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.SetHeader("replyMPPApplied", true);
             accessor.SetHeader("bean", accessor.Target.GetType().Name);
             accessor.SetHeader("method", accessor.TargetMethod.Name);
@@ -1450,13 +1676,13 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
 
         public AtomicReference<IMessage> Message { get; set; }
 
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
         public TestManualContainerListener(CountdownEvent latch, AtomicReference<IMessage> message)
         {
             ManualContainerLatch = latch;
             Message = message;
         }
-
-        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message)
         {

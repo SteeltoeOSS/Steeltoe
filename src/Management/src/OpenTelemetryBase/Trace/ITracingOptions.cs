@@ -14,13 +14,17 @@ public interface ITracingOptions
     /// <summary>
     /// Gets a regex pattern for requests coming into this application that should not be traced.
     /// </summary>
-    /// <remarks>Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif".</remarks>
+    /// <remarks>
+    /// Default value: "/actuator/.*|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif".
+    /// </remarks>
     string IngressIgnorePattern { get; }
 
     /// <summary>
     /// Gets a regex pattern for requests leaving this application that should not be traced.
     /// </summary>
-    /// <remarks>Default value: "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*".</remarks>
+    /// <remarks>
+    /// Default value: "/api/v2/spans|/v2/apps/.*/permissions|/eureka/*".
+    /// </remarks>
     string EgressIgnorePattern { get; }
 
     /// <summary>
@@ -41,19 +45,25 @@ public interface ITracingOptions
     /// <summary>
     /// Gets a value indicating whether trace ids should be truncated from 16 to 8 bytes in logs.
     /// </summary>
-    /// <remarks>This setting will NOT affect exported traces.</remarks>
+    /// <remarks>
+    /// This setting will NOT affect exported traces.
+    /// </remarks>
     bool UseShortTraceIds { get; }
 
     /// <summary>
     /// Gets a value indicating the propagation format that should be used.
     /// </summary>
-    /// <remarks>Default value is currently B3. W3C trace context is also supported.</remarks>
+    /// <remarks>
+    /// Default value is currently B3. W3C trace context is also supported.
+    /// </remarks>
     string PropagationType { get; }
 
     /// <summary>
     /// Gets a value indicating whether one or multiple B3 headers should be used.
     /// </summary>
-    /// <remarks>No effect on other propagation types.</remarks>
+    /// <remarks>
+    /// No effect on other propagation types.
+    /// </remarks>
     bool SingleB3Header { get; }
 
     /// <summary>

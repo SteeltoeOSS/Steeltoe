@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Steeltoe.Common.Net;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
 using Xunit;
 
 namespace Steeltoe.Discovery.Consul.Discovery.Test;
@@ -40,6 +40,7 @@ public class ConsulDiscoveryOptionsTest
         Assert.Equal("http", opts.Scheme);
         Assert.Null(opts.ServiceName);
         Assert.Null(opts.Tags);
+
         if (!RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
         {
             // TODO: this is null on MacOS
@@ -51,9 +52,20 @@ public class ConsulDiscoveryOptionsTest
     public void Options_DoNotUseInetUtilsByDefault()
     {
         var mockNetUtils = new Mock<InetUtils>(null, null);
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
-        var config = new ConfigurationBuilder().Build();
-        var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
+
+        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
+        {
+            Hostname = "FromMock",
+            IpAddress = "254.254.254.254"
+        }).Verifiable();
+
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
+        var opts = new ConsulDiscoveryOptions
+        {
+            NetUtils = mockNetUtils.Object
+        };
+
         config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
@@ -65,10 +77,25 @@ public class ConsulDiscoveryOptionsTest
     public void Options_CanUseInetUtils()
     {
         var mockNetUtils = new Mock<InetUtils>(null, null);
-        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo { Hostname = "FromMock", IpAddress = "254.254.254.254" }).Verifiable();
-        var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var opts = new ConsulDiscoveryOptions { NetUtils = mockNetUtils.Object };
+
+        mockNetUtils.Setup(n => n.FindFirstNonLoopbackHostInfo()).Returns(new HostInfo
+        {
+            Hostname = "FromMock",
+            IpAddress = "254.254.254.254"
+        }).Verifiable();
+
+        var appSettings = new Dictionary<string, string>
+        {
+            { "consul:discovery:UseNetUtils", "true" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var opts = new ConsulDiscoveryOptions
+        {
+            NetUtils = mockNetUtils.Object
+        };
+
         config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         opts.ApplyNetUtils();
@@ -82,9 +109,19 @@ public class ConsulDiscoveryOptionsTest
     [Trait("Category", "SkipOnMacOS")] // for some reason this takes 25-ish seconds on the MSFT-hosted MacOS agent
     public void Options_CanUseInetUtilsWithoutReverseDnsOnIP()
     {
-        var appSettings = new Dictionary<string, string> { { "consul:discovery:UseNetUtils", "true" }, { "spring:cloud:inet:SkipReverseDnsLookup", "true" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var opts = new ConsulDiscoveryOptions { NetUtils = new InetUtils(config.GetSection(InetOptions.Prefix).Get<InetOptions>()) };
+        var appSettings = new Dictionary<string, string>
+        {
+            { "consul:discovery:UseNetUtils", "true" },
+            { "spring:cloud:inet:SkipReverseDnsLookup", "true" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var opts = new ConsulDiscoveryOptions
+        {
+            NetUtils = new InetUtils(config.GetSection(InetOptions.Prefix).Get<InetOptions>())
+        };
+
         config.GetSection(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix).Bind(opts);
 
         var noSlowReverseDnsQuery = new Stopwatch();

@@ -11,6 +11,8 @@ public class TestSink : ILogEventSink
 {
     private static TestSink _currentSink;
 
+    private readonly List<string> _logs = new();
+
     public static TestSink GetCurrentSink(bool createNew = false)
     {
         if (createNew)
@@ -20,8 +22,6 @@ public class TestSink : ILogEventSink
 
         return _currentSink ??= new TestSink();
     }
-
-    private readonly List<string> _logs = new ();
 
     public void Emit(LogEvent logEvent)
     {

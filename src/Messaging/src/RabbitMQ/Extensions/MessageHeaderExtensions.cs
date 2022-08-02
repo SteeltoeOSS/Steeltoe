@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.RabbitMQ.Core;
 using System.Reflection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 
 namespace Steeltoe.Messaging.RabbitMQ.Extensions;
 
@@ -41,7 +41,8 @@ public static class MessageHeaderExtensions
 
     public static bool IsContentLengthSet(this IMessageHeaders headers)
     {
-        var len = ContentLength(headers);
+        long? len = ContentLength(headers);
+
         if (len.HasValue)
         {
             return true;
@@ -52,7 +53,7 @@ public static class MessageHeaderExtensions
 
     public static string ContentType(this IMessageHeaders headers)
     {
-        var contentType = headers.Get<object>(RabbitMessageHeaders.ContentType);
+        object contentType = headers.Get<object>(RabbitMessageHeaders.ContentType);
         return contentType?.ToString();
     }
 
@@ -78,7 +79,8 @@ public static class MessageHeaderExtensions
 
     public static bool IsDeliveryTagSet(this IMessageHeaders headers)
     {
-        var result = DeliveryTag(headers);
+        ulong? result = DeliveryTag(headers);
+
         if (result.HasValue)
         {
             return true;
@@ -154,7 +156,8 @@ public static class MessageHeaderExtensions
 
     public static Address ReplyToAddress(this IMessageHeaders headers)
     {
-        var results = headers.ReplyTo();
+        string results = headers.ReplyTo();
+
         if (results != null)
         {
             return new Address(results);
@@ -195,7 +198,8 @@ public static class MessageHeaderExtensions
 
     public static bool IsFinalRetryForMessageWithNoId(this IMessageHeaders headers)
     {
-        var result = FinalRetryForMessageWithNoId(headers);
+        bool? result = FinalRetryForMessageWithNoId(headers);
+
         if (result.HasValue)
         {
             return result.Value;

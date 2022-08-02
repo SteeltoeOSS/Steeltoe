@@ -19,9 +19,11 @@ public class LocalCertificateWriterTest
         certWriter.Write(orgId, spaceId);
         var rootCertificate = new X509Certificate2(certWriter.RootCaPfxPath);
         var intermediateCert = new X509Certificate2(certWriter.IntermediatePfxPath);
-        var clientCert =
+
+        X509Certificate2 clientCert =
             new X509Certificate2(File.ReadAllBytes(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceCert.pem")))
-                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", "SteeltoeInstanceKey.pem"))));
+                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath,
+                    "GeneratedCertificates", "SteeltoeInstanceKey.pem"))));
 
         Assert.NotNull(rootCertificate);
         Assert.NotNull(intermediateCert);

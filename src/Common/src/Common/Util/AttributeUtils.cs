@@ -15,7 +15,8 @@ public static class AttributeUtils
             return null;
         }
 
-        var property = attribute.GetType().GetProperty(propertyName);
+        PropertyInfo property = attribute.GetType().GetProperty(propertyName);
+
         if (property != null)
         {
             return property.GetValue(attribute);
@@ -27,11 +28,12 @@ public static class AttributeUtils
     public static List<MethodInfo> FindMethodsWithAttribute(Type targetClass, Type attribute, BindingFlags flags)
     {
         var results = new List<MethodInfo>();
-        var targetMethods = targetClass.GetMethods(flags);
+        MethodInfo[] targetMethods = targetClass.GetMethods(flags);
 
-        foreach (var method in targetMethods)
+        foreach (MethodInfo method in targetMethods)
         {
-            var attr = method.GetCustomAttribute(attribute);
+            Attribute attr = method.GetCustomAttribute(attribute);
+
             if (attr != null)
             {
                 results.Add(method);

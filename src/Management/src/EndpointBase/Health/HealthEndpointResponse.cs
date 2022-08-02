@@ -8,6 +8,11 @@ namespace Steeltoe.Management.Endpoint.Health;
 
 public class HealthEndpointResponse : HealthCheckResult
 {
+    /// <summary>
+    /// Gets or sets the list of available health groups.
+    /// </summary>
+    public IEnumerable<string> Groups { get; set; }
+
     public HealthEndpointResponse(HealthCheckResult result)
     {
         result ??= new HealthCheckResult();
@@ -15,9 +20,4 @@ public class HealthEndpointResponse : HealthCheckResult
         Details = result.Details;
         Status = result.Status;
     }
-
-    /// <summary>
-    /// Gets or sets the list of available health groups.
-    /// </summary>
-    public IEnumerable<string> Groups { get; set; }
 }

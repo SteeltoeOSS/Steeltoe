@@ -2,23 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Metrics;
+using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Collections.Concurrent;
-using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class EventSourceListener : EventListener
 {
+    private readonly ILogger<EventSourceListener> _logger;
     protected ConcurrentDictionary<string, Counter<long>> LongCounters { get; set; }
 
     protected ConcurrentDictionary<string, Counter<double>> DoubleCounters { get; set; }
-
-    private readonly ILogger<EventSourceListener> _logger;
 
     internal EventSourceListener(ILogger<EventSourceListener> logger = null)
     {
@@ -39,32 +39,24 @@ public class EventSourceListener : EventListener
         }
     }
 
-    protected virtual void ExtractAndRecordMetric(
-        string eventSourceName,
-        EventWrittenEventArgs eventData,
-        IDictionary<string, object> labels,
-        string[] ignorePayloadNames = null,
-        string[] counterNames = null)
+    protected virtual void ExtractAndRecordMetric(string eventSourceName, EventWrittenEventArgs eventData, IDictionary<string, object> labels,
+        string[] ignorePayloadNames = null, string[] counterNames = null)
     {
-        var payloadNames = eventData.PayloadNames;
-        var payload = eventData.Payload;
+        ReadOnlyCollection<string> payloadNames = eventData.PayloadNames;
+        ReadOnlyCollection<object> payload = eventData.Payload;
 
-        var names = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).ToList();
+        List<string> names = payloadNames.Where(name => ignorePayloadNames == null || !ignorePayloadNames.Contains(name)).ToList();
 
-        var currentLabels = GetLabels(payload, names, labels);
+        IDictionary<string, object> currentLabels = GetLabels(payload, names, labels);
 
-        using var payloadEnumerator = payload.GetEnumerator();
-        using var nameEnumerator = names.GetEnumerator();
+        using IEnumerator<object> payloadEnumerator = payload.GetEnumerator();
+        using List<string>.Enumerator nameEnumerator = names.GetEnumerator();
+
         while (nameEnumerator.MoveNext())
         {
             payloadEnumerator.MoveNext();
-            var metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
-            RecordMetricsWithLabels(
-                metricName,
-                nameEnumerator.Current,
-                payloadEnumerator.Current,
-                currentLabels,
-                counterNames);
+            string metricName = $"{eventSourceName}.{eventData.EventName}.{nameEnumerator.Current}";
+            RecordMetricsWithLabels(metricName, nameEnumerator.Current, payloadEnumerator.Current, currentLabels, counterNames);
         }
     }
 
@@ -80,13 +72,10 @@ public class EventSourceListener : EventListener
         }
     }
 
-    private IDictionary<string, object> GetLabels(
-        IEnumerable<object> payload,
-        IList<string> names,
-        IDictionary<string, object> labels)
+    private IDictionary<string, object> GetLabels(IEnumerable<object> payload, IList<string> names, IDictionary<string, object> labels)
     {
-        using var nameEnumerator = names.GetEnumerator();
-        using var payloadEnumerator = payload.GetEnumerator();
+        using IEnumerator<string> nameEnumerator = names.GetEnumerator();
+        using IEnumerator<object> payloadEnumerator = payload.GetEnumerator();
 
         while (nameEnumerator.MoveNext())
         {
@@ -107,12 +96,7 @@ public class EventSourceListener : EventListener
         return labels;
     }
 
-    private void RecordMetricsWithLabels(
-        string metricName,
-        string payLoadName,
-        object payloadValue,
-        IDictionary<string, object> labels,
-        string[] counterNames)
+    private void RecordMetricsWithLabels(string metricName, string payLoadName, object payloadValue, IDictionary<string, object> labels, string[] counterNames)
     {
         long? longValue = null;
         double? doubleValue = null;
@@ -149,12 +133,12 @@ public class EventSourceListener : EventListener
 
         if (longValue.HasValue)
         {
-            var currentMetric = LongCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
+            Counter<long> currentMetric = LongCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<long>(name));
             currentMetric.Add(longValue.Value, labels.AsReadonlySpan());
         }
         else if (doubleValue.HasValue)
         {
-            var currentMetric = DoubleCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
+            Counter<double> currentMetric = DoubleCounters.GetOrAddEx(metricName, name => OpenTelemetryMetrics.Meter.CreateCounter<double>(name));
             currentMetric.Add(doubleValue.Value, labels.AsReadonlySpan());
         }
     }

@@ -6,7 +6,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 
 public class HystrixMetricsPublisherCommandDefault : IHystrixMetricsPublisherCommand
 {
-    public HystrixMetricsPublisherCommandDefault(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    public HystrixMetricsPublisherCommandDefault(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics,
+        ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
     {
         // do nothing by default
     }

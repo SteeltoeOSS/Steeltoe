@@ -6,13 +6,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public abstract class AbstractDeclarable : IDeclarable
 {
-    protected List<object> declaringAdmins = new ();
-
-    protected AbstractDeclarable(Dictionary<string, object> arguments)
-    {
-        ShouldDeclare = true;
-        Arguments = arguments != null ? new Dictionary<string, object>(arguments) : new Dictionary<string, object>();
-    }
+    protected List<object> declaringAdmins = new();
 
     public bool ShouldDeclare { get; set; }
 
@@ -20,27 +14,28 @@ public abstract class AbstractDeclarable : IDeclarable
 
     public List<object> DeclaringAdmins
     {
-        get
-        {
-            return declaringAdmins;
-        }
+        get => declaringAdmins;
 
-        set
-        {
-            declaringAdmins = value;
-        }
+        set => declaringAdmins = value;
     }
 
     public bool IgnoreDeclarationExceptions { get; set; }
 
+    protected AbstractDeclarable(Dictionary<string, object> arguments)
+    {
+        ShouldDeclare = true;
+        Arguments = arguments != null ? new Dictionary<string, object>(arguments) : new Dictionary<string, object>();
+    }
+
     public virtual void SetAdminsThatShouldDeclare(params object[] adminArgs)
     {
         var admins = new List<object>();
+
         if (adminArgs != null)
         {
             if (adminArgs.Length > 1)
             {
-                foreach (var a in adminArgs)
+                foreach (object a in adminArgs)
                 {
                     if (a == null)
                     {
@@ -65,7 +60,7 @@ public abstract class AbstractDeclarable : IDeclarable
 
     public object RemoveArgument(string name)
     {
-        Arguments.Remove(name, out var result);
+        Arguments.Remove(name, out object result);
         return result;
     }
 }

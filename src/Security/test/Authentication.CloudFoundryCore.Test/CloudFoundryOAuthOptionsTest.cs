@@ -16,23 +16,6 @@ public class CloudFoundryOAuthOptionsTest
     private const string DefaultCheckTokenUrl = DefaultOauthUrl + CloudFoundryDefaults.CheckTokenUri;
     private const string DefaultUserInfoUrl = DefaultOauthUrl + CloudFoundryDefaults.UserInfoUri;
 
-    public static TheoryData<string, string, string, string, string> SetEndpointsData()
-    {
-        var data = new TheoryData<string, string, string, string, string>();
-        var newDomain = "http://not-the-original-domain";
-        var newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
-        var newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
-        var newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
-        var newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
-
-        data.Add(string.Empty, default, default, default, default);
-        data.Add("   ", default, default, default, default);
-        data.Add(default, default, default, default, default);
-        data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
-
-        return data;
-    }
-
     [Fact]
     public void DefaultConstructor_SetsUpDefaultOptions()
     {
@@ -54,12 +37,8 @@ public class CloudFoundryOAuthOptionsTest
 
     [Theory]
     [MemberData(nameof(SetEndpointsData))]
-    public void SetEndpoints_WithNewDomain_ReturnsExpected(
-        string newDomain,
-        string expectedAccessTokenUrl,
-        string expectedAuthorizationUrl,
-        string expectedCheckTokenUrl,
-        string expectedUserInfoUrl)
+    public void SetEndpoints_WithNewDomain_ReturnsExpected(string newDomain, string expectedAccessTokenUrl, string expectedAuthorizationUrl,
+        string expectedCheckTokenUrl, string expectedUserInfoUrl)
     {
         var options = new CloudFoundryOAuthOptions();
 
@@ -69,5 +48,22 @@ public class CloudFoundryOAuthOptionsTest
         Assert.Equal(expectedAuthorizationUrl ?? DefaultAuthorizationUrl, options.AuthorizationEndpoint);
         Assert.Equal(expectedCheckTokenUrl ?? DefaultCheckTokenUrl, options.TokenInfoUrl);
         Assert.Equal(expectedUserInfoUrl ?? DefaultUserInfoUrl, options.UserInformationEndpoint);
+    }
+
+    public static TheoryData<string, string, string, string, string> SetEndpointsData()
+    {
+        var data = new TheoryData<string, string, string, string, string>();
+        string newDomain = "http://not-the-original-domain";
+        string newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
+        string newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
+        string newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
+        string newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
+
+        data.Add(string.Empty, default, default, default, default);
+        data.Add("   ", default, default, default, default);
+        data.Add(default, default, default, default, default);
+        data.Add(newDomain, newAccessTokenUrl, newAuthorizationUrl, newCheckTokenUrl, newUserInfoUrl);
+
+        return data;
     }
 }

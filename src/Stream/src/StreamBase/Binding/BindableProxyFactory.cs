@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Steeltoe.Messaging;
 
 namespace Steeltoe.Stream.Binding;
 
 public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxyFactory
 {
-    private readonly ConcurrentDictionary<MethodInfo, object> _targetCache = new ();
+    private readonly ConcurrentDictionary<MethodInfo, object> _targetCache = new();
 
     public BindableProxyFactory(Type bindingType, IEnumerable<IBindingTargetFactory> bindingTargetFactories)
         : base(bindingType, bindingTargetFactories)
@@ -19,12 +19,12 @@ public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxy
 
     public virtual object Invoke(MethodInfo info)
     {
-        if (_targetCache.TryGetValue(info, out var boundTarget))
+        if (_targetCache.TryGetValue(info, out object boundTarget))
         {
             return boundTarget;
         }
 
-        var bindable = bindables.Values.SingleOrDefault(c => c.FactoryMethod == info);
+        Bindable bindable = bindables.Values.SingleOrDefault(c => c.FactoryMethod == info);
 
         // Doesn't exist, return null
         if (bindable.Name == null)
@@ -37,10 +37,8 @@ public class BindableProxyFactory : AbstractBindableProxyFactory, IBindableProxy
         {
             return _targetCache.GetOrAdd(info, boundInputTargets[bindable.Name].Value);
         }
-        else
-        {
-            return _targetCache.GetOrAdd(info, boundOutputTargets[bindable.Name].Value);
-        }
+
+        return _targetCache.GetOrAdd(info, boundOutputTargets[bindable.Name].Value);
     }
 
     public virtual void ReplaceInputChannel(string originalChannelName, string newChannelName, ISubscribableChannel messageChannel)

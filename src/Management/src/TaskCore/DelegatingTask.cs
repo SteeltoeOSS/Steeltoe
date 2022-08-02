@@ -10,13 +10,16 @@ public class DelegatingTask : IApplicationTask
 {
     private readonly Action _run;
 
+    public string Name { get; }
+
     public DelegatingTask(string name, Action run)
     {
         _run = run;
         Name = name;
     }
 
-    public string Name { get; }
-
-    public void Run() => _run();
+    public void Run()
+    {
+        _run();
+    }
 }

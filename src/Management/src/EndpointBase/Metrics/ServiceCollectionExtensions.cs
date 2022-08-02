@@ -21,9 +21,15 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Metrics actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configuration">Reference to the configuration system.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Reference to the configuration system.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddMetricsActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -46,9 +52,15 @@ public static partial class ServiceCollectionExtensions
         services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoeExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
-            var exporterOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+
+            var exporterOptions = new PullMetricsExporterOptions
+            {
+                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+            };
+
             return new SteeltoeExporter(exporterOptions);
         }));
+
         services.AddOpenTelemetryMetricsForSteeltoe();
 
         return services;
@@ -57,9 +69,15 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Adds the services used by the Prometheus actuator.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configuration">Reference to the configuration system.</param>
-    /// <returns>A reference to the service collection.</returns>
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Reference to the configuration system.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
     public static IServiceCollection AddPrometheusActuatorServices(this IServiceCollection services, IConfiguration configuration)
     {
         if (services == null)
@@ -76,10 +94,16 @@ public static partial class ServiceCollectionExtensions
         services.TryAddSingleton<IPrometheusEndpointOptions>(options);
         services.TryAddEnumerable(ServiceDescriptor.Singleton(typeof(IEndpointOptions), options));
         services.TryAddSingleton<PrometheusScraperEndpoint>();
+
         services.TryAddEnumerable(ServiceDescriptor.Singleton<MetricsExporter, SteeltoePrometheusExporter>(provider =>
         {
             var options = provider.GetService<IMetricsEndpointOptions>();
-            var exporterOptions = new PullMetricsExporterOptions { ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds };
+
+            var exporterOptions = new PullMetricsExporterOptions
+            {
+                ScrapeResponseCacheDurationMilliseconds = options.ScrapeResponseCacheDurationMilliseconds
+            };
+
             return new SteeltoePrometheusExporter(exporterOptions);
         }));
 
@@ -91,36 +115,63 @@ public static partial class ServiceCollectionExtensions
     /// <summary>
     /// Helper method to configure opentelemetry metrics. Do not use in conjunction with Extension methods provided by OpenTelemetry.
     /// </summary>
-    /// <param name="services">Reference to the service collection.</param>
-    /// <param name="configure">The Action to configure OpenTelemetry.</param>
-    /// <param name="name">Instrumentation Name. </param>
-    /// <param name="version">Instrumentation Version.</param>
-    /// <returns>A reference to the service collection. </returns>
-    public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
+    /// <param name="services">
+    /// Reference to the service collection.
+    /// </param>
+    /// <param name="configure">
+    /// The Action to configure OpenTelemetry.
+    /// </param>
+    /// <param name="name">
+    /// Instrumentation Name.
+    /// </param>
+    /// <param name="version">
+    /// Instrumentation Version.
+    /// </param>
+    /// <returns>
+    /// A reference to the service collection.
+    /// </returns>
+    public static IServiceCollection AddOpenTelemetryMetricsForSteeltoe(this IServiceCollection services,
+        Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         if (services.Any(sd => sd.ServiceType == typeof(MeterProvider)))
         {
             if (!services.Any(sd => sd.ImplementationInstance?.ToString() == "{ ConfiguredSteeltoeMetrics = True }"))
             {
-                Console.WriteLine("Warning!! Make sure one of the extension methods that calls ConfigureSteeltoeMetrics is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
+                Console.WriteLine(
+                    "Warning!! Make sure one of the extension methods that calls ConfigureSteeltoeMetrics is used to correctly configure metrics using OpenTelemetry for Steeltoe.");
             }
 
             return services; // Already Configured, get out of here
         }
 
-        services.AddSingleton(new { ConfiguredSteeltoeMetrics = true });
+        services.AddSingleton(new
+        {
+            ConfiguredSteeltoeMetrics = true
+        });
+
         return services.AddOpenTelemetryMetrics(builder => builder.ConfigureSteeltoeMetrics());
     }
 
     /// <summary>
     /// Configures the <see cref="MeterProviderBuilder"></see> as an underlying Metrics processor and exporter for Steeltoe in actuators and exporters. />.
     /// </summary>
-    /// <param name="builder">MeterProviderBuilder. </param>
-    /// <param name="configure"> Configuration callback.</param>
-    /// <param name="name">Instrumentation Name.</param>
-    /// <param name="version">Instrumentation Version.</param>
-    /// <returns>Configured MeterProviderBuilder.</returns>
-    public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder, Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
+    /// <param name="builder">
+    /// MeterProviderBuilder.
+    /// </param>
+    /// <param name="configure">
+    /// Configuration callback.
+    /// </param>
+    /// <param name="name">
+    /// Instrumentation Name.
+    /// </param>
+    /// <param name="version">
+    /// Instrumentation Version.
+    /// </param>
+    /// <returns>
+    /// Configured MeterProviderBuilder.
+    /// </returns>
+    public static MeterProviderBuilder ConfigureSteeltoeMetrics(this MeterProviderBuilder builder,
+        Action<IServiceProvider, MeterProviderBuilder> configure = null, string name = null, string version = null)
     {
         if (configure != null)
         {
@@ -130,12 +181,10 @@ public static partial class ServiceCollectionExtensions
         builder.Configure((provider, deferredBuilder) =>
         {
             var views = provider.GetService<IViewRegistry>();
-            var exporters = provider.GetServices(typeof(MetricsExporter)) as System.Collections.Generic.IEnumerable<MetricsExporter>;
+            var exporters = provider.GetServices(typeof(MetricsExporter)) as IEnumerable<MetricsExporter>;
 
-            deferredBuilder
-                .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
-                .AddRegisteredViews(views)
-                .AddExporters(exporters);
+            deferredBuilder.AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
+                .AddRegisteredViews(views).AddExporters(exporters);
 
             var wavefrontExporter = provider.GetService<WavefrontMetricsExporter>(); // Not an IMetricsExporter
 
@@ -144,6 +193,7 @@ public static partial class ServiceCollectionExtensions
                 deferredBuilder.AddWavefrontExporter(wavefrontExporter);
             }
         });
+
         return builder;
     }
 }

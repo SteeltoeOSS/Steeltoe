@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal;
 using System.Reflection;
+using Steeltoe.Common.Expression.Internal;
 
 namespace Steeltoe.Integration.Util;
 
@@ -26,7 +26,8 @@ public class AnnotatedMethodFilter : IMethodFilter
     {
         var annotatedCandidates = new List<MethodInfo>();
         var fallbackCandidates = new List<MethodInfo>();
-        foreach (var method in methods)
+
+        foreach (MethodInfo method in methods)
         {
             if (_requiresReply && (method.ReturnType == typeof(void) || method.ReturnType == typeof(Task)))
             {

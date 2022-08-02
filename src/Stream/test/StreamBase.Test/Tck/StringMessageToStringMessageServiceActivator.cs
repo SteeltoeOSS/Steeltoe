@@ -29,8 +29,6 @@ public class StringMessageToStringMessageServiceActivator
         var textReader = new StringReader(value.Payload);
         var person = (Person)serializer.Deserialize(textReader, typeof(Person));
 
-        return (IMessage<string>)MessageBuilder.WithPayload(person.ToString())
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
-            .Build();
+        return (IMessage<string>)MessageBuilder.WithPayload(person.ToString()).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
     }
 }

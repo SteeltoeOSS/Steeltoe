@@ -21,32 +21,20 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 {
     private static IApplicationContext _applicationContext;
     private readonly RabbitAdmin _rabbitAdmin;
-    private readonly HashSet<string> _prefixes = new ();
-
-    public RabbitBindingsOptions BindingsOptions { get; }
+    private readonly HashSet<string> _prefixes = new();
 
     private readonly ILogger _logger;
     private readonly ILoggerFactory _loggerFactory;
 
-    public static IApplicationContext GetApplicationContext()
-    {
-        if (_applicationContext == null)
-        {
-            var serviceProvider = new ServiceCollection().BuildServiceProvider();
-            _applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
-        }
+    public RabbitBindingsOptions BindingsOptions { get; }
 
-        return _applicationContext;
-    }
-
-    public void ResetApplicationContext()
-    {
-        _applicationContext = null;
-        GetApplicationContext();
-    }
-
-    public RabbitTestBinder(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions, IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, ILoggerFactory loggerFactory)
-        : this(connectionFactory, new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions, binderOptions, bindingsOptions, new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(), loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
+    public RabbitTestBinder(IConnectionFactory connectionFactory, IOptionsMonitor<RabbitOptions> rabbitOptions,
+        IOptionsMonitor<RabbitBinderOptions> binderOptions, IOptionsMonitor<RabbitBindingsOptions> bindingsOptions, ILoggerFactory loggerFactory)
+        : this(connectionFactory,
+            new RabbitMessageChannelBinder(GetApplicationContext(), loggerFactory.CreateLogger<RabbitMessageChannelBinder>(), connectionFactory, rabbitOptions,
+                binderOptions, bindingsOptions,
+                new RabbitExchangeQueueProvisioner(connectionFactory, bindingsOptions, GetApplicationContext(),
+                    loggerFactory.CreateLogger<RabbitExchangeQueueProvisioner>())), loggerFactory.CreateLogger<RabbitTestBinder>())
     {
         BindingsOptions = bindingsOptions.CurrentValue;
         _loggerFactory = loggerFactory;
@@ -58,6 +46,23 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
         PollableConsumerBinder = binder;
         _rabbitAdmin = new RabbitAdmin(GetApplicationContext(), connectionFactory, logger);
         BindingsOptions = binder.BindingsOptions;
+    }
+
+    public static IApplicationContext GetApplicationContext()
+    {
+        if (_applicationContext == null)
+        {
+            ServiceProvider serviceProvider = new ServiceCollection().BuildServiceProvider();
+            _applicationContext = new GenericApplicationContext(serviceProvider, new ConfigurationBuilder().Build());
+        }
+
+        return _applicationContext;
+    }
+
+    public void ResetApplicationContext()
+    {
+        _applicationContext = null;
+        GetApplicationContext();
     }
 
     public override IBinding BindConsumer(string name, string group, IMessageChannel inboundTarget, IConsumerOptions consumerOptions)
@@ -75,14 +80,14 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
     public override IBinding BindProducer(string name, IMessageChannel outboundTarget, IProducerOptions producerOptions)
     {
-        var properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
+        RabbitProducerOptions properties = BindingsOptions.GetRabbitProducerOptions(producerOptions.BindingName);
 
         queues.Add($"{properties.Prefix}{name}.default");
         exchanges.Add(properties.Prefix + name);
 
         if (producerOptions.RequiredGroups != null)
         {
-            foreach (var group in producerOptions.RequiredGroups)
+            foreach (string group in producerOptions.RequiredGroups)
             {
                 if (properties.QueueNameGroupOnly == true)
                 {
@@ -103,36 +108,35 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
     public void ResetConnectionFactoryTimeout()
     {
-        var host = _rabbitAdmin.ConnectionFactory.Host;
-        var port = _rabbitAdmin.ConnectionFactory.Port;
+        string host = _rabbitAdmin.ConnectionFactory.Host;
+        int port = _rabbitAdmin.ConnectionFactory.Port;
 
-        _rabbitAdmin.ConnectionFactory =
-            _rabbitAdmin.RabbitTemplate.ConnectionFactory = new CachingConnectionFactory(host, port, _loggerFactory);
+        _rabbitAdmin.ConnectionFactory = _rabbitAdmin.RabbitTemplate.ConnectionFactory = new CachingConnectionFactory(host, port, _loggerFactory);
     }
 
     public override void Cleanup()
     {
-        foreach (var q in queues)
+        foreach (string q in queues)
         {
             _logger.LogInformation("Deleting queue " + q);
             _rabbitAdmin.DeleteQueue(q);
             _rabbitAdmin.DeleteQueue($"{q}.dlq");
 
             // delete any partitioned queues
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 _rabbitAdmin.DeleteQueue($"{q}-{i}");
                 _rabbitAdmin.DeleteQueue($"{q}-{i}.dlq");
             }
         }
 
-        foreach (var exchange in exchanges)
+        foreach (string exchange in exchanges)
         {
             _logger.LogInformation("Deleting exch " + exchange);
             _rabbitAdmin.DeleteExchange(exchange);
         }
 
-        foreach (var prefix in _prefixes)
+        foreach (string prefix in _prefixes)
         {
             _rabbitAdmin.DeleteExchange($"{prefix}DLX");
         }
@@ -143,7 +147,8 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
     private void CaptureConsumerResources(string name, string group, IConsumerOptions options)
     {
         string[] names = null;
-        var consumerOptions = BindingsOptions.GetRabbitConsumerOptions(options.BindingName);
+        RabbitConsumerOptions consumerOptions = BindingsOptions.GetRabbitConsumerOptions(options.BindingName);
+
         if (group != null)
         {
             if (consumerOptions.QueueNameGroupOnly.GetValueOrDefault())
@@ -155,7 +160,8 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
                 if (options.Multiplex)
                 {
                     names = name.Split(',');
-                    foreach (var nextName in names)
+
+                    foreach (string nextName in names)
                     {
                         queues.Add($"{consumerOptions.Prefix}{nextName.Trim()}.{group}");
                     }
@@ -169,7 +175,7 @@ public class RabbitTestBinder : AbstractPollableConsumerTestBinder<RabbitMessage
 
         if (names != null)
         {
-            foreach (var nextName in names)
+            foreach (string nextName in names)
             {
                 exchanges.Add(consumerOptions.Prefix + nextName.Trim());
             }

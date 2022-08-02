@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class HyperMediaStartup
 {
+    public IConfiguration Configuration { get; set; }
+
     public HyperMediaStartup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -27,6 +27,7 @@ public class HyperMediaStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<ActuatorEndpoint>();

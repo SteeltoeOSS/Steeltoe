@@ -11,18 +11,27 @@ public class RabbitMQConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        RabbitMQServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>()
             : configuration.GetRequiredServiceInfo<RabbitMQServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((RabbitMQServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((RabbitMQServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) => serviceType.Equals("rabbitmq", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("rabbitmq", StringComparison.InvariantCultureIgnoreCase);
+    }
 
-    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is RabbitMQServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+    {
+        return serviceInfo is RabbitMQServiceInfo;
+    }
 
     private Connection GetConnection(RabbitMQServiceInfo info, IConfiguration configuration)
     {

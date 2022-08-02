@@ -10,16 +10,20 @@ namespace Steeltoe.Extensions.Configuration;
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// If an instance of <see cref="IServicesInfo"/> is found, it is returned.
-    /// Otherwise a default instance is added to the collection and then returned.
+    /// If an instance of <see cref="IServicesInfo" /> is found, it is returned. Otherwise a default instance is added to the collection and then returned.
     /// </summary>
-    /// <param name="serviceCollection">Collection of configured services.</param>
-    /// <returns>Relevant <see cref="IServicesInfo" />.</returns>
+    /// <param name="serviceCollection">
+    /// Collection of configured services.
+    /// </param>
+    /// <returns>
+    /// Relevant <see cref="IServicesInfo" />.
+    /// </returns>
     [Obsolete("This method builds a temporary service provider and should not be used")]
     public static IServicesInfo GetServicesInfo(this IServiceCollection serviceCollection)
     {
-        var sp = serviceCollection.BuildServiceProvider();
-        var servicesInfo = sp.GetServices<IServicesInfo>();
+        ServiceProvider sp = serviceCollection.BuildServiceProvider();
+        IEnumerable<IServicesInfo> servicesInfo = sp.GetServices<IServicesInfo>();
+
         if (!servicesInfo.Any())
         {
             var config = sp.GetRequiredService<IConfiguration>();

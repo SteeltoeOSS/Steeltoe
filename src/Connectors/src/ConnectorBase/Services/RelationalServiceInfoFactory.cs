@@ -20,16 +20,17 @@ public abstract class RelationalServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        var uri = GetUriFromCredentials(binding.Credentials);
+        string uri = GetUriFromCredentials(binding.Credentials);
+
         if (uri == null)
         {
-            var host = GetHostFromCredentials(binding.Credentials);
-            var port = GetPortFromCredentials(binding.Credentials);
+            string host = GetHostFromCredentials(binding.Credentials);
+            int port = GetPortFromCredentials(binding.Credentials);
 
-            var username = GetUsernameFromCredentials(binding.Credentials);
-            var password = GetPasswordFromCredentials(binding.Credentials);
+            string username = GetUsernameFromCredentials(binding.Credentials);
+            string password = GetPasswordFromCredentials(binding.Credentials);
 
-            var database = GetStringFromCredentials(binding.Credentials, "name");
+            string database = GetStringFromCredentials(binding.Credentials, "name");
 
             if (host != null)
             {

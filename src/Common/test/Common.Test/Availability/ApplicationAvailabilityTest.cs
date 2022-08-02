@@ -11,6 +11,12 @@ public class ApplicationAvailabilityTest
 {
     private readonly ILogger<ApplicationAvailability> _logger = TestHelpers.GetLoggerFactory().CreateLogger<ApplicationAvailability>();
 
+    private int _livenessChanges;
+    private LivenessState _lastLivenessState;
+
+    private int _readinessChanges;
+    private ReadinessState _lastReadinessState;
+
     [Fact]
     public void TracksAndReturnsState()
     {
@@ -30,8 +36,8 @@ public class ApplicationAvailabilityTest
     {
         var availability = new ApplicationAvailability(_logger);
 
-        var liveness = availability.GetLivenessState();
-        var readiness = availability.GetReadinessState();
+        IAvailabilityState liveness = availability.GetLivenessState();
+        IAvailabilityState readiness = availability.GetReadinessState();
 
         Assert.Null(liveness);
         Assert.Null(readiness);
@@ -65,12 +71,6 @@ public class ApplicationAvailabilityTest
         Assert.Equal(2, _readinessChanges);
         Assert.Equal(ReadinessState.AcceptingTraffic, _lastReadinessState);
     }
-
-    private int _livenessChanges;
-    private LivenessState _lastLivenessState;
-
-    private int _readinessChanges;
-    private ReadinessState _lastReadinessState;
 
     private void Availability_ReadinessChanged(object sender, EventArgs e)
     {

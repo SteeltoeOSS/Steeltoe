@@ -26,8 +26,7 @@ public class TestServerJwtStartup
     {
         services.AddOptions();
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddCloudFoundryJwtBearer(Configuration);
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddCloudFoundryJwtBearer(Configuration);
     }
 
     public void Configure(IApplicationBuilder app)

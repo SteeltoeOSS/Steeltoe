@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Test;
-using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test;
@@ -14,7 +14,7 @@ public class JsonInstanceInfoTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        var json = @"
+        string json = @"
 { 
     ""instanceId"":""localhost:foo"",
     ""hostName"":""localhost"",
@@ -46,24 +46,24 @@ public class JsonInstanceInfoTest : AbstractBaseTest
         Assert.Equal("192.168.56.1", result.IpAddress);
         Assert.Equal(InstanceStatus.Up, result.Status);
         Assert.Equal(InstanceStatus.Unknown, result.OverriddenStatus);
-        var port = result.Port;
+        JsonInstanceInfo.JsonPortWrapper port = result.Port;
         Assert.True(port.Enabled);
         Assert.Equal(8080, port.Port);
-        var securePort = result.SecurePort;
+        JsonInstanceInfo.JsonPortWrapper securePort = result.SecurePort;
         Assert.False(securePort.Enabled);
         Assert.Equal(443, securePort.Port);
         Assert.Equal(1, result.CountryId);
-        var dataCenterInfo = result.DataCenterInfo;
+        JsonInstanceInfo.JsonDataCenterInfo dataCenterInfo = result.DataCenterInfo;
         Assert.Equal("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", dataCenterInfo.ClassName);
         Assert.Equal("MyOwn", dataCenterInfo.Name);
-        var leaseInfo = result.LeaseInfo;
+        JsonLeaseInfo leaseInfo = result.LeaseInfo;
         Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);
         Assert.Equal(90, leaseInfo.DurationInSecs);
         Assert.Equal(1_457_714_988_223, leaseInfo.RegistrationTimestamp);
         Assert.Equal(1_457_716_158_319, leaseInfo.LastRenewalTimestamp);
         Assert.Equal(0, leaseInfo.EvictionTimestamp);
         Assert.Equal(1_457_714_988_223, leaseInfo.ServiceUpTimestamp);
-        var metadata = result.Metadata;
+        Dictionary<string, string> metadata = result.Metadata;
         Assert.NotNull(metadata);
         Assert.True(metadata.Count == 1);
         Assert.True(metadata.ContainsKey("@class"));

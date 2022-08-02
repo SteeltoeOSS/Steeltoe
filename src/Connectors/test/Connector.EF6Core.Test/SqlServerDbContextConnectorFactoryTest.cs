@@ -25,7 +25,7 @@ public class SqlServerDbContextConnectorFactoryTest
     {
         var config = new SqlServerProviderConnectorOptions();
         const SqlServerServiceInfo si = null;
-        var dbContextType = typeof(BadSqlServerDbContext);
+        Type dbContextType = typeof(BadSqlServerDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new SqlServerDbContextConnectorFactory(si, config, dbContextType).Create(null));
         Assert.Contains("BadSqlServerDbContext", ex.Message);
@@ -42,9 +42,12 @@ public class SqlServerDbContextConnectorFactoryTest
             Username = "username",
             Database = "database"
         };
-        var si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
+
+        var si = new SqlServerServiceInfo("MyId", "SqlServer://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", "Dd6O1BPXUHdrmzbP",
+            "7E1LxXnlH2hhlPVt");
+
         var factory = new SqlServerDbContextConnectorFactory(si, config, typeof(GoodSqlServerDbContext));
-        var context = factory.Create(null);
+        object context = factory.Create(null);
         Assert.NotNull(context);
         var goodSqlServerDbContext = context as GoodSqlServerDbContext;
         Assert.NotNull(goodSqlServerDbContext);

@@ -13,15 +13,26 @@ public static class CredHubServiceCollectionExtensions
     /// <summary>
     /// Make a CredHubClient available to DI.
     /// </summary>
-    /// <remarks>Uses UAA user/password authentication if configured, otherwise mTLS.</remarks>
-    /// <param name="services">Service collection.</param>
-    /// <param name="config">App configuration.</param>
-    /// <param name="loggerFactory">Logger factory.</param>
-    /// <returns>Service collection with CredHubClient added in.</returns>
+    /// <remarks>
+    /// Uses UAA user/password authentication if configured, otherwise mTLS.
+    /// </remarks>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="config">
+    /// App configuration.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Logger factory.
+    /// </param>
+    /// <returns>
+    /// Service collection with CredHubClient added in.
+    /// </returns>
     public static IServiceCollection AddCredHubClient(this IServiceCollection services, IConfiguration config, ILoggerFactory loggerFactory = null)
     {
         ILogger startupLogger = null;
         ILogger credHubLogger = null;
+
         if (loggerFactory != null)
         {
             startupLogger = loggerFactory.CreateLogger("Steeltoe.Security.DataProtection.CredHubCore");
@@ -32,6 +43,7 @@ public static class CredHubServiceCollectionExtensions
         credHubOptions.Validate();
 
         CredHubClient credHubClient;
+
         try
         {
             startupLogger?.LogTrace("Using UAA auth for CredHub client with client id {ClientId}", credHubOptions.ClientId);

@@ -17,10 +17,8 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
         {
             return ParseTemplate(expressionString, context);
         }
-        else
-        {
-            return DoParseExpression(expressionString, context);
-        }
+
+        return DoParseExpression(expressionString, context);
     }
 
     protected internal abstract IExpression DoParseExpression(string expressionString, IParserContext context);
@@ -32,27 +30,27 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
             return new LiteralExpression(string.Empty);
         }
 
-        var expressions = ParseExpressions(expressionString, context);
+        List<IExpression> expressions = ParseExpressions(expressionString, context);
+
         if (expressions.Count == 1)
         {
             return expressions[0];
         }
-        else
-        {
-            return new CompositeStringExpression(expressionString, expressions);
-        }
+
+        return new CompositeStringExpression(expressionString, expressions);
     }
 
     private List<IExpression> ParseExpressions(string expressionString, IParserContext context)
     {
         var expressions = new List<IExpression>();
-        var prefix = context.ExpressionPrefix;
-        var suffix = context.ExpressionSuffix;
-        var startIdx = 0;
+        string prefix = context.ExpressionPrefix;
+        string suffix = context.ExpressionSuffix;
+        int startIdx = 0;
 
         while (startIdx < expressionString.Length)
         {
-            var prefixIndex = expressionString.IndexOf(prefix, startIdx);
+            int prefixIndex = expressionString.IndexOf(prefix, startIdx);
+
             if (prefixIndex >= startIdx)
             {
                 // an inner expression was found - this is a composite
@@ -61,24 +59,29 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
                     expressions.Add(new LiteralExpression(expressionString.Substring(startIdx, prefixIndex - startIdx)));
                 }
 
-                var afterPrefixIndex = prefixIndex + prefix.Length;
-                var suffixIndex = SkipToCorrectEndSuffix(suffix, expressionString, afterPrefixIndex);
+                int afterPrefixIndex = prefixIndex + prefix.Length;
+                int suffixIndex = SkipToCorrectEndSuffix(suffix, expressionString, afterPrefixIndex);
+
                 if (suffixIndex == -1)
                 {
-                    throw new ParseException(expressionString, prefixIndex, $"No ending suffix '{suffix}' for expression starting at character {prefixIndex}: {expressionString.Substring(prefixIndex)}");
+                    throw new ParseException(expressionString, prefixIndex,
+                        $"No ending suffix '{suffix}' for expression starting at character {prefixIndex}: {expressionString.Substring(prefixIndex)}");
                 }
 
                 if (suffixIndex == afterPrefixIndex)
                 {
-                    throw new ParseException(expressionString, prefixIndex, $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
+                    throw new ParseException(expressionString, prefixIndex,
+                        $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
                 }
 
-                var startIndex = prefixIndex + prefix.Length;
-                var expr = expressionString.Substring(startIndex, suffixIndex - startIndex);
+                int startIndex = prefixIndex + prefix.Length;
+                string expr = expressionString.Substring(startIndex, suffixIndex - startIndex);
                 expr = expr.Trim();
+
                 if (expr.Length == 0)
                 {
-                    throw new ParseException(expressionString, prefixIndex, $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
+                    throw new ParseException(expressionString, prefixIndex,
+                        $"No expression defined within delimiter '{prefix}{suffix}' at character {prefixIndex}");
                 }
 
                 expressions.Add(DoParseExpression(expr, context));
@@ -97,8 +100,9 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
 
     private bool IsSuffixHere(string expressionString, int pos, string suffix)
     {
-        var suffixPosition = 0;
-        for (var i = 0; i < suffix.Length && pos < expressionString.Length; i++)
+        int suffixPosition = 0;
+
+        for (int i = 0; i < suffix.Length && pos < expressionString.Length; i++)
         {
             if (expressionString[pos++] != suffix[suffixPosition++])
             {
@@ -120,15 +124,17 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
         // Chew on the expression text - relying on the rules:
         // brackets must be in pairs: () [] {}
         // string literals are "..." or '...' and these may contain unmatched brackets
-        var pos = afterPrefixIndex;
-        var maxLength = expressionString.Length;
-        var nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
+        int pos = afterPrefixIndex;
+        int maxLength = expressionString.Length;
+        int nextSuffix = expressionString.IndexOf(suffix, afterPrefixIndex);
+
         if (nextSuffix == -1)
         {
             return -1; // the suffix is missing
         }
 
         var stack = new Stack<Bracket>();
+
         while (pos < maxLength)
         {
             if (IsSuffixHere(expressionString, pos, suffix) && stack.Count == 0)
@@ -136,7 +142,8 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
                 break;
             }
 
-            var ch = expressionString[pos];
+            char ch = expressionString[pos];
+
             switch (ch)
             {
                 case '{':
@@ -149,20 +156,24 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
                 case ')':
                     if (stack.Count == 0)
                     {
-                        throw new ParseException(expressionString, pos, $"Found closing '{ch}' at position {pos} without an opening '{Bracket.TheOpenBracketFor(ch)}'");
+                        throw new ParseException(expressionString, pos,
+                            $"Found closing '{ch}' at position {pos} without an opening '{Bracket.TheOpenBracketFor(ch)}'");
                     }
 
-                    var p = stack.Pop();
+                    Bracket p = stack.Pop();
+
                     if (!p.CompatibleWithCloseBracket(ch))
                     {
-                        throw new ParseException(expressionString, pos, $"Found closing '{ch}' at position {pos} but most recent opening is '{p.BracketChar}' at position {p.Pos}");
+                        throw new ParseException(expressionString, pos,
+                            $"Found closing '{ch}' at position {pos} but most recent opening is '{p.BracketChar}' at position {p.Pos}");
                     }
 
                     break;
                 case '\'':
                 case '"':
                     // jump to the end of the literal
-                    var endLiteral = expressionString.IndexOf(ch, pos + 1);
+                    int endLiteral = expressionString.IndexOf(ch, pos + 1);
+
                     if (endLiteral == -1)
                     {
                         throw new ParseException(expressionString, pos, $"Found non terminating string literal starting at position {pos}");
@@ -177,8 +188,10 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
 
         if (stack.Count > 0)
         {
-            var p = stack.Pop();
-            throw new ParseException(expressionString, p.Pos, $"Missing closing '{Bracket.TheCloseBracketFor(p.BracketChar)}' for '{p.BracketChar}' at position {p.Pos}");
+            Bracket p = stack.Pop();
+
+            throw new ParseException(expressionString, p.Pos,
+                $"Missing closing '{Bracket.TheCloseBracketFor(p.BracketChar)}' for '{p.BracketChar}' at position {p.Pos}");
         }
 
         if (!IsSuffixHere(expressionString, pos, suffix))
@@ -207,7 +220,8 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
             {
                 return '{';
             }
-            else if (closeBracket == ']')
+
+            if (closeBracket == ']')
             {
                 return '[';
             }
@@ -221,7 +235,8 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
             {
                 return '}';
             }
-            else if (openBracket == '[')
+
+            if (openBracket == '[')
             {
                 return ']';
             }
@@ -235,7 +250,8 @@ public abstract class TemplateAwareExpressionParser : IExpressionParser
             {
                 return closeBracket == '}';
             }
-            else if (BracketChar == '[')
+
+            if (BracketChar == '[')
             {
                 return closeBracket == ']';
             }

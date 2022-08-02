@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Attributes;
 using Steeltoe.Common.Contexts;
@@ -11,7 +12,6 @@ using Steeltoe.Integration.Endpoint;
 using Steeltoe.Integration.Handler;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System.Reflection;
 
 namespace Steeltoe.Integration.Config;
 
@@ -19,10 +19,16 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 {
     private readonly List<IServiceActivatorMethod> _serviceActivatorMethods;
 
-    public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods, ILogger<ServiceActivatorAttributeProcessor> logger)
+    public ServiceActivatorAttributeProcessor(IApplicationContext applicationContext, IEnumerable<IServiceActivatorMethod> methods,
+        ILogger<ServiceActivatorAttributeProcessor> logger)
         : base(applicationContext, logger)
     {
-        MessageHandlerProperties.AddRange(new List<string> { "OutputChannel", "RequiresReply" });
+        MessageHandlerProperties.AddRange(new List<string>
+        {
+            "OutputChannel",
+            "RequiresReply"
+        });
+
         _serviceActivatorMethods = methods.ToList();
     }
 
@@ -33,25 +39,27 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
             return;
         }
 
-        foreach (var method in _serviceActivatorMethods)
+        foreach (IServiceActivatorMethod method in _serviceActivatorMethods)
         {
-            var service = CreateTargetService(method.ImplementationType);
+            object service = CreateTargetService(method.ImplementationType);
+
             if (service == null)
             {
                 continue;
             }
 
-            var attributes = method.Method.GetCustomAttributes().ToList();
-            var serviceName = GetServiceName(service);
-            var result = PostProcess(service, serviceName, method.Method, attributes);
+            List<Attribute> attributes = method.Method.GetCustomAttributes().ToList();
+            string serviceName = GetServiceName(service);
+            object result = PostProcess(service, serviceName, method.Method, attributes);
 
-            var endpoint = GetEndpoint(attributes, result);
+            AbstractEndpoint endpoint = GetEndpoint(attributes, result);
+
             if (endpoint == null)
             {
                 continue;
             }
 
-            var endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
+            string endpointName = GenerateServiceName(serviceName, method.Method, typeof(ServiceActivatorAttribute));
             endpoint.ServiceName = endpointName;
             ApplicationContext?.Register(endpointName, endpoint);
         }
@@ -60,11 +68,13 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
     protected override IMessageHandler CreateHandler(object service, MethodInfo method, List<Attribute> attributes)
     {
         AbstractReplyProducingMessageHandler serviceActivator;
+
         if (method.GetCustomAttribute<ServiceAttribute>() != null)
         {
             // Service Attribute usage
-            var target = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
+            object target = ResolveTargetServiceFromMethodWithServiceAnnotation(method);
             serviceActivator = ExtractTypeIfPossible<AbstractReplyProducingMessageHandler>(target);
+
             if (serviceActivator == null)
             {
                 if (target is IMessageHandler handler)
@@ -75,10 +85,8 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
                      */
                     return new ReplyProducingMessageHandlerWrapper(ApplicationContext, handler);
                 }
-                else
-                {
-                    serviceActivator = new ServiceActivatingHandler(ApplicationContext, target, method);
-                }
+
+                serviceActivator = new ServiceActivatingHandler(ApplicationContext, target, method);
             }
             else
             {
@@ -91,7 +99,8 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
             serviceActivator = new ServiceActivatingHandler(ApplicationContext, service, method);
         }
 
-        var requiresReply = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "RequiresReply");
+        string requiresReply = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "RequiresReply");
+
         if (!string.IsNullOrEmpty(requiresReply))
         {
             serviceActivator.RequiresReply = bool.Parse(ApplicationContext.ResolveEmbeddedValue(requiresReply));
@@ -103,7 +112,8 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
     protected virtual string GenerateServiceName(string originalServiceName, MethodInfo method, Type attributeType)
     {
-        var name = MessagingAttributeUtils.EndpointIdValue(method);
+        string name = MessagingAttributeUtils.EndpointIdValue(method);
+
         if (string.IsNullOrEmpty(name))
         {
             name = $"{originalServiceName}.{method.Name}.{attributeType.Name}.{Guid.NewGuid()}";
@@ -128,20 +138,24 @@ public class ServiceActivatorAttributeProcessor : AbstractMethodAttributeProcess
 
         if (endpoint != null)
         {
-            var autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
+            string autoStartup = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "AutoStartup");
+
             if (!string.IsNullOrEmpty(autoStartup))
             {
                 autoStartup = ApplicationContext?.ResolveEmbeddedValue(autoStartup);
+
                 if (!string.IsNullOrEmpty(autoStartup))
                 {
                     endpoint.IsAutoStartup = bool.Parse(autoStartup);
                 }
             }
 
-            var phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
+            string phase = MessagingAttributeUtils.ResolveAttribute<string>(attributes, "Phase");
+
             if (!string.IsNullOrEmpty(phase))
             {
                 phase = ApplicationContext?.ResolveEmbeddedValue(phase);
+
                 if (!string.IsNullOrEmpty(phase))
                 {
                     endpoint.Phase = int.Parse(phase);

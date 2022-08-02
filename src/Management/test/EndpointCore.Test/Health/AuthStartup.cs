@@ -10,12 +10,12 @@ namespace Steeltoe.Management.Endpoint.Health.Test;
 
 public class AuthStartup
 {
+    public IConfiguration Configuration;
+
     public AuthStartup(IConfiguration configuration)
     {
-        this.Configuration = configuration;
+        Configuration = configuration;
     }
-
-    public IConfiguration Configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -27,6 +27,7 @@ public class AuthStartup
     {
         app.UseMiddleware<AuthenticatedTestMiddleware>();
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<HealthEndpointCore>();

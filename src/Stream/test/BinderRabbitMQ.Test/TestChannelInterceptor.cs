@@ -11,5 +11,8 @@ internal sealed class TestChannelInterceptor : AbstractChannelInterceptor
 {
     public Func<IMessage, IMessageChannel, IMessage> PreSendHandler { get; set; }
 
-    public override IMessage PreSend(IMessage message, IMessageChannel channel) => PreSendHandler?.Invoke(message, channel) ?? message;
+    public override IMessage PreSend(IMessage message, IMessageChannel channel)
+    {
+        return PreSendHandler?.Invoke(message, channel) ?? message;
+    }
 }

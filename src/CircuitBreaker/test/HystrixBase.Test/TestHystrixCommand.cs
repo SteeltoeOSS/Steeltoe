@@ -11,47 +11,23 @@ public class TestHystrixCommand<T> : HystrixCommand<T>
 {
     public ITestOutputHelper Output;
 
+    public virtual TestCommandBuilder Builder { get; }
+
     public TestHystrixCommand(TestCommandBuilder builder)
-        : base(
-            builder.Owner,
-            builder.DependencyKey,
-            builder.ThreadPoolKey,
-            builder.CircuitBreaker,
-            builder.ThreadPool,
-            builder.CommandPropertiesDefaults,
-            builder.ThreadPoolPropertiesDefaults,
-            builder.Metrics,
-            builder.FallbackSemaphore,
-            builder.ExecutionSemaphore,
-            new TestOptionsFactory(),
-            builder.ExecutionHook,
-            null,
-            null)
+        : base(builder.Owner, builder.DependencyKey, builder.ThreadPoolKey, builder.CircuitBreaker, builder.ThreadPool, builder.CommandPropertiesDefaults,
+            builder.ThreadPoolPropertiesDefaults, builder.Metrics, builder.FallbackSemaphore, builder.ExecutionSemaphore, new TestOptionsFactory(),
+            builder.ExecutionHook, null, null)
     {
         Builder = builder;
     }
 
     public TestHystrixCommand(TestCommandBuilder builder, HystrixCommandExecutionHook executionHook)
-        : base(
-            builder.Owner,
-            builder.DependencyKey,
-            builder.ThreadPoolKey,
-            builder.CircuitBreaker,
-            builder.ThreadPool,
-            builder.CommandPropertiesDefaults,
-            builder.ThreadPoolPropertiesDefaults,
-            builder.Metrics,
-            builder.FallbackSemaphore,
-            builder.ExecutionSemaphore,
-            new TestOptionsFactory(),
-            executionHook,
-            null,
-            null)
+        : base(builder.Owner, builder.DependencyKey, builder.ThreadPoolKey, builder.CircuitBreaker, builder.ThreadPool, builder.CommandPropertiesDefaults,
+            builder.ThreadPoolPropertiesDefaults, builder.Metrics, builder.FallbackSemaphore, builder.ExecutionSemaphore, new TestOptionsFactory(),
+            executionHook, null, null)
     {
         Builder = builder;
     }
-
-    public virtual TestCommandBuilder Builder { get; }
 
     public static TestCommandBuilder TestPropsBuilder()
     {

@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
-using System.Collections.Concurrent;
 using Xunit;
 
 namespace Steeltoe.Common.Test.Lifecycle;
@@ -17,9 +17,14 @@ public class DefaultLifecycleProcessorTest
     public async Task SingleSmartLifecycleAutoStartup()
     {
         var startedBeans = new ConcurrentQueue<ILifecycle>();
-        var bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
+        TestSmartLifecycleBean bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
         bean.IsAutoStartup = true;
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean }, new List<ISmartLifecycle>()));
+
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean
+        }, new List<ISmartLifecycle>()));
+
         Assert.False(bean.IsRunning);
         await processor.OnRefresh();
         Assert.True(bean.IsRunning);
@@ -32,9 +37,14 @@ public class DefaultLifecycleProcessorTest
     public async Task SingleSmartLifecycleWithoutAutoStartup()
     {
         var startedBeans = new ConcurrentQueue<ILifecycle>();
-        var bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
+        TestSmartLifecycleBean bean = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
         bean.IsAutoStartup = false;
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean }, new List<ISmartLifecycle>()));
+
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean
+        }, new List<ISmartLifecycle>()));
+
         Assert.False(bean.IsRunning);
         await processor.OnRefresh();
         Assert.False(bean.IsRunning);
@@ -49,12 +59,20 @@ public class DefaultLifecycleProcessorTest
     public async Task SmartLifecycleGroupStartup()
     {
         var startedBeans = new ConcurrentQueue<ILifecycle>();
-        var beanMin = TestSmartLifecycleBean.ForStartupTests(int.MinValue, startedBeans);
-        var bean1 = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
-        var bean2 = TestSmartLifecycleBean.ForStartupTests(2, startedBeans);
-        var bean3 = TestSmartLifecycleBean.ForStartupTests(3, startedBeans);
-        var beanMax = TestSmartLifecycleBean.ForStartupTests(int.MaxValue, startedBeans);
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean3, beanMin, bean2, beanMax, bean1 }, new List<ISmartLifecycle>()));
+        TestSmartLifecycleBean beanMin = TestSmartLifecycleBean.ForStartupTests(int.MinValue, startedBeans);
+        TestSmartLifecycleBean bean1 = TestSmartLifecycleBean.ForStartupTests(1, startedBeans);
+        TestSmartLifecycleBean bean2 = TestSmartLifecycleBean.ForStartupTests(2, startedBeans);
+        TestSmartLifecycleBean bean3 = TestSmartLifecycleBean.ForStartupTests(3, startedBeans);
+        TestSmartLifecycleBean beanMax = TestSmartLifecycleBean.ForStartupTests(int.MaxValue, startedBeans);
+
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean3,
+            beanMin,
+            bean2,
+            beanMax,
+            bean1
+        }, new List<ISmartLifecycle>()));
 
         Assert.False(beanMin.IsRunning);
         Assert.False(bean1.IsRunning);
@@ -73,7 +91,7 @@ public class DefaultLifecycleProcessorTest
         await processor.Stop();
 
         Assert.Equal(5, startedBeans.Count);
-        var started = startedBeans.ToArray();
+        ILifecycle[] started = startedBeans.ToArray();
         Assert.Equal(int.MinValue, GetPhase(started[0]));
         Assert.Equal(1, GetPhase(started[1]));
         Assert.Equal(2, GetPhase(started[2]));
@@ -85,11 +103,18 @@ public class DefaultLifecycleProcessorTest
     public async Task RefreshThenStartWithMixedBeans()
     {
         var startedBeans = new ConcurrentQueue<ILifecycle>();
-        var simpleBean1 = TestLifecycleBean.ForStartupTests(startedBeans);
-        var simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
-        var smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
-        var smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { simpleBean1, simpleBean2, smartBean1, smartBean2 }, new List<ISmartLifecycle>()));
+        TestLifecycleBean simpleBean1 = TestLifecycleBean.ForStartupTests(startedBeans);
+        TestLifecycleBean simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
+        TestSmartLifecycleBean smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
+        TestSmartLifecycleBean smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
+
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            simpleBean1,
+            simpleBean2,
+            smartBean1,
+            smartBean2
+        }, new List<ISmartLifecycle>()));
 
         Assert.False(simpleBean1.IsRunning);
         Assert.False(simpleBean2.IsRunning);
@@ -104,7 +129,7 @@ public class DefaultLifecycleProcessorTest
         Assert.True(smartBean2.IsRunning);
 
         Assert.Equal(2, startedBeans.Count);
-        var started = startedBeans.ToArray();
+        ILifecycle[] started = startedBeans.ToArray();
         Assert.Equal(-3, GetPhase(started[0]));
         Assert.Equal(5, GetPhase(started[1]));
 
@@ -125,11 +150,18 @@ public class DefaultLifecycleProcessorTest
     public async Task RefreshThenStopAndRestartWithMixedBeans()
     {
         var startedBeans = new ConcurrentQueue<ILifecycle>();
-        var simpleBean1 = TestLifecycleBean.ForStartupTests(startedBeans);
-        var simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
-        var smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
-        var smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { simpleBean1, simpleBean2, smartBean1, smartBean2 }, new List<ISmartLifecycle>()));
+        TestLifecycleBean simpleBean1 = TestLifecycleBean.ForStartupTests(startedBeans);
+        TestLifecycleBean simpleBean2 = TestLifecycleBean.ForStartupTests(startedBeans);
+        TestSmartLifecycleBean smartBean1 = TestSmartLifecycleBean.ForStartupTests(5, startedBeans);
+        TestSmartLifecycleBean smartBean2 = TestSmartLifecycleBean.ForStartupTests(-3, startedBeans);
+
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            simpleBean1,
+            simpleBean2,
+            smartBean1,
+            smartBean2
+        }, new List<ISmartLifecycle>()));
 
         Assert.False(simpleBean1.IsRunning);
         Assert.False(simpleBean2.IsRunning);
@@ -144,7 +176,7 @@ public class DefaultLifecycleProcessorTest
         Assert.True(smartBean2.IsRunning);
 
         Assert.Equal(2, startedBeans.Count);
-        var started = startedBeans.ToArray();
+        ILifecycle[] started = startedBeans.ToArray();
         Assert.Equal(-3, GetPhase(started[0]));
         Assert.Equal(5, GetPhase(started[1]));
 
@@ -175,18 +207,28 @@ public class DefaultLifecycleProcessorTest
     {
         var stoppedBeans = new ConcurrentQueue<ILifecycle>();
 
-        var bean1 = TestSmartLifecycleBean.ForShutdownTests(1, 300, stoppedBeans);
-        var bean2 = TestSmartLifecycleBean.ForShutdownTests(3, 100, stoppedBeans);
-        var bean3 = TestSmartLifecycleBean.ForShutdownTests(1, 600, stoppedBeans);
-        var bean4 = TestSmartLifecycleBean.ForShutdownTests(2, 400, stoppedBeans);
-        var bean5 = TestSmartLifecycleBean.ForShutdownTests(2, 700, stoppedBeans);
-        var bean6 = TestSmartLifecycleBean.ForShutdownTests(int.MaxValue, 200, stoppedBeans);
-        var bean7 = TestSmartLifecycleBean.ForShutdownTests(3, 200, stoppedBeans);
+        TestSmartLifecycleBean bean1 = TestSmartLifecycleBean.ForShutdownTests(1, 300, stoppedBeans);
+        TestSmartLifecycleBean bean2 = TestSmartLifecycleBean.ForShutdownTests(3, 100, stoppedBeans);
+        TestSmartLifecycleBean bean3 = TestSmartLifecycleBean.ForShutdownTests(1, 600, stoppedBeans);
+        TestSmartLifecycleBean bean4 = TestSmartLifecycleBean.ForShutdownTests(2, 400, stoppedBeans);
+        TestSmartLifecycleBean bean5 = TestSmartLifecycleBean.ForShutdownTests(2, 700, stoppedBeans);
+        TestSmartLifecycleBean bean6 = TestSmartLifecycleBean.ForShutdownTests(int.MaxValue, 200, stoppedBeans);
+        TestSmartLifecycleBean bean7 = TestSmartLifecycleBean.ForShutdownTests(3, 200, stoppedBeans);
 
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean1, bean2, bean3, bean4, bean5, bean6, bean7 }, new List<ISmartLifecycle>()));
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean1,
+            bean2,
+            bean3,
+            bean4,
+            bean5,
+            bean6,
+            bean7
+        }, new List<ISmartLifecycle>()));
+
         await processor.OnRefresh();
         await processor.Stop();
-        var stopped = stoppedBeans.ToArray();
+        ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.Equal(int.MaxValue, GetPhase(stopped[0]));
         Assert.Equal(3, GetPhase(stopped[1]));
         Assert.Equal(3, GetPhase(stopped[2]));
@@ -200,13 +242,17 @@ public class DefaultLifecycleProcessorTest
     public async Task SingleSmartLifecycleShutdown()
     {
         var stoppedBeans = new ConcurrentQueue<ILifecycle>();
-        var bean = TestSmartLifecycleBean.ForShutdownTests(99, 300, stoppedBeans);
+        TestSmartLifecycleBean bean = TestSmartLifecycleBean.ForShutdownTests(99, 300, stoppedBeans);
 
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean }, new List<ISmartLifecycle>()));
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean
+        }, new List<ISmartLifecycle>()));
+
         await processor.OnRefresh();
         Assert.True(bean.IsRunning);
         await processor.Stop();
-        var stopped = stoppedBeans.ToArray();
+        ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.Same(bean, stopped[0]);
     }
 
@@ -216,14 +262,18 @@ public class DefaultLifecycleProcessorTest
         var stoppedBeans = new ConcurrentQueue<ILifecycle>();
         ILifecycle bean = new TestLifecycleBean(null, stoppedBeans);
 
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean }, new List<ISmartLifecycle>()));
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean
+        }, new List<ISmartLifecycle>()));
+
         Assert.False(bean.IsRunning);
         await processor.OnRefresh();
         Assert.False(bean.IsRunning);
         await processor.Start();
         Assert.True(bean.IsRunning);
         await processor.Stop();
-        var stopped = stoppedBeans.ToArray();
+        ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.False(bean.IsRunning);
         Assert.Same(bean, stopped[0]);
     }
@@ -240,7 +290,17 @@ public class DefaultLifecycleProcessorTest
         ILifecycle bean6 = TestSmartLifecycleBean.ForShutdownTests(-1, 100, stoppedBeans);
         ILifecycle bean7 = TestSmartLifecycleBean.ForShutdownTests(int.MinValue, 300, stoppedBeans);
 
-        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle> { bean1, bean2, bean3, bean4, bean5, bean6, bean7 }, new List<ISmartLifecycle>()));
+        var processor = new DefaultLifecycleProcessor(CreateApplicationContext(new List<ILifecycle>
+        {
+            bean1,
+            bean2,
+            bean3,
+            bean4,
+            bean5,
+            bean6,
+            bean7
+        }, new List<ISmartLifecycle>()));
+
         await processor.OnRefresh();
 
         Assert.True(bean2.IsRunning);
@@ -267,7 +327,7 @@ public class DefaultLifecycleProcessorTest
         Assert.False(bean1.IsRunning);
         Assert.False(bean4.IsRunning);
 
-        var stopped = stoppedBeans.ToArray();
+        ILifecycle[] stopped = stoppedBeans.ToArray();
         Assert.Equal(7, stopped.Length);
         Assert.Equal(int.MaxValue, GetPhase(stopped[0]));
         Assert.Equal(500, GetPhase(stopped[1]));
@@ -280,14 +340,15 @@ public class DefaultLifecycleProcessorTest
 
     private static IApplicationContext CreateApplicationContext(List<ILifecycle> lifecycles, List<ISmartLifecycle> smartLifecycles)
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         var serviceCollection = new ServiceCollection();
-        foreach (var lifeCycle in lifecycles)
+
+        foreach (ILifecycle lifeCycle in lifecycles)
         {
             serviceCollection.AddSingleton(lifeCycle);
         }
 
-        foreach (var lifeCycle in smartLifecycles)
+        foreach (ISmartLifecycle lifeCycle in smartLifecycles)
         {
             serviceCollection.AddSingleton(lifeCycle);
         }
@@ -310,6 +371,14 @@ public class DefaultLifecycleProcessorTest
         private readonly ConcurrentQueue<ILifecycle> _startedBeans;
         private readonly ConcurrentQueue<ILifecycle> _stoppedBeans;
 
+        public bool IsRunning { get; private set; }
+
+        public TestLifecycleBean(ConcurrentQueue<ILifecycle> startedBeans, ConcurrentQueue<ILifecycle> stoppedBeans)
+        {
+            _startedBeans = startedBeans;
+            _stoppedBeans = stoppedBeans;
+        }
+
         public static TestLifecycleBean ForStartupTests(ConcurrentQueue<ILifecycle> startedBeans)
         {
             return new TestLifecycleBean(startedBeans, null);
@@ -319,14 +388,6 @@ public class DefaultLifecycleProcessorTest
         {
             return new TestLifecycleBean(null, stoppedBeans);
         }
-
-        public TestLifecycleBean(ConcurrentQueue<ILifecycle> startedBeans, ConcurrentQueue<ILifecycle> stoppedBeans)
-        {
-            _startedBeans = startedBeans;
-            _stoppedBeans = stoppedBeans;
-        }
-
-        public bool IsRunning { get; private set; }
 
         public Task Start()
         {
@@ -357,7 +418,14 @@ public class DefaultLifecycleProcessorTest
 
         public bool IsAutoStartup { get; set; } = true;
 
-        public int Phase { get; private set; }
+        public int Phase { get; }
+
+        public TestSmartLifecycleBean(int phase, int shutdownDelay, ConcurrentQueue<ILifecycle> startedBeans, ConcurrentQueue<ILifecycle> stoppedBeans)
+            : base(startedBeans, stoppedBeans)
+        {
+            Phase = phase;
+            _shutdownDelay = shutdownDelay;
+        }
 
         public static TestSmartLifecycleBean ForStartupTests(int phase, ConcurrentQueue<ILifecycle> startedBeans)
         {
@@ -372,16 +440,9 @@ public class DefaultLifecycleProcessorTest
         public async Task Stop(Action callback)
         {
             await Stop();
-            var delay = _shutdownDelay;
+            int delay = _shutdownDelay;
             await Task.Delay(delay);
             callback();
-        }
-
-        public TestSmartLifecycleBean(int phase, int shutdownDelay, ConcurrentQueue<ILifecycle> startedBeans, ConcurrentQueue<ILifecycle> stoppedBeans)
-            : base(startedBeans, stoppedBeans)
-        {
-            Phase = phase;
-            _shutdownDelay = shutdownDelay;
         }
     }
 }

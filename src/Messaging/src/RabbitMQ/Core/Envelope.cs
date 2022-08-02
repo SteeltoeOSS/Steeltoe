@@ -6,14 +6,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Envelope
 {
-    public Envelope(ulong deliveryTag, bool redeliver, string exchange, string routingKey)
-    {
-        DeliveryTag = deliveryTag;
-        Redeliver = redeliver;
-        Exchange = exchange;
-        RoutingKey = routingKey;
-    }
-
     public ulong DeliveryTag { get; }
 
     public bool Redeliver { get; }
@@ -21,4 +13,12 @@ public class Envelope
     public string Exchange { get; }
 
     public string RoutingKey { get; }
+
+    public Envelope(ulong deliveryTag, bool redeliver, string exchange, string routingKey)
+    {
+        DeliveryTag = deliveryTag;
+        Redeliver = redeliver;
+        Exchange = exchange;
+        RoutingKey = routingKey;
+    }
 }

@@ -2,17 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections.Concurrent;
 using System.Reflection;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
 
 public abstract class AbstractExceptionHandlerMethodResolver
 {
-    private readonly Dictionary<Type, MethodInfo> _mappedMethods = new ();
+    private readonly Dictionary<Type, MethodInfo> _mappedMethods = new();
 
-    private readonly ConcurrentDictionary<Type, MethodInfo> _exceptionLookupCache = new ();
+    private readonly ConcurrentDictionary<Type, MethodInfo> _exceptionLookupCache = new();
+
+    public bool HasExceptionMappings => _mappedMethods.Count > 0;
 
     protected AbstractExceptionHandlerMethodResolver(IDictionary<Type, MethodInfo> mappedMethods)
     {
@@ -21,7 +23,7 @@ public abstract class AbstractExceptionHandlerMethodResolver
             throw new ArgumentNullException(nameof(mappedMethods));
         }
 
-        foreach (var entry in mappedMethods)
+        foreach (KeyValuePair<Type, MethodInfo> entry in mappedMethods)
         {
             _mappedMethods[entry.Key] = entry.Value;
         }
@@ -31,9 +33,10 @@ public abstract class AbstractExceptionHandlerMethodResolver
     {
         var result = new List<Type>();
 
-        foreach (var param in method.GetParameters())
+        foreach (ParameterInfo param in method.GetParameters())
         {
-            var paramType = param.ParameterType;
+            Type paramType = param.ParameterType;
+
             if (typeof(Exception).IsAssignableFrom(paramType))
             {
                 result.Add(paramType);
@@ -48,17 +51,14 @@ public abstract class AbstractExceptionHandlerMethodResolver
         return result;
     }
 
-    public bool HasExceptionMappings
-    {
-        get { return _mappedMethods.Count > 0; }
-    }
-
     public MethodInfo ResolveMethod(Exception exception)
     {
-        var method = ResolveMethodByExceptionType(exception.GetType());
+        MethodInfo method = ResolveMethodByExceptionType(exception.GetType());
+
         if (method == null)
         {
-            var cause = exception.InnerException;
+            Exception cause = exception.InnerException;
+
             if (cause != null)
             {
                 method = ResolveMethodByExceptionType(cause.GetType());
@@ -70,10 +70,12 @@ public abstract class AbstractExceptionHandlerMethodResolver
 
     public MethodInfo ResolveMethodByExceptionType(Type exceptionType)
     {
-        _exceptionLookupCache.TryGetValue(exceptionType, out var method);
+        _exceptionLookupCache.TryGetValue(exceptionType, out MethodInfo method);
+
         if (method == null)
         {
             method = GetMappedMethod(exceptionType);
+
             if (_exceptionLookupCache.TryAdd(exceptionType, method))
             {
                 return method;
@@ -88,7 +90,8 @@ public abstract class AbstractExceptionHandlerMethodResolver
     private MethodInfo GetMappedMethod(Type exceptionType)
     {
         var matches = new List<Type>();
-        foreach (var mappedException in _mappedMethods.Keys)
+
+        foreach (Type mappedException in _mappedMethods.Keys)
         {
             if (mappedException.IsAssignableFrom(exceptionType))
             {
@@ -101,9 +104,7 @@ public abstract class AbstractExceptionHandlerMethodResolver
             matches.Sort(new ExceptionDepthComparator(exceptionType));
             return _mappedMethods[matches[0]];
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 }

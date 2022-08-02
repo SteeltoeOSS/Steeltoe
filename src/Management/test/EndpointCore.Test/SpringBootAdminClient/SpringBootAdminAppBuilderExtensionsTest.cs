@@ -25,24 +25,24 @@ public class SpringBootAdminAppBuilderExtensionsTest
             ["management:endpoints:health:path"] = "myhealth",
             ["URLS"] = "http://localhost:8080;https://localhost:8082",
             ["spring:boot:admin:client:url"] = "http://springbootadmin:9090",
-            ["spring:application:name"] = "MySteeltoeApplication",
+            ["spring:application:name"] = "MySteeltoeApplication"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var services = new ServiceCollection();
         var appLifeTime = new MyAppLifeTime();
         services.TryAddSingleton<IHostApplicationLifetime>(appLifeTime);
         services.TryAddSingleton<IConfiguration>(config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var appBuilder = new ApplicationBuilder(provider);
 
         var builder = new WebHostBuilder();
         builder.UseStartup<TestStartup>();
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
+        HttpClient client = server.CreateClient();
         appBuilder.RegisterWithSpringBootAdmin(config, client);
 
         appLifeTime.AppStartTokenSource.Cancel(); // Trigger application lifetime start
@@ -55,8 +55,8 @@ public class SpringBootAdminAppBuilderExtensionsTest
 
     private sealed class MyAppLifeTime : IHostApplicationLifetime
     {
-        public CancellationTokenSource AppStartTokenSource = new ();
-        public CancellationTokenSource AppStopTokenSource = new ();
+        public readonly CancellationTokenSource AppStartTokenSource = new();
+        public readonly CancellationTokenSource AppStopTokenSource = new();
 
         public CancellationToken ApplicationStarted => AppStartTokenSource.Token;
 

@@ -30,6 +30,7 @@ public class ThreadDumpEndpointTest : BaseTest
     {
         using var tc = new TestContext(_output);
         var dumper = new TestThreadDumper();
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddSingleton<IThreadDumper>(dumper);
@@ -37,7 +38,7 @@ public class ThreadDumpEndpointTest : BaseTest
         };
 
         var ep = tc.GetService<IThreadDumpEndpoint>();
-        var result = ep.Invoke();
+        List<ThreadInfo> result = ep.Invoke();
         Assert.NotNull(result);
         Assert.True(dumper.DumpThreadsCalled);
     }

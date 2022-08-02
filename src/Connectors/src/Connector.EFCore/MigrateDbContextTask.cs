@@ -9,18 +9,21 @@ using Steeltoe.Common;
 namespace Steeltoe.Connector.EFCore;
 
 /// <summary>
-/// Applies code first migrations for the specified Entity Framework DB Context
-/// This task name is "migrate".
+/// Applies code first migrations for the specified Entity Framework DB Context This task name is "migrate".
 /// </summary>
 /// <example>
 /// dotnet run runtask=migrate.
 /// </example>
-/// <typeparam name="T">The DBContext which to migrate.</typeparam>
+/// <typeparam name="T">
+/// The DBContext which to migrate.
+/// </typeparam>
 public class MigrateDbContextTask<T> : IApplicationTask
     where T : DbContext
 {
     private readonly T _db;
     private readonly ILogger _logger;
+
+    public string Name => "migrate";
 
     public MigrateDbContextTask(T db, ILogger<MigrateDbContextTask<T>> logger)
     {
@@ -28,12 +31,11 @@ public class MigrateDbContextTask<T> : IApplicationTask
         _logger = logger;
     }
 
-    public string Name => "migrate";
-
     public void Run()
     {
-        var isNewDb = false;
+        bool isNewDb = false;
         var migrations = new List<string>();
+
         try
         {
             migrations = _db.Database.GetPendingMigrations().ToList();
@@ -45,6 +47,7 @@ public class MigrateDbContextTask<T> : IApplicationTask
 
         _logger.LogInformation("Starting database migration...");
         _db.Database.Migrate();
+
         if (isNewDb)
         {
             migrations = _db.Database.GetAppliedMigrations().ToList();
@@ -53,7 +56,8 @@ public class MigrateDbContextTask<T> : IApplicationTask
         if (migrations.Any())
         {
             _logger.LogInformation("The following migrations have been successfully applied:");
-            foreach (var migration in migrations)
+
+            foreach (string migration in migrations)
             {
                 _logger.LogInformation(migration);
             }

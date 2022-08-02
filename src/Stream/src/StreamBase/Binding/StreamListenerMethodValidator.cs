@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Stream.Attributes;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -16,20 +16,22 @@ public class StreamListenerMethodValidator
     private readonly IApplicationContext _context;
     private readonly List<IStreamListenerParameterAdapter> _streamListenerParameterAdapters;
 
-    public StreamListenerMethodValidator(MethodInfo method, IApplicationContext context = null, List<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
+    public MethodInfo Method { get; }
+
+    public StreamListenerMethodValidator(MethodInfo method, IApplicationContext context = null,
+        List<IStreamListenerParameterAdapter> streamListenerParameterAdapters = null)
     {
         Method = method;
         _context = context;
         _streamListenerParameterAdapters = streamListenerParameterAdapters ?? new List<IStreamListenerParameterAdapter>();
     }
 
-    public MethodInfo Method { get; }
-
     public int GetInputAnnotationCount()
     {
-        var count = 0;
-        var parameters = Method.GetParameters();
-        foreach (var methodParameter in parameters)
+        int count = 0;
+        ParameterInfo[] parameters = Method.GetParameters();
+
+        foreach (ParameterInfo methodParameter in parameters)
         {
             if (methodParameter.GetCustomAttribute<InputAttribute>() != null)
             {
@@ -42,9 +44,10 @@ public class StreamListenerMethodValidator
 
     public int GetOutputAnnotationCount()
     {
-        var count = 0;
-        var parameters = Method.GetParameters();
-        foreach (var methodParameter in parameters)
+        int count = 0;
+        ParameterInfo[] parameters = Method.GetParameters();
+
+        foreach (ParameterInfo methodParameter in parameters)
         {
             if (methodParameter.GetCustomAttribute<OutputAttribute>() != null)
             {
@@ -57,21 +60,22 @@ public class StreamListenerMethodValidator
 
     public void Validate(string methodAnnotatedInboundName, string condition)
     {
-        var methodAnnotatedOutboundName = GetOutboundBindingTargetName();
-        var inputAnnotationCount = GetInputAnnotationCount();
-        var outputAnnotationCount = GetOutputAnnotationCount();
-        var isDeclarative = CheckDeclarativeMethod(methodAnnotatedInboundName);
+        string methodAnnotatedOutboundName = GetOutboundBindingTargetName();
+        int inputAnnotationCount = GetInputAnnotationCount();
+        int outputAnnotationCount = GetOutputAnnotationCount();
+        bool isDeclarative = CheckDeclarativeMethod(methodAnnotatedInboundName);
 
-        var parameters = Method.GetParameters();
-        var methodArgumentsLength = parameters.Length;
-        var returnType = Method.ReturnType;
+        ParameterInfo[] parameters = Method.GetParameters();
+        int methodArgumentsLength = parameters.Length;
+        Type returnType = Method.ReturnType;
+
         if (!isDeclarative && !(inputAnnotationCount == 0 && outputAnnotationCount == 0))
         {
             throw new ArgumentException(StreamListenerErrorMessages.InvalidDeclarativeMethodParameters);
         }
 
-        if (!string.IsNullOrEmpty(methodAnnotatedInboundName)
-            && !string.IsNullOrEmpty(methodAnnotatedOutboundName) && !(inputAnnotationCount == 0 && outputAnnotationCount == 0))
+        if (!string.IsNullOrEmpty(methodAnnotatedInboundName) && !string.IsNullOrEmpty(methodAnnotatedOutboundName) &&
+            !(inputAnnotationCount == 0 && outputAnnotationCount == 0))
         {
             throw new ArgumentException(StreamListenerErrorMessages.InvalidInputOutputMethodParameters);
         }
@@ -113,13 +117,15 @@ public class StreamListenerMethodValidator
                 throw new ArgumentException(StreamListenerErrorMessages.ConditionOnDeclarativeMethod);
             }
 
-            for (var parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
+            for (int parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
             {
-                var methodParameter = parameters[parameterIndex];
+                ParameterInfo methodParameter = parameters[parameterIndex];
+
                 if (methodParameter.GetCustomAttribute<InputAttribute>() != null)
                 {
                     var attribute = methodParameter.GetCustomAttribute<InputAttribute>();
-                    var inboundName = attribute.Name;
+                    string inboundName = attribute.Name;
+
                     if (string.IsNullOrEmpty(inboundName))
                     {
                         throw new ArgumentException(StreamListenerErrorMessages.InvalidInboundName);
@@ -129,7 +135,8 @@ public class StreamListenerMethodValidator
                 if (methodParameter.GetCustomAttribute<OutputAttribute>() != null)
                 {
                     var attribute = methodParameter.GetCustomAttribute<OutputAttribute>();
-                    var outboundName = attribute.Name;
+                    string outboundName = attribute.Name;
+
                     if (string.IsNullOrEmpty(outboundName))
                     {
                         throw new ArgumentException(StreamListenerErrorMessages.InvalidOutboundName);
@@ -159,16 +166,19 @@ public class StreamListenerMethodValidator
 
     public void ValidateStreamListenerMessageHandler()
     {
-        var parameters = Method.GetParameters();
-        var methodArgumentsLength = parameters.Length;
+        ParameterInfo[] parameters = Method.GetParameters();
+        int methodArgumentsLength = parameters.Length;
+
         if (methodArgumentsLength > 1)
         {
-            var numAnnotatedMethodParameters = 0;
-            var numPayloadAnnotations = 0;
-            for (var parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
+            int numAnnotatedMethodParameters = 0;
+            int numPayloadAnnotations = 0;
+
+            for (int parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
             {
-                var methodParameter = parameters[parameterIndex];
-                var attributes = methodParameter.GetCustomAttributes();
+                ParameterInfo methodParameter = parameters[parameterIndex];
+                IEnumerable<Attribute> attributes = methodParameter.GetCustomAttributes();
+
                 if (attributes.Any())
                 {
                     numAnnotatedMethodParameters++;
@@ -190,6 +200,7 @@ public class StreamListenerMethodValidator
     public string GetOutboundBindingTargetName()
     {
         var sendTo = Method.GetCustomAttribute<SendToAttribute>();
+
         if (sendTo != null)
         {
             if (ObjectUtils.IsNullOrEmpty(sendTo.Destinations))
@@ -211,6 +222,7 @@ public class StreamListenerMethodValidator
         }
 
         var output = Method.GetCustomAttribute<OutputAttribute>();
+
         if (output != null)
         {
             if (string.IsNullOrEmpty(output.Name))
@@ -226,16 +238,19 @@ public class StreamListenerMethodValidator
 
     public bool CheckDeclarativeMethod(string methodAnnotatedInboundName)
     {
-        var parameters = Method.GetParameters();
-        var methodArgumentsLength = parameters.Length;
-        var methodAnnotatedOutboundName = GetOutboundBindingTargetName();
-        for (var parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
+        ParameterInfo[] parameters = Method.GetParameters();
+        int methodArgumentsLength = parameters.Length;
+        string methodAnnotatedOutboundName = GetOutboundBindingTargetName();
+
+        for (int parameterIndex = 0; parameterIndex < methodArgumentsLength; parameterIndex++)
         {
-            var methodParameter = parameters[parameterIndex];
+            ParameterInfo methodParameter = parameters[parameterIndex];
+
             if (methodParameter.GetCustomAttribute<InputAttribute>() != null)
             {
                 var attribute = methodParameter.GetCustomAttribute<InputAttribute>();
-                var inboundName = attribute.Name;
+                string inboundName = attribute.Name;
+
                 if (string.IsNullOrEmpty(inboundName))
                 {
                     throw new ArgumentException(StreamListenerErrorMessages.InvalidInboundName);
@@ -248,10 +263,12 @@ public class StreamListenerMethodValidator
 
                 return true;
             }
-            else if (methodParameter.GetCustomAttribute<OutputAttribute>() != null)
+
+            if (methodParameter.GetCustomAttribute<OutputAttribute>() != null)
             {
                 var attribute = methodParameter.GetCustomAttribute<OutputAttribute>();
-                var outboundName = attribute.Name;
+                string outboundName = attribute.Name;
+
                 if (string.IsNullOrEmpty(outboundName))
                 {
                     throw new ArgumentException(StreamListenerErrorMessages.InvalidOutboundName);
@@ -264,11 +281,13 @@ public class StreamListenerMethodValidator
 
                 return true;
             }
-            else if (!string.IsNullOrEmpty(methodAnnotatedOutboundName))
+
+            if (!string.IsNullOrEmpty(methodAnnotatedOutboundName))
             {
                 return IsDeclarativeMethodParameter(methodAnnotatedOutboundName, methodParameter);
             }
-            else if (!string.IsNullOrEmpty(methodAnnotatedInboundName))
+
+            if (!string.IsNullOrEmpty(methodAnnotatedInboundName))
             {
                 return IsDeclarativeMethodParameter(methodAnnotatedInboundName, methodParameter);
             }
@@ -279,17 +298,21 @@ public class StreamListenerMethodValidator
 
     private bool IsDeclarativeMethodParameter(string target, ParameterInfo methodParameter)
     {
-        var declarative = false;
+        bool declarative = false;
+
         if (_context != null)
         {
-            var targetBindable = BindingHelpers.GetBindableTarget(_context, target);
+            object targetBindable = BindingHelpers.GetBindableTarget(_context, target);
+
             if (!methodParameter.ParameterType.IsAssignableFrom(typeof(object)) && targetBindable != null)
             {
                 declarative = typeof(IMessageChannel).IsAssignableFrom(methodParameter.ParameterType);
+
                 if (!declarative)
                 {
-                    var targetBeanClass = targetBindable.GetType();
-                    foreach (var adapter in _streamListenerParameterAdapters)
+                    Type targetBeanClass = targetBindable.GetType();
+
+                    foreach (IStreamListenerParameterAdapter adapter in _streamListenerParameterAdapters)
                     {
                         if (adapter.Supports(targetBeanClass, methodParameter))
                         {

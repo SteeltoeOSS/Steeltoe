@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Http.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using System.Net.Http.Json;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -24,9 +24,15 @@ public static class SpringBootAdminApplicationBuilderExtensions
     /// <summary>
     /// Register the application with a Spring-Boot-Admin server.
     /// </summary>
-    /// <param name="builder"><see cref="IApplicationBuilder"/>.</param>
-    /// <param name="configuration">App configuration. Will be retrieved from builder.ApplicationServices if not provided.</param>
-    /// <param name="httpClient">A customized HttpClient. [Bring your own auth].</param>
+    /// <param name="builder">
+    /// <see cref="IApplicationBuilder" />.
+    /// </param>
+    /// <param name="configuration">
+    /// App configuration. Will be retrieved from builder.ApplicationServices if not provided.
+    /// </param>
+    /// <param name="httpClient">
+    /// A customized HttpClient. [Bring your own auth].
+    /// </param>
     public static void RegisterWithSpringBootAdmin(this IApplicationBuilder builder, IConfiguration configuration = null, HttpClient httpClient = null)
     {
         if (builder is null)
@@ -37,11 +43,11 @@ public static class SpringBootAdminApplicationBuilderExtensions
         configuration ??= builder.ApplicationServices.GetRequiredService<IConfiguration>();
 
         var logger = builder.ApplicationServices.GetService<ILogger<SpringBootAdminClientOptions>>();
-        var appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
+        IApplicationInstanceInfo appInfo = builder.ApplicationServices.GetApplicationInstanceInfo();
         var options = new SpringBootAdminClientOptions(configuration, appInfo);
         var managementOptions = new ManagementEndpointOptions(configuration);
         var healthOptions = new HealthEndpointOptions(configuration);
-        var basePath = options.BasePath.TrimEnd('/');
+        string basePath = options.BasePath.TrimEnd('/');
         httpClient ??= HttpClientHelper.GetHttpClient(options.ValidateCertificates, _connectionTimeoutMs);
 
         var app = new Application
@@ -50,17 +56,22 @@ public static class SpringBootAdminApplicationBuilderExtensions
             HealthUrl = new Uri($"{basePath}{managementOptions.Path}/{healthOptions.Path}"),
             ManagementUrl = new Uri($"{basePath}{managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
-            Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
+            Metadata = new Dictionary<string, object>
+            {
+                { "startup", DateTime.Now }
+            }
         };
 
         app.Metadata.Merge(options.Metadata);
 
         var lifetime = builder.ApplicationServices.GetService<IHostApplicationLifetime>();
+
         lifetime.ApplicationStarted.Register(() =>
         {
             logger?.LogInformation("Registering with Spring Boot Admin Server at {0}", options.Url);
 
             HttpResponseMessage result = null;
+
             try
             {
                 result = httpClient.PostAsJsonAsync($"{options.Url}/instances", app).GetAwaiter().GetResult();
@@ -76,7 +87,7 @@ public static class SpringBootAdminApplicationBuilderExtensions
             }
             else
             {
-                var errorResponse = result != null ? result.Content.ReadAsStringAsync().Result : string.Empty;
+                string errorResponse = result != null ? result.Content.ReadAsStringAsync().Result : string.Empty;
                 logger?.LogError("Error registering with SpringBootAdmin: {Result} \n {Message}", result, errorResponse);
             }
         });
@@ -92,6 +103,8 @@ public static class SpringBootAdminApplicationBuilderExtensions
         });
     }
 
-    private static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
+    private static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+    {
         from?.ToList().ForEach(to.Add);
+    }
 }

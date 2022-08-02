@@ -34,7 +34,10 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' == new System.Text.StringBuilder('abc').ToString()", true, typeof(bool));
         Evaluate("'abc' == 'def'", false, typeof(bool));
         Evaluate("'abc' == null", false, typeof(bool));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() == new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()", true, typeof(bool));
+
+        Evaluate(
+            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() == new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
+            true, typeof(bool));
 
         Evaluate("3 eq 5", false, typeof(bool));
         Evaluate("5 eQ 3", false, typeof(bool));
@@ -57,7 +60,10 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' eq new System.Text.StringBuilder('abc').ToString()", true, typeof(bool));
         Evaluate("'abc' eq 'def'", false, typeof(bool));
         Evaluate("'abc' eq null", false, typeof(bool));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() eq new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()", true, typeof(bool));
+
+        Evaluate(
+            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() eq new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
+            true, typeof(bool));
     }
 
     [Fact]
@@ -84,7 +90,10 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' != new System.Text.StringBuilder('abc').ToString()", false, typeof(bool));
         Evaluate("'abc' != 'def'", true, typeof(bool));
         Evaluate("'abc' != null", true, typeof(bool));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() != new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()", false, typeof(bool));
+
+        Evaluate(
+            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() != new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
+            false, typeof(bool));
 
         Evaluate("3 ne 5", true, typeof(bool));
         Evaluate("5 nE 3", true, typeof(bool));
@@ -107,7 +116,10 @@ public class OperatorTests : AbstractExpressionTests
         Evaluate("'abc' ne new System.Text.StringBuilder('abc').ToString()", false, typeof(bool));
         Evaluate("'abc' ne 'def'", true, typeof(bool));
         Evaluate("'abc' ne null", true, typeof(bool));
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() ne new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()", false, typeof(bool));
+
+        Evaluate(
+            "new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$SubComparable() ne new Steeltoe.Common.Expression.Internal.Spring.OperatorTests$OtherSubComparable()",
+            false, typeof(bool));
     }
 
     [Fact]
@@ -494,7 +506,7 @@ public class OperatorTests : AbstractExpressionTests
     [Fact]
     public void TestOperatorNames()
     {
-        var node = GetOperatorNode((SpelExpression)Parser.ParseExpression("1==3"));
+        Operator node = GetOperatorNode((SpelExpression)Parser.ParseExpression("1==3"));
         Assert.Equal("==", node.OperatorName);
 
         node = GetOperatorNode((SpelExpression)Parser.ParseExpression("1!=3"));
@@ -593,7 +605,7 @@ public class OperatorTests : AbstractExpressionTests
 
     private Operator GetOperatorNode(SpelExpression expr)
     {
-        var node = expr.Ast;
+        ISpelNode node = expr.Ast;
         return FindOperator(node);
     }
 
@@ -604,10 +616,12 @@ public class OperatorTests : AbstractExpressionTests
             return operatorNode;
         }
 
-        var childCount = node.ChildCount;
-        for (var i = 0; i < childCount; i++)
+        int childCount = node.ChildCount;
+
+        for (int i = 0; i < childCount; i++)
         {
-            var possible = FindOperator(node.GetChild(i));
+            Operator possible = FindOperator(node.GetChild(i));
+
             if (possible != null)
             {
                 return possible;

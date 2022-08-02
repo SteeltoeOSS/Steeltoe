@@ -26,7 +26,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo:8080/test");
 
-        var result = handler.LookupService(uri);
+        Uri result = handler.LookupService(uri);
         Assert.Equal(uri, result);
     }
 
@@ -37,7 +37,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test");
 
-        var result = handler.LookupService(uri);
+        Uri result = handler.LookupService(uri);
         Assert.Equal(uri, result);
     }
 
@@ -48,7 +48,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-        var result = handler.LookupService(uri);
+        Uri result = handler.LookupService(uri);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
     }
 
@@ -59,7 +59,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo:8080/test");
 
-        var result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri);
         Assert.Equal(uri, result);
     }
 
@@ -70,7 +70,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test");
 
-        var result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri);
         Assert.Equal(uri, result);
     }
 
@@ -81,7 +81,7 @@ public class DiscoveryHttpClientHandlerBaseTest
         var handler = new DiscoveryHttpClientHandlerBase(client);
         var uri = new Uri("https://foo/test/bar/foo?test=1&test2=2");
 
-        var result = await handler.LookupServiceAsync(uri);
+        Uri result = await handler.LookupServiceAsync(uri);
         Assert.Equal(new Uri("https://foundit:5555/test/bar/foo?test=1&test2=2"), result);
     }
 }

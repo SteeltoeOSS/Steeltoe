@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Http;
 
 public class ClientCertificateHttpHandler : HttpClientHandler
 {
-    private readonly SemaphoreSlim _lock = new (1);
+    private readonly SemaphoreSlim _lock = new(1);
     private readonly IOptionsMonitor<CertificateOptions> _certificateOptions;
     private CertificateOptions _lastValue;
 
@@ -24,6 +24,7 @@ public class ClientCertificateHttpHandler : HttpClientHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         await _lock.WaitAsync(cancellationToken);
+
         try
         {
             return await base.SendAsync(request, cancellationToken);
@@ -45,6 +46,7 @@ public class ClientCertificateHttpHandler : HttpClientHandler
         var authorityCertStore = new X509Store(StoreName.CertificateAuthority, StoreLocation.CurrentUser);
         personalCertStore.Open(OpenFlags.ReadWrite);
         authorityCertStore.Open(OpenFlags.ReadWrite);
+
         if (_lastValue != null)
         {
             personalCertStore.Certificates.Remove(_lastValue.Certificate);
@@ -55,6 +57,7 @@ public class ClientCertificateHttpHandler : HttpClientHandler
         personalCertStore.Close();
         authorityCertStore.Close();
         _lock.Wait();
+
         try
         {
             _lastValue = _certificateOptions.CurrentValue;

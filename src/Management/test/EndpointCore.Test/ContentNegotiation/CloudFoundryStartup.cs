@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class CloudFoundryStartup
 {
+    public IConfiguration Configuration { get; set; }
+
     public CloudFoundryStartup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -27,6 +27,7 @@ public class CloudFoundryStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<CloudFoundryEndpoint>();

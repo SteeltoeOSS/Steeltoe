@@ -16,23 +16,20 @@ public class ProcessorBindingWithBindingTargetsTest : AbstractTest
     [Fact]
     public async Task TestSourceOutputChannelBound()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithIProcessorBinding(
-                searchDirectories,
-                "spring:cloud:stream:defaultBinder=mock",
-                "spring.cloud.stream.bindings.input.destination=testtock.0",
-                "spring.cloud.stream.bindings.output.destination=testtock.1")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock",
+            "spring.cloud.stream.bindings.input.destination=testtock.0", "spring.cloud.stream.bindings.output.destination=testtock.1").BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
+        IBinder binder = factory.GetBinder(null);
         Assert.NotNull(binder);
 
         var processor = provider.GetService<IProcessor>();
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("testtock.0", null, processor.Input, It.IsAny<ConsumerOptions>()));
         mock.Verify(b => b.BindProducer("testtock.1", processor.Output, It.IsAny<ProducerOptions>()));
     }

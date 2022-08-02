@@ -105,8 +105,7 @@ public class RabbitCommonOptions
         DeadLetterQueueName ??= defaultOptions?.DeadLetterQueueName;
         DeadLetterExchange ??= defaultOptions?.DeadLetterExchange;
 
-        DeadLetterExchangeType ??=
-            defaultOptions != null ? defaultOptions.DeadLetterExchangeType : RabbitConfig.ExchangeType.Direct;
+        DeadLetterExchangeType ??= defaultOptions != null ? defaultOptions.DeadLetterExchangeType : RabbitConfig.ExchangeType.Direct;
 
         DeclareDlx ??= defaultOptions != null ? defaultOptions.DeclareDlx : true;
         DeadLetterRoutingKey ??= defaultOptions?.DeadLetterRoutingKey;
@@ -126,11 +125,22 @@ public class RabbitCommonOptions
         DlqOverflowBehavior ??= defaultOptions?.DlqOverflowBehavior;
         SingleActiveConsumer ??= defaultOptions != null ? defaultOptions.SingleActiveConsumer : false;
         DlqSingleActiveConsumer ??= defaultOptions != null ? defaultOptions.DlqSingleActiveConsumer : false;
-        Quorum ??= defaultOptions != null ? defaultOptions.Quorum : new QuorumConfig { Enabled = false };
-        DlqQuorum ??= defaultOptions != null ? defaultOptions.DlqQuorum : new QuorumConfig { Enabled = false };
 
-        QueueBindingArguments ??=
-            defaultOptions != null ? defaultOptions.QueueBindingArguments : new Dictionary<string, string>();
+        Quorum ??= defaultOptions != null
+            ? defaultOptions.Quorum
+            : new QuorumConfig
+            {
+                Enabled = false
+            };
+
+        DlqQuorum ??= defaultOptions != null
+            ? defaultOptions.DlqQuorum
+            : new QuorumConfig
+            {
+                Enabled = false
+            };
+
+        QueueBindingArguments ??= defaultOptions != null ? defaultOptions.QueueBindingArguments : new Dictionary<string, string>();
 
         DlqBindingArguments ??= defaultOptions != null ? defaultOptions.DlqBindingArguments : new Dictionary<string, string>();
     }

@@ -2,20 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using System.Net.Http.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "true",
         ["management:endpoints:path"] = "/cloudfoundryapplication",
@@ -49,24 +50,23 @@ public class EndpointMiddlewareTest : BaseTest
 
         var middle = new CloudFoundryEndpointMiddleware(null, ep, managementOptions);
 
-        var context = CreateRequest("GET", "/");
+        HttpContext context = CreateRequest("GET", "/");
         await middle.HandleCloudFoundryRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
-        var json = await rdr.ReadToEndAsync();
+        string json = await rdr.ReadToEndAsync();
         Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{}}", json);
     }
 
     [Fact]
     public async Task CloudFoundryEndpointMiddleware_ReturnsExpectedData()
     {
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var options = GetSerializerOptions();
+        HttpClient client = server.CreateClient();
+        JsonSerializerOptions options = GetSerializerOptions();
         options.PropertyNameCaseInsensitive = true;
         var links = await client.GetFromJsonAsync<Links>("http://localhost/cloudfoundryapplication", options);
         Assert.NotNull(links);
@@ -80,30 +80,30 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task CloudFoundryEndpointMiddleware_ServiceContractNotBroken()
     {
         // arrange a server and client
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
+        HttpClient client = server.CreateClient();
 
         // send the request
-        var result = await client.GetAsync("http://localhost/cloudfoundryapplication");
-        var json = await result.Content.ReadAsStringAsync();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication");
+        string json = await result.Content.ReadAsStringAsync();
 
-        Assert.Equal("{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}", json);
+        Assert.Equal(
+            "{\"type\":\"steeltoe\",\"_links\":{\"info\":{\"href\":\"http://localhost/cloudfoundryapplication/info\",\"templated\":false},\"self\":{\"href\":\"http://localhost/cloudfoundryapplication\",\"templated\":false}}}",
+            json);
     }
 
     [Fact]
     public async Task CloudFoundryOptions_UseDefaultJsonSerializerOptions()
     {
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+        HttpClient client = server.CreateClient();
+        string response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
 
         Assert.Contains("2017-07-12T18:40:39Z", response);
         Assert.Contains("2017-06-08T12:47:02Z", response);
@@ -112,14 +112,16 @@ public class EndpointMiddlewareTest : BaseTest
     [Fact]
     public async Task CloudFoundryOptions_UseCustomJsonSerializerOptions()
     {
-        Dictionary<string, string> settings = new (_appSettings) { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        Dictionary<string, string> settings = new(_appSettings)
+        {
+            { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
+        };
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
+        HttpClient client = server.CreateClient();
+        string response = await client.GetStringAsync("http://localhost/cloudfoundryapplication/info");
 
         Assert.Contains("1499884839000", response);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response);
@@ -133,6 +135,7 @@ public class EndpointMiddlewareTest : BaseTest
         {
             TraceIdentifier = Guid.NewGuid().ToString()
         };
+
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
         context.Request.Path = new PathString(path);

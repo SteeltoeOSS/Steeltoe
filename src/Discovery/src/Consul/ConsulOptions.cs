@@ -5,8 +5,7 @@
 namespace Steeltoe.Discovery.Consul;
 
 /// <summary>
-/// Configuration options to use in creating a Consul client. See the documentation
-/// of the Consul client for more details.
+/// Configuration options to use in creating a Consul client. See the documentation of the Consul client for more details.
 /// </summary>
 public class ConsulOptions
 {

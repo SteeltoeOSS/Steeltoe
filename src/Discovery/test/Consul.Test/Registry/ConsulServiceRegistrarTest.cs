@@ -13,7 +13,7 @@ public class ConsulServiceRegistrarTest
     [Fact]
     public void Constructor_ThrowsOnNulls()
     {
-        var registry = new Mock<IConsulServiceRegistry>().Object;
+        IConsulServiceRegistry registry = new Mock<IConsulServiceRegistry>().Object;
         var options = new ConsulDiscoveryOptions();
         var registration = new ConsulRegistration();
 
@@ -50,10 +50,12 @@ public class ConsulServiceRegistrarTest
     public void Register_DoesNotCallRegistry()
     {
         var regMoq = new Mock<IConsulServiceRegistry>();
+
         var options = new ConsulDiscoveryOptions
         {
             Register = false
         };
+
         var registration = new ConsulRegistration();
 
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
@@ -65,10 +67,12 @@ public class ConsulServiceRegistrarTest
     public void Deregister_DoesNotCallRegistry()
     {
         var regMoq = new Mock<IConsulServiceRegistry>();
+
         var options = new ConsulDiscoveryOptions
         {
             Deregister = false
         };
+
         var registration = new ConsulRegistration();
 
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
@@ -80,10 +84,12 @@ public class ConsulServiceRegistrarTest
     public void Start_DoesNotStart()
     {
         var regMoq = new Mock<IConsulServiceRegistry>();
+
         var options = new ConsulDiscoveryOptions
         {
             Enabled = false
         };
+
         var registration = new ConsulRegistration();
         var reg = new ConsulServiceRegistrar(regMoq.Object, options, registration);
         reg.Start();

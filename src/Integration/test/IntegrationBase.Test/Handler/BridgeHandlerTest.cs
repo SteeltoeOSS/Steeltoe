@@ -21,7 +21,7 @@ public class BridgeHandlerTest
     public BridgeHandlerTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
@@ -36,9 +36,9 @@ public class BridgeHandlerTest
     {
         var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>());
         _handler.OutputChannel = outputChannel;
-        var request = Message.Create("test");
+        IMessage<string> request = Message.Create("test");
         _handler.HandleMessage(request);
-        var reply = outputChannel.Receive(0);
+        IMessage reply = outputChannel.Receive(0);
         Assert.NotNull(reply);
         Assert.Equal(request.Payload, reply.Payload);
         Assert.Equal(request.Headers, reply.Headers);
@@ -47,7 +47,7 @@ public class BridgeHandlerTest
     [Fact]
     public void MissingOutputChannelVerifiedAtRuntime()
     {
-        var request = Message.Create("test");
+        IMessage<string> request = Message.Create("test");
         var ex = Assert.Throws<MessageHandlingException>(() => _handler.HandleMessage(request));
         Assert.IsType<DestinationResolutionException>(ex.InnerException);
     }
@@ -56,9 +56,9 @@ public class BridgeHandlerTest
     public void MissingOutputChannelAllowedForReplyChannelMessages()
     {
         var replyChannel = new QueueChannel(_provider.GetService<IApplicationContext>());
-        var request = IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
+        IMessage request = IntegrationMessageBuilder.WithPayload("tst").SetReplyChannel(replyChannel).Build();
         _handler.HandleMessage(request);
-        var reply = replyChannel.Receive();
+        IMessage reply = replyChannel.Receive();
         Assert.NotNull(reply);
         Assert.Equal(request.Payload, reply.Payload);
         Assert.Equal(request.Headers, reply.Headers);

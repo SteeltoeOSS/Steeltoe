@@ -21,10 +21,7 @@ public class DeclareQueueBindingAttribute : Attribute
             return _bindingName;
         }
 
-        set
-        {
-            _bindingName = value;
-        }
+        set => _bindingName = value;
     }
 
     public string QueueName { get; set; } = string.Empty;
@@ -45,7 +42,10 @@ public class DeclareQueueBindingAttribute : Attribute
 
         set
         {
-            RoutingKeys = new[] { value };
+            RoutingKeys = new[]
+            {
+                value
+            };
         }
     }
 
@@ -69,7 +69,10 @@ public class DeclareQueueBindingAttribute : Attribute
 
         set
         {
-            Admins = new[] { value };
+            Admins = new[]
+            {
+                value
+            };
         }
     }
 

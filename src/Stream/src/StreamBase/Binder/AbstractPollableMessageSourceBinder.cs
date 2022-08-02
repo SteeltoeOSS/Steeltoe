@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Retry;
+using Steeltoe.Integration;
+using Steeltoe.Integration.Support;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Config;
 using Steeltoe.Stream.Provisioning;
@@ -14,30 +16,24 @@ namespace Steeltoe.Stream.Binder;
 
 public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChannelBinder, IPollableConsumerBinder<IMessageHandler>
 {
-    protected AbstractPollableMessageSourceBinder(
-        IApplicationContext context,
-        string[] headersToEmbed,
-        IProvisioningProvider provisioningProvider,
+    protected AbstractPollableMessageSourceBinder(IApplicationContext context, string[] headersToEmbed, IProvisioningProvider provisioningProvider,
         ILogger logger)
         : this(context, headersToEmbed, provisioningProvider, null, null, logger)
     {
     }
 
-    protected AbstractPollableMessageSourceBinder(
-        IApplicationContext context,
-        string[] headersToEmbed,
-        IProvisioningProvider provisioningProvider,
-        IListenerContainerCustomizer containerCustomizer,
-        IMessageSourceCustomizer sourceCustomizer,
-        ILogger logger)
+    protected AbstractPollableMessageSourceBinder(IApplicationContext context, string[] headersToEmbed, IProvisioningProvider provisioningProvider,
+        IListenerContainerCustomizer containerCustomizer, IMessageSourceCustomizer sourceCustomizer, ILogger logger)
         : base(context, headersToEmbed, provisioningProvider, containerCustomizer, sourceCustomizer, logger)
     {
     }
 
     public override IBinding BindConsumer(string name, string group, object inboundTarget, IConsumerOptions consumerOptions)
-        => inboundTarget is IPollableSource<IMessageHandler> source
+    {
+        return inboundTarget is IPollableSource<IMessageHandler> source
             ? BindConsumer(name, group, source, consumerOptions)
             : base.BindConsumer(name, group, inboundTarget, consumerOptions);
+    }
 
     public virtual IBinding BindConsumer(string name, string group, IPollableSource<IMessageHandler> inboundTarget, IConsumerOptions consumerOptions)
     {
@@ -46,17 +42,19 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
             throw new InvalidOperationException(nameof(inboundTarget));
         }
 
-        var destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
+        IConsumerDestination destination = InnerProvisioningProvider.ProvisionConsumerDestination(name, group, consumerOptions);
+
         if (consumerOptions.HeaderMode == HeaderMode.EmbeddedHeaders)
         {
             bindingTarget.AddInterceptor(0, CurrentEmbeddedHeadersChannelInterceptor);
         }
 
-        var resources = CreatePolledConsumerResources(name, group, destination, consumerOptions);
+        PolledConsumerResources resources = CreatePolledConsumerResources(name, group, destination, consumerOptions);
 
-        var messageSource = resources.Source;
+        IMessageSource messageSource = resources.Source;
 
         bindingTarget.Source = messageSource;
+
         if (resources.ErrorInfrastructure != null)
         {
             if (resources.ErrorInfrastructure.ErrorChannel != null)
@@ -64,7 +62,8 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
                 bindingTarget.ErrorChannel = resources.ErrorInfrastructure.ErrorChannel;
             }
 
-            var ems = GetErrorMessageStrategy();
+            IErrorMessageStrategy ems = GetErrorMessageStrategy();
+
             if (ems != null)
             {
                 bindingTarget.ErrorMessageStrategy = ems;
@@ -79,30 +78,33 @@ public abstract class AbstractPollableMessageSourceBinder : AbstractMessageChann
 
         PostProcessPollableSource(bindingTarget);
         var sourceAsLifecycle = resources.Source as ILifecycle;
+
         if (sourceAsLifecycle != null)
         {
             sourceAsLifecycle.Start();
         }
 
-        var binding = new DefaultPollableChannelBinding(
-            this,
-            name,
-            group,
-            inboundTarget,
-            sourceAsLifecycle ?? null,
-            consumerOptions,
-            destination);
+        var binding = new DefaultPollableChannelBinding(this, name, group, inboundTarget, sourceAsLifecycle ?? null, consumerOptions, destination);
         return binding;
     }
 
-    public virtual IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions) => throw new NotImplementedException();
+    public virtual IBinding BindProducer(string name, IPollableSource<IMessageHandler> outboundTarget, IProducerOptions producerOptions)
+    {
+        throw new NotImplementedException();
+    }
 
     protected virtual void PostProcessPollableSource(DefaultPollableMessageSource bindingTarget)
     {
     }
 
-    protected virtual IRecoveryCallback GetPolledConsumerRecoveryCallback(ErrorInfrastructure errorInfrastructure, IConsumerOptions options) => errorInfrastructure.Recoverer;
+    protected virtual IRecoveryCallback GetPolledConsumerRecoveryCallback(ErrorInfrastructure errorInfrastructure, IConsumerOptions options)
+    {
+        return errorInfrastructure.Recoverer;
+    }
 
-    protected virtual PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination, IConsumerOptions consumerOptions)
-        => throw new InvalidOperationException("This binder does not support pollable consumers");
+    protected virtual PolledConsumerResources CreatePolledConsumerResources(string name, string group, IConsumerDestination destination,
+        IConsumerOptions consumerOptions)
+    {
+        throw new InvalidOperationException("This binder does not support pollable consumers");
+    }
 }

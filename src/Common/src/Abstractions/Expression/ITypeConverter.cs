@@ -7,9 +7,7 @@ using Steeltoe.Common.Converter;
 namespace Steeltoe.Common.Expression.Internal;
 
 /// <summary>
-/// A type converter can convert values between different types encountered during expression
-/// evaluation.
-/// TODO:  This interface is not complete.
+/// A type converter can convert values between different types encountered during expression evaluation. TODO:  This interface is not complete.
 /// </summary>
 public interface ITypeConverter
 {

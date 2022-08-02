@@ -10,11 +10,14 @@ namespace Steeltoe.Management.OpenTelemetry.Exporters;
 
 public class SteeltoePrometheusExporter : MetricsExporter
 {
+    private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
     internal PullMetricsCollectionManager CollectionManager { get; }
 
     internal override int ScrapeResponseCacheDurationMilliseconds { get; }
 
-    private byte[] _buffer = new byte[85000]; // encourage the object to live in LOH (large object heap)
+    internal override Func<Batch<Metric>, ExportResult> OnExport { get; set; }
+
+    public override Func<int, bool> Collect { get; set; }
 
     internal SteeltoePrometheusExporter(IPullMetricsExporterOptions options = null)
     {
@@ -22,15 +25,10 @@ public class SteeltoePrometheusExporter : MetricsExporter
         CollectionManager = new PullMetricsCollectionManager(this);
     }
 
-    public override Func<int, bool> Collect
-    {
-        get;
-        set;
-    }
-
     public override ExportResult Export(in Batch<Metric> batch)
     {
         var result = ExportResult.Failure;
+
         if (OnExport != null)
         {
             result = OnExport(batch);
@@ -39,16 +37,11 @@ public class SteeltoePrometheusExporter : MetricsExporter
         return result;
     }
 
-    internal override Func<Batch<Metric>, ExportResult> OnExport
-    {
-        get; set;
-    }
-
     internal override ICollectionResponse GetCollectionResponse(Batch<Metric> metrics = default)
     {
         int cursor = 0;
 
-        foreach (var metric in metrics)
+        foreach (Metric metric in metrics)
         {
             while (true)
             {
@@ -72,7 +65,7 @@ public class SteeltoePrometheusExporter : MetricsExporter
                         throw;
                     }
 
-                    var newBuffer = new byte[bufferSize];
+                    byte[] newBuffer = new byte[bufferSize];
                     _buffer.CopyTo(newBuffer, 0);
                     _buffer = newBuffer;
                 }

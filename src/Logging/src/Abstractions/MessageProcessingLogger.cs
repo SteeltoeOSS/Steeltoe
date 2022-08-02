@@ -10,27 +10,37 @@ public class MessageProcessingLogger : ILogger
 {
     private readonly IEnumerable<IDynamicMessageProcessor> _messageProcessors;
 
+    public ILogger Delegate { get; }
+
+    public Func<string, LogLevel, bool> Filter { get; internal set; }
+
+    public string Name { get; internal set; }
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="MessageProcessingLogger"/> class.
-    /// Wraps an ILogger and decorates log messages via <see cref="IDynamicMessageProcessor"/>.
+    /// Initializes a new instance of the <see cref="MessageProcessingLogger" /> class. Wraps an ILogger and decorates log messages via
+    /// <see cref="IDynamicMessageProcessor" />.
     /// </summary>
-    /// <param name="iLogger">The <see cref="ILogger"/> being wrapped.</param>
-    /// <param name="messageProcessors">The list of <see cref="IDynamicMessageProcessor"/>s.</param>
+    /// <param name="iLogger">
+    /// The <see cref="ILogger" /> being wrapped.
+    /// </param>
+    /// <param name="messageProcessors">
+    /// The list of <see cref="IDynamicMessageProcessor" />s.
+    /// </param>
     public MessageProcessingLogger(ILogger iLogger, IEnumerable<IDynamicMessageProcessor> messageProcessors = null)
     {
         _messageProcessors = messageProcessors;
         Delegate = iLogger;
     }
 
-    public IDisposable BeginScope<TState>(TState state) => Delegate.BeginScope(state);
+    public IDisposable BeginScope<TState>(TState state)
+    {
+        return Delegate.BeginScope(state);
+    }
 
-    public bool IsEnabled(LogLevel logLevel) => Filter.Invoke(Name, logLevel);
-
-    public ILogger Delegate { get; private set; }
-
-    public Func<string, LogLevel, bool> Filter { get; internal set; }
-
-    public string Name { get; internal set; }
+    public bool IsEnabled(LogLevel logLevel)
+    {
+        return Filter.Invoke(Name, logLevel);
+    }
 
     public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
@@ -44,11 +54,11 @@ public class MessageProcessingLogger : ILogger
             throw new ArgumentNullException(nameof(formatter));
         }
 
-        var message = formatter(state, exception);
+        string message = formatter(state, exception);
 
         if (_messageProcessors != null)
         {
-            foreach (var processor in _messageProcessors)
+            foreach (IDynamicMessageProcessor processor in _messageProcessors)
             {
                 message = processor.Process(message);
             }
@@ -61,5 +71,7 @@ public class MessageProcessingLogger : ILogger
     }
 
     public virtual void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
-        => Delegate.Log(logLevel, eventId, exception, message);
+    {
+        Delegate.Log(logLevel, eventId, exception, message);
+    }
 }

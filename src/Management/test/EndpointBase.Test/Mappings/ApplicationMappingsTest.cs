@@ -16,10 +16,11 @@ public class ApplicationMappingsTest : BaseTest
         {
             { "dispatcherServlet", new List<MappingDescription>() }
         };
+
         var contextMappings = new ContextMappings(mappingDict);
 
         var appMappings = new ApplicationMappings(contextMappings);
-        var ctxMappings = appMappings.ContextMappings;
+        IDictionary<string, ContextMappings> ctxMappings = appMappings.ContextMappings;
         Assert.Contains("application", ctxMappings.Keys);
         Assert.Single(ctxMappings.Keys);
         Assert.Same(contextMappings, ctxMappings["application"]);
@@ -30,15 +31,24 @@ public class ApplicationMappingsTest : BaseTest
     {
         var routeDetail = new TestRouteDetails
         {
-            HttpMethods = new List<string> { "GET" },
+            HttpMethods = new List<string>
+            {
+                "GET"
+            },
             RouteTemplate = "/Home/Index",
-            Consumes = new List<string> { "application/json" },
-            Produces = new List<string> { "application/json" }
+            Consumes = new List<string>
+            {
+                "application/json"
+            },
+            Produces = new List<string>
+            {
+                "application/json"
+            }
         };
 
         var mappingDescriptions = new List<MappingDescription>
         {
-            new ("foobar", routeDetail)
+            new("foobar", routeDetail)
         };
 
         var mappingDict = new Dictionary<string, IList<MappingDescription>>
@@ -49,7 +59,10 @@ public class ApplicationMappingsTest : BaseTest
         var contextMappings = new ContextMappings(mappingDict);
         var appMappings = new ApplicationMappings(contextMappings);
 
-        var result = Serialize(appMappings);
-        Assert.Equal("{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"controllerTypeName\":[{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}]}}}}}", result);
+        string result = Serialize(appMappings);
+
+        Assert.Equal(
+            "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"controllerTypeName\":[{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}]}}}}}",
+            result);
     }
 }

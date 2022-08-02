@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Extensions;
 using Steeltoe.Stream.TestBinder;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Stream.Tck;
@@ -19,7 +19,7 @@ public class ErrorHandlingTest : AbstractTest
 
     public ErrorHandlingTest()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         _container = CreateStreamsContainerWithDefaultBindings(searchDirectories);
     }
 
@@ -27,13 +27,13 @@ public class ErrorHandlingTest : AbstractTest
     public async Task TestGlobalErrorWithMessage()
     {
         _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
-        var provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
-        var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         DoSend(provider, message);
 
         var config = provider.GetService<GlobalErrorHandlerWithErrorMessageConfig>();
@@ -44,13 +44,13 @@ public class ErrorHandlingTest : AbstractTest
     public async Task TestGlobalErrorWithThrowable()
     {
         _container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
-        var provider = _container.BuildServiceProvider();
+        ServiceProvider provider = _container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
-        var message = Message.Create(Encoding.UTF8.GetBytes("foo"));
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("foo"));
         DoSend(provider, message);
 
         var config = provider.GetService<GlobalErrorHandlerWithExceptionConfig>();

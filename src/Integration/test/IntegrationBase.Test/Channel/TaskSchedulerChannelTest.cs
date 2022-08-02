@@ -21,7 +21,7 @@ public class TaskSchedulerChannelTest
     public TaskSchedulerChannelTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
@@ -46,7 +46,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void RoundRobinLoadBalancing()
     {
-        var numberOfMessages = 12;
+        int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
@@ -55,7 +55,8 @@ public class TaskSchedulerChannelTest
         channel.Subscribe(handler1);
         channel.Subscribe(handler2);
         channel.Subscribe(handler3);
-        for (var i = 0; i < numberOfMessages; i++)
+
+        for (int i = 0; i < numberOfMessages; i++)
         {
             channel.Send(Message.Create($"test-{i}"));
         }
@@ -76,7 +77,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void VerifyFailoverWithLoadBalancing()
     {
-        var numberOfMessages = 12;
+        int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
@@ -86,7 +87,8 @@ public class TaskSchedulerChannelTest
         channel.Subscribe(handler2);
         channel.Subscribe(handler3);
         handler2.ShouldFail = true;
-        for (var i = 0; i < numberOfMessages; i++)
+
+        for (int i = 0; i < numberOfMessages; i++)
         {
             channel.Send(Message.Create($"test-{i}"));
         }
@@ -107,7 +109,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void VerifyFailoverWithoutLoadBalancing()
     {
-        var numberOfMessages = 12;
+        int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
@@ -117,7 +119,8 @@ public class TaskSchedulerChannelTest
         channel.Subscribe(handler2);
         channel.Subscribe(handler3);
         handler1.ShouldFail = true;
-        for (var i = 0; i < numberOfMessages; i++)
+
+        for (int i = 0; i < numberOfMessages; i++)
         {
             channel.Send(Message.Create($"test-{i}"));
         }
@@ -143,7 +146,12 @@ public class TaskSchedulerChannelTest
         var mockHandler = new Mock<IMessageHandler>();
         var mockExpected = new Mock<IMessage>();
         var latch = new CountdownEvent(2);
-        var interceptor = new BeforeHandleInterceptor(latch) { MessageToReturn = mockExpected.Object };
+
+        var interceptor = new BeforeHandleInterceptor(latch)
+        {
+            MessageToReturn = mockExpected.Object
+        };
+
         channel.AddInterceptor(interceptor);
         channel.Subscribe(mockHandler.Object);
         channel.Send(Message.Create("foo"));
@@ -157,7 +165,7 @@ public class TaskSchedulerChannelTest
     public void InterceptorWithException()
     {
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
-        var message = Message.Create("foo");
+        IMessage<string> message = Message.Create("foo");
         var mockHandler = new Mock<IMessageHandler>();
 
         var expected = new InvalidOperationException("Fake exception");
@@ -195,12 +203,13 @@ public class TaskSchedulerChannelTest
 
         public TestHandler(CountdownEvent latch)
         {
-            this.Latch = latch;
+            Latch = latch;
         }
 
         public void HandleMessage(IMessage message)
         {
             Thread = Thread.CurrentThread;
+
             if (ShouldFail)
             {
                 throw new Exception("intentional test failure");
@@ -213,10 +222,10 @@ public class TaskSchedulerChannelTest
 
     private sealed class BeforeHandleInterceptor : AbstractTaskSchedulerChannelInterceptor
     {
+        private readonly CountdownEvent _latch;
         public int Counter;
         public volatile bool AfterHandledInvoked;
         public IMessage MessageToReturn;
-        private readonly CountdownEvent _latch;
 
         public BeforeHandleInterceptor()
         {

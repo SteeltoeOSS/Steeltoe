@@ -48,7 +48,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseCharset()
     {
-        var s = "text/html; charset=iso-8859-1";
+        string s = "text/html; charset=iso-8859-1";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("text", mimeType.Type);
         Assert.Equal("html", mimeType.Subtype);
@@ -58,7 +58,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseQuotedCharset()
     {
-        var s = "application/xml;charset=\"utf-8\"";
+        string s = "application/xml;charset=\"utf-8\"";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("application", mimeType.Type);
         Assert.Equal("xml", mimeType.Subtype);
@@ -68,7 +68,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseQuotedSeparator()
     {
-        var s = "application/xop+xml;charset=utf-8;type=\"application/soap+xml;action=\\\"https://x.y.z\\\"\"";
+        string s = "application/xop+xml;charset=utf-8;type=\"application/soap+xml;action=\\\"https://x.y.z\\\"\"";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("application", mimeType.Type);
         Assert.Equal("xop+xml", mimeType.Subtype);
@@ -87,7 +87,7 @@ public class MimeTypeTest
     [Fact]
     public void Includes()
     {
-        var textPlain = MimeTypeUtils.TextPlain;
+        MimeType textPlain = MimeTypeUtils.TextPlain;
         Assert.True(textPlain.Includes(textPlain));
         var allText = new MimeType("text");
 
@@ -118,7 +118,7 @@ public class MimeTypeTest
     [Fact]
     public void IsCompatible()
     {
-        var textPlain = MimeTypeUtils.TextPlain;
+        MimeType textPlain = MimeTypeUtils.TextPlain;
         Assert.True(textPlain.IsCompatibleWith(textPlain));
         var allText = new MimeType("text");
 
@@ -150,15 +150,15 @@ public class MimeTypeTest
     public void TestToString()
     {
         var mimeType = new MimeType("text", "plain");
-        var result = mimeType.ToString();
+        string result = mimeType.ToString();
         Assert.Equal("text/plain", result);
     }
 
     [Fact]
     public void ParseMimeType()
     {
-        var s = "audio/*";
-        var mimeType = MimeTypeUtils.ParseMimeType(s);
+        string s = "audio/*";
+        MimeType mimeType = MimeTypeUtils.ParseMimeType(s);
         Assert.Equal("audio", mimeType.Type);
         Assert.Equal("*", mimeType.Subtype);
     }
@@ -232,28 +232,28 @@ public class MimeTypeTest
     [Fact]
     public void ParseMimeTypeQuotedParameterValue()
     {
-        var mimeType = MimeTypeUtils.ParseMimeType("audio/*;attr=\"v>alue\"");
+        MimeType mimeType = MimeTypeUtils.ParseMimeType("audio/*;attr=\"v>alue\"");
         Assert.Equal("\"v>alue\"", mimeType.GetParameter("attr"));
     }
 
     [Fact]
     public void ParseMimeTypeSingleQuotedParameterValue()
     {
-        var mimeType = MimeTypeUtils.ParseMimeType("audio/*;attr='v>alue'");
+        MimeType mimeType = MimeTypeUtils.ParseMimeType("audio/*;attr='v>alue'");
         Assert.Equal("'v>alue'", mimeType.GetParameter("attr"));
     }
 
     [Fact]
     public void ParseMimeTypeWithSpacesAroundEquals()
     {
-        var mimeType = MimeTypeUtils.ParseMimeType("multipart/x-mixed-replace;boundary = --myboundary");
+        MimeType mimeType = MimeTypeUtils.ParseMimeType("multipart/x-mixed-replace;boundary = --myboundary");
         Assert.Equal("--myboundary", mimeType.GetParameter("boundary"));
     }
 
     [Fact]
     public void ParseMimeTypeWithSpacesAroundEqualsAndQuotedValue()
     {
-        var mimeType = MimeTypeUtils.ParseMimeType("text/plain; foo = \" bar \" ");
+        MimeType mimeType = MimeTypeUtils.ParseMimeType("text/plain; foo = \" bar \" ");
         Assert.Equal("\" bar \"", mimeType.GetParameter("foo"));
     }
 
@@ -266,8 +266,8 @@ public class MimeTypeTest
     [Fact]
     public void ParseMimeTypes()
     {
-        var s = "text/plain, text/html, text/x-dvi, text/x-c";
-        var mimeTypes = MimeTypeUtils.ParseMimeTypes(s);
+        string s = "text/plain, text/html, text/x-dvi, text/x-c";
+        List<MimeType> mimeTypes = MimeTypeUtils.ParseMimeTypes(s);
         Assert.NotNull(mimeTypes);
         Assert.Equal(4, mimeTypes.Count);
 
@@ -302,18 +302,24 @@ public class MimeTypeTest
 
         Assert.True(audioBasicLevel.CompareTo(audio) > 0);
 
-        var expected = new List<MimeType> { audio, audioBasic, audioBasicLevel, audioWave };
+        var expected = new List<MimeType>
+        {
+            audio,
+            audioBasic,
+            audioBasicLevel,
+            audioWave
+        };
 
         var result = new List<MimeType>(expected);
         var rnd = new Random();
 
         // shuffle & sort 10 times
-        for (var i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             Shuffle(result, rnd);
             result.Sort();
 
-            for (var j = 0; j < result.Count; j++)
+            for (int j = 0; j < result.Count; j++)
             {
                 Assert.Same(expected[j], result[j]);
             }
@@ -352,10 +358,11 @@ public class MimeTypeTest
 
     private void TestWithQuotedParameters(params string[] mimeTypes)
     {
-        var s = string.Join(",", mimeTypes);
-        var actual = MimeTypeUtils.ParseMimeTypes(s);
+        string s = string.Join(",", mimeTypes);
+        List<MimeType> actual = MimeTypeUtils.ParseMimeTypes(s);
         Assert.Equal(mimeTypes.Length, actual.Count);
-        for (var i = 0; i < mimeTypes.Length; i++)
+
+        for (int i = 0; i < mimeTypes.Length; i++)
         {
             Assert.Equal(mimeTypes[i], actual[i].ToString());
         }
@@ -363,12 +370,15 @@ public class MimeTypeTest
 
     private IDictionary<string, string> SingletonMap(string key, string value)
     {
-        return new Dictionary<string, string> { { key, value } };
+        return new Dictionary<string, string>
+        {
+            { key, value }
+        };
     }
 
     private void Shuffle<T>(IList<T> list, Random rnd)
     {
-        for (var i = 0; i < list.Count - 1; i++)
+        for (int i = 0; i < list.Count - 1; i++)
         {
             Swap(list, i, rnd.Next(i, list.Count));
         }

@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Http.Json;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.Http;
 using Steeltoe.Management.Endpoint.Health;
-using System.Net.Http.Json;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
@@ -21,7 +21,8 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
 
     internal static RegistrationResult RegistrationResult { get; set; }
 
-    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions, HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
+    public SpringBootAdminClientHostedService(SpringBootAdminClientOptions options, ManagementEndpointOptions managementOptions,
+        HealthEndpointOptions healthOptions, HttpClient httpClient = null, ILogger<SpringBootAdminClientHostedService> logger = null)
     {
         _options = options;
         _managementOptions = managementOptions;
@@ -33,23 +34,29 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Registering with Spring Boot Admin Server at {0}", _options.Url);
-        var basePath = _options.BasePath.TrimEnd('/');
+        string basePath = _options.BasePath.TrimEnd('/');
+
         var app = new Application
         {
             Name = _options.ApplicationName ?? "Steeltoe",
             HealthUrl = new Uri($"{basePath}{_managementOptions.Path}/{_healthOptions.Path}"),
             ManagementUrl = new Uri($"{basePath}{_managementOptions.Path}"),
             ServiceUrl = new Uri($"{basePath}/"),
-            Metadata = new Dictionary<string, object> { { "startup", DateTime.Now } },
+            Metadata = new Dictionary<string, object>
+            {
+                { "startup", DateTime.Now }
+            }
         };
+
         app.Metadata.Merge(_options.Metadata);
 
         _httpClient.Timeout = TimeSpan.FromMilliseconds(_options.ConnectionTimeoutMs);
 
         HttpResponseMessage result = null;
+
         try
         {
-            result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken: cancellationToken);
+            result = await _httpClient.PostAsJsonAsync($"{_options.Url}/instances", app, cancellationToken);
         }
         catch (Exception exception)
         {
@@ -62,7 +69,7 @@ internal sealed class SpringBootAdminClientHostedService : IHostedService
         }
         else
         {
-            var errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
+            string errorResponse = result != null ? await result.Content.ReadAsStringAsync() : string.Empty;
             _logger.LogError("Error registering with SpringBootAdmin: {Message} \n {Response} ", result?.ToString(), errorResponse);
         }
     }

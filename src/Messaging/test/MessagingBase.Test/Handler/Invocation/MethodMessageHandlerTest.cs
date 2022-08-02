@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Messaging.Handler.Invocation.Test;
@@ -21,7 +21,10 @@ public class MethodMessageHandlerTest
 
     public MethodMessageHandlerTest()
     {
-        var destinationPrefixes = new List<string> { "/test" };
+        var destinationPrefixes = new List<string>
+        {
+            "/test"
+        };
 
         _messageHandler = new TestMethodMessageHandler
         {
@@ -43,7 +46,7 @@ public class MethodMessageHandlerTest
     [Fact]
     public void RegisteredMappings()
     {
-        var handlerMethods = _messageHandler.HandlerMethods;
+        IDictionary<string, HandlerMethod> handlerMethods = _messageHandler.HandlerMethods;
 
         Assert.NotNull(handlerMethods);
         Assert.Equal(3, handlerMethods.Count);
@@ -52,7 +55,7 @@ public class MethodMessageHandlerTest
     [Fact]
     public void PatternMatch()
     {
-        var method = typeof(TestController).GetMethod(nameof(TestController.HandlerPathMatchWildcard));
+        MethodInfo method = typeof(TestController).GetMethod(nameof(TestController.HandlerPathMatchWildcard));
         _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/handlerPathMatch*");
 
         _messageHandler.HandleMessage(ToDestination("/test/handlerPathMatchFoo"));
@@ -63,7 +66,7 @@ public class MethodMessageHandlerTest
     [Fact]
     public void BestMatch()
     {
-        var method = typeof(TestController).GetMethod(nameof(TestController.BestMatch));
+        MethodInfo method = typeof(TestController).GetMethod(nameof(TestController.BestMatch));
         _messageHandler.RegisterHandlerMethodPublic(_testController, method, "/bestmatch/{foo}/path");
 
         method = typeof(TestController).GetMethod(nameof(TestController.SecondBestMatch));
@@ -99,7 +102,7 @@ public class MethodMessageHandlerTest
 
     internal sealed class TestController
     {
-        public Dictionary<string, object> Arguments { get; } = new ();
+        public Dictionary<string, object> Arguments { get; } = new();
 
         public string Method { get; set; }
 
@@ -167,6 +170,7 @@ public class MethodMessageHandlerTest
             {
                 new MessageMethodArgumentResolver(new SimpleMessageConverter())
             };
+
             resolvers.AddRange(CustomArgumentResolvers);
             return resolvers;
         }
@@ -180,7 +184,8 @@ public class MethodMessageHandlerTest
 
         protected override string GetMappingForMethod(MethodInfo method, Type handlerType)
         {
-            var methodName = method.Name;
+            string methodName = method.Name;
+
             if (methodName.StartsWith("Handler"))
             {
                 return $"/{methodName}";
@@ -192,6 +197,7 @@ public class MethodMessageHandlerTest
         protected override ISet<string> GetDirectLookupDestinations(string mapping)
         {
             ISet<string> result = new HashSet<string>();
+
             if (!_pathMatcher.IsPattern(mapping))
             {
                 result.Add(mapping);
@@ -207,7 +213,7 @@ public class MethodMessageHandlerTest
 
         protected override string GetMatchingMapping(string mapping, IMessage message)
         {
-            var destination = GetLookupDestination(GetDestination(message));
+            string destination = GetLookupDestination(GetDestination(message));
             Assert.NotNull(destination);
             return mapping.Equals(destination) || _pathMatcher.Match(mapping, destination) ? mapping : null;
         }

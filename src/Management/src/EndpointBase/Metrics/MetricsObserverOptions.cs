@@ -9,43 +9,16 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 public class MetricsObserverOptions : IMetricsObserverOptions
 {
     internal const string ManagementMetricsPrefix = "management:metrics:observer";
-    internal const string DefaultIngressIgnorePattern = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
+    internal const string DefaultIngressIgnorePattern =
+        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
 
-    public MetricsObserverOptions()
-    {
-        IngressIgnorePattern = DefaultIngressIgnorePattern;
-        EgressIgnorePattern = DefaultEgressIgnorePattern;
-    }
-
-    public MetricsObserverOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(ManagementMetricsPrefix);
-        if (section != null)
-        {
-            section.Bind(this);
-        }
-
-        if (string.IsNullOrEmpty(IngressIgnorePattern))
-        {
-            IngressIgnorePattern = DefaultIngressIgnorePattern;
-        }
-
-        if (string.IsNullOrEmpty(EgressIgnorePattern))
-        {
-            EgressIgnorePattern = DefaultEgressIgnorePattern;
-        }
-    }
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public string IngressIgnorePattern { get; set; }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public string EgressIgnorePattern { get; set; }
 
     public bool AspNetCoreHosting { get; set; } = true;
@@ -62,6 +35,37 @@ public class MetricsObserverOptions : IMetricsObserverOptions
 
     public bool HystrixEvents { get; set; }
 
-    /// <inheritdoc/>
-    public List<string> ExcludedMetrics { get; set; } = new ();
+    /// <inheritdoc />
+    public List<string> ExcludedMetrics { get; set; } = new();
+
+    public MetricsObserverOptions()
+    {
+        IngressIgnorePattern = DefaultIngressIgnorePattern;
+        EgressIgnorePattern = DefaultEgressIgnorePattern;
+    }
+
+    public MetricsObserverOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(ManagementMetricsPrefix);
+
+        if (section != null)
+        {
+            section.Bind(this);
+        }
+
+        if (string.IsNullOrEmpty(IngressIgnorePattern))
+        {
+            IngressIgnorePattern = DefaultIngressIgnorePattern;
+        }
+
+        if (string.IsNullOrEmpty(EgressIgnorePattern))
+        {
+            EgressIgnorePattern = DefaultEgressIgnorePattern;
+        }
+    }
 }

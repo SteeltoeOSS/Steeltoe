@@ -32,22 +32,21 @@ public class DirectMessageListenerContainerMockTest
         rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
         channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(new RC.QueueDeclareOk("test", 0, 0));
-        channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Returns("consumerTag");
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+            It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>())).Returns("consumerTag");
 
         var latch1 = new CountdownEvent(1);
         var qos = new AtomicInteger();
-        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((_, count, _) =>
-            {
-                qos.Value = count;
-                latch1.Signal();
-            });
+
+        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>())).Callback<uint, ushort, bool>((_, count, _) =>
+        {
+            qos.Value = count;
+            latch1.Signal();
+        });
 
         var latch2 = new CountdownEvent(1);
-        channel.Setup(c => c.BasicCancel("consumerTag"))
-            .Callback(() => latch2.Signal());
+        channel.Setup(c => c.BasicCancel("consumerTag")).Callback(() => latch2.Signal());
         var container = new DirectMessageListenerContainer(null, connectionFactory.Object);
         container.SetQueueNames("test");
         container.PrefetchCount = 2;
@@ -83,42 +82,45 @@ public class DirectMessageListenerContainerMockTest
 
         var consumer = new AtomicReference<RC.IBasicConsumer>();
         var latch1 = new CountdownEvent(1);
-        channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (_, _, _, _, _, _, cons) =>
-                {
-                    consumer.Value = cons;
-                    cons.HandleBasicConsumeOk("consumerTag");
-                    latch1.Signal();
-                })
-            .Returns("consumerTag");
-        var qos = new AtomicInteger();
-        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((_, count, _) =>
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, cons) =>
             {
-                qos.Value = count;
-            });
+                consumer.Value = cons;
+                cons.HandleBasicConsumeOk("consumerTag");
+                latch1.Signal();
+            }).Returns("consumerTag");
+
+        var qos = new AtomicInteger();
+
+        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>())).Callback<uint, ushort, bool>((_, count, _) =>
+        {
+            qos.Value = count;
+        });
+
         var latch2 = new CountdownEvent(2);
         var latch3 = new CountdownEvent(1);
-        channel.Setup(c => c.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>()))
-            .Callback<ulong, bool>((tag, _) =>
+
+        channel.Setup(c => c.BasicAck(It.IsAny<ulong>(), It.IsAny<bool>())).Callback<ulong, bool>((tag, _) =>
+        {
+            if (tag == 10ul || tag == 16ul)
             {
-                if (tag == 10ul || tag == 16ul)
-                {
-                    latch2.Signal();
-                }
-                else if (tag == 17ul)
-                {
-                    latch3.Signal();
-                }
-            });
+                latch2.Signal();
+            }
+            else if (tag == 17ul)
+            {
+                latch3.Signal();
+            }
+        });
+
         var latch4 = new CountdownEvent(1);
-        channel.Setup(c => c.BasicNack(It.IsAny<ulong>(), It.IsAny<bool>(), It.IsAny<bool>()))
-            .Callback<ulong, bool, bool>((_, _, _) =>
-            {
-                latch4.Signal();
-            });
+
+        channel.Setup(c => c.BasicNack(It.IsAny<ulong>(), It.IsAny<bool>(), It.IsAny<bool>())).Callback<ulong, bool, bool>((_, _, _) =>
+        {
+            latch4.Signal();
+        });
+
         var container = new DirectMessageListenerContainer(null, connectionFactory.Object);
         container.SetQueueNames("test");
         container.PrefetchCount = 2;
@@ -134,7 +136,8 @@ public class DirectMessageListenerContainerMockTest
         Assert.Equal(10, qos.Value);
         var props = new MockRabbitBasicProperties();
 
-        var body = new byte[1];
+        byte[] body = new byte[1];
+
         for (long i = 1; i < 16; i++)
         {
             consumer.Value.HandleBasicDeliver("consumerTag", (ulong)i, false, string.Empty, string.Empty, props, body);
@@ -163,12 +166,12 @@ public class DirectMessageListenerContainerMockTest
         channel.Verify(c => c.BasicNack(19ul, true, true));
         consumer.Value.HandleBasicDeliver("consumerTag", 20ul, false, string.Empty, string.Empty, props, body);
         var latch5 = new CountdownEvent(1);
-        channel.Setup(c => c.BasicCancel("consumerTag"))
-            .Callback(() =>
-            {
-                consumer.Value.HandleBasicCancelOk("consumerTag");
-                latch5.Signal();
-            });
+
+        channel.Setup(c => c.BasicCancel("consumerTag")).Callback(() =>
+        {
+            consumer.Value.HandleBasicCancelOk("consumerTag");
+            latch5.Signal();
+        });
 
         await container.Stop();
         Assert.True(latch5.Wait(TimeSpan.FromSeconds(10)));
@@ -188,54 +191,47 @@ public class DirectMessageListenerContainerMockTest
         connection.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel.Object);
         connection.Setup(c => c.IsOpen).Returns(true);
         var isOpen = new AtomicBoolean(true);
-        channel.Setup(c => c.IsOpen).Returns(
-            () =>
-                isOpen.Value);
+        channel.Setup(c => c.IsOpen).Returns(() => isOpen.Value);
         rabbitChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
         var declare = new AtomicReference<string>();
-        channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>()))
-            .Callback<string>(
-                name =>
-                    declare.Value = name)
-            .Returns(() =>
-                new RC.QueueDeclareOk(declare.Value, 0, 0));
+
+        channel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Callback<string>(name => declare.Value = name)
+            .Returns(() => new RC.QueueDeclareOk(declare.Value, 0, 0));
 
         var latch1 = new CountdownEvent(2);
         var latch3 = new CountdownEvent(3);
-        channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback(
-                () =>
-                {
-                    if (!latch3.IsSet)
-                    {
-                        latch3.Signal();
-                    }
-                })
-            .Returns("consumerTag");
-        var qos = new AtomicInteger();
-        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>()))
-            .Callback<uint, ushort, bool>((_, count, _) =>
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+            It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>())).Callback(() =>
+        {
+            if (!latch3.IsSet)
             {
-                qos.Value = count;
-                if (!latch1.IsSet)
-                {
-                    latch1.Signal();
-                }
-            });
+                latch3.Signal();
+            }
+        }).Returns("consumerTag");
+
+        var qos = new AtomicInteger();
+
+        channel.Setup(c => c.BasicQos(It.IsAny<uint>(), It.IsAny<ushort>(), It.IsAny<bool>())).Callback<uint, ushort, bool>((_, count, _) =>
+        {
+            qos.Value = count;
+
+            if (!latch1.IsSet)
+            {
+                latch1.Signal();
+            }
+        });
 
         var latch2 = new CountdownEvent(2);
-        channel.Setup(
-                c => c.BasicCancel("consumerTag"))
-            .Callback(
-                () =>
-                {
-                    if (!latch2.IsSet)
-                    {
-                        latch2.Signal();
-                    }
-                });
+
+        channel.Setup(c => c.BasicCancel("consumerTag")).Callback(() =>
+        {
+            if (!latch2.IsSet)
+            {
+                latch2.Signal();
+            }
+        });
 
         var container = new DirectMessageListenerContainer(null, connectionFactory.Object);
         container.SetQueueNames("test1", "test2");
@@ -253,17 +249,17 @@ public class DirectMessageListenerContainerMockTest
         isOpen.Value = false;
         container.RemoveQueueNames("test1");
         Assert.True(latch2.Wait(TimeSpan.FromSeconds(20))); // Basic Cancels from isOpen = false
-        isOpen.Value = true;  // Consumers should restart, but only test2,
+        isOpen.Value = true; // Consumers should restart, but only test2,
         Assert.True(latch3.Wait(TimeSpan.FromSeconds(10)));
 
         channel.Verify(
-            c =>
-                c.BasicConsume("test1", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()),
-            Times.Once());
+            c => c.BasicConsume("test1", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(),
+                It.IsAny<RC.IBasicConsumer>()), Times.Once());
+
         channel.Verify(
-            c =>
-                c.BasicConsume("test2", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()),
-            Times.Exactly(2));
+            c => c.BasicConsume("test2", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(),
+                It.IsAny<RC.IBasicConsumer>()), Times.Exactly(2));
+
         await container.Stop();
     }
 
@@ -287,22 +283,23 @@ public class DirectMessageListenerContainerMockTest
         var consumer = new AtomicReference<RC.IBasicConsumer>();
         var latch1 = new CountdownEvent(1);
         var latch2 = new CountdownEvent(1);
-        channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (_, _, _, _, _, _, cons) =>
-                {
-                    consumer.Value = cons;
-                    latch1.Signal();
-                })
-            .Returns("consumerTag");
-        channel.Setup(c => c.BasicAck(1ul, false)).Throws(new Exception("bad ack"));
-        channel.Setup(c => c.BasicCancel("consumerTag"))
-            .Callback(() =>
+
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, cons) =>
             {
-                consumer.Value.HandleBasicCancelOk("consumerTag");
-                latch2.Signal();
-            });
+                consumer.Value = cons;
+                latch1.Signal();
+            }).Returns("consumerTag");
+
+        channel.Setup(c => c.BasicAck(1ul, false)).Throws(new Exception("bad ack"));
+
+        channel.Setup(c => c.BasicCancel("consumerTag")).Callback(() =>
+        {
+            consumer.Value.HandleBasicCancelOk("consumerTag");
+            latch2.Signal();
+        });
+
         var container = new DirectMessageListenerContainer(null, connectionFactory.Object);
         container.SetQueueNames("test");
         container.PrefetchCount = 2;
@@ -342,22 +339,21 @@ public class DirectMessageListenerContainerMockTest
         var consumer = new AtomicReference<RC.IBasicConsumer>();
         var latch1 = new CountdownEvent(1);
         var latch2 = new CountdownEvent(1);
-        channel.Setup(c =>
-                c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
-            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>(
-                (_, _, _, _, _, _, cons) =>
-                {
-                    consumer.Value = cons;
-                    latch1.Signal();
-                })
-            .Returns("consumerTag");
 
-        channel.Setup(c => c.BasicCancel("consumerTag"))
-            .Callback(() =>
+        channel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+            .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, cons) =>
             {
-                consumer.Value.HandleBasicCancelOk("consumerTag");
-                latch2.Signal();
-            });
+                consumer.Value = cons;
+                latch1.Signal();
+            }).Returns("consumerTag");
+
+        channel.Setup(c => c.BasicCancel("consumerTag")).Callback(() =>
+        {
+            consumer.Value.HandleBasicCancelOk("consumerTag");
+            latch2.Signal();
+        });
+
         var container = new DirectMessageListenerContainer(null, connectionFactory.Object);
         container.SetQueueNames("test");
         container.PrefetchCount = 2;
@@ -380,13 +376,13 @@ public class DirectMessageListenerContainerMockTest
         private readonly AtomicReference<RC.IModel> _target;
         private readonly RC.IModel _object;
 
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
         public TestListener2(AtomicReference<RC.IModel> target, RC.IModel @object)
         {
             _target = target;
             _object = @object;
         }
-
-        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message)
         {

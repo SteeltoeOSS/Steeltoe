@@ -51,21 +51,25 @@ public class SpringBootAdminClientOptions
             throw new ArgumentNullException(nameof(appInfo));
         }
 
-        var section = config.GetSection(Prefix);
+        IConfigurationSection section = config.GetSection(Prefix);
+
         if (section != null)
         {
             section.Bind(this);
         }
 
         // Require base path to be supplied directly, in the config, or in the app instance info
-        BasePath ??= GetBasePath(config) ?? appInfo?.Uris?.FirstOrDefault() ?? throw new NullReferenceException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
+        BasePath ??= GetBasePath(config) ?? appInfo?.Uris?.FirstOrDefault() ??
+            throw new NullReferenceException($"Please set {Prefix}:BasePath in order to register with Spring Boot Admin");
+
         ApplicationName ??= appInfo.ApplicationNameInContext(SteeltoeComponent.Management);
     }
 
     private string GetBasePath(IConfiguration config)
     {
-        var urlString = config.GetValue<string>(Urls);
-        var urls = urlString?.Split(';');
+        string urlString = config.GetValue<string>(Urls);
+        string[] urls = urlString?.Split(';');
+
         if (urls?.Length > 0)
         {
             return urls[0];

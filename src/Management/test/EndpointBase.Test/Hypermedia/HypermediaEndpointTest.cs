@@ -31,10 +31,12 @@ public class HypermediaEndpointTest : BaseTest
     public void Invoke_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddHypermediaActuatorServices(configuration);
             services.AddInfoActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new ActuatorManagementOptions();
@@ -47,7 +49,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -61,9 +63,11 @@ public class HypermediaEndpointTest : BaseTest
     public void Invoke_OnlyActuatorHypermediaEndpoint_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddHypermediaActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new ActuatorManagementOptions();
@@ -75,7 +79,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -87,10 +91,12 @@ public class HypermediaEndpointTest : BaseTest
     public void Invoke_HonorsEndpointEnabled_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddHypermediaActuatorServices(configuration);
             services.AddInfoActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new ActuatorManagementOptions();
@@ -100,6 +106,7 @@ public class HypermediaEndpointTest : BaseTest
                 return options;
             });
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
@@ -110,7 +117,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.True(info._links.ContainsKey("self"));
@@ -123,10 +130,12 @@ public class HypermediaEndpointTest : BaseTest
     public void Invoke_CloudFoundryDisable_ReturnsExpectedLinks()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddHypermediaActuatorServices(configuration);
             services.AddInfoActuatorServices(configuration);
+
             services.AddSingleton(sp =>
             {
                 var options = new ActuatorManagementOptions();
@@ -136,6 +145,7 @@ public class HypermediaEndpointTest : BaseTest
                 return options;
             });
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(new Dictionary<string, string>
@@ -147,7 +157,7 @@ public class HypermediaEndpointTest : BaseTest
 
         var ep = tc.GetService<IActuatorEndpoint>();
 
-        var info = ep.Invoke("http://localhost:5000/foobar");
+        Links info = ep.Invoke("http://localhost:5000/foobar");
         Assert.NotNull(info);
         Assert.NotNull(info._links);
         Assert.Empty(info._links);

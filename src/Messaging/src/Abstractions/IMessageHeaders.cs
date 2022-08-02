@@ -12,14 +12,6 @@ namespace Steeltoe.Messaging;
 public interface IMessageHeaders : IDictionary, IDictionary<string, object>
 {
     /// <summary>
-    /// Gets a header value given its key.
-    /// </summary>
-    /// <typeparam name="T">the type of the value returned.</typeparam>
-    /// <param name="key">the name of the header.</param>
-    /// <returns>the value or null if not found.</returns>
-    T Get<T>(string key);
-
-    /// <summary>
     /// Gets the ID header value.
     /// </summary>
     string Id { get; }
@@ -44,6 +36,20 @@ public interface IMessageHeaders : IDictionary, IDictionary<string, object>
     new ICollection<object> Values { get; }
 
     new int Count { get; }
+
+    /// <summary>
+    /// Gets a header value given its key.
+    /// </summary>
+    /// <typeparam name="T">
+    /// the type of the value returned.
+    /// </typeparam>
+    /// <param name="key">
+    /// the name of the header.
+    /// </param>
+    /// <returns>
+    /// the value or null if not found.
+    /// </returns>
+    T Get<T>(string key);
 
     new IEnumerator<KeyValuePair<string, object>> GetEnumerator();
 }

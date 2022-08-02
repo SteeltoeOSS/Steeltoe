@@ -4,14 +4,9 @@
 
 namespace Steeltoe.Management.OpenTelemetry.Metrics;
 
-public class MetricsCollection<T>
-    : Dictionary<string, T>
+public class MetricsCollection<T> : Dictionary<string, T>
     where T : new()
 {
-    internal MetricsCollection()
-    {
-    }
-
     public new T this[string key]
     {
         get
@@ -23,5 +18,9 @@ public class MetricsCollection<T>
 
             return base[key];
         }
+    }
+
+    internal MetricsCollection()
+    {
     }
 }

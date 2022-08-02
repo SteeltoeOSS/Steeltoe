@@ -5,9 +5,8 @@
 namespace Steeltoe.Common.Expression.Internal;
 
 /// <summary>
-/// Context that gets passed along a bean definition parsing process,
-/// encapsulating all relevant configuration as well as state.
-/// TODO:  This interface is not complete.
+/// Context that gets passed along a bean definition parsing process, encapsulating all relevant configuration as well as state. TODO:  This interface is
+/// not complete.
 /// </summary>
 public interface IParserContext
 {

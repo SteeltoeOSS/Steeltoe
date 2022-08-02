@@ -31,7 +31,7 @@ public class OracleProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new OracleProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Server);
@@ -48,9 +48,10 @@ public class OracleProviderConnectorOptionsTest
         {
             ["oracle:client:ConnectionString"] = "Data Source=localhost:1521/orclpdb1;User Id=hr;Password=hr;"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new OracleProviderConnectorOptions(config);
 

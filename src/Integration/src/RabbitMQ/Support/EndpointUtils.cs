@@ -19,9 +19,7 @@ public static class EndpointUtils
         {
             return new ManualAckListenerExecutionFailedException(ErrorMessage, e, message, channel, message.Headers.DeliveryTag().Value);
         }
-        else
-        {
-            return new ListenerExecutionFailedException(ErrorMessage, e, message);
-        }
+
+        return new ListenerExecutionFailedException(ErrorMessage, e, message);
     }
 }

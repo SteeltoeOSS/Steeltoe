@@ -27,7 +27,8 @@ public class RabbitHostService : IHostedService
         _logger?.LogInformation("Starting RabbitHostService ...");
 
         // Ensure any admins in the container get initialized
-        var admins = _applicationContext.GetServices<IRabbitAdmin>();
+        IEnumerable<IRabbitAdmin> admins = _applicationContext.GetServices<IRabbitAdmin>();
+
         if (admins == null || !admins.Any())
         {
             _logger?.LogInformation("Found no IRabbitAdmin services to initialize");
@@ -35,6 +36,7 @@ public class RabbitHostService : IHostedService
 
         // Allow for processing of RabbitListenerAttributes
         var listenerProcessor = _applicationContext.GetService<IRabbitListenerAttributeProcessor>();
+
         if (listenerProcessor == null)
         {
             _logger?.LogInformation("Found no IRabbitListenerAttributeProcessor services to initialize");
@@ -46,6 +48,7 @@ public class RabbitHostService : IHostedService
 
         // Ensure any RabbitContainers get started
         var processor = _applicationContext.GetService<ILifecycleProcessor>();
+
         if (processor != null)
         {
             await processor.OnRefresh();

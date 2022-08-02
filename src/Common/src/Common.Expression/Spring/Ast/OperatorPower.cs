@@ -15,11 +15,11 @@ public class OperatorPower : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var leftOp = LeftOperand;
-        var rightOp = RightOperand;
+        SpelNode leftOp = LeftOperand;
+        SpelNode rightOp = RightOperand;
 
-        var leftOperand = leftOp.GetValueInternal(state).Value;
-        var rightOperand = rightOp.GetValueInternal(state).Value;
+        object leftOperand = leftOp.GetValueInternal(state).Value;
+        object rightOperand = rightOp.GetValueInternal(state).Value;
 
         if (IsNumber(leftOperand) && IsNumber(rightOperand))
         {
@@ -28,37 +28,38 @@ public class OperatorPower : Operator
 
             if (leftOperand is decimal)
             {
-                var rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
-                var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
+                int rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
+                double leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
                 var result = Math.Pow(leftVal, rightVal) as IConvertible;
                 return new TypedValue(result.ToDecimal(CultureInfo.InvariantCulture));
             }
-            else if (leftOperand is double || rightOperand is double)
+
+            if (leftOperand is double || rightOperand is double)
             {
-                var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
-                var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
-                return new TypedValue(Math.Pow(leftVal, rightVal));
-            }
-            else if (leftOperand is float || rightOperand is float)
-            {
-                var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
-                var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
+                double rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(Math.Pow(leftVal, rightVal));
             }
 
-            var r = rightConv.ToDouble(CultureInfo.InvariantCulture);
-            var l = leftConv.ToDouble(CultureInfo.InvariantCulture);
+            if (leftOperand is float || rightOperand is float)
+            {
+                float rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
+                float leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
+                return new TypedValue(Math.Pow(leftVal, rightVal));
+            }
 
-            var d = Math.Pow(l, r);
-            var asLong = (long)d;
+            double r = rightConv.ToDouble(CultureInfo.InvariantCulture);
+            double l = leftConv.ToDouble(CultureInfo.InvariantCulture);
+
+            double d = Math.Pow(l, r);
+            long asLong = (long)d;
+
             if (asLong > int.MaxValue || leftOperand is long || rightOperand is long)
             {
                 return new TypedValue(asLong);
             }
-            else
-            {
-                return new TypedValue((int)asLong);
-            }
+
+            return new TypedValue((int)asLong);
         }
 
         return state.Operate(Operation.Power, leftOperand, rightOperand);

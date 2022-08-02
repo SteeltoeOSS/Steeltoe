@@ -46,17 +46,19 @@ public class RefreshEndpointTest : BaseTest
         };
 
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddRefreshActuatorServices(configuration);
         };
+
         tc.AdditionalConfiguration = configuration =>
         {
             configuration.AddInMemoryCollection(appsettings);
         };
 
         var ep = tc.GetService<IRefreshEndpoint>();
-        var result = ep.Invoke();
+        IList<string> result = ep.Invoke();
         Assert.NotNull(result);
 
         Assert.Contains("management:endpoints:loggers:enabled", result);

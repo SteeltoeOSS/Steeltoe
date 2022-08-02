@@ -13,11 +13,11 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy;
 
 public static class HystrixPlugins
 {
-    private static readonly AtomicReference<HystrixEventNotifier> AtomicNotifier = new ();
-    private static readonly AtomicReference<HystrixConcurrencyStrategy> AtomicConcurrencyStrategy = new ();
-    private static readonly AtomicReference<HystrixMetricsPublisher> AtomicMetricsPublisher = new ();
-    private static readonly AtomicReference<HystrixCommandExecutionHook> AtomicCommandExecutionHook = new ();
-    private static readonly AtomicReference<HystrixOptionsStrategy> AtomicOptions = new ();
+    private static readonly AtomicReference<HystrixEventNotifier> AtomicNotifier = new();
+    private static readonly AtomicReference<HystrixConcurrencyStrategy> AtomicConcurrencyStrategy = new();
+    private static readonly AtomicReference<HystrixMetricsPublisher> AtomicMetricsPublisher = new();
+    private static readonly AtomicReference<HystrixCommandExecutionHook> AtomicCommandExecutionHook = new();
+    private static readonly AtomicReference<HystrixOptionsStrategy> AtomicOptions = new();
 
     public static HystrixEventNotifier EventNotifier
     {
@@ -29,14 +29,6 @@ public static class HystrixPlugins
             }
 
             return AtomicNotifier.Value;
-        }
-    }
-
-    public static void RegisterEventNotifier(HystrixEventNotifier impl)
-    {
-        if (!AtomicNotifier.CompareAndSet(null, impl))
-        {
-            throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
 
@@ -53,14 +45,6 @@ public static class HystrixPlugins
         }
     }
 
-    public static void RegisterConcurrencyStrategy(HystrixConcurrencyStrategy impl)
-    {
-        if (!AtomicConcurrencyStrategy.CompareAndSet(null, impl))
-        {
-            throw new InvalidOperationException("Another strategy was already registered.");
-        }
-    }
-
     public static HystrixMetricsPublisher MetricsPublisher
     {
         get
@@ -71,16 +55,6 @@ public static class HystrixPlugins
             }
 
             return AtomicMetricsPublisher.Value;
-        }
-    }
-
-#pragma warning disable S4136 // Method overloads should be grouped together
-    public static void RegisterMetricsPublisher(HystrixMetricsPublisher impl)
-#pragma warning restore S4136 // Method overloads should be grouped together
-    {
-        if (!AtomicMetricsPublisher.CompareAndSet(null, impl))
-        {
-            throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
 
@@ -97,14 +71,6 @@ public static class HystrixPlugins
         }
     }
 
-    public static void RegisterMetricsPublisher(HystrixCommandExecutionHook impl)
-    {
-        if (!AtomicCommandExecutionHook.CompareAndSet(null, impl))
-        {
-            throw new InvalidOperationException("Another strategy was already registered.");
-        }
-    }
-
     public static HystrixOptionsStrategy OptionsStrategy
     {
         get
@@ -115,6 +81,40 @@ public static class HystrixPlugins
             }
 
             return AtomicOptions.Value;
+        }
+    }
+
+    public static void RegisterEventNotifier(HystrixEventNotifier impl)
+    {
+        if (!AtomicNotifier.CompareAndSet(null, impl))
+        {
+            throw new InvalidOperationException("Another strategy was already registered.");
+        }
+    }
+
+    public static void RegisterConcurrencyStrategy(HystrixConcurrencyStrategy impl)
+    {
+        if (!AtomicConcurrencyStrategy.CompareAndSet(null, impl))
+        {
+            throw new InvalidOperationException("Another strategy was already registered.");
+        }
+    }
+
+#pragma warning disable S4136 // Method overloads should be grouped together
+    public static void RegisterMetricsPublisher(HystrixMetricsPublisher impl)
+#pragma warning restore S4136 // Method overloads should be grouped together
+    {
+        if (!AtomicMetricsPublisher.CompareAndSet(null, impl))
+        {
+            throw new InvalidOperationException("Another strategy was already registered.");
+        }
+    }
+
+    public static void RegisterMetricsPublisher(HystrixCommandExecutionHook impl)
+    {
+        if (!AtomicCommandExecutionHook.CompareAndSet(null, impl))
+        {
+            throw new InvalidOperationException("Another strategy was already registered.");
         }
     }
 

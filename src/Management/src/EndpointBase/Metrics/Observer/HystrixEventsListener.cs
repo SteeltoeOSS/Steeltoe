@@ -2,23 +2,24 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Diagnostics.Tracing;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class HystrixEventsListener : EventSourceListener
 {
     private const string EventSourceName = "Steeltoe.Hystrix.Events";
+
     private static readonly string[] AllowedEvents =
     {
         "CommandMetrics",
         "ThreadPoolMetrics",
-        "CollapserMetrics",
+        "CollapserMetrics"
     };
 
     private readonly ILogger<EventSourceListener> _logger;
-    private readonly Dictionary<string, object> _cktBreakerLabels = new ();
+    private readonly Dictionary<string, object> _cktBreakerLabels = new();
 
     public HystrixEventsListener(ILogger<EventSourceListener> logger = null)
         : base(logger)

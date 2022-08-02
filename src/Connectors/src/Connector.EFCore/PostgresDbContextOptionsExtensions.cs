@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
-using System.Reflection;
 
 namespace Steeltoe.Connector.PostgreSql.EFCore;
 
@@ -25,12 +25,13 @@ public static class PostgresDbContextOptionsExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var connection = GetConnection(config);
+        string connection = GetConnection(config);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
+    public static DbContextOptionsBuilder UseNpgsql(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+        object npgsqlOptionsAction = null)
     {
         if (optionsBuilder == null)
         {
@@ -47,12 +48,13 @@ public static class PostgresDbContextOptionsExtensions
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var connection = GetConnection(config, serviceName);
+        string connection = GetConnection(config, serviceName);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object npgsqlOptionsAction = null)
+    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+        object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
         if (optionsBuilder == null)
@@ -65,12 +67,13 @@ public static class PostgresDbContextOptionsExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var connection = GetConnection(config);
+        string connection = GetConnection(config);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object npgsqlOptionsAction = null)
+    public static DbContextOptionsBuilder<TContext> UseNpgsql<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+        string serviceName, object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
         if (optionsBuilder == null)
@@ -88,24 +91,22 @@ public static class PostgresDbContextOptionsExtensions
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var connection = GetConnection(config, serviceName);
+        string connection = GetConnection(config, serviceName);
 
         return DoUseNpgsql(optionsBuilder, connection, npgsqlOptionsAction);
     }
 
     public static MethodInfo FindUseNpgsqlMethod(Type type, Type[] parameterTypes)
     {
-        var typeInfo = type.GetTypeInfo();
-        var declaredMethods = typeInfo.DeclaredMethods;
+        TypeInfo typeInfo = type.GetTypeInfo();
+        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
 
-        foreach (var ci in declaredMethods)
+        foreach (MethodInfo ci in declaredMethods)
         {
-            var parameters = ci.GetParameters();
+            ParameterInfo[] parameters = ci.GetParameters();
 
-            if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") &&
-                parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                parameters[1].ParameterType.Equals(parameterTypes[1]) &&
-                ci.IsPublic && ci.IsStatic)
+            if (parameters.Length == 3 && ci.Name.Equals("UseNpgsql") && parameters[0].ParameterType.Equals(parameterTypes[0]) &&
+                parameters[1].ParameterType.Equals(parameterTypes[1]) && ci.IsPublic && ci.IsStatic)
             {
                 return ci;
             }
@@ -116,7 +117,7 @@ public static class PostgresDbContextOptionsExtensions
 
     private static string GetConnection(IConfiguration config, string serviceName = null)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? config.GetSingletonServiceInfo<PostgresServiceInfo>()
             : config.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
 
@@ -128,15 +129,26 @@ public static class PostgresDbContextOptionsExtensions
 
     private static DbContextOptionsBuilder DoUseNpgsql(DbContextOptionsBuilder builder, string connection, object npgsqlOptionsAction = null)
     {
-        var extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
+        Type extensionType = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
-        var useMethod = FindUseNpgsqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
+        MethodInfo useMethod = FindUseNpgsqlMethod(extensionType, new[]
+        {
+            typeof(DbContextOptionsBuilder),
+            typeof(string)
+        });
+
         if (extensionType == null)
         {
             throw new ConnectorException("Unable to find UseNpgsql extension, are you missing Postgres EntityFramework Core assembly");
         }
 
-        var result = ReflectionHelpers.Invoke(useMethod, null, new[] { builder, connection, npgsqlOptionsAction });
+        object result = ReflectionHelpers.Invoke(useMethod, null, new[]
+        {
+            builder,
+            connection,
+            npgsqlOptionsAction
+        });
+
         if (result == null)
         {
             throw new ConnectorException($"Failed to invoke UseNpgsql extension, connection: {connection}");
@@ -145,7 +157,8 @@ public static class PostgresDbContextOptionsExtensions
         return (DbContextOptionsBuilder)result;
     }
 
-    private static DbContextOptionsBuilder<TContext> DoUseNpgsql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object npgsqlOptionsAction = null)
+    private static DbContextOptionsBuilder<TContext> DoUseNpgsql<TContext>(DbContextOptionsBuilder<TContext> builder, string connection,
+        object npgsqlOptionsAction = null)
         where TContext : DbContext
     {
         return (DbContextOptionsBuilder<TContext>)DoUseNpgsql((DbContextOptionsBuilder)builder, connection, npgsqlOptionsAction);

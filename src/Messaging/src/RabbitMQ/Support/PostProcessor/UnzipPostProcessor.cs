@@ -20,7 +20,8 @@ public class UnzipPostProcessor : AbstractDecompressingPostProcessor
     protected override Stream GetDeCompressorStream(Stream stream)
     {
         var zipper = new ZipArchive(stream, ZipArchiveMode.Read);
-        var entry = zipper.GetEntry("amqp");
+        ZipArchiveEntry entry = zipper.GetEntry("amqp");
+
         if (entry == null)
         {
             throw new InvalidOperationException("Zip entryName 'amqp' does not exist");

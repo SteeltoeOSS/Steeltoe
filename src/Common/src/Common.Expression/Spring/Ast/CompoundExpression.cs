@@ -19,8 +19,8 @@ public class CompoundExpression : SpelNode
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var valueRef = GetValueRef(state);
-        var result = valueRef.GetValue();
+        IValueRef valueRef = GetValueRef(state);
+        ITypedValue result = valueRef.GetValue();
         exitTypeDescriptor = children[children.Length - 1].ExitDescriptor;
         return result;
     }
@@ -38,7 +38,8 @@ public class CompoundExpression : SpelNode
     public override string ToStringAst()
     {
         var strings = new List<string>();
-        for (var i = 0; i < ChildCount; i++)
+
+        for (int i = 0; i < ChildCount; i++)
         {
             strings.Add(GetChild(i).ToStringAst());
         }
@@ -48,7 +49,7 @@ public class CompoundExpression : SpelNode
 
     public override bool IsCompilable()
     {
-        foreach (var child in children)
+        foreach (SpelNode child in children)
         {
             if (!child.IsCompilable())
             {
@@ -61,7 +62,7 @@ public class CompoundExpression : SpelNode
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        foreach (var child in children)
+        foreach (SpelNode child in children)
         {
             child.GenerateCode(gen, cf);
         }
@@ -76,12 +77,14 @@ public class CompoundExpression : SpelNode
             return children[0].GetValueRef(state);
         }
 
-        var nextNode = children[0];
+        SpelNode nextNode = children[0];
+
         try
         {
-            var result = nextNode.GetValueInternal(state);
-            var cc = ChildCount;
-            for (var i = 1; i < cc - 1; i++)
+            ITypedValue result = nextNode.GetValueInternal(state);
+            int cc = ChildCount;
+
+            for (int i = 1; i < cc - 1; i++)
             {
                 try
                 {

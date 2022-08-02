@@ -11,26 +11,6 @@ public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
     private const string ManagementInfoPrefix = "management:endpoints:httptrace";
     private const int DefaultCapacity = 100;
 
-    public HttpTraceEndpointOptions()
-    {
-        Id = "httptrace";
-        Capacity = DefaultCapacity;
-    }
-
-    public HttpTraceEndpointOptions(IConfiguration config)
-        : base(ManagementInfoPrefix, config)
-    {
-        if (string.IsNullOrEmpty(Id))
-        {
-            Id = "httptrace";
-        }
-
-        if (Capacity == -1)
-        {
-            Capacity = DefaultCapacity;
-        }
-    }
-
     public int Capacity { get; set; } = -1;
 
     public bool AddRequestHeaders { get; set; } = true;
@@ -52,4 +32,24 @@ public class HttpTraceEndpointOptions : AbstractEndpointOptions, ITraceOptions
     public bool AddSessionId { get; set; }
 
     public bool AddTimeTaken { get; set; } = true;
+
+    public HttpTraceEndpointOptions()
+    {
+        Id = "httptrace";
+        Capacity = DefaultCapacity;
+    }
+
+    public HttpTraceEndpointOptions(IConfiguration config)
+        : base(ManagementInfoPrefix, config)
+    {
+        if (string.IsNullOrEmpty(Id))
+        {
+            Id = "httptrace";
+        }
+
+        if (Capacity == -1)
+        {
+            Capacity = DefaultCapacity;
+        }
+    }
 }

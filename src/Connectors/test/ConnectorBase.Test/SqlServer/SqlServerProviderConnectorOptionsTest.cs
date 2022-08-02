@@ -32,7 +32,7 @@ public class SqlServerProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
         Assert.Equal("servername", options.Server);
@@ -49,9 +49,10 @@ public class SqlServerProviderConnectorOptionsTest
         {
             ["sqlserver:credentials:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
 
@@ -76,7 +77,7 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
 
@@ -93,7 +94,7 @@ public class SqlServerProviderConnectorOptionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
 
@@ -113,7 +114,7 @@ public class SqlServerProviderConnectorOptionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
 
@@ -141,7 +142,7 @@ public class SqlServerProviderConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new SqlServerProviderConnectorOptions(config);
 

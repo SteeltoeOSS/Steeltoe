@@ -6,11 +6,11 @@ namespace Steeltoe.Common.Transaction;
 
 public class InvalidTimeoutException : TransactionUsageException
 {
+    public int Timeout { get; }
+
     public InvalidTimeoutException(string msg, int timeout)
         : base(msg)
     {
         Timeout = timeout;
     }
-
-    public int Timeout { get; }
 }

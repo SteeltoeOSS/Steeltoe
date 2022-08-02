@@ -5,8 +5,7 @@
 namespace Steeltoe.Stream.Provisioning;
 
 /// <summary>
-/// Represents a ProducerDestination that provides the information about the destination
-/// that is physically provisioned through a provisioning provider.
+/// Represents a ProducerDestination that provides the information about the destination that is physically provisioned through a provisioning provider.
 /// </summary>
 public interface IProducerDestination
 {
@@ -18,7 +17,11 @@ public interface IProducerDestination
     /// <summary>
     /// Provides the destination name for a given partition.
     /// </summary>
-    /// <param name="partition">the partition to find a name for.</param>
-    /// <returns>the destination name for the partition.</returns>
+    /// <param name="partition">
+    /// the partition to find a name for.
+    /// </param>
+    /// <returns>
+    /// the destination name for the partition.
+    /// </returns>
     string GetNameForPartition(int partition);
 }

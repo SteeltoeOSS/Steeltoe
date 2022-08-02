@@ -52,6 +52,7 @@ public class ResourceHolderSynchronization<THolder, TKey> : ITransactionSynchron
         {
             TransactionSynchronizationManager.UnbindResource(_resourceKey);
             _holderActive = false;
+
             if (ShouldReleaseBeforeCompletion())
             {
                 ReleaseResource(_resourceHolder, _resourceKey);
@@ -71,7 +72,8 @@ public class ResourceHolderSynchronization<THolder, TKey> : ITransactionSynchron
     {
         if (ShouldUnbindAtCompletion())
         {
-            var releaseNecessary = false;
+            bool releaseNecessary = false;
+
             if (_holderActive)
             {
                 // The thread-bound resource holder might not be available anymore,

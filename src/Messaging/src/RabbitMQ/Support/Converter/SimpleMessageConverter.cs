@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
 
@@ -31,27 +32,27 @@ public class SimpleMessageConverter : AbstractMessageConverter
         }
 
         object content = null;
-        var properties = bytesMessage.Headers;
+        IMessageHeaders properties = bytesMessage.Headers;
+
         if (properties != null)
         {
-            var contentType = properties.ContentType();
+            string contentType = properties.ContentType();
+
             if (contentType != null && contentType.StartsWith("text"))
             {
-                var encoding = properties.ContentEncoding() ?? DefaultCharset;
+                string encoding = properties.ContentEncoding() ?? DefaultCharset;
 
                 try
                 {
-                    var enc = EncodingUtils.GetEncoding(encoding);
+                    Encoding enc = EncodingUtils.GetEncoding(encoding);
                     content = enc.GetString(bytesMessage.Payload);
                 }
                 catch (Exception e)
                 {
-                    throw new MessageConversionException(
-                        "failed to convert text-based Message content", e);
+                    throw new MessageConversionException("failed to convert text-based Message content", e);
                 }
             }
-            else if (contentType != null &&
-                     contentType.Equals(MessageHeaders.ContentTypeDotnetSerializedObject))
+            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeDotnetSerializedObject))
             {
                 try
                 {
@@ -68,8 +69,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
                     throw new MessageConversionException("failed to convert serialized Message content", e);
                 }
             }
-            else if (contentType != null &&
-                     contentType.Equals(MessageHeaders.ContentTypeJavaSerializedObject))
+            else if (contentType != null && contentType.Equals(MessageHeaders.ContentTypeJavaSerializedObject))
             {
                 throw new MessageConversionException($"Content type: {MessageHeaders.ContentTypeJavaSerializedObject} unsupported");
             }
@@ -87,7 +87,8 @@ public class SimpleMessageConverter : AbstractMessageConverter
     protected override IMessage CreateMessage(object payload, IMessageHeaders headers, object conversionHint)
     {
         byte[] bytes = null;
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(headers);
+
         switch (payload)
         {
             case byte[] v:
@@ -98,7 +99,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
             {
                 try
                 {
-                    var enc = EncodingUtils.GetEncoding(DefaultCharset);
+                    Encoding enc = EncodingUtils.GetEncoding(DefaultCharset);
                     bytes = enc.GetBytes(sPayload);
                 }
                 catch (Exception e)
@@ -126,7 +127,7 @@ public class SimpleMessageConverter : AbstractMessageConverter
             throw new ArgumentException($"SimpleMessageConverter only supports string, byte[] and serializable payloads, received: {payload?.GetType().Name}");
         }
 
-        var message = Message.Create(bytes, headers);
+        IMessage<byte[]> message = Message.Create(bytes, headers);
         accessor.ContentLength = bytes.Length;
         return message;
     }

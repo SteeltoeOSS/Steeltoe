@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Stream.Attributes;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -17,14 +17,17 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
         Context = context;
     }
 
-    public object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName, params IStreamListenerParameterAdapter[] streamListenerParameterAdapters)
+    public object[] AdaptAndRetrieveInboundArguments(MethodInfo method, string inboundName,
+        params IStreamListenerParameterAdapter[] streamListenerParameterAdapters)
     {
-        var arguments = new object[method.GetParameters().Length];
-        for (var parameterIndex = 0; parameterIndex < arguments.Length; parameterIndex++)
+        object[] arguments = new object[method.GetParameters().Length];
+
+        for (int parameterIndex = 0; parameterIndex < arguments.Length; parameterIndex++)
         {
-            var methodParameter = method.GetParameters()[parameterIndex];
-            var parameterType = methodParameter.ParameterType;
+            ParameterInfo methodParameter = method.GetParameters()[parameterIndex];
+            Type parameterType = methodParameter.ParameterType;
             string targetReferenceValue = null;
+
             if (methodParameter.GetCustomAttribute<InputAttribute>() != null)
             {
                 var attr = methodParameter.GetCustomAttribute<InputAttribute>();
@@ -42,10 +45,10 @@ public abstract class AbstractStreamListenerSetupMethodOrchestrator : IStreamLis
 
             if (targetReferenceValue != null)
             {
-                var targetBean = BindingHelpers.GetBindableTarget(Context, targetReferenceValue);
+                object targetBean = BindingHelpers.GetBindableTarget(Context, targetReferenceValue);
 
                 // Iterate existing parameter adapters first
-                foreach (var streamListenerParameterAdapter in streamListenerParameterAdapters)
+                foreach (IStreamListenerParameterAdapter streamListenerParameterAdapter in streamListenerParameterAdapters)
                 {
                     if (streamListenerParameterAdapter.Supports(targetBean.GetType(), methodParameter))
                     {

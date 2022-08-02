@@ -11,12 +11,12 @@ public class ServiceExpressionContext : IServiceExpressionContext
 {
     private const string EnvironmentName = "configuration";
 
+    public IApplicationContext ApplicationContext { get; }
+
     public ServiceExpressionContext(IApplicationContext applicationContext)
     {
         ApplicationContext = applicationContext ?? throw new ArgumentNullException(nameof(applicationContext));
     }
-
-    public IApplicationContext ApplicationContext { get; }
 
     public bool ContainsService(string serviceName, Type serviceType)
     {

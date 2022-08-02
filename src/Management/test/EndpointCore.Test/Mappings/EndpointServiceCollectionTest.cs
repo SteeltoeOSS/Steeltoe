@@ -19,9 +19,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMappingsActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMappingsActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMappingsActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -36,14 +36,15 @@ public class EndpointServiceCollectionTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(config);
 
         services.AddMappingsActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IMappingsOptions>();
         Assert.NotNull(options);
 

@@ -18,9 +18,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHeapDumpActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHeapDumpActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHeapDumpActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -28,6 +28,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHeapDumpActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
@@ -35,13 +36,14 @@ public class EndpointServiceCollectionTest : BaseTest
             ["management:endpoints:heapdump:enabled"] = "false",
             ["management:endpoints:heapdump:HeapDumpType"] = "Normal"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         services.AddHeapDumpActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IHeapDumpOptions>();
         Assert.NotNull(options);
         Assert.Equal("Normal", options.HeapDumpType);

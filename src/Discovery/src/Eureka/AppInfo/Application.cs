@@ -2,40 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Transport;
 using System.Collections.Concurrent;
 using System.Text;
+using Steeltoe.Discovery.Eureka.Transport;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public class Application
 {
+    internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new();
     public string Name { get; internal set; }
 
     public int Count => InstanceMap.Count;
 
     public IList<InstanceInfo> Instances => new List<InstanceInfo>(InstanceMap.Values);
-
-    public InstanceInfo GetInstance(string instanceId)
-    {
-        InstanceMap.TryGetValue(instanceId, out var result);
-        return result;
-    }
-
-    public override string ToString()
-    {
-        var sb = new StringBuilder("Application[");
-        sb.Append($"Name={Name}");
-        sb.Append(",Instances=");
-        foreach (var inst in Instances)
-        {
-            sb.Append(inst);
-            sb.Append(',');
-        }
-
-        sb.Append(']');
-        return sb.ToString();
-    }
 
     internal Application(string name)
     {
@@ -45,10 +25,33 @@ public class Application
     internal Application(string name, IList<InstanceInfo> instances)
     {
         Name = name;
-        foreach (var info in instances)
+
+        foreach (InstanceInfo info in instances)
         {
             Add(info);
         }
+    }
+
+    public InstanceInfo GetInstance(string instanceId)
+    {
+        InstanceMap.TryGetValue(instanceId, out InstanceInfo result);
+        return result;
+    }
+
+    public override string ToString()
+    {
+        var sb = new StringBuilder("Application[");
+        sb.Append($"Name={Name}");
+        sb.Append(",Instances=");
+
+        foreach (InstanceInfo inst in Instances)
+        {
+            sb.Append(inst);
+            sb.Append(',');
+        }
+
+        sb.Append(']');
+        return sb.ToString();
     }
 
     internal void Add(InstanceInfo info)
@@ -65,13 +68,11 @@ public class Application
 
     internal void Remove(InstanceInfo info)
     {
-        if (!InstanceMap.TryRemove(info.InstanceId, out var removed))
+        if (!InstanceMap.TryRemove(info.InstanceId, out InstanceInfo removed))
         {
             InstanceMap.TryRemove(info.HostName, out removed);
         }
     }
-
-    internal ConcurrentDictionary<string, InstanceInfo> InstanceMap { get; } = new ();
 
     internal static Application FromJsonApplication(JsonApplication application)
     {
@@ -81,9 +82,10 @@ public class Application
         }
 
         var app = new Application(application.Name);
+
         if (application.Instances != null)
         {
-            foreach (var instance in application.Instances)
+            foreach (JsonInstanceInfo instance in application.Instances)
             {
                 var inst = InstanceInfo.FromJsonInstance(instance);
                 app.Add(inst);

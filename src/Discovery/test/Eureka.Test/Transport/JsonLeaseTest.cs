@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
+using Steeltoe.Discovery.Eureka.Test;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test;
@@ -13,7 +13,7 @@ public class JsonLeaseTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        var json = @"
+        string json = @"
 {   
     ""renewalIntervalInSecs"":30,
     ""durationInSecs"":90,
@@ -22,6 +22,7 @@ public class JsonLeaseTest : AbstractBaseTest
     ""evictionTimestamp"":0,
     ""serviceUpTimestamp"":1457714988223
 }";
+
         var leaseInfo = JsonSerializer.Deserialize<JsonLeaseInfo>(json);
         Assert.NotNull(leaseInfo);
         Assert.Equal(30, leaseInfo.RenewalIntervalInSecs);

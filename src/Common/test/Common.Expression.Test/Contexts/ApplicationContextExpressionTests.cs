@@ -16,18 +16,21 @@ public class ApplicationContextExpressionTests
 
     public ApplicationContextExpressionTests()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(
-                new Dictionary<string, string> { { "code", "123" } })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "code", "123" }
+        }).Build();
+
         var collection = new ServiceCollection();
         collection.AddSingleton<IConfiguration>(config);
+
         collection.AddSingleton(_ =>
         {
             var tb = new TestService
             {
                 ServiceName = "tb0"
             };
+
             return tb;
         });
 
@@ -37,6 +40,7 @@ public class ApplicationContextExpressionTests
             {
                 ServiceName = "tb1"
             };
+
             return tb;
         });
 
@@ -46,6 +50,7 @@ public class ApplicationContextExpressionTests
             {
                 ServiceExpressionResolver = new StandardServiceExpressionResolver()
             };
+
             return context;
         });
 
@@ -56,7 +61,7 @@ public class ApplicationContextExpressionTests
     public void GenericApplicationContext()
     {
         var context = _serviceProvider.GetService<IApplicationContext>();
-        var services = context.GetServices<TestService>();
+        IEnumerable<TestService> services = context.GetServices<TestService>();
         Assert.Equal(2, services.Count());
         Assert.Equal("XXXtb0YYYZZZ", Evaluate("XXX#{tb0.Name}YYYZZZ"));
         Assert.Equal("123", Evaluate("${code}"));
@@ -69,7 +74,7 @@ public class ApplicationContextExpressionTests
     private object Evaluate(string value)
     {
         var context = _serviceProvider.GetService<IApplicationContext>();
-        var result = context.ResolveEmbeddedValue(value);
+        string result = context.ResolveEmbeddedValue(value);
         return context.ServiceExpressionResolver.Evaluate(result, new ServiceExpressionContext(context));
     }
 

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Converter;
 
@@ -12,6 +12,8 @@ public class StringMessageConverter : AbstractMessageConverter
     public const string DefaultServiceName = nameof(StringMessageConverter);
 
     private readonly Encoding _defaultCharset;
+
+    public override string ServiceName { get; set; } = DefaultServiceName;
 
     public StringMessageConverter()
         : this(Encoding.UTF8)
@@ -24,14 +26,15 @@ public class StringMessageConverter : AbstractMessageConverter
         _defaultCharset = defaultCharset ?? throw new ArgumentNullException(nameof(defaultCharset));
     }
 
-    public override string ServiceName { get; set; } = DefaultServiceName;
-
-    protected override bool Supports(Type clazz) => typeof(string) == clazz;
+    protected override bool Supports(Type clazz)
+    {
+        return typeof(string) == clazz;
+    }
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {
-        var charset = GetContentTypeCharset(GetMimeType(message.Headers));
-        var payload = message.Payload;
+        Encoding charset = GetContentTypeCharset(GetMimeType(message.Headers));
+        object payload = message.Payload;
 
         return payload is string ? payload : new string(charset.GetChars((byte[])payload));
     }
@@ -40,8 +43,8 @@ public class StringMessageConverter : AbstractMessageConverter
     {
         if (typeof(byte[]) == SerializedPayloadClass)
         {
-            var charset = GetContentTypeCharset(GetMimeType(headers));
-            var payStr = (string)payload;
+            Encoding charset = GetContentTypeCharset(GetMimeType(headers));
+            string payStr = (string)payload;
             payload = charset.GetBytes(payStr);
         }
 
@@ -54,9 +57,7 @@ public class StringMessageConverter : AbstractMessageConverter
         {
             return mimeType.Encoding;
         }
-        else
-        {
-            return _defaultCharset;
-        }
+
+        return _defaultCharset;
     }
 }

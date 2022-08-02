@@ -12,6 +12,8 @@ public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessage
 {
     private readonly IMessageHandler _target;
 
+    public bool IsRunning => _target is not ILifecycle lifecycle || lifecycle.IsRunning;
+
     public ReplyProducingMessageHandlerWrapper(IApplicationContext context, IMessageHandler target)
         : base(context)
     {
@@ -37,8 +39,6 @@ public class ReplyProducingMessageHandlerWrapper : AbstractReplyProducingMessage
 
         return Task.CompletedTask;
     }
-
-    public bool IsRunning => _target is not ILifecycle lifecycle || lifecycle.IsRunning;
 
     public override void Initialize()
     {

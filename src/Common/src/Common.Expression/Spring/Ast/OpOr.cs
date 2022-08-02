@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -28,19 +28,19 @@ public class OpOr : Operator
 
     public override bool IsCompilable()
     {
-        var left = LeftOperand;
-        var right = RightOperand;
-        return left.IsCompilable() && right.IsCompilable() &&
-               CodeFlow.IsBooleanCompatible(left.ExitDescriptor) &&
-               CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
+        SpelNode left = LeftOperand;
+        SpelNode right = RightOperand;
+
+        return left.IsCompilable() && right.IsCompilable() && CodeFlow.IsBooleanCompatible(left.ExitDescriptor) &&
+            CodeFlow.IsBooleanCompatible(right.ExitDescriptor);
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         // pseudo: if (leftOperandValue) { result=true; } else { result=rightOperandValue; }
-        var elseTarget = gen.DefineLabel();
-        var endIfTarget = gen.DefineLabel();
-        var result = gen.DeclareLocal(typeof(bool));
+        Label elseTarget = gen.DefineLabel();
+        Label endIfTarget = gen.DefineLabel();
+        LocalBuilder result = gen.DeclareLocal(typeof(bool));
 
         cf.EnterCompilationScope();
         LeftOperand.GenerateCode(gen, cf);
@@ -65,7 +65,7 @@ public class OpOr : Operator
     {
         try
         {
-            var value = operand.GetValue<bool>(state);
+            bool value = operand.GetValue<bool>(state);
             return value;
         }
         catch (SpelEvaluationException ee)

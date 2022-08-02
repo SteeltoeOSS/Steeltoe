@@ -12,6 +12,8 @@ internal sealed class StubArgumentResolver : IHandlerMethodArgumentResolver
 
     private readonly object _value;
 
+    public List<ParameterInfo> ResolvedParameters { get; } = new();
+
     public StubArgumentResolver(object value)
         : this(value.GetType(), value)
     {
@@ -27,8 +29,6 @@ internal sealed class StubArgumentResolver : IHandlerMethodArgumentResolver
         _valueType = valueType;
         _value = value;
     }
-
-    public List<ParameterInfo> ResolvedParameters { get; } = new ();
 
     public bool SupportsParameter(ParameterInfo parameter)
     {

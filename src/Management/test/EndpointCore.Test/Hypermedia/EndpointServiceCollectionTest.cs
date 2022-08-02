@@ -18,9 +18,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHypermediaActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddHypermediaActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHypermediaActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddHypermediaActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -28,17 +28,19 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddCloudFoundryActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         services.AddHypermediaActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IActuatorHypermediaOptions>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<ActuatorEndpoint>();

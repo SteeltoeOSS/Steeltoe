@@ -8,6 +8,10 @@ namespace Steeltoe.Common.Transaction;
 
 public class DefaultTransactionAttribute : DefaultTransactionDefinition, ITransactionAttribute
 {
+    public string Qualifier { get; }
+
+    public string Descriptor { get; }
+
     public DefaultTransactionAttribute()
     {
     }
@@ -22,17 +26,10 @@ public class DefaultTransactionAttribute : DefaultTransactionDefinition, ITransa
     {
     }
 
-    public string Qualifier { get; }
-
-    public string Descriptor { get; }
-
     public bool RollbackOn(Exception exception)
     {
-        if (exception is OutOfMemoryException ||
-            exception is InvalidProgramException ||
-            exception is AccessViolationException ||
-            exception is StackOverflowException ||
-            exception is BadImageFormatException)
+        if (exception is OutOfMemoryException || exception is InvalidProgramException || exception is AccessViolationException ||
+            exception is StackOverflowException || exception is BadImageFormatException)
         {
             return true;
         }
@@ -42,7 +39,8 @@ public class DefaultTransactionAttribute : DefaultTransactionDefinition, ITransa
 
     protected StringBuilder GetAttributeDescription()
     {
-        var result = GetDefinitionDescription();
+        StringBuilder result = GetDefinitionDescription();
+
         if (!string.IsNullOrEmpty(Qualifier))
         {
             result.Append("; '").Append(Qualifier).Append('\'');

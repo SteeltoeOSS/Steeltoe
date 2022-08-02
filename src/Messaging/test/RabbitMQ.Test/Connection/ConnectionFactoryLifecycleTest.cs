@@ -21,12 +21,12 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
     [Fact]
     public async Task TestConnectionFactoryAvailableDuringStop()
     {
-        var services = CreateContainer();
+        ServiceCollection services = CreateContainer();
         services.AddRabbitConnectionFactory((_, f) => f.Host = "localhost");
         services.AddRabbitAdmin();
         services.AddSingleton<MyLifecycle>();
         services.AddSingleton<ILifecycle>(p => p.GetService<MyLifecycle>());
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var hostService = provider.GetRequiredService<IHostedService>();
         await hostService.StartAsync(default);
@@ -42,14 +42,16 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
     [Fact]
     public async Task TestBlockedConnection()
     {
-        var services = CreateContainer();
+        ServiceCollection services = CreateContainer();
+
         services.AddRabbitConnectionFactory((_, f) =>
         {
             f.Host = "localhost";
             f.ServiceName = "TestBlockedConnection";
         });
+
         services.AddRabbitAdmin();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var hostService = provider.GetRequiredService<IHostedService>();
         await hostService.StartAsync(default);
@@ -59,7 +61,7 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
         var listener = new TestBlockedListener(blockedConnectionLatch, unblockedConnectionLatch);
         connection.AddBlockedListener(listener);
-        var amqConnection = connection.Target.Connection;
+        global::RabbitMQ.Client.IConnection amqConnection = connection.Target.Connection;
         amqConnection.HandleConnectionBlocked("Test connection blocked");
         Assert.True(blockedConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
         amqConnection.HandleConnectionUnblocked();
@@ -95,6 +97,12 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
         private readonly IQueue _queue = new AnonymousQueue();
         private volatile bool _running;
 
+        public bool IsRunning => _running;
+
+        public int Phase => 0;
+
+        public bool IsAutoStartup => true;
+
         public MyLifecycle(IConnectionFactory cf)
         {
             _admin = new RabbitAdmin(cf);
@@ -115,12 +123,6 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
             _running = false;
             return Task.CompletedTask;
         }
-
-        public bool IsRunning => _running;
-
-        public int Phase => 0;
-
-        public bool IsAutoStartup => true;
 
         public async Task Stop(Action callback)
         {

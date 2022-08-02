@@ -26,7 +26,7 @@ public class ConnectionStringManagerTest
     public void MysqlConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<MySqlConnectionInfo>();
+        Connection connInfo = cm.Get<MySqlConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("Server=localhost;Port=3306;", connInfo.ConnectionString);
@@ -38,10 +38,10 @@ public class ConnectionStringManagerTest
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MySqlTestHelpers.TwoServerVcap);
-        var config = new ConfigurationBuilder().AddCloudFoundry().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCloudFoundry().Build();
 
         var cm = new ConnectionStringManager(config);
-        var connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
+        Connection connInfo = cm.Get<MySqlConnectionInfo>("spring-cloud-broker-db");
 
         Assert.NotNull(connInfo);
         Assert.Equal("MySql-spring-cloud-broker-db", connInfo.Name);
@@ -51,7 +51,7 @@ public class ConnectionStringManagerTest
     public void PostgresConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<PostgresConnectionInfo>();
+        Connection connInfo = cm.Get<PostgresConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("Host=localhost;Port=5432;Timeout=15;Command Timeout=30;", connInfo.ConnectionString);
@@ -64,7 +64,7 @@ public class ConnectionStringManagerTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", PostgresTestHelpers.TwoServerVcapEdb);
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        var connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
+        Connection connInfo = cm.Get<PostgresConnectionInfo>("myPostgres");
 
         Assert.NotNull(connInfo);
         Assert.Equal("Postgres-myPostgres", connInfo.Name);
@@ -74,7 +74,7 @@ public class ConnectionStringManagerTest
     public void SqlServerConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<SqlServerConnectionInfo>();
+        Connection connInfo = cm.Get<SqlServerConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("Data Source=localhost,1433;", connInfo.ConnectionString);
@@ -88,7 +88,7 @@ public class ConnectionStringManagerTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", SqlServerTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        var connInfo = cm.Get<SqlServerConnectionInfo>("mySqlServerService");
+        Connection connInfo = cm.Get<SqlServerConnectionInfo>("mySqlServerService");
 
         Assert.NotNull(connInfo);
         Assert.Equal("SqlServer-mySqlServerService", connInfo.Name);
@@ -98,7 +98,7 @@ public class ConnectionStringManagerTest
     public void RedisConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<RedisConnectionInfo>();
+        Connection connInfo = cm.Get<RedisConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("localhost:6379,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connInfo.ConnectionString);
@@ -112,7 +112,7 @@ public class ConnectionStringManagerTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", RedisCacheTestHelpers.TwoServerVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        var connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
+        Connection connInfo = cm.Get<RedisConnectionInfo>("myRedisService1");
 
         Assert.NotNull(connInfo);
         Assert.Equal("Redis-myRedisService1", connInfo.Name);
@@ -122,7 +122,7 @@ public class ConnectionStringManagerTest
     public void RabbitMQConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<RabbitMQConnectionInfo>();
+        Connection connInfo = cm.Get<RabbitMQConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("amqp://127.0.0.1:5672/", connInfo.ConnectionString);
@@ -133,7 +133,7 @@ public class ConnectionStringManagerTest
     public void MongoDbConnectionInfo()
     {
         var cm = new ConnectionStringManager(new ConfigurationBuilder().Build());
-        var connInfo = cm.Get<MongoDbConnectionInfo>();
+        Connection connInfo = cm.Get<MongoDbConnectionInfo>();
 
         Assert.NotNull(connInfo);
         Assert.Equal("mongodb://localhost:27017", connInfo.ConnectionString);
@@ -147,7 +147,7 @@ public class ConnectionStringManagerTest
         Environment.SetEnvironmentVariable("VCAP_SERVICES", MongoDbTestHelpers.DoubleBindingEnterpriseVcap);
 
         var cm = new ConnectionStringManager(new ConfigurationBuilder().AddCloudFoundry().Build());
-        var connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");
+        Connection connInfo = cm.Get<MongoDbConnectionInfo>("steeltoe");
 
         Assert.NotNull(connInfo);
         Assert.Equal("MongoDb-steeltoe", connInfo.Name);

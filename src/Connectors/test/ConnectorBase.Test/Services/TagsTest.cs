@@ -8,27 +8,54 @@ namespace Steeltoe.Connector.Services.Test;
 
 public class TagsTest
 {
-    private static readonly Tags EmptyTags = new ();
+    private static readonly Tags EmptyTags = new();
 
     [Fact]
     public void ContainsOne()
     {
-        var tags = new Tags(new[] { "test1", "test2" });
-        Assert.True(tags.ContainsOne(new[] { "test1", "testx" }));
-        Assert.True(tags.ContainsOne(new[] { "testx", "test2" }));
-        Assert.False(tags.ContainsOne(new[] { "testx", "testy" }));
+        var tags = new Tags(new[]
+        {
+            "test1",
+            "test2"
+        });
+
+        Assert.True(tags.ContainsOne(new[]
+        {
+            "test1",
+            "testx"
+        }));
+
+        Assert.True(tags.ContainsOne(new[]
+        {
+            "testx",
+            "test2"
+        }));
+
+        Assert.False(tags.ContainsOne(new[]
+        {
+            "testx",
+            "testy"
+        }));
     }
 
     [Fact]
     public void ContainsOne_WithEmptyTags()
     {
-        Assert.False(EmptyTags.ContainsOne(new[] { "test" }));
+        Assert.False(EmptyTags.ContainsOne(new[]
+        {
+            "test"
+        }));
     }
 
     [Fact]
     public void Contains()
     {
-        var tags = new Tags(new[] { "test1", "test2" });
+        var tags = new Tags(new[]
+        {
+            "test1",
+            "test2"
+        });
+
         Assert.True(tags.Contains("test1"));
         Assert.True(tags.Contains("test2"));
         Assert.False(tags.Contains("testx"));

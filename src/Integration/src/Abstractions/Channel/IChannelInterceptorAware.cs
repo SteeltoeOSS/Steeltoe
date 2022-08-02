@@ -7,8 +7,7 @@ using Steeltoe.Messaging.Support;
 namespace Steeltoe.Integration.Channel;
 
 /// <summary>
-/// A marker interface providing the ability to configure ChannelInterceptors
-/// on MessageChannel implementations.
+/// A marker interface providing the ability to configure ChannelInterceptors on MessageChannel implementations.
 /// </summary>
 public interface IChannelInterceptorAware
 {
@@ -20,27 +19,41 @@ public interface IChannelInterceptorAware
     /// <summary>
     /// Add a interceptor to the channel.
     /// </summary>
-    /// <param name="interceptor">the interceptor.</param>
+    /// <param name="interceptor">
+    /// the interceptor.
+    /// </param>
     void AddInterceptor(IChannelInterceptor interceptor);
 
     /// <summary>
     /// Add an interceptor to the channel at the specified index.
     /// </summary>
-    /// <param name="index">the index to add the interceptor at.</param>
-    /// <param name="interceptor">the interceptor.</param>
+    /// <param name="index">
+    /// the index to add the interceptor at.
+    /// </param>
+    /// <param name="interceptor">
+    /// the interceptor.
+    /// </param>
     void AddInterceptor(int index, IChannelInterceptor interceptor);
 
     /// <summary>
     /// Remove an interceptor from the channel.
     /// </summary>
-    /// <param name="interceptor">the interceptor.</param>
-    /// <returns>success or failure.</returns>
+    /// <param name="interceptor">
+    /// the interceptor.
+    /// </param>
+    /// <returns>
+    /// success or failure.
+    /// </returns>
     bool RemoveInterceptor(IChannelInterceptor interceptor);
 
     /// <summary>
     /// Remove an interceptor at the specified index.
     /// </summary>
-    /// <param name="index">the index.</param>
-    /// <returns>removed interceptor.</returns>
+    /// <param name="index">
+    /// the index.
+    /// </param>
+    /// <returns>
+    /// removed interceptor.
+    /// </returns>
     IChannelInterceptor RemoveInterceptor(int index);
 }

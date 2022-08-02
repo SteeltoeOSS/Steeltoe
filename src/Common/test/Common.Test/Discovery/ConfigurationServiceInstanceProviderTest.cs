@@ -13,13 +13,46 @@ public class ConfigurationServiceInstanceProviderTest
     {
         var services = new List<ConfigurationServiceInstance>
         {
-            new () { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
-            new () { ServiceId = "fruitService", Host = "fruitballer", Port = 8081 },
-            new () { ServiceId = "fruitService", Host = "fruitballerz", Port = 8082 },
-            new () { ServiceId = "vegetableService", Host = "vegemite", Port = 443, IsSecure = true },
-            new () { ServiceId = "vegetableService", Host = "carrot", Port = 8081 },
-            new () { ServiceId = "vegetableService", Host = "beet", Port = 8082 },
+            new()
+            {
+                ServiceId = "fruitService",
+                Host = "fruitball",
+                Port = 443,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "fruitService",
+                Host = "fruitballer",
+                Port = 8081
+            },
+            new()
+            {
+                ServiceId = "fruitService",
+                Host = "fruitballerz",
+                Port = 8082
+            },
+            new()
+            {
+                ServiceId = "vegetableService",
+                Host = "vegemite",
+                Port = 443,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "vegetableService",
+                Host = "carrot",
+                Port = 8081
+            },
+            new()
+            {
+                ServiceId = "vegetableService",
+                Host = "beet",
+                Port = 8082
+            }
         };
+
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
 
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
@@ -34,8 +67,15 @@ public class ConfigurationServiceInstanceProviderTest
     {
         var services = new List<ConfigurationServiceInstance>
         {
-            new () { ServiceId = "fruitService", Host = "fruitball", Port = 443, IsSecure = true },
+            new()
+            {
+                ServiceId = "fruitService",
+                Host = "fruitball",
+                Port = 443,
+                IsSecure = true
+            }
         };
+
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
         Assert.Single(provider.GetInstances("fruitService"));

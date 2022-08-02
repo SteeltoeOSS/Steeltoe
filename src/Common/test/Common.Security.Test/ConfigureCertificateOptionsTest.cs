@@ -13,7 +13,7 @@ public class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_ThrowsOnNull()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         var configCertOpts = new ConfigureCertificateOptions(config);
 
         var constructorException = Assert.Throws<ArgumentNullException>(() => new ConfigureCertificateOptions(null));
@@ -25,9 +25,11 @@ public class ConfigureCertificateOptionsTest
     [Fact]
     public void ConfigureCertificateOptions_NoPath_NoCertificate()
     {
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string> { { "certificate", string.Empty } })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "certificate", string.Empty }
+        }).Build();
+
         Assert.NotNull(config["certificate"]);
         var options = new ConfigureCertificateOptions(config);
         var opts = new CertificateOptions();
@@ -42,9 +44,7 @@ public class ConfigureCertificateOptionsTest
     {
         // Skipped on Mac due to inability to open a PKCS#12 with no password
         // https://github.com/dotnet/runtime/issues/23635
-        var config = new ConfigurationBuilder()
-            .AddCertificateFile("instance.p12")
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile("instance.p12").Build();
         Assert.NotNull(config["certificate"]);
         var options = new ConfigureCertificateOptions(config);
         var opts = new CertificateOptions();

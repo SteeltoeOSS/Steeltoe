@@ -14,17 +14,10 @@ internal sealed class LatchedSemaphoreCommand : TestHystrixCommand<bool>
     {
     }
 
-    public LatchedSemaphoreCommand(
-        string commandName,
-        TestCircuitBreaker circuitBreaker,
-        SemaphoreSlim semaphore,
-        CountdownEvent startLatch,
+    public LatchedSemaphoreCommand(string commandName, TestCircuitBreaker circuitBreaker, SemaphoreSlim semaphore, CountdownEvent startLatch,
         CountdownEvent waitLatch)
-        : base(TestPropsBuilder()
-            .SetCommandKey(HystrixCommandKeyDefault.AsKey(commandName))
-            .SetCircuitBreaker(circuitBreaker)
-            .SetMetrics(circuitBreaker.Metrics)
-            .SetExecutionSemaphore(semaphore)
+        : base(TestPropsBuilder().SetCommandKey(HystrixCommandKeyDefault.AsKey(commandName)).SetCircuitBreaker(circuitBreaker)
+            .SetMetrics(circuitBreaker.Metrics).SetExecutionSemaphore(semaphore)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
     {
         _startLatch = startLatch;

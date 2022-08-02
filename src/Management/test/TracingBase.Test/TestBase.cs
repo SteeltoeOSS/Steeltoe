@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,7 +10,6 @@ using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Trace;
 using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry.Trace;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -22,22 +22,29 @@ public class TestBase
         return opts;
     }
 
-    public virtual IConfiguration GetConfiguration() =>
-        GetConfiguration(new Dictionary<string, string>());
+    public virtual IConfiguration GetConfiguration()
+    {
+        return GetConfiguration(new Dictionary<string, string>());
+    }
 
     public virtual IConfiguration GetConfiguration(Dictionary<string, string> moreSettings)
-        => new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>(moreSettings) { { "management:tracing:name", "foobar" } })
-            .Build();
+    {
+        return new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>(moreSettings)
+        {
+            { "management:tracing:name", "foobar" }
+        }).Build();
+    }
 
     protected TelemetrySpan GetCurrentSpan(Tracer tracer)
     {
-        var span = Tracer.CurrentSpan;
+        TelemetrySpan span = Tracer.CurrentSpan;
         return span.Context.IsValid ? span : null;
     }
 
     protected object GetPrivateField(object baseObject, string fieldName)
-        => baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+    {
+        return baseObject.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance).GetValue(baseObject);
+    }
 
     protected void ValidateServiceCollectionCommon(ServiceProvider serviceProvider)
     {

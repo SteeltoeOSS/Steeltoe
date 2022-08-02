@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using HdrHistogram;
 using Steeltoe.Common;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class RollingCommandUserLatencyDistributionStream : RollingDistributionStream<HystrixCommandCompletion>
 {
-    private static readonly ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, RollingCommandUserLatencyDistributionStream> Streams = new();
 
     private static Func<LongHistogram, HystrixCommandCompletion, LongHistogram> AddValuesToBucket { get; } = (initialDistribution, @event) =>
     {
@@ -22,29 +22,35 @@ public class RollingCommandUserLatencyDistributionStream : RollingDistributionSt
         return initialDistribution;
     };
 
+    private RollingCommandUserLatencyDistributionStream(IHystrixCommandKey commandKey, int numPercentileBuckets, int percentileBucketSizeInMs)
+        : base(HystrixCommandCompletionStream.GetInstance(commandKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
+    {
+    }
+
     public static RollingCommandUserLatencyDistributionStream GetInstance(IHystrixCommandKey commandKey, IHystrixCommandOptions properties)
     {
-        var percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
-        var numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
-        var percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
+        int percentileMetricWindow = properties.MetricsRollingPercentileWindowInMilliseconds;
+        int numPercentileBuckets = properties.MetricsRollingPercentileWindowBuckets;
+        int percentileBucketSizeInMs = percentileMetricWindow / numPercentileBuckets;
 
         return GetInstance(commandKey, numPercentileBuckets, percentileBucketSizeInMs);
     }
 
     public static RollingCommandUserLatencyDistributionStream GetInstance(IHystrixCommandKey commandKey, int numBuckets, int bucketSizeInMs)
     {
-        var result = Streams.GetOrAddEx(commandKey.Name, _ =>
+        RollingCommandUserLatencyDistributionStream result = Streams.GetOrAddEx(commandKey.Name, _ =>
         {
             var stream = new RollingCommandUserLatencyDistributionStream(commandKey, numBuckets, bucketSizeInMs);
             stream.StartCachingStreamValuesIfUnstarted();
             return stream;
         });
+
         return result;
     }
 
     public static void Reset()
     {
-        foreach (var stream in Streams.Values)
+        foreach (RollingCommandUserLatencyDistributionStream stream in Streams.Values)
         {
             stream.Unsubscribe();
         }
@@ -52,10 +58,5 @@ public class RollingCommandUserLatencyDistributionStream : RollingDistributionSt
         HystrixCommandCompletionStream.Reset();
 
         Streams.Clear();
-    }
-
-    private RollingCommandUserLatencyDistributionStream(IHystrixCommandKey commandKey, int numPercentileBuckets, int percentileBucketSizeInMs)
-        : base(HystrixCommandCompletionStream.GetInstance(commandKey), numPercentileBuckets, percentileBucketSizeInMs, AddValuesToBucket)
-    {
     }
 }

@@ -10,31 +10,19 @@ public static class Time
     private const long YieldThreshold = 1000;
     private const long SleepThreshold = TimeSpan.TicksPerMillisecond;
 
-    public static long CurrentTimeMillis
-    {
-        get
-        {
-            return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        }
-    }
+    public static long CurrentTimeMillis => DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
 
-    public static long CurrentTimeMillisJava
-    {
-        get
-        {
-            return DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        }
-    }
+    public static long CurrentTimeMillisJava => DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
     public static bool WaitUntil(Func<bool> check, int maxWaitMilliseconds)
     {
-        var ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
-        var start = DateTime.Now.Ticks;
+        long ticksToWait = maxWaitMilliseconds * TimeSpan.TicksPerMillisecond;
+        long start = DateTime.Now.Ticks;
 
         while (true)
         {
-            var elapsed = DateTime.Now.Ticks - start;
-            var ticksLeft = ticksToWait - elapsed;
+            long elapsed = DateTime.Now.Ticks - start;
+            long ticksLeft = ticksToWait - elapsed;
 
             if (check())
             {

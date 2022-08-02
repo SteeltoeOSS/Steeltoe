@@ -8,6 +8,13 @@ public class AtomicInteger
 {
     protected volatile int value;
 
+    public int Value
+    {
+        get => value;
+
+        set => this.value = value;
+    }
+
     public AtomicInteger()
         : this(0)
     {
@@ -16,13 +23,6 @@ public class AtomicInteger
     public AtomicInteger(int value)
     {
         this.value = value;
-    }
-
-    public int Value
-    {
-        get => value;
-
-        set => this.value = value;
     }
 
     public bool CompareAndSet(int expected, int update)

@@ -29,8 +29,10 @@ public static class RedisDataProtectionBuilderExtensions
             {
                 options.XmlRepository = p.GetRequiredService<IXmlRepository>();
             });
+
             return config;
         });
+
         return builder;
     }
 }

@@ -19,7 +19,7 @@ public class BindingBuilderTest
     public void FanOutBinding()
     {
         var fanOutExchange = new FanOutExchange("f");
-        var binding = BindingBuilder.Bind(_queue).To(fanOutExchange);
+        IBinding binding = BindingBuilder.Bind(_queue).To(fanOutExchange);
         Assert.NotNull(binding);
         Assert.Equal(fanOutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(string.Empty, binding.RoutingKey);
@@ -31,8 +31,8 @@ public class BindingBuilderTest
     public void DirectBinding()
     {
         var directExchange = new DirectExchange("d");
-        var routingKey = "r";
-        var binding = BindingBuilder.Bind(_queue).To(directExchange).With(routingKey);
+        string routingKey = "r";
+        IBinding binding = BindingBuilder.Bind(_queue).To(directExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
@@ -44,7 +44,7 @@ public class BindingBuilderTest
     public void DirectBindingWithQueueName()
     {
         var directExchange = new DirectExchange("d");
-        var binding = BindingBuilder.Bind(_queue).To(directExchange).WithQueueName();
+        IBinding binding = BindingBuilder.Bind(_queue).To(directExchange).WithQueueName();
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
@@ -56,8 +56,8 @@ public class BindingBuilderTest
     public void TopicBinding()
     {
         var topicExchange = new TopicExchange("t");
-        var routingKey = "r";
-        var binding = BindingBuilder.Bind(_queue).To(topicExchange).With(routingKey);
+        string routingKey = "r";
+        IBinding binding = BindingBuilder.Bind(_queue).To(topicExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(topicExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
@@ -69,8 +69,8 @@ public class BindingBuilderTest
     public void HeaderBinding()
     {
         var headersExchange = new HeadersExchange("h");
-        var headerKey = "headerKey";
-        var binding = BindingBuilder.Bind(_queue).To(headersExchange).Where(headerKey).Exists();
+        string headerKey = "headerKey";
+        IBinding binding = BindingBuilder.Bind(_queue).To(headersExchange).Where(headerKey).Exists();
         Assert.NotNull(binding);
         Assert.Equal(headersExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Queue, binding.Type);
@@ -81,14 +81,15 @@ public class BindingBuilderTest
     [Fact]
     public void CustomBinding()
     {
-        var argumentObject = new object();
+        object argumentObject = new object();
         var customExchange = new CustomExchange("c");
-        var routingKey = "r";
-        var binding = BindingBuilder.
-            Bind(_queue).
-            To(customExchange).
-            With(routingKey).
-            And(new Dictionary<string, object> { { "k", argumentObject } });
+        string routingKey = "r";
+
+        IBinding binding = BindingBuilder.Bind(_queue).To(customExchange).With(routingKey).And(new Dictionary<string, object>
+        {
+            { "k", argumentObject }
+        });
+
         Assert.NotNull(binding);
         Assert.Equal(argumentObject, binding.Arguments["k"]);
         Assert.Equal(customExchange.ExchangeName, binding.Exchange);
@@ -102,7 +103,7 @@ public class BindingBuilderTest
     {
         var directExchange = new DirectExchange("d");
         var fanOutExchange = new FanOutExchange("f");
-        var binding = BindingBuilder.Bind(directExchange).To(fanOutExchange);
+        IBinding binding = BindingBuilder.Bind(directExchange).To(fanOutExchange);
         Assert.NotNull(binding);
         Assert.Equal(fanOutExchange.ExchangeName, binding.Exchange);
         Assert.Equal(Binding.DestinationType.Exchange, binding.Type);
@@ -112,11 +113,11 @@ public class BindingBuilderTest
 
     private sealed class CustomExchange : AbstractExchange
     {
+        public override string Type { get; } = "x-custom";
+
         public CustomExchange(string name)
             : base(name)
         {
         }
-
-        public override string Type { get; } = "x-custom";
     }
 }

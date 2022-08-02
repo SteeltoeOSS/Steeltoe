@@ -9,10 +9,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class CompositeChannelListener : IChannelListener
 {
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
     private readonly ILogger _logger;
 
-    private List<IChannelListener> _channelListeners = new ();
+    private List<IChannelListener> _channelListeners = new();
 
     public CompositeChannelListener(ILogger logger = null)
     {
@@ -22,8 +22,9 @@ public class CompositeChannelListener : IChannelListener
     public void OnCreate(RC.IModel channel, bool transactional)
     {
         _logger?.LogDebug("OnCreate");
-        var listeners = _channelListeners;
-        foreach (var listener in listeners)
+        List<IChannelListener> listeners = _channelListeners;
+
+        foreach (IChannelListener listener in listeners)
         {
             listener.OnCreate(channel, transactional);
         }
@@ -32,8 +33,9 @@ public class CompositeChannelListener : IChannelListener
     public void OnShutDown(RC.ShutdownEventArgs args)
     {
         _logger?.LogDebug("OnShutDown");
-        var listeners = _channelListeners;
-        foreach (var listener in listeners)
+        List<IChannelListener> listeners = _channelListeners;
+
+        foreach (IChannelListener listener in listeners)
         {
             listener.OnShutDown(args);
         }
@@ -52,6 +54,7 @@ public class CompositeChannelListener : IChannelListener
             {
                 channelListener
             };
+
             _channelListeners = listeners;
         }
     }

@@ -12,12 +12,12 @@ namespace Steeltoe.Management.Endpoint.ContentNegotiation.Test;
 
 public class MetricsStartup
 {
+    public IConfiguration Configuration;
+
     public MetricsStartup(IConfiguration configuration)
     {
-        this.Configuration = configuration;
+        Configuration = configuration;
     }
-
-    public IConfiguration Configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -29,6 +29,7 @@ public class MetricsStartup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<ActuatorEndpoint>();

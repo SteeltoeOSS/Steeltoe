@@ -23,7 +23,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        var actual = await _template.ReceiveAsync();
+        IMessage actual = await _template.ReceiveAsync();
 
         Assert.Equal("home", _template.Destination);
         Assert.Same(expected, actual);
@@ -35,7 +35,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        var actual = _template.Receive();
+        IMessage actual = _template.Receive();
 
         Assert.Equal("home", _template.Destination);
         Assert.Same(expected, actual);
@@ -58,7 +58,7 @@ public class MessageReceivingTemplateTest
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        var actual = await _template.ReceiveAsync("somewhere");
+        IMessage actual = await _template.ReceiveAsync("somewhere");
 
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same(expected, actual);
@@ -69,7 +69,7 @@ public class MessageReceivingTemplateTest
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        var actual = _template.Receive("somewhere");
+        IMessage actual = _template.Receive("somewhere");
 
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same(expected, actual);
@@ -81,7 +81,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        var payload = await _template.ReceiveAndConvertAsync<string>();
+        string payload = await _template.ReceiveAndConvertAsync<string>();
         Assert.Equal("home", _template.Destination);
         Assert.Same("payload", payload);
     }
@@ -92,7 +92,7 @@ public class MessageReceivingTemplateTest
         IMessage expected = Message.Create("payload");
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
-        var payload = _template.ReceiveAndConvert<string>();
+        string payload = _template.ReceiveAndConvert<string>();
         Assert.Equal("home", _template.Destination);
         Assert.Same("payload", payload);
     }
@@ -102,7 +102,7 @@ public class MessageReceivingTemplateTest
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        var payload = await _template.ReceiveAndConvertAsync<string>("somewhere");
+        string payload = await _template.ReceiveAndConvertAsync<string>("somewhere");
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same("payload", payload);
     }
@@ -112,7 +112,7 @@ public class MessageReceivingTemplateTest
     {
         IMessage expected = Message.Create("payload");
         _template.ReceiveMessage = expected;
-        var payload = _template.ReceiveAndConvert<string>("somewhere");
+        string payload = _template.ReceiveAndConvert<string>("somewhere");
         Assert.Equal("somewhere", _template.Destination);
         Assert.Same("payload", payload);
     }
@@ -144,6 +144,7 @@ public class MessageReceivingTemplateTest
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
         _template.MessageConverter = new GenericMessageConverter();
+
         try
         {
             _template.ReceiveAndConvert<StringWriter>();
@@ -162,6 +163,7 @@ public class MessageReceivingTemplateTest
         _template.DefaultReceiveDestination = "home";
         _template.ReceiveMessage = expected;
         _template.MessageConverter = new GenericMessageConverter();
+
         try
         {
             await _template.ReceiveAndConvertAsync<StringWriter>();

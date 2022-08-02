@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Info;
-using System.Globalization;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor;
 
@@ -14,7 +14,11 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     private const string GitSettingsPrefix = "git";
     private const string GitPropertiesFile = "git.properties";
 
-    private static readonly List<string> DatetimeInputKeys = new () { "time" };
+    private static readonly List<string> DatetimeInputKeys = new()
+    {
+        "time"
+    };
+
     private readonly string _propFile;
     private readonly ILogger _logger;
 
@@ -40,26 +44,28 @@ public class GitInfoContributor : AbstractConfigurationContributor, IInfoContrib
     {
         if (File.Exists(propFile))
         {
-            var lines = File.ReadAllLines(propFile);
+            string[] lines = File.ReadAllLines(propFile);
+
             if (lines != null && lines.Length > 0)
             {
                 var dict = new Dictionary<string, string>();
-                foreach (var line in lines)
+
+                foreach (string line in lines)
                 {
-                    if (line.StartsWith("#") ||
-                        !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
+                    if (line.StartsWith("#") || !line.StartsWith("git.", StringComparison.OrdinalIgnoreCase))
                     {
                         continue;
                     }
 
-                    var keyVal = line.Split('=');
+                    string[] keyVal = line.Split('=');
+
                     if (keyVal == null || keyVal.Length != 2)
                     {
                         continue;
                     }
 
-                    var key = keyVal[0].Trim().Replace('.', ':');
-                    var val = keyVal[1].Replace("\\:", ":");
+                    string key = keyVal[0].Trim().Replace('.', ':');
+                    string val = keyVal[1].Replace("\\:", ":");
 
                     dict[key] = val;
                 }

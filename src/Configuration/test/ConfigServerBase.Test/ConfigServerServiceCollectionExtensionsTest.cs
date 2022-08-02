@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
@@ -36,16 +37,16 @@ public class ConfigServerServiceCollectionExtensionsTest
     public void ConfigureConfigServerClientOptions_ConfiguresConfigServerClientSettingsOptions_WithDefaults()
     {
         var services = new ServiceCollection();
-        var environment = HostingHelpers.GetHostingEnvironment("Production");
+        IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
 
-        var builder = new ConfigurationBuilder().AddConfigServer(environment.EnvironmentName);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(environment.EnvironmentName);
+        IConfigurationRoot config = builder.Build();
         services.AddSingleton<IConfiguration>(config);
         services.ConfigureConfigServerClientOptions();
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<IOptions<ConfigServerClientSettingsOptions>>();
         Assert.NotNull(service);
-        var options = service.Value;
+        ConfigServerClientSettingsOptions options = service.Value;
         Assert.NotNull(options);
         TestHelper.VerifyDefaults(options.Settings);
     }
@@ -57,7 +58,7 @@ public class ConfigServerServiceCollectionExtensionsTest
 
         services.ConfigureConfigServerClientOptions();
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var app = serviceProvider.GetService<IOptions<CloudFoundryApplicationOptions>>();
         Assert.NotNull(app);
         var service = serviceProvider.GetService<IOptions<CloudFoundryServicesOptions>>();

@@ -12,36 +12,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Steeltoe;
 
-public static partial class TestHelpers
+public static class TestHelpers
 {
-    public static Stream StringToStream(string str)
-    {
-        var memStream = new MemoryStream();
-        var textWriter = new StreamWriter(memStream);
-        textWriter.Write(str);
-        textWriter.Flush();
-        memStream.Seek(0, SeekOrigin.Begin);
-
-        return memStream;
-    }
-
-    public static string StreamToString(Stream stream)
-    {
-        stream.Seek(0, SeekOrigin.Begin);
-        var reader = new StreamReader(stream);
-
-        return reader.ReadToEnd();
-    }
-
-    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
-    {
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(collection);
-        return builder.Build();
-    }
-
-    public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
-
     public static readonly string VcapApplication = @"
             {
                 ""limits"": {
@@ -74,13 +46,41 @@ public static partial class TestHelpers
         { "postgres:client:timeout", "1" },
         { "redis:client:abortOnConnectFail", "false" },
         { "redis:client:connectTimeout", "1" },
-        { "sqlserver:credentials:timeout", "1" },
+        { "sqlserver:credentials:timeout", "1" }
     }.ToImmutableDictionary();
 
     public static readonly ImmutableDictionary<string, string> WavefrontConfiguration = new Dictionary<string, string>
     {
         { "management:metrics:export:wavefront:uri", "proxy://localhost:7828" }
     }.ToImmutableDictionary();
+
+    public static string EntryAssemblyName => Assembly.GetEntryAssembly().GetName().Name;
+
+    public static Stream StringToStream(string str)
+    {
+        var memStream = new MemoryStream();
+        var textWriter = new StreamWriter(memStream);
+        textWriter.Write(str);
+        textWriter.Flush();
+        memStream.Seek(0, SeekOrigin.Begin);
+
+        return memStream;
+    }
+
+    public static string StreamToString(Stream stream)
+    {
+        stream.Seek(0, SeekOrigin.Begin);
+        var reader = new StreamReader(stream);
+
+        return reader.ReadToEnd();
+    }
+
+    public static IConfiguration GetConfigurationFromDictionary(IDictionary<string, string> collection)
+    {
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(collection);
+        return builder.Build();
+    }
 
     public static ILoggerFactory GetLoggerFactory()
     {
@@ -93,7 +93,7 @@ public static partial class TestHelpers
 
     public static WebApplicationBuilder GetTestWebApplicationBuilder(string[] args = null)
     {
-        var webAppBuilder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder webAppBuilder = WebApplication.CreateBuilder(args);
         webAppBuilder.Configuration.AddInMemoryCollection(FastTestsConfiguration);
         webAppBuilder.WebHost.UseTestServer();
         return webAppBuilder;

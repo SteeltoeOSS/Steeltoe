@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Net;
 
 namespace Steeltoe.Management.Endpoint.Loggers;
 
@@ -14,7 +14,8 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 {
     private readonly RequestDelegate _next;
 
-    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions managementOptions, ILogger<LoggersEndpointMiddleware> logger = null)
+    public LoggersEndpointMiddleware(RequestDelegate next, LoggersEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<LoggersEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
         _next = next;
@@ -32,19 +33,17 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
 
     protected internal async Task HandleLoggersRequestAsync(HttpContext context)
     {
-        var request = context.Request;
-        var response = context.Response;
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
 
         if (context.Request.Method.Equals("POST"))
         {
             // POST - change a logger level
             var paths = new List<string>();
             logger?.LogDebug("Incoming path: {0}", request.Path.Value);
-            paths.Add(managementOptions == null
-                ? endpoint.Path
-                : $"{managementOptions.Path}/{endpoint.Path}".Replace("//", "/"));
+            paths.Add(managementOptions == null ? endpoint.Path : $"{managementOptions.Path}/{endpoint.Path}".Replace("//", "/"));
 
-            foreach (var path in paths.Distinct())
+            foreach (string path in paths.Distinct())
             {
                 if (ChangeLoggerLevel(request, path))
                 {
@@ -58,7 +57,7 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
         }
 
         // GET request
-        var serialInfo = HandleRequest(null);
+        string serialInfo = HandleRequest(null);
         logger?.LogDebug("Returning: {0}", serialInfo);
 
         context.HandleContentNegotiation(logger);
@@ -68,13 +67,14 @@ public class LoggersEndpointMiddleware : EndpointMiddleware<Dictionary<string, o
     private bool ChangeLoggerLevel(HttpRequest request, string path)
     {
         var epPath = new PathString(path);
-        if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
+
+        if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
         {
-            var loggerName = remaining.Value.TrimStart('/');
+            string loggerName = remaining.Value.TrimStart('/');
 
-            var change = ((LoggersEndpoint)endpoint).DeserializeRequest(request.Body);
+            Dictionary<string, string> change = ((LoggersEndpoint)endpoint).DeserializeRequest(request.Body);
 
-            change.TryGetValue("configuredLevel", out var level);
+            change.TryGetValue("configuredLevel", out string level);
 
             logger?.LogDebug("Change Request: {0}, {1}", loggerName, level ?? "RESET");
 

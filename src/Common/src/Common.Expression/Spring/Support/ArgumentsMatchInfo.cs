@@ -8,16 +8,16 @@ public class ArgumentsMatchInfo
 {
     private readonly ArgumentsMatchKind _kind;
 
-    public ArgumentsMatchInfo(ArgumentsMatchKind kind)
-    {
-        _kind = kind;
-    }
-
     public bool IsExactMatch => _kind == ArgumentsMatchKind.Exact;
 
     public bool IsCloseMatch => _kind == ArgumentsMatchKind.Close;
 
     public bool IsMatchRequiringConversion => _kind == ArgumentsMatchKind.RequiresConversion;
+
+    public ArgumentsMatchInfo(ArgumentsMatchKind kind)
+    {
+        _kind = kind;
+    }
 
     public override string ToString()
     {

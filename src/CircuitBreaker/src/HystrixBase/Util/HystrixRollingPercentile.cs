@@ -2,13 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Collections;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Util;
 
 public class HystrixRollingPercentile
 {
+    private static readonly ITime ActualTime = new ActualTime();
+    private readonly ITime _time;
+
+    private readonly object _newBucketLock = new();
     internal readonly BucketCircularArray Buckets;
     internal readonly int TimeInMilliseconds;
     internal readonly int NumberOfBuckets;
@@ -16,14 +20,31 @@ public class HystrixRollingPercentile
     internal readonly int BucketSizeInMilliseconds;
     internal readonly bool Enabled;
 
-    private static readonly ITime ActualTime = new ActualTime();
-    private readonly ITime _time;
-
     /*
      * This will get flipped each time a new bucket is created.
      */
     /* package for testing */
-    private volatile PercentileSnapshot _currentPercentileSnapshot = new (0);
+    private volatile PercentileSnapshot _currentPercentileSnapshot = new(0);
+
+    private PercentileSnapshot CurrentPercentileSnapshot => _currentPercentileSnapshot;
+
+    public int Mean
+    {
+        get
+        {
+            /* no-op if disabled */
+            if (!Enabled)
+            {
+                return -1;
+            }
+
+            // force logic to move buckets forward in case other requests aren't making it happen
+            GetCurrentBucket();
+
+            // fetch the current snapshot
+            return CurrentPercentileSnapshot.Mean;
+        }
+    }
 
     public HystrixRollingPercentile(int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
         : this(ActualTime, timeInMilliseconds, numberOfBuckets, bucketDataLength, enabled)
@@ -34,19 +55,19 @@ public class HystrixRollingPercentile
     internal HystrixRollingPercentile(ITime time, int timeInMilliseconds, int numberOfBuckets, int bucketDataLength, bool enabled)
     {
         _time = time;
-        this.TimeInMilliseconds = timeInMilliseconds;
-        this.NumberOfBuckets = numberOfBuckets;
-        this.BucketDataLength = bucketDataLength;
-        this.Enabled = enabled;
+        TimeInMilliseconds = timeInMilliseconds;
+        NumberOfBuckets = numberOfBuckets;
+        BucketDataLength = bucketDataLength;
+        Enabled = enabled;
 
-        if (this.TimeInMilliseconds % this.NumberOfBuckets != 0)
+        if (TimeInMilliseconds % NumberOfBuckets != 0)
         {
             throw new ArgumentException("The timeInMilliseconds must divide equally into numberOfBuckets. For example 1000/10 is ok, 1000/11 is not.");
         }
 
-        BucketSizeInMilliseconds = this.TimeInMilliseconds / this.NumberOfBuckets;
+        BucketSizeInMilliseconds = TimeInMilliseconds / NumberOfBuckets;
 
-        Buckets = new BucketCircularArray(this.NumberOfBuckets);
+        Buckets = new BucketCircularArray(NumberOfBuckets);
     }
 
     public void AddValue(params int[] value)
@@ -57,11 +78,12 @@ public class HystrixRollingPercentile
             return;
         }
 
-        foreach (var v in value)
+        foreach (int v in value)
         {
             try
             {
-                var currentBucket = GetCurrentBucket();
+                Bucket currentBucket = GetCurrentBucket();
+
                 if (currentBucket != null)
                 {
                     currentBucket.Data.AddValue(v);
@@ -89,24 +111,6 @@ public class HystrixRollingPercentile
         return CurrentPercentileSnapshot.GetPercentile(percentile);
     }
 
-    public int Mean
-    {
-        get
-        {
-            /* no-op if disabled */
-            if (!Enabled)
-            {
-                return -1;
-            }
-
-            // force logic to move buckets forward in case other requests aren't making it happen
-            GetCurrentBucket();
-
-            // fetch the current snapshot
-            return CurrentPercentileSnapshot.Mean;
-        }
-    }
-
     public void Reset()
     {
         /* no-op if disabled */
@@ -122,13 +126,9 @@ public class HystrixRollingPercentile
         _currentPercentileSnapshot = new PercentileSnapshot(Buckets.Array);
     }
 
-    private PercentileSnapshot CurrentPercentileSnapshot => _currentPercentileSnapshot;
-
-    private readonly object _newBucketLock = new ();
-
     private Bucket GetCurrentBucket()
     {
-        var currentTime = _time.CurrentTimeInMillis;
+        long currentTime = _time.CurrentTimeInMillis;
 
         /* a shortcut to try and get the most common result of immediately finding the current bucket */
 
@@ -136,7 +136,8 @@ public class HystrixRollingPercentile
          * Retrieve the latest bucket if the given time is BEFORE the end of the bucket window, otherwise it returns NULL.
          * NOTE: This is thread-safe because it's accessing 'buckets' which is a LinkedBlockingDeque
          */
-        var currentBucket = Buckets.PeekLast;
+        Bucket currentBucket = Buckets.PeekLast;
+
         if (currentBucket != null && currentTime < currentBucket.WindowStart + BucketSizeInMilliseconds)
         {
             // if we're within the bucket 'window of time' return the current one
@@ -165,11 +166,13 @@ public class HystrixRollingPercentile
          * bucket to calculate the sum themselves. This is an example of favoring write-performance instead of read-performance and how the tryLock
          * versus a synchronized block needs to be accommodated.
          */
-        var lockTaken = false;
+        bool lockTaken = false;
         Monitor.TryEnter(_newBucketLock, ref lockTaken);
+
         if (lockTaken)
         {
             currentTime = _time.CurrentTimeInMillis;
+
             try
             {
                 if (Buckets.PeekLast == null)
@@ -183,10 +186,11 @@ public class HystrixRollingPercentile
                 {
                     // We go into a loop so that it will create as many buckets as needed to catch up to the current time
                     // as we want the buckets complete even if we don't have transactions during a period of time.
-                    for (var i = 0; i < NumberOfBuckets; i++)
+                    for (int i = 0; i < NumberOfBuckets; i++)
                     {
                         // we have at least 1 bucket so retrieve it
-                        var lastBucket = Buckets.PeekLast;
+                        Bucket lastBucket = Buckets.PeekLast;
+
                         if (currentTime < lastBucket.WindowStart + BucketSizeInMilliseconds)
                         {
                             // if we're within the bucket 'window of time' return the current one
@@ -208,7 +212,7 @@ public class HystrixRollingPercentile
                         else
                         {
                             // we're past the window so we need to create a new bucket
-                            var allBuckets = Buckets.Array;
+                            Bucket[] allBuckets = Buckets.Array;
 
                             // create a new bucket and add it as the new 'last' (once this is done other threads will start using it on subsequent retrievals)
                             Buckets.AddLast(new Bucket(lastBucket.WindowStart + BucketSizeInMilliseconds, BucketDataLength));
@@ -227,54 +231,30 @@ public class HystrixRollingPercentile
                 Monitor.Exit(_newBucketLock);
             }
         }
-        else
+
+        currentBucket = Buckets.PeekLast;
+
+        if (currentBucket != null)
         {
-            currentBucket = Buckets.PeekLast;
-            if (currentBucket != null)
-            {
-                // we didn't get the lock so just return the latest bucket while another thread creates the next one
-                return currentBucket;
-            }
-            else
-            {
-                // the rare scenario where multiple threads raced to create the very first bucket
-                // wait slightly and then use recursion while the other thread finishes creating a bucket
-                if (Time.WaitUntil(() => Buckets.PeekLast != null, 500))
-                {
-                    return Buckets.PeekLast;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            // we didn't get the lock so just return the latest bucket while another thread creates the next one
+            return currentBucket;
         }
+
+        // the rare scenario where multiple threads raced to create the very first bucket
+        // wait slightly and then use recursion while the other thread finishes creating a bucket
+        if (Time.WaitUntil(() => Buckets.PeekLast != null, 500))
+        {
+            return Buckets.PeekLast;
+        }
+
+        return null;
     }
 
     internal sealed class PercentileBucketData
     {
         internal readonly int DataLength;
         internal readonly AtomicIntegerArray List;
-        internal readonly AtomicInteger Index = new ();
-
-        public PercentileBucketData(int dataLength)
-        {
-            DataLength = dataLength;
-            List = new AtomicIntegerArray(dataLength);
-        }
-
-        public void AddValue(params int[] latency)
-        {
-            foreach (var l in latency)
-            {
-                /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
-                List[Index.GetAndIncrement() % DataLength] = l;
-
-                // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
-                // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
-                // A threadlocal data storage that only aggregates when fetched would be ideal. Similar to LongAdder except for accumulating lists of data.
-            }
-        }
+        internal readonly AtomicInteger Index = new();
 
         public int Length
         {
@@ -284,10 +264,27 @@ public class HystrixRollingPercentile
                 {
                     return List.Length;
                 }
-                else
-                {
-                    return Index.Value;
-                }
+
+                return Index.Value;
+            }
+        }
+
+        public PercentileBucketData(int dataLength)
+        {
+            DataLength = dataLength;
+            List = new AtomicIntegerArray(dataLength);
+        }
+
+        public void AddValue(params int[] latency)
+        {
+            foreach (int l in latency)
+            {
+                /* We just wrap around the beginning and over-write if we go past 'dataLength' as that will effectively cause us to "sample" the most recent data */
+                List[Index.GetAndIncrement() % DataLength] = l;
+
+                // TODO Alternative to AtomicInteger? The getAndIncrement may be a source of contention on high throughput circuits on large multi-core systems.
+                // LongAdder isn't suited to this as it is not consistent. Perhaps a different data structure that doesn't need indexed adds?
+                // A threadlocal data storage that only aggregates when fetched would be ideal. Similar to LongAdder except for accumulating lists of data.
             }
         }
     }
@@ -298,33 +295,39 @@ public class HystrixRollingPercentile
         private readonly int _length;
 
         /* package for testing */
+        public int Mean { get; }
+
+        /* package for testing */
         public PercentileSnapshot(Bucket[] buckets)
         {
-            var lengthFromBuckets = 0;
+            int lengthFromBuckets = 0;
 
             // we need to calculate it dynamically as it could have been changed by properties (rare, but possible)
             // also this way we capture the actual index size rather than the max so size the int[] to only what we need
-            foreach (var bd in buckets)
+            foreach (Bucket bd in buckets)
             {
                 lengthFromBuckets += bd.Data.DataLength;
             }
 
             _data = new int[lengthFromBuckets];
-            var index = 0;
-            var sum = 0;
-            foreach (var bd in buckets)
+            int index = 0;
+            int sum = 0;
+
+            foreach (Bucket bd in buckets)
             {
-                var pbd = bd.Data;
-                var pbdLength = pbd.Length;
-                for (var i = 0; i < pbdLength; i++)
+                PercentileBucketData pbd = bd.Data;
+                int pbdLength = pbd.Length;
+
+                for (int i = 0; i < pbdLength; i++)
                 {
-                    var v = pbd.List[i];
+                    int v = pbd.List[i];
                     _data[index++] = v;
                     sum += v;
                 }
             }
 
             _length = index;
+
             if (_length == 0)
             {
                 Mean = 0;
@@ -343,8 +346,9 @@ public class HystrixRollingPercentile
             _data = data;
             _length = data.Length;
 
-            var sum = 0;
-            foreach (var v in data)
+            int sum = 0;
+
+            foreach (int v in data)
             {
                 sum += v;
             }
@@ -353,9 +357,6 @@ public class HystrixRollingPercentile
 
             Array.Sort(_data, 0, _length);
         }
-
-        /* package for testing */
-        public int Mean { get; }
 
         public int GetPercentile(double percentile)
         {
@@ -374,21 +375,23 @@ public class HystrixRollingPercentile
             {
                 return 0;
             }
-            else if (percent <= 0.0)
+
+            if (percent <= 0.0)
             {
                 return _data[0];
             }
-            else if (percent >= 100.0)
+
+            if (percent >= 100.0)
             {
                 return _data[_length - 1];
             }
 
             // ranking (https://en.wikipedia.org/wiki/Percentile#Alternative_methods)
-            var rank = percent / 100.0 * _length;
+            double rank = percent / 100.0 * _length;
 
             // linear interpolation between closest ranks
-            var iLow = (int)Math.Floor(rank);
-            var iHigh = (int)Math.Ceiling(rank);
+            int iLow = (int)Math.Floor(rank);
+            int iHigh = (int)Math.Ceiling(rank);
 
             // assert 0 <= iLow && iLow <= rank && rank <= iHigh && iHigh <= length;
             // assert(iHigh - iLow) <= 1;
@@ -397,15 +400,14 @@ public class HystrixRollingPercentile
                 // Another edge case
                 return _data[_length - 1];
             }
-            else if (iLow == iHigh)
+
+            if (iLow == iHigh)
             {
                 return _data[iLow];
             }
-            else
-            {
-                // Interpolate between the two bounding values
-                return (int)(_data[iLow] + ((rank - iLow) * (_data[iHigh] - _data[iLow])));
-            }
+
+            // Interpolate between the two bounding values
+            return (int)(_data[iLow] + (rank - iLow) * (_data[iHigh] - _data[iLow]));
         }
     }
 
@@ -414,6 +416,78 @@ public class HystrixRollingPercentile
         private readonly AtomicReference<ListState> _state;
         private readonly int _dataLength; // we don't resize, we always stay the same, so remember this
         private readonly int _numBuckets;
+
+        public int Size =>
+            // the size can also be worked out each time as:
+            // return (tail + data.length() - head) % data.length();
+            _state.Value.Size;
+
+        public Bucket PeekLast => _state.Value.Tail;
+
+        public Bucket[] Array => _state.Value.Array;
+
+        public BucketCircularArray(int size)
+        {
+            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
+            _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
+            _dataLength = buckets.Length;
+            _numBuckets = size;
+        }
+
+        public void Clear()
+        {
+            while (true)
+            {
+                /*
+                 * it should be very hard to not succeed the first pass thru since this is typically is only called from
+                 * a single thread protected by a tryLock, but there is at least 1 other place (at time of writing this comment)
+                 * where reset can be called from (CircuitBreaker.markSuccess after circuit was tripped) so it can
+                 * in an edge-case conflict.
+                 * Instead of trying to determine if someone already successfully called clear() and we should skip
+                 * we will have both calls reset the circuit, even if that means losing data added in between the two
+                 * depending on thread scheduling.
+                 * The rare scenario in which that would occur, we'll accept the possible data loss while clearing it
+                 * since the code has stated its desire to clear() anyways.
+                 */
+                ListState current = _state.Value;
+                ListState newState = current.Clear();
+
+                if (_state.CompareAndSet(current, newState))
+                {
+                    return;
+                }
+            }
+        }
+
+        public void AddLast(Bucket o)
+        {
+            ListState currentState = _state.Value;
+
+            // create new version of state (what we want it to become)
+            ListState newState = currentState.AddBucket(o);
+
+            /*
+             * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
+             * provided in <code>getCurrentBucket</code>)
+             */
+#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
+            if (_state.CompareAndSet(currentState, newState))
+            {
+                // we succeeded
+            }
+#pragma warning restore S3923 // All branches in a conditional structure should not have exactly the same implementation
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        public IEnumerator<Bucket> GetEnumerator()
+        {
+            var list = new List<Bucket>(Array);
+            return list.AsReadOnly().GetEnumerator();
+        }
 
         internal sealed class ListState
         {
@@ -428,23 +502,6 @@ public class HystrixRollingPercentile
             internal readonly int Head;
             internal BucketCircularArray Cb;
 
-            public ListState(BucketCircularArray cb, AtomicReferenceArray<Bucket> data, int head, int tail)
-            {
-                this.Cb = cb;
-                this.Head = head;
-                BucketTail = tail;
-                if (head == 0 && tail == 0)
-                {
-                    Size = 0;
-                }
-                else
-                {
-                    Size = (tail + cb._dataLength - head) % cb._dataLength;
-                }
-
-                this.Data = data;
-            }
-
             public Bucket Tail
             {
                 get
@@ -453,11 +510,9 @@ public class HystrixRollingPercentile
                     {
                         return null;
                     }
-                    else
-                    {
-                        // we want to get the last item, so size()-1
-                        return Data[Convert(Size - 1)];
-                    }
+
+                    // we want to get the last item, so size()-1
+                    return Data[Convert(Size - 1)];
                 }
             }
 
@@ -471,13 +526,32 @@ public class HystrixRollingPercentile
                         * just potentially return stale data which we are okay with doing
                         */
                     var array = new List<Bucket>();
-                    for (var i = 0; i < Size; i++)
+
+                    for (int i = 0; i < Size; i++)
                     {
                         array.Add(Data[Convert(i)]);
                     }
 
                     return array.ToArray();
                 }
+            }
+
+            public ListState(BucketCircularArray cb, AtomicReferenceArray<Bucket> data, int head, int tail)
+            {
+                Cb = cb;
+                Head = head;
+                BucketTail = tail;
+
+                if (head == 0 && tail == 0)
+                {
+                    Size = 0;
+                }
+                else
+                {
+                    Size = (tail + cb._dataLength - head) % cb._dataLength;
+                }
+
+                Data = data;
             }
 
             public ListState Clear()
@@ -513,92 +587,11 @@ public class HystrixRollingPercentile
                     // increment tail and head
                     return new ListState(Cb, Data, (Head + 1) % Cb._dataLength, (BucketTail + 1) % Cb._dataLength);
                 }
-                else
-                {
-                    // increment only tail
-                    return new ListState(Cb, Data, Head, (BucketTail + 1) % Cb._dataLength);
-                }
+
+                // increment only tail
+                return new ListState(Cb, Data, Head, (BucketTail + 1) % Cb._dataLength);
             }
         }
-
-        public BucketCircularArray(int size)
-        {
-            var buckets = new AtomicReferenceArray<Bucket>(size + 1); // + 1 as extra room for the add/remove;
-            _state = new AtomicReference<ListState>(new ListState(this, buckets, 0, 0));
-            _dataLength = buckets.Length;
-            _numBuckets = size;
-        }
-
-        public void Clear()
-        {
-            while (true)
-            {
-                /*
-                 * it should be very hard to not succeed the first pass thru since this is typically is only called from
-                 * a single thread protected by a tryLock, but there is at least 1 other place (at time of writing this comment)
-                 * where reset can be called from (CircuitBreaker.markSuccess after circuit was tripped) so it can
-                 * in an edge-case conflict.
-                 * Instead of trying to determine if someone already successfully called clear() and we should skip
-                 * we will have both calls reset the circuit, even if that means losing data added in between the two
-                 * depending on thread scheduling.
-                 * The rare scenario in which that would occur, we'll accept the possible data loss while clearing it
-                 * since the code has stated its desire to clear() anyways.
-                 */
-                var current = _state.Value;
-                var newState = current.Clear();
-                if (_state.CompareAndSet(current, newState))
-                {
-                    return;
-                }
-            }
-        }
-
-        public void AddLast(Bucket o)
-        {
-            var currentState = _state.Value;
-
-            // create new version of state (what we want it to become)
-            var newState = currentState.AddBucket(o);
-
-            /*
-             * use compareAndSet to set in case multiple threads are attempting (which shouldn't be the case because since addLast will ONLY be called by a single thread at a time due to protection
-             * provided in <code>getCurrentBucket</code>)
-             */
-#pragma warning disable S3923 // All branches in a conditional structure should not have exactly the same implementation
-            if (_state.CompareAndSet(currentState, newState))
-            {
-                // we succeeded
-            }
-            else
-            {
-                // we failed, someone else was adding or removing
-                // instead of trying again and risking multiple addLast concurrently (which shouldn't be the case)
-                // we'll just return and let the other thread 'win' and if the timing is off the next call to getCurrentBucket will fix things
-            }
-#pragma warning restore S3923 // All branches in a conditional structure should not have exactly the same implementation
-        }
-
-        public int Size
-        {
-            // the size can also be worked out each time as:
-            // return (tail + data.length() - head) % data.length();
-            get { return _state.Value.Size; }
-        }
-
-        public Bucket PeekLast => _state.Value.Tail;
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        public IEnumerator<Bucket> GetEnumerator()
-        {
-            var list = new List<Bucket>(Array);
-            return list.AsReadOnly().GetEnumerator();
-        }
-
-        public Bucket[] Array => _state.Value.Array;
     }
 
     internal sealed class Bucket

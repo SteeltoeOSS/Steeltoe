@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Net;
 
@@ -23,7 +23,8 @@ public class InetUtils
 
     public virtual HostInfo FindFirstNonLoopbackHostInfo()
     {
-        var address = FindFirstNonLoopbackAddress();
+        IPAddress address = FindFirstNonLoopbackAddress();
+
         if (address != null)
         {
             return ConvertAddress(address);
@@ -34,24 +35,27 @@ public class InetUtils
             Hostname = _options.DefaultHostname,
             IpAddress = _options.DefaultIpAddress
         };
+
         return hostInfo;
     }
 
     public IPAddress FindFirstNonLoopbackAddress()
     {
         IPAddress result = null;
+
         try
         {
-            var lowest = int.MaxValue;
-            var interfaces = NetworkInterface.GetAllNetworkInterfaces();
-            foreach (var @interface in interfaces)
+            int lowest = int.MaxValue;
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+
+            foreach (NetworkInterface @interface in interfaces)
             {
                 if (@interface.OperationalStatus == OperationalStatus.Up && !@interface.IsReceiveOnly)
                 {
                     _logger?.LogTrace("Testing interface: {name}, {id}", @interface.Name, @interface.Id);
 
-                    var props = @interface.GetIPProperties();
-                    var ipProps = props.GetIPv4Properties();
+                    IPInterfaceProperties props = @interface.GetIPProperties();
+                    IPv4InterfaceProperties ipProps = props.GetIPv4Properties();
 
                     if (ipProps.Index < lowest || result == null)
                     {
@@ -64,12 +68,11 @@ public class InetUtils
 
                     if (!IgnoreInterface(@interface.Name))
                     {
-                        foreach (var addressInfo in props.UnicastAddresses)
+                        foreach (UnicastIPAddressInformation addressInfo in props.UnicastAddresses)
                         {
-                            var address = addressInfo.Address;
-                            if (IsInet4Address(address)
-                                && !IsLoopbackAddress(address)
-                                && IsPreferredAddress(address))
+                            IPAddress address = addressInfo.Address;
+
+                            if (IsInet4Address(address) && !IsLoopbackAddress(address) && IsPreferredAddress(address))
                             {
                                 _logger?.LogTrace("Found non-loopback interface: {name}", @interface.Name);
                                 result = address;
@@ -106,7 +109,8 @@ public class InetUtils
     {
         if (_options.UseOnlySiteLocalInterfaces)
         {
-            var siteLocalAddress = IsSiteLocalAddress(address);
+            bool siteLocalAddress = IsSiteLocalAddress(address);
+
             if (!siteLocalAddress)
             {
                 _logger?.LogTrace("Ignoring address: {address} [UseOnlySiteLocalInterfaces=true, this address is not]", address.ToString());
@@ -115,16 +119,18 @@ public class InetUtils
             return siteLocalAddress;
         }
 
-        var preferredNetworks = _options.GetPreferredNetworks();
+        IEnumerable<string> preferredNetworks = _options.GetPreferredNetworks();
+
         if (!preferredNetworks.Any())
         {
             return true;
         }
 
-        foreach (var regex in preferredNetworks)
+        foreach (string regex in preferredNetworks)
         {
-            var hostAddress = address.ToString();
+            string hostAddress = address.ToString();
             var matcher = new Regex(regex);
+
             if (matcher.IsMatch(hostAddress) || hostAddress.StartsWith(regex))
             {
                 return true;
@@ -142,9 +148,10 @@ public class InetUtils
             return false;
         }
 
-        foreach (var regex in _options.GetIgnoredInterfaces())
+        foreach (string regex in _options.GetIgnoredInterfaces())
         {
             var matcher = new Regex(regex);
+
             if (matcher.IsMatch(interfaceName))
             {
                 _logger?.LogTrace("Ignoring interface: {name}", interfaceName);
@@ -158,13 +165,15 @@ public class InetUtils
     internal HostInfo ConvertAddress(IPAddress address)
     {
         var hostInfo = new HostInfo();
+
         if (!_options.SkipReverseDnsLookup)
         {
             string hostname;
+
             try
             {
                 // warning: this might take a few seconds...
-                var hostEntry = Dns.GetHostEntry(address);
+                IPHostEntry hostEntry = Dns.GetHostEntry(address);
                 hostname = hostEntry.HostName;
             }
             catch (Exception e)
@@ -187,12 +196,14 @@ public class InetUtils
     internal IPAddress ResolveHostAddress(string hostName)
     {
         IPAddress result = null;
+
         try
         {
-            var results = Dns.GetHostAddresses(hostName);
+            IPAddress[] results = Dns.GetHostAddresses(hostName);
+
             if (results != null && results.Length > 0)
             {
-                foreach (var address in results)
+                foreach (IPAddress address in results)
                 {
                     if (address.AddressFamily.Equals(AddressFamily.InterNetwork))
                     {
@@ -213,12 +224,15 @@ public class InetUtils
     internal string ResolveHostName()
     {
         string result = null;
+
         try
         {
             result = Dns.GetHostName();
+
             if (!string.IsNullOrEmpty(result))
             {
-                var response = Dns.GetHostEntry(result);
+                IPHostEntry response = Dns.GetHostEntry(result);
+
                 if (response != null)
                 {
                     return response.HostName;
@@ -240,7 +254,8 @@ public class InetUtils
 
     internal IPAddress GetHostAddress()
     {
-        var hostName = GetHostName();
+        string hostName = GetHostName();
+
         if (!string.IsNullOrEmpty(hostName))
         {
             return ResolveHostAddress(hostName);
@@ -251,9 +266,7 @@ public class InetUtils
 
     internal bool IsSiteLocalAddress(IPAddress address)
     {
-        var text = address.ToString();
-        return text.StartsWith("10.") ||
-               text.StartsWith("172.16.") ||
-               text.StartsWith("192.168.");
+        string text = address.ToString();
+        return text.StartsWith("10.") || text.StartsWith("172.16.") || text.StartsWith("192.168.");
     }
 }

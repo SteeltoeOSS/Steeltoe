@@ -11,18 +11,24 @@ namespace Steeltoe.Stream.StreamHost;
 
 public sealed class StreamHost : IHost
 {
-    public static IHostBuilder CreateDefaultBuilder<T>() => new StreamsHostBuilder<T>(Host.CreateDefaultBuilder());
+    private readonly IHost _host;
 
-    public static IHostBuilder CreateDefaultBuilder<T>(string[] args) => new StreamsHostBuilder<T>(Host.CreateDefaultBuilder(args));
+    public IServiceProvider Services => _host.Services;
 
     public StreamHost(IHost host)
     {
         _host = host;
     }
 
-    public IServiceProvider Services => _host.Services;
+    public static IHostBuilder CreateDefaultBuilder<T>()
+    {
+        return new StreamsHostBuilder<T>(Host.CreateDefaultBuilder());
+    }
 
-    private readonly IHost _host;
+    public static IHostBuilder CreateDefaultBuilder<T>(string[] args)
+    {
+        return new StreamsHostBuilder<T>(Host.CreateDefaultBuilder(args));
+    }
 
     public void Dispose()
     {

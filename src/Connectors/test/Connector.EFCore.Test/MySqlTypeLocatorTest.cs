@@ -11,10 +11,14 @@ public class MySqlTypeLocatorTest
     [Fact]
     public void Driver_Found_In_MySqlConnector_Assembly()
     {
-        var types = MySqlTypeLocator.Assemblies;
-        MySqlTypeLocator.Assemblies = new[] { "MySqlConnector" };
+        string[] types = MySqlTypeLocator.Assemblies;
 
-        var type = MySqlTypeLocator.MySqlConnection;
+        MySqlTypeLocator.Assemblies = new[]
+        {
+            "MySqlConnector"
+        };
+
+        Type type = MySqlTypeLocator.MySqlConnection;
 
         Assert.NotNull(type);
         MySqlTypeLocator.Assemblies = types;
@@ -23,10 +27,14 @@ public class MySqlTypeLocatorTest
     [Fact]
     public void Driver_Found_In_MySqlData_Assembly()
     {
-        var types = MySqlTypeLocator.Assemblies;
-        MySqlTypeLocator.Assemblies = new[] { "MySql.Data" };
+        string[] types = MySqlTypeLocator.Assemblies;
 
-        var type = MySqlTypeLocator.MySqlConnection;
+        MySqlTypeLocator.Assemblies = new[]
+        {
+            "MySql.Data"
+        };
+
+        Type type = MySqlTypeLocator.MySqlConnection;
 
         Assert.NotNull(type);
         MySqlTypeLocator.Assemblies = types;

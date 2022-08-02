@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Config;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Extensions;
 
@@ -37,21 +37,30 @@ public static class BinderServicesExtensions
 
     internal static void ConfigureBinderServices(this IServiceCollection services, IBinderConfigurations binderConfigurations, IConfiguration configuration)
     {
-        foreach (var binderConfiguration in binderConfigurations.Configurations)
+        foreach (KeyValuePair<string, BinderConfiguration> binderConfiguration in binderConfigurations.Configurations)
         {
-            var type = FindConfigureType(binderConfiguration.Value);
+            Type type = FindConfigureType(binderConfiguration.Value);
+
             if (type != null)
             {
-                var constructor = FindConstructor(type);
-                var method = FindConfigureServicesMethod(type);
+                ConstructorInfo constructor = FindConstructor(type);
+                MethodInfo method = FindConfigureServicesMethod(type);
+
                 if (constructor != null && method != null)
                 {
                     try
                     {
-                        var instance = constructor.Invoke(new object[] { configuration });
+                        object instance = constructor.Invoke(new object[]
+                        {
+                            configuration
+                        });
+
                         if (instance != null)
                         {
-                            method.Invoke(instance, new object[] { services });
+                            method.Invoke(instance, new object[]
+                            {
+                                services
+                            });
                         }
 
                         binderConfiguration.Value.ResolvedAssembly = type.Assembly.Location;
@@ -61,21 +70,16 @@ public static class BinderServicesExtensions
                         // Log
                     }
                 }
-                else
-                {
-                    // Log
-                }
-            }
-            else
-            {
-                // Log
             }
         }
     }
 
     internal static MethodInfo FindConfigureServicesMethod(Type type)
     {
-        return type.GetMethod("ConfigureServices", new[] { typeof(IServiceCollection) });
+        return type.GetMethod("ConfigureServices", new[]
+        {
+            typeof(IServiceCollection)
+        });
     }
 
     internal static Type FindConfigureType(BinderConfiguration binderConfiguration)
@@ -84,18 +88,19 @@ public static class BinderServicesExtensions
         {
             return Type.GetType(binderConfiguration.ConfigureClass, false);
         }
-        else
-        {
 #pragma warning disable S3885 // "Assembly.Load" should be used
-            var assembly = Assembly.LoadFrom(binderConfiguration.ConfigureAssembly);
+        Assembly assembly = Assembly.LoadFrom(binderConfiguration.ConfigureAssembly);
 #pragma warning restore S3885 // "Assembly.Load" should be used
-            return assembly.GetType(binderConfiguration.ConfigureClass.Split(',')[0], false);
-        }
+        return assembly.GetType(binderConfiguration.ConfigureClass.Split(',')[0], false);
     }
 
     internal static ConstructorInfo FindConstructor(Type type)
     {
-        var constructor = type.GetConstructor(new[] { typeof(IConfiguration) });
+        ConstructorInfo constructor = type.GetConstructor(new[]
+        {
+            typeof(IConfiguration)
+        });
+
         if (constructor == null)
         {
             constructor = type.GetConstructor(Array.Empty<Type>());

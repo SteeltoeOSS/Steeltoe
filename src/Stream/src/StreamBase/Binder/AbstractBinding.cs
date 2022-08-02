@@ -12,8 +12,8 @@ public abstract class AbstractBinding : IBinding
 
     public virtual string BindingName => null;
 
-    public virtual bool IsInput => throw new InvalidOperationException(
-        $"Binding implementation `{GetType().Name}` must implement this operation before it is called");
+    public virtual bool IsInput =>
+        throw new InvalidOperationException($"Binding implementation `{GetType().Name}` must implement this operation before it is called");
 
     public virtual bool IsRunning => false;
 

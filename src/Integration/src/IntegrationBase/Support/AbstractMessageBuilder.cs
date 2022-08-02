@@ -19,18 +19,31 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     protected IList<string> readOnlyHeaders;
 
+    protected abstract List<List<object>> SequenceDetails { get; }
+
+    protected abstract object CorrelationId { get; }
+
+    protected abstract object SequenceNumber { get; }
+
+    protected abstract object SequenceSize { get; }
+
+    public abstract object Payload { get; }
+
+    public abstract IDictionary<string, object> Headers { get; }
+
     protected AbstractMessageBuilder()
     {
     }
 
     protected AbstractMessageBuilder(object payload, IMessage originalMessage)
     {
-        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
-        this.OriginalMessage = originalMessage;
+        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        OriginalMessage = originalMessage;
         HeaderAccessor = new IntegrationMessageHeaderAccessor(originalMessage);
+
         if (originalMessage != null)
         {
-            modified = !this.InnerPayload.Equals(originalMessage.Payload);
+            modified = !InnerPayload.Equals(originalMessage.Payload);
         }
     }
 
@@ -46,10 +59,8 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
             var datetime = new DateTimeOffset(expirationDate.Value);
             return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, datetime.ToUnixTimeMilliseconds());
         }
-        else
-        {
-            return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, null);
-        }
+
+        return SetHeader(IntegrationMessageHeaderAccessor.ExpirationDate, null);
     }
 
     public virtual IMessageBuilder SetCorrelationId(object correlationId)
@@ -59,12 +70,19 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     public virtual IMessageBuilder PushSequenceDetails(object correlationId, int sequenceNumber, int sequenceSize)
     {
-        var incomingCorrelationId = CorrelationId;
-        var incomingSequenceDetails = SequenceDetails;
+        object incomingCorrelationId = CorrelationId;
+        List<List<object>> incomingSequenceDetails = SequenceDetails;
+
         if (incomingCorrelationId != null)
         {
             incomingSequenceDetails = incomingSequenceDetails == null ? new List<List<object>>() : new List<List<object>>(incomingSequenceDetails);
-            incomingSequenceDetails.Add(new List<object> { incomingCorrelationId, SequenceNumber, SequenceSize });
+
+            incomingSequenceDetails.Add(new List<object>
+            {
+                incomingCorrelationId,
+                SequenceNumber,
+                SequenceSize
+            });
         }
 
         if (incomingSequenceDetails != null)
@@ -72,33 +90,32 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
             SetHeader(IntegrationMessageHeaderAccessor.SequenceDetails, incomingSequenceDetails);
         }
 
-        return SetCorrelationId(correlationId)
-            .SetSequenceNumber(sequenceNumber)
-            .SetSequenceSize(sequenceSize);
+        return SetCorrelationId(correlationId).SetSequenceNumber(sequenceNumber).SetSequenceSize(sequenceSize);
     }
 
     public virtual IMessageBuilder PopSequenceDetails()
     {
-        var incomingSequenceDetails = SequenceDetails;
+        List<List<object>> incomingSequenceDetails = SequenceDetails;
+
         if (incomingSequenceDetails == null)
         {
             return this;
         }
-        else
-        {
-            incomingSequenceDetails = new List<List<object>>(incomingSequenceDetails);
-        }
 
-        var sequenceDetails = incomingSequenceDetails[incomingSequenceDetails.Count - 1];
+        incomingSequenceDetails = new List<List<object>>(incomingSequenceDetails);
+
+        List<object> sequenceDetails = incomingSequenceDetails[incomingSequenceDetails.Count - 1];
         incomingSequenceDetails.RemoveAt(incomingSequenceDetails.Count - 1);
+
         if (sequenceDetails.Count != 3)
         {
             throw new InvalidOperationException("Wrong sequence details (not created by MessageBuilder?)");
         }
 
         SetCorrelationId(sequenceDetails[0]);
-        var sequenceNumber = sequenceDetails[1] as int?;
-        var sequenceSize = sequenceDetails[2] as int?;
+        int? sequenceNumber = sequenceDetails[1] as int?;
+        int? sequenceSize = sequenceDetails[2] as int?;
+
         if (sequenceNumber.HasValue)
         {
             SetSequenceNumber(sequenceNumber.Value);
@@ -162,7 +179,7 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
         if (headerPatternsToFilter?.Length > 0)
         {
-            foreach (var entry in headersToCopy)
+            foreach (KeyValuePair<string, object> entry in headersToCopy)
             {
                 if (PatternMatchUtils.SimpleMatch(headerPatternsToFilter, entry.Key))
                 {
@@ -173,10 +190,6 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
         return CopyHeadersIfAbsent(headers);
     }
-
-    public abstract object Payload { get; }
-
-    public abstract IDictionary<string, object> Headers { get; }
 
     public abstract IMessageBuilder SetHeader(string headerName, object headerValue);
 
@@ -192,19 +205,11 @@ public abstract class AbstractMessageBuilder : IMessageBuilder
 
     public abstract IMessage Build();
 
-    protected abstract List<List<object>> SequenceDetails { get; }
-
-    protected abstract object CorrelationId { get; }
-
-    protected abstract object SequenceNumber { get; }
-
-    protected abstract object SequenceSize { get; }
-
     protected bool ContainsReadOnly(IMessageHeaders headers)
     {
         if (readOnlyHeaders != null)
         {
-            foreach (var readOnly in readOnlyHeaders)
+            foreach (string readOnly in readOnlyHeaders)
             {
                 if (headers.ContainsKey(readOnly))
                 {

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Configuration;
@@ -10,12 +12,10 @@ using Steeltoe.Common.Contexts;
 using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
-using System;
-using System.Threading.Tasks;
 
 [MemoryDiagnoser]
 public class Program
-{ 
+{
     //|                                                Method |     Mean |   Error |  StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
     //|------------------------------------------------------ |---------:|--------:|--------:|------:|------:|------:|----------:|
     //|           DirectChannel_Send_10_000_000_SingleHandler | 229.1 ms | 2.47 ms | 2.31 ms |     - |     - |     - |   5.97 KB |
@@ -25,7 +25,7 @@ public class Program
     //| PublishSubscribeChannel_Send_10_000_000_SingleHandler | 387.0 ms | 2.89 ms | 2.56 ms |     - |     - |     - |   6.13 KB |
     //|   PublishSubscribeChannel_Send_10_000_000_TwoHandlers | 468.5 ms | 3.60 ms | 3.37 ms |     - |     - |     - |   6.32 KB |
 
-    static void Main()
+    private static void Main()
     {
         BenchmarkRunner.Run<Program>();
     }
@@ -34,18 +34,19 @@ public class Program
     public void DirectChannel_Send_10_000_000_SingleHandler()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         directChannel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         directChannel.Send(message);
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             directChannel.Send(message);
         }
@@ -61,14 +62,15 @@ public class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var directChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         directChannel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         await directChannel.SendAsync(message);
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             await directChannel.SendAsync(message);
         }
@@ -84,14 +86,15 @@ public class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
         channel.Subscribe(count1);
         channel.Subscribe(count2);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -112,7 +115,7 @@ public class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new DirectChannel(provider.GetService<IApplicationContext>());
         var count1 = new CounterHandler();
         var count2 = new CounterHandler();
@@ -122,8 +125,9 @@ public class Program
         channel.Subscribe(count2);
         channel.Subscribe(count3);
         channel.Subscribe(count4);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -148,22 +152,25 @@ public class Program
             throw new InvalidOperationException("Handler count4 invalid");
         }
     }
+
     [Benchmark]
     public void PublishSubscribeChannel_Send_10_000_000_SingleHandler()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new CounterHandler();
 
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         channel.Send(message);
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
+
         if (handler.Count != 10_000_000 + 1)
         {
             throw new InvalidOperationException("Handler count invalid");
@@ -175,21 +182,24 @@ public class Program
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler1 = new CounterHandler();
         var handler2 = new CounterHandler();
         channel.Subscribe(handler1);
         channel.Subscribe(handler2);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
+
         if (handler1.Count != 10_000_000)
         {
             throw new InvalidOperationException("Handler count1 invalid");
         }
+
         if (handler2.Count != 10_000_000)
         {
             throw new InvalidOperationException("Handler count2 invalid");
@@ -208,4 +218,3 @@ public class Program
         }
     }
 }
-

@@ -6,11 +6,11 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public abstract class AbstractBuilder
 {
+    protected Dictionary<string, object> Arguments { get; private set; }
+
     protected Dictionary<string, object> GetOrCreateArguments()
     {
         Arguments ??= new Dictionary<string, object>();
         return Arguments;
     }
-
-    protected Dictionary<string, object> Arguments { get; private set; }
 }

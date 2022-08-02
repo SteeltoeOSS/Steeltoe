@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
@@ -25,7 +25,8 @@ public static class SpelUtilities
             sb.Append("  value:").Append(t.ToStringAst());
             sb.Append(t.ChildCount < 2 ? string.Empty : $"  #children:{t.ChildCount}");
             output.WriteLine(sb.ToString());
-            for (var i = 0; i < t.ChildCount; i++)
+
+            for (int i = 0; i < t.ChildCount; i++)
             {
                 PrintAst(output, t.GetChild(i), $"{indent}  ");
             }

@@ -13,7 +13,8 @@ public class StringToNumberConverter : AbstractToNumberConverter
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
-        var asString = source as string;
+        string asString = source as string;
+
         if (string.IsNullOrEmpty(asString))
         {
             return null;
@@ -36,7 +37,7 @@ public class StringToNumberConverter : AbstractToNumberConverter
             (typeof(string), typeof(ushort)),
             (typeof(string), typeof(decimal)),
             (typeof(string), typeof(byte)),
-            (typeof(string), typeof(sbyte)),
+            (typeof(string), typeof(sbyte))
         };
     }
 }

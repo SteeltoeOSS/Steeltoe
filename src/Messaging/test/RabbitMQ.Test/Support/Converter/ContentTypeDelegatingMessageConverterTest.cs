@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support.Converter;
@@ -20,13 +20,14 @@ public class ContentTypeDelegatingMessageConverterTest
         converter.AddDelegate(MessageHeaders.ContentTypeJson, messageConverter);
 
         var props = new RabbitHeaderAccessor();
+
         var foo = new Foo
         {
             FooString = "bar"
         };
 
         props.ContentType = "foo/bar";
-        var message = converter.ToMessage(foo, props.MessageHeaders);
+        IMessage message = converter.ToMessage(foo, props.MessageHeaders);
         Assert.Equal(MessageHeaders.ContentTypeJson, message.Headers.ContentType());
         Assert.Equal("{\"fooString\":\"bar\"}", Encoding.UTF8.GetString((byte[])message.Payload));
         var converted = converter.FromMessage<Foo>(message);
@@ -36,6 +37,7 @@ public class ContentTypeDelegatingMessageConverterTest
         {
             ContentType = MessageHeaders.ContentTypeJson
         };
+
         message = converter.ToMessage(foo, props.MessageHeaders);
         Assert.Equal("{\"fooString\":\"bar\"}", Encoding.UTF8.GetString((byte[])message.Payload));
         converted = converter.FromMessage<Foo>(message);
@@ -43,6 +45,7 @@ public class ContentTypeDelegatingMessageConverterTest
 
         converter = new ContentTypeDelegatingMessageConverter(null); // no default
         props = new RabbitHeaderAccessor();
+
         try
         {
             converter.ToMessage(foo, props.MessageHeaders);

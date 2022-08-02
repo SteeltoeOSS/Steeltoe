@@ -43,7 +43,7 @@ public class HypermediaEndpointOptionsTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new InfoEndpointOptions(config);
 

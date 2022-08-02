@@ -56,7 +56,7 @@ public class OracleDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseOracle(config, serviceName));

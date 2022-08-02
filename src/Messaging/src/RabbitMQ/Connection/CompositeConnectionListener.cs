@@ -9,10 +9,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class CompositeConnectionListener : IConnectionListener
 {
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
     private readonly ILogger _logger;
 
-    private List<IConnectionListener> _connectionListeners = new ();
+    private List<IConnectionListener> _connectionListeners = new();
 
     public CompositeConnectionListener(ILogger logger = null)
     {
@@ -22,8 +22,9 @@ public class CompositeConnectionListener : IConnectionListener
     public void OnClose(IConnection connection)
     {
         _logger?.LogDebug("OnClose");
-        var listeners = _connectionListeners;
-        foreach (var listener in listeners)
+        List<IConnectionListener> listeners = _connectionListeners;
+
+        foreach (IConnectionListener listener in listeners)
         {
             listener.OnClose(connection);
         }
@@ -32,8 +33,9 @@ public class CompositeConnectionListener : IConnectionListener
     public void OnCreate(IConnection connection)
     {
         _logger?.LogDebug("OnCreate");
-        var listeners = _connectionListeners;
-        foreach (var listener in listeners)
+        List<IConnectionListener> listeners = _connectionListeners;
+
+        foreach (IConnectionListener listener in listeners)
         {
             listener.OnCreate(connection);
         }
@@ -42,8 +44,9 @@ public class CompositeConnectionListener : IConnectionListener
     public void OnShutDown(RC.ShutdownEventArgs args)
     {
         _logger?.LogDebug("OnShutDown");
-        var listeners = _connectionListeners;
-        foreach (var listener in listeners)
+        List<IConnectionListener> listeners = _connectionListeners;
+
+        foreach (IConnectionListener listener in listeners)
         {
             listener.OnShutDown(args);
         }
@@ -62,6 +65,7 @@ public class CompositeConnectionListener : IConnectionListener
             {
                 connectionListener
             };
+
             _connectionListeners = listeners;
         }
     }

@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Collections;
-using System.Reflection;
 
 namespace Steeltoe.Integration.Handler.Support;
 
@@ -21,20 +21,18 @@ public class DictionaryArgumentResolver : AbstractExpressionEvaluator, IHandlerM
 
     public object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (parameter.GetCustomAttribute<HeadersAttribute>() == null && payload is IDictionary)
         {
             return payload;
         }
-        else
-        {
-            return message.Headers;
-        }
+
+        return message.Headers;
     }
 
     public bool SupportsParameter(ParameterInfo parameter)
     {
-        return parameter.GetCustomAttribute<PayloadAttribute>() == null &&
-               typeof(IDictionary).IsAssignableFrom(parameter.ParameterType);
+        return parameter.GetCustomAttribute<PayloadAttribute>() == null && typeof(IDictionary).IsAssignableFrom(parameter.ParameterType);
     }
 }

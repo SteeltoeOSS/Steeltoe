@@ -4,6 +4,7 @@
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Middleware;
@@ -11,16 +12,17 @@ using Steeltoe.Management.Endpoint.Middleware;
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 /// <summary>
-/// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled.
-/// When deployed to CloudFoundry this endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware"/> is added.
+/// CloudFoundry endpoint provides hypermedia: a page is added with links to all the endpoints that are enabled. When deployed to CloudFoundry this
+/// endpoint is used for apps manager integration when <see cref="CloudFoundrySecurityMiddleware" /> is added.
 /// </summary>
 public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 {
     private readonly ICloudFoundryOptions _options;
     private readonly RequestDelegate _next;
 
-    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions managementOptions, ILogger<CloudFoundryEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public CloudFoundryEndpointMiddleware(RequestDelegate next, CloudFoundryEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<CloudFoundryEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
         _options = endpoint.Options as ICloudFoundryOptions;
@@ -40,7 +42,7 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     protected internal Task HandleCloudFoundryRequestAsync(HttpContext context)
     {
-        var serialInfo = HandleRequest(GetRequestUri(context.Request));
+        string serialInfo = HandleRequest(GetRequestUri(context.Request));
         logger?.LogDebug("Returning: {0}", serialInfo);
         context.HandleContentNegotiation(logger);
         return context.Response.WriteAsync(serialInfo);
@@ -48,9 +50,9 @@ public class CloudFoundryEndpointMiddleware : EndpointMiddleware<Links, string>
 
     protected internal string GetRequestUri(HttpRequest request)
     {
-        var scheme = request.Scheme;
+        string scheme = request.Scheme;
 
-        if (request.Headers.TryGetValue("X-Forwarded-Proto", out var headerScheme))
+        if (request.Headers.TryGetValue("X-Forwarded-Proto", out StringValues headerScheme))
         {
             scheme = headerScheme.ToString();
         }

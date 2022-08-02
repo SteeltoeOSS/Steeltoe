@@ -8,12 +8,19 @@ namespace Steeltoe.Management.Endpoint.Mappings;
 
 public class ContextMappings
 {
+    [JsonPropertyName("parentId")]
+    public string ParentId { get; }
+
+    [JsonPropertyName("mappings")]
+    public IDictionary<string, IDictionary<string, IList<MappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
+
     public ContextMappings()
     {
         var mappingList = new Dictionary<string, IList<MappingDescription>>
         {
             { "dispatcherServlet", new List<MappingDescription>() }
         };
+
         Mappings = new Dictionary<string, IDictionary<string, IList<MappingDescription>>>
         {
             { "dispatcherServlets", mappingList }
@@ -41,10 +48,4 @@ public class ContextMappings
 
         ParentId = parentId;
     }
-
-    [JsonPropertyName("parentId")]
-    public string ParentId { get; }
-
-    [JsonPropertyName("mappings")]
-    public IDictionary<string, IDictionary<string, IList<MappingDescription>>> Mappings { get; } // "dispatcherServlets", "dispatcherServlet"
 }

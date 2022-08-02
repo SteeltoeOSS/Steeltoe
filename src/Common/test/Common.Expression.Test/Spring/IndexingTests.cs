@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System.Collections;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -13,6 +13,7 @@ public class IndexingTests
 {
     [FieldAnnotation]
     public object Property;
+
     public IList ListOfMapsNotGeneric;
     public Dictionary<int, int> ParameterizedMap;
     public List<int> ParameterizedList;
@@ -34,9 +35,10 @@ public class IndexingTests
         {
             { "foo", "bar" }
         };
+
         Property = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(property.GetType(), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         Assert.Equal(property, expression.GetValue(this, typeof(IDictionary)));
@@ -48,16 +50,18 @@ public class IndexingTests
     public void IndexIntoGenericPropertyContainingMapObject()
     {
         var property = new Dictionary<string, Dictionary<string, string>>();
+
         var map = new Dictionary<string, string>
         {
             { "foo", "bar" }
         };
+
         property.Add("property", map);
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         context.AddPropertyAccessor(new MapAccessor());
         context.SetRootObject(property);
-        var expression = parser.ParseExpression("property");
+        IExpression expression = parser.ParseExpression("property");
         Assert.Equal(typeof(Dictionary<string, string>), expression.GetValueType(context));
         Assert.Equal(map, expression.GetValue(context));
         Assert.Equal(map, expression.GetValue(context, typeof(IDictionary)));
@@ -72,9 +76,10 @@ public class IndexingTests
         {
             { "foo", "bar" }
         };
+
         Property = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(Dictionary<string, string>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property['foo']");
@@ -90,9 +95,10 @@ public class IndexingTests
         {
             { 9, 3 }
         };
+
         ParameterizedMap = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ParameterizedMap");
+        IExpression expression = parser.ParseExpression("ParameterizedMap");
         Assert.Equal(typeof(Dictionary<int, int>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("ParameterizedMap['9']");
@@ -105,7 +111,7 @@ public class IndexingTests
     public void SetPropertyContainingMapAutoGrow()
     {
         var parser = new SpelExpressionParser(new SpelParserOptions(true, false));
-        var expression = parser.ParseExpression("ParameterizedMap");
+        IExpression expression = parser.ParseExpression("ParameterizedMap");
         Assert.Equal(typeof(Dictionary<int, int>), expression.GetValueType(this));
         Assert.Equal(Property, expression.GetValue(this));
         expression = parser.ParseExpression("ParameterizedMap['9']");
@@ -121,9 +127,10 @@ public class IndexingTests
         {
             "bar"
         };
+
         Property = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(List<string>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
@@ -137,9 +144,10 @@ public class IndexingTests
         {
             3
         };
+
         Property = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(List<int>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
@@ -154,10 +162,11 @@ public class IndexingTests
         var property = new List<int>();
         Property = property;
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(List<int>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
+
         try
         {
             expression.SetValue(this, "4");
@@ -175,9 +184,10 @@ public class IndexingTests
         {
             3
         };
+
         ParameterizedList = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ParameterizedList");
+        IExpression expression = parser.ParseExpression("ParameterizedList");
         Assert.Equal(typeof(List<int>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("ParameterizedList[0]");
@@ -189,11 +199,15 @@ public class IndexingTests
     {
         var property = new List<List<int>>
         {
-            new () { 3 }
+            new()
+            {
+                3
+            }
         };
+
         ParameterizedListOfList = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ParameterizedListOfList[0]");
+        IExpression expression = parser.ParseExpression("ParameterizedListOfList[0]");
         Assert.Equal(typeof(List<int>), expression.GetValueType(this));
         Assert.Equal(property[0], expression.GetValue(this));
         expression = parser.ParseExpression("ParameterizedListOfList[0][0]");
@@ -207,9 +221,10 @@ public class IndexingTests
         {
             3
         };
+
         ParameterizedList = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ParameterizedList");
+        IExpression expression = parser.ParseExpression("ParameterizedList");
         Assert.Equal(typeof(List<int>), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("ParameterizedList[0]");
@@ -223,10 +238,11 @@ public class IndexingTests
     {
         var configuration = new SpelParserOptions(true, true);
         var parser = new SpelExpressionParser(configuration);
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(object), expression.GetValueType(this));
         Assert.Equal(Property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
+
         try
         {
             Assert.Equal("bar", expression.GetValue(this));
@@ -244,10 +260,11 @@ public class IndexingTests
         Property = property;
         var configuration = new SpelParserOptions(true, true);
         var parser = new SpelExpressionParser(configuration);
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(ArrayList), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
+
         try
         {
             Assert.Equal("bar", expression.GetValue(this));
@@ -265,10 +282,11 @@ public class IndexingTests
         Property2 = property2;
         var configuration = new SpelParserOptions(true, true);
         var parser = new SpelExpressionParser(configuration);
-        var expression = parser.ParseExpression("Property2");
+        IExpression expression = parser.ParseExpression("Property2");
         Assert.Equal(typeof(ArrayList), expression.GetValueType(this));
         Assert.Equal(property2, expression.GetValue(this));
         expression = parser.ParseExpression("Property2[0]");
+
         try
         {
             Assert.Equal("bar", expression.GetValue(this));
@@ -282,10 +300,14 @@ public class IndexingTests
     [Fact]
     public void IndexIntoGenericPropertyContainingArray()
     {
-        var property = new[] { "bar" };
+        string[] property = new[]
+        {
+            "bar"
+        };
+
         Property = property;
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("Property");
+        IExpression expression = parser.ParseExpression("Property");
         Assert.Equal(typeof(string[]), expression.GetValueType(this));
         Assert.Equal(property, expression.GetValue(this));
         expression = parser.ParseExpression("Property[0]");
@@ -297,7 +319,7 @@ public class IndexingTests
     {
         ListOfScalarNotGeneric = new ArrayList();
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ListOfScalarNotGeneric");
+        IExpression expression = parser.ParseExpression("ListOfScalarNotGeneric");
         Assert.Equal(typeof(ArrayList), expression.GetValueType(this));
         Assert.Equal(string.Empty, expression.GetValue(this, typeof(string)));
     }
@@ -310,8 +332,9 @@ public class IndexingTests
             5,
             6
         };
+
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ListNotGeneric");
+        IExpression expression = parser.ParseExpression("ListNotGeneric");
         Assert.Equal(typeof(ArrayList), expression.GetValueType(this));
         Assert.Equal("5,6", expression.GetValue(this, typeof(string)));
     }
@@ -320,7 +343,7 @@ public class IndexingTests
     public void ResolveCollectionElementTypeNull()
     {
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ListNotGeneric");
+        IExpression expression = parser.ParseExpression("ListNotGeneric");
         Assert.Equal(typeof(IList), expression.GetValueType(this));
     }
 
@@ -332,8 +355,9 @@ public class IndexingTests
             { "baseAmount", 3.11 },
             { "bonusAmount", 7.17 }
         };
+
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("MapNotGeneric");
+        IExpression expression = parser.ParseExpression("MapNotGeneric");
         Assert.Equal(typeof(Hashtable), expression.GetValueType(this));
     }
 
@@ -344,8 +368,9 @@ public class IndexingTests
         {
             "5"
         };
+
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ListOfScalarNotGeneric[0]");
+        IExpression expression = parser.ParseExpression("ListOfScalarNotGeneric[0]");
         Assert.Equal(5, expression.GetValue(this, typeof(int)));
     }
 
@@ -353,13 +378,15 @@ public class IndexingTests
     public void TestListsOfMap()
     {
         ListOfMapsNotGeneric = new ArrayList();
+
         var map = new Hashtable
         {
             { "fruit", "apple" }
         };
+
         ListOfMapsNotGeneric.Add(map);
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("ListOfMapsNotGeneric[0]['fruit']");
+        IExpression expression = parser.ParseExpression("ListOfMapsNotGeneric[0]['fruit']");
         Assert.Equal("apple", expression.GetValue(this, typeof(string)));
     }
 
@@ -387,7 +414,10 @@ public class IndexingTests
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new List<Type> { typeof(IDictionary) };
+            return new List<Type>
+            {
+                typeof(IDictionary)
+            };
         }
     }
 

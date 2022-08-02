@@ -15,7 +15,11 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Label = "sqlserver",
-            Tags = new[] { "sqlserver", "relational" },
+            Tags = new[]
+            {
+                "sqlserver",
+                "relational"
+            },
             Name = "sqlserverService",
             Plan = "free",
             Credentials = new Credential
@@ -25,10 +29,17 @@ public class SqlServerInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -39,7 +50,7 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Label = "user-provided",
-            Tags = System.Array.Empty<string>(),
+            Tags = Array.Empty<string>(),
             Name = "sqlserverService",
             Plan = "free",
             Credentials = new Credential
@@ -49,6 +60,7 @@ public class SqlServerInfoFactoryTest
                 { "uri", new Credential("jdbc:sqlserver://10.194.59.187:1433;databaseName=d07833038adb541bba1bb6dc77df7a724") }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -66,10 +78,17 @@ public class SqlServerInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -89,10 +108,17 @@ public class SqlServerInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -103,7 +129,11 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Label = "p-foobar",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -113,10 +143,16 @@ public class SqlServerInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:foobar://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri", new Credential("foobar://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:foobar://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -127,7 +163,11 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Label = "sqlserver",
-            Tags = new[] { "sqlserver", "relational" },
+            Tags = new[]
+            {
+                "sqlserver",
+                "relational"
+            },
             Name = "sqlserverService",
             Plan = "free",
             Credentials = new Credential
@@ -137,10 +177,17 @@ public class SqlServerInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "uri",
+                    new Credential("sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true")
+                },
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:sqlserver://192.168.0.90:1433/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         var info = factory.Create(s) as SqlServerServiceInfo;
         Assert.NotNull(info);
@@ -159,7 +206,11 @@ public class SqlServerInfoFactoryTest
         var s = new Service
         {
             Label = "sqlserver",
-            Tags = new[] { "sqlserver", "relational" },
+            Tags = new[]
+            {
+                "sqlserver",
+                "relational"
+            },
             Name = "sqlserverService",
             Plan = "free",
             Credentials = new Credential
@@ -171,6 +222,7 @@ public class SqlServerInfoFactoryTest
                 { "password", new Credential("7E1LxXnlH2hhlPVt") }
             }
         };
+
         var factory = new SqlServerServiceInfoFactory();
         var info = factory.Create(s) as SqlServerServiceInfo;
         Assert.NotNull(info);

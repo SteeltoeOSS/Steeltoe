@@ -32,7 +32,7 @@ public class RabbitMQProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RabbitMQProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Server);
@@ -58,7 +58,7 @@ public class RabbitMQProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RabbitMQProviderConnectorOptions(config);
         Assert.Equal("localhost", options.Server);
@@ -85,10 +85,10 @@ public class RabbitMQProviderConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RabbitMQProviderConnectorOptions(config);
-        var result = options.ToString();
+        string result = options.ToString();
         Assert.Equal("amqps://username:password@localhost:5671/foobar", result);
     }
 }

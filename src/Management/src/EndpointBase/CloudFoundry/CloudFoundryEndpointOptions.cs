@@ -13,6 +13,12 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
     private const string VcapApplicationCloudfoundryApiKey = "vcap:application:cf_api";
     private const bool DefaultValidateCertificates = true;
 
+    public bool ValidateCertificates { get; set; } = DefaultValidateCertificates;
+
+    public string ApplicationId { get; set; }
+
+    public string CloudFoundryApi { get; set; }
+
     public CloudFoundryEndpointOptions()
     {
         Id = string.Empty;
@@ -25,10 +31,4 @@ public class CloudFoundryEndpointOptions : AbstractEndpointOptions, ICloudFoundr
         ApplicationId = config[VcapApplicationIdKey];
         CloudFoundryApi = config[VcapApplicationCloudfoundryApiKey];
     }
-
-    public bool ValidateCertificates { get; set; } = DefaultValidateCertificates;
-
-    public string ApplicationId { get; set; }
-
-    public string CloudFoundryApi { get; set; }
 }

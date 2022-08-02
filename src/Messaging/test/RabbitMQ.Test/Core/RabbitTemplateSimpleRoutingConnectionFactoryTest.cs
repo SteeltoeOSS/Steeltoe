@@ -48,13 +48,12 @@ public class RabbitTemplateSimpleRoutingConnectionFactoryTest
             connection.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.IsOpen).Returns(true);
             channel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-            channel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo))
-                .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
+            channel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
             return channel;
         }
 
-        var channel1 = SetupMocks(cf1);
-        var channel2 = SetupMocks(cf2);
+        Mock<RC.IModel> channel1 = SetupMocks(cf1);
+        Mock<RC.IModel> channel2 = SetupMocks(cf2);
 
         // act(a): send message using connection factory 1
         SimpleResourceHolder.Bind(routingTemplate.ConnectionFactory, ConnectionFactory1);

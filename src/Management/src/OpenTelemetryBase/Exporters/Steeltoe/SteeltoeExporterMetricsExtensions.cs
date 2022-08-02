@@ -10,7 +10,7 @@ public static class SteeltoeExporterMetricsExtensions
 {
     public static MeterProviderBuilder AddSteeltoeExporter(this MeterProviderBuilder builder, SteeltoeExporter exporter)
     {
-        var steeltoeExporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
+        SteeltoeExporter steeltoeExporter = exporter ?? throw new ArgumentNullException(nameof(exporter));
         var reader = new BaseExportingMetricReader(steeltoeExporter);
         return builder?.AddReader(reader) ?? throw new ArgumentNullException(nameof(builder));
     }

@@ -10,39 +10,27 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 {
     protected readonly ILogger Logger;
 
-    protected AbstractHeaderMapper(ILogger logger = null)
-    {
-        Logger = logger;
-    }
-
     private string _inboundPrefix = string.Empty;
 
     private string _outboundPrefix = string.Empty;
 
     public string InboundPrefix
     {
-        get
-        {
-            return _inboundPrefix;
-        }
+        get => _inboundPrefix;
 
-        set
-        {
-            _inboundPrefix = value ?? string.Empty;
-        }
+        set => _inboundPrefix = value ?? string.Empty;
     }
 
     public string OutboundPrefix
     {
-        get
-        {
-            return _outboundPrefix;
-        }
+        get => _outboundPrefix;
 
-        set
-        {
-            _outboundPrefix = value ?? string.Empty;
-        }
+        set => _outboundPrefix = value ?? string.Empty;
+    }
+
+    protected AbstractHeaderMapper(ILogger logger = null)
+    {
+        Logger = logger;
     }
 
     public abstract void FromHeaders(IMessageHeaders headers, T target);
@@ -51,7 +39,8 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 
     protected virtual string FromHeaderName(string headerName)
     {
-        var propertyName = headerName;
+        string propertyName = headerName;
+
         if (!string.IsNullOrEmpty(_outboundPrefix) && !propertyName.StartsWith(_outboundPrefix))
         {
             propertyName = _outboundPrefix + headerName;
@@ -62,7 +51,8 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 
     protected virtual string ToHeaderName(string propertyName)
     {
-        var headerName = propertyName;
+        string headerName = propertyName;
+
         if (!string.IsNullOrEmpty(_inboundPrefix) && !headerName.StartsWith(_inboundPrefix))
         {
             headerName = _inboundPrefix + propertyName;
@@ -73,22 +63,21 @@ public abstract class AbstractHeaderMapper<T> : IHeaderMapper<T>
 
     protected virtual TValue GetHeaderIfAvailable<TValue>(IDictionary<string, object> headers, string name)
     {
-        headers.TryGetValue(name, out var value);
+        headers.TryGetValue(name, out object value);
+
         if (value == null)
         {
             return default;
         }
 
-        var type = typeof(TValue);
+        Type type = typeof(TValue);
 
         if (!type.IsInstanceOfType(value))
         {
             Logger?.LogDebug("Skipping header '{headerName}': expected type [{type}], but got [{valueType}]", name, type, value.GetType());
             return default;
         }
-        else
-        {
-            return (TValue)value;
-        }
+
+        return (TValue)value;
     }
 }

@@ -2,16 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring;
 using System.Collections;
 using System.Reflection;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class DictionaryAccessor : ICompilablePropertyAccessor
 {
-    private static readonly MethodInfo GetItem = typeof(IDictionary).GetMethod("get_Item", new[] { typeof(object) });
+    private static readonly MethodInfo GetItem = typeof(IDictionary).GetMethod("get_Item", new[]
+    {
+        typeof(object)
+    });
 
     public bool CanRead(IEvaluationContext context, object target, string name)
     {
@@ -30,7 +33,10 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
 
     public IList<Type> GetSpecificTargetClasses()
     {
-        return new List<Type> { typeof(IDictionary) };
+        return new List<Type>
+        {
+            typeof(IDictionary)
+        };
     }
 
     public bool IsCompilable()
@@ -65,7 +71,8 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
 
     public void GenerateCode(string propertyName, ILGenerator gen, CodeFlow cf)
     {
-        var descriptor = cf.LastDescriptor();
+        TypeDescriptor descriptor = cf.LastDescriptor();
+
         if (descriptor == null || descriptor.Value != typeof(IDictionary))
         {
             if (descriptor == null)
@@ -84,12 +91,12 @@ public class DictionaryAccessor : ICompilablePropertyAccessor
     {
         private readonly string _key;
 
+        public override string Message => $"Dictionary does not contain a value for key '{_key}'";
+
         public DictionaryAccessException(string key)
             : base(string.Empty)
         {
             _key = key;
         }
-
-        public override string Message => $"Dictionary does not contain a value for key '{_key}'";
     }
 }

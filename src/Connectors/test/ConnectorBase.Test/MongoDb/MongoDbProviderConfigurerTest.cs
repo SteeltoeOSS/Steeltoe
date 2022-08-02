@@ -13,6 +13,7 @@ public class MongoDbProviderConfigurerTest
     public void UpdateConfiguration_WithNullMongoDbServiceInfo_ReturnsExpected()
     {
         var configurer = new MongoDbProviderConfigurer();
+
         var config = new MongoDbConnectorOptions
         {
             Server = "localhost",
@@ -21,6 +22,7 @@ public class MongoDbProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Server);
@@ -35,6 +37,7 @@ public class MongoDbProviderConfigurerTest
     public void UpdateConfiguration_WithMongoDbServiceInfo_ReturnsExpected()
     {
         var configurer = new MongoDbProviderConfigurer();
+
         var config = new MongoDbConnectorOptions
         {
             Server = "localhost",
@@ -43,6 +46,7 @@ public class MongoDbProviderConfigurerTest
             Password = "password",
             Database = "database"
         };
+
         var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, config);
@@ -68,7 +72,7 @@ public class MongoDbProviderConfigurerTest
 
         var configurer = new MongoDbProviderConfigurer();
 
-        var connString = configurer.Configure(null, config);
+        string connString = configurer.Configure(null, config);
 
         Assert.Equal("mongodb://username:password@localhost:1234/database", connString);
     }
@@ -88,7 +92,7 @@ public class MongoDbProviderConfigurerTest
         var configurer = new MongoDbProviderConfigurer();
         var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-        var connString = configurer.Configure(si, config);
+        string connString = configurer.Configure(si, config);
 
         Assert.Equal("192.168.0.90", config.Server);
         Assert.Equal(27017, config.Port);

@@ -8,55 +8,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public static class HystrixEventTypeHelper
 {
-    public static bool IsTerminal(this HystrixEventType evType)
-    {
-        return evType switch
-        {
-            HystrixEventType.Emit => false,
-            HystrixEventType.Success => false,
-            HystrixEventType.Failure => false,
-            HystrixEventType.Timeout => false,
-            HystrixEventType.BadRequest => false,
-            HystrixEventType.ShortCircuited => false,
-            HystrixEventType.ThreadPoolRejected => false,
-            HystrixEventType.SemaphoreRejected => false,
-            HystrixEventType.FallbackEmit => false,
-            HystrixEventType.FallbackSuccess => false,
-            HystrixEventType.FallbackFailure => false,
-            HystrixEventType.FallbackRejection => false,
-            HystrixEventType.FallbackMissing => false,
-            HystrixEventType.ExceptionThrown => false,
-            HystrixEventType.ResponseFromCache => false,
-            HystrixEventType.Cancelled => false,
-            HystrixEventType.Collapsed => false,
-            _ => throw new ArgumentOutOfRangeException(),
-        };
-    }
-
-    public static HystrixEventType From(this HystrixRollingNumberEvent @event)
-    {
-        return @event switch
-        {
-            HystrixRollingNumberEvent.Emit => HystrixEventType.Emit,
-            HystrixRollingNumberEvent.Success => HystrixEventType.Success,
-            HystrixRollingNumberEvent.Failure => HystrixEventType.Failure,
-            HystrixRollingNumberEvent.Timeout => HystrixEventType.Timeout,
-            HystrixRollingNumberEvent.ShortCircuited => HystrixEventType.ShortCircuited,
-            HystrixRollingNumberEvent.ThreadPoolRejected => HystrixEventType.ThreadPoolRejected,
-            HystrixRollingNumberEvent.SemaphoreRejected => HystrixEventType.SemaphoreRejected,
-            HystrixRollingNumberEvent.FallbackEmit => HystrixEventType.FallbackEmit,
-            HystrixRollingNumberEvent.FallbackSuccess => HystrixEventType.FallbackSuccess,
-            HystrixRollingNumberEvent.FallbackFailure => HystrixEventType.FallbackFailure,
-            HystrixRollingNumberEvent.FallbackRejection => HystrixEventType.FallbackRejection,
-            HystrixRollingNumberEvent.FallbackMissing => HystrixEventType.FallbackMissing,
-            HystrixRollingNumberEvent.ExceptionThrown => HystrixEventType.ExceptionThrown,
-            HystrixRollingNumberEvent.ResponseFromCache => HystrixEventType.ResponseFromCache,
-            HystrixRollingNumberEvent.Collapsed => HystrixEventType.Collapsed,
-            HystrixRollingNumberEvent.BadRequest => HystrixEventType.BadRequest,
-            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType : {@event}"),
-        };
-    }
-
     public static IList<HystrixEventType> Values { get; } = new List<HystrixEventType>
     {
         HystrixEventType.Emit,
@@ -88,13 +39,63 @@ public static class HystrixEventTypeHelper
 
     public static IList<HystrixEventType> TerminalEventTypes { get; } = GetTerminalEventTypes();
 
+    public static bool IsTerminal(this HystrixEventType evType)
+    {
+        return evType switch
+        {
+            HystrixEventType.Emit => false,
+            HystrixEventType.Success => false,
+            HystrixEventType.Failure => false,
+            HystrixEventType.Timeout => false,
+            HystrixEventType.BadRequest => false,
+            HystrixEventType.ShortCircuited => false,
+            HystrixEventType.ThreadPoolRejected => false,
+            HystrixEventType.SemaphoreRejected => false,
+            HystrixEventType.FallbackEmit => false,
+            HystrixEventType.FallbackSuccess => false,
+            HystrixEventType.FallbackFailure => false,
+            HystrixEventType.FallbackRejection => false,
+            HystrixEventType.FallbackMissing => false,
+            HystrixEventType.ExceptionThrown => false,
+            HystrixEventType.ResponseFromCache => false,
+            HystrixEventType.Cancelled => false,
+            HystrixEventType.Collapsed => false,
+            _ => throw new ArgumentOutOfRangeException()
+        };
+    }
+
+    public static HystrixEventType From(this HystrixRollingNumberEvent @event)
+    {
+        return @event switch
+        {
+            HystrixRollingNumberEvent.Emit => HystrixEventType.Emit,
+            HystrixRollingNumberEvent.Success => HystrixEventType.Success,
+            HystrixRollingNumberEvent.Failure => HystrixEventType.Failure,
+            HystrixRollingNumberEvent.Timeout => HystrixEventType.Timeout,
+            HystrixRollingNumberEvent.ShortCircuited => HystrixEventType.ShortCircuited,
+            HystrixRollingNumberEvent.ThreadPoolRejected => HystrixEventType.ThreadPoolRejected,
+            HystrixRollingNumberEvent.SemaphoreRejected => HystrixEventType.SemaphoreRejected,
+            HystrixRollingNumberEvent.FallbackEmit => HystrixEventType.FallbackEmit,
+            HystrixRollingNumberEvent.FallbackSuccess => HystrixEventType.FallbackSuccess,
+            HystrixRollingNumberEvent.FallbackFailure => HystrixEventType.FallbackFailure,
+            HystrixRollingNumberEvent.FallbackRejection => HystrixEventType.FallbackRejection,
+            HystrixRollingNumberEvent.FallbackMissing => HystrixEventType.FallbackMissing,
+            HystrixRollingNumberEvent.ExceptionThrown => HystrixEventType.ExceptionThrown,
+            HystrixRollingNumberEvent.ResponseFromCache => HystrixEventType.ResponseFromCache,
+            HystrixRollingNumberEvent.Collapsed => HystrixEventType.Collapsed,
+            HystrixRollingNumberEvent.BadRequest => HystrixEventType.BadRequest,
+            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType : {@event}")
+        };
+    }
+
     private static List<HystrixEventType> GetTerminalEventTypes()
     {
         var terminalEventTypes = new List<HystrixEventType>();
 
-        foreach (var evName in Enum.GetNames(typeof(HystrixEventType)))
+        foreach (string evName in Enum.GetNames(typeof(HystrixEventType)))
         {
             var e = (HystrixEventType)Enum.Parse(typeof(HystrixEventType), evName);
+
             if (e.IsTerminal())
             {
                 terminalEventTypes.Add(e);

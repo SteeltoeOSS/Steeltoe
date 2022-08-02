@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System.Collections.Concurrent;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -73,7 +73,11 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         _listenerContainer2.AddQueueNames(Q3);
         _listenerContainer2.MessageListener = adapter;
 
-        _expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object> { { "x-expires", 200 } });
+        _expiringQueue = new Queue(Guid.NewGuid().ToString(), true, false, false, new Dictionary<string, object>
+        {
+            { "x-expires", 200 }
+        });
+
         _containerAdmin.DeclareQueue(_expiringQueue);
         _listenerContainer3 = new DirectMessageListenerContainer(null, _connectionFactory, "container3");
         _listenerContainer3.IsAutoStartup = false;
@@ -176,8 +180,8 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
 
     private sealed class AppendingListener : IReplyingMessageListener<string, string>
     {
-        public readonly ConcurrentQueue<string> Queue = new ();
-        public readonly CountdownEvent Latch = new (1);
+        public readonly ConcurrentQueue<string> Queue = new();
+        public readonly CountdownEvent Latch = new(1);
 
         public string HandleMessage(string input)
         {

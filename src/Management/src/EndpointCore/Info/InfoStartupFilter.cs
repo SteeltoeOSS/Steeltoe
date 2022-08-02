@@ -15,6 +15,7 @@ public class InfoStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<InfoEndpoint>();

@@ -6,10 +6,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class ExceptionToBadRequestByExecutionHookCommand : TestHystrixCommand<bool>
 {
+    protected override string CacheKey => "nein";
+
     public ExceptionToBadRequestByExecutionHookCommand(TestCircuitBreaker circuitBreaker, ExecutionIsolationStrategy isolationType)
-        : base(TestPropsBuilder()
-            .SetCircuitBreaker(circuitBreaker)
-            .SetMetrics(circuitBreaker.Metrics)
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetExecutionHook(new ExceptionToBadRequestByExecutionHookCommandExecutionHook())
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), isolationType)))
     {
@@ -18,11 +18,6 @@ internal sealed class ExceptionToBadRequestByExecutionHookCommand : TestHystrixC
     protected override bool Run()
     {
         throw new BusinessException("invalid input by the user");
-    }
-
-    protected override string CacheKey
-    {
-        get { return "nein"; }
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, ExecutionIsolationStrategy isolationType)

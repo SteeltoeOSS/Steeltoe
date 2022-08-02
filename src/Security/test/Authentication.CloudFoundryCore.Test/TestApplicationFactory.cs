@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Immutable;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using System.Collections.Immutable;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
@@ -30,15 +30,13 @@ public class TestApplicationFactory<TStartup> : WebApplicationFactory<TStartup>
 
     protected override IHostBuilder CreateHostBuilder()
     {
-        var builder = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(webHostBuilder =>
-            {
-                webHostBuilder.UseStartup<TStartup>().UseTestServer();
-            })
-            .ConfigureAppConfiguration((_, config) =>
-            {
-                config.AddInMemoryCollection(_configuration);
-            });
+        IHostBuilder builder = Host.CreateDefaultBuilder().ConfigureWebHostDefaults(webHostBuilder =>
+        {
+            webHostBuilder.UseStartup<TStartup>().UseTestServer();
+        }).ConfigureAppConfiguration((_, config) =>
+        {
+            config.AddInMemoryCollection(_configuration);
+        });
 
         return builder;
     }

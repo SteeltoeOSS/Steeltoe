@@ -10,6 +10,9 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
 {
     public const string ConversionHintHeader = "conversionHint";
 
+    protected virtual TDestination RequiredDefaultSendDestination =>
+        DefaultSendDestination ?? throw new InvalidOperationException("No default destination configured");
+
     public virtual TDestination DefaultSendDestination { get; set; }
 
     public virtual IMessageConverter MessageConverter { get; set; } = new SimpleMessageConverter();
@@ -24,7 +27,8 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
         return ConvertAndSendAsync(destination, payload, (IDictionary<string, object>)null, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(destination, payload, headers, null, cancellationToken);
     }
@@ -34,14 +38,16 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
         return ConvertAndSendAsync(RequiredDefaultSendDestination, payload, postProcessor, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IMessagePostProcessor postProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertAndSendAsync(destination, payload, null, postProcessor, cancellationToken);
     }
 
-    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor, CancellationToken cancellationToken = default)
+    public virtual Task ConvertAndSendAsync(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor,
+        CancellationToken cancellationToken = default)
     {
-        var message = DoConvert(payload, headers, postProcessor);
+        IMessage message = DoConvert(payload, headers, postProcessor);
         return SendAsync(destination, message, cancellationToken);
     }
 
@@ -82,7 +88,7 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
 
     public virtual void ConvertAndSend(TDestination destination, object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
     {
-        var message = DoConvert(payload, headers, postProcessor);
+        IMessage message = DoConvert(payload, headers, postProcessor);
         Send(destination, message);
     }
 
@@ -100,18 +106,14 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
 
     protected abstract void DoSend(TDestination destination, IMessage message);
 
-    protected virtual TDestination RequiredDefaultSendDestination
-    {
-        get => DefaultSendDestination ?? throw new InvalidOperationException("No default destination configured");
-    }
-
     protected virtual IMessage DoConvert(object payload, IDictionary<string, object> headers, IMessagePostProcessor postProcessor)
     {
         IMessageHeaders messageHeaders = null;
         object conversionHint = null;
         headers?.TryGetValue(ConversionHintHeader, out conversionHint);
 
-        var headersToUse = ProcessHeadersToSend(headers);
+        IDictionary<string, object> headersToUse = ProcessHeadersToSend(headers);
+
         if (headersToUse != null)
         {
             if (headersToUse is MessageHeaders headers1)
@@ -124,19 +126,22 @@ public abstract class AbstractMessageSendingTemplate<TDestination> : IMessageSen
             }
         }
 
-        var converter = MessageConverter;
-        var message = converter is ISmartMessageConverter smartConverter ?
-            smartConverter.ToMessage(payload, messageHeaders, conversionHint) :
-            converter.ToMessage(payload, messageHeaders);
+        IMessageConverter converter = MessageConverter;
+
+        IMessage message = converter is ISmartMessageConverter smartConverter
+            ? smartConverter.ToMessage(payload, messageHeaders, conversionHint)
+            : converter.ToMessage(payload, messageHeaders);
+
         if (message == null)
         {
-            var payloadType = payload.GetType().Name;
+            string payloadType = payload.GetType().Name;
 
             object contentType = null;
             messageHeaders?.TryGetValue(MessageHeaders.ContentType, out contentType);
             contentType ??= "unknown";
 
-            throw new MessageConversionException($"Unable to convert payload with type='{payloadType}', contentType='{contentType}', converter=[{MessageConverter}]");
+            throw new MessageConversionException(
+                $"Unable to convert payload with type='{payloadType}', contentType='{contentType}', converter=[{MessageConverter}]");
         }
 
         if (postProcessor != null)

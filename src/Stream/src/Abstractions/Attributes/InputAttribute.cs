@@ -11,16 +11,18 @@ namespace Steeltoe.Stream.Attributes;
 public class InputAttribute : Attribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="InputAttribute"/> class.
+    /// Gets or sets the binding target name; used as a name for binding target and as a destination name by default.
     /// </summary>
-    /// <param name="name">the binding target name.</param>
+    public virtual string Name { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="InputAttribute" /> class.
+    /// </summary>
+    /// <param name="name">
+    /// the binding target name.
+    /// </param>
     public InputAttribute(string name = null)
     {
         Name = name;
     }
-
-    /// <summary>
-    /// Gets or sets the binding target name; used as a name for binding target and as a destination name by default.
-    /// </summary>
-    public virtual string Name { get; set; }
 }

@@ -11,7 +11,7 @@ namespace Steeltoe.Management.Endpoint;
 /// </summary>
 public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
 {
-    private readonly List<IEndpointConventionBuilder> _conventionBuilders = new ();
+    private readonly List<IEndpointConventionBuilder> _conventionBuilders = new();
 
     public void AddConventionBuilder(IEndpointConventionBuilder builder)
     {
@@ -20,7 +20,7 @@ public class EndpointCollectionConventionBuilder : IEndpointConventionBuilder
 
     public void Add(Action<EndpointBuilder> convention)
     {
-        foreach (var conventionBuilder in _conventionBuilders)
+        foreach (IEndpointConventionBuilder conventionBuilder in _conventionBuilders)
         {
             conventionBuilder.Add(convention);
         }

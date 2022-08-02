@@ -21,9 +21,9 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfiguration config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddMetricsActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddMetricsActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -31,7 +31,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
     public void AddMetricsActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        var config = GetConfiguration();
+        IConfiguration config = GetConfiguration();
 
         services.AddOptions();
         services.AddLogging();
@@ -39,7 +39,7 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         services.AddSingleton(config);
         services.AddMetricsActuator();
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         var mgr = serviceProvider.GetService<IDiagnosticsManager>();
         Assert.NotNull(mgr);
@@ -48,8 +48,8 @@ public class EndpointServiceCollectionExtensionsTest : BaseTest
         var opts = serviceProvider.GetService<IMetricsObserverOptions>();
         Assert.NotNull(opts);
 
-        var observers = serviceProvider.GetServices<IDiagnosticObserver>();
-        var list = observers.ToList();
+        IEnumerable<IDiagnosticObserver> observers = serviceProvider.GetServices<IDiagnosticObserver>();
+        List<IDiagnosticObserver> list = observers.ToList();
         Assert.Single(list);
 
         var ep = serviceProvider.GetService<MetricsEndpoint>();

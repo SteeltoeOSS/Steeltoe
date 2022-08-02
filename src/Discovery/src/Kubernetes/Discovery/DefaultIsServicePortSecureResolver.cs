@@ -6,7 +6,7 @@ namespace Steeltoe.Discovery.Kubernetes.Discovery;
 
 public class DefaultIsServicePortSecureResolver
 {
-    private readonly List<string> _truthyStrings = new ()
+    private readonly List<string> _truthyStrings = new()
     {
         "true",
         "on",
@@ -23,19 +23,21 @@ public class DefaultIsServicePortSecureResolver
 
     public bool Resolve(Input input)
     {
-        var securedLabelValue = input.GetServiceLabels().ContainsKey("secured") ? input.GetServiceLabels()["secured"] : "false";
+        string securedLabelValue = input.GetServiceLabels().ContainsKey("secured") ? input.GetServiceLabels()["secured"] : "false";
+
         if (_truthyStrings.Contains(securedLabelValue))
         {
             return true;
         }
 
-        var securedAnnotationValue = input.GetServiceAnnotations().ContainsKey("secured") ? input.GetServiceAnnotations()["secured"] : "false";
+        string securedAnnotationValue = input.GetServiceAnnotations().ContainsKey("secured") ? input.GetServiceAnnotations()["secured"] : "false";
+
         if (_truthyStrings.Contains(securedAnnotationValue))
         {
             return true;
         }
 
-        if (input.GetPort() != null && _kubernetesDiscoveryOptions.KnownSecurePorts.Contains(item: input.GetPort().Value))
+        if (input.GetPort() != null && _kubernetesDiscoveryOptions.KnownSecurePorts.Contains(input.GetPort().Value))
         {
             return true;
         }

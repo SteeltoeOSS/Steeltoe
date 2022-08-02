@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Moq;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
@@ -22,10 +22,7 @@ public class MessageMethodArgumentResolverTest
 
     public MessageMethodArgumentResolverTest()
     {
-        _method = typeof(MessageMethodArgumentResolverTest)
-            .GetMethod(
-                nameof(Handle),
-                BindingFlags.NonPublic | BindingFlags.Instance);
+        _method = typeof(MessageMethodArgumentResolverTest).GetMethod(nameof(Handle), BindingFlags.NonPublic | BindingFlags.Instance);
 
         _mock = new Mock<IMessageConverter>();
         _converter = _mock.Object;
@@ -35,8 +32,8 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithPayloadTypeAsObject()
     {
-        var message = MessageBuilder.WithPayload("test").Build();
-        var parameter = _method.GetParameters()[0];
+        IMessage message = MessageBuilder.WithPayload("test").Build();
+        ParameterInfo parameter = _method.GetParameters()[0];
 
         Assert.True(_resolver.SupportsParameter(parameter));
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
@@ -45,8 +42,8 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithMatchingPayloadType()
     {
-        var message = MessageBuilder.WithPayload(123).Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload(123).Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
 
         Assert.True(_resolver.SupportsParameter(parameter));
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
@@ -55,8 +52,8 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithConversion()
     {
-        var message = MessageBuilder.WithPayload("test").Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload("test").Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
         _mock.Setup(c => c.FromMessage(message, typeof(int))).Returns(4);
 
         var actual = (IMessage)_resolver.ResolveArgument(parameter, message);
@@ -69,8 +66,8 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithConversionNoMatchingConverter()
     {
-        var message = MessageBuilder.WithPayload("test").Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload("test").Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
 
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
@@ -81,8 +78,8 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithConversionEmptyPayload()
     {
-        var message = MessageBuilder.WithPayload(string.Empty).Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload(string.Empty).Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
         Assert.Contains("payload is empty", ex.Message);
@@ -115,7 +112,7 @@ public class MessageMethodArgumentResolverTest
     public void ResolveMessageSubclassMatch()
     {
         var message = new ErrorMessage(new InvalidOperationException());
-        var parameter = _method.GetParameters()[4];
+        ParameterInfo parameter = _method.GetParameters()[4];
 
         Assert.True(_resolver.SupportsParameter(parameter));
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
@@ -125,7 +122,7 @@ public class MessageMethodArgumentResolverTest
     public void ResolveWithMessageSubclassAndPayloadWildcard()
     {
         var message = new ErrorMessage(new InvalidOperationException());
-        var parameter = _method.GetParameters()[0];
+        ParameterInfo parameter = _method.GetParameters()[0];
         Assert.True(_resolver.SupportsParameter(parameter));
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
     }
@@ -147,8 +144,8 @@ public class MessageMethodArgumentResolverTest
     {
         _resolver = new MessageMethodArgumentResolver();
 
-        var message = MessageBuilder.WithPayload("test").Build();
-        var parameter = _method.GetParameters()[0];
+        IMessage message = MessageBuilder.WithPayload("test").Build();
+        ParameterInfo parameter = _method.GetParameters()[0];
         Assert.True(_resolver.SupportsParameter(parameter));
         Assert.Same(message, _resolver.ResolveArgument(parameter, message));
     }
@@ -158,8 +155,8 @@ public class MessageMethodArgumentResolverTest
     {
         _resolver = new MessageMethodArgumentResolver();
 
-        var message = MessageBuilder.WithPayload("test").Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload("test").Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
         Assert.Contains("Int32", ex.Message);
@@ -171,8 +168,8 @@ public class MessageMethodArgumentResolverTest
     {
         _resolver = new MessageMethodArgumentResolver();
 
-        var message = MessageBuilder.WithPayload(string.Empty).Build();
-        var parameter = _method.GetParameters()[1];
+        IMessage message = MessageBuilder.WithPayload(string.Empty).Build();
+        ParameterInfo parameter = _method.GetParameters()[1];
         Assert.True(_resolver.SupportsParameter(parameter));
         var ex = Assert.Throws<MessageConversionException>(() => _resolver.ResolveArgument(parameter, message));
         Assert.Contains("payload is empty", ex.Message);
@@ -183,27 +180,22 @@ public class MessageMethodArgumentResolverTest
     [Fact]
     public void ResolveWithNewtonJSonConverter()
     {
-        var inMessage = MessageBuilder.WithPayload("{\"prop\":\"bar\"}").Build();
-        var parameter = _method.GetParameters()[5];
+        IMessage inMessage = MessageBuilder.WithPayload("{\"prop\":\"bar\"}").Build();
+        ParameterInfo parameter = _method.GetParameters()[5];
 
         _resolver = new MessageMethodArgumentResolver(new NewtonJsonMessageConverter());
-        var actual = _resolver.ResolveArgument(parameter, inMessage);
+        object actual = _resolver.ResolveArgument(parameter, inMessage);
 
-        var condition1 = actual is IMessage;
+        bool condition1 = actual is IMessage;
         Assert.True(condition1);
         var outMessage = (IMessage)actual;
-        var condition = outMessage.Payload is Foo;
+        bool condition = outMessage.Payload is Foo;
         Assert.True(condition);
         Assert.Equal("bar", ((Foo)outMessage.Payload).Prop);
     }
 
-    private void Handle(
-        IMessage wildcardPayload,
-        IMessage<int> integerPayload,
-        IMessage<long> numberPayload,
-        IMessage<string> anyNumberPayload,
-        ErrorMessage subClass,
-        IMessage<Foo> fooPayload)
+    private void Handle(IMessage wildcardPayload, IMessage<int> integerPayload, IMessage<long> numberPayload, IMessage<string> anyNumberPayload,
+        ErrorMessage subClass, IMessage<Foo> fooPayload)
     {
     }
 

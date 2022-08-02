@@ -71,15 +71,18 @@ public static class ClassUtils
             return method;
         }
 
-        var current = method.DeclaringType;
+        Type current = method.DeclaringType;
+
         while (current != null && current != typeof(object))
         {
-            var interfaces = current.GetInterfaces();
-            foreach (var ifc in interfaces)
+            Type[] interfaces = current.GetInterfaces();
+
+            foreach (Type ifc in interfaces)
             {
                 try
                 {
-                    var found = ifc.GetMethod(method.Name, GetParameterTypes(method));
+                    MethodInfo found = ifc.GetMethod(method.Name, GetParameterTypes(method));
+
                     if (found != null)
                     {
                         return found;
@@ -115,8 +118,9 @@ public static class ClassUtils
         }
 
         var results = new Type[method.GetParameters().Length];
-        var index = 0;
-        foreach (var param in method.GetParameters())
+        int index = 0;
+
+        foreach (ParameterInfo param in method.GetParameters())
         {
             results[index++] = param.ParameterType;
         }
@@ -126,9 +130,10 @@ public static class ClassUtils
 
     public static object[][] GetParameterAttributes(MethodInfo method)
     {
-        var parameters = method.GetParameters();
-        var paramsAttributes = new object[parameters.Length][];
-        for (var i = 0; i < parameters.Length; i++)
+        ParameterInfo[] parameters = method.GetParameters();
+        object[][] paramsAttributes = new object[parameters.Length][];
+
+        for (int i = 0; i < parameters.Length; i++)
         {
             paramsAttributes[i] = parameters[i].GetCustomAttributes(false);
         }
@@ -158,16 +163,19 @@ public static class ClassUtils
             return clazz2;
         }
 
-        var ancestor = clazz1;
+        Type ancestor = clazz1;
+
         do
         {
             ancestor = ancestor.BaseType;
+
             if (ancestor == null || typeof(object) == ancestor)
             {
                 return null;
             }
         }
         while (!ancestor.IsAssignableFrom(clazz2));
+
         return ancestor;
     }
 }

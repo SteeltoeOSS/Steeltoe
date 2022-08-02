@@ -15,7 +15,11 @@ public class Db2ServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-db2",
-            Tags = new[] { "db2", "relational" },
+            Tags = new[]
+            {
+                "db2",
+                "relational"
+            },
             Name = "db2Service",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -26,9 +30,13 @@ public class Db2ServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("db2://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new Db2ServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -39,7 +47,11 @@ public class Db2ServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-msql",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mysqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -50,9 +62,13 @@ public class Db2ServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new Db2ServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -63,7 +79,11 @@ public class Db2ServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-db2",
-            Tags = new[] { "db2", "relational" },
+            Tags = new[]
+            {
+                "db2",
+                "relational"
+            },
             Name = "db2Service",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -74,9 +94,13 @@ public class Db2ServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("db2://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:db2://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new Db2ServiceInfoFactory();
         var info = factory.Create(s) as Db2ServiceInfo;
         Assert.NotNull(info);

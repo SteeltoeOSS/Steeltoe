@@ -35,7 +35,11 @@ public class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo.bar.com",
                         Port = 1234,
-                        Tags = new[] { "foo=bar", "secure=true" }
+                        Tags = new[]
+                        {
+                            "foo=bar",
+                            "secure=true"
+                        }
                     }
                 },
                 new ServiceEntry
@@ -45,13 +49,17 @@ public class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo1.bar1.com",
                         Port = 5678,
-                        Tags = new[] { "bar=foo", "secure=false" }
+                        Tags = new[]
+                        {
+                            "bar=foo",
+                            "secure=false"
+                        }
                     }
                 }
             }
         };
 
-        var result = Task.FromResult(queryResult);
+        Task<QueryResult<ServiceEntry[]>> result = Task.FromResult(queryResult);
         var clientMoq = new Mock<IConsulClient>();
         var healthMoq = new Mock<IHealthEndpoint>();
         clientMoq.Setup(c => c.Health).Returns(healthMoq.Object);
@@ -62,7 +70,7 @@ public class ConsulDiscoveryClientTest
         await dc.AddInstancesToListAsync(list, "ServiceId", QueryOptions.Default);
         Assert.Equal(2, list.Count);
 
-        var inst = list[0];
+        IServiceInstance inst = list[0];
         Assert.Equal("foo.bar.com", inst.Host);
         Assert.Equal("ServiceId", inst.ServiceId);
         Assert.True(inst.IsSecure);
@@ -96,18 +104,31 @@ public class ConsulDiscoveryClientTest
         {
             Response = new Dictionary<string, string[]>
             {
-                { "foo", new[] { "I1", "I2" } },
-                { "bar", new[] { "I1", "I2" } },
+                {
+                    "foo", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                },
+                {
+                    "bar", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                }
             }
         };
-        var result = Task.FromResult(queryResult);
+
+        Task<QueryResult<Dictionary<string, string[]>>> result = Task.FromResult(queryResult);
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
         clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
         var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        var services = await dc.GetServicesAsync();
+        IList<string> services = await dc.GetServicesAsync();
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
         Assert.Contains("bar", services);
@@ -122,18 +143,31 @@ public class ConsulDiscoveryClientTest
         {
             Response = new Dictionary<string, string[]>
             {
-                { "foo", new[] { "I1", "I2" } },
-                { "bar", new[] { "I1", "I2" } },
+                {
+                    "foo", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                },
+                {
+                    "bar", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                }
             }
         };
-        var result = Task.FromResult(queryResult);
+
+        Task<QueryResult<Dictionary<string, string[]>>> result = Task.FromResult(queryResult);
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
         clientMoq.Setup(c => c.Catalog).Returns(catMoq.Object);
         catMoq.Setup(c => c.Services(QueryOptions.Default, default)).Returns(result);
 
         var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        var services = dc.GetServices();
+        IList<string> services = dc.GetServices();
         Assert.Equal(2, services.Count);
         Assert.Contains("foo", services);
         Assert.Contains("bar", services);
@@ -148,10 +182,17 @@ public class ConsulDiscoveryClientTest
         {
             Response = new Dictionary<string, string[]>
             {
-                { "ServiceId", new[] { "I1", "I2" } },
+                {
+                    "ServiceId", new[]
+                    {
+                        "I1",
+                        "I2"
+                    }
+                }
             }
         };
-        var result1 = Task.FromResult(queryResult1);
+
+        Task<QueryResult<Dictionary<string, string[]>>> result1 = Task.FromResult(queryResult1);
 
         var queryResult2 = new QueryResult<ServiceEntry[]>
         {
@@ -164,7 +205,11 @@ public class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo.bar.com",
                         Port = 1234,
-                        Tags = new[] { "foo=bar", "secure=true" }
+                        Tags = new[]
+                        {
+                            "foo=bar",
+                            "secure=true"
+                        }
                     }
                 },
                 new ServiceEntry
@@ -174,12 +219,17 @@ public class ConsulDiscoveryClientTest
                         Service = "ServiceId",
                         Address = "foo1.bar1.com",
                         Port = 5678,
-                        Tags = new[] { "bar=foo", "secure=false" }
+                        Tags = new[]
+                        {
+                            "bar=foo",
+                            "secure=false"
+                        }
                     }
                 }
             }
         };
-        var result2 = Task.FromResult(queryResult2);
+
+        Task<QueryResult<ServiceEntry[]>> result2 = Task.FromResult(queryResult2);
 
         var clientMoq = new Mock<IConsulClient>();
         var catMoq = new Mock<ICatalogEndpoint>();
@@ -191,11 +241,11 @@ public class ConsulDiscoveryClientTest
         healthMoq.Setup(h => h.Service("ServiceId", options.DefaultQueryTag, options.QueryPassing, QueryOptions.Default, default)).Returns(result2);
 
         var dc = new ConsulDiscoveryClient(clientMoq.Object, options);
-        var list = dc.GetAllInstances(QueryOptions.Default);
+        IList<IServiceInstance> list = dc.GetAllInstances(QueryOptions.Default);
 
         Assert.Equal(2, list.Count);
 
-        var inst = list[0];
+        IServiceInstance inst = list[0];
         Assert.Equal("foo.bar.com", inst.Host);
         Assert.Equal("ServiceId", inst.ServiceId);
         Assert.True(inst.IsSecure);

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Integration.Channel;
+using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder;
 using Steeltoe.Stream.Messaging;
 using Steeltoe.Stream.Partitioning;
@@ -17,26 +18,25 @@ public class CustomPartitionedProducerTest : AbstractTest
     [Fact]
     public async Task TestCustomPartitionedProducerByName()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithISourceBinding(
-            searchDirectories,
-            "spring.cloud.stream.bindings.output.destination=partOut",
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceCollection container = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.bindings.output.destination=partOut",
             "spring.cloud.stream.bindings.output.producer.partitionCount=3",
             "spring.cloud.stream.bindings.output.producer.partitionKeyExtractorName=CustomPartitionKeyExtractorClass",
-            "spring.cloud.stream.bindings.output.producer.partitionSelectorName=CustomPartitionSelectorClass",
-            "spring.cloud.stream.defaultbinder=mock");
+            "spring.cloud.stream.bindings.output.producer.partitionSelectorName=CustomPartitionSelectorClass", "spring.cloud.stream.defaultbinder=mock");
 
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClass>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClass>();
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundPartInterceptor = false;
-        foreach (var interceptor in messageChannel.ChannelInterceptors)
+        bool foundPartInterceptor = false;
+
+        foreach (IChannelInterceptor interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
@@ -55,24 +55,23 @@ public class CustomPartitionedProducerTest : AbstractTest
     [Fact]
     public async Task TestCustomPartitionedProducerAsSingletons()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithISourceBinding(
-            searchDirectories,
-            "spring.cloud.stream.bindings.output.destination=partOut",
-            "spring.cloud.stream.bindings.output.producer.partitionCount=3",
-            "spring.cloud.stream.defaultbinder=mock");
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceCollection container = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.bindings.output.destination=partOut",
+            "spring.cloud.stream.bindings.output.producer.partitionCount=3", "spring.cloud.stream.defaultbinder=mock");
 
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClass>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClass>();
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundPartInterceptor = false;
-        foreach (var interceptor in messageChannel.ChannelInterceptors)
+        bool foundPartInterceptor = false;
+
+        foreach (IChannelInterceptor interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
@@ -90,14 +89,12 @@ public class CustomPartitionedProducerTest : AbstractTest
     [Fact]
     public async Task TestCustomPartitionedProducerMultipleInstances()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithISourceBinding(
-            searchDirectories,
-            "spring.cloud.stream.bindings.output.destination=partOut",
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceCollection container = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.bindings.output.destination=partOut",
             "spring.cloud.stream.bindings.output.producer.partitionCount=3",
             "spring.cloud.stream.bindings.output.producer.partitionKeyExtractorName=CustomPartitionKeyExtractorClassOne",
-            "spring.cloud.stream.bindings.output.producer.partitionSelectorName=CustomPartitionSelectorClassTwo",
-            "spring.cloud.stream.defaultbinder=mock");
+            "spring.cloud.stream.bindings.output.producer.partitionSelectorName=CustomPartitionSelectorClassTwo", "spring.cloud.stream.defaultbinder=mock");
 
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassOne>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassOne>();
@@ -105,14 +102,15 @@ public class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassTwo>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassTwo>();
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
-        var foundPartInterceptor = false;
-        foreach (var interceptor in messageChannel.ChannelInterceptors)
+        bool foundPartInterceptor = false;
+
+        foreach (IChannelInterceptor interceptor in messageChannel.ChannelInterceptors)
         {
             if (interceptor is PartitioningInterceptor partInterceptor)
             {
@@ -131,12 +129,10 @@ public class CustomPartitionedProducerTest : AbstractTest
     [Fact]
     public async Task TestCustomPartitionedProducerMultipleInstancesFailNoFilter()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithISourceBinding(
-            searchDirectories,
-            "spring.cloud.stream.bindings.output.destination=partOut",
-            "spring.cloud.stream.bindings.output.producer.partitionCount=3",
-            "spring.cloud.stream.defaultbinder=mock");
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceCollection container = CreateStreamsContainerWithISourceBinding(searchDirectories, "spring.cloud.stream.bindings.output.destination=partOut",
+            "spring.cloud.stream.bindings.output.producer.partitionCount=3", "spring.cloud.stream.defaultbinder=mock");
 
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassOne>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassOne>();
@@ -144,9 +140,10 @@ public class CustomPartitionedProducerTest : AbstractTest
         container.AddSingleton<IPartitionKeyExtractorStrategy, CustomPartitionKeyExtractorClassTwo>();
         container.AddSingleton<IPartitionSelectorStrategy, CustomPartitionSelectorClassTwo>();
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
-        var exceptionThrown = false;
+        bool exceptionThrown = false;
+
         try
         {
             await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart

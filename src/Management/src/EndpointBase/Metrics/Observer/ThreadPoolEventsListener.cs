@@ -2,22 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Management.OpenTelemetry;
-using Steeltoe.Management.OpenTelemetry.Metrics;
 using System.Diagnostics.Metrics;
 using System.Diagnostics.Tracing;
 using System.Globalization;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Management.OpenTelemetry;
+using Steeltoe.Management.OpenTelemetry.Metrics;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 /// <summary>
-/// This EventSourceListener listens on the following events:
-/// ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
-/// IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate
-/// And Records the following values:
-/// ActiveWorkerThreadCount - UInt32 - Number of worker threads available to process work, including those that are already processing work.
-/// RetiredWorkerThreadCount - UInt32 - Number of worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
+/// This EventSourceListener listens on the following events: ThreadPoolWorkerThreadStart, ThreadPoolWorkerThreadWait, ThreadPoolWorkerThreadStop,
+/// IOThreadCreate_V1, IOThreadRetire_V1, IOThreadUnretire_V1, IOThreadTerminate And Records the following values: ActiveWorkerThreadCount - UInt32 -
+/// Number of worker threads available to process work, including those that are already processing work. RetiredWorkerThreadCount - UInt32 - Number of
+/// worker threads that are not available to process work, but that are being held in reserve in case more threads are needed later.
 /// </summary>
 [Obsolete("Use CLRRuntimeObserver instead")]
 public class ThreadPoolEventsListener : EventSourceListener
@@ -75,10 +73,14 @@ public class ThreadPoolEventsListener : EventSourceListener
     {
         return eventName switch
         {
-            _ when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) =>
-                new Dictionary<string, object> { { "kind", "completionPort" } },
-            _ when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) =>
-                new Dictionary<string, object> { { "kind", "worker" } },
+            _ when eventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) => new Dictionary<string, object>
+            {
+                { "kind", "completionPort" }
+            },
+            _ when eventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) => new Dictionary<string, object>
+            {
+                { "kind", "worker" }
+            },
             _ => new Dictionary<string, object>()
         };
     }
@@ -93,21 +95,21 @@ public class ThreadPoolEventsListener : EventSourceListener
 
     private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
     {
-        ThreadPool.GetMaxThreads(out var maxWorker, out _);
-        using var nameEnumerator = eventData.PayloadNames.GetEnumerator();
-        using var payloadEnumerator = eventData.Payload.GetEnumerator();
+        ThreadPool.GetMaxThreads(out int maxWorker, out _);
+        using IEnumerator<string> nameEnumerator = eventData.PayloadNames.GetEnumerator();
+        using IEnumerator<object> payloadEnumerator = eventData.Payload.GetEnumerator();
 
         while (nameEnumerator.MoveNext())
         {
             payloadEnumerator.MoveNext();
 
-            if ((eventData.EventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase)
-                 && nameEnumerator.Current.Equals("ActiveWorkerThreadCount", StringComparison.OrdinalIgnoreCase))
-                || (eventData.EventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase)
-                    && nameEnumerator.Current.EndsWith("Count", StringComparison.OrdinalIgnoreCase)))
+            if ((eventData.EventName.StartsWith("ThreadPoolWorker", StringComparison.OrdinalIgnoreCase) &&
+                    nameEnumerator.Current.Equals("ActiveWorkerThreadCount", StringComparison.OrdinalIgnoreCase)) ||
+                (eventData.EventName.StartsWith("IOThread", StringComparison.OrdinalIgnoreCase) &&
+                    nameEnumerator.Current.EndsWith("Count", StringComparison.OrdinalIgnoreCase)))
             {
-                var activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
-                var available = maxWorker - activeCount;
+                long activeCount = Convert.ToInt64(payloadEnumerator.Current, CultureInfo.InvariantCulture);
+                long available = maxWorker - activeCount;
                 _availableThreads.Add(available, GetLabelSet(eventData.EventName).AsReadonlySpan());
             }
         }

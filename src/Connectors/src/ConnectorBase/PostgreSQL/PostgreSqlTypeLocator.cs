@@ -14,16 +14,25 @@ public static class PostgreSqlTypeLocator
     /// <summary>
     /// Gets a list of supported PostgreSQL assemblies.
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "Npgsql" };
+    public static string[] Assemblies { get; internal set; } =
+    {
+        "Npgsql"
+    };
 
     /// <summary>
     /// Gets a list of PostgreSQL types that implement IDbConnection.
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "Npgsql.NpgsqlConnection" };
+    public static string[] ConnectionTypeNames { get; internal set; } =
+    {
+        "Npgsql.NpgsqlConnection"
+    };
 
     /// <summary>
     /// Gets NpgsqlConnection from a PostgreSQL Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found.</exception>
-    public static Type NpgsqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "NpgsqlConnection", "a PostgreSQL ADO.NET assembly");
+    /// <exception cref="ConnectorException">
+    /// When type is not found.
+    /// </exception>
+    public static Type NpgsqlConnection =>
+        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "NpgsqlConnection", "a PostgreSQL ADO.NET assembly");
 }

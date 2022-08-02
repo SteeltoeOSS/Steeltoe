@@ -12,19 +12,13 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
     private readonly ILogger<RefreshEndpoint> _logger;
     private readonly IConfiguration _configuration;
 
+    public new IRefreshOptions Options => options as IRefreshOptions;
+
     public RefreshEndpoint(IRefreshOptions options, IConfiguration configuration, ILogger<RefreshEndpoint> logger = null)
         : base(options)
     {
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _logger = logger;
-    }
-
-    public new IRefreshOptions Options
-    {
-        get
-        {
-            return options as IRefreshOptions;
-        }
     }
 
     public override IList<string> Invoke()
@@ -45,7 +39,8 @@ public class RefreshEndpoint : AbstractEndpoint<IList<string>>, IRefreshEndpoint
         }
 
         var keys = new List<string>();
-        foreach (var kvp in configuration.AsEnumerable())
+
+        foreach (KeyValuePair<string, string> kvp in configuration.AsEnumerable())
         {
             keys.Add(kvp.Key);
         }

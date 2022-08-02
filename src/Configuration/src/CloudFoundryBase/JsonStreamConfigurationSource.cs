@@ -9,12 +9,12 @@ namespace Steeltoe.Extensions.Configuration.CloudFoundry;
 
 internal sealed class JsonStreamConfigurationSource : JsonConfigurationSource
 {
+    internal MemoryStream Stream { get; }
+
     internal JsonStreamConfigurationSource(MemoryStream stream)
     {
         Stream = stream ?? throw new ArgumentNullException(nameof(stream));
     }
-
-    internal MemoryStream Stream { get; }
 
     public override IConfigurationProvider Build(IConfigurationBuilder builder)
     {

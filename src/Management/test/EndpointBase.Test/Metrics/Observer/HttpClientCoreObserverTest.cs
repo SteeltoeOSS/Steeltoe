@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Net;
+using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
@@ -15,7 +16,10 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer.Test;
 [Obsolete("To be removed in the next major version.")]
 public class HttpClientCoreObserverTest : BaseTest
 {
-    private readonly PullMetricsExporterOptions _scraperOptions = new () { ScrapeResponseCacheDurationMilliseconds = 100 };
+    private readonly PullMetricsExporterOptions _scraperOptions = new()
+    {
+        ScrapeResponseCacheDurationMilliseconds = 100
+    };
 
     [Fact]
     public void Constructor_RegistersExpectedViews()
@@ -69,8 +73,8 @@ public class HttpClientCoreObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        var message = GetHttpResponseMessage(HttpStatusCode.OK);
-        var status = obs.GetStatusCode(message, default);
+        HttpResponseMessage message = GetHttpResponseMessage(HttpStatusCode.OK);
+        string status = obs.GetStatusCode(message, default);
         Assert.Equal("200", status);
 
         status = obs.GetStatusCode(null, TaskStatus.Canceled);
@@ -90,10 +94,10 @@ public class HttpClientCoreObserverTest : BaseTest
         var viewRegistry = new ViewRegistry();
         var obs = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        var req = GetHttpRequestMessage();
-        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
-        var tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
-        var tagValues = tagContext.ToList();
+        HttpRequestMessage req = GetHttpRequestMessage();
+        HttpResponseMessage resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        IEnumerable<KeyValuePair<string, object>> tagContext = obs.GetLabels(req, resp, TaskStatus.RanToCompletion);
+        List<KeyValuePair<string, object>> tagValues = tagContext.ToList();
 
         Assert.Contains(KeyValuePair.Create("clientName", (object)"localhost:5555"), tagValues);
         Assert.Contains(KeyValuePair.Create("uri", (object)"/foo/bar"), tagValues);
@@ -111,11 +115,11 @@ public class HttpClientCoreObserverTest : BaseTest
         OpenTelemetryMetrics.InstrumentationName = Guid.NewGuid().ToString();
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
+        using MeterProvider metrics = GetTestMetrics(viewRegistry, exporter, null);
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
-        var req = GetHttpRequestMessage();
-        var resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
+        HttpRequestMessage req = GetHttpRequestMessage();
+        HttpResponseMessage resp = GetHttpResponseMessage(HttpStatusCode.InternalServerError);
 
         var act = new Activity("Test");
         act.Start();
@@ -128,14 +132,14 @@ public class HttpClientCoreObserverTest : BaseTest
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
-        var timeSummary = timeSample.Value.FirstOrDefault();
-        var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
-        var countSummary = countSample.Value.FirstOrDefault();
+        KeyValuePair<string, List<MetricSample>> timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+        MetricSample timeSummary = timeSample.Value.FirstOrDefault();
+        KeyValuePair<string, List<MetricSample>> countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+        MetricSample countSummary = countSample.Value.FirstOrDefault();
 
         Assert.NotNull(timeSample.Value);
 
-        var average = timeSummary.Value / countSummary.Value;
+        double average = timeSummary.Value / countSummary.Value;
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);
@@ -156,9 +160,9 @@ public class HttpClientCoreObserverTest : BaseTest
         var observer = new HttpClientCoreObserver(options, null, viewRegistry);
 
         var exporter = new SteeltoeExporter(_scraperOptions);
-        using var metrics = GetTestMetrics(viewRegistry, exporter, null);
+        using MeterProvider metrics = GetTestMetrics(viewRegistry, exporter, null);
 
-        var req = GetHttpRequestMessage();
+        HttpRequestMessage req = GetHttpRequestMessage();
 
         var act = new Activity("Test");
         act.Start();
@@ -170,14 +174,14 @@ public class HttpClientCoreObserverTest : BaseTest
 
         var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
 
-        var timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
-        var timeSummary = timeSample.Value.FirstOrDefault();
-        var countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
-        var countSummary = countSample.Value.FirstOrDefault();
+        KeyValuePair<string, List<MetricSample>> timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.time");
+        MetricSample timeSummary = timeSample.Value.FirstOrDefault();
+        KeyValuePair<string, List<MetricSample>> countSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.client.request.count");
+        MetricSample countSummary = countSample.Value.FirstOrDefault();
 
         Assert.NotNull(timeSample.Value);
 
-        var average = timeSummary.Value / countSummary.Value;
+        double average = timeSummary.Value / countSummary.Value;
         Assert.InRange(average, 975.0, 1200.0);
 
         // Assert.InRange(max, 975.0, 1200.0);

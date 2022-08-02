@@ -30,7 +30,10 @@ public abstract class DeclareQueueBaseAttribute : Attribute
 
         set
         {
-            Admins = new[] { value };
+            Admins = new[]
+            {
+                value
+            };
         }
     }
 

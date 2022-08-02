@@ -16,9 +16,9 @@ internal sealed class FileProvider : FileConfigurationProvider
     public override void Load(Stream stream)
     {
         var source = Source as FileSource;
-        var key = source.Key;
+        string key = source.Key;
         using var reader = new StreamReader(stream);
-        var value = reader.ReadToEnd();
+        string value = reader.ReadToEnd();
         Data[key] = value;
     }
 }

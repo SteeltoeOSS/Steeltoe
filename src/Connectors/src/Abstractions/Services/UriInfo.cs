@@ -8,60 +8,15 @@ namespace Steeltoe.Connector.Services;
 
 public class UriInfo
 {
-    private readonly char[] _questionMark = { '?' };
-
-    private readonly char[] _colon = { ':' };
-
-    public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
+    private readonly char[] _questionMark =
     {
-        Scheme = scheme;
-        Host = host;
-        Port = port;
-        UserName = WebUtility.UrlEncode(username);
-        Password = WebUtility.UrlEncode(password);
-        Path = path;
-        Query = query;
+        '?'
+    };
 
-        UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
-    }
-
-    public UriInfo(string uriString)
+    private readonly char[] _colon =
     {
-        var uri = MakeUri(uriString);
-        if (uri != null)
-        {
-            Scheme = uri.Scheme;
-            Host ??= uri.Host;
-
-            Port = uri.Port;
-            Path = GetPath(uri.PathAndQuery);
-            Query = GetQuery(uri.PathAndQuery);
-
-            var userInfo = GetUserInfo(uri.UserInfo);
-            UserName = userInfo[0];
-            Password = userInfo[1];
-        }
-
-        UriString = uriString;
-    }
-
-    public UriInfo(string uriString, string username, string password)
-    {
-        var uri = MakeUri(uriString);
-        if (uri != null)
-        {
-            Scheme = uri.Scheme;
-            Host ??= uri.Host;
-
-            Port = uri.Port;
-            Path = GetPath(uri.PathAndQuery);
-            Query = GetQuery(uri.PathAndQuery);
-        }
-
-        UserName = WebUtility.UrlEncode(username);
-        Password = WebUtility.UrlEncode(password);
-        UriString = uriString;
-    }
+        ':'
+    };
 
     public string Scheme { get; protected internal set; }
 
@@ -83,11 +38,67 @@ public class UriInfo
 
     public Uri Uri => MakeUri(UriString);
 
-    public override string ToString() => UriString;
+    public UriInfo(string scheme, string host, int port, string username, string password, string path = null, string query = null)
+    {
+        Scheme = scheme;
+        Host = host;
+        Port = port;
+        UserName = WebUtility.UrlEncode(username);
+        Password = WebUtility.UrlEncode(password);
+        Path = path;
+        Query = query;
+
+        UriString = MakeUri(scheme, host, port, username, password, path, query).ToString();
+    }
+
+    public UriInfo(string uriString)
+    {
+        Uri uri = MakeUri(uriString);
+
+        if (uri != null)
+        {
+            Scheme = uri.Scheme;
+            Host ??= uri.Host;
+
+            Port = uri.Port;
+            Path = GetPath(uri.PathAndQuery);
+            Query = GetQuery(uri.PathAndQuery);
+
+            string[] userInfo = GetUserInfo(uri.UserInfo);
+            UserName = userInfo[0];
+            Password = userInfo[1];
+        }
+
+        UriString = uriString;
+    }
+
+    public UriInfo(string uriString, string username, string password)
+    {
+        Uri uri = MakeUri(uriString);
+
+        if (uri != null)
+        {
+            Scheme = uri.Scheme;
+            Host ??= uri.Host;
+
+            Port = uri.Port;
+            Path = GetPath(uri.PathAndQuery);
+            Query = GetQuery(uri.PathAndQuery);
+        }
+
+        UserName = WebUtility.UrlEncode(username);
+        Password = WebUtility.UrlEncode(password);
+        UriString = uriString;
+    }
+
+    public override string ToString()
+    {
+        return UriString;
+    }
 
     protected internal Uri MakeUri(string scheme, string host, int port, string username, string password, string path, string query)
     {
-        var cleanedPath = path == null || path.StartsWith("/") ? path : $"/{path}";
+        string cleanedPath = path == null || path.StartsWith("/") ? path : $"/{path}";
         cleanedPath = query != null ? $"{cleanedPath}?{query}" : cleanedPath;
 
         if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
@@ -101,6 +112,7 @@ public class UriInfo
                 Password = WebUtility.UrlEncode(password),
                 Path = cleanedPath
             };
+
             return builder.Uri;
         }
         else
@@ -112,6 +124,7 @@ public class UriInfo
                 Port = port,
                 Path = cleanedPath
             };
+
             return builder.Uri;
         }
     }
@@ -133,12 +146,12 @@ public class UriInfo
             if (uriString.Contains(","))
             {
                 // Slide past the protocol
-                var splitUri = uriString.Split('/');
+                string[] splitUri = uriString.Split('/');
 
                 // get the host list (and maybe credentials)
                 // -- pre-emptively set it as the Host property rather than a local variable
                 //      since the connector is likely to expect this format here anyway
-                var credentialAndHost = splitUri[2];
+                string credentialAndHost = splitUri[2];
 
                 // skip over credentials if they're present
                 Host = credentialAndHost.Contains('@') ? credentialAndHost.Split('@')[1] : credentialAndHost;
@@ -157,16 +170,19 @@ public class UriInfo
     protected internal void ConvertJdbcToUri(ref string uriString)
     {
         uriString = uriString.Replace("jdbc:", string.Empty).Replace(";", "&");
+
         if (!uriString.Contains("?"))
         {
-            var firstAmp = uriString.IndexOf("&");
+            int firstAmp = uriString.IndexOf("&");
 
             // If there is an equals sign before any ampersands, it is likely a key was included for the db name.
             // Make the database name part of the path rather than query string if possible
-            var firstEquals = uriString.IndexOf("=");
+            int firstEquals = uriString.IndexOf("=");
+
             if (firstEquals > 0 && (firstEquals < firstAmp || firstAmp == -1))
             {
-                var dbNameIndex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
+                int dbNameIndex = uriString.IndexOf("databasename=", StringComparison.InvariantCultureIgnoreCase);
+
                 if (dbNameIndex > 0)
                 {
                     uriString = uriString.Remove(dbNameIndex, 13);
@@ -190,7 +206,8 @@ public class UriInfo
             return null;
         }
 
-        var split = pathAndQuery.Split(_questionMark);
+        string[] split = pathAndQuery.Split(_questionMark);
+
         if (split.Length == 0)
         {
             return null;
@@ -206,7 +223,8 @@ public class UriInfo
             return null;
         }
 
-        var split = pathAndQuery.Split(_questionMark);
+        string[] split = pathAndQuery.Split(_questionMark);
+
         if (split.Length <= 1)
         {
             return null;
@@ -219,10 +237,15 @@ public class UriInfo
     {
         if (string.IsNullOrEmpty(userPass))
         {
-            return new string[] { null, null };
+            return new string[]
+            {
+                null,
+                null
+            };
         }
 
-        var split = userPass.Split(_colon);
+        string[] split = userPass.Split(_colon);
+
         if (split.Length != 2)
         {
             throw new ArgumentException($"Bad user/password in URI: {userPass}");

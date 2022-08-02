@@ -13,15 +13,15 @@ public class MessageTest
     [Fact]
     public void ToStringForEmptyMessageBody()
     {
-        var message = Message.Create(Array.Empty<byte>(), new MessageHeaders());
+        IMessage<byte[]> message = Message.Create(Array.Empty<byte>(), new MessageHeaders());
         Assert.NotNull(message.ToString());
     }
 
     [Fact(Skip = "Standard ContentType header missing")]
     public void ProperEncoding()
     {
-        var message = Message.Create(EncodingUtils.Utf16.GetBytes("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"), new MessageHeaders());
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        IMessage<byte[]> message = Message.Create(EncodingUtils.Utf16.GetBytes("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"), new MessageHeaders());
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ContentType = MessageHeaders.ContentTypeJson;
         accessor.ContentEncoding = "UTF-16";
         Assert.Contains("ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP", message.ToString());
@@ -30,14 +30,14 @@ public class MessageTest
     [Fact]
     public void ToStringForNullMessageProperties()
     {
-        var message = Message.Create(Array.Empty<byte>(), null);
+        IMessage<byte[]> message = Message.Create(Array.Empty<byte>(), null);
         Assert.NotNull(message.ToString());
     }
 
     [Fact]
     public void ToStringForNonStringMessageBody()
     {
-        var message = Message.Create(default(DateTime), null);
+        IMessage<DateTime> message = Message.Create(default(DateTime), null);
         Assert.NotNull(message.ToString());
     }
 }

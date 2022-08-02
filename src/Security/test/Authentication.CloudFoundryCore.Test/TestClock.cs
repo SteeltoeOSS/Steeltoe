@@ -8,12 +8,12 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class TestClock : ISystemClock
 {
+    public DateTimeOffset UtcNow { get; set; }
+
     public TestClock()
     {
         UtcNow = new DateTimeOffset(2013, 6, 11, 12, 34, 56, 789, TimeSpan.Zero);
     }
-
-    public DateTimeOffset UtcNow { get; set; }
 
     public void Add(TimeSpan timeSpan)
     {

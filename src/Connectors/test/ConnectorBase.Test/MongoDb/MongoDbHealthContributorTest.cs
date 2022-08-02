@@ -26,10 +26,10 @@ public class MongoDbHealthContributorTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
-        var contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
+        IConfigurationRoot config = configurationBuilder.Build();
+        IHealthContributor contrib = MongoDbHealthContributor.GetMongoDbHealthContributor(config);
         Assert.NotNull(contrib);
-        var status = contrib.Health();
+        HealthCheckResult status = contrib.Health();
         Assert.Equal(HealthStatus.Down, status.Status);
     }
 
@@ -42,7 +42,7 @@ public class MongoDbHealthContributorTest
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>(), 1);
 
-        var status = h.Health();
+        HealthCheckResult status = h.Health();
 
         Assert.Equal(HealthStatus.Down, status.Status);
         Assert.Equal("Failed to open MongoDb connection!", status.Description);
@@ -57,7 +57,7 @@ public class MongoDbHealthContributorTest
         var connFactory = new MongoDbConnectorFactory(sInfo, mongoDbConfig, _mongoDbImplementationType);
         var h = new MongoDbHealthContributor(connFactory, loggerFactory.CreateLogger<MongoDbHealthContributor>());
 
-        var status = h.Health();
+        HealthCheckResult status = h.Health();
 
         Assert.Equal(HealthStatus.Up, status.Status);
     }

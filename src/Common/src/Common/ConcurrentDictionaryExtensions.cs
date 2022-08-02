@@ -10,7 +10,7 @@ public static class ConcurrentDictionaryExtensions
 {
     public static TValue GetOrAddEx<TKey, TValue>(this ConcurrentDictionary<TKey, TValue> dict, TKey key, Func<TKey, TValue> factory)
     {
-        if (dict.TryGetValue(key, out var value))
+        if (dict.TryGetValue(key, out TValue value))
         {
             return value;
         }

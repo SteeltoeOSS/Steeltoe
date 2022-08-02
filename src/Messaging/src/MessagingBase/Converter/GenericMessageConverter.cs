@@ -22,7 +22,8 @@ public class GenericMessageConverter : SimpleMessageConverter
 
     public override object FromMessage(IMessage message, Type targetType)
     {
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (_conversionService.CanConvert(payload.GetType(), targetType))
         {
             try

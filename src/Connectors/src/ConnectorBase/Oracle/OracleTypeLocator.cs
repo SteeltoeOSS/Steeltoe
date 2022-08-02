@@ -14,16 +14,24 @@ public static class OracleTypeLocator
     /// <summary>
     /// Gets a list of supported Oracle Client assemblies.
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "Oracle.ManagedDataAccess" };
+    public static string[] Assemblies { get; internal set; } =
+    {
+        "Oracle.ManagedDataAccess"
+    };
 
     /// <summary>
     /// Gets a list of Oracle types that implement IDbConnection.
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "Oracle.ManagedDataAccess.Client.OracleConnection" };
+    public static string[] ConnectionTypeNames { get; internal set; } =
+    {
+        "Oracle.ManagedDataAccess.Client.OracleConnection"
+    };
 
     /// <summary>
     /// Gets SqlConnection from a Oracle Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found.</exception>
+    /// <exception cref="ConnectorException">
+    /// When type is not found.
+    /// </exception>
     public static Type OracleConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "OracleConnection", "a Oracle ODP.NET assembly");
 }

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +28,6 @@ using Steeltoe.Management.Endpoint;
 using Steeltoe.Management.Kubernetes;
 using Steeltoe.Management.Tracing;
 using Steeltoe.Security.Authentication.CloudFoundry;
-using System.Runtime.CompilerServices;
 
 namespace Steeltoe.Bootstrap.Autoconfig;
 
@@ -39,35 +39,48 @@ public static class WebApplicationBuilderExtensions
 
     static WebApplicationBuilderExtensions()
     {
-        var currentDomain = AppDomain.CurrentDomain;
+        AppDomain currentDomain = AppDomain.CurrentDomain;
         currentDomain.AssemblyResolve += AssemblyExtensions.LoadAnyVersion;
     }
 
     /// <summary>
-    /// Automatically configure Steeltoe packages that have been added as NuGet references.<para />
+    /// Automatically configure Steeltoe packages that have been added as NuGet references.
+    /// <para />
     /// PLEASE NOTE: No extensions to IApplicationBuilder will be configured.
     /// </summary>
-    /// <param name="webApplicationBuilder">Your <see cref="WebApplicationBuilder" />.</param>
-    /// <param name="exclusions">A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.</param>
-    /// <param name="loggerFactory">For logging within auto-configuration.</param>
-    public static WebApplicationBuilder AddSteeltoe(this WebApplicationBuilder webApplicationBuilder, IEnumerable<string> exclusions = null, ILoggerFactory loggerFactory = null)
+    /// <param name="webApplicationBuilder">
+    /// Your <see cref="WebApplicationBuilder" />.
+    /// </param>
+    /// <param name="exclusions">
+    /// A list of assemblies to exclude from auto-configuration. For ease of use, select from <see cref="SteeltoeAssemblies" />.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// For logging within auto-configuration.
+    /// </param>
+    public static WebApplicationBuilder AddSteeltoe(this WebApplicationBuilder webApplicationBuilder, IEnumerable<string> exclusions = null,
+        ILoggerFactory loggerFactory = null)
     {
         AssemblyExtensions.ExcludedAssemblies = exclusions ?? new List<string>();
         _loggerFactory = loggerFactory;
         _logger = loggerFactory?.CreateLogger(LoggerName) ?? NullLogger.Instance;
 
-        if (!webApplicationBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore))
+        if (!webApplicationBuilder.WireIfAnyLoaded(WireConfigServer, SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerBase,
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationConfigServerCore))
         {
-            webApplicationBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
+            webApplicationBuilder.WireIfAnyLoaded(WireCloudFoundryConfiguration, SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryBase,
+                SteeltoeAssemblies.SteeltoeExtensionsConfigurationCloudFoundryCore);
         }
 
-        if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore))
+        if (Platform.IsKubernetes && AssemblyExtensions.IsEitherAssemblyLoaded(SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesBase,
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationKubernetesCore))
         {
             WireKubernetesConfiguration(webApplicationBuilder);
         }
 
         webApplicationBuilder.WireIfLoaded(WireRandomValueProvider, SteeltoeAssemblies.SteeltoeExtensionsConfigurationRandomValueBase);
-        webApplicationBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderBase, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore);
+
+        webApplicationBuilder.WireIfAnyLoaded(WirePlaceholderResolver, SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderBase,
+            SteeltoeAssemblies.SteeltoeExtensionsConfigurationPlaceholderCore);
 
         if (webApplicationBuilder.WireIfLoaded(WireConnectorConfiguration, SteeltoeAssemblies.SteeltoeConnectorConnectorCore))
         {
@@ -78,13 +91,20 @@ public static class WebApplicationBuilderExtensions
             webApplicationBuilder.WireIfAnyLoaded(WirePostgresConnection, PostgreSqlTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRabbitMqConnection, RabbitMQTypeLocator.Assemblies);
             webApplicationBuilder.WireIfAnyLoaded(WireRedisConnectionMultiplexer, RedisTypeLocator.StackExchangeAssemblies);
-            webApplicationBuilder.WireIfAnyLoaded(WireDistributedRedisCache, RedisTypeLocator.MicrosoftAssemblies.Except(new[] { "Microsoft.Extensions.Caching.Abstractions" }).ToArray());
+
+            webApplicationBuilder.WireIfAnyLoaded(WireDistributedRedisCache, RedisTypeLocator.MicrosoftAssemblies.Except(new[]
+            {
+                "Microsoft.Extensions.Caching.Abstractions"
+            }).ToArray());
+
             webApplicationBuilder.WireIfAnyLoaded(WireSqlServerConnection, SqlServerTypeLocator.Assemblies);
 #pragma warning restore CS0436 // Type conflicts with imported type
         }
 
         webApplicationBuilder.WireIfLoaded(WireDynamicSerilog, SteeltoeAssemblies.SteeltoeExtensionsLoggingDynamicSerilogCore);
-        webApplicationBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClientBase, SteeltoeAssemblies.SteeltoeDiscoveryClientCore);
+
+        webApplicationBuilder.WireIfAnyLoaded(WireDiscoveryClient, SteeltoeAssemblies.SteeltoeDiscoveryClientBase,
+            SteeltoeAssemblies.SteeltoeDiscoveryClientCore);
 
         if (AssemblyExtensions.IsAssemblyLoaded(SteeltoeAssemblies.SteeltoeManagementKubernetesCore))
         {
@@ -178,48 +198,70 @@ public static class WebApplicationBuilderExtensions
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireMySqlConnection(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddMySqlConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireMySqlConnection);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireMongoClient(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireMongoClient(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddMongoClient(webApplicationBuilder.Configuration).Log(LogMessages.WireMongoClient);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireOracleConnection(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireOracleConnection(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddOracleConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireOracleConnection);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WirePostgresConnection(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WirePostgresConnection(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddPostgresConnection(webApplicationBuilder.Configuration).Log(LogMessages.WirePostgresConnection);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRabbitMqConnection(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireRabbitMqConnection(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddRabbitMQConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireRabbitMqConnection);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireRedisConnectionMultiplexer(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireRedisConnectionMultiplexer(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddRedisConnectionMultiplexer(webApplicationBuilder.Configuration).Log(LogMessages.WireRedisConnectionMultiplexer);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedRedisCache(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireDistributedRedisCache(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddDistributedRedisCache(webApplicationBuilder.Configuration).Log(LogMessages.WireDistributedRedisCache);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireSqlServerConnection(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddSqlServerConnection(webApplicationBuilder.Configuration).Log(LogMessages.WireSqlServerConnection);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDiscoveryClient(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireDiscoveryClient(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddDiscoveryClient(webApplicationBuilder.Configuration).Log(LogMessages.WireDiscoveryClient);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedTracingBase(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireDistributedTracingBase(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddDistributedTracing().Log(LogMessages.WireDistributedTracing);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
-    private static void WireDistributedTracingCore(this WebApplicationBuilder webApplicationBuilder) =>
+    private static void WireDistributedTracingCore(this WebApplicationBuilder webApplicationBuilder)
+    {
         webApplicationBuilder.Services.AddDistributedTracingAspNetCore().Log(LogMessages.WireDistributedTracing);
+    }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
     private static void WireKubernetesActuators(this WebApplicationBuilder webApplicationBuilder)

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -17,7 +18,6 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Support.Converter;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
-using System.Reflection;
 
 namespace Steeltoe.Integration.Extensions;
 
@@ -26,6 +26,7 @@ public static class IntegrationServicesExtensions
     public static IServiceCollection AddErrorChannel(this IServiceCollection services)
     {
         services.RegisterService(IntegrationContextUtils.ErrorChannelBeanName, typeof(IMessageChannel));
+
         services.AddSingleton<IMessageChannel>(p =>
         {
             var context = p.GetService<IApplicationContext>();
@@ -33,6 +34,7 @@ public static class IntegrationServicesExtensions
         });
 
         services.RegisterService(IntegrationContextUtils.ErrorChannelBeanName, typeof(ISubscribableChannel));
+
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
@@ -47,6 +49,7 @@ public static class IntegrationServicesExtensions
         services.RegisterService(IntegrationContextUtils.NullChannelBeanName, typeof(IMessageChannel));
         services.AddSingleton<IMessageChannel, NullChannel>();
         services.RegisterService(IntegrationContextUtils.NullChannelBeanName, typeof(IPollableChannel));
+
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
@@ -69,9 +72,11 @@ public static class IntegrationServicesExtensions
         }
 
         services.RegisterService(channelName, typeof(IMessageChannel));
+
         services.AddSingleton<IMessageChannel>(p =>
         {
             var context = p.GetService<IApplicationContext>();
+
             var chan = new QueueChannel(context)
             {
                 ServiceName = channelName
@@ -83,6 +88,7 @@ public static class IntegrationServicesExtensions
         });
 
         services.RegisterService(channelName, typeof(IPollableChannel));
+
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
@@ -105,9 +111,11 @@ public static class IntegrationServicesExtensions
         }
 
         services.RegisterService(channelName, typeof(IMessageChannel));
+
         services.AddSingleton<IMessageChannel>(p =>
         {
             var context = p.GetService<IApplicationContext>();
+
             var chan = new DirectChannel(context)
             {
                 ServiceName = channelName
@@ -119,6 +127,7 @@ public static class IntegrationServicesExtensions
         });
 
         services.RegisterService(channelName, typeof(ISubscribableChannel));
+
         services.AddSingleton(p =>
         {
             var context = p.GetService<IApplicationContext>();
@@ -138,6 +147,7 @@ public static class IntegrationServicesExtensions
             var errorChan = GetRequiredChannel<ISubscribableChannel>(context, IntegrationContextUtils.ErrorChannelBeanName);
             return new EventDrivenConsumerEndpoint(context, errorChan, handler);
         });
+
         return services;
     }
 
@@ -160,7 +170,7 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddServiceActivators(this IServiceCollection services, params Type[] targetClasses)
     {
-        foreach (var targetClass in targetClasses)
+        foreach (Type targetClass in targetClasses)
         {
             services.AddServiceActivators(targetClass);
         }
@@ -170,11 +180,10 @@ public static class IntegrationServicesExtensions
 
     public static IServiceCollection AddServiceActivators(this IServiceCollection services, Type targetClass)
     {
-        var targetMethods = AttributeUtils.FindMethodsWithAttribute(
-            targetClass,
-            typeof(ServiceActivatorAttribute),
+        List<MethodInfo> targetMethods = AttributeUtils.FindMethodsWithAttribute(targetClass, typeof(ServiceActivatorAttribute),
             BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-        foreach (var method in targetMethods)
+
+        foreach (MethodInfo method in targetMethods)
         {
             services.AddServiceActivator(method, targetClass);
         }
@@ -195,6 +204,7 @@ public static class IntegrationServicesExtensions
     public static IServiceCollection AddServiceActivator(this IServiceCollection services, MethodInfo method, Type targetClass)
     {
         var attribute = method.GetCustomAttribute<ServiceActivatorAttribute>();
+
         if (attribute == null)
         {
             throw new InvalidOperationException($"Method: '{method}' missing ServiceActivatorAttribute");

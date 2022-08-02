@@ -11,12 +11,14 @@ namespace Steeltoe.Common.Contexts;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services, Action<IServiceProvider, GenericApplicationContext> configure)
+    public static IServiceCollection AddGenericApplicationContext(this IServiceCollection services,
+        Action<IServiceProvider, GenericApplicationContext> configure)
     {
         services.TryAddSingleton<IApplicationContext>(p =>
         {
             var config = p.GetService<IConfiguration>();
             var context = new GenericApplicationContext(p, config);
+
             if (configure != null)
             {
                 configure(p, context);
@@ -24,6 +26,7 @@ public static class ServiceCollectionExtensions
 
             return context;
         });
+
         return services;
     }
 

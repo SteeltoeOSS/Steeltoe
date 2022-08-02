@@ -8,7 +8,7 @@ namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public class DataCenterInfo : IDataCenterInfo
 {
-    public DataCenterName Name { get; private set; }
+    public DataCenterName Name { get; }
 
     public DataCenterInfo(DataCenterName name)
     {
@@ -21,21 +21,18 @@ public class DataCenterInfo : IDataCenterInfo
         {
             return new DataCenterInfo(DataCenterName.MyOwn);
         }
-        else if (DataCenterName.Amazon.ToString().Equals(dataCenterInfo.Name))
+
+        if (DataCenterName.Amazon.ToString().Equals(dataCenterInfo.Name))
         {
             return new DataCenterInfo(DataCenterName.Amazon);
         }
-        else
-        {
-            throw new ArgumentOutOfRangeException("Datacenter name");
-        }
+
+        throw new ArgumentOutOfRangeException("Datacenter name");
     }
 
     internal JsonInstanceInfo.JsonDataCenterInfo ToJson()
     {
         // TODO: Other data centers @class settings?
-        return new JsonInstanceInfo.JsonDataCenterInfo(
-            "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
-            Name.ToString());
+        return new JsonInstanceInfo.JsonDataCenterInfo("com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo", Name.ToString());
     }
 }

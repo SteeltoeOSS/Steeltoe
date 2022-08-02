@@ -9,7 +9,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
 public class Listener
 {
-    public CountdownEvent Latch { get; set; } = new (2);
+    public CountdownEvent Latch { get; set; } = new(2);
 
     public int Counter { get; set; }
 

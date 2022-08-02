@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Text;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -17,7 +17,7 @@ public class StandardTypeLocatorTests
         Assert.Equal(typeof(int), locator.FindType("System.Int32"));
         Assert.Equal(typeof(string), locator.FindType("System.String"));
 
-        var prefixes = locator.ImportPrefixes;
+        List<string> prefixes = locator.ImportPrefixes;
         Assert.Single(prefixes);
         Assert.Contains("System", prefixes);
         Assert.DoesNotContain("System.Collections", prefixes);

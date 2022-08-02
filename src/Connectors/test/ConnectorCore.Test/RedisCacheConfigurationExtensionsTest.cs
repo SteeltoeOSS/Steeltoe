@@ -20,7 +20,7 @@ public class RedisCacheConfigurationExtensionsTest
     public void CreateRedisServiceConnectorFactory_ThrowsIfConfigurationNull()
     {
         const IConfigurationRoot config = null;
-        var connectorConfiguration = new ConfigurationBuilder().Build();
+        IConfigurationRoot connectorConfiguration = new ConfigurationBuilder().Build();
         var connectorOptions = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
@@ -36,7 +36,7 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorConfigurationNull()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const IConfigurationRoot connectorConfiguration = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorConfiguration, "foobar"));
@@ -46,7 +46,7 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_ThrowsIfConnectorOptionsNull()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const RedisCacheConnectorOptions connectorOptions = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => config.CreateRedisServiceConnectorFactory(connectorOptions, "foobar"));
@@ -56,7 +56,7 @@ public class RedisCacheConfigurationExtensionsTest
     [Fact]
     public void CreateRedisServiceConnectorFactory_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         var connectorOptions = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory("foobar"));
@@ -82,7 +82,7 @@ public class RedisCacheConfigurationExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var connectorOptions = new RedisCacheConnectorOptions(config);
 
         Assert.NotNull(config.CreateRedisServiceConnectorFactory());
@@ -98,7 +98,7 @@ public class RedisCacheConfigurationExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var connectorOptions = new RedisCacheConnectorOptions();
 
         var ex = Assert.Throws<ConnectorException>(() => config.CreateRedisServiceConnectorFactory());

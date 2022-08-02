@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.ObjectModel;
 using Steeltoe.Common.Expression.Internal.Spring.Ast;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using System.Collections.ObjectModel;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -137,10 +137,11 @@ public class ListTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
         var expression = (SpelExpression)parser.ParseExpression(expressionText);
-        var node = expression.Ast;
-        var condition = node is InlineList;
+        ISpelNode node = expression.Ast;
+        bool condition = node is InlineList;
         Assert.True(condition);
         var inlineList = (InlineList)node;
+
         if (expectedToBeConstant)
         {
             Assert.True(inlineList.IsConstant);

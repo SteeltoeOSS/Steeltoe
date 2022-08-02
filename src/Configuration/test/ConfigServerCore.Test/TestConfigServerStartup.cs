@@ -9,11 +9,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServerCore.Test;
 
 public class TestConfigServerStartup
 {
-    public TestConfigServerStartup()
-    {
-        LastRequest = null;
-    }
-
     public static string Response { get; set; }
 
     public static int ReturnStatus { get; set; } = 200;
@@ -21,6 +16,11 @@ public class TestConfigServerStartup
     public static HttpRequest LastRequest { get; set; }
 
     public static int RequestCount { get; set; }
+
+    public TestConfigServerStartup()
+    {
+        LastRequest = null;
+    }
 
     public void Configure(IApplicationBuilder app)
     {

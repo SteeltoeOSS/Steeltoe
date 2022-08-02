@@ -40,11 +40,13 @@ public class DiscoveryManagerTest : AbstractBaseTest
     public void Initialize_WithBothConfigs_InitializesAll()
     {
         var instanceConfig = new EurekaInstanceConfig();
+
         var clientConfig = new EurekaClientConfig
         {
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
+
         DiscoveryManager.Instance.Initialize(clientConfig, instanceConfig);
 
         Assert.NotNull(DiscoveryManager.Instance.InstanceConfig);
@@ -64,6 +66,7 @@ public class DiscoveryManagerTest : AbstractBaseTest
             ShouldRegisterWithEureka = false,
             ShouldFetchRegistry = false
         };
+
         DiscoveryManager.Instance.Initialize(clientConfig);
 
         Assert.Null(DiscoveryManager.Instance.InstanceConfig);

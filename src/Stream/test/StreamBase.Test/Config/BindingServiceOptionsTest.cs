@@ -13,6 +13,7 @@ public class BindingServiceOptionsTest
     public void Initialize_ConfiguresOptionsCorrectly()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:cloud:stream:instanceCount", "100" },
@@ -59,10 +60,10 @@ public class BindingServiceOptionsTest
             { "spring:cloud:stream:binders:foobar:inheritEnvironment", "false" },
             { "spring:cloud:stream:binders:foobar:defaultCandidate", "false" },
             { "spring:cloud:stream:binders:foobar:environment:key1", "value1" },
-            { "spring:cloud:stream:binders:foobar:environment:key2", "value2" },
+            { "spring:cloud:stream:binders:foobar:environment:key2", "value2" }
         });
 
-        var config = builder.Build().GetSection("spring:cloud:stream");
+        IConfigurationSection config = builder.Build().GetSection("spring:cloud:stream");
         var options = new BindingServiceOptions(config);
         options.PostProcess();
 
@@ -79,7 +80,7 @@ public class BindingServiceOptionsTest
         Assert.Equal("contentType", options.Default.ContentType);
         Assert.Equal("binder", options.Default.Binder);
 
-        var input = options.GetBindingOptions("input");
+        BindingOptions input = options.GetBindingOptions("input");
 
         Assert.NotNull(input);
         Assert.Equal("inputdestination", input.Destination);
@@ -97,10 +98,15 @@ public class BindingServiceOptionsTest
         Assert.Equal(false, input.Consumer.DefaultRetryable);
         Assert.Equal(10, input.Consumer.InstanceIndex);
         Assert.Equal(10, input.Consumer.InstanceCount);
-        Assert.Equal(new List<string> { "notused" }, input.Consumer.RetryableExceptions);
+
+        Assert.Equal(new List<string>
+        {
+            "notused"
+        }, input.Consumer.RetryableExceptions);
+
         Assert.Equal(true, input.Consumer.UseNativeDecoding);
 
-        var output = options.GetBindingOptions("output");
+        BindingOptions output = options.GetBindingOptions("output");
 
         Assert.Equal("outputdestination", output.Destination);
         Assert.Equal("outputgroup", output.Group);
@@ -117,7 +123,7 @@ public class BindingServiceOptionsTest
         Assert.Equal(true, output.Producer.UseNativeEncoding);
         Assert.Equal(true, output.Producer.ErrorChannelEnabled);
 
-        var foobar = options.Binders["foobar"];
+        BinderOptions foobar = options.Binders["foobar"];
         Assert.NotNull(foobar);
 
         Assert.Equal(false, foobar.InheritEnvironment);
@@ -131,7 +137,7 @@ public class BindingServiceOptionsTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(new Dictionary<string, string>());
-        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
+        IConfigurationSection configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 
@@ -155,6 +161,7 @@ public class BindingServiceOptionsTest
     public void NonDefaults_ConfiguresOptionsCorrectly()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:cloud:stream:instanceCount", "100" },
@@ -162,10 +169,10 @@ public class BindingServiceOptionsTest
             { "spring:cloud:stream:dynamicDestinations:0", "dynamicDestinations" },
             { "spring:cloud:stream:defaultBinder", "defaultBinder" },
             { "spring:cloud:stream:overrideCloudConnectors", "true" },
-            { "spring:cloud:stream:bindingRetryInterval", "500" },
+            { "spring:cloud:stream:bindingRetryInterval", "500" }
         });
 
-        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
+        IConfigurationSection configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 
@@ -190,15 +197,16 @@ public class BindingServiceOptionsTest
     public void Mixture_Default_NonDefault_ConfiguresOptionsCorrectly()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "spring:cloud:stream:instanceIndex", "2" },
             { "spring:cloud:stream:dynamicDestinations:0", "dynamicDestinations" },
             { "spring:cloud:stream:overrideCloudConnectors", "true" },
-            { "spring:cloud:stream:bindingRetryInterval", "100" },
+            { "spring:cloud:stream:bindingRetryInterval", "100" }
         });
 
-        var configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
+        IConfigurationSection configuration = builder.Build().GetSection(BindingServiceOptions.Prefix);
         var options = new BindingServiceOptions(configuration);
         options.PostProcess();
 

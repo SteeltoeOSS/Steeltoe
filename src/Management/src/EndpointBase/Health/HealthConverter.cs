@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.HealthChecks;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
@@ -34,7 +34,7 @@ public class HealthConverter : JsonConverter<HealthEndpointResponse>
                 writer.WritePropertyName("details");
                 writer.WriteStartObject();
 
-                foreach (var detail in health.Details)
+                foreach (KeyValuePair<string, object> detail in health.Details)
                 {
                     writer.WritePropertyName(detail.Key);
 

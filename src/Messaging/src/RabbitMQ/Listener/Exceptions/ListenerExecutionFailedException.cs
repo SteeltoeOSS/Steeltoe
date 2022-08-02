@@ -6,12 +6,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 
 public class ListenerExecutionFailedException : Exception
 {
-    public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
-        : base(message, cause)
-    {
-        FailedMessages.AddRange(failedMessages);
-    }
-
     public IMessage FailedMessage
     {
         get
@@ -25,5 +19,11 @@ public class ListenerExecutionFailedException : Exception
         }
     }
 
-    public List<IMessage> FailedMessages { get; } = new ();
+    public List<IMessage> FailedMessages { get; } = new();
+
+    public ListenerExecutionFailedException(string message, Exception cause, params IMessage[] failedMessages)
+        : base(message, cause)
+    {
+        FailedMessages.AddRange(failedMessages);
+    }
 }

@@ -17,30 +17,23 @@ public class SpelExpression : IExpression
     // Number of times to try compiling an expression before giving up
     internal const int FailedAttemptsThreshold = 100;
 
-    // Holds the compiled form of the expression (if it has been compiled)
-    internal volatile CompiledExpression CompiledAst;
-
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
     private readonly SpelNode _ast;
     private readonly SpelParserOptions _configuration;
 
     // Count of many times as the expression been interpreted - can trigger compilation
     // when certain limit reached
-    private readonly AtomicInteger _interpretedCount = new (0);
+    private readonly AtomicInteger _interpretedCount = new(0);
 
     // The number of times compilation was attempted and failed - enables us to eventually
     // give up trying to compile it when it just doesn't seem to be possible.
-    private readonly AtomicInteger _failedAttempts = new (0);
+    private readonly AtomicInteger _failedAttempts = new(0);
 
     // The default context is used if no override is supplied by the user
     private IEvaluationContext _evaluationContext;
 
-    public SpelExpression(string expression, SpelNode ast, SpelParserOptions configuration)
-    {
-        ExpressionString = expression;
-        _ast = ast;
-        _configuration = configuration;
-    }
+    // Holds the compiled form of the expression (if it has been compiled)
+    internal volatile CompiledExpression CompiledAst;
 
     public IEvaluationContext EvaluationContext
     {
@@ -56,13 +49,22 @@ public class SpelExpression : IExpression
     // implementing Expression
     public string ExpressionString { get; }
 
+    public ISpelNode Ast => _ast;
+
+    public SpelExpression(string expression, SpelNode ast, SpelParserOptions configuration)
+    {
+        ExpressionString = expression;
+        _ast = ast;
+        _configuration = configuration;
+    }
+
     public object GetValue()
     {
         if (CompiledAst != null)
         {
             try
             {
-                var context = EvaluationContext;
+                IEvaluationContext context = EvaluationContext;
                 return CompiledAst.GetValue(context.RootObject.Value, context);
             }
             catch (Exception ex)
@@ -82,7 +84,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(EvaluationContext, _configuration);
-        var result = _ast.GetValue(expressionState);
+        object result = _ast.GetValue(expressionState);
         CheckCompile(expressionState);
         return result;
     }
@@ -98,16 +100,15 @@ public class SpelExpression : IExpression
         {
             try
             {
-                var context = EvaluationContext;
-                var result = CompiledAst.GetValue(context.RootObject.Value, context);
+                IEvaluationContext context = EvaluationContext;
+                object result = CompiledAst.GetValue(context.RootObject.Value, context);
+
                 if (desiredResultType == null)
                 {
                     return result;
                 }
-                else
-                {
-                    return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
-                }
+
+                return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
             }
             catch (Exception ex)
             {
@@ -126,7 +127,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(EvaluationContext, _configuration);
-        var typedResultValue = _ast.GetTypedValue(expressionState);
+        ITypedValue typedResultValue = _ast.GetTypedValue(expressionState);
         CheckCompile(expressionState);
         return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, desiredResultType);
     }
@@ -156,7 +157,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(EvaluationContext, ToTypedValue(rootObject), _configuration);
-        var result = _ast.GetValue(expressionState);
+        object result = _ast.GetValue(expressionState);
         CheckCompile(expressionState);
         return result;
     }
@@ -172,15 +173,14 @@ public class SpelExpression : IExpression
         {
             try
             {
-                var result = CompiledAst.GetValue(rootObject, EvaluationContext);
+                object result = CompiledAst.GetValue(rootObject, EvaluationContext);
+
                 if (desiredResultType == null)
                 {
                     return result;
                 }
-                else
-                {
-                    return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
-                }
+
+                return ExpressionUtils.ConvertTypedValue(EvaluationContext, new TypedValue(result), desiredResultType);
             }
             catch (Exception ex)
             {
@@ -199,7 +199,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(EvaluationContext, ToTypedValue(rootObject), _configuration);
-        var typedResultValue = _ast.GetTypedValue(expressionState);
+        ITypedValue typedResultValue = _ast.GetTypedValue(expressionState);
         CheckCompile(expressionState);
         return ExpressionUtils.ConvertTypedValue(expressionState.EvaluationContext, typedResultValue, desiredResultType);
     }
@@ -234,7 +234,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(context, _configuration);
-        var result = _ast.GetValue(expressionState);
+        object result = _ast.GetValue(expressionState);
         CheckCompile(expressionState);
         return result;
     }
@@ -255,15 +255,14 @@ public class SpelExpression : IExpression
         {
             try
             {
-                var result = CompiledAst.GetValue(context.RootObject.Value, context);
+                object result = CompiledAst.GetValue(context.RootObject.Value, context);
+
                 if (desiredResultType != null)
                 {
                     return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
                 }
-                else
-                {
-                    return result;
-                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -282,7 +281,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(context, _configuration);
-        var typedResultValue = _ast.GetTypedValue(expressionState);
+        ITypedValue typedResultValue = _ast.GetTypedValue(expressionState);
         CheckCompile(expressionState);
         return ExpressionUtils.ConvertTypedValue(context, typedResultValue, desiredResultType);
     }
@@ -317,7 +316,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(context, ToTypedValue(rootObject), _configuration);
-        var result = _ast.GetValue(expressionState);
+        object result = _ast.GetValue(expressionState);
         CheckCompile(expressionState);
         return result;
     }
@@ -338,15 +337,14 @@ public class SpelExpression : IExpression
         {
             try
             {
-                var result = CompiledAst.GetValue(rootObject, context);
+                object result = CompiledAst.GetValue(rootObject, context);
+
                 if (desiredResultType != null)
                 {
                     return ExpressionUtils.ConvertTypedValue(context, new TypedValue(result), desiredResultType);
                 }
-                else
-                {
-                    return result;
-                }
+
+                return result;
             }
             catch (Exception ex)
             {
@@ -365,7 +363,7 @@ public class SpelExpression : IExpression
         }
 
         var expressionState = new ExpressionState(context, ToTypedValue(rootObject), _configuration);
-        var typedResultValue = _ast.GetTypedValue(expressionState);
+        ITypedValue typedResultValue = _ast.GetTypedValue(expressionState);
         CheckCompile(expressionState);
         return ExpressionUtils.ConvertTypedValue(context, typedResultValue, desiredResultType);
     }
@@ -449,7 +447,8 @@ public class SpelExpression : IExpression
 
     public bool CompileExpression()
     {
-        var compiledAst = this.CompiledAst;
+        CompiledExpression compiledAst = CompiledAst;
+
         if (compiledAst != null)
         {
             // Previously compiled
@@ -464,26 +463,25 @@ public class SpelExpression : IExpression
 
         lock (_lock)
         {
-            if (this.CompiledAst != null)
+            if (CompiledAst != null)
             {
                 // Compiled by another thread before this thread got into the sync block
                 return true;
             }
 
-            var compiler = SpelCompiler.GetCompiler();
+            SpelCompiler compiler = SpelCompiler.GetCompiler();
             compiledAst = compiler.Compile(_ast);
+
             if (compiledAst != null)
             {
                 // Successfully compiled
-                this.CompiledAst = compiledAst;
+                CompiledAst = compiledAst;
                 return true;
             }
-            else
-            {
-                // Failed to compile
-                _failedAttempts.IncrementAndGet();
-                return false;
-            }
+
+            // Failed to compile
+            _failedAttempts.IncrementAndGet();
+            return false;
         }
     }
 
@@ -494,8 +492,6 @@ public class SpelExpression : IExpression
         _failedAttempts.Value = 0;
     }
 
-    public ISpelNode Ast => _ast;
-
     public string ToStringAst()
     {
         return _ast.ToStringAst();
@@ -504,7 +500,8 @@ public class SpelExpression : IExpression
     private void CheckCompile(ExpressionState expressionState)
     {
         _interpretedCount.IncrementAndGet();
-        var compilerMode = expressionState.Configuration.CompilerMode;
+        SpelCompilerMode compilerMode = expressionState.Configuration.CompilerMode;
+
         if (compilerMode != SpelCompilerMode.Off)
         {
             if (compilerMode == SpelCompilerMode.Immediate)

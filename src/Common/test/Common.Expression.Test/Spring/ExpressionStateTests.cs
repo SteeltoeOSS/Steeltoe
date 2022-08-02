@@ -13,7 +13,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestConstruction()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
         var state = new ExpressionState(context);
         Assert.Equal(context, state.EvaluationContext);
     }
@@ -21,9 +21,9 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestLocalVariables()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
 
-        var value = state.LookupLocalVariable("foo");
+        object value = state.LookupLocalVariable("foo");
         Assert.Null(value);
 
         state.SetLocalVariable("foo", 34);
@@ -38,8 +38,8 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestVariables()
     {
-        var state = GetState();
-        var typedValue = state.LookupVariable("foo");
+        ExpressionState state = GetState();
+        ITypedValue typedValue = state.LookupVariable("foo");
         Assert.Equal(TypedValue.Null, typedValue);
 
         state.SetVariable("foo", 34);
@@ -56,8 +56,8 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestNoVariableInterference()
     {
-        var state = GetState();
-        var typedValue = state.LookupVariable("foo");
+        ExpressionState state = GetState();
+        ITypedValue typedValue = state.LookupVariable("foo");
         Assert.Equal(TypedValue.Null, typedValue);
 
         state.SetLocalVariable("foo", 34);
@@ -71,7 +71,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestLocalVariableNestedScopes()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Null(state.LookupLocalVariable("foo"));
 
         state.SetLocalVariable("foo", 12);
@@ -96,7 +96,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestRootContextObject()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.IsType<Inventor>(state.RootContextObject.Value);
 
         // although the root object is being set on the evaluation context, the value in the 'state' remains what it was when constructed
@@ -114,7 +114,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestActiveContextObject()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Equal(state.RootContextObject.Value, state.GetActiveContextObject().Value);
 
         Assert.Throws<InvalidOperationException>(() => state.PopActiveContextObject());
@@ -138,7 +138,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestPopulatedNestedScopes()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Null(state.LookupLocalVariable("foo"));
 
         state.EnterScope("foo", 34);
@@ -158,12 +158,12 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestRootObjectConstructor()
     {
-        var ctx = GetContext();
+        IEvaluationContext ctx = GetContext();
 
         // TypedValue root = ctx.getRootObject();
         // supplied should override root on context
         var state = new ExpressionState(ctx, new TypedValue("i am a string"));
-        var stateRoot = state.RootContextObject;
+        ITypedValue stateRoot = state.RootContextObject;
         Assert.Equal(typeof(string), stateRoot.TypeDescriptor);
         Assert.Equal("i am a string", stateRoot.Value);
     }
@@ -171,7 +171,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestPopulatedNestedScopesMap()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Null(state.LookupLocalVariable("foo"));
         Assert.Null(state.LookupLocalVariable("goo"));
 
@@ -199,7 +199,7 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestOperators()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         var ex = Assert.Throws<SpelEvaluationException>(() => state.Operate(Operation.Add, 1, 2));
         Assert.Equal(SpelMessage.OperatorNotSupportedBetweenTypes, ex.MessageCode);
 
@@ -210,14 +210,14 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestComparator()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Equal(state.EvaluationContext.TypeComparator, state.TypeComparator);
     }
 
     [Fact]
     public void TestTypeLocator()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.NotNull(state.EvaluationContext.TypeLocator);
         Assert.Equal(typeof(int), state.FindType("System.Int32"));
         var ex = Assert.Throws<SpelEvaluationException>(() => state.FindType("someMadeUpName"));
@@ -227,8 +227,8 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestTypeConversion()
     {
-        var state = GetState();
-        var s = (string)state.ConvertValue(34, typeof(string));
+        ExpressionState state = GetState();
+        string s = (string)state.ConvertValue(34, typeof(string));
         Assert.Equal("34", s);
 
         s = (string)state.ConvertValue(new TypedValue(34), typeof(string));
@@ -238,13 +238,13 @@ public class ExpressionStateTests : AbstractExpressionTests
     [Fact]
     public void TestPropertyAccessors()
     {
-        var state = GetState();
+        ExpressionState state = GetState();
         Assert.Equal(state.EvaluationContext.PropertyAccessors, state.PropertyAccessors);
     }
 
     private ExpressionState GetState()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
         var state = new ExpressionState(context);
         return state;
     }

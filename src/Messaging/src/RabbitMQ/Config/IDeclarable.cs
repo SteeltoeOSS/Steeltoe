@@ -29,14 +29,22 @@ public interface IDeclarable
     /// <summary>
     /// Adds an argument to the declarable.
     /// </summary>
-    /// <param name="name">the argument name.</param>
-    /// <param name="value">the argument value.</param>
+    /// <param name="name">
+    /// the argument name.
+    /// </param>
+    /// <param name="value">
+    /// the argument value.
+    /// </param>
     void AddArgument(string name, object value);
 
     /// <summary>
     /// Remove an argument from the declarable.
     /// </summary>
-    /// <param name="name">the argument name.</param>
-    /// <returns>the value if present.</returns>
+    /// <param name="name">
+    /// the argument name.
+    /// </param>
+    /// <returns>
+    /// the value if present.
+    /// </returns>
     object RemoveArgument(string name);
 }

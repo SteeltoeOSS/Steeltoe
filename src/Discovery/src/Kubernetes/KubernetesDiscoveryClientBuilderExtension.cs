@@ -10,9 +10,11 @@ namespace Steeltoe.Discovery.Kubernetes;
 public static class KubernetesDiscoveryClientBuilderExtension
 {
     /// <summary>
-    /// Configures <see cref="KubernetesDiscoveryClient"/> as the <see cref="IDiscoveryClient"/> of choice.
+    /// Configures <see cref="KubernetesDiscoveryClient" /> as the <see cref="IDiscoveryClient" /> of choice.
     /// </summary>
-    /// <param name="clientBuilder"><see cref="DiscoveryClientBuilder"/>.</param>
+    /// <param name="clientBuilder">
+    /// <see cref="DiscoveryClientBuilder" />.
+    /// </param>
     public static DiscoveryClientBuilder UseKubernetes(this DiscoveryClientBuilder clientBuilder)
     {
         clientBuilder.Extensions.Add(new KubernetesDiscoveryClientExtension());

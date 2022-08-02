@@ -13,7 +13,13 @@ public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
     public LoggersEndpointOptions()
     {
         Id = "loggers";
-        AllowedVerbs = new List<string> { "Get", "Post" };
+
+        AllowedVerbs = new List<string>
+        {
+            "Get",
+            "Post"
+        };
+
         ExactMatch = false;
     }
 
@@ -25,7 +31,12 @@ public class LoggersEndpointOptions : AbstractEndpointOptions, ILoggersOptions
             Id = "loggers";
         }
 
-        AllowedVerbs = new List<string> { "Get", "Post" };
+        AllowedVerbs = new List<string>
+        {
+            "Get",
+            "Post"
+        };
+
         ExactMatch = false;
     }
 }

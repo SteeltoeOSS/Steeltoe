@@ -8,18 +8,12 @@ namespace Steeltoe.Management.Diagnostics;
 
 internal sealed class MiniDumper
 {
-    public struct Result
-    {
-        public int ReturnValue;
-        public int ErrorCode;
-        public Exception Exception;
-    }
-
     internal static Result DumpProcess(FileStream dumpFile, IntPtr processHandle, int pid)
     {
         IntPtr callbackParam = default;
         Result result = default;
         GCHandle callbackHandle = default;
+
         try
         {
             var callbackDelegate = new MiniDumpCallback(MiniDumpCallbackMethod);
@@ -34,7 +28,7 @@ internal sealed class MiniDumper
             }
 
 #pragma warning disable S3869 // "SafeHandle.DangerousGetHandle" should not be called
-            var fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
+            IntPtr fileHandle = dumpFile.SafeFileHandle.DangerousGetHandle();
 #pragma warning restore S3869 // "SafeHandle.DangerousGetHandle" should not be called
 
             result.ReturnValue = MiniDumpWriteDump(processHandle, pid, fileHandle, GetMiniDumpType(), IntPtr.Zero, IntPtr.Zero, callbackParam);
@@ -64,18 +58,39 @@ internal sealed class MiniDumper
 
     internal static MiniDumpTypes GetMiniDumpType()
     {
-        var minidumpFlags = MiniDumpTypes.MiniDumpWithDataSegs |
-                            MiniDumpTypes.MiniDumpWithTokenInformation |
-                            MiniDumpTypes.MiniDumpWithPrivateWriteCopyMemory |
-                            MiniDumpTypes.MiniDumpWithPrivateReadWriteMemory |
-                            MiniDumpTypes.MiniDumpWithUnloadedModules |
-                            MiniDumpTypes.MiniDumpWithFullMemory |
-                            MiniDumpTypes.MiniDumpWithHandleData |
-                            MiniDumpTypes.MiniDumpWithThreadInfo |
-                            MiniDumpTypes.MiniDumpWithFullMemoryInfo |
-                            MiniDumpTypes.MiniDumpWithProcessThreadData |
-                            MiniDumpTypes.MiniDumpWithModuleHeaders;
+        MiniDumpTypes minidumpFlags = MiniDumpTypes.MiniDumpWithDataSegs | MiniDumpTypes.MiniDumpWithTokenInformation |
+            MiniDumpTypes.MiniDumpWithPrivateWriteCopyMemory | MiniDumpTypes.MiniDumpWithPrivateReadWriteMemory | MiniDumpTypes.MiniDumpWithUnloadedModules |
+            MiniDumpTypes.MiniDumpWithFullMemory | MiniDumpTypes.MiniDumpWithHandleData | MiniDumpTypes.MiniDumpWithThreadInfo |
+            MiniDumpTypes.MiniDumpWithFullMemoryInfo | MiniDumpTypes.MiniDumpWithProcessThreadData | MiniDumpTypes.MiniDumpWithModuleHeaders;
+
         return minidumpFlags;
+    }
+
+    [DllImport("DbgHelp", SetLastError = true)]
+    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MiniDumpTypes dumpType, IntPtr exceptionParam,
+        IntPtr userParam, IntPtr callParam);
+
+    internal static int MiniDumpCallbackMethod(IntPtr param, IntPtr input, IntPtr output)
+    {
+        unsafe
+        {
+            if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MiniDumpCallbackType.IsProcessSnapshotCallback)
+            {
+                var o = (MinidumpCallbackOutput*)output;
+
+                // removed null check on o because sonar analyzer indicates that o will never be null... TH - 7/2/2019
+                o->Status = 1;
+            }
+        }
+
+        return 1;
+    }
+
+    public struct Result
+    {
+        public int ReturnValue;
+        public int ErrorCode;
+        public Exception Exception;
     }
 
     internal struct MiniDumpCallbackInformation
@@ -105,7 +120,7 @@ internal sealed class MiniDumper
         IsProcessSnapshotCallback,
         VmStartCallback,
         VmQueryCallback,
-        VmPreReadCallback,
+        VmPreReadCallback
     }
 
     [Flags]
@@ -134,7 +149,7 @@ internal sealed class MiniDumper
         MiniDumpIgnoreInaccessibleMemory = 0x00020000,
         MiniDumpWithTokenInformation = 0x00040000,
         MiniDumpWithModuleHeaders = 0x00080000,
-        MiniDumpFilterTriage = 0x00100000,
+        MiniDumpFilterTriage = 0x00100000
     }
 
     internal struct MinidumpCallbackOutput
@@ -142,26 +157,6 @@ internal sealed class MiniDumper
         public int Status; // HRESULT
     }
 
-    [DllImport("DbgHelp", SetLastError = true)]
-
-    private static extern int MiniDumpWriteDump(IntPtr processHandle, int processId, IntPtr fileHandle, MiniDumpTypes dumpType, IntPtr exceptionParam, IntPtr userParam, IntPtr callParam);
-
     [UnmanagedFunctionPointer(CallingConvention.StdCall)]
     internal delegate int MiniDumpCallback(IntPtr callbackParam, IntPtr callbackInput, IntPtr callbackOutput);
-
-    internal static int MiniDumpCallbackMethod(IntPtr param, IntPtr input, IntPtr output)
-    {
-        unsafe
-        {
-            if (Marshal.ReadByte(input + sizeof(int) + IntPtr.Size) == (int)MiniDumpCallbackType.IsProcessSnapshotCallback)
-            {
-                var o = (MinidumpCallbackOutput*)output;
-
-                // removed null check on o because sonar analyzer indicates that o will never be null... TH - 7/2/2019
-                o->Status = 1;
-            }
-        }
-
-        return 1;
-    }
 }

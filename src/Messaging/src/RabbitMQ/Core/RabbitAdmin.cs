@@ -17,44 +17,20 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 {
+    private const int DeclareMaxAttempts = 5;
+    private const int DeclareInitialRetryInterval = 1000;
+    private const int DeclareMaxRetryInterval = 5000;
+    private const double DeclareRetryMultiplier = 2.0d;
+    private const string DelayedMessageExchange = "x-delayed-message";
     public const string DefaultServiceName = "rabbitAdmin";
 
     public const string QueueName = "QUEUE_NAME";
     public const string QueueMessageCount = "QUEUE_MESSAGE_COUNT";
     public const string QueueConsumerCount = "QUEUE_CONSUMER_COUNT";
 
-    private const int DeclareMaxAttempts = 5;
-    private const int DeclareInitialRetryInterval = 1000;
-    private const int DeclareMaxRetryInterval = 5000;
-    private const double DeclareRetryMultiplier = 2.0d;
-    private const string DelayedMessageExchange = "x-delayed-message";
-
-    private readonly object _lifecycleMonitor = new ();
+    private readonly object _lifecycleMonitor = new();
     private readonly ILogger _logger;
     private int _initializing;
-
-    [ActivatorUtilitiesConstructor]
-    public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
-    {
-        _logger = logger;
-        ApplicationContext = applicationContext;
-        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
-        RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
-        DoInitialize();
-    }
-
-    public RabbitAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
-        : this(null, connectionFactory, logger)
-    {
-    }
-
-    public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
-    {
-        _logger = logger;
-        RabbitTemplate = template ?? throw new ArgumentNullException(nameof(template));
-        ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
-        DoInitialize();
-    }
 
     public IApplicationContext ApplicationContext { get; set; }
 
@@ -80,16 +56,38 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public bool RetryDisabled { get; set; }
 
+    [ActivatorUtilitiesConstructor]
+    public RabbitAdmin(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILogger logger = null)
+    {
+        _logger = logger;
+        ApplicationContext = applicationContext;
+        ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
+        RabbitTemplate = new RabbitTemplate(connectionFactory, logger);
+        DoInitialize();
+    }
+
+    public RabbitAdmin(IConnectionFactory connectionFactory, ILogger logger = null)
+        : this(null, connectionFactory, logger)
+    {
+    }
+
+    public RabbitAdmin(RabbitTemplate template, ILogger logger = null)
+    {
+        _logger = logger;
+        RabbitTemplate = template ?? throw new ArgumentNullException(nameof(template));
+        ConnectionFactory = template.ConnectionFactory ?? throw new ArgumentNullException("RabbitTemplate's ConnectionFactory must not be null");
+        DoInitialize();
+    }
+
     public void DeclareBinding(IBinding binding)
     {
         try
         {
-            RabbitTemplate.Execute<object>(
-                channel =>
-                {
-                    DeclareBindings(channel, binding);
-                    return null;
-                });
+            RabbitTemplate.Execute<object>(channel =>
+            {
+                DeclareBindings(channel, binding);
+                return null;
+            });
         }
         catch (RabbitException e)
         {
@@ -117,8 +115,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         try
         {
-            var declareOk = RabbitTemplate.Execute(
-                channel => RC.IModelExensions.QueueDeclare(channel));
+            RC.QueueDeclareOk declareOk = RabbitTemplate.Execute(channel => RC.IModelExensions.QueueDeclare(channel));
             return new Queue(declareOk.QueueName, false, true, true);
         }
         catch (RabbitException e)
@@ -132,12 +129,11 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     {
         try
         {
-            return RabbitTemplate.Execute(
-                channel =>
-                {
-                    var declared = DeclareQueues(channel, queue);
-                    return declared.Count > 0 ? declared[0].QueueName : null;
-                });
+            return RabbitTemplate.Execute(channel =>
+            {
+                List<RC.QueueDeclareOk> declared = DeclareQueues(channel, queue);
+                return declared.Count > 0 ? declared[0].QueueName : null;
+            });
         }
         catch (RabbitException e)
         {
@@ -148,54 +144,51 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public bool DeleteExchange(string exchangeName)
     {
-        return RabbitTemplate.Execute(
-            channel =>
+        return RabbitTemplate.Execute(channel =>
+        {
+            if (IsDeletingDefaultExchange(exchangeName))
             {
-                if (IsDeletingDefaultExchange(exchangeName))
-                {
-                    return true;
-                }
-
-                try
-                {
-                    channel.ExchangeDelete(exchangeName, false);
-                }
-                catch (RabbitMQClientException e)
-                {
-                    _logger?.LogError(e, "Exception while issuing ExchangeDelete");
-                    return false;
-                }
-
                 return true;
-            });
+            }
+
+            try
+            {
+                channel.ExchangeDelete(exchangeName, false);
+            }
+            catch (RabbitMQClientException e)
+            {
+                _logger?.LogError(e, "Exception while issuing ExchangeDelete");
+                return false;
+            }
+
+            return true;
+        });
     }
 
     public bool DeleteQueue(string queueName)
     {
-        return RabbitTemplate.Execute(
-            channel =>
+        return RabbitTemplate.Execute(channel =>
+        {
+            try
             {
-                try
-                {
-                    RC.IModelExensions.QueueDelete(channel, queueName);
-                    return true;
-                }
-                catch (RabbitMQClientException e)
-                {
-                    _logger?.LogError(e, "Exception while issuing QueueDelete");
-                    return false;
-                }
-            });
+                RC.IModelExensions.QueueDelete(channel, queueName);
+                return true;
+            }
+            catch (RabbitMQClientException e)
+            {
+                _logger?.LogError(e, "Exception while issuing QueueDelete");
+                return false;
+            }
+        });
     }
 
     public void DeleteQueue(string queueName, bool unused, bool empty)
     {
-        RabbitTemplate.Execute<object>(
-            channel =>
-            {
-                channel.QueueDelete(queueName, unused, empty);
-                return null;
-            });
+        RabbitTemplate.Execute<object>(channel =>
+        {
+            channel.QueueDelete(queueName, unused, empty);
+            return null;
+        });
     }
 
     public QueueInformation GetQueueInfo(string queueName)
@@ -210,42 +203,43 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             return null;
         }
 
-        return RabbitTemplate.Execute(
-            channel =>
+        return RabbitTemplate.Execute(channel =>
+        {
+            try
             {
+                RC.QueueDeclareOk declareOk = channel.QueueDeclarePassive(queueName);
+                return new QueueInformation(declareOk.QueueName, declareOk.MessageCount, declareOk.ConsumerCount);
+            }
+            catch (RabbitMQClientException e)
+            {
+                _logger?.LogError(e, "Exception while fetching Queue properties for '{queueName}'", queueName);
+
                 try
                 {
-                    var declareOk = channel.QueueDeclarePassive(queueName);
-                    return new QueueInformation(declareOk.QueueName, declareOk.MessageCount, declareOk.ConsumerCount);
+                    if (channel is IChannelProxy proxy)
+                    {
+                        proxy.TargetChannel.Close();
+                    }
                 }
-                catch (RabbitMQClientException e)
+                catch (Exception ex)
                 {
-                    _logger?.LogError(e, "Exception while fetching Queue properties for '{queueName}'", queueName);
-                    try
-                    {
-                        if (channel is IChannelProxy proxy)
-                        {
-                            proxy.TargetChannel.Close();
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger?.LogError(ex, "Exception while closing {channel}", channel);
-                    }
+                    _logger?.LogError(ex, "Exception while closing {channel}", channel);
+                }
 
-                    return null;
-                }
-                catch (Exception e)
-                {
-                    _logger?.LogError(e, "Queue '{queueName}' does not exist", queueName);
-                    return null;
-                }
-            });
+                return null;
+            }
+            catch (Exception e)
+            {
+                _logger?.LogError(e, "Queue '{queueName}' does not exist", queueName);
+                return null;
+            }
+        });
     }
 
     public Dictionary<string, object> GetQueueProperties(string queueName)
     {
-        var queueInfo = GetQueueInfo(queueName);
+        QueueInformation queueInfo = GetQueueInfo(queueName);
+
         if (queueInfo != null)
         {
             var props = new Dictionary<string, object>
@@ -254,12 +248,11 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 { QueueMessageCount, queueInfo.MessageCount },
                 { QueueConsumerCount, queueInfo.ConsumerCount }
             };
+
             return props;
         }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 
     public void PurgeQueue(string queueName, bool noWait)
@@ -276,36 +269,34 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     public uint PurgeQueue(string queueName)
     {
-        return RabbitTemplate.Execute(
-            channel =>
-            {
-                var queuePurged = channel.QueuePurge(queueName);
-                _logger?.LogDebug("Purged queue: {queueName} : {result}", queueName, queuePurged);
-                return queuePurged;
-            });
+        return RabbitTemplate.Execute(channel =>
+        {
+            uint queuePurged = channel.QueuePurge(queueName);
+            _logger?.LogDebug("Purged queue: {queueName} : {result}", queueName, queuePurged);
+            return queuePurged;
+        });
     }
 
     public void RemoveBinding(IBinding binding)
     {
-        RabbitTemplate.Execute<object>(
-            channel =>
+        RabbitTemplate.Execute<object>(channel =>
+        {
+            if (binding.IsDestinationQueue)
             {
-                if (binding.IsDestinationQueue)
+                if (IsRemovingImplicitQueueBinding(binding))
                 {
-                    if (IsRemovingImplicitQueueBinding(binding))
-                    {
-                        return null;
-                    }
-
-                    channel.QueueUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
-                }
-                else
-                {
-                    channel.ExchangeUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
+                    return null;
                 }
 
-                return null;
-            });
+                channel.QueueUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
+            }
+            else
+            {
+                channel.ExchangeUnbind(binding.Destination, binding.Exchange, binding.RoutingKey, binding.Arguments);
+            }
+
+            return null;
+        });
     }
 
     public void OnCreate(IConnection connection)
@@ -327,12 +318,11 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
              */
             if (RetryTemplate != null && !RetryDisabled)
             {
-                RetryTemplate.Execute(
-                    c =>
-                    {
-                        _logger?.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
-                        Initialize();
-                    });
+                RetryTemplate.Execute(c =>
+                {
+                    _logger?.LogTrace($"Rabbit Admin::Initialize(). Context: {c}");
+                    Initialize();
+                });
             }
             else
             {
@@ -358,47 +348,43 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     public void Initialize()
     {
         _logger?.LogDebug("Initializing declarations");
+
         if (ApplicationContext == null)
         {
             _logger?.LogDebug("No ApplicationContext has been set, cannot auto-declare Exchanges, Queues, and Bindings");
             return;
         }
 
-        var contextExchanges = ApplicationContext.GetServices<IExchange>().ToList();
-        var contextQueues = ApplicationContext.GetServices<IQueue>().ToList();
-        var contextBindings = ApplicationContext.GetServices<IBinding>().ToList();
-        var customizers = ApplicationContext.GetServices<IDeclarableCustomizer>().ToList();
+        List<IExchange> contextExchanges = ApplicationContext.GetServices<IExchange>().ToList();
+        List<IQueue> contextQueues = ApplicationContext.GetServices<IQueue>().ToList();
+        List<IBinding> contextBindings = ApplicationContext.GetServices<IBinding>().ToList();
+        List<IDeclarableCustomizer> customizers = ApplicationContext.GetServices<IDeclarableCustomizer>().ToList();
 
         ProcessDeclarables(contextExchanges, contextQueues, contextBindings);
 
-        var exchanges = FilterDeclarables(contextExchanges, customizers);
-        var queues = FilterDeclarables(contextQueues, customizers);
-        var bindings = FilterDeclarables(contextBindings, customizers);
+        List<IExchange> exchanges = FilterDeclarables(contextExchanges, customizers);
+        List<IQueue> queues = FilterDeclarables(contextQueues, customizers);
+        List<IBinding> bindings = FilterDeclarables(contextBindings, customizers);
 
-        foreach (var exchange in exchanges)
+        foreach (IExchange exchange in exchanges)
         {
             if (!exchange.IsDurable || exchange.IsAutoDelete)
             {
                 _logger?.LogInformation(
-                    "Auto-declaring a non-durable or auto-delete Exchange ({exchange}), durable:{durable}, auto-delete:{autoDelete}. "
-                    + "It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.",
-                    exchange.ExchangeName,
-                    exchange.IsDurable,
-                    exchange.IsAutoDelete);
+                    "Auto-declaring a non-durable or auto-delete Exchange ({exchange}), durable:{durable}, auto-delete:{autoDelete}. " +
+                    "It will be deleted by the broker if it shuts down, and can be redeclared by closing and reopening the connection.", exchange.ExchangeName,
+                    exchange.IsDurable, exchange.IsAutoDelete);
             }
         }
 
-        foreach (var queue in queues)
+        foreach (IQueue queue in queues)
         {
             if (!queue.IsDurable || queue.IsAutoDelete || queue.IsExclusive)
             {
                 _logger?.LogInformation(
-                    "Auto-declaring a non-durable, auto-delete, or exclusive Queue ({queueName}) durable:{durable}, auto-delete:{autoDelete}, exclusive:{exclusive}."
-                    + "It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.",
-                    queue.QueueName,
-                    queue.IsDurable,
-                    queue.IsAutoDelete,
-                    queue.IsExclusive);
+                    "Auto-declaring a non-durable, auto-delete, or exclusive Queue ({queueName}) durable:{durable}, auto-delete:{autoDelete}, exclusive:{exclusive}." +
+                    "It will be redeclared if the broker stops and is restarted while the connection factory is alive, but all messages will be lost.",
+                    queue.QueueName, queue.IsDurable, queue.IsAutoDelete, queue.IsExclusive);
             }
         }
 
@@ -408,24 +394,24 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             return;
         }
 
-        RabbitTemplate.Execute<object>(
-            channel =>
-            {
-                DeclareExchanges(channel, exchanges.ToArray());
-                DeclareQueues(channel, queues.ToArray());
-                DeclareBindings(channel, bindings.ToArray());
-                return null;
-            });
+        RabbitTemplate.Execute<object>(channel =>
+        {
+            DeclareExchanges(channel, exchanges.ToArray());
+            DeclareQueues(channel, queues.ToArray());
+            DeclareBindings(channel, bindings.ToArray());
+            return null;
+        });
 
         _logger?.LogDebug("Declarations finished");
     }
 
     private void ProcessDeclarables(List<IExchange> contextExchanges, List<IQueue> contextQueues, List<IBinding> contextBindings)
     {
-        var declarables = ApplicationContext.GetServices<Declarables>();
-        foreach (var declarable in declarables)
+        IEnumerable<Declarables> declarables = ApplicationContext.GetServices<Declarables>();
+
+        foreach (Declarables declarable in declarables)
         {
-            foreach (var d in declarable.DeclarableList)
+            foreach (IDeclarable d in declarable.DeclarableList)
             {
                 switch (d)
                 {
@@ -447,8 +433,9 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
         where T : IDeclarable
     {
         var results = new List<T>();
-        var customizerCounts = customizers.Count();
-        foreach (var dec in declarables)
+        int customizerCounts = customizers.Count();
+
+        foreach (T dec in declarables)
         {
             if (ShouldDeclare(dec))
             {
@@ -459,7 +446,8 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 else
                 {
                     IDeclarable customized = dec;
-                    foreach (var customizer in customizers)
+
+                    foreach (IDeclarableCustomizer customizer in customizers)
                     {
                         customized = customizer.Apply(customized);
                     }
@@ -483,14 +471,13 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
             return false;
         }
 
-        return (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly)
-               || declarable.DeclaringAdmins.Contains(this)
-               || (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
+        return (declarable.DeclaringAdmins.Count == 0 && !ExplicitDeclarationsOnly) || declarable.DeclaringAdmins.Contains(this) ||
+            (ServiceName != null && declarable.DeclaringAdmins.Contains(ServiceName));
     }
 
     private void DeclareExchanges(RC.IModel channel, params IExchange[] exchanges)
     {
-        foreach (var exchange in exchanges)
+        foreach (IExchange exchange in exchanges)
         {
             _logger?.LogDebug("Declaring exchange '{exchange}'", exchange.ExchangeName);
 
@@ -500,7 +487,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 {
                     if (exchange.IsDelayed)
                     {
-                        var arguments = exchange.Arguments;
+                        Dictionary<string, object> arguments = exchange.Arguments;
                         arguments = arguments == null ? new Dictionary<string, object>() : new Dictionary<string, object>(arguments);
 
                         arguments["x-delayed-type"] = exchange.Type;
@@ -525,7 +512,8 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     private List<RC.QueueDeclareOk> DeclareQueues(RC.IModel channel, params IQueue[] queues)
     {
         var declareOks = new List<RC.QueueDeclareOk>(queues.Length);
-        foreach (var queue in queues)
+
+        foreach (IQueue queue in queues)
         {
             if (!queue.QueueName.StartsWith("amq."))
             {
@@ -540,7 +528,9 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
                 {
                     try
                     {
-                        var declareOk = channel.QueueDeclare(queue.QueueName, queue.IsDurable, queue.IsExclusive, queue.IsAutoDelete, queue.Arguments);
+                        RC.QueueDeclareOk declareOk =
+                            channel.QueueDeclare(queue.QueueName, queue.IsDurable, queue.IsExclusive, queue.IsAutoDelete, queue.Arguments);
+
                         if (!string.IsNullOrEmpty(declareOk.QueueName))
                         {
                             queue.ActualName = declareOk.QueueName;
@@ -571,6 +561,7 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     private void CloseChannelAfterIllegalArg(RC.IModel channel, IQueue queue)
     {
         _logger?.LogError("Exception while declaring queue'{queueName}'", queue.QueueName);
+
         try
         {
             if (channel is IChannelProxy proxy)
@@ -586,9 +577,10 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
     private void DeclareBindings(RC.IModel channel, params IBinding[] bindings)
     {
-        foreach (var binding in bindings)
+        foreach (IBinding binding in bindings)
         {
-            _logger?.LogDebug("Binding destination [{destination} ({type})] to exchange [{exchange}] with routing key [{routingKey}]", binding.Destination, binding.Type, binding.Exchange, binding.RoutingKey);
+            _logger?.LogDebug("Binding destination [{destination} ({type})] to exchange [{exchange}] with routing key [{routingKey}]", binding.Destination,
+                binding.Type, binding.Exchange, binding.RoutingKey);
 
             try
             {
@@ -614,22 +606,21 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
     private void LogOrRethrowDeclarationException(IDeclarable element, string elementType, Exception exception)
     {
         PublishDeclarationExceptionEvent(element, exception);
+
         if (IgnoreDeclarationExceptions || (element != null && element.IgnoreDeclarationExceptions))
         {
-            _logger?.LogDebug(exception, "Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...");
+            _logger?.LogDebug(exception,
+                "Failed to declare " + elementType + ": " + (element == null ? "broker-generated" : element.ToString()) + ", continuing...");
 
-            var cause = exception;
+            Exception cause = exception;
+
             if (exception.InnerException != null)
             {
                 cause = exception.InnerException;
             }
 
-            _logger?.LogWarning(
-                exception,
-                "Failed to declare {elementType}: {element}, continuing... {cause} ",
-                elementType,
-                element == null ? "broker-generated" : element.ToString(),
-                cause);
+            _logger?.LogWarning(exception, "Failed to declare {elementType}: {element}, continuing... {cause} ", elementType,
+                element == null ? "broker-generated" : element.ToString(), cause);
         }
         else
         {
@@ -712,7 +703,8 @@ public class RabbitAdmin : IRabbitAdmin, IConnectionListener
 
             if (RetryTemplate == null && !RetryDisabled)
             {
-                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DeclareMaxAttempts, true, DeclareInitialRetryInterval, DeclareMaxRetryInterval, DeclareRetryMultiplier, _logger);
+                RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), DeclareMaxAttempts, true, DeclareInitialRetryInterval,
+                    DeclareMaxRetryInterval, DeclareRetryMultiplier, _logger);
             }
 
             if (ConnectionFactory is CachingConnectionFactory factory && factory.CacheMode == CachingMode.Connection)

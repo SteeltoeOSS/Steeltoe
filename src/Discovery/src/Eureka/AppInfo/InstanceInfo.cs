@@ -2,15 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Transport;
-using Steeltoe.Discovery.Eureka.Util;
 using System.Text;
 using System.Text.Json.Serialization;
+using Steeltoe.Discovery.Eureka.Transport;
+using Steeltoe.Discovery.Eureka.Util;
 
 namespace Steeltoe.Discovery.Eureka.AppInfo;
 
 public class InstanceInfo
 {
+    private string _sid;
+
+    private InstanceStatus _status;
+
+    private Dictionary<string, string> _metaData;
+
+    private bool _isDirty;
     public string InstanceId { get; internal set; }
 
     public string AppName { get; internal set; }
@@ -20,14 +27,9 @@ public class InstanceInfo
     [JsonPropertyName("IpAddr")]
     public string IpAddress { get; internal set; }
 
-    private string _sid;
-
     public string Sid
     {
-        get
-        {
-            return _sid;
-        }
+        get => _sid;
 
         internal set
         {
@@ -58,14 +60,9 @@ public class InstanceInfo
 
     public string HostName { get; internal set; }
 
-    private InstanceStatus _status;
-
     public InstanceStatus Status
     {
-        get
-        {
-            return _status;
-        }
+        get => _status;
 
         internal set
         {
@@ -83,14 +80,9 @@ public class InstanceInfo
 
     public bool IsCoordinatingDiscoveryServer { get; internal set; }
 
-    private Dictionary<string, string> _metaData;
-
     public Dictionary<string, string> Metadata
     {
-        get
-        {
-            return _metaData;
-        }
+        get => _metaData;
 
         internal set
         {
@@ -111,14 +103,9 @@ public class InstanceInfo
 
     public bool IsSecurePortEnabled { get; internal set; }
 
-    private bool _isDirty;
-
     public bool IsDirty
     {
-        get
-        {
-            return _isDirty;
-        }
+        get => _isDirty;
 
         internal set
         {
@@ -129,6 +116,22 @@ public class InstanceInfo
 
             _isDirty = value;
         }
+    }
+
+    internal InstanceInfo()
+    {
+        OverriddenStatus = InstanceStatus.Unknown;
+        IsSecurePortEnabled = false;
+        IsCoordinatingDiscoveryServer = false;
+        IsInsecurePortEnabled = true;
+        CountryId = 1;
+        Port = 7001;
+        SecurePort = 7002;
+        LastUpdatedTimestamp = LastDirtyTimestamp = DateTime.UtcNow.Ticks;
+        _sid = "na";
+        _metaData = new Dictionary<string, string>();
+        _isDirty = false;
+        _status = InstanceStatus.Up;
     }
 
     public override bool Equals(object obj)
@@ -179,22 +182,6 @@ public class InstanceInfo
         return sb.ToString();
     }
 
-    internal InstanceInfo()
-    {
-        OverriddenStatus = InstanceStatus.Unknown;
-        IsSecurePortEnabled = false;
-        IsCoordinatingDiscoveryServer = false;
-        IsInsecurePortEnabled = true;
-        CountryId = 1;
-        Port = 7001;
-        SecurePort = 7002;
-        LastUpdatedTimestamp = LastDirtyTimestamp = DateTime.UtcNow.Ticks;
-        _sid = "na";
-        _metaData = new Dictionary<string, string>();
-        _isDirty = false;
-        _status = InstanceStatus.Up;
-    }
-
     internal static InstanceInfo FromInstanceConfig(IEurekaInstanceConfig instanceConfig)
     {
         var info = new InstanceInfo
@@ -202,12 +189,14 @@ public class InstanceInfo
             LeaseInfo = LeaseInfo.FromConfig(instanceConfig),
             InstanceId = instanceConfig.InstanceId
         };
+
         if (string.IsNullOrEmpty(info.InstanceId))
         {
             info.InstanceId = instanceConfig.GetHostName(false);
         }
 
-        var defaultAddress = instanceConfig.GetHostName(false);
+        string defaultAddress = instanceConfig.GetHostName(false);
+
         if (instanceConfig.PreferIpAddress || string.IsNullOrEmpty(defaultAddress))
         {
             defaultAddress = instanceConfig.IpAddress;
@@ -236,7 +225,8 @@ public class InstanceInfo
 
         if (!string.IsNullOrEmpty(info.InstanceId))
         {
-            var me = ApplicationInfoManager.Instance.InstanceInfo;
+            InstanceInfo me = ApplicationInfoManager.Instance.InstanceInfo;
+
             if (me != null && info.InstanceId.Equals(me.InstanceId))
             {
                 info.IsCoordinatingDiscoveryServer = true;
@@ -254,6 +244,7 @@ public class InstanceInfo
     internal static InstanceInfo FromJsonInstance(JsonInstanceInfo json)
     {
         var info = new InstanceInfo();
+
         if (json != null)
         {
             info._sid = json.Sid ?? "na";
@@ -316,7 +307,12 @@ public class InstanceInfo
             LastDirtyTimestamp = DateTimeConversions.ToJavaMillis(new DateTime(LastDirtyTimestamp, DateTimeKind.Utc)),
             ActionType = ActionType,
             AsgName = AsgName,
-            Metadata = Metadata.Count == 0 ? new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } } : Metadata
+            Metadata = Metadata.Count == 0
+                ? new Dictionary<string, string>
+                {
+                    { "@class", "java.util.Collections$EmptyMap" }
+                }
+                : Metadata
         };
 
         return instanceInfo;
@@ -329,7 +325,7 @@ public class InstanceInfo
             return new Dictionary<string, string>();
         }
 
-        if (json.TryGetValue("@class", out var value) && value.Equals("java.util.Collections$EmptyMap"))
+        if (json.TryGetValue("@class", out string value) && value.Equals("java.util.Collections$EmptyMap"))
         {
             return new Dictionary<string, string>();
         }
@@ -346,17 +342,15 @@ public class InstanceInfo
                 return null;
             }
 
-            if (metaData.TryGetValue("instanceId", out var mid))
+            if (metaData.TryGetValue("instanceId", out string mid))
             {
                 return $"{instanceInfo.HostName}:{mid}";
             }
 
             return null;
         }
-        else
-        {
-            return instanceInfo.InstanceId;
-        }
+
+        return instanceInfo.InstanceId;
     }
 
     private static string MakeUrl(InstanceInfo info, string relativeUrl, string explicitUrl, string secureExplicitUrl = null)
@@ -365,7 +359,8 @@ public class InstanceInfo
         {
             return explicitUrl;
         }
-        else if (!string.IsNullOrEmpty(relativeUrl) && info.IsInsecurePortEnabled)
+
+        if (!string.IsNullOrEmpty(relativeUrl) && info.IsInsecurePortEnabled)
         {
             return $"http://{info.HostName}:{info.Port}{relativeUrl}";
         }
@@ -374,7 +369,8 @@ public class InstanceInfo
         {
             return secureExplicitUrl;
         }
-        else if (info.IsSecurePortEnabled)
+
+        if (info.IsSecurePortEnabled)
         {
             return $"https://{info.HostName}:{info.SecurePort}{relativeUrl}";
         }

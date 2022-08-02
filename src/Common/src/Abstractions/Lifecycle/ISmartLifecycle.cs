@@ -5,8 +5,7 @@
 namespace Steeltoe.Common.Lifecycle;
 
 /// <summary>
-/// An extension of the Lifecycle interface that provides auto startup and a call back
-/// stop action.
+/// An extension of the Lifecycle interface that provides auto startup and a call back stop action.
 /// </summary>
 public interface ISmartLifecycle : ILifecycle, IPhased
 {
@@ -18,7 +17,11 @@ public interface ISmartLifecycle : ILifecycle, IPhased
     /// <summary>
     /// Stop the component and issue the callback when complete.
     /// </summary>
-    /// <param name="callback">the callback action to invoke when complete.</param>
-    /// <returns>a task for completion.</returns>
+    /// <param name="callback">
+    /// the callback action to invoke when complete.
+    /// </param>
+    /// <returns>
+    /// a task for completion.
+    /// </returns>
     Task Stop(Action callback);
 }

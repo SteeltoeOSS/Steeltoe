@@ -9,7 +9,10 @@ public class ObjectToArrayConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public ObjectToArrayConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(object), typeof(object[])) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(object), typeof(object[]))
+        })
     {
         _conversionService = conversionService;
     }
@@ -31,14 +34,15 @@ public class ObjectToArrayConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var targetElementType = ConversionUtils.GetElementType(targetType);
+        Type targetElementType = ConversionUtils.GetElementType(targetType);
+
         if (targetElementType == null)
         {
             throw new InvalidOperationException("No target element type");
         }
 
         var target = Array.CreateInstance(targetElementType, 1);
-        var targetElement = _conversionService.Convert(source, sourceType, targetElementType);
+        object targetElement = _conversionService.Convert(source, sourceType, targetElementType);
         target.SetValue(targetElement, 0);
         return target;
     }

@@ -12,7 +12,12 @@ public class EurekaDiscoveryManagerTest : AbstractBaseTest
     public void Constructor_Initializes_Correctly()
     {
         var instOptions = new EurekaInstanceOptions();
-        var clientOptions = new EurekaClientOptions { EurekaServerRetryCount = 0 };
+
+        var clientOptions = new EurekaClientOptions
+        {
+            EurekaServerRetryCount = 0
+        };
+
         var wrapInst = new TestOptionMonitorWrapper<EurekaInstanceOptions>(instOptions);
         var wrapClient = new TestOptionMonitorWrapper<EurekaClientOptions>(clientOptions);
         var appMgr = new EurekaApplicationInfoManager(wrapInst);

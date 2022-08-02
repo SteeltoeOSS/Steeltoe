@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
-using Steeltoe.Common.Expression.Internal.Spring.Support;
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System.Collections;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using Xunit;
 
 #pragma warning disable S3443 // Type should not be examined on "System.Type" instances
@@ -22,10 +22,10 @@ public class EvaluationTests : AbstractExpressionTests
     public void TestCreateListsOnAttemptToIndexNull01()
     {
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e = parser.ParseExpression("List[0]");
+        IExpression e = parser.ParseExpression("List[0]");
         var testClass = new TestClass();
 
-        var o = e.GetValue(new StandardEvaluationContext(testClass));
+        object o = e.GetValue(new StandardEvaluationContext(testClass));
         Assert.Equal(string.Empty, o);
         o = parser.ParseExpression("List[3]").GetValue(new StandardEvaluationContext(testClass));
         Assert.Equal(string.Empty, o);
@@ -48,7 +48,7 @@ public class EvaluationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext(testClass);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
 
-        var o = parser.ParseExpression("Map['a']").GetValue(ctx);
+        object o = parser.ParseExpression("Map['a']").GetValue(ctx);
         Assert.Null(o);
         o = parser.ParseExpression("Map").GetValue(ctx);
         Assert.NotNull(o);
@@ -65,7 +65,7 @@ public class EvaluationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext(testClass);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
 
-        var o = parser.ParseExpression("Wibble.Bar").GetValue(ctx);
+        object o = parser.ParseExpression("Wibble.Bar").GetValue(ctx);
         Assert.Equal("hello", o);
         o = parser.ParseExpression("Wibble").GetValue(ctx);
         Assert.NotNull(o);
@@ -167,16 +167,16 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestRelOperatorsMatches05()
     {
-        Evaluate("27 matches '^.*2.*$'", true, typeof(bool));  // conversion int>string
+        Evaluate("27 matches '^.*2.*$'", true, typeof(bool)); // conversion int>string
     }
 
     // SPR-16731
     [Fact]
     public void TestMatchesWithPatternAccessThreshold()
     {
-        var pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
-        var expression = $"'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches '{pattern}'";
-        var expr = Parser.ParseExpression(expression);
+        string pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
+        string expression = $"'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches '{pattern}'";
+        IExpression expr = Parser.ParseExpression(expression);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue());
         Assert.IsType<RegexMatchTimeoutException>(ex.InnerException);
         Assert.Equal(SpelMessage.FlawedPattern, ex.MessageCode);
@@ -189,7 +189,8 @@ public class EvaluationTests : AbstractExpressionTests
         Evaluate("Name", "Nikola Tesla", typeof(string), false);
 
         // not writable because (1) name is private (2) there is no setter, only a getter
-        EvaluateAndCheckError("madeup", SpelMessage.PropertyOrFieldNotReadable, 0, "madeup", "Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor");
+        EvaluateAndCheckError("madeup", SpelMessage.PropertyOrFieldNotReadable, 0, "madeup",
+            "Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor");
     }
 
     [Fact]
@@ -259,7 +260,7 @@ public class EvaluationTests : AbstractExpressionTests
     {
         // repeated evaluation to drive use of cached executor
         var e = (SpelExpression)Parser.ParseExpression("new String('wibble')");
-        var newString = e.GetValue<string>();
+        string newString = e.GetValue<string>();
         Assert.Equal("wibble", newString);
         newString = e.GetValue<string>();
         Assert.Equal("wibble", newString);
@@ -355,7 +356,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestTernaryOperator04()
     {
-        var e = Parser.ParseExpression("1>2?3:4");
+        IExpression e = Parser.ParseExpression("1>2?3:4");
         Assert.False(e.IsWritable(Context));
     }
 
@@ -383,7 +384,8 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void CtorCallWithRootReferenceThroughParameter()
     {
-        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.PlaceOfBirth(Inventions[0].ToString()).City", "Telephone repeater", typeof(string));
+        Evaluate("new Steeltoe.Common.Expression.Internal.Spring.TestResources.PlaceOfBirth(Inventions[0].ToString()).City", "Telephone repeater",
+            typeof(string));
     }
 
     [Fact]
@@ -439,7 +441,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestTypeReferences01()
     {
-        var t = typeof(string);
+        Type t = typeof(string);
         Evaluate("T(System.String)", "System.String", t.GetType());
     }
 
@@ -502,7 +504,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestTypeReferences02()
     {
-        var t = typeof(string);
+        Type t = typeof(string);
         Evaluate("T(String)", "System.String", t.GetType());
     }
 
@@ -525,30 +527,30 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestAdvancedNumerics()
     {
-        var twentyFour = Parser.ParseExpression("2.0 * 3e0 * 4").GetValue(typeof(int));
+        object twentyFour = Parser.ParseExpression("2.0 * 3e0 * 4").GetValue(typeof(int));
         Assert.Equal(24, twentyFour);
-        var one = Parser.ParseExpression("8.0 / 5e0 % 2").GetValue<double>();
+        double one = Parser.ParseExpression("8.0 / 5e0 % 2").GetValue<double>();
         Assert.InRange((float)one, 1.6f, 1.6f);
-        var o = Parser.ParseExpression("8.0 / 5e0 % 2").GetValue<int>();
+        int o = Parser.ParseExpression("8.0 / 5e0 % 2").GetValue<int>();
         Assert.Equal(2, o);
-        var sixteen = Parser.ParseExpression("-2 ^ 4").GetValue<int>();
+        int sixteen = Parser.ParseExpression("-2 ^ 4").GetValue<int>();
         Assert.Equal(16, sixteen);
-        var minusFortyFive = Parser.ParseExpression("1+2-3*8^2/2/2").GetValue<int>();
+        int minusFortyFive = Parser.ParseExpression("1+2-3*8^2/2/2").GetValue<int>();
         Assert.Equal(-45, minusFortyFive);
     }
 
     [Fact]
     public void TestComparison()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
-        var trueValue = Parser.ParseExpression("T(DateTime) == BirthDate.GetType()").GetValue<bool>(context);
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
+        bool trueValue = Parser.ParseExpression("T(DateTime) == BirthDate.GetType()").GetValue<bool>(context);
         Assert.True(trueValue);
     }
 
     [Fact]
     public void TestResolvingList()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
         Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("T(List)!=null").GetValue<bool>(context));
         ((StandardTypeLocator)context.TypeLocator).RegisterImport("System.Collections");
         Assert.True(Parser.ParseExpression("T(ArrayList)!=null").GetValue<bool>(context));
@@ -568,7 +570,7 @@ public class EvaluationTests : AbstractExpressionTests
         var context = new StandardEvaluationContext(person);
         var config = new SpelParserOptions(true, true);
         var parser = new SpelExpressionParser(config);
-        var e = parser.ParseExpression("Name");
+        IExpression e = parser.ParseExpression("Name");
         e.SetValue(context, "Oleg");
         Assert.Equal("Oleg", person.Name);
 
@@ -591,7 +593,7 @@ public class EvaluationTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
 
-        var e = parser.ParseExpression("null");
+        IExpression e = parser.ParseExpression("null");
         Assert.Null(e.GetValue());
 
         e = parser.ParseExpression("NULL");
@@ -611,6 +613,7 @@ public class EvaluationTests : AbstractExpressionTests
         {
             new CustomMethodResolver()
         };
+
         context.MethodResolvers = customResolvers;
 
         // or simply...
@@ -618,8 +621,7 @@ public class EvaluationTests : AbstractExpressionTests
 
         // Register a custom MethodFilter...
         var filter = new CustomMethodFilter();
-        var ex = Assert.Throws<InvalidOperationException>(() =>
-            context.RegisterMethodFilter(typeof(string), filter));
+        var ex = Assert.Throws<InvalidOperationException>(() => context.RegisterMethodFilter(typeof(string), filter));
 
         Assert.Contains(ex.Message, "Method filter cannot be set as the reflective method resolver is not in use");
     }
@@ -632,7 +634,7 @@ public class EvaluationTests : AbstractExpressionTests
         // Add a new element to the list
         var ctx = new StandardEvaluationContext(instance);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e = parser.ParseExpression("ListOfStrings[++Index3]='def'");
+        IExpression e = parser.ParseExpression("ListOfStrings[++Index3]='def'");
         e.GetValue(ctx);
         Assert.Equal(2, instance.ListOfStrings.Count);
         Assert.Equal("def", instance.ListOfStrings[1]);
@@ -641,7 +643,7 @@ public class EvaluationTests : AbstractExpressionTests
         ctx = new StandardEvaluationContext(instance);
         parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         e = parser.ParseExpression("ListOfStrings[0]");
-        var value = e.GetValue<string>(ctx);
+        string value = e.GetValue<string>(ctx);
         Assert.Equal("abc", value);
         e = parser.ParseExpression("ListOfStrings[1]");
         value = e.GetValue<string>(ctx);
@@ -653,7 +655,7 @@ public class EvaluationTests : AbstractExpressionTests
         // Now turn off growing and reference off the end
         var failCtx = new StandardEvaluationContext(instance);
         parser = new SpelExpressionParser(new SpelParserOptions(false, false));
-        var failExp = parser.ParseExpression("ListOfStrings[3]");
+        IExpression failExp = parser.ParseExpression("ListOfStrings[3]");
         var ex = Assert.Throws<SpelEvaluationException>(() => failExp.GetValue<string>(failCtx));
         Assert.Equal(SpelMessage.CollectionIndexOutOfBounds, ex.MessageCode);
     }
@@ -664,10 +666,11 @@ public class EvaluationTests : AbstractExpressionTests
         var instance = new TestClass();
         var ctx = new StandardEvaluationContext(instance);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true, 3));
-        var e = parser.ParseExpression("Foo[2]");
+        IExpression e = parser.ParseExpression("Foo[2]");
         e.SetValue(ctx, "2");
         Assert.Equal(3, instance.Foo.Count);
         e = parser.ParseExpression("Foo[3]");
+
         try
         {
             e.SetValue(ctx, "3");
@@ -683,10 +686,10 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Increment01Root()
     {
-        var i = 42;
+        int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e = parser.ParseExpression("#this++");
+        IExpression e = parser.ParseExpression("#this++");
         Assert.Equal(42, i);
         var ex = Assert.Throws<SpelEvaluationException>(() => e.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NotAssignable, ex.MessageCode);
@@ -703,35 +706,35 @@ public class EvaluationTests : AbstractExpressionTests
         // decimal
         e = parser.ParseExpression("Bd++");
         Assert.Equal(2M, helper.Bd);
-        var return_bd = e.GetValue<decimal>(ctx);
+        decimal return_bd = e.GetValue<decimal>(ctx);
         Assert.Equal(2M, return_bd);
         Assert.Equal(3M, helper.Bd);
 
         // double
         e = parser.ParseExpression("Ddd++");
         Assert.InRange((float)helper.Ddd, 2.0f, 2.0f);
-        var return_ddd = e.GetValue<double>(ctx);
+        double return_ddd = e.GetValue<double>(ctx);
         Assert.InRange((float)return_ddd, 2.0f, 2.0f);
         Assert.InRange((float)helper.Ddd, 3.0f, 3.0f);
 
         // float
         e = parser.ParseExpression("Fff++");
         Assert.InRange(helper.Fff, 3.0f, 3.0f);
-        var return_fff = e.GetValue<float>(ctx);
+        float return_fff = e.GetValue<float>(ctx);
         Assert.InRange(return_fff, 3.0f, 3.0f);
         Assert.InRange(helper.Fff, 4.0f, 4.0f);
 
         // long
         e = parser.ParseExpression("Lll++");
         Assert.Equal(66666L, helper.Lll);
-        var return_lll = e.GetValue<long>(ctx);
+        long return_lll = e.GetValue<long>(ctx);
         Assert.Equal(66666L, return_lll);
         Assert.Equal(66667L, helper.Lll);
 
         // int
         e = parser.ParseExpression("Iii++");
         Assert.Equal(42, helper.Iii);
-        var return_iii = e.GetValue<int>(ctx);
+        int return_iii = e.GetValue<int>(ctx);
         Assert.Equal(42, return_iii);
         Assert.Equal(43, helper.Iii);
         return_iii = e.GetValue<int>(ctx);
@@ -741,7 +744,7 @@ public class EvaluationTests : AbstractExpressionTests
         // short
         e = parser.ParseExpression("Sss++");
         Assert.Equal((short)15, helper.Sss);
-        var return_sss = e.GetValue<short>(ctx);
+        short return_sss = e.GetValue<short>(ctx);
         Assert.Equal((short)15, return_sss);
         Assert.Equal((short)16, helper.Sss);
     }
@@ -757,35 +760,35 @@ public class EvaluationTests : AbstractExpressionTests
         // decimal
         e = parser.ParseExpression("++Bd");
         Assert.Equal(2M, helper.Bd);
-        var return_bd = e.GetValue<decimal>(ctx);
+        decimal return_bd = e.GetValue<decimal>(ctx);
         Assert.Equal(3M, return_bd);
         Assert.Equal(3M, helper.Bd);
 
         // double
         e = parser.ParseExpression("++Ddd");
         Assert.InRange(helper.Ddd, 2.0d, 2.0d);
-        var return_ddd = e.GetValue<double>(ctx);
+        double return_ddd = e.GetValue<double>(ctx);
         Assert.InRange(return_ddd, 3.0d, 3.0d);
         Assert.InRange(helper.Ddd, 3.0d, 3.0d);
 
         // float
         e = parser.ParseExpression("++Fff");
         Assert.InRange(helper.Fff, 3.0f, 3.0f);
-        var return_fff = e.GetValue<float>(ctx);
+        float return_fff = e.GetValue<float>(ctx);
         Assert.InRange(return_fff, 4.0f, 4.0f);
         Assert.InRange(helper.Fff, 4.0f, 4.0f);
 
         // long
         e = parser.ParseExpression("++Lll");
         Assert.Equal(66666L, helper.Lll);
-        var return_lll = e.GetValue<long>(ctx);
+        long return_lll = e.GetValue<long>(ctx);
         Assert.Equal(66667L, return_lll);
         Assert.Equal(66667L, helper.Lll);
 
         // int
         e = parser.ParseExpression("++Iii");
         Assert.Equal(42, helper.Iii);
-        var return_iii = e.GetValue<int>(ctx);
+        int return_iii = e.GetValue<int>(ctx);
         Assert.Equal(43, return_iii);
         Assert.Equal(43, helper.Iii);
         return_iii = e.GetValue<int>(ctx);
@@ -795,8 +798,8 @@ public class EvaluationTests : AbstractExpressionTests
         // short
         e = parser.ParseExpression("++Sss");
         Assert.Equal((short)15, helper.Sss);
-        var return_sss = e.GetValue<int>(ctx);
-        Assert.Equal((short)16, return_sss);
+        int return_sss = e.GetValue<int>(ctx);
+        Assert.Equal(16, return_sss);
         Assert.Equal((short)16, helper.Sss);
     }
 
@@ -807,11 +810,11 @@ public class EvaluationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext(helper);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
 
-        var e1 = parser.ParseExpression("M()++");
+        IExpression e1 = parser.ParseExpression("M()++");
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<decimal>(ctx));
         Assert.Equal(SpelMessage.OperandNotIncrementable, ex.MessageCode);
 
-        var e2 = parser.ParseExpression("++M()");
+        IExpression e2 = parser.ParseExpression("++M()");
         ex = Assert.Throws<SpelEvaluationException>(() => e2.GetValue<decimal>(ctx));
         Assert.Equal(SpelMessage.OperandNotIncrementable, ex.MessageCode);
     }
@@ -819,13 +822,13 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Increment04()
     {
-        var i = 42;
+        int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e1 = parser.ParseExpression("++1");
+        IExpression e1 = parser.ParseExpression("++1");
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<double>(ctx));
         Assert.Equal(SpelMessage.NotAssignable, ex.MessageCode);
-        var e2 = parser.ParseExpression("1++");
+        IExpression e2 = parser.ParseExpression("1++");
         ex = Assert.Throws<SpelEvaluationException>(() => e2.GetValue<double>(ctx));
         Assert.Equal(SpelMessage.NotAssignable, ex.MessageCode);
     }
@@ -833,10 +836,10 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Decrement01Root()
     {
-        var i = 42;
+        int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e = parser.ParseExpression("#this--");
+        IExpression e = parser.ParseExpression("#this--");
         Assert.Equal(42, i);
         var ex = Assert.Throws<SpelEvaluationException>(() => e.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NotAssignable, ex.MessageCode);
@@ -853,35 +856,35 @@ public class EvaluationTests : AbstractExpressionTests
         // BigDecimal
         e = parser.ParseExpression("Bd--");
         Assert.Equal(2M, helper.Bd);
-        var return_bd = e.GetValue<decimal>(ctx);
+        decimal return_bd = e.GetValue<decimal>(ctx);
         Assert.Equal(2M, return_bd);
         Assert.Equal(1M, helper.Bd);
 
         // double
         e = parser.ParseExpression("Ddd--");
         Assert.InRange((float)helper.Ddd, 2.0d, 2.0d);
-        var return_ddd = e.GetValue<double>(ctx);
+        double return_ddd = e.GetValue<double>(ctx);
         Assert.InRange(return_ddd, 2.0d, 2.0d);
         Assert.InRange(helper.Ddd, 1.0d, 1.0d);
 
         // float
         e = parser.ParseExpression("Fff--");
         Assert.InRange(helper.Fff, 3.0f, 3.0f);
-        var return_fff = e.GetValue<float>(ctx);
+        float return_fff = e.GetValue<float>(ctx);
         Assert.InRange(return_fff, 3.0f, 3.0f);
         Assert.InRange(helper.Fff, 2.0f, 2.0f);
 
         // long
         e = parser.ParseExpression("Lll--");
         Assert.Equal(66666L, helper.Lll);
-        var return_lll = e.GetValue<long>(ctx);
+        long return_lll = e.GetValue<long>(ctx);
         Assert.Equal(66666L, return_lll);
         Assert.Equal(66665L, helper.Lll);
 
         // int
         e = parser.ParseExpression("Iii--");
         Assert.Equal(42, helper.Iii);
-        var return_iii = e.GetValue<int>(ctx);
+        int return_iii = e.GetValue<int>(ctx);
         Assert.Equal(42, return_iii);
         Assert.Equal(41, helper.Iii);
         return_iii = e.GetValue<int>(ctx);
@@ -891,7 +894,7 @@ public class EvaluationTests : AbstractExpressionTests
         // short
         e = parser.ParseExpression("Sss--");
         Assert.Equal((short)15, helper.Sss);
-        var return_sss = e.GetValue<short>(ctx);
+        short return_sss = e.GetValue<short>(ctx);
         Assert.Equal((short)15, return_sss);
         Assert.Equal((short)14, helper.Sss);
     }
@@ -907,35 +910,35 @@ public class EvaluationTests : AbstractExpressionTests
         // BigDecimal
         e = parser.ParseExpression("--Bd");
         Assert.Equal(2M, helper.Bd);
-        var return_bd = e.GetValue<decimal>(ctx);
+        decimal return_bd = e.GetValue<decimal>(ctx);
         Assert.Equal(1M, return_bd);
         Assert.Equal(1M, helper.Bd);
 
         // double
         e = parser.ParseExpression("--Ddd");
         Assert.InRange((float)helper.Ddd, 2.0d, 2.0d);
-        var return_ddd = e.GetValue<double>(ctx);
+        double return_ddd = e.GetValue<double>(ctx);
         Assert.InRange(return_ddd, 1.0d, 1.0d);
         Assert.InRange(helper.Ddd, 1.0d, 1.0d);
 
         // float
         e = parser.ParseExpression("--Fff");
         Assert.InRange(helper.Fff, 3.0f, 3.0f);
-        var return_fff = e.GetValue<float>(ctx);
+        float return_fff = e.GetValue<float>(ctx);
         Assert.InRange(return_fff, 2.0f, 2.0f);
         Assert.InRange(helper.Fff, 2.0f, 2.0f);
 
         // long
         e = parser.ParseExpression("--Lll");
         Assert.Equal(66666L, helper.Lll);
-        var return_lll = e.GetValue<long>(ctx);
+        long return_lll = e.GetValue<long>(ctx);
         Assert.Equal(66665L, return_lll);
         Assert.Equal(66665L, helper.Lll);
 
         // int
         e = parser.ParseExpression("--Iii");
         Assert.Equal(42, helper.Iii);
-        var return_iii = e.GetValue<int>(ctx);
+        int return_iii = e.GetValue<int>(ctx);
         Assert.Equal(41, return_iii);
         Assert.Equal(41, helper.Iii);
         return_iii = e.GetValue<int>(ctx);
@@ -945,7 +948,7 @@ public class EvaluationTests : AbstractExpressionTests
         // short
         e = parser.ParseExpression("--Sss");
         Assert.Equal((short)15, helper.Sss);
-        var return_sss = e.GetValue<int>(ctx);
+        int return_sss = e.GetValue<int>(ctx);
         Assert.Equal(14, return_sss);
         Assert.Equal(14, helper.Sss);
     }
@@ -957,11 +960,11 @@ public class EvaluationTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext(helper);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
 
-        var e1 = parser.ParseExpression("M()--");
+        IExpression e1 = parser.ParseExpression("M()--");
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<double>(ctx));
         Assert.Equal(SpelMessage.OperandNotDecrementable, ex.MessageCode);
 
-        var e2 = parser.ParseExpression("--M()");
+        IExpression e2 = parser.ParseExpression("--M()");
         ex = Assert.Throws<SpelEvaluationException>(() => e2.GetValue<double>(ctx));
         Assert.Equal(SpelMessage.OperandNotDecrementable, ex.MessageCode);
     }
@@ -969,10 +972,10 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Decrement04()
     {
-        var i = 42;
+        int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
-        var e1 = parser.ParseExpression("--1");
+        IExpression e1 = parser.ParseExpression("--1");
         var ex = Assert.Throws<SpelEvaluationException>(() => e1.GetValue<int>(ctx));
         Assert.Equal(SpelMessage.NotAssignable, ex.MessageCode);
 
@@ -1165,7 +1168,7 @@ public class EvaluationTests : AbstractExpressionTests
         // iii=42
         e = parser.ParseExpression("Iii=Iii++");
         Assert.Equal(42, helper.Iii);
-        var return_iii = e.GetValue<int>(ctx);
+        int return_iii = e.GetValue<int>(ctx);
         Assert.Equal(42, helper.Iii);
         Assert.Equal(42, return_iii);
 
@@ -1192,7 +1195,7 @@ public class EvaluationTests : AbstractExpressionTests
         // foo.iii == 99
         e = parser.ParseExpression("Foo.Iii++");
         Assert.Equal(99, helper.Foo.Iii);
-        var return_foo_iii = e.GetValue<int>(ctx);
+        int return_foo_iii = e.GetValue<int>(ctx);
         Assert.Equal(99, return_foo_iii);
         Assert.Equal(100, helper.Foo.Iii);
 
@@ -1224,7 +1227,10 @@ public class EvaluationTests : AbstractExpressionTests
         ExpectFailSetValueNotSupported(parser, ctx, "('abc' matches '^a..')=('abc' matches '^a..')");
 
         // Selection
-        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod(nameof(Spr9751.IsEven), new[] { typeof(int) }));
+        ctx.RegisterFunction("IsEven", typeof(Spr9751).GetMethod(nameof(Spr9751.IsEven), new[]
+        {
+            typeof(int)
+        }));
 
         ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.?[#IsEven(#this)])++");
         ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.?[#IsEven(#this)])");
@@ -1249,14 +1255,14 @@ public class EvaluationTests : AbstractExpressionTests
         ExpectFailNotIncrementable(parser, ctx, "#wibble++");
         ExpectFailNotDecrementable(parser, ctx, "--#wibble");
         e = parser.ParseExpression("#wibble=#wibble+#wibble");
-        var s = e.GetValue<string>(ctx);
+        string s = e.GetValue<string>(ctx);
         Assert.Equal("hello worldhello world", s);
         Assert.Equal("hello worldhello world", ctx.LookupVariable("wibble"));
 
         ctx.SetVariable("wobble", 3);
         e = parser.ParseExpression("#wobble++");
         Assert.Equal(3, ctx.LookupVariable<int>("wobble"));
-        var r = e.GetValue<int>(ctx);
+        int r = e.GetValue<int>(ctx);
         Assert.Equal(3, r);
         Assert.Equal(4, ctx.LookupVariable<int>("wobble"));
 
@@ -1273,8 +1279,8 @@ public class EvaluationTests : AbstractExpressionTests
         Assert.Equal(34, ctx.LookupVariable<int>("wobble"));
 
         // Projection
-        ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.![#IsEven(#this)])++");  // projection would be {false,true,false}
-        ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.![#IsEven(#this)])");  // projection would be {false,true,false}
+        ExpectFailNotIncrementable(parser, ctx, "({1,2,3}.![#IsEven(#this)])++"); // projection would be {false,true,false}
+        ExpectFailNotDecrementable(parser, ctx, "--({1,2,3}.![#IsEven(#this)])"); // projection would be {false,true,false}
         ExpectFailNotAssignable(parser, ctx, "({1,2,3}.![#IsEven(#this)])=({1,2,3}.![#IsEven(#this)])");
 
         // InlineList
@@ -1338,7 +1344,8 @@ public class EvaluationTests : AbstractExpressionTests
     {
         var ex = Assert.Throws<SpelEvaluationException>(() =>
         {
-            var e = parser.ParseExpression(expressionString);
+            IExpression e = parser.ParseExpression(expressionString);
+
             if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
@@ -1346,6 +1353,7 @@ public class EvaluationTests : AbstractExpressionTests
 
             e.GetValue(eContext);
         });
+
         Assert.Equal(messageCode, ex.MessageCode);
     }
 
@@ -1373,9 +1381,17 @@ public class EvaluationTests : AbstractExpressionTests
         public long Lll = 66666L;
         public int Iii = 42;
         public short Sss = 15;
-        public Spr9751_2 Foo = new ();
+        public Spr9751_2 Foo = new();
 
-        public int[] IntArray = { 1, 2, 3, 4, 5 };
+        public int[] IntArray =
+        {
+            1,
+            2,
+            3,
+            4,
+            5
+        };
+
         public int Index1 = 2;
 
         public int[] IntegerArray;
@@ -1392,6 +1408,7 @@ public class EvaluationTests : AbstractExpressionTests
             IntegerArray[2] = 3;
             IntegerArray[3] = 4;
             IntegerArray[4] = 5;
+
             ListOfStrings = new List<string>
             {
                 "abc"

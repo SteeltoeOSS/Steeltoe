@@ -2,105 +2,36 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging.Support;
 
 public class MessageHeaderAccessor : IMessageHeaderAccessor
 {
-    public static readonly Encoding DefaultCharset = Encoding.UTF8;
-
-    protected AccessorMessageHeaders headers;
-
     private static readonly MimeType[] ReadableMimeTypes =
     {
         MimeTypeUtils.ApplicationJson,
         MimeTypeUtils.ApplicationXml,
-        new ("text", "*"),
-        new ("application", "*+json"),
-        new ("application", "*+xml")
+        new("text", "*"),
+        new("application", "*+json"),
+        new("application", "*+xml")
     };
+
+    public static readonly Encoding DefaultCharset = Encoding.UTF8;
 
     private bool _leaveMutable;
 
-    public MessageHeaderAccessor()
-        : this((IMessage)null)
-    {
-    }
+    protected AccessorMessageHeaders headers;
 
-    public MessageHeaderAccessor(IMessage message)
+    private Encoding Encoding
     {
-        headers = new AccessorMessageHeaders(this, message?.Headers);
-    }
-
-    public MessageHeaderAccessor(MessageHeaders headers)
-    {
-        this.headers = new AccessorMessageHeaders(this, headers);
-    }
-
-    public static T GetAccessor<T>(IMessage message)
-        where T : MessageHeaderAccessor
-    {
-        return (T)GetAccessor(message.Headers, typeof(T));
-    }
-
-    public static MessageHeaderAccessor GetAccessor(IMessage message, Type accessorType)
-        => GetAccessor(message.Headers, accessorType);
-
-    public static T GetAccessor<T>(IMessageHeaders messageHeaders)
-        where T : MessageHeaderAccessor
-    {
-        return (T)GetAccessor(messageHeaders, typeof(T));
-    }
-
-    public static MessageHeaderAccessor GetAccessor(IMessageHeaders messageHeaders, Type accessorType)
-    {
-        if (messageHeaders is AccessorMessageHeaders accessorMessageHeaders)
+        get
         {
-            var headerAccessor = accessorMessageHeaders.Accessor;
-            if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
-            {
-                return headerAccessor;
-            }
+            var contentType = MimeType.ToMimeType(ContentType);
+            Encoding charset = contentType?.Encoding;
+            return charset ?? DefaultCharset;
         }
-
-        return null;
-    }
-
-    public static T GetMutableAccessor<T>(IMessage message)
-        where T : MessageHeaderAccessor
-    {
-        return (T)GetMutableAccessor(message, typeof(T));
-    }
-
-    public static T GetMutableAccessor<T>(IMessageHeaders messageHeaders)
-        where T : MessageHeaderAccessor
-    {
-        return (T)GetMutableAccessor(messageHeaders, typeof(T));
-    }
-
-    public static MessageHeaderAccessor GetMutableAccessor(IMessage message, Type accessorType = null)
-        => GetMutableAccessor(message.Headers, accessorType);
-
-    public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers, Type accessorType = null)
-    {
-        MessageHeaderAccessor messageHeaderAccessor = null;
-        if (headers is AccessorMessageHeaders accessorMessageHeaders)
-        {
-            var headerAccessor = accessorMessageHeaders.Accessor;
-            if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
-            {
-                messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
-            }
-        }
-
-        if (messageHeaderAccessor == null && accessorType == null && headers is MessageHeaders msgHeaders)
-        {
-            messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
-        }
-
-        return messageHeaderAccessor;
     }
 
     public virtual bool EnableTimestamp { get; set; }
@@ -156,7 +87,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         get
         {
-            var value = GetHeader(Messaging.MessageHeaders.TimestampName);
+            object value = GetHeader(Messaging.MessageHeaders.TimestampName);
+
             if (value == null)
             {
                 return null;
@@ -170,7 +102,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         get
         {
-            var value = GetHeader(Messaging.MessageHeaders.ContentType);
+            object value = GetHeader(Messaging.MessageHeaders.ContentType);
+
             if (value == null)
             {
                 return null;
@@ -206,14 +139,112 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         set => SetHeader(Messaging.MessageHeaders.ErrorChannelName, value);
     }
 
-    public virtual void SetImmutable() => headers.SetImmutable();
+    public MessageHeaderAccessor()
+        : this((IMessage)null)
+    {
+    }
 
-    public virtual IMessageHeaders ToMessageHeaders() => new MessageHeaders(headers);
+    public MessageHeaderAccessor(IMessage message)
+    {
+        headers = new AccessorMessageHeaders(this, message?.Headers);
+    }
 
-    public virtual IDictionary<string, object> ToDictionary() => new Dictionary<string, object>(headers);
+    public MessageHeaderAccessor(MessageHeaders headers)
+    {
+        this.headers = new AccessorMessageHeaders(this, headers);
+    }
+
+    public static T GetAccessor<T>(IMessage message)
+        where T : MessageHeaderAccessor
+    {
+        return (T)GetAccessor(message.Headers, typeof(T));
+    }
+
+    public static MessageHeaderAccessor GetAccessor(IMessage message, Type accessorType)
+    {
+        return GetAccessor(message.Headers, accessorType);
+    }
+
+    public static T GetAccessor<T>(IMessageHeaders messageHeaders)
+        where T : MessageHeaderAccessor
+    {
+        return (T)GetAccessor(messageHeaders, typeof(T));
+    }
+
+    public static MessageHeaderAccessor GetAccessor(IMessageHeaders messageHeaders, Type accessorType)
+    {
+        if (messageHeaders is AccessorMessageHeaders accessorMessageHeaders)
+        {
+            MessageHeaderAccessor headerAccessor = accessorMessageHeaders.Accessor;
+
+            if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
+            {
+                return headerAccessor;
+            }
+        }
+
+        return null;
+    }
+
+    public static T GetMutableAccessor<T>(IMessage message)
+        where T : MessageHeaderAccessor
+    {
+        return (T)GetMutableAccessor(message, typeof(T));
+    }
+
+    public static T GetMutableAccessor<T>(IMessageHeaders messageHeaders)
+        where T : MessageHeaderAccessor
+    {
+        return (T)GetMutableAccessor(messageHeaders, typeof(T));
+    }
+
+    public static MessageHeaderAccessor GetMutableAccessor(IMessage message, Type accessorType = null)
+    {
+        return GetMutableAccessor(message.Headers, accessorType);
+    }
+
+    public static MessageHeaderAccessor GetMutableAccessor(IMessageHeaders headers, Type accessorType = null)
+    {
+        MessageHeaderAccessor messageHeaderAccessor = null;
+
+        if (headers is AccessorMessageHeaders accessorMessageHeaders)
+        {
+            MessageHeaderAccessor headerAccessor = accessorMessageHeaders.Accessor;
+
+            if (accessorType == null || accessorType.IsInstanceOfType(headerAccessor))
+            {
+                messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
+            }
+        }
+
+        if (messageHeaderAccessor == null && accessorType == null && headers is MessageHeaders msgHeaders)
+        {
+            messageHeaderAccessor = new MessageHeaderAccessor(msgHeaders);
+        }
+
+        return messageHeaderAccessor;
+    }
+
+    public virtual void SetImmutable()
+    {
+        headers.SetImmutable();
+    }
+
+    public virtual IMessageHeaders ToMessageHeaders()
+    {
+        return new MessageHeaders(headers);
+    }
+
+    public virtual IDictionary<string, object> ToDictionary()
+    {
+        return new Dictionary<string, object>(headers);
+    }
 
     // Generic header accessors
-    public virtual object GetHeader(string headerName) => headers.TryGetValue(headerName, out var value) ? value : null;
+    public virtual object GetHeader(string headerName)
+    {
+        return headers.TryGetValue(headerName, out object value) ? value : null;
+    }
 
     public virtual void SetHeader(string name, object value)
     {
@@ -263,7 +294,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     public virtual void RemoveHeaders(params string[] headerPatterns)
     {
         var headersToRemove = new List<string>();
-        foreach (var pattern in headerPatterns)
+
+        foreach (string pattern in headerPatterns)
         {
             if (!string.IsNullOrEmpty(pattern))
             {
@@ -278,7 +310,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
             }
         }
 
-        foreach (var headerToRemove in headersToRemove)
+        foreach (string headerToRemove in headersToRemove)
         {
             RemoveHeader(headerToRemove);
         }
@@ -288,7 +320,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (headersToCopy != null)
         {
-            foreach (var kvp in headersToCopy)
+            foreach (KeyValuePair<string, object> kvp in headersToCopy)
             {
                 if (!IsReadOnly(kvp.Key))
                 {
@@ -302,7 +334,7 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     {
         if (headersToCopy != null)
         {
-            foreach (var kvp in headersToCopy)
+            foreach (KeyValuePair<string, object> kvp in headersToCopy)
             {
                 if (!IsReadOnly(kvp.Key))
                 {
@@ -313,13 +345,25 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
     }
 
     // Log message stuff
-    public virtual string GetShortLogMessage(object payload) => $"headers={headers}{GetShortPayloadLogMessage(payload)}";
+    public virtual string GetShortLogMessage(object payload)
+    {
+        return $"headers={headers}{GetShortPayloadLogMessage(payload)}";
+    }
 
-    public virtual string GetDetailedLogMessage(object payload) => $"headers={headers}{GetDetailedPayloadLogMessage(payload)}";
+    public virtual string GetDetailedLogMessage(object payload)
+    {
+        return $"headers={headers}{GetDetailedPayloadLogMessage(payload)}";
+    }
 
-    public override string ToString() => $"{GetType().Name} [headers={headers}]";
+    public override string ToString()
+    {
+        return $"{GetType().Name} [headers={headers}]";
+    }
 
-    protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessage message) => CreateMutableAccessor(message.Headers);
+    protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessage message)
+    {
+        return CreateMutableAccessor(message.Headers);
+    }
 
     protected virtual MessageHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
     {
@@ -331,15 +375,17 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         return new MessageHeaderAccessor(asHeaders);
     }
 
-    protected virtual bool IsReadOnly(string headerName) => Messaging.MessageHeaders.IdName.Equals(headerName) || Messaging.MessageHeaders.TimestampName.Equals(headerName);
+    protected virtual bool IsReadOnly(string headerName)
+    {
+        return Messaging.MessageHeaders.IdName.Equals(headerName) || Messaging.MessageHeaders.TimestampName.Equals(headerName);
+    }
 
     protected virtual void VerifyType(string headerName, object headerValue)
     {
         if (headerName != null && headerValue != null && (Messaging.MessageHeaders.ErrorChannelName.Equals(headerName) ||
-                                                          Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
+            Messaging.MessageHeaders.ReplyChannelName.EndsWith(headerName)) && !(headerValue is IMessageChannel || headerValue is string))
         {
-            throw new ArgumentException(
-                $"'{headerName}' header value must be a MessageChannel or string");
+            throw new ArgumentException($"'{headerName}' header value must be a MessageChannel or string");
         }
     }
 
@@ -349,10 +395,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         {
             case string sPayload:
             {
-                var payloadText = sPayload;
-                return payloadText.Length < 80
-                    ? $" payload={payloadText}"
-                    : $" payload={payloadText.Substring(0, 80)}...(truncated)";
+                string payloadText = sPayload;
+                return payloadText.Length < 80 ? $" payload={payloadText}" : $" payload={payloadText.Substring(0, 80)}...(truncated)";
             }
 
             case byte[] bytes:
@@ -362,17 +406,13 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
                         ? $" payload={new string(Encoding.GetChars(bytes))}"
                         : $" payload={new string(Encoding.GetChars(bytes, 0, 80))}...(truncated)";
                 }
-                else
-                {
-                    return $" payload=byte[{bytes.Length}]";
-                }
+
+                return $" payload=byte[{bytes.Length}]";
 
             default:
             {
-                var payloadText = payload.ToString();
-                return payloadText.Length < 80
-                    ? $" payload={payloadText}"
-                    : $" payload={payload.GetType().Name}@{payload}";
+                string payloadText = payload.ToString();
+                return payloadText.Length < 80 ? $" payload={payloadText}" : $" payload={payload.GetType().Name}@{payload}";
             }
         }
     }
@@ -383,27 +423,25 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         {
             return $" payload={payload}";
         }
-        else if (payload is byte[] bytes)
+
+        if (payload is byte[] bytes)
         {
             if (IsReadableContentType())
             {
                 return $" payload={new string(Encoding.GetChars(bytes))}";
             }
-            else
-            {
-                return $" payload=byte[{bytes.Length}]";
-            }
+
+            return $" payload=byte[{bytes.Length}]";
         }
-        else
-        {
-            return $" payload={payload}";
-        }
+
+        return $" payload={payload}";
     }
 
     protected virtual bool IsReadableContentType()
     {
         var contentType = MimeType.ToMimeType(ContentType);
-        foreach (var mimeType in ReadableMimeTypes)
+
+        foreach (MimeType mimeType in ReadableMimeTypes)
         {
             if (mimeType.Includes(contentType))
             {
@@ -422,7 +460,8 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         }
 
         var matchingHeaderNames = new List<string>();
-        foreach (var key in headers.Keys)
+
+        foreach (string key in headers.Keys)
         {
             if (PatternMatchUtils.SimpleMatch(pattern, key))
             {
@@ -433,32 +472,10 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
         return matchingHeaderNames;
     }
 
-    private Encoding Encoding
-    {
-        get
-        {
-            var contentType = MimeType.ToMimeType(ContentType);
-            var charset = contentType?.Encoding;
-            return charset ?? DefaultCharset;
-        }
-    }
-
     protected class AccessorMessageHeaders : MessageHeaders
     {
-        protected MessageHeaderAccessor accessor;
         private bool _mutable = true;
-
-        public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
-            : base(headers, IdValueNone, -1L)
-        {
-            this.accessor = accessor;
-        }
-
-        public AccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders other)
-            : base(other)
-        {
-            this.accessor = accessor;
-        }
+        protected MessageHeaderAccessor accessor;
 
         public new IDictionary<string, object> RawHeaders
         {
@@ -475,6 +492,20 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
         public virtual bool IsMutable => _mutable;
 
+        public virtual MessageHeaderAccessor Accessor => accessor;
+
+        public AccessorMessageHeaders(MessageHeaderAccessor accessor, IDictionary<string, object> headers)
+            : base(headers, IdValueNone, -1L)
+        {
+            this.accessor = accessor;
+        }
+
+        public AccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders other)
+            : base(other)
+        {
+            this.accessor = accessor;
+        }
+
         public virtual void SetImmutable()
         {
             if (!_mutable)
@@ -484,8 +515,9 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             if (Id == null)
             {
-                var idGenerator = accessor.IdGenerator ?? IdGenerator;
-                var id = idGenerator.GenerateId();
+                IIdGenerator idGenerator = accessor.IdGenerator ?? IdGenerator;
+                string id = idGenerator.GenerateId();
+
                 if (id != IdValueNone)
                 {
                     RawHeaders[IdName] = id;
@@ -499,7 +531,5 @@ public class MessageHeaderAccessor : IMessageHeaderAccessor
 
             _mutable = false;
         }
-
-        public virtual MessageHeaderAccessor Accessor => accessor;
     }
 }

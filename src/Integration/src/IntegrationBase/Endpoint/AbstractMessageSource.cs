@@ -37,9 +37,10 @@ public abstract class AbstractMessageSource<T> : AbstractExpressionEvaluator, IM
             return null;
         }
 
-        var headers = EvaluateHeaders();
+        IDictionary<string, object> headers = EvaluateHeaders();
 
         IMessage message;
+
         switch (result)
         {
             case AbstractMessageBuilder amBuilder:
@@ -52,6 +53,7 @@ public abstract class AbstractMessageSource<T> : AbstractExpressionEvaluator, IM
                 break;
             case IMessage mResult:
                 message = mResult;
+
                 if (headers != null && headers.Count > 0)
                 {
                     // create a new Message from this one in order to apply headers

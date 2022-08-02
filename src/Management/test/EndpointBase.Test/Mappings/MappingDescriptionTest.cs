@@ -14,11 +14,21 @@ public class MappingDescriptionTest : BaseTest
     {
         var routeDetail = new TestRouteDetails
         {
-            HttpMethods = new List<string> { "GET" },
+            HttpMethods = new List<string>
+            {
+                "GET"
+            },
             RouteTemplate = "/Home/Index",
-            Consumes = new List<string> { "application/json" },
-            Produces = new List<string> { "application/json" }
+            Consumes = new List<string>
+            {
+                "application/json"
+            },
+            Produces = new List<string>
+            {
+                "application/json"
+            }
         };
+
         var mapDesc = new MappingDescription("foobar", routeDetail);
 
         Assert.Null(mapDesc.Details);
@@ -31,14 +41,26 @@ public class MappingDescriptionTest : BaseTest
     {
         var routeDetail = new TestRouteDetails
         {
-            HttpMethods = new List<string> { "GET" },
+            HttpMethods = new List<string>
+            {
+                "GET"
+            },
             RouteTemplate = "/Home/Index",
-            Consumes = new List<string> { "application/json" },
-            Produces = new List<string> { "application/json" }
+            Consumes = new List<string>
+            {
+                "application/json"
+            },
+            Produces = new List<string>
+            {
+                "application/json"
+            }
         };
+
         var mapDesc = new MappingDescription("foobar", routeDetail);
 
-        var result = Serialize(mapDesc);
-        Assert.Equal("{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}", result);
+        string result = Serialize(mapDesc);
+
+        Assert.Equal("{\"handler\":\"foobar\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[application/json],consumes=[application/json]}\"}",
+            result);
     }
 }

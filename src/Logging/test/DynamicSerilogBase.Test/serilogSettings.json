@@ -11,13 +11,13 @@
       {
         "Name": "Console",
         "Args": {
-          "outputTemplate": "[{Timestamp:HH:mm:ss} MachineName:{MachineName} ThreadId:<{ThreadId}> {Level:u3}] {SourceContext}: {Properties} {NewLine} {EventId} {Message:lj}{NewLine}{Exception}"
+          "outputTemplate":
+            "[{Timestamp:HH:mm:ss} MachineName:{MachineName} ThreadId:<{ThreadId}> {Level:u3}] {SourceContext}: {Properties} {NewLine} {EventId} {Message:lj}{NewLine}{Exception}"
         }
       }
     ],
-    "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ],
+    "Enrich": ["FromLogContext", "WithMachineName", "WithThreadId"],
     "Destructure": [
-
       {
         "Name": "ToMaximumDepth",
         "Args": { "maximumDestructuringDepth": 10 }

@@ -20,6 +20,6 @@ public class Links
 
     // ReSharper disable once InconsistentNaming
 #pragma warning disable SA1300 // Element should begin with upper-case letter
-    public Dictionary<string, Link> _links { get; set; } = new ();
+    public Dictionary<string, Link> _links { get; set; } = new();
 #pragma warning restore SA1300 // Element should begin with upper-case letter
 }

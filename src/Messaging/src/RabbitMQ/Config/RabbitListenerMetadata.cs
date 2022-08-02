@@ -2,19 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Listener;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class RabbitListenerMetadata
 {
-    internal static readonly Dictionary<Type, RabbitListenerMetadata> TypeCache = new ();
-    internal static readonly HashSet<string> Groups = new ();
+    internal static readonly Dictionary<Type, RabbitListenerMetadata> TypeCache = new();
+    internal static readonly HashSet<string> Groups = new();
 
-    internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods, List<RabbitListenerAttribute> classLevelListeners)
+    internal List<ListenerMethod> ListenerMethods { get; }
+
+    internal List<MethodInfo> HandlerMethods { get; }
+
+    internal List<RabbitListenerAttribute> ClassAnnotations { get; }
+
+    internal Type TargetClass { get; }
+
+    internal RabbitListenerMetadata(Type targetClass, List<ListenerMethod> methods, List<MethodInfo> multiMethods,
+        List<RabbitListenerAttribute> classLevelListeners)
     {
         TargetClass = targetClass;
         ListenerMethods = methods;
@@ -29,14 +38,6 @@ public class RabbitListenerMetadata
         ClassAnnotations = new List<RabbitListenerAttribute>();
     }
 
-    internal List<ListenerMethod> ListenerMethods { get; }
-
-    internal List<MethodInfo> HandlerMethods { get; }
-
-    internal List<RabbitListenerAttribute> ClassAnnotations { get; }
-
-    internal Type TargetClass { get; }
-
     internal static RabbitListenerMetadata BuildMetadata(IServiceCollection services, Type targetClass)
     {
         if (targetClass == null)
@@ -49,14 +50,16 @@ public class RabbitListenerMetadata
             return null;
         }
 
-        var classLevelListeners = targetClass.GetCustomAttributes<RabbitListenerAttribute>().ToList();
+        List<RabbitListenerAttribute> classLevelListeners = targetClass.GetCustomAttributes<RabbitListenerAttribute>().ToList();
         Validate(services, classLevelListeners);
         var methods = new List<ListenerMethod>();
         var multiMethods = new List<MethodInfo>();
-        var reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-        foreach (var m in reflectMethods)
+        MethodInfo[] reflectMethods = targetClass.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (MethodInfo m in reflectMethods)
         {
-            var methodLevelListeners = m.GetCustomAttributes<RabbitListenerAttribute>().ToList();
+            List<RabbitListenerAttribute> methodLevelListeners = m.GetCustomAttributes<RabbitListenerAttribute>().ToList();
+
             if (methodLevelListeners.Count > 0)
             {
                 Validate(services, methodLevelListeners);
@@ -65,7 +68,8 @@ public class RabbitListenerMetadata
 
             if (classLevelListeners.Count > 0)
             {
-                var handlerAttributes = m.GetCustomAttributes<RabbitHandlerAttribute>();
+                IEnumerable<RabbitHandlerAttribute> handlerAttributes = m.GetCustomAttributes<RabbitHandlerAttribute>();
+
                 if (handlerAttributes.Any())
                 {
                     multiMethods.Add(m);
@@ -83,10 +87,11 @@ public class RabbitListenerMetadata
 
     private static void Validate(IServiceCollection services, List<RabbitListenerAttribute> listenerAttributes)
     {
-        foreach (var listener in listenerAttributes)
+        foreach (RabbitListenerAttribute listener in listenerAttributes)
         {
-            var queues = listener.Queues;
-            var bindings = listener.Bindings;
+            string[] queues = listener.Queues;
+            string[] bindings = listener.Bindings;
+
             if (bindings.Length > 0 && queues.Length > 0)
             {
                 throw new InvalidOperationException("RabbitListenerAttribute can have either 'Queues' or 'Bindings' set, but not both");
@@ -100,6 +105,11 @@ public class RabbitListenerMetadata
         }
     }
 
+    internal static void Reset()
+    {
+        TypeCache.Clear();
+    }
+
     internal sealed class ListenerMethod
     {
         public MethodInfo Method { get; }
@@ -111,10 +121,5 @@ public class RabbitListenerMetadata
             Method = method;
             Attributes = attributes;
         }
-    }
-
-    internal static void Reset()
-    {
-        TypeCache.Clear();
     }
 }

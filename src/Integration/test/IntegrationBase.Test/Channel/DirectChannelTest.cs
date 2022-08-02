@@ -18,7 +18,7 @@ public class DirectChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         _provider = services.BuildServiceProvider();
@@ -30,9 +30,9 @@ public class DirectChannelTest
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
-        var message = Message.Create("test");
-        var currentId = Task.CurrentId;
-        var curThreadId = Thread.CurrentThread.ManagedThreadId;
+        IMessage<string> message = Message.Create("test");
+        int? currentId = Task.CurrentId;
+        int curThreadId = Thread.CurrentThread.ManagedThreadId;
         Assert.True(channel.Send(message));
         Assert.Equal(currentId, target.TaskId);
         Assert.Equal(curThreadId, target.ThreadId);
@@ -44,7 +44,7 @@ public class DirectChannelTest
         var target = new ThreadNameExtractingTestTarget();
         var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         channel.Subscribe(target);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
     }
 
@@ -64,9 +64,10 @@ public class DirectChannelTest
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(channel.Send(message));
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -81,9 +82,10 @@ public class DirectChannelTest
 
         var handler = new CounterHandler();
         channel.Subscribe(handler);
-        var message = Message.Create("test");
+        IMessage<string> message = Message.Create("test");
         Assert.True(await channel.SendAsync(message));
-        for (var i = 0; i < 10_000_000; i++)
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             await channel.SendAsync(message);
         }
@@ -106,8 +108,9 @@ public class DirectChannelTest
         var count2 = new CounterHandler();
         channel.Subscribe(count1);
         channel.Subscribe(count2);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -128,8 +131,9 @@ public class DirectChannelTest
         channel.Subscribe(count2);
         channel.Subscribe(count3);
         channel.Subscribe(count4);
-        var message = Message.Create("test");
-        for (var i = 0; i < 10_000_000; i++)
+        IMessage<string> message = Message.Create("test");
+
+        for (int i = 0; i < 10_000_000; i++)
         {
             channel.Send(message);
         }
@@ -147,8 +151,13 @@ public class DirectChannelTest
         var channel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var target = new ThreadNameExtractingTestTarget(latch);
         channel.Subscribe(target);
-        var message = Message.Create("test");
-        var thread = new Thread(() => channel.Send(message)) { Name = "test-thread" };
+        IMessage<string> message = Message.Create("test");
+
+        var thread = new Thread(() => channel.Send(message))
+        {
+            Name = "test-thread"
+        };
+
         thread.Start();
         latch.Wait(1000);
         Assert.Equal("test-thread", target.ThreadName);
@@ -182,7 +191,7 @@ public class DirectChannelTest
 
         public ThreadNameExtractingTestTarget(CountdownEvent latch)
         {
-            this.Latch = latch;
+            Latch = latch;
         }
 
         public void HandleMessage(IMessage message)
@@ -190,6 +199,7 @@ public class DirectChannelTest
             TaskId = Task.CurrentId;
             ThreadId = Thread.CurrentThread.ManagedThreadId;
             ThreadName = Thread.CurrentThread.Name;
+
             if (Latch != null)
             {
                 Latch.Signal();

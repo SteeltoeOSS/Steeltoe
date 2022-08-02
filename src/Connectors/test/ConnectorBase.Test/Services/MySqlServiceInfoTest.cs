@@ -11,7 +11,7 @@ public class MySqlServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        var uri = "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true";
+        string uri = "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true";
         var r1 = new MySqlServiceInfo("myId", uri);
 
         Assert.Equal("myId", r1.Id);

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Logging;
 
 namespace Steeltoe.Common.Hosting;
 
@@ -18,7 +19,7 @@ public class BootstrapLoggerHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        Logging.BootstrapLoggerFactory.Instance.Update(_loggerFactory);
+        BootstrapLoggerFactory.Instance.Update(_loggerFactory);
         return Task.CompletedTask;
     }
 

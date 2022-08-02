@@ -10,7 +10,7 @@ namespace Steeltoe.Connector.SqlServer.Test;
 public class SqlServerProviderConfigurerTest
 {
     // shared variable to hold config (like from a source such as appsettings)
-    private readonly SqlServerProviderConnectorOptions _config = new ()
+    private readonly SqlServerProviderConnectorOptions _config = new()
     {
         Server = "localhost",
         Port = 1433,
@@ -64,7 +64,7 @@ public class SqlServerProviderConfigurerTest
     public void Configure_Without_ServiceInfo_Returns_Config()
     {
         var configurer = new SqlServerProviderConfigurer();
-        var opts = configurer.Configure(null, _config);
+        string opts = configurer.Configure(null, _config);
         Assert.Contains("Data Source=localhost,1433", opts);
         Assert.Contains("User Id=username;", opts);
         Assert.Contains("Password=password;", opts);
@@ -77,10 +77,11 @@ public class SqlServerProviderConfigurerTest
         var configurer = new SqlServerProviderConfigurer();
 
         // override provided by environment
-        var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt");
+        var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e", "Dd6O1BPXUHdrmzbP",
+            "7E1LxXnlH2hhlPVt");
 
         // apply override
-        var opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _config);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername,1433", opts);
@@ -95,10 +96,11 @@ public class SqlServerProviderConfigurerTest
         var configurer = new SqlServerProviderConfigurer();
 
         // override provided by environment
-        var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e");
+        var si = new SqlServerServiceInfo("MyId",
+            "jdbc:sqlserver://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@servername:1433/databaseName=de5aa3a747c134b3d8780f8cc80be519e");
 
         // apply override
-        var opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _config);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername,1433", opts);
@@ -113,10 +115,11 @@ public class SqlServerProviderConfigurerTest
         var configurer = new SqlServerProviderConfigurer();
 
         // override provided by environment
-        var si = new SqlServerServiceInfo("MyId", "jdbc:sqlserver://servername/databaseName=de5aa3a747c134b3d8780f8cc80be519e;instanceName=someInstance;integratedSecurity=true");
+        var si = new SqlServerServiceInfo("MyId",
+            "jdbc:sqlserver://servername/databaseName=de5aa3a747c134b3d8780f8cc80be519e;instanceName=someInstance;integratedSecurity=true");
 
         // apply override
-        var opts = configurer.Configure(si, _config);
+        string opts = configurer.Configure(si, _config);
 
         // resulting options should contain values parsed from environment
         Assert.Contains("Data Source=servername\\someInstance", opts);

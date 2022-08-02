@@ -11,18 +11,27 @@ public class MongoDbConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        MongoDbServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<MongoDbServiceInfo>()
             : configuration.GetRequiredServiceInfo<MongoDbServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((MongoDbServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((MongoDbServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) => serviceType.Equals("mongodb", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("mongodb", StringComparison.InvariantCultureIgnoreCase);
+    }
 
-    public bool IsSameType(IServiceInfo serviceInfo) => serviceInfo is MongoDbServiceInfo;
+    public bool IsSameType(IServiceInfo serviceInfo)
+    {
+        return serviceInfo is MongoDbServiceInfo;
+    }
 
     private Connection GetConnection(MongoDbServiceInfo info, IConfiguration configuration)
     {

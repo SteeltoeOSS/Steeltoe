@@ -17,22 +17,24 @@ public class PartitionedConsumerTest : AbstractTest
     [Fact]
     public async Task TestBindingPartitionedConsumer()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithISinkBinding(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=partIn",
-                "spring.cloud.stream.bindings.input.consumer.partitioned=true",
-                "spring.cloud.stream.instanceCount=2",
-                "spring.cloud.stream.instanceIndex=0")
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring.cloud.stream.bindings.input.destination=partIn",
+                "spring.cloud.stream.bindings.input.consumer.partitioned=true", "spring.cloud.stream.instanceCount=2", "spring.cloud.stream.instanceIndex=0")
             .BuildServiceProvider();
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null);
-        var mockBinder = Mock.Get(binder);
+        IBinder binder = factory.GetBinder(null);
+        Mock<IBinder> mockBinder = Mock.Get(binder);
         var sink = provider.GetService<ISink>();
         IConsumerOptions captured = null;
-        mockBinder.Setup(b => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>())).Callback<string, string, object, IConsumerOptions>((_, _, _, d) => { captured = d; });
+
+        mockBinder.Setup(b => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>())).Callback<string, string, object, IConsumerOptions>(
+            (_, _, _, d) =>
+            {
+                captured = d;
+            });
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 

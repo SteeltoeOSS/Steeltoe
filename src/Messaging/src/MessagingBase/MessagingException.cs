@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging;
 
 public class MessagingException : Exception
 {
+    public IMessage FailedMessage { get; }
+
     public MessagingException(IMessage message)
         : base(null, null)
     {
@@ -42,11 +44,8 @@ public class MessagingException : Exception
         FailedMessage = message;
     }
 
-    public IMessage FailedMessage { get; }
-
     public override string ToString()
     {
-        return base.ToString() + (FailedMessage == null ? string.Empty
-            : ", failedMessage=" + FailedMessage);
+        return base.ToString() + (FailedMessage == null ? string.Empty : ", failedMessage=" + FailedMessage);
     }
 }

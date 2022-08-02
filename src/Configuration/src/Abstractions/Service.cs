@@ -12,5 +12,5 @@ public class Service : AbstractServiceOptions
     /// <summary>
     /// Gets or sets the connection information and credentials for using the service.
     /// </summary>
-    public Dictionary<string, Credential> Credentials { get; set; } = new (StringComparer.InvariantCultureIgnoreCase);
+    public Dictionary<string, Credential> Credentials { get; set; } = new(StringComparer.InvariantCultureIgnoreCase);
 }

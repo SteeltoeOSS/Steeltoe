@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,7 +17,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Text;
 using Xunit;
 using RC = RabbitMQ.Client;
 
@@ -28,7 +28,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task SampleConfiguration()
     {
-        var services = await RabbitSampleConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitSampleConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         TestSampleConfiguration(context, 2);
     }
@@ -36,7 +36,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task FullConfiguration()
     {
-        var services = await RabbitFullConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitFullConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         TestFullConfiguration(context);
     }
@@ -44,7 +44,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task FullConfigurableConfiguration()
     {
-        var services = await RabbitFullConfigurableConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitFullConfigurableConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         TestFullConfiguration(context);
     }
@@ -59,7 +59,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task CustomConfiguration()
     {
-        var services = await RabbitCustomConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitCustomConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         TestCustomConfiguration(context);
     }
@@ -67,7 +67,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task ExplicitContainerFactory()
     {
-        var services = await RabbitCustomContainerFactoryConfig.CreateAndStartServices();
+        ServiceProvider services = await RabbitCustomContainerFactoryConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         TestExplicitContainerFactoryConfiguration(context);
     }
@@ -75,7 +75,7 @@ public class EnableRabbitTest
     [Fact]
     public async Task DefaultContainerFactory()
     {
-        var services = await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(DefaultBean));
+        ServiceProvider services = await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(DefaultBean));
         var context = services.GetRequiredService<IApplicationContext>();
         TestDefaultContainerFactoryConfiguration(context);
     }
@@ -96,7 +96,9 @@ public class EnableRabbitTest
     [Fact]
     public async Task RabbitListeners()
     {
-        var services = await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
+        ServiceProvider services =
+            await RabbitDefaultContainerFactoryConfig.CreateAndStartServices(typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
+
         var context = services.GetRequiredService<IApplicationContext>();
         TestRabbitListenerRepeatable(context);
     }
@@ -118,11 +120,12 @@ public class EnableRabbitTest
     [Fact]
     public async Task TestProperShutdownOnException()
     {
-        var services = await TestProperShutdownOnExceptionConfig.CreateAndStartServices();
+        ServiceProvider services = await TestProperShutdownOnExceptionConfig.CreateAndStartServices();
         var context = services.GetRequiredService<IApplicationContext>();
         var listenerEndpointRegistry = context.GetService<IRabbitListenerEndpointRegistry>();
         services.Dispose();
-        foreach (var messageListenerContainer in listenerEndpointRegistry.GetListenerContainers())
+
+        foreach (IMessageListenerContainer messageListenerContainer in listenerEndpointRegistry.GetListenerContainers())
         {
             Assert.False(messageListenerContainer.IsRunning);
         }
@@ -162,24 +165,27 @@ public class EnableRabbitTest
         Assert.Equal(expectedDefaultContainers, defaultFactory.ListenerContainers.Count);
         Assert.Single(simpleFactory.ListenerContainers);
 
-        var queues = context.GetRabbitQueues();
-        foreach (var queue in queues)
+        IEnumerable<IQueue> queues = context.GetRabbitQueues();
+
+        foreach (IQueue queue in queues)
         {
             Assert.True(queue.IgnoreDeclarationExceptions);
             Assert.False(queue.ShouldDeclare);
             CheckAdmins(queue.DeclaringAdmins);
         }
 
-        var exchanges = context.GetRabbitExchanges();
-        foreach (var exchange in exchanges)
+        IEnumerable<IExchange> exchanges = context.GetRabbitExchanges();
+
+        foreach (IExchange exchange in exchanges)
         {
             Assert.True(exchange.IgnoreDeclarationExceptions);
             Assert.False(exchange.ShouldDeclare);
             CheckAdmins(exchange.DeclaringAdmins);
         }
 
-        var bindings = context.GetRabbitBindings();
-        foreach (var binding in bindings)
+        IEnumerable<IBinding> bindings = context.GetRabbitBindings();
+
+        foreach (IBinding binding in bindings)
         {
             Assert.True(binding.IgnoreDeclarationExceptions);
             Assert.False(binding.ShouldDeclare);
@@ -192,24 +198,26 @@ public class EnableRabbitTest
         var simpleFactory = context.GetService<IRabbitListenerContainerFactory>("simpleFactory") as RabbitListenerContainerTestFactory;
         Assert.Single(simpleFactory.ListenerContainers);
 
-        var testContainer = simpleFactory.GetListenerContainers()[0];
+        MessageListenerTestContainer testContainer = simpleFactory.GetListenerContainers()[0];
         var endpoint = testContainer.Endpoint as AbstractRabbitListenerEndpoint;
         Assert.Equal("listener1", endpoint.Id);
         AssertQueues(endpoint, "queue1", "queue2");
         Assert.Empty(endpoint.Queues);
         Assert.True(endpoint.Exclusive);
         Assert.Equal(34, endpoint.Priority);
-        var admin = context.GetRabbitAdmin();
+        IRabbitAdmin admin = context.GetRabbitAdmin();
         Assert.Same(endpoint.Admin, admin);
 
         var container = new DirectMessageListenerContainer(context);
         endpoint.SetupListenerContainer(container);
         var listener = container.MessageListener as MessagingMessageListenerAdapter;
+
         var accessor = new RabbitHeaderAccessor
         {
             ContentType = MessageHeaders.ContentTypeTextPlain
         };
-        var message = Message.Create(Encoding.UTF8.GetBytes("Hello"), accessor.MessageHeaders);
+
+        IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes("Hello"), accessor.MessageHeaders);
         var mockChannel = new Mock<RC.IModel>();
 
         listener.OnMessage(message, mockChannel.Object);
@@ -221,8 +229,8 @@ public class EnableRabbitTest
         var defaultFactory = context.GetService<IRabbitListenerContainerFactory>("rabbitListenerContainerFactory") as RabbitListenerContainerTestFactory;
         Assert.Single(defaultFactory.ListenerContainers);
         Assert.Single(customFactory.ListenerContainers);
-        var testContainer = defaultFactory.GetListenerContainers()[0];
-        var endpoint = testContainer.Endpoint;
+        MessageListenerTestContainer testContainer = defaultFactory.GetListenerContainers()[0];
+        IRabbitListenerEndpoint endpoint = testContainer.Endpoint;
         Assert.IsType<SimpleRabbitListenerEndpoint>(endpoint);
         var simpleEndpoint = endpoint as SimpleRabbitListenerEndpoint;
         Assert.IsType<MessageListenerAdapter>(simpleEndpoint.MessageListener);
@@ -248,8 +256,9 @@ public class EnableRabbitTest
 
     private void AssertQueues(AbstractRabbitListenerEndpoint endpoint, params string[] queues)
     {
-        var actualQueues = endpoint.QueueNames;
-        foreach (var expectedQueue in queues)
+        List<string> actualQueues = endpoint.QueueNames;
+
+        foreach (string expectedQueue in queues)
         {
             Assert.Contains(expectedQueue, actualQueues);
         }
@@ -260,6 +269,7 @@ public class EnableRabbitTest
     private void CheckAdmins(List<object> admins)
     {
         Assert.Single(admins);
+
         if (admins[0] is RabbitAdmin admin)
         {
             Assert.Equal("myAdmin", admin.ServiceName);
@@ -283,11 +293,12 @@ public class EnableRabbitTest
             mockConnection.Setup(c => c.IsOpen).Returns(true);
             mockChannel.Setup(c => c.IsOpen).Returns(true);
             var queueName = new AtomicReference<string>();
+
             mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+            IConfigurationRoot config = new ConfigurationBuilder().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -300,17 +311,17 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<TestDirectRabbitListenerContainerFactory>("rabbitListenerContainerFactory");
             services.AddRabbitAdmin();
 
-            var myQueue = QueueBuilder.Durable("myQueue").Build();
-            var anotherQueue = QueueBuilder.Durable("anotherQueue").Build();
-            var class1 = QueueBuilder.Durable("class1").Build();
-            var class2 = QueueBuilder.Durable("class2").Build();
+            IQueue myQueue = QueueBuilder.Durable("myQueue").Build();
+            IQueue anotherQueue = QueueBuilder.Durable("anotherQueue").Build();
+            IQueue class1 = QueueBuilder.Durable("class1").Build();
+            IQueue class2 = QueueBuilder.Durable("class2").Build();
 
             services.AddRabbitQueues(myQueue, anotherQueue, class1, class2);
             services.AddSingleton<RabbitListenersBean>();
             services.AddSingleton<ClassLevelListenersBean>();
             services.AddRabbitListeners(config, typeof(RabbitListenersBean), typeof(ClassLevelListenersBean));
 
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -329,11 +340,12 @@ public class EnableRabbitTest
             mockConnection.Setup(c => c.IsOpen).Returns(true);
             mockChannel.Setup(c => c.IsOpen).Returns(true);
             var queueName = new AtomicReference<string>();
+
             mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+            IConfigurationRoot config = new ConfigurationBuilder().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -347,19 +359,14 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
             services.AddRabbitAdmin("myAdmin");
 
-            var foo = QueueBuilder.Durable("foo").Build();
+            IQueue foo = QueueBuilder.Durable("foo").Build();
             foo.ShouldDeclare = false;
             foo.IgnoreDeclarationExceptions = true;
             foo.DeclaringAdmins.Add("myAdmin");
 
-            var bar = (DirectExchange)ExchangeBuilder
-                .DirectExchange("bar")
-                .IgnoreDeclarationExceptions()
-                .SuppressDeclaration()
-                .Admins("myAdmin")
-                .Build();
+            var bar = (DirectExchange)ExchangeBuilder.DirectExchange("bar").IgnoreDeclarationExceptions().SuppressDeclaration().Admins("myAdmin").Build();
 
-            var binding = BindingBuilder.Bind(foo).To(bar).With("baz");
+            IBinding binding = BindingBuilder.Bind(foo).To(bar).With("baz");
             binding.DeclaringAdmins.Add("myAdmin");
             binding.IgnoreDeclarationExceptions = true;
             binding.ShouldDeclare = false;
@@ -374,7 +381,7 @@ public class EnableRabbitTest
             services.AddSingleton<Listener>();
 
             services.AddRabbitListeners(config, listenerBeanType, typeof(Listener));
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -401,11 +408,12 @@ public class EnableRabbitTest
             mockConnection.Setup(c => c.IsOpen).Returns(true);
             mockChannel.Setup(c => c.IsOpen).Returns(true);
             var queueName = new AtomicReference<string>();
+
             mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
-            var config = new ConfigurationBuilder().Build();
+            IConfigurationRoot config = new ConfigurationBuilder().Build();
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
             services.AddRabbitMessageHandlerMethodFactory();
@@ -418,13 +426,13 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
             services.AddRabbitAdmin();
 
-            var queue1 = QueueBuilder.Durable("queue1").Build();
-            var queue2 = QueueBuilder.Durable("queue2").Build();
+            IQueue queue1 = QueueBuilder.Durable("queue1").Build();
+            IQueue queue2 = QueueBuilder.Durable("queue2").Build();
             services.AddRabbitQueues(queue1, queue2);
 
             services.AddSingleton<FullBean>();
             services.AddRabbitListeners<FullBean>();
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -443,11 +451,13 @@ public class EnableRabbitTest
             mockConnection.Setup(c => c.IsOpen).Returns(true);
             mockChannel.Setup(c => c.IsOpen).Returns(true);
             var queueName = new AtomicReference<string>();
+
             mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
+
             configBuilder.AddInMemoryCollection(new Dictionary<string, string>
             {
                 { "rabbit:listener:id", "listener1" },
@@ -455,9 +465,10 @@ public class EnableRabbitTest
                 { "rabbit.listener.queue", "queue1" },
                 { "rabbit.listener.priority", "34" },
                 { "rabbit.listener.responseRoutingKey", "routing-123" },
-                { "rabbit.listener.admin", "rabbitAdmin" },
+                { "rabbit.listener.admin", "rabbitAdmin" }
             });
-            var config = configBuilder.Build();
+
+            IConfigurationRoot config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
@@ -471,13 +482,13 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
             services.AddRabbitAdmin();
 
-            var queue1 = QueueBuilder.Durable("queue1").Build();
-            var queue2 = QueueBuilder.Durable("queue2").Build();
+            IQueue queue1 = QueueBuilder.Durable("queue1").Build();
+            IQueue queue2 = QueueBuilder.Durable("queue2").Build();
             services.AddRabbitQueues(queue1, queue2);
 
             services.AddSingleton<FullBean>();
             services.AddRabbitListeners<FullBean>();
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -490,7 +501,7 @@ public class EnableRabbitTest
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            var config = configBuilder.Build();
+            IConfigurationRoot config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
@@ -504,16 +515,16 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("rabbitListenerContainerFactory");
             services.AddRabbitAdmin();
 
-            var queue1 = QueueBuilder.Durable("myQueue").Build();
+            IQueue queue1 = QueueBuilder.Durable("myQueue").Build();
             services.AddRabbitQueues(queue1);
 
-            foreach (var listener in listeners)
+            foreach (Type listener in listeners)
             {
                 services.AddSingleton(listener);
             }
 
             services.AddRabbitListeners(config, listeners);
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -541,12 +552,13 @@ public class EnableRabbitTest
             mockConnection.Setup(c => c.IsOpen).Returns(true);
             mockChannel.Setup(c => c.IsOpen).Returns(true);
             var queueName = new AtomicReference<string>();
+
             mockChannel.Setup(c => c.QueueDeclarePassive(It.IsAny<string>())).Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0))
                 .Callback<string>(name => queueName.Value = name);
 
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            var config = configBuilder.Build();
+            IConfigurationRoot config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
@@ -562,11 +574,11 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("customFactory");
             services.AddRabbitAdmin();
 
-            var queue1 = QueueBuilder.Durable("myQueue").Build();
+            IQueue queue1 = QueueBuilder.Durable("myQueue").Build();
             services.AddRabbitQueues(queue1);
 
             services.AddRabbitListeners<CustomBean>();
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -574,10 +586,12 @@ public class EnableRabbitTest
         public void ConfigureRabbitListeners(IRabbitListenerEndpointRegistrar registrar)
         {
             registrar.EndpointRegistry = _registry;
+
             var endpoint = new SimpleRabbitListenerEndpoint(_context)
             {
                 Id = "myCustomEndpointId"
             };
+
             endpoint.SetQueueNames("myQueue");
             endpoint.MessageListener = new MessageListenerAdapter(_context);
             registrar.RegisterEndpoint(endpoint);
@@ -598,7 +612,7 @@ public class EnableRabbitTest
             var mockConnection = new Mock<IConnectionFactory>();
             var services = new ServiceCollection();
             var configBuilder = new ConfigurationBuilder();
-            var config = configBuilder.Build();
+            IConfigurationRoot config = configBuilder.Build();
 
             services.AddSingleton<IConfiguration>(config);
             services.AddRabbitHostingServices();
@@ -613,11 +627,11 @@ public class EnableRabbitTest
             services.AddRabbitListenerContainerFactory<RabbitListenerContainerTestFactory>("simpleFactory");
             services.AddRabbitAdmin();
 
-            var queue1 = QueueBuilder.Durable("myQueue").Build();
+            IQueue queue1 = QueueBuilder.Durable("myQueue").Build();
             services.AddRabbitQueues(queue1);
 
             services.AddRabbitListeners<DefaultBean>();
-            var container = services.BuildServiceProvider();
+            ServiceProvider container = services.BuildServiceProvider();
             await container.GetRequiredService<IHostedService>().StartAsync(default);
             return container;
         }
@@ -630,7 +644,8 @@ public class EnableRabbitTest
 
     public class TestDirectRabbitListenerContainerFactory : DirectRabbitListenerContainerFactory
     {
-        public TestDirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+        public TestDirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
+            ILoggerFactory loggerFactory = null)
             : base(applicationContext, connectionFactory, loggerFactory)
         {
         }
@@ -664,14 +679,7 @@ public class EnableRabbitTest
 
     public class FullBean
     {
-        [RabbitListener(
-            "queue1",
-            "queue2",
-            Id = "listener1",
-            ContainerFactory = "simpleFactory",
-            Exclusive = true,
-            Priority = "34",
-            Admin = "rabbitAdmin")]
+        [RabbitListener("queue1", "queue2", Id = "listener1", ContainerFactory = "simpleFactory", Exclusive = true, Priority = "34", Admin = "rabbitAdmin")]
         public void FullHandle(string msg)
         {
         }
@@ -679,14 +687,8 @@ public class EnableRabbitTest
 
     public class FullConfigurableBean
     {
-        [RabbitListener(
-            "${rabbit:listener:queue}",
-            "queue2",
-            Id = "${rabbit:listener:id}",
-            ContainerFactory = "${rabbit:listener:containerFactory}",
-            Exclusive = true,
-            Priority = "${rabbit: listener:priority}",
-            Admin = "${rabbit:listener:admin}")]
+        [RabbitListener("${rabbit:listener:queue}", "queue2", Id = "${rabbit:listener:id}", ContainerFactory = "${rabbit:listener:containerFactory}",
+            Exclusive = true, Priority = "${rabbit: listener:priority}", Admin = "${rabbit:listener:admin}")]
         public void FullHandle(string msg)
         {
         }

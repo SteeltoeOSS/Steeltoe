@@ -7,6 +7,11 @@ namespace Steeltoe.Common.Transaction;
 public interface IResourceHolder
 {
     /// <summary>
+    /// Gets a value indicating whether this holder is considered void, leftover from previous thread.
+    /// </summary>
+    bool IsVoid { get; }
+
+    /// <summary>
     /// Reset the transactional state.
     /// </summary>
     void Reset();
@@ -15,9 +20,4 @@ public interface IResourceHolder
     /// Notify holder that it has been unbound from transaction.
     /// </summary>
     void Unbound();
-
-    /// <summary>
-    /// Gets a value indicating whether this holder is considered void, leftover from previous thread.
-    /// </summary>
-    bool IsVoid { get; }
 }

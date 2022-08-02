@@ -2,26 +2,21 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
-using Steeltoe.Common.Http;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Net.Security;
 using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Http;
 
 namespace Steeltoe.Security.DataProtection.CredHub;
 
 public class CredHubClient : ICredHubClient
 {
-    internal JsonSerializerOptions SerializerOptions { get; set; } = new ()
-    {
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        PropertyNameCaseInsensitive = true
-    };
-
     private const int DefaultTimeout = 3000;
 
     private static HttpClient _httpClient;
@@ -29,6 +24,13 @@ public class CredHubClient : ICredHubClient
     private static string _baseCredHubUrl;
 
     private readonly bool _validateCertificates;
+
+    internal JsonSerializerOptions SerializerOptions { get; set; } = new()
+    {
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true
+    };
 
     public CredHubClient(bool validateCertificates = true)
     {
@@ -38,10 +40,18 @@ public class CredHubClient : ICredHubClient
     /// <summary>
     /// Initialize a CredHub Client with user credentials for the appropriate UAA server.
     /// </summary>
-    /// <param name="credHubOptions">CredHub client configuration values.</param>
-    /// <param name="logger">Pass in a logger if you want logs.</param>
-    /// <param name="httpClient">Primarily for tests, optionally provide your own http client.</param>
-    /// <returns>An initialized CredHub client (using UAA OAuth).</returns>
+    /// <param name="credHubOptions">
+    /// CredHub client configuration values.
+    /// </param>
+    /// <param name="logger">
+    /// Pass in a logger if you want logs.
+    /// </param>
+    /// <param name="httpClient">
+    /// Primarily for tests, optionally provide your own http client.
+    /// </param>
+    /// <returns>
+    /// An initialized CredHub client (using UAA OAuth).
+    /// </returns>
     public static Task<CredHubClient> CreateUaaClientAsync(CredHubOptions credHubOptions, ILogger logger = null, HttpClient httpClient = null)
     {
         _logger = logger;
@@ -59,15 +69,18 @@ public class CredHubClient : ICredHubClient
 
     private async Task<CredHubClient> InitializeAsync(CredHubOptions options)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             Uri tokenUri;
-            var uaaOverrideUrl = Environment.GetEnvironmentVariable("UAA_Server_Override");
+            string uaaOverrideUrl = Environment.GetEnvironmentVariable("UAA_Server_Override");
+
             if (string.IsNullOrEmpty(uaaOverrideUrl))
             {
-                var info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}").ConfigureAwait(false);
-                var infoResponse = await HandleErrorParseResponse<CredHubServerInfo>(info, "GET /info from CredHub Server").ConfigureAwait(false);
+                HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}").ConfigureAwait(false);
+                CredHubServerInfo infoResponse = await HandleErrorParseResponse<CredHubServerInfo>(info, "GET /info from CredHub Server").ConfigureAwait(false);
                 tokenUri = new Uri($"{infoResponse.AuthServer.First().Value}/oauth/token");
                 _logger?.LogInformation($"Targeted CredHub server uses UAA server at {tokenUri}");
             }
@@ -78,13 +91,11 @@ public class CredHubClient : ICredHubClient
             }
 
             // login to UAA
-            var token = await HttpClientHelper.GetAccessToken(
-                tokenUri,
-                options.ClientId,
-                options.ClientSecret,
-                additionalParams: new Dictionary<string, string> { { "response_type", "token" } },
-                httpClient: _httpClient,
-                logger: _logger);
+            string token = await HttpClientHelper.GetAccessToken(tokenUri, options.ClientId, options.ClientSecret,
+                additionalParams: new Dictionary<string, string>
+                {
+                    { "response_type", "token" }
+                }, httpClient: _httpClient, logger: _logger);
 
             if (token != null)
             {
@@ -106,11 +117,16 @@ public class CredHubClient : ICredHubClient
 
     public async Task<CredHubCredential<T>> WriteAsync<T>(CredentialSetRequest credentialRequest)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to PUT {_baseCredHubUrl}/v1/data");
-            var response = await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
+
+            HttpResponseMessage response =
+                await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
+
             return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
@@ -121,12 +137,16 @@ public class CredHubClient : ICredHubClient
 
     public async Task<CredHubCredential<T>> GenerateAsync<T>(CredHubGenerateRequest requestParameters)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
 
-            var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
+            HttpResponseMessage response =
+                await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
+
             return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
@@ -147,11 +167,18 @@ public class CredHubClient : ICredHubClient
 
     private async Task<CredHubCredential<T>> RegenerateInternalAsync<T>(string name)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/data");
-            var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string> { { "name", name } }).ConfigureAwait(false);
+
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/regenerate", new Dictionary<string, string>
+            {
+                { "name", name }
+            }).ConfigureAwait(false);
+
             return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
@@ -172,11 +199,18 @@ public class CredHubClient : ICredHubClient
 
     private async Task<RegeneratedCertificates> BulkRegenerateInternalAsync(string certificateAuthority)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/bulk-regenerate");
-            var response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string> { { "signed_by", certificateAuthority } }).ConfigureAwait(false);
+
+            HttpResponseMessage response = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/bulk-regenerate", new Dictionary<string, string>
+            {
+                { "signed_by", certificateAuthority }
+            }).ConfigureAwait(false);
+
             return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
         }
         finally
@@ -197,11 +231,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<CredHubCredential<T>> GetByIdInternalAsync<T>(Guid id)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}v1/data/{id}");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}v1/data/{id}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}v1/data/{id}").ConfigureAwait(false);
             return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
         }
         finally
@@ -222,11 +258,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<CredHubCredential<T>> GetByNameInternalAsync<T>(string name)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&current=true");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true").ConfigureAwait(false);
             return (await HandleErrorParseResponse<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name").ConfigureAwait(false)).Data.First();
         }
         finally
@@ -247,11 +285,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<List<CredHubCredential<T>>> GetByNameWithHistoryInternalAsync<T>(string name, int entries)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&versions={entries}");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&versions={entries}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&versions={entries}").ConfigureAwait(false);
             return (await HandleErrorParseResponse<CredHubResponse<T>>(response, "Get credential by name with History").ConfigureAwait(false)).Data;
         }
         finally
@@ -272,11 +312,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<List<FoundCredential>> FindByNameInternalAsync(string name)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name-like={name}");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name-like={name}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name-like={name}").ConfigureAwait(false);
             return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find credential by Name").ConfigureAwait(false)).Credentials;
         }
         finally
@@ -297,11 +339,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<List<FoundCredential>> FindByPathInternalAsync(string path)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?path={path}");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?path={path}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?path={path}").ConfigureAwait(false);
             return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find by Path").ConfigureAwait(false)).Credentials;
         }
         finally
@@ -322,13 +366,15 @@ public class CredHubClient : ICredHubClient
 
     public async Task<bool> DeleteByNameInternalAsync(string name)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/data?name={name}");
-            var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/data?name={name}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/data?name={name}").ConfigureAwait(false);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NoContent || response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            if (response.StatusCode == HttpStatusCode.NoContent || response.StatusCode == HttpStatusCode.NotFound)
             {
                 return true;
             }
@@ -353,11 +399,13 @@ public class CredHubClient : ICredHubClient
 
     private async Task<List<CredentialPermission>> GetPermissionsInternalAsync(string name)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/permissions?credential_name={name}");
-            var response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}").ConfigureAwait(false);
+            HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}").ConfigureAwait(false);
             return (await HandleErrorParseResponse<CredentialPermissions>(response, "Get Permissions").ConfigureAwait(false)).Permissions;
         }
         finally
@@ -383,11 +431,19 @@ public class CredHubClient : ICredHubClient
 
     private async Task<List<CredentialPermission>> AddPermissionsInternalAsync(string name, List<CredentialPermission> permissions)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/permissions");
-            var newPermissions = new CredentialPermissions { CredentialName = name, Permissions = permissions };
+
+            var newPermissions = new CredentialPermissions
+            {
+                CredentialName = name,
+                Permissions = permissions
+            };
+
             _ = await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/permissions", newPermissions, SerializerOptions).ConfigureAwait(false);
 
             return await GetPermissionsAsync(name).ConfigureAwait(false);
@@ -415,13 +471,17 @@ public class CredHubClient : ICredHubClient
 
     private async Task<bool> DeletePermissionInternalAsync(string name, string actor)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to DELETE {_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}");
-            var response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}").ConfigureAwait(false);
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NoContent || response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            HttpResponseMessage response = await _httpClient.DeleteAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}&actor={actor}")
+                .ConfigureAwait(false);
+
+            if (response.StatusCode == HttpStatusCode.NoContent || response.StatusCode == HttpStatusCode.NotFound)
             {
                 return true;
             }
@@ -446,11 +506,15 @@ public class CredHubClient : ICredHubClient
 
     private async Task<string> InterpolateServiceDataInternalAsync(string serviceData)
     {
-        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out var protocolType, out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_validateCertificates, out SecurityProtocolType protocolType,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogTrace($"About to POST {_baseCredHubUrl}/v1/interpolate");
-            var response = await _httpClient.PostAsync($"{_baseCredHubUrl}/v1/interpolate", new StringContent(serviceData, Encoding.Default, "application/json")).ConfigureAwait(false);
+
+            HttpResponseMessage response = await _httpClient
+                .PostAsync($"{_baseCredHubUrl}/v1/interpolate", new StringContent(serviceData, Encoding.Default, "application/json")).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
             {
@@ -473,11 +537,9 @@ public class CredHubClient : ICredHubClient
         {
             return await response.Content.ReadFromJsonAsync<T>(SerializerOptions).ConfigureAwait(false);
         }
-        else
-        {
-            _logger?.LogCritical($"Failed to {operation}, status code: {response.StatusCode}");
-            _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-            throw new CredHubException($"Failed to {operation}, status code: {response.StatusCode}");
-        }
+
+        _logger?.LogCritical($"Failed to {operation}, status code: {response.StatusCode}");
+        _logger?.LogCritical(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+        throw new CredHubException($"Failed to {operation}, status code: {response.StatusCode}");
     }
 }

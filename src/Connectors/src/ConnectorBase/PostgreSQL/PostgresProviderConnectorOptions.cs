@@ -2,34 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Connector.PostgreSql;
 
 public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string PostgresClientSectionPrefix = "postgres:client";
     public const string DefaultHost = "localhost";
     public const int DefaultPort = 5432;
-    private const string PostgresClientSectionPrefix = "postgres:client";
     private readonly bool _cloudFoundryConfigFound;
 
-    public PostgresProviderConnectorOptions()
-    {
-    }
-
-    public PostgresProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(PostgresClientSectionPrefix);
-        section.Bind(this);
-
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
-    }
+    internal Dictionary<string, string> Options { get; set; } = new();
 
     public string ConnectionString { get; set; }
 
@@ -59,7 +44,22 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 
     public bool? TrustServerCertificate { get; set; } = null;
 
-    internal Dictionary<string, string> Options { get; set; } = new ();
+    public PostgresProviderConnectorOptions()
+    {
+    }
+
+    public PostgresProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(PostgresClientSectionPrefix);
+        section.Bind(this);
+
+        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+    }
 
     public override string ToString()
     {
@@ -87,7 +87,7 @@ public class PostgresProviderConnectorOptions : AbstractServiceConnectorOptions
 
         if (Options != null && Options.Any())
         {
-            foreach (var o in Options)
+            foreach (KeyValuePair<string, string> o in Options)
             {
                 AddKeyValue(sb, o.Key, o.Value);
             }

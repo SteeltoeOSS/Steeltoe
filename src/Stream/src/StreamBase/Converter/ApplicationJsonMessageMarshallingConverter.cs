@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Converter;
 
@@ -16,18 +16,21 @@ public class ApplicationJsonMessageMarshallingConverter : NewtonJsonMessageConve
     }
 
     protected override object ConvertToInternal(object payload, IMessageHeaders headers, object conversionHint)
-        => payload switch
+    {
+        return payload switch
         {
             byte[] => payload,
             string sPayload => EncodingUtils.Utf8.GetBytes(sPayload),
             _ => base.ConvertToInternal(payload, headers, conversionHint)
         };
+    }
 
     protected override object ConvertFromInternal(IMessage message, Type targetClass, object conversionHint)
     {
         if (conversionHint is ParameterInfo info)
         {
-            var conversionHintType = info.ParameterType;
+            Type conversionHintType = info.ParameterType;
+
             if (IsIMessageGenericType(conversionHintType))
             {
                 /*

@@ -9,6 +9,14 @@ public class RabbitMQServiceInfo : UriServiceInfo
     public const string AmqpScheme = "amqp";
     public const string AmqpSecureScheme = "amqps";
 
+    public string ManagementUri { get; protected internal set; }
+
+    public List<string> Uris { get; protected internal set; }
+
+    public List<string> ManagementUris { get; protected internal set; }
+
+    public string VirtualHost => Info.Path;
+
     public RabbitMQServiceInfo(string id, string host, int port, string username, string password, string virtualHost)
         : this(id, host, port, username, password, virtualHost, null)
     {
@@ -36,19 +44,5 @@ public class RabbitMQServiceInfo : UriServiceInfo
         : base(id, uri)
     {
         ManagementUri = managementUri;
-    }
-
-    public string ManagementUri { get; protected internal set; }
-
-    public List<string> Uris { get; protected internal set; }
-
-    public List<string> ManagementUris { get; protected internal set; }
-
-    public string VirtualHost
-    {
-        get
-        {
-            return Info.Path;
-        }
     }
 }

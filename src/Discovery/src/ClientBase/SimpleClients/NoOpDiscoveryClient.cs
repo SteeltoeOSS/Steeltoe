@@ -11,11 +11,18 @@ namespace Steeltoe.Discovery.Client.SimpleClients;
 
 internal sealed class NoOpDiscoveryClient : IDiscoveryClient
 {
+    private readonly IList<IServiceInstance> _serviceInstances = new List<IServiceInstance>();
+
+    public string Description => "An IDiscoveryClient that passes through to underlying infrastructure";
+
+    public IList<string> Services => new List<string>();
+
     internal NoOpDiscoveryClient(IConfiguration configuration, ILogger<NoOpDiscoveryClient> logger = null)
     {
         logger?.LogWarning("No discovery client has been completely configured, using default no-op discovery client.");
         logger?.LogInformation("Running in container: {IsContainerized}", Platform.IsContainerized);
-        foreach (var client in GetConfiguredClients(configuration))
+
+        foreach (KeyValuePair<string, string> client in GetConfiguredClients(configuration))
         {
             logger?.LogWarning("Found configuration values for {client}, try adding a NuGet reference {package}", client.Key, client.Value);
         }
@@ -31,38 +38,31 @@ internal sealed class NoOpDiscoveryClient : IDiscoveryClient
         // clients (and their config base paths) shipped with Steeltoe
         var configurableClients = new List<Tuple<string, string, bool>>
         {
-            new ("Consul", "consul", true),
-            new ("Eureka", "eureka", true),
-            new ("Kubernetes", "spring:cloud:kubernetes:discovery", true)
+            new("Consul", "consul", true),
+            new("Eureka", "eureka", true),
+            new("Kubernetes", "spring:cloud:kubernetes:discovery", true)
         };
 
         // allow for custom discovery client configurations to be discovered
-        configurableClients.AddRange(
-            configuration
-                .GetSection("DiscoveryClients")
-                .GetChildren()
-                .Select(x => new Tuple<string, string, bool>(x.Key, x.Value, false)));
+        configurableClients.AddRange(configuration.GetSection("DiscoveryClients").GetChildren()
+            .Select(x => new Tuple<string, string, bool>(x.Key, x.Value, false)));
 
         // iterate through the clients to see if any of them have config values
         var clientsWithConfig = new Dictionary<string, string>();
-        foreach (var potentialClient in configurableClients)
+
+        foreach (Tuple<string, string, bool> potentialClient in configurableClients)
         {
             if (configuration.GetSection(potentialClient.Item2).GetChildren().Any())
             {
-                clientsWithConfig.Add(
-                    potentialClient.Item1,
-                    potentialClient.Item3 ? $"to Steeltoe.Discovery.{potentialClient.Item1}" : $"that enables {potentialClient.Item1} to work with Steeltoe Discovery");
+                clientsWithConfig.Add(potentialClient.Item1,
+                    potentialClient.Item3
+                        ? $"to Steeltoe.Discovery.{potentialClient.Item1}"
+                        : $"that enables {potentialClient.Item1} to work with Steeltoe Discovery");
             }
         }
 
         return clientsWithConfig;
     }
-
-    public string Description => "An IDiscoveryClient that passes through to underlying infrastructure";
-
-    public IList<string> Services => new List<string>();
-
-    private readonly IList<IServiceInstance> _serviceInstances = new List<IServiceInstance>();
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {

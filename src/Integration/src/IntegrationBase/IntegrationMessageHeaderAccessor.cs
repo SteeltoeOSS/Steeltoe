@@ -43,7 +43,7 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
     public void SetReadOnlyHeaders(IList<string> readOnlyHeaders)
     {
-        foreach (var h in readOnlyHeaders)
+        foreach (string h in readOnlyHeaders)
         {
             if (h == null)
             {
@@ -69,13 +69,13 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
     public int GetSequenceNumber()
     {
-        var sequenceNumber = (int?)GetHeader(SequenceNumber);
+        int? sequenceNumber = (int?)GetHeader(SequenceNumber);
         return sequenceNumber ?? 0;
     }
 
     public int GetSequenceSize()
     {
-        var sequenceSize = (int?)GetHeader(SequenceSize);
+        int? sequenceSize = (int?)GetHeader(SequenceSize);
         return sequenceSize ?? 0;
     }
 
@@ -96,7 +96,8 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
     public T GetHeader<T>(string key)
     {
-        var value = GetHeader(key);
+        object value = GetHeader(key);
+
         if (value == null)
         {
             return default;
@@ -104,8 +105,7 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
 
         if (value is not T typedValue)
         {
-            throw new ArgumentException(
-                $"Incorrect type specified for header '{key}'. Expected [{typeof(T)}] but actual type is [{value.GetType()}]");
+            throw new ArgumentException($"Incorrect type specified for header '{key}'. Expected [{typeof(T)}] but actual type is [{value.GetType()}]");
         }
 
         return typedValue;
@@ -117,16 +117,15 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
         {
             return base.ToDictionary();
         }
-        else
-        {
-            var headers = base.ToDictionary();
-            foreach (var header in _readOnlyHeaders)
-            {
-                headers.Remove(header);
-            }
 
-            return headers;
+        IDictionary<string, object> headers = base.ToDictionary();
+
+        foreach (string header in _readOnlyHeaders)
+        {
+            headers.Remove(header);
         }
+
+        return headers;
     }
 
     public new bool IsReadOnly(string headerName)
@@ -139,6 +138,7 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
         if (headerName != null && headerValue != null)
         {
             base.VerifyType(headerName, headerValue);
+
             if (ExpirationDate.Equals(headerName))
             {
                 if (!(headerValue is DateTime || headerValue is long))
@@ -146,9 +146,7 @@ public class IntegrationMessageHeaderAccessor : MessageHeaderAccessor
                     throw new ArgumentException($"The '{headerName}' header value must be a Date or Long.");
                 }
             }
-            else if (SequenceNumber.Equals(headerName)
-                     || SequenceSize.Equals(headerName)
-                     || Priority.Equals(headerName))
+            else if (SequenceNumber.Equals(headerName) || SequenceSize.Equals(headerName) || Priority.Equals(headerName))
             {
                 if (headerValue is not int)
                 {

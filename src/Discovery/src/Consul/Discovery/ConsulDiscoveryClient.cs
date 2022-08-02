@@ -35,14 +35,29 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         }
     }
 
+    /// <inheritdoc />
+    public string Description { get; } = "HashiCorp Consul Client";
+
+    /// <inheritdoc />
+    public IList<string> Services => GetServicesAsync().GetAwaiter().GetResult();
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
+    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
     /// </summary>
-    /// <param name="client">a Consul client.</param>
-    /// <param name="options">the configuration options.</param>
-    /// <param name="registrar">a Consul registrar service.</param>
-    /// <param name="logger">optional logger.</param>
-    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
+    /// <param name="client">
+    /// a Consul client.
+    /// </param>
+    /// <param name="options">
+    /// the configuration options.
+    /// </param>
+    /// <param name="registrar">
+    /// a Consul registrar service.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
+    public ConsulDiscoveryClient(IConsulClient client, ConsulDiscoveryOptions options, IConsulServiceRegistrar registrar = null,
+        ILogger<ConsulDiscoveryClient> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -57,13 +72,22 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient"/> class.
+    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
     /// </summary>
-    /// <param name="client">a Consul client.</param>
-    /// <param name="optionsMonitor">the configuration options.</param>
-    /// <param name="registrar">a Consul registrar service.</param>
-    /// <param name="logger">optional logger.</param>
-    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null, ILogger<ConsulDiscoveryClient> logger = null)
+    /// <param name="client">
+    /// a Consul client.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// the configuration options.
+    /// </param>
+    /// <param name="registrar">
+    /// a Consul registrar service.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulServiceRegistrar registrar = null,
+        ILogger<ConsulDiscoveryClient> logger = null)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
@@ -77,42 +101,36 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IServiceInstance GetLocalServiceInstance()
     {
         return _thisServiceInstance;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
         return GetInstances(serviceId, QueryOptions.Default);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task ShutdownAsync()
     {
         return Task.CompletedTask;
     }
 
-    /// <inheritdoc/>
-    public string Description { get; } = "HashiCorp Consul Client";
-
-    /// <inheritdoc/>
-    public IList<string> Services
-    {
-        get
-        {
-            return GetServicesAsync().GetAwaiter().GetResult();
-        }
-    }
-
     /// <summary>
     /// Returns the instances for the provided service ID.
     /// </summary>
-    /// <param name="serviceId">the service id to get instances for.</param>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
-    /// <returns>the list of service instances.</returns>
+    /// <param name="serviceId">
+    /// the service id to get instances for.
+    /// </param>
+    /// <param name="queryOptions">
+    /// any Consul query options to use when doing lookup.
+    /// </param>
+    /// <returns>
+    /// the list of service instances.
+    /// </returns>
     public IList<IServiceInstance> GetInstances(string serviceId, QueryOptions queryOptions = null)
     {
         return GetInstancesAsync(serviceId, queryOptions).GetAwaiter().GetResult();
@@ -121,8 +139,12 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <summary>
     /// Returns all instances for all services.
     /// </summary>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
-    /// <returns>the list of service instances.</returns>
+    /// <param name="queryOptions">
+    /// any Consul query options to use when doing lookup.
+    /// </param>
+    /// <returns>
+    /// the list of service instances.
+    /// </returns>
     public IList<IServiceInstance> GetAllInstances(QueryOptions queryOptions = null)
     {
         return GetAllInstancesAsync().GetAwaiter().GetResult();
@@ -131,8 +153,9 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
         {
             queryOptions ??= QueryOptions.Default;
             var instances = new List<IServiceInstance>();
-            var result = await GetServicesAsync().ConfigureAwait(false);
-            foreach (var serviceId in result)
+            IList<string> result = await GetServicesAsync().ConfigureAwait(false);
+
+            foreach (string serviceId in result)
             {
                 await AddInstancesToListAsync(instances, serviceId, queryOptions).ConfigureAwait(false);
             }
@@ -144,8 +167,12 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     /// <summary>
     /// Returns a list of service names in the catalog.
     /// </summary>
-    /// <param name="queryOptions">any Consul query options to use when doing lookup.</param>
-    /// <returns>the list of services.</returns>
+    /// <param name="queryOptions">
+    /// any Consul query options to use when doing lookup.
+    /// </param>
+    /// <returns>
+    /// the list of services.
+    /// </returns>
     public IList<string> GetServices(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
@@ -162,17 +189,19 @@ public class ConsulDiscoveryClient : IConsulDiscoveryClient
     internal async Task<IList<string>> GetServicesAsync(QueryOptions queryOptions = null)
     {
         queryOptions ??= QueryOptions.Default;
-        var result = await _client.Catalog.Services(queryOptions).ConfigureAwait(false);
-        var response = result.Response;
+        QueryResult<Dictionary<string, string[]>> result = await _client.Catalog.Services(queryOptions).ConfigureAwait(false);
+        Dictionary<string, string[]> response = result.Response;
         return response.Keys.ToList();
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions)
     {
-        var result = await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions).ConfigureAwait(false);
-        var response = result.Response;
+        QueryResult<ServiceEntry[]> result =
+            await _client.Health.Service(serviceId, Options.DefaultQueryTag, Options.QueryPassing, queryOptions).ConfigureAwait(false);
 
-        foreach (var instance in response.Select(s => new ConsulServiceInstance(s)))
+        ServiceEntry[] response = result.Response;
+
+        foreach (ConsulServiceInstance instance in response.Select(s => new ConsulServiceInstance(s)))
         {
             instances.Add(instance);
         }

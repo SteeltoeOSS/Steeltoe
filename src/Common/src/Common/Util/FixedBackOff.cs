@@ -10,6 +10,10 @@ public class FixedBackOff : IBackOff
     public const int DefaultInterval = 5000;
     public const int UnlimitedAttempts = int.MaxValue;
 
+    public int Interval { get; set; } = DefaultInterval;
+
+    public int MaxAttempts { get; set; } = UnlimitedAttempts;
+
     public FixedBackOff()
     {
     }
@@ -19,10 +23,6 @@ public class FixedBackOff : IBackOff
         Interval = interval;
         MaxAttempts = maxAttempts;
     }
-
-    public int Interval { get; set; } = DefaultInterval;
-
-    public int MaxAttempts { get; set; } = UnlimitedAttempts;
 
     public IBackOffExecution Start()
     {
@@ -42,19 +42,18 @@ public class FixedBackOff : IBackOff
         public int NextBackOff()
         {
             _currentAttempts++;
+
             if (_currentAttempts <= _backOff.MaxAttempts)
             {
                 return _backOff.Interval;
             }
-            else
-            {
-                return Stop;
-            }
+
+            return Stop;
         }
 
         public override string ToString()
         {
-            var attemptValue = _backOff.MaxAttempts == int.MaxValue ? "unlimited" : _backOff.MaxAttempts.ToString();
+            string attemptValue = _backOff.MaxAttempts == int.MaxValue ? "unlimited" : _backOff.MaxAttempts.ToString();
             return $"FixedBackOff{{interval={_backOff.Interval}, currentAttempts={_currentAttempts}, maxAttempts={attemptValue}}}";
         }
     }

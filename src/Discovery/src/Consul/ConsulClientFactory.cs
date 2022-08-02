@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Consul;
 using Steeltoe.Discovery.Consul.Util;
-using System.Net;
 
 namespace Steeltoe.Discovery.Consul;
 
@@ -16,8 +16,12 @@ public static class ConsulClientFactory
     /// <summary>
     /// Create a Consul client using the provided configuration options.
     /// </summary>
-    /// <param name="options">the configuration options.</param>
-    /// <returns>a Consul client.</returns>
+    /// <param name="options">
+    /// the configuration options.
+    /// </param>
+    /// <returns>
+    /// a Consul client.
+    /// </returns>
     public static IConsulClient CreateClient(ConsulOptions options)
     {
         if (options == null)
@@ -30,6 +34,7 @@ public static class ConsulClientFactory
             s.Address = new Uri($"{options.Scheme}://{options.Host}:{options.Port}");
             s.Token = options.Token;
             s.Datacenter = options.Datacenter;
+
             if (!string.IsNullOrEmpty(options.WaitTime))
             {
                 s.WaitTime = DateTimeConversions.ToTimeSpan(options.WaitTime);
@@ -42,6 +47,7 @@ public static class ConsulClientFactory
 #pragma warning restore CS0618 // Type or member is obsolete
             }
         });
+
         return client;
     }
 }

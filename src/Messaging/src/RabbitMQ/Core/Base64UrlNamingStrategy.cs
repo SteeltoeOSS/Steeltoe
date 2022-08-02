@@ -6,7 +6,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 
 public class Base64UrlNamingStrategy : INamingStrategy
 {
-    public static readonly Base64UrlNamingStrategy Default = new ();
+    public static readonly Base64UrlNamingStrategy Default = new();
+
+    public string Prefix { get; }
 
     public Base64UrlNamingStrategy()
         : this("spring.gen-")
@@ -18,15 +20,10 @@ public class Base64UrlNamingStrategy : INamingStrategy
         Prefix = prefix ?? throw new ArgumentNullException(nameof(prefix));
     }
 
-    public string Prefix { get; }
-
     public string GenerateName()
     {
         var uuid = Guid.NewGuid();
-        var converted = Convert.ToBase64String(uuid.ToByteArray())
-            .Replace('+', '-')
-            .Replace('/', '_')
-            .Replace("=", string.Empty);
+        string converted = Convert.ToBase64String(uuid.ToByteArray()).Replace('+', '-').Replace('/', '_').Replace("=", string.Empty);
         return Prefix + converted;
     }
 }

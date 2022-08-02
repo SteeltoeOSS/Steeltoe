@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Text;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
-using System.Net;
-using System.Text;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
@@ -26,7 +26,9 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
     {
         try
         {
-            var secretResponse = K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            HttpOperationResponse<V1Secret> secretResponse =
+                K8sClient.ReadNamespacedSecretWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+
             ProcessData(secretResponse.Body);
             EnableReloading();
         }
@@ -34,7 +36,9 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         {
             if (e.Response.StatusCode == HttpStatusCode.Forbidden)
             {
-                Logger?.LogCritical(e, "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                Logger?.LogCritical(e,
+                    "Failed to retrieve secret '{SecretName}' in namespace '{SecretNamespace}'. Confirm that your service account has the necessary permissions",
+                    Settings.Name, Settings.Namespace);
             }
             else if (e.Response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -55,7 +59,10 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         K8sClient = null;
     }
 
-    private static string NormalizeKey(string key) => key.Replace("__", ":");
+    private static string NormalizeKey(string key)
+    {
+        return key.Replace("__", ":");
+    }
 
     private void EnableReloading()
     {
@@ -82,26 +89,28 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
 
     private void EnableEventReloading()
     {
-        SecretWatcher = K8sClient.WatchNamespacedSecretAsync(
-            Settings.Name,
-            Settings.Namespace,
-            onEvent: (eventType, item) =>
-            {
-                Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
-                switch (eventType)
+        SecretWatcher = K8sClient.WatchNamespacedSecretAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
-                    case WatchEventType.Added:
-                    case WatchEventType.Modified:
-                    case WatchEventType.Deleted:
-                        ProcessData(item);
-                        break;
-                    default:
-                        Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
-                        break;
-                }
-            },
-            onError: exception => Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
-            onClosed: () => Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name)).GetAwaiter().GetResult();
+                    Logger?.LogInformation("Received {eventType} event for Secret {secretName} with {entries} values", eventType.ToString(), Settings.Name,
+                        item?.Data?.Count);
+
+                    switch (eventType)
+                    {
+                        case WatchEventType.Added:
+                        case WatchEventType.Modified:
+                        case WatchEventType.Deleted:
+                            ProcessData(item);
+                            break;
+                        default:
+                            Logger?.LogDebug("Event type {eventType} is not support, no action has been taken", eventType);
+                            break;
+                    }
+                },
+                onError: exception => Logger?.LogCritical(exception, "Secret watcher on {namespace}.{name} encountered an error!", Settings.Namespace,
+                    Settings.Name),
+                onClosed: () => Logger?.LogInformation("Secret watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
+            .GetAwaiter()
+            .GetResult();
     }
 
     private void ProcessData(V1Secret item)
@@ -113,9 +122,10 @@ internal sealed class KubernetesSecretProvider : KubernetesProviderBase, IDispos
         }
 
         var secretContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
         if (item?.Data != null)
         {
-            foreach (var data in item.Data)
+            foreach (KeyValuePair<string, byte[]> data in item.Data)
             {
                 secretContents[NormalizeKey(data.Key)] = Encoding.UTF8.GetString(data.Value);
             }

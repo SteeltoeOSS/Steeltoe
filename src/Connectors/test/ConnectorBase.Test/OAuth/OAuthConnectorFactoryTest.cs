@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 using Xunit;
 
@@ -16,10 +17,10 @@ public class OAuthConnectorFactoryTest
         var config = new OAuthConnectorOptions();
 
         var factory = new OAuthConnectorFactory(si, config);
-        var result = factory.Create(null);
+        IOptions<OAuthServiceOptions> result = factory.Create(null);
 
         Assert.NotNull(result);
-        var opts = result.Value;
+        OAuthServiceOptions opts = result.Value;
         Assert.NotNull(opts);
 
         Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAccessTokenUri}", opts.AccessTokenUrl);

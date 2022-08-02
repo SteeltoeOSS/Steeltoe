@@ -54,21 +54,21 @@ public class BindingLifecycleTests
 
     private sealed class TestBindable : IBindable
     {
-        private readonly List<IBinding> _bindings = new ();
-
-        public TestBindable(params Mock<IBinding>[] bindings)
-        {
-            foreach (var mocks in bindings)
-            {
-                _bindings.Add(mocks.Object);
-            }
-        }
+        private readonly List<IBinding> _bindings = new();
 
         public Type BindingType => throw new NotImplementedException();
 
         public ICollection<string> Inputs => throw new NotImplementedException();
 
         public ICollection<string> Outputs => throw new NotImplementedException();
+
+        public TestBindable(params Mock<IBinding>[] bindings)
+        {
+            foreach (Mock<IBinding> mocks in bindings)
+            {
+                _bindings.Add(mocks.Object);
+            }
+        }
 
         public ICollection<IBinding> CreateAndBindInputs(IBindingService bindingService)
         {

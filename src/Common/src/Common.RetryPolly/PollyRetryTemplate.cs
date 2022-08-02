@@ -5,6 +5,8 @@
 using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
+using Polly.Fallback;
+using Polly.Retry;
 using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Retry;
@@ -30,7 +32,8 @@ public class PollyRetryTemplate : RetryTemplate
     {
     }
 
-    public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval, int backOffMaxInterval, double backOffMultiplier, ILogger logger = null)
+    public PollyRetryTemplate(Dictionary<Type, bool> retryableExceptions, int maxAttempts, bool defaultRetryable, int backOffInitialInterval,
+        int backOffMaxInterval, double backOffMultiplier, ILogger logger = null)
     {
         _retryableExceptions = new BinaryExceptionClassifier(retryableExceptions, defaultRetryable);
         _maxAttempts = maxAttempts;
@@ -59,35 +62,39 @@ public class PollyRetryTemplate : RetryTemplate
 
     public override T Execute<T>(Func<IRetryContext, T> retryCallback, IRecoveryCallback<T> recoveryCallback)
     {
-        var policy = BuildPolicy<T>();
+        Policy<T> policy = BuildPolicy<T>();
         var retryContext = new RetryContext();
+
         var context = new Context
         {
             { RetryContextKey, retryContext }
         };
+
         RetrySynchronizationManager.Register(retryContext);
+
         if (recoveryCallback != null)
         {
             retryContext.SetAttribute(RecoveryCallbackKey, recoveryCallback);
         }
 
         CallListenerOpen(retryContext);
-        var result = policy.Execute(
-            _ =>
+
+        T result = policy.Execute(_ =>
+        {
+            T callbackResult = retryCallback(retryContext);
+
+            if (recoveryCallback != null)
             {
-                var callbackResult = retryCallback(retryContext);
+                bool? recovered = (bool?)retryContext.GetAttribute(Recovered);
 
-                if (recoveryCallback != null)
+                if (recovered != null && recovered.Value)
                 {
-                    var recovered = (bool?)retryContext.GetAttribute(Recovered);
-                    if (recovered != null && recovered.Value)
-                    {
-                        callbackResult = (T)retryContext.GetAttribute(RecoveredResult);
-                    }
+                    callbackResult = (T)retryContext.GetAttribute(RecoveredResult);
                 }
+            }
 
-                return callbackResult;
-            }, context);
+            return callbackResult;
+        }, context);
 
         CallListenerClose(retryContext, retryContext.LastException);
         RetrySynchronizationManager.Clear();
@@ -101,13 +108,16 @@ public class PollyRetryTemplate : RetryTemplate
 
     public override void Execute(Action<IRetryContext> retryCallback, IRecoveryCallback recoveryCallback)
     {
-        var policy = BuildPolicy<object>();
+        Policy<object> policy = BuildPolicy<object>();
         var retryContext = new RetryContext();
+
         var context = new Context
         {
             { RetryContextKey, retryContext }
         };
+
         RetrySynchronizationManager.Register(retryContext);
+
         if (recoveryCallback != null)
         {
             retryContext.SetAttribute(RecoveryCallbackKey, recoveryCallback);
@@ -118,12 +128,11 @@ public class PollyRetryTemplate : RetryTemplate
             throw new TerminatedRetryException("Retry terminated abnormally by interceptor before first attempt");
         }
 
-        policy.Execute(
-            _ =>
-            {
-                retryCallback(retryContext);
-                return null;
-            }, context);
+        policy.Execute(_ =>
+        {
+            retryCallback(retryContext);
+            return null;
+        }, context);
 
         CallListenerClose(retryContext, retryContext.LastException);
         RetrySynchronizationManager.Clear();
@@ -131,57 +140,55 @@ public class PollyRetryTemplate : RetryTemplate
 
     private Policy<T> BuildPolicy<T>()
     {
-        var delay = Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(_backOffInitialInterval), _maxAttempts - 1, _backOffMultiplier, true);
-        var retryPolicy = Policy<T>.HandleInner<Exception>(e => _retryableExceptions.Classify(e))
-            .WaitAndRetry(delay, OnRetry);
+        IEnumerable<TimeSpan> delay =
+            Backoff.ExponentialBackoff(TimeSpan.FromMilliseconds(_backOffInitialInterval), _maxAttempts - 1, _backOffMultiplier, true);
 
-        var fallbackPolicy = Policy<T>.Handle<Exception>()
-            .Fallback(
-                (delegateResult, context, _) =>
-                {
-                    var retryContext = GetRetryContext(context);
-                    retryContext.LastException = delegateResult.Exception;
-                    var result = default(T);
-                    if (retryContext.GetAttribute(RecoveryCallbackKey) is IRecoveryCallback callback)
-                    {
-                        result = (T)callback.Recover(retryContext);
-                        retryContext.SetAttribute(Recovered, true);
-                        retryContext.SetAttribute(RecoveredResult, result);
-                    }
-                    else if (delegateResult.Exception != null)
-                    {
-                        throw delegateResult.Exception;
-                    }
+        RetryPolicy<T> retryPolicy = Policy<T>.HandleInner<Exception>(e => _retryableExceptions.Classify(e)).WaitAndRetry(delay, OnRetry);
 
-                    return result;
-                }, (ex, context) =>
-                {
-                    _logger?.LogError(ex.Exception, $"Context: {context}");
+        FallbackPolicy<T> fallbackPolicy = Policy<T>.Handle<Exception>().Fallback((delegateResult, context, _) =>
+        {
+            RetryContext retryContext = GetRetryContext(context);
+            retryContext.LastException = delegateResult.Exception;
+            var result = default(T);
 
-                    // throw ex.Exception; throwing here doesn't allow the fall back to work.
-                });
+            if (retryContext.GetAttribute(RecoveryCallbackKey) is IRecoveryCallback callback)
+            {
+                result = (T)callback.Recover(retryContext);
+                retryContext.SetAttribute(Recovered, true);
+                retryContext.SetAttribute(RecoveredResult, result);
+            }
+            else if (delegateResult.Exception != null)
+            {
+                throw delegateResult.Exception;
+            }
+
+            return result;
+        }, (ex, context) =>
+        {
+            _logger?.LogError(ex.Exception, $"Context: {context}");
+
+            // throw ex.Exception; throwing here doesn't allow the fall back to work.
+        });
 
         return fallbackPolicy.Wrap(retryPolicy);
     }
 
     private RetryContext GetRetryContext(Context context)
     {
-        if (context.TryGetValue(RetryContextKey, out var obj))
+        if (context.TryGetValue(RetryContextKey, out object obj))
         {
             return (RetryContext)obj;
         }
-        else
-        {
-            var result = new RetryContext();
-            RetrySynchronizationManager.Register(result);
-            return result;
-        }
+
+        var result = new RetryContext();
+        RetrySynchronizationManager.Register(result);
+        return result;
     }
 
     private void OnRetry<T>(DelegateResult<T> delegateResult, TimeSpan time, int retryCount, Context context)
     {
-        var retryContext = GetRetryContext(context);
-        var ex = delegateResult.Exception;
+        RetryContext retryContext = GetRetryContext(context);
+        Exception ex = delegateResult.Exception;
 
         retryContext.LastException = ex;
         retryContext.RetryCount = retryCount;
@@ -194,8 +201,9 @@ public class PollyRetryTemplate : RetryTemplate
 
     private bool CallListenerOpen(RetryContext context)
     {
-        var running = true;
-        foreach (var listener in listeners)
+        bool running = true;
+
+        foreach (IRetryListener listener in listeners)
         {
             running &= listener.Open(context);
         }
@@ -206,7 +214,8 @@ public class PollyRetryTemplate : RetryTemplate
     private void CallListenerClose(RetryContext context, Exception ex)
     {
         context.SetAttribute(Closed, true);
-        foreach (var listener in listeners)
+
+        foreach (IRetryListener listener in listeners)
         {
             listener.Close(context, ex);
         }
@@ -214,7 +223,7 @@ public class PollyRetryTemplate : RetryTemplate
 
     private void CallListenerOnError(RetryContext context, Exception ex)
     {
-        foreach (var listener in listeners)
+        foreach (IRetryListener listener in listeners)
         {
             listener.OnError(context, ex);
         }

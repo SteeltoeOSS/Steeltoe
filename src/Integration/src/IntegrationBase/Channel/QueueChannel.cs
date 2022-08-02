@@ -2,11 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
-using System.Threading.Channels;
-using Channels = System.Threading.Channels;
 
 namespace Steeltoe.Integration.Channel;
 
@@ -16,25 +15,38 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
     private readonly int _capacity = -1;
     private int _size;
 
+    public int QueueSize => _size;
+
+    public int RemainingCapacity => _capacity - _size;
+
     public QueueChannel(ILogger logger = null)
         : this(null, logger)
     {
     }
 
     public QueueChannel(IApplicationContext context, ILogger logger = null)
-        : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+        : this(context, System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        {
+            FullMode = BoundedChannelFullMode.Wait
+        }), null, logger)
     {
         _capacity = int.MaxValue;
     }
 
     public QueueChannel(IApplicationContext context, string name, ILogger logger = null)
-        : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue) { FullMode = BoundedChannelFullMode.Wait }), name, logger)
+        : this(context, System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        {
+            FullMode = BoundedChannelFullMode.Wait
+        }), name, logger)
     {
         _capacity = int.MaxValue;
     }
 
     public QueueChannel(IApplicationContext context, int capacity, ILogger logger = null)
-        : this(context, Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(capacity) { FullMode = BoundedChannelFullMode.Wait }), null, logger)
+        : this(context, System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(capacity)
+        {
+            FullMode = BoundedChannelFullMode.Wait
+        }), null, logger)
     {
         _capacity = capacity;
     }
@@ -52,17 +64,11 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
         Reader = new QueueChannelReader(this, logger);
     }
 
-    public int QueueSize => _size;
-
-    public int RemainingCapacity
-    {
-        get { return _capacity - _size; }
-    }
-
     public IList<IMessage> Clear()
     {
         var messages = new List<IMessage>();
-        while (_channel.Reader.TryRead(out var message))
+
+        while (_channel.Reader.TryRead(out IMessage message))
         {
             Interlocked.Decrement(ref _size);
             messages.Add(message);
@@ -80,36 +86,28 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
     {
         if (cancellationToken == default)
         {
-            if (_channel.Reader.TryRead(out var message))
+            if (_channel.Reader.TryRead(out IMessage message))
             {
                 Interlocked.Decrement(ref _size);
             }
 
             return message;
         }
-        else
+
+        try
         {
-            try
-            {
-                var message = _channel
-                    .Reader
-                    .ReadAsync(cancellationToken)
-                    .AsTask()
-                    .ConfigureAwait(false)
-                    .GetAwaiter()
-                    .GetResult();
+            IMessage message = _channel.Reader.ReadAsync(cancellationToken).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
 
-                if (message != null)
-                {
-                    Interlocked.Decrement(ref _size);
-                }
-
-                return message;
-            }
-            catch (OperationCanceledException)
+            if (message != null)
             {
-                return null;
+                Interlocked.Decrement(ref _size);
             }
+
+            return message;
+        }
+        catch (OperationCanceledException)
+        {
+            return null;
         }
     }
 
@@ -125,18 +123,16 @@ public class QueueChannel : AbstractPollableChannel, IQueueChannelOperations
 
             return false;
         }
-        else
+
+        try
         {
-            try
-            {
-                _channel.Writer.WriteAsync(message, cancellationToken).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
-                Interlocked.Increment(ref _size);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            _channel.Writer.WriteAsync(message, cancellationToken).AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+            Interlocked.Increment(ref _size);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
         }
     }
 }

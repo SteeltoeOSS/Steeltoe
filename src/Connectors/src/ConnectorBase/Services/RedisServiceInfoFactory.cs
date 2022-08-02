@@ -9,31 +9,30 @@ namespace Steeltoe.Connector.Services;
 public class RedisServiceInfoFactory : ServiceInfoFactory
 {
     public RedisServiceInfoFactory()
-        : base(new Tags("redis"), new[] { RedisServiceInfo.RedisScheme, RedisServiceInfo.RedisSecureScheme })
+        : base(new Tags("redis"), new[]
+        {
+            RedisServiceInfo.RedisScheme,
+            RedisServiceInfo.RedisSecureScheme
+        })
     {
     }
 
     public override IServiceInfo Create(Service binding)
     {
-        var uri = GetUriFromCredentials(binding.Credentials);
+        string uri = GetUriFromCredentials(binding.Credentials);
+
         if (string.IsNullOrEmpty(uri))
         {
-            var host = GetHostFromCredentials(binding.Credentials);
-            var password = GetPasswordFromCredentials(binding.Credentials);
-            var port = GetPortFromCredentials(binding.Credentials);
-            var tlsPort = GetTlsPortFromCredentials(binding.Credentials);
-            var tlsEnabled = tlsPort != 0;
+            string host = GetHostFromCredentials(binding.Credentials);
+            string password = GetPasswordFromCredentials(binding.Credentials);
+            int port = GetPortFromCredentials(binding.Credentials);
+            int tlsPort = GetTlsPortFromCredentials(binding.Credentials);
+            bool tlsEnabled = tlsPort != 0;
 
-            return new RedisServiceInfo(
-                binding.Name,
-                tlsEnabled ? RedisServiceInfo.RedisSecureScheme : RedisServiceInfo.RedisScheme,
-                host,
-                tlsEnabled ? tlsPort : port,
-                password);
+            return new RedisServiceInfo(binding.Name, tlsEnabled ? RedisServiceInfo.RedisSecureScheme : RedisServiceInfo.RedisScheme, host,
+                tlsEnabled ? tlsPort : port, password);
         }
-        else
-        {
-            return new RedisServiceInfo(binding.Name, uri);
-        }
+
+        return new RedisServiceInfo(binding.Name, uri);
     }
 }

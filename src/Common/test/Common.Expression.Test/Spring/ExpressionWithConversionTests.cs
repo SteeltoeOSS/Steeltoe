@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Converter;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class ExpressionWithConversionTests : AbstractExpressionTests
 {
-    private static readonly List<string> ListOfString = new ();
-    private static readonly List<int> ListOfInteger = new ();
+    private static readonly List<string> ListOfString = new();
+    private static readonly List<int> ListOfInteger = new();
     private static Type _typeDescriptorForListOfInteger;
     private static Type _typeDescriptorForListOfString;
 
@@ -29,7 +29,9 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     public ExpressionWithConversionTests()
     {
         _typeDescriptorForListOfString = typeof(ExpressionWithConversionTests).GetField("ListOfString", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
-        _typeDescriptorForListOfInteger = typeof(ExpressionWithConversionTests).GetField("ListOfInteger", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
+
+        _typeDescriptorForListOfInteger =
+            typeof(ExpressionWithConversionTests).GetField("ListOfInteger", BindingFlags.NonPublic | BindingFlags.Static).FieldType;
     }
 
     [Fact]
@@ -38,7 +40,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         var tcs = new TypeConvertorUsingConversionService();
 
         // ArrayList containing List<Integer> to List<String>
-        var clazz = _typeDescriptorForListOfString.GetGenericArguments()[0];
+        Type clazz = _typeDescriptorForListOfString.GetGenericArguments()[0];
         Assert.Equal(typeof(string), clazz);
         var l = tcs.ConvertValue(ListOfInteger, ListOfInteger.GetType(), _typeDescriptorForListOfString) as List<string>;
         Assert.NotNull(l);
@@ -54,8 +56,8 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     [Fact]
     public void TestSetParameterizedList()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
-        var e = Parser.ParseExpression("ListOfInteger.Count");
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
+        IExpression e = Parser.ParseExpression("ListOfInteger.Count");
         Assert.Equal(0, e.GetValue(context, typeof(int)));
         context.TypeConverter = new TypeConvertorUsingConversionService();
 
@@ -66,7 +68,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
         Assert.Equal(3, e.GetValue(context, typeof(int)));
 
         // element type correctly Integer
-        var clazz = Parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
+        object clazz = Parser.ParseExpression("ListOfInteger[1].GetType()").GetValue(context, typeof(Type));
         Assert.Equal(typeof(int), clazz);
     }
 
@@ -75,13 +77,13 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     {
         var evaluationContext = new StandardEvaluationContext();
 
-        var collectionType = typeof(TestTarget).GetMethod(nameof(TestTarget.Sum)).GetParameters()[0].ParameterType;
+        Type collectionType = typeof(TestTarget).GetMethod(nameof(TestTarget.Sum)).GetParameters()[0].ParameterType;
 
         // The type conversion is possible
         Assert.True(evaluationContext.TypeConverter.CanConvert(typeof(string), collectionType));
 
         // ... and it can be done successfully
-        var result = evaluationContext.TypeConverter.ConvertValue("1,2,3,4", typeof(string), collectionType);
+        object result = evaluationContext.TypeConverter.ConvertValue("1,2,3,4", typeof(string), collectionType);
         var asList = result as ICollection<int>;
         Assert.NotNull(asList);
         Assert.Equal(4, asList.Count);
@@ -90,7 +92,7 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
 
         // OK up to here, so the evaluation should be fine...
         // ... but this fails
-        var result2 = (int)Parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
+        int result2 = (int)Parser.ParseExpression("#target.Sum(#root)").GetValue(evaluationContext, "1,2,3,4");
         Assert.Equal(10, result2);
     }
 
@@ -98,14 +100,18 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     public void TestConvert()
     {
         var root = new Foo("bar");
-        ICollection<string> foos = new List<string> { "baz" };
+
+        ICollection<string> foos = new List<string>
+        {
+            "baz"
+        };
 
         var context = new StandardEvaluationContext(root);
 
         // property access
-        var expression = Parser.ParseExpression("Foos");
+        IExpression expression = Parser.ParseExpression("Foos");
         expression.SetValue(context, foos);
-        var baz = root.Foos.Single();
+        Foo baz = root.Foos.Single();
         Assert.Equal("baz", baz.Value);
 
         // method call
@@ -132,8 +138,9 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     {
         public int Sum(ICollection<int> numbers)
         {
-            var total = 0;
-            foreach (var i in numbers)
+            int total = 0;
+
+            foreach (int i in numbers)
             {
                 total += i;
             }
@@ -161,15 +168,23 @@ public class ExpressionWithConversionTests : AbstractExpressionTests
     {
         public readonly string Value;
 
-        public Foo(string value)
-        {
-            this.Value = value;
-        }
-
         public ICollection<Foo> Foos { get; set; }
 
-        public ICollection<string> FoosAsStrings => new List<string> { "baz" };
+        public ICollection<string> FoosAsStrings =>
+            new List<string>
+            {
+                "baz"
+            };
 
-        public ICollection<object> FoosAsObjects => new List<object> { "baz" };
+        public ICollection<object> FoosAsObjects =>
+            new List<object>
+            {
+                "baz"
+            };
+
+        public Foo(string value)
+        {
+            Value = value;
+        }
     }
 }

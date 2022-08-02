@@ -11,10 +11,14 @@ public class EntityFrameworkCoreTypeLocatorTest
     [Fact]
     public void Property_Can_Locate_MySqlDbContextOptionsType_MySql()
     {
-        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "MySql.EntityFrameworkCore" };
+        string[] assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
 
-        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[]
+        {
+            "MySql.EntityFrameworkCore"
+        };
+
+        Type type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
         EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
@@ -23,10 +27,14 @@ public class EntityFrameworkCoreTypeLocatorTest
     [Fact]
     public void Property_Can_Locate_MySqlDbContextOptionsType_Pomelo()
     {
-        var assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new [] { "Pomelo.EntityFrameworkCore.MySql" };
+        string[] assemblies = EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies;
 
-        var type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
+        EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = new[]
+        {
+            "Pomelo.EntityFrameworkCore.MySql"
+        };
+
+        Type type = EntityFrameworkCoreTypeLocator.MySqlDbContextOptionsType;
 
         Assert.NotNull(type);
         EntityFrameworkCoreTypeLocator.MySqlEntityAssemblies = assemblies;
@@ -36,7 +44,7 @@ public class EntityFrameworkCoreTypeLocatorTest
     public void Property_Can_Locate_PostgreSqlDbContextOptionsType()
     {
         // arrange -- handled by including a compatible EF Core NuGet package
-        var type = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
+        Type type = EntityFrameworkCoreTypeLocator.PostgreSqlDbContextOptionsType;
 
         Assert.NotNull(type);
     }
@@ -45,7 +53,7 @@ public class EntityFrameworkCoreTypeLocatorTest
     public void Property_Can_Locate_SqlServerDbContextOptionsType()
     {
         // arrange -- handled by including a compatible EF Core NuGet package
-        var type = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
+        Type type = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
         Assert.NotNull(type);
     }
@@ -54,10 +62,14 @@ public class EntityFrameworkCoreTypeLocatorTest
     public void Options_Found_In_OracleEF_Assembly()
     {
         // arrange ~ narrow the assembly list to one specific nuget package
-        var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0] };
+        string[] oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
 
-        var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[]
+        {
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[0]
+        };
+
+        Type type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
         Assert.NotNull(type);
         EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;
@@ -67,10 +79,14 @@ public class EntityFrameworkCoreTypeLocatorTest
     public void Options_Found_In_Devart_Assembly()
     {
         // arrange ~ narrow the assembly list to one specific nuget package
-        var oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
-        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[] { EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1] };
+        string[] oracleAssemblies = EntityFrameworkCoreTypeLocator.OracleEntityAssemblies;
 
-        var type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
+        EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = new[]
+        {
+            EntityFrameworkCoreTypeLocator.OracleEntityAssemblies[1]
+        };
+
+        Type type = EntityFrameworkCoreTypeLocator.OracleDbContextOptionsType;
 
         Assert.NotNull(type);
         EntityFrameworkCoreTypeLocator.OracleEntityAssemblies = oracleAssemblies;

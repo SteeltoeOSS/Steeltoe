@@ -10,6 +10,8 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
 public class KubernetesConfigurationBuilderExtensionsTest
 {
+    private Action<KubernetesClientConfiguration> FakeClientSetup => fakeClient => fakeClient.Host = "http://127.0.0.1";
+
     [Fact]
     public void AddKubernetes_ThrowsIfConfigBuilderNull()
     {
@@ -33,7 +35,10 @@ public class KubernetesConfigurationBuilderExtensionsTest
     [Fact]
     public void AddKubernetes_Disabled_DoesNotAddConfigMapAndSecretsToSourcesList()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:enabled", "false" } });
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:cloud:kubernetes:enabled", "false" }
+        });
 
         configurationBuilder.AddKubernetes(FakeClientSetup);
 
@@ -44,7 +49,10 @@ public class KubernetesConfigurationBuilderExtensionsTest
     [Fact]
     public void AddKubernetes_ConfigMapDisabled_DoesNotAddConfigMapToSourcesList()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:config:enabled", "false" } });
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:cloud:kubernetes:config:enabled", "false" }
+        });
 
         configurationBuilder.AddKubernetes(FakeClientSetup);
 
@@ -55,13 +63,14 @@ public class KubernetesConfigurationBuilderExtensionsTest
     [Fact]
     public void AddKubernetes_SecretsDisabled_DoesNotAddSecretsToSourcesList()
     {
-        var configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "spring:cloud:kubernetes:secrets:enabled", "false" } });
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:cloud:kubernetes:secrets:enabled", "false" }
+        });
 
         configurationBuilder.AddKubernetes(FakeClientSetup);
 
         Assert.Contains(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesConfigMapSource)));
         Assert.DoesNotContain(configurationBuilder.Sources, ics => ics.GetType().IsAssignableFrom(typeof(KubernetesSecretSource)));
     }
-
-    private Action<KubernetesClientConfiguration> FakeClientSetup => fakeClient => fakeClient.Host = "http://127.0.0.1";
 }

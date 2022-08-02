@@ -22,7 +22,7 @@ public class DefaultMessageChannelDestinationResolver : IDestinationResolver<IMe
 
     object IDestinationResolver.ResolveDestination(string name)
     {
-        var result = ResolveDestination(name);
+        IMessageChannel result = ResolveDestination(name);
         return result;
     }
 }

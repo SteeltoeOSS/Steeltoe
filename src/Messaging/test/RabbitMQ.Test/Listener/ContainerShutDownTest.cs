@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using RabbitMQ.Client.Impl;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
-using System.Reflection;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CachingConnectionFactory;
 using RC = RabbitMQ.Client;
@@ -21,12 +22,13 @@ public class ContainerShutDownTest : AbstractTest
     {
         var cf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(cf);
-        admin.DeclareQueue(new Config.Queue("test.shutdown"));
+        admin.DeclareQueue(new Queue("test.shutdown"));
 
         var container = new DirectMessageListenerContainer(null, cf)
         {
             ShutdownTimeout = 500
         };
+
         container.SetQueueNames("test.shutdown");
         var latch = new CountdownEvent(1);
         var testEnded = new CountdownEvent(1);
@@ -35,8 +37,7 @@ public class ContainerShutDownTest : AbstractTest
         var connection = cf.CreateConnection() as ChannelCachingConnectionProxy;
 
         // var channels = TestUtils.getPropertyValue(connection, "target.delegate._channelManager._channelMap");
-        var field = typeof(RC.Framing.Impl.Connection)
-            .GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
+        FieldInfo field = typeof(global::RabbitMQ.Client.Framing.Impl.Connection).GetField("m_sessionManager", BindingFlags.Instance | BindingFlags.NonPublic);
         Assert.NotNull(field);
         var channels = (SessionManager)field.GetValue(connection.Target.Connection);
         Assert.NotNull(channels);
@@ -47,13 +48,15 @@ public class ContainerShutDownTest : AbstractTest
         try
         {
             var template = new RabbitTemplate(cf);
+
             template.Execute(c =>
             {
-                var properties = c.CreateBasicProperties();
-                var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+                RC.IBasicProperties properties = c.CreateBasicProperties();
+                byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
                 c.BasicPublish(string.Empty, "test.shutdown", false, properties, bytes);
                 RabbitUtils.SetPhysicalCloseRequired(c, false);
             });
+
             Assert.True(latch.Wait(TimeSpan.FromSeconds(30)));
             Assert.Equal(2, channels.Count);
         }
@@ -74,13 +77,13 @@ public class ContainerShutDownTest : AbstractTest
         private readonly CountdownEvent _latch;
         private readonly CountdownEvent _testEnded;
 
+        public AcknowledgeMode ContainerAckMode { get; set; }
+
         public TestListener(CountdownEvent latch, CountdownEvent testEnded)
         {
             _latch = latch;
             _testEnded = testEnded;
         }
-
-        public AcknowledgeMode ContainerAckMode { get; set; }
 
         public void OnMessage(IMessage message)
         {

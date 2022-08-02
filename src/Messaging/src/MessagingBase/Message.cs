@@ -2,15 +2,18 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reflection;
 using System.Text;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Messaging;
 
 public static class Message
 {
-    public static IMessage<T> Create<T>(T payload) => (IMessage<T>)Create(payload, typeof(T));
+    public static IMessage<T> Create<T>(T payload)
+    {
+        return (IMessage<T>)Create(payload, typeof(T));
+    }
 
     public static IMessage<T> Create<T>(T payload, IMessageHeaders headers)
     {
@@ -18,54 +21,48 @@ public static class Message
         {
             return (IMessage<T>)Create(payload, typeof(T));
         }
-        else
-        {
-            return (IMessage<T>)Create(payload, headers, typeof(T));
-        }
+
+        return (IMessage<T>)Create(payload, headers, typeof(T));
     }
 
-    public static IMessage<T> Create<T>(T payload, IDictionary<string, object> headers) => (IMessage<T>)Create(payload, new MessageHeaders(headers, null, null), typeof(T));
+    public static IMessage<T> Create<T>(T payload, IDictionary<string, object> headers)
+    {
+        return (IMessage<T>)Create(payload, new MessageHeaders(headers, null, null), typeof(T));
+    }
 
     public static IMessage Create(object payload, Type messageType = null)
     {
-        var genParamType = GetGenericParamType(payload, messageType);
-        var typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
+        Type genParamType = GetGenericParamType(payload, messageType);
+        Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
 
-        return (IMessage)Activator.CreateInstance(
-            typeToCreate,
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-            null,
-            new[] { payload },
-            null,
-            null);
+        return (IMessage)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new[]
+        {
+            payload
+        }, null, null);
     }
 
     public static IMessage Create(object payload, IMessageHeaders headers, Type messageType = null)
     {
-        var genParamType = GetGenericParamType(payload, messageType);
-        var typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
+        Type genParamType = GetGenericParamType(payload, messageType);
+        Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
 
-        return (IMessage)Activator.CreateInstance(
-            typeToCreate,
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-            null,
-            new[] { payload, headers },
-            null,
-            null);
+        return (IMessage)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new[]
+        {
+            payload,
+            headers
+        }, null, null);
     }
 
     public static IMessage Create(object payload, IDictionary<string, object> headers, Type messageType = null)
     {
-        var genParamType = GetGenericParamType(payload, messageType);
-        var typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
+        Type genParamType = GetGenericParamType(payload, messageType);
+        Type typeToCreate = typeof(Message<>).MakeGenericType(genParamType);
 
-        return (IMessage)Activator.CreateInstance(
-            typeToCreate,
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-            null,
-            new[] { payload, headers },
-            null,
-            null);
+        return (IMessage)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new[]
+        {
+            payload,
+            headers
+        }, null, null);
     }
 
     private static Type GetGenericParamType(object payload, Type messageType)
@@ -90,6 +87,12 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 
     protected readonly IMessageHeaders InnerHeaders;
 
+    object IMessage.Payload => Payload;
+
+    public TPayload Payload => InnerPayload;
+
+    public IMessageHeaders Headers => InnerHeaders;
+
     protected internal Message(TPayload payload)
         : this(payload, new MessageHeaders())
     {
@@ -102,15 +105,9 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
 
     protected internal Message(TPayload payload, IMessageHeaders headers)
     {
-        this.InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
-        this.InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
+        InnerPayload = payload ?? throw new ArgumentNullException(nameof(payload));
+        InnerHeaders = headers ?? throw new ArgumentNullException(nameof(headers));
     }
-
-    public TPayload Payload => InnerPayload;
-
-    public IMessageHeaders Headers => InnerHeaders;
-
-    object IMessage.Payload => Payload;
 
     public override bool Equals(object obj)
     {
@@ -130,16 +127,17 @@ public class Message<TPayload> : AbstractMessage, IMessage<TPayload>
     public override int GetHashCode()
     {
         // Using nullSafeHashCode for proper array hashCode handling
-        return (ObjectUtils.NullSafeHashCode(InnerPayload) * 23) + InnerHeaders.GetHashCode();
+        return ObjectUtils.NullSafeHashCode(InnerPayload) * 23 + InnerHeaders.GetHashCode();
     }
 
     public override string ToString()
     {
         var sb = new StringBuilder(GetType().Name);
         sb.Append(" [payload=");
+
         if (InnerPayload is byte[])
         {
-            var arr = (byte[])(object)InnerPayload;
+            byte[] arr = (byte[])(object)InnerPayload;
             sb.Append("byte[").Append(arr.Length).Append(']');
         }
         else

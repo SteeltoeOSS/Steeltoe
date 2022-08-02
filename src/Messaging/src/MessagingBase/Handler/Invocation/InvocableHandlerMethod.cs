@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Messaging.Handler.Invocation;
 
@@ -12,7 +13,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
     private static readonly object[] EmptyArgs = Array.Empty<object>();
     private readonly ILogger _logger;
 
-    public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new ();
+    public HandlerMethodArgumentResolverComposite MessageMethodArgumentResolvers { get; set; } = new();
 
     public InvocableHandlerMethod(HandlerMethod handlerMethod, ILogger logger = null)
         : base(handlerMethod)
@@ -32,7 +33,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
     public virtual object Invoke(IMessage requestMessage, params object[] args)
     {
-        var argValues = GetMethodArgumentValues(requestMessage, args);
+        object[] argValues = GetMethodArgumentValues(requestMessage, args);
 
         _logger?.LogTrace("Arguments: " + string.Join(", ", args));
 
@@ -41,19 +42,21 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
     protected virtual object[] GetMethodArgumentValues(IMessage message, params object[] providedArgs)
     {
-        var parameters = MethodParameters;
+        ParameterInfo[] parameters = MethodParameters;
 
         if (parameters.Length == 0)
         {
             return EmptyArgs;
         }
 
-        var args = new object[parameters.Length];
-        for (var i = 0; i < parameters.Length; i++)
+        object[] args = new object[parameters.Length];
+
+        for (int i = 0; i < parameters.Length; i++)
         {
-            var parameter = parameters[i];
+            ParameterInfo parameter = parameters[i];
 
             args[i] = FindProvidedArgument(parameter, providedArgs);
+
             if (args[i] != null)
             {
                 continue;
@@ -61,8 +64,7 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
 
             if (!MessageMethodArgumentResolvers.SupportsParameter(parameter))
             {
-                throw new MethodArgumentResolutionException(
-                    message, parameter, FormatArgumentError(parameter, "No suitable resolver"));
+                throw new MethodArgumentResolutionException(message, parameter, FormatArgumentError(parameter, "No suitable resolver"));
             }
 
             try
@@ -72,7 +74,8 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
             catch (Exception ex)
             {
                 // Leave stack trace for later, exception may actually be resolved and handled..
-                var error = ex.Message;
+                string error = ex.Message;
+
                 if (error != null && !error.Contains(parameter.Name))
                 {
                     _logger?.LogDebug(ex, $"Error resolving parameter: {parameter.Name}, error: {error}");
@@ -94,12 +97,11 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
                 throw new InvalidOperationException(FormatInvokeError("Argument count mismatch", args), new TargetParameterCountException());
             }
 
-            var result = InnerInvoker(InnerHandler, args);
+            object result = InnerInvoker(InnerHandler, args);
 
             if (result is Task resultAsTask)
             {
-                var isAsyncMethod = Method.CustomAttributes
-                    .Any(x => x.AttributeType.Name == nameof(System.Runtime.CompilerServices.AsyncStateMachineAttribute));
+                bool isAsyncMethod = Method.CustomAttributes.Any(x => x.AttributeType.Name == nameof(AsyncStateMachineAttribute));
 
                 if (isAsyncMethod)
                 {
@@ -112,21 +114,20 @@ public class InvocableHandlerMethod : HandlerMethod, IInvocableHandlerMethod
         catch (Exception ex) when (ex is InvalidCastException)
         {
             AssertTargetBean(Method, Handler, args);
-            var text = !string.IsNullOrEmpty(ex.Message) ? ex.Message : "Illegal argument";
+            string text = !string.IsNullOrEmpty(ex.Message) ? ex.Message : "Illegal argument";
             throw new InvalidOperationException(FormatInvokeError(text, args), new ArgumentException());
         }
         catch (Exception ex)
         {
             // Unwrap for HandlerExceptionResolvers ...
-            var targetException = ex.GetBaseException();
+            Exception targetException = ex.GetBaseException();
+
             if (targetException != null)
             {
                 throw targetException;
             }
-            else
-            {
-                throw new InvalidOperationException(FormatInvokeError("Invocation failure", args), ex);
-            }
+
+            throw new InvalidOperationException(FormatInvokeError("Invocation failure", args), ex);
         }
     }
 }

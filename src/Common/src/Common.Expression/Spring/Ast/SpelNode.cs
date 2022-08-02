@@ -2,29 +2,39 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Reflection.Emit;
 using Steeltoe.Common.Expression.Internal.Spring.Common;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class SpelNode : ISpelNode
 {
-    protected SpelNode[] children = NoChildren;
-    protected volatile TypeDescriptor exitTypeDescriptor;
     private static readonly SpelNode[] NoChildren = Array.Empty<SpelNode>();
     private SpelNode _parent;
+    protected SpelNode[] children = NoChildren;
+    protected volatile TypeDescriptor exitTypeDescriptor;
+
+    public virtual TypeDescriptor ExitDescriptor => exitTypeDescriptor;
+
+    public virtual int StartPosition { get; }
+
+    public virtual int EndPosition { get; }
+
+    public virtual int ChildCount => children.Length;
 
     protected SpelNode(int startPos, int endPos, params SpelNode[] operands)
     {
         StartPosition = startPos;
         EndPosition = endPos;
+
         if (!ObjectUtils.IsNullOrEmpty(operands))
         {
             children = operands;
-            foreach (var operand in operands)
+
+            foreach (SpelNode operand in operands)
             {
                 if (operand == null)
                 {
@@ -36,15 +46,10 @@ public abstract class SpelNode : ISpelNode
         }
     }
 
-    public virtual TypeDescriptor ExitDescriptor => exitTypeDescriptor;
-
-    public virtual int StartPosition { get; }
-
-    public virtual int EndPosition { get; }
-
-    public virtual int ChildCount => children.Length;
-
-    public virtual bool IsCompilable() => false;
+    public virtual bool IsCompilable()
+    {
+        return false;
+    }
 
     public virtual object GetValue(ExpressionState state)
     {
@@ -94,7 +99,8 @@ public abstract class SpelNode : ISpelNode
     {
         if (_parent != null)
         {
-            var peers = _parent.children;
+            SpelNode[] peers = _parent.children;
+
             for (int i = 0, max = peers.Length; i < max; i++)
             {
                 if (this == peers[i])
@@ -104,8 +110,9 @@ public abstract class SpelNode : ISpelNode
                         return false;
                     }
 
-                    var peerClass = peers[i + 1].GetType();
-                    foreach (var desiredClass in classes)
+                    Type peerClass = peers[i + 1].GetType();
+
+                    foreach (Type desiredClass in classes)
                     {
                         if (peerClass == desiredClass)
                         {
@@ -138,12 +145,12 @@ public abstract class SpelNode : ISpelNode
 
     protected static void GenerateCodeForArguments(ILGenerator gen, CodeFlow cf, MethodBase member, SpelNode[] arguments)
     {
-        var paramDescriptors = CodeFlow.ToDescriptors(member.GetParameterTypes());
-        var isVarargs = member.IsVarArgs();
+        TypeDescriptor[] paramDescriptors = CodeFlow.ToDescriptors(member.GetParameterTypes());
+        bool isVarargs = member.IsVarArgs();
 
         if (isVarargs)
         {
-            var childCount = arguments.Length;
+            int childCount = arguments.Length;
 
             // The final parameter may or may not need packaging into an array, or nothing may
             // have been passed to satisfy the varargs and so something needs to be built.
@@ -155,8 +162,8 @@ public abstract class SpelNode : ISpelNode
                 GenerateCodeForArgument(gen, cf, arguments[p], paramDescriptors[p]);
             }
 
-            var lastChild = childCount == 0 ? null : arguments[childCount - 1];
-            var arrayType = paramDescriptors[paramDescriptors.Length - 1];
+            SpelNode lastChild = childCount == 0 ? null : arguments[childCount - 1];
+            TypeDescriptor arrayType = paramDescriptors[paramDescriptors.Length - 1];
 
             // Determine if the final passed argument is already suitably packaged in array
             // form to be passed to the method
@@ -166,17 +173,18 @@ public abstract class SpelNode : ISpelNode
             }
             else
             {
-                var arrElemType = arrayType.Value.GetElementType();
+                Type arrElemType = arrayType.Value.GetElementType();
                 var arrElemDesc = new TypeDescriptor(arrElemType);
 
                 gen.Emit(OpCodes.Ldc_I4, childCount - p);
                 gen.Emit(OpCodes.Newarr, arrElemType);
 
                 // Package up the remaining arguments into the array
-                var arrayIndex = 0;
+                int arrayIndex = 0;
+
                 while (p < childCount)
                 {
-                    var child = arguments[p];
+                    SpelNode child = arguments[p];
                     gen.Emit(OpCodes.Dup);
                     gen.Emit(OpCodes.Ldc_I4, arrayIndex++);
                     GenerateCodeForArgument(gen, cf, child, arrElemDesc);
@@ -187,7 +195,7 @@ public abstract class SpelNode : ISpelNode
         }
         else
         {
-            for (var i = 0; i < paramDescriptors.Length; i++)
+            for (int i = 0; i < paramDescriptors.Length; i++)
             {
                 GenerateCodeForArgument(gen, cf, arguments[i], paramDescriptors[i]);
             }
@@ -198,13 +206,14 @@ public abstract class SpelNode : ISpelNode
     {
         cf.EnterCompilationScope();
         argument.GenerateCode(gen, cf);
-        var lastDesc = cf.LastDescriptor();
+        TypeDescriptor lastDesc = cf.LastDescriptor();
+
         if (lastDesc == null)
         {
             throw new InvalidOperationException("No last descriptor");
         }
 
-        var valueTypeOnStack = CodeFlow.IsValueType(lastDesc);
+        bool valueTypeOnStack = CodeFlow.IsValueType(lastDesc);
 
         // Check if need to box it for the method reference?
         if (valueTypeOnStack && paramDesc.IsReferenceType)

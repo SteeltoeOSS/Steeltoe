@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Security;
+using System.Security.Authentication;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.Connector.Hystrix;
 using Steeltoe.Discovery;
-using System.Net.Security;
-using System.Security.Authentication;
-using System.Text;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsStream;
 
@@ -22,20 +22,24 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
 
     protected internal IModel Channel { get; set; }
 
-    public RabbitMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory, ILogger<RabbitMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
+    public RabbitMetricsStreamPublisher(IOptions<HystrixMetricsStreamOptions> options, HystrixDashboardStream stream, HystrixConnectionFactory factory,
+        ILogger<RabbitMetricsStreamPublisher> logger = null, IDiscoveryClient discoveryClient = null)
         : base(options, stream, logger, discoveryClient)
     {
         Factory = factory.ConnectionFactory as ConnectionFactory;
-        var sslOption = Factory.Ssl;
+        SslOption sslOption = Factory.Ssl;
+
         if (sslOption != null && sslOption.Enabled)
         {
             logger?.LogInformation("Hystrix Metrics using TLS");
             sslOption.Version = SslProtocols.Tls12 | SslProtocols.Tls13;
+
             if (!this.options.ValidateCertificates)
             {
                 logger?.LogInformation("Hystrix Metrics disabling certificate validation");
-                sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors |
-                                                   SslPolicyErrors.RemoteCertificateNameMismatch | SslPolicyErrors.RemoteCertificateNotAvailable;
+
+                sslOption.AcceptablePolicyErrors = SslPolicyErrors.RemoteCertificateChainErrors | SslPolicyErrors.RemoteCertificateNameMismatch |
+                    SslPolicyErrors.RemoteCertificateNotAvailable;
             }
         }
 
@@ -67,14 +71,14 @@ public class RabbitMetricsStreamPublisher : HystrixMetricsStreamPublisher
     {
         if (Channel != null)
         {
-            foreach (var sampleDataAsString in jsonList)
+            foreach (string sampleDataAsString in jsonList)
             {
                 if (!string.IsNullOrEmpty(sampleDataAsString))
                 {
                     logger?.LogDebug("Hystrix Metrics: {0}", sampleDataAsString);
 
-                    var body = Encoding.UTF8.GetBytes(sampleDataAsString);
-                    var props = Channel.CreateBasicProperties();
+                    byte[] body = Encoding.UTF8.GetBytes(sampleDataAsString);
+                    IBasicProperties props = Channel.CreateBasicProperties();
                     props.ContentType = "application/json";
                     Channel.BasicPublish(SpringCloudHystrixStreamExchange, string.Empty, props, body);
                 }

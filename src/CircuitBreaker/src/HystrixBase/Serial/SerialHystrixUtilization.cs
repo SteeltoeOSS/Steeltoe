@@ -12,6 +12,7 @@ public static class SerialHystrixUtilization
     public static string ToJsonString(HystrixUtilization utilization)
     {
         using var sw = new StringWriter();
+
         using (var writer = new JsonTextWriter(sw))
         {
             SerializeUtilization(writer, utilization);
@@ -25,20 +26,22 @@ public static class SerialHystrixUtilization
         json.WriteStartObject();
         json.WriteStringField("type", "HystrixUtilization");
         json.WriteObjectFieldStart("commands");
-        foreach (var entry in utilization.CommandUtilizationMap)
+
+        foreach (KeyValuePair<IHystrixCommandKey, HystrixCommandUtilization> entry in utilization.CommandUtilizationMap)
         {
-            var key = entry.Key;
-            var commandUtilization = entry.Value;
+            IHystrixCommandKey key = entry.Key;
+            HystrixCommandUtilization commandUtilization = entry.Value;
             WriteCommandUtilizationJson(json, key, commandUtilization);
         }
 
         json.WriteEndObject();
 
         json.WriteObjectFieldStart("threadpools");
-        foreach (var entry in utilization.ThreadPoolUtilizationMap)
+
+        foreach (KeyValuePair<IHystrixThreadPoolKey, HystrixThreadPoolUtilization> entry in utilization.ThreadPoolUtilizationMap)
         {
-            var threadPoolKey = entry.Key;
-            var threadPoolUtilization = entry.Value;
+            IHystrixThreadPoolKey threadPoolKey = entry.Key;
+            HystrixThreadPoolUtilization threadPoolUtilization = entry.Value;
             WriteThreadPoolUtilizationJson(json, threadPoolKey, threadPoolUtilization);
         }
 

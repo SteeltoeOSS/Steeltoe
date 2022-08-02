@@ -11,12 +11,7 @@ namespace Steeltoe.Integration.Transformer;
 
 public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, ILifecycle
 {
-    public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
-        : base(context)
-    {
-        Transformer = transformer ?? throw new ArgumentNullException(nameof(transformer));
-        RequiresReply = true;
-    }
+    protected override bool ShouldCopyRequestHeaders => false;
 
     public ITransformer Transformer { get; }
 
@@ -33,7 +28,12 @@ public class MessageTransformingHandler : AbstractReplyProducingMessageHandler, 
         }
     }
 
-    protected override bool ShouldCopyRequestHeaders => false;
+    public MessageTransformingHandler(IApplicationContext context, ITransformer transformer)
+        : base(context)
+    {
+        Transformer = transformer ?? throw new ArgumentNullException(nameof(transformer));
+        RequiresReply = true;
+    }
 
     public override void Initialize()
     {

@@ -9,10 +9,13 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 
 public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentResolver
 {
-    private readonly List<IHandlerMethodArgumentResolver> _argumentResolvers = new ();
+    private readonly List<IHandlerMethodArgumentResolver> _argumentResolvers = new();
 
-    private readonly ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver> _argumentResolverCache =
-        new ();
+    private readonly ConcurrentDictionary<ParameterInfo, IHandlerMethodArgumentResolver> _argumentResolverCache = new();
+
+    public int Count => _argumentResolvers.Count;
+
+    public List<IHandlerMethodArgumentResolver> Resolvers => new List<IHandlerMethodArgumentResolver>(_argumentResolvers);
 
     public HandlerMethodArgumentResolverComposite AddResolver(IHandlerMethodArgumentResolver argumentResolver)
     {
@@ -40,19 +43,6 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
         return this;
     }
 
-    public int Count
-    {
-        get
-        {
-            return _argumentResolvers.Count;
-        }
-    }
-
-    public List<IHandlerMethodArgumentResolver> Resolvers
-    {
-        get { return new List<IHandlerMethodArgumentResolver>(_argumentResolvers); }
-    }
-
     public void Clear()
     {
         _argumentResolvers.Clear();
@@ -65,11 +55,11 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
 
     public object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var resolver = GetArgumentResolver(parameter);
+        IHandlerMethodArgumentResolver resolver = GetArgumentResolver(parameter);
+
         if (resolver == null)
         {
-            throw new InvalidOperationException(
-                $"Unsupported parameter type [{parameter.ParameterType.Name}]. supportsParameter should be called first.");
+            throw new InvalidOperationException($"Unsupported parameter type [{parameter.ParameterType.Name}]. supportsParameter should be called first.");
         }
 
         return resolver.ResolveArgument(parameter, message);
@@ -77,9 +67,9 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
 
     private IHandlerMethodArgumentResolver GetArgumentResolver(ParameterInfo parameter)
     {
-        if (!_argumentResolverCache.TryGetValue(parameter, out var result))
+        if (!_argumentResolverCache.TryGetValue(parameter, out IHandlerMethodArgumentResolver result))
         {
-            foreach (var resolver in _argumentResolvers)
+            foreach (IHandlerMethodArgumentResolver resolver in _argumentResolvers)
             {
                 if (resolver.SupportsParameter(parameter))
                 {

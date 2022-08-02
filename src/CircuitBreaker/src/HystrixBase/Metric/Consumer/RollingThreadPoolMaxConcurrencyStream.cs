@@ -2,20 +2,25 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
 {
-    private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new ();
+    private static readonly ConcurrentDictionary<string, RollingThreadPoolMaxConcurrencyStream> Streams = new();
+
+    public RollingThreadPoolMaxConcurrencyStream(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
+        : base(HystrixThreadPoolStartStream.GetInstance(threadPoolKey), numBuckets, bucketSizeInMs)
+    {
+    }
 
     public static RollingThreadPoolMaxConcurrencyStream GetInstance(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions properties)
     {
-        var counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
-        var numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
-        var counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
+        int counterMetricWindow = properties.MetricsRollingStatisticalWindowInMilliseconds;
+        int numCounterBuckets = properties.MetricsRollingStatisticalWindowBuckets;
+        int counterBucketSizeInMs = counterMetricWindow / numCounterBuckets;
 
         return GetInstance(threadPoolKey, numCounterBuckets, counterBucketSizeInMs);
     }
@@ -32,7 +37,7 @@ public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
 
     public static void Reset()
     {
-        foreach (var stream in Streams.Values)
+        foreach (RollingThreadPoolMaxConcurrencyStream stream in Streams.Values)
         {
             stream.Unsubscribe();
         }
@@ -40,10 +45,5 @@ public class RollingThreadPoolMaxConcurrencyStream : RollingConcurrencyStream
         HystrixThreadPoolStartStream.Reset();
 
         Streams.Clear();
-    }
-
-    public RollingThreadPoolMaxConcurrencyStream(IHystrixThreadPoolKey threadPoolKey, int numBuckets, int bucketSizeInMs)
-        : base(HystrixThreadPoolStartStream.GetInstance(threadPoolKey), numBuckets, bucketSizeInMs)
-    {
     }
 }

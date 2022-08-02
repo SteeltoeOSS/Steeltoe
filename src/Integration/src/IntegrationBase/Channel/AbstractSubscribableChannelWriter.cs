@@ -8,12 +8,12 @@ namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractSubscribableChannelWriter : AbstractMessageChannelWriter
 {
+    public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)channel;
+
     protected AbstractSubscribableChannelWriter(AbstractSubscribableChannel channel, ILogger logger = null)
         : base(channel, logger)
     {
     }
-
-    public virtual AbstractSubscribableChannel Channel => (AbstractSubscribableChannel)channel;
 
     public override ValueTask<bool> WaitToWriteAsync(CancellationToken cancellationToken = default)
     {

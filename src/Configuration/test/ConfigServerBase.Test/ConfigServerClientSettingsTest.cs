@@ -19,7 +19,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetRawUris_GoodWithUserPass()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/"
+        };
 
         Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
     }
@@ -27,7 +30,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetRawUris_MultipleUris_GoodWithUserPass()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user:pass@localhost:9999/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/, https://user:pass@localhost:9999/"
+        };
 
         Assert.Equal("https://localhost:8888/", settings.RawUris[0]);
         Assert.Equal("https://localhost:9999/", settings.RawUris[1]);
@@ -36,7 +42,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetRawUris_Bad()
     {
-        var settings = new ConfigServerClientSettings { Uri = "blahblah" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "blahblah"
+        };
 
         Assert.Empty(settings.RawUris);
     }
@@ -44,7 +53,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetUserName_GoodWithUserPassOnUri()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/"
+        };
 
         Assert.Equal("user", settings.Username);
     }
@@ -52,7 +64,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetUserName_MultipleUrisWithUserPass_ReturnsNull()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/"
+        };
 
         Assert.Null(settings.Username);
     }
@@ -72,7 +87,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetPassword_GoodWithUserPassOnUri()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/"
+        };
 
         Assert.Equal("pass", settings.Password);
     }
@@ -80,7 +98,10 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetPassword_MultipleUrisWithUserPass_ReturnsNull()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/, https://user1:pass1@localhost:9999/"
+        };
 
         Assert.Null(settings.Password);
     }
@@ -100,7 +121,11 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetUserName_GoodWithUserPassOnUri_SettingsOverrides()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/", Username = "explicitOverrides" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/",
+            Username = "explicitOverrides"
+        };
 
         Assert.Equal("explicitOverrides", settings.Username);
         Assert.Equal("pass", settings.Password);
@@ -109,7 +134,11 @@ public class ConfigServerClientSettingsTest
     [Fact]
     public void GetPassword_GoodWithUserPassOnUri_SettingsOverrides()
     {
-        var settings = new ConfigServerClientSettings { Uri = "https://user:pass@localhost:8888/", Password = "explicitOverrides" };
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://user:pass@localhost:8888/",
+            Password = "explicitOverrides"
+        };
 
         Assert.Equal("explicitOverrides", settings.Password);
         Assert.Equal("user", settings.Username);

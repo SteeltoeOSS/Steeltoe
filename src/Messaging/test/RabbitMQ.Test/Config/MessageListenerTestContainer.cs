@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Messaging.RabbitMQ.Listener;
 using System.Text;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
@@ -15,25 +15,22 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
     internal bool InitializationInvoked;
     internal IRabbitListenerEndpoint Endpoint;
 
-    public MessageListenerTestContainer(IRabbitListenerEndpoint endpoint)
-    {
-        Endpoint = endpoint;
-    }
-
     public bool IsStarted => StartInvoked && InitializationInvoked;
 
     public bool IsStopped => StopInvoked && DestroyInvoked;
 
     public bool IsAutoStartup => true;
 
-    public bool IsRunning
-    {
-        get => StartInvoked && !StopInvoked;
-    }
+    public bool IsRunning => StartInvoked && !StopInvoked;
 
     public int Phase => 0;
 
     public string ServiceName { get; set; } = nameof(MessageListenerTestContainer);
+
+    public MessageListenerTestContainer(IRabbitListenerEndpoint endpoint)
+    {
+        Endpoint = endpoint;
+    }
 
     public void Dispose()
     {

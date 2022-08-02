@@ -15,7 +15,7 @@ public abstract class AbstractTest
         var services = new ServiceCollection();
         configurationBuilder ??= new ConfigurationBuilder();
 
-        var configuration = configurationBuilder.Build();
+        IConfigurationRoot configuration = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(configuration);
         services.AddRabbitHostingServices();
         return services;

@@ -10,13 +10,13 @@ public class DirectHandler : IMessageHandler
 {
     private readonly IMessageChannel _outputChannel;
 
+    public virtual string ServiceName { get; set; }
+
     public DirectHandler(IMessageChannel outputChannel)
     {
         _outputChannel = outputChannel;
         ServiceName = $"{GetType().Name}@{GetHashCode()}";
     }
-
-    public virtual string ServiceName { get; set; }
 
     public void HandleMessage(IMessage message)
     {

@@ -16,8 +16,8 @@ public class OpDivide : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var leftOperand = LeftOperand.GetValueInternal(state).Value;
-        var rightOperand = RightOperand.GetValueInternal(state).Value;
+        object leftOperand = LeftOperand.GetValueInternal(state).Value;
+        object rightOperand = RightOperand.GetValueInternal(state).Value;
 
         if (IsNumber(leftOperand) && IsNumber(rightOperand))
         {
@@ -26,44 +26,48 @@ public class OpDivide : Operator
 
             if (leftOperand is decimal || rightOperand is decimal)
             {
-                var leftVal = leftConv.ToDecimal(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToDecimal(CultureInfo.InvariantCulture);
+                decimal leftVal = leftConv.ToDecimal(CultureInfo.InvariantCulture);
+                decimal rightVal = rightConv.ToDecimal(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal / rightVal);
             }
-            else if (leftOperand is double || rightOperand is double)
+
+            if (leftOperand is double || rightOperand is double)
             {
-                var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
+                double rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
                 exitTypeDescriptor = TypeDescriptor.D;
                 return new TypedValue(leftVal / rightVal);
             }
-            else if (leftOperand is float || rightOperand is float)
+
+            if (leftOperand is float || rightOperand is float)
             {
-                var leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
+                float leftVal = leftConv.ToSingle(CultureInfo.InvariantCulture);
+                float rightVal = rightConv.ToSingle(CultureInfo.InvariantCulture);
                 exitTypeDescriptor = TypeDescriptor.F;
                 return new TypedValue(leftVal / rightVal);
             }
 
             // Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
-            else if (leftOperand is long || rightOperand is long)
+
+            if (leftOperand is long || rightOperand is long)
             {
-                var leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
+                long leftVal = leftConv.ToInt64(CultureInfo.InvariantCulture);
+                long rightVal = rightConv.ToInt64(CultureInfo.InvariantCulture);
                 exitTypeDescriptor = TypeDescriptor.J;
                 return new TypedValue(leftVal / rightVal);
             }
-            else if (CodeFlow.IsIntegerForNumericOp(leftOperand) || CodeFlow.IsIntegerForNumericOp(rightOperand))
+
+            if (CodeFlow.IsIntegerForNumericOp(leftOperand) || CodeFlow.IsIntegerForNumericOp(rightOperand))
             {
-                var leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
+                int leftVal = leftConv.ToInt32(CultureInfo.InvariantCulture);
+                int rightVal = rightConv.ToInt32(CultureInfo.InvariantCulture);
                 exitTypeDescriptor = TypeDescriptor.I;
                 return new TypedValue(leftVal / rightVal);
             }
             else
             {
-                var leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
-                var rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftConv.ToDouble(CultureInfo.InvariantCulture);
+                double rightVal = rightConv.ToDouble(CultureInfo.InvariantCulture);
 
                 // Unknown Number subtypes -> best guess is double division
                 // Look at need to add support for .NET types not present in Java, e.g. ulong, ushort, byte, uint
@@ -92,21 +96,24 @@ public class OpDivide : Operator
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         LeftOperand.GenerateCode(gen, cf);
-        var leftDesc = LeftOperand.ExitDescriptor;
-        var exitDesc = exitTypeDescriptor;
+        TypeDescriptor leftDesc = LeftOperand.ExitDescriptor;
+        TypeDescriptor exitDesc = exitTypeDescriptor;
+
         if (exitDesc == null)
         {
             throw new InvalidOperationException("No exit type descriptor");
         }
 
         CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
+
         if (children.Length > 1)
         {
             cf.EnterCompilationScope();
             RightOperand.GenerateCode(gen, cf);
-            var rightDesc = RightOperand.ExitDescriptor;
+            TypeDescriptor rightDesc = RightOperand.ExitDescriptor;
             cf.ExitCompilationScope();
             CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
+
             if (exitDesc != TypeDescriptor.I && exitDesc != TypeDescriptor.J && exitDesc != TypeDescriptor.F && exitDesc != TypeDescriptor.D)
             {
                 throw new InvalidOperationException($"Unrecognized exit type descriptor: '{exitTypeDescriptor}'");

@@ -25,7 +25,7 @@ public class MessageProducerSupportEndpointTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         _services.AddSingleton<IConfiguration>(config);
         _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
@@ -33,7 +33,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateExceptionIfNoErrorChannel()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -50,7 +50,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateExceptionIfSendToErrorChannelFails()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -70,7 +70,7 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task ValidateSuccessfulErrorFlowDoesNotThrowErrors()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var outChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         var handler = new ExceptionHandler();
         outChannel.Subscribe(handler);
@@ -86,7 +86,7 @@ public class MessageProducerSupportEndpointTest
         };
 
         await mps.Start();
-        var message = Message.Create("hello");
+        IMessage<string> message = Message.Create("hello");
         mps.SendMessage(message);
         Assert.IsType<ErrorMessage>(errorService.LastMessage);
         Assert.IsType<MessageDeliveryException>(errorService.LastMessage.Payload);
@@ -98,11 +98,13 @@ public class MessageProducerSupportEndpointTest
     public async Task TestWithChannelName()
     {
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "foo"));
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
+
         var mps = new TestMessageProducerSupportEndpoint(provider.GetService<IApplicationContext>())
         {
             OutputChannelName = "foo"
         };
+
         await mps.Start();
         Assert.NotNull(mps.OutputChannel);
         Assert.Equal("foo", mps.OutputChannel.ServiceName);
@@ -111,16 +113,18 @@ public class MessageProducerSupportEndpointTest
     [Fact]
     public async Task CustomDoStop()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
         Assert.Equal(0, endpoint.Count);
         Assert.False(endpoint.IsRunning);
         await endpoint.Start();
         Assert.True(endpoint.IsRunning);
+
         await endpoint.Stop(() =>
         {
             // Do nothing
         });
+
         Assert.Equal(1, endpoint.Count);
         Assert.False(endpoint.IsRunning);
     }

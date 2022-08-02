@@ -7,11 +7,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
 public class RabbitListenerAttribute : Attribute
 {
-    public RabbitListenerAttribute(params string[] queues)
-    {
-        Queues = queues;
-    }
-
     public string Id { get; set; } = string.Empty;
 
     public string ContainerFactory { get; set; } = string.Empty;
@@ -30,7 +25,10 @@ public class RabbitListenerAttribute : Attribute
 
         set
         {
-            Queues = new[] { value };
+            Queues = new[]
+            {
+                value
+            };
         }
     }
 
@@ -50,7 +48,10 @@ public class RabbitListenerAttribute : Attribute
 
         set
         {
-            Bindings = new[] { value };
+            Bindings = new[]
+            {
+                value
+            };
         }
     }
 
@@ -75,4 +76,9 @@ public class RabbitListenerAttribute : Attribute
     public string ReplyPostProcessor { get; set; } = string.Empty;
 
     public string Group { get; set; }
+
+    public RabbitListenerAttribute(params string[] queues)
+    {
+        Queues = queues;
+    }
 }

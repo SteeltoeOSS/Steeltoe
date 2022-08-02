@@ -6,7 +6,11 @@ namespace Steeltoe.Connector.Services;
 
 public class PostgresServiceInfoFactory : RelationalServiceInfoFactory
 {
-    private static readonly string[] Schemes = { PostgresServiceInfo.PostgresScheme, PostgresServiceInfo.PostgresJdbcScheme };
+    private static readonly string[] Schemes =
+    {
+        PostgresServiceInfo.PostgresScheme,
+        PostgresServiceInfo.PostgresJdbcScheme
+    };
 
     public PostgresServiceInfoFactory()
         : base(new Tags("postgresql"), Schemes)

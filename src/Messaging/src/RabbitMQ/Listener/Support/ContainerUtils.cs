@@ -11,8 +11,9 @@ public static class ContainerUtils
 {
     public static bool ShouldRequeue(bool defaultRequeueRejected, Exception exception, ILogger logger = null)
     {
-        var shouldRequeue = defaultRequeueRejected || exception is MessageRejectedWhileStoppingException;
-        var e = exception;
+        bool shouldRequeue = defaultRequeueRejected || exception is MessageRejectedWhileStoppingException;
+        Exception e = exception;
+
         while (e != null)
         {
             if (e is RabbitRejectAndDoNotRequeueException)
@@ -20,7 +21,8 @@ public static class ContainerUtils
                 shouldRequeue = false;
                 break;
             }
-            else if (e is ImmediateRequeueException)
+
+            if (e is ImmediateRequeueException)
             {
                 shouldRequeue = true;
                 break;
@@ -33,5 +35,8 @@ public static class ContainerUtils
         return shouldRequeue;
     }
 
-    public static bool IsRejectManual(Exception exception) => exception is RabbitRejectAndDoNotRequeueException rejectException && rejectException.IsRejectManual;
+    public static bool IsRejectManual(Exception exception)
+    {
+        return exception is RabbitRejectAndDoNotRequeueException rejectException && rejectException.IsRejectManual;
+    }
 }

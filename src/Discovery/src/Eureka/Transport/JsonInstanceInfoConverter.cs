@@ -12,6 +12,7 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
     public override IList<JsonInstanceInfo> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         var result = new List<JsonInstanceInfo>();
+
         if (reader.TokenType.Equals(JsonTokenType.StartArray))
         {
             result = JsonSerializer.Deserialize<List<JsonInstanceInfo>>(ref reader, options);
@@ -19,6 +20,7 @@ internal sealed class JsonInstanceInfoConverter : JsonConverter<IList<JsonInstan
         else
         {
             var singleInst = JsonSerializer.Deserialize<JsonInstanceInfo>(ref reader, options);
+
             if (singleInst != null)
             {
                 result.Add(singleInst);

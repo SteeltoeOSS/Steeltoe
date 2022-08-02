@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System.Reflection;
 
 namespace Steeltoe.Connector.Hystrix;
 
@@ -12,7 +12,7 @@ public class HystrixProviderConnectorFactory
 {
     private readonly HystrixRabbitMQServiceInfo _info;
     private readonly HystrixProviderConnectorOptions _config;
-    private readonly HystrixProviderConfigurer _configurer = new ();
+    private readonly HystrixProviderConfigurer _configurer = new();
     private readonly Type _type;
 
     private readonly MethodInfo _setUri;
@@ -23,6 +23,7 @@ public class HystrixProviderConnectorFactory
         _config = options ?? throw new ArgumentNullException(nameof(options));
         _type = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
         _setUri = FindSetUriMethod(_type);
+
         if (_setUri == null)
         {
             throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
@@ -35,10 +36,10 @@ public class HystrixProviderConnectorFactory
 
     public static MethodInfo FindSetUriMethod(Type type)
     {
-        var typeInfo = type.GetTypeInfo();
-        var declaredMethods = typeInfo.DeclaredMethods;
+        TypeInfo typeInfo = type.GetTypeInfo();
+        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
 
-        foreach (var ci in declaredMethods)
+        foreach (MethodInfo ci in declaredMethods)
         {
             if (ci.Name.Equals("SetUri"))
             {
@@ -51,8 +52,9 @@ public class HystrixProviderConnectorFactory
 
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -73,7 +75,8 @@ public class HystrixProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        var inst = ReflectionHelpers.CreateInstance(_type);
+        object inst = ReflectionHelpers.CreateInstance(_type);
+
         if (inst == null)
         {
             return null;
@@ -81,7 +84,11 @@ public class HystrixProviderConnectorFactory
 
         var uri = new Uri(connectionString, UriKind.Absolute);
 
-        ReflectionHelpers.Invoke(_setUri, inst, new object[] { uri });
+        ReflectionHelpers.Invoke(_setUri, inst, new object[]
+        {
+            uri
+        });
+
         return new HystrixConnectionFactory(inst);
     }
 }

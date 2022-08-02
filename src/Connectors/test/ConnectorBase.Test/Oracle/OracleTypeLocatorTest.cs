@@ -12,7 +12,7 @@ public class OracleTypeLocatorTest
     public void Property_Can_Locate_ConnectionType()
     {
         // arrange -- handled by including a compatible Oracle NuGet package
-        var type = OracleTypeLocator.OracleConnection;
+        Type type = OracleTypeLocator.OracleConnection;
 
         Assert.NotNull(type);
     }
@@ -21,10 +21,14 @@ public class OracleTypeLocatorTest
     public void Driver_Found_In_ODPNet_Assembly()
     {
         // arrange ~ narrow the assembly list to one specific nuget package
-        var assemblies = OracleTypeLocator.Assemblies;
-        OracleTypeLocator.Assemblies = new[] { "Oracle.ManagedDataAccess" };
+        string[] assemblies = OracleTypeLocator.Assemblies;
 
-        var type = OracleTypeLocator.OracleConnection;
+        OracleTypeLocator.Assemblies = new[]
+        {
+            "Oracle.ManagedDataAccess"
+        };
+
+        Type type = OracleTypeLocator.OracleConnection;
 
         Assert.NotNull(type);
         OracleTypeLocator.Assemblies = assemblies;
@@ -33,8 +37,12 @@ public class OracleTypeLocatorTest
     [Fact]
     public void Throws_When_ConnectionType_NotFound()
     {
-        var types = OracleTypeLocator.ConnectionTypeNames;
-        OracleTypeLocator.ConnectionTypeNames = new[] { "something-Wrong" };
+        string[] types = OracleTypeLocator.ConnectionTypeNames;
+
+        OracleTypeLocator.ConnectionTypeNames = new[]
+        {
+            "something-Wrong"
+        };
 
         var exception = Assert.Throws<TypeLoadException>(() => OracleTypeLocator.OracleConnection);
 

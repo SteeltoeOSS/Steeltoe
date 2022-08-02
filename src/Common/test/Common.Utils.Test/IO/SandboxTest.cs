@@ -24,7 +24,7 @@ public class SandboxTest
     {
         using var sandbox = new Sandbox();
 
-        var path = sandbox.ResolvePath("some/path");
+        string path = sandbox.ResolvePath("some/path");
 
         path.Should().Be(Path.Join(sandbox.FullPath, "some/path"));
     }
@@ -34,7 +34,7 @@ public class SandboxTest
     {
         using var sandbox = new Sandbox();
 
-        var path = sandbox.CreateDirectory("path/to/dir");
+        string path = sandbox.CreateDirectory("path/to/dir");
 
         Directory.Exists(path).Should().BeTrue();
     }
@@ -44,7 +44,7 @@ public class SandboxTest
     {
         using var sandbox = new Sandbox();
 
-        var path = sandbox.CreateFile("path/to/file");
+        string path = sandbox.CreateFile("path/to/file");
 
         File.Exists(path).Should().BeTrue();
     }
@@ -54,7 +54,7 @@ public class SandboxTest
     {
         using var sandbox = new Sandbox();
 
-        var path = sandbox.CreateFile("path/to/file", "mytext");
+        string path = sandbox.CreateFile("path/to/file", "mytext");
 
         File.ReadAllText(path).Should().Be("mytext");
     }

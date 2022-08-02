@@ -22,16 +22,13 @@ namespace Steeltoe.Integration.Rabbit.Outbound;
 
 public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMessageHandler, ILifecycle
 {
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
     private readonly string _noId = Guid.Empty.ToString();
     private readonly ILogger _logger;
 
-    protected AbstractRabbitOutboundEndpoint(IApplicationContext context, ILogger logger)
-        : base(context)
-    {
-        _logger = logger;
-        HeaderMapper = DefaultRabbitHeaderMapper.GetOutboundMapper(_logger);
-    }
+    private Task ConfirmChecker { get; set; }
+
+    private CancellationTokenSource TokenSource { get; set; }
 
     public string ExchangeName { get; set; }
 
@@ -81,9 +78,12 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
     public bool IsRunning => Running;
 
-    private Task ConfirmChecker { get; set; }
-
-    private CancellationTokenSource TokenSource { get; set; }
+    protected AbstractRabbitOutboundEndpoint(IApplicationContext context, ILogger logger)
+        : base(context)
+    {
+        _logger = logger;
+        HeaderMapper = DefaultRabbitHeaderMapper.GetOutboundMapper(_logger);
+    }
 
     public void SetExchangeNameExpressionString(string exchangeNameExpression)
     {
@@ -140,7 +140,8 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                 {
                     try
                     {
-                        var connection = ConnectionFactory.CreateConnection();
+                        IConnection connection = ConnectionFactory.CreateConnection();
+
                         if (connection != null)
                         {
                             connection.Close();
@@ -175,6 +176,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
             }
 
             Running = false;
+
             if (TokenSource != null)
             {
                 TokenSource.Cancel();
@@ -194,7 +196,10 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         EndpointInit();
     }
 
-    Task ILifecycle.Start() => Task.Run(Start);
+    Task ILifecycle.Start()
+    {
+        return Task.Run(Start);
+    }
 
     Task ILifecycle.Stop()
     {
@@ -240,11 +245,11 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
     {
         CorrelationData correlationData = null;
 
-        var messageId = requestMessage.Headers.Id ?? _noId;
+        string messageId = requestMessage.Headers.Id ?? _noId;
 
         if (CorrelationDataGenerator != null)
         {
-            var userData = CorrelationDataGenerator.ProcessMessage(requestMessage);
+            object userData = CorrelationDataGenerator.ProcessMessage(requestMessage);
 
             if (userData != null)
             {
@@ -258,7 +263,7 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
         if (correlationData == null)
         {
-            var correlation = requestMessage.Headers[RabbitMessageHeaders.PublishConfirmCorrelation];
+            object correlation = requestMessage.Headers[RabbitMessageHeaders.PublishConfirmCorrelation];
 
             if (correlation is CorrelationData cdata)
             {
@@ -276,7 +281,8 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
     protected virtual string GenerateExchangeName(IMessage requestMessage)
     {
-        var exchange = ExchangeName;
+        string exchange = ExchangeName;
+
         if (ExchangeNameGenerator != null)
         {
             exchange = ExchangeNameGenerator.ProcessMessage(requestMessage);
@@ -287,7 +293,8 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
     protected virtual string GenerateRoutingKey(IMessage requestMessage)
     {
-        var key = RoutingKey;
+        string key = RoutingKey;
+
         if (RoutingKeyGenerator != null)
         {
             key = RoutingKeyGenerator.ProcessMessage(requestMessage);
@@ -300,42 +307,41 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
     {
         if (DelayGenerator != null)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.Delay = DelayGenerator.ProcessMessage(message);
         }
     }
 
     protected virtual IMessageBuilder BuildReply(IMessageConverter converter, IMessage amqpReplyMessage)
     {
-        var replyObject = converter.FromMessage(amqpReplyMessage, null);
-        var builder = PrepareMessageBuilder(replyObject);
+        object replyObject = converter.FromMessage(amqpReplyMessage, null);
+        IMessageBuilder builder = PrepareMessageBuilder(replyObject);
 
         // var headers = getHeaderMapper().toHeadersFromReply(amqpReplyMessage.getMessageProperties());
         builder.CopyHeadersIfAbsent(amqpReplyMessage.Headers);
         return builder;
     }
 
-    protected virtual IMessage BuildReturnedMessage(IMessage message, int replyCode, string replyText, string exchange, string returnedRoutingKey, IMessageConverter converter)
+    protected virtual IMessage BuildReturnedMessage(IMessage message, int replyCode, string replyText, string exchange, string returnedRoutingKey,
+        IMessageConverter converter)
     {
-        var returnedObject = converter.FromMessage(message, null);
-        var builder = PrepareMessageBuilder(returnedObject);
+        object returnedObject = converter.FromMessage(message, null);
+        IMessageBuilder builder = PrepareMessageBuilder(returnedObject);
 
         // TODO: Map < String, ?> headers = getHeaderMapper().toHeadersFromReply(message.getMessageProperties());
         if (ErrorMessageStrategy == null)
         {
-            builder.CopyHeadersIfAbsent(message.Headers)
-                .SetHeader(RabbitMessageHeaders.ReturnReplyCode, replyCode)
-                .SetHeader(RabbitMessageHeaders.ReturnReplyText, replyText)
-                .SetHeader(RabbitMessageHeaders.ReturnExchange, exchange)
+            builder.CopyHeadersIfAbsent(message.Headers).SetHeader(RabbitMessageHeaders.ReturnReplyCode, replyCode)
+                .SetHeader(RabbitMessageHeaders.ReturnReplyText, replyText).SetHeader(RabbitMessageHeaders.ReturnExchange, exchange)
                 .SetHeader(RabbitMessageHeaders.ReturnRoutingKey, returnedRoutingKey);
         }
 
-        var returnedMessage = builder.Build();
+        IMessage returnedMessage = builder.Build();
+
         if (ErrorMessageStrategy != null)
         {
             returnedMessage = ErrorMessageStrategy.BuildErrorMessage(
-                new ReturnedRabbitMessageException(returnedMessage, replyCode, replyText, exchange, returnedRoutingKey),
-                null);
+                new ReturnedRabbitMessageException(returnedMessage, replyCode, replyText, exchange, returnedRoutingKey), null);
         }
 
         return returnedMessage;
@@ -344,15 +350,17 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
     protected void HandleConfirm(CorrelationData correlationData, bool ack, string cause)
     {
         var wrapper = (CorrelationDataWrapper)correlationData;
+
         if (correlationData == null)
         {
             _logger.LogDebug("No correlation data provided for ack: " + ack + " cause:" + cause);
             return;
         }
 
-        var userCorrelationData = wrapper.UserData;
+        object userCorrelationData = wrapper.UserData;
         IMessage confirmMessage;
         confirmMessage = BuildConfirmMessage(ack, cause, wrapper, userCorrelationData);
+
         if (ack && GetConfirmAckChannel() != null)
         {
             SendOutput(confirmMessage, GetConfirmAckChannel(), true);
@@ -375,40 +383,39 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
             {
                 { RabbitMessageHeaders.PublishConfirm, ack }
             };
+
             if (!ack && !string.IsNullOrEmpty(cause))
             {
                 headers.Add(RabbitMessageHeaders.PublishConfirmNackCause, cause);
             }
 
-            return PrepareMessageBuilder(userCorrelationData)
-                .CopyHeaders(headers)
-                .Build();
+            return PrepareMessageBuilder(userCorrelationData).CopyHeaders(headers).Build();
         }
-        else
-        {
-            return ErrorMessageStrategy.BuildErrorMessage(
-                new NackedRabbitMessageException(wrapper.Message, wrapper.UserData, cause), null);
-        }
+
+        return ErrorMessageStrategy.BuildErrorMessage(new NackedRabbitMessageException(wrapper.Message, wrapper.UserData, cause), null);
     }
 
     private IMessageBuilder PrepareMessageBuilder(object replyObject)
     {
-        var factory = IntegrationServices.MessageBuilderFactory;
+        IMessageBuilderFactory factory = IntegrationServices.MessageBuilderFactory;
         return replyObject is IMessage message ? factory.FromMessage(message) : factory.WithPayload(replyObject);
     }
 
     private void CheckUnconfirmed(CancellationToken cancellationToken)
     {
-        var delay = ConfirmTimeout.Value.TotalMilliseconds / 2L;
+        double delay = ConfirmTimeout.Value.TotalMilliseconds / 2L;
+
         while (!cancellationToken.IsCancellationRequested)
         {
-            var rabbitTemplate = GetRabbitTemplate();
+            RabbitTemplate rabbitTemplate = GetRabbitTemplate();
+
             if (rabbitTemplate != null)
             {
-                var unconfirmed = rabbitTemplate.GetUnconfirmed((long)ConfirmTimeout.Value.TotalMilliseconds);
+                ICollection<CorrelationData> unconfirmed = rabbitTemplate.GetUnconfirmed((long)ConfirmTimeout.Value.TotalMilliseconds);
+
                 if (unconfirmed != null)
                 {
-                    foreach (var cd in unconfirmed)
+                    foreach (CorrelationData cd in unconfirmed)
                     {
                         HandleConfirm(cd, false, "Confirm timed out");
                     }
@@ -454,12 +461,14 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
         else
         {
             var nullChannel = IntegrationServicesUtils.ExtractTypeIfPossible<NullChannel>(ConfirmAckChannel);
+
             if (!((ConfirmAckChannel == null || nullChannel != null) && ConfirmAckChannelName == null))
             {
                 throw new InvalidOperationException("A 'confirmCorrelationExpression' is required when specifying a 'confirmAckChannel'");
             }
 
             nullChannel = IntegrationServicesUtils.ExtractTypeIfPossible<NullChannel>(ConfirmNackChannel);
+
             if (!((ConfirmNackChannel == null || nullChannel != null) && ConfirmNackChannelName == null))
             {
                 throw new InvalidOperationException("A 'confirmCorrelationExpression' is required when specifying a 'confirmNackChannel'");
@@ -481,13 +490,6 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
         public IMessage Message { get; }
 
-        public CorrelationDataWrapper(string id, object userData, IMessage message)
-            : base(id)
-        {
-            UserData = userData;
-            Message = message;
-        }
-
         public override TaskCompletionSource<Confirm> FutureSource
         {
             get
@@ -496,10 +498,8 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
                 {
                     return data.FutureSource;
                 }
-                else
-                {
-                    return base.FutureSource;
-                }
+
+                return base.FutureSource;
             }
         }
 
@@ -524,6 +524,13 @@ public abstract class AbstractRabbitOutboundEndpoint : AbstractReplyProducingMes
 
                 base.ReturnedMessage = value;
             }
+        }
+
+        public CorrelationDataWrapper(string id, object userData, IMessage message)
+            : base(id)
+        {
+            UserData = userData;
+            Message = message;
         }
     }
 }

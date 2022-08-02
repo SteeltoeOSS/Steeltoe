@@ -14,7 +14,7 @@ public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        var appsettings = @"
+        string appsettings = @"
 {
     ""discovery"": {
         ""services"": [
@@ -25,17 +25,18 @@ public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
         ]
     }
 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
         var services = new ServiceCollection();
 
         services.AddConfigurationDiscoveryClient(builder.Build());
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         // by getting the provider, we're confirming that the options are also available in the container
         var serviceInstanceProvider = serviceProvider.GetRequiredService(typeof(IServiceInstanceProvider)) as IServiceInstanceProvider;

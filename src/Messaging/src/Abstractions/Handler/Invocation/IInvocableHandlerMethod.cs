@@ -28,8 +28,14 @@ public interface IInvocableHandlerMethod
     /// <summary>
     /// Invoke the underlying method after resolving its argument values in the context of the given message.
     /// </summary>
-    /// <param name="requestMessage">the message being processed.</param>
-    /// <param name="args">given arguments matched by type, not resolved.</param>
-    /// <returns>the raw value returned from the invoked method.</returns>
+    /// <param name="requestMessage">
+    /// the message being processed.
+    /// </param>
+    /// <param name="args">
+    /// given arguments matched by type, not resolved.
+    /// </param>
+    /// <returns>
+    /// the raw value returned from the invoked method.
+    /// </returns>
     object Invoke(IMessage requestMessage, params object[] args);
 }

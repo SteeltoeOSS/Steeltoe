@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Discovery.Eureka.Test;
 using System.Text.Json;
+using Steeltoe.Discovery.Eureka.Test;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Transport.Test;
@@ -13,7 +13,7 @@ public class JsonApplicationsTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        var json = @"
+        string json = @"
                 { 
                     ""versions__delta"":""1"",
                     ""apps__hashcode"":""UP_1_"",
@@ -44,6 +44,7 @@ public class JsonApplicationsTest : AbstractBaseTest
                         }]
                     }]
                 }";
+
         var result = JsonSerializer.Deserialize<JsonApplications>(json);
         Assert.NotNull(result);
         Assert.Equal("UP_1_", result.AppsHashCode);

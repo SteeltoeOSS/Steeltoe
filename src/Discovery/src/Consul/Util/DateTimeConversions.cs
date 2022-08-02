@@ -51,7 +51,7 @@ public static class DateTimeConversions
             "s" => TimeSpan.FromSeconds(value),
             "m" => TimeSpan.FromMinutes(value),
             "h" => TimeSpan.FromHours(value),
-            _ => throw new InvalidOperationException($"Incorrect unit:{unit}"),
+            _ => throw new InvalidOperationException($"Incorrect unit:{unit}")
         };
     }
 }

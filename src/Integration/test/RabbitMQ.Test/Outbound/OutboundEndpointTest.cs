@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
@@ -11,7 +12,6 @@ using Steeltoe.Messaging;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Integration.Rabbit.Outbound;
@@ -21,20 +21,23 @@ public class OutboundEndpointTest
     [Fact]
     public void TestDelay()
     {
-        var config = new ConfigurationBuilder().Build();
-        var services = new ServiceCollection().BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+        ServiceProvider services = new ServiceCollection().BuildServiceProvider();
         var context = new GenericApplicationContext(services, config);
 
         var connectionFactory = new Mock<IConnectionFactory>();
+
         var rabbitTemplate = new TestRabbitTemplate
         {
             ConnectionFactory = connectionFactory.Object
         };
+
         var endpoint = new RabbitOutboundEndpoint(context, rabbitTemplate, null)
         {
             ExchangeName = "foo",
             RoutingKey = "bar"
         };
+
         endpoint.SetDelayExpressionString("42");
         endpoint.Initialize();
 

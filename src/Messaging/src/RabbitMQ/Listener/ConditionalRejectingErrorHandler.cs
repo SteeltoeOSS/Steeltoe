@@ -17,6 +17,12 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
     private readonly ILogger _logger;
     private readonly IFatalExceptionStrategy _exceptionStrategy;
 
+    public virtual bool DiscardFatalErrorsWithXDeath { get; set; } = true;
+
+    public virtual bool RejectManual { get; set; } = true;
+
+    public string ServiceName { get; set; } = DefaultServiceName;
+
     public ConditionalRejectingErrorHandler(ILogger logger = null)
     {
         _logger = logger;
@@ -29,29 +35,27 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
         _exceptionStrategy = exceptionStrategy;
     }
 
-    public virtual bool DiscardFatalErrorsWithXDeath { get; set; } = true;
-
-    public virtual bool RejectManual { get; set; } = true;
-
-    public string ServiceName { get; set; } = DefaultServiceName;
-
     public virtual bool HandleError(Exception exception)
     {
         _logger?.LogWarning(exception, "Execution of Rabbit message listener failed.");
+
         if (!CauseChainContainsRabbitRejectAndDoNotRequeueException(exception) && _exceptionStrategy.IsFatal(exception))
         {
             if (DiscardFatalErrorsWithXDeath && exception is ListenerExecutionFailedException listenerException)
             {
-                var failed = listenerException.FailedMessage;
+                IMessage failed = listenerException.FailedMessage;
+
                 if (failed != null)
                 {
-                    var accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
-                    var xDeath = accessor.GetXDeathHeader();
+                    RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(failed);
+                    List<Dictionary<string, object>> xDeath = accessor.GetXDeathHeader();
+
                     if (xDeath != null && xDeath.Count > 0)
                     {
                         _logger?.LogError(
-                            "x-death header detected on a message with a fatal exception; "
-                            + "perhaps requeued from a DLQ? - discarding: {failedMessage} ", failed);
+                            "x-death header detected on a message with a fatal exception; " + "perhaps requeued from a DLQ? - discarding: {failedMessage} ",
+                            failed);
+
                         throw new ImmediateAcknowledgeException("Fatal and x-death present");
                     }
                 }
@@ -65,7 +69,8 @@ public class ConditionalRejectingErrorHandler : IErrorHandler
 
     protected virtual bool CauseChainContainsRabbitRejectAndDoNotRequeueException(Exception exception)
     {
-        var cause = exception.InnerException;
+        Exception cause = exception.InnerException;
+
         while (cause != null)
         {
             if (cause is RabbitRejectAndDoNotRequeueException)

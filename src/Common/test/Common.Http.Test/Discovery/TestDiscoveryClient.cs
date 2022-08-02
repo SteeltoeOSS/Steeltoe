@@ -11,32 +11,23 @@ internal sealed class TestDiscoveryClient : IDiscoveryClient
 {
     private readonly IServiceInstance _instance;
 
+    public string Description => throw new NotImplementedException();
+
+    public IList<string> Services => throw new NotImplementedException();
+
     public TestDiscoveryClient(IServiceInstance instance = null)
     {
         _instance = instance;
-    }
-
-    public string Description
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public IList<string> Services
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
         if (_instance != null)
         {
-            return new List<IServiceInstance> { _instance };
+            return new List<IServiceInstance>
+            {
+                _instance
+            };
         }
 
         return new List<IServiceInstance>();

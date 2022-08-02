@@ -48,9 +48,10 @@ public class OAuthConfigurer
         options.UserInfoUrl = config.OAuthServiceUrl + config.UserInfoUri;
         options.JwtKeyUrl = config.OAuthServiceUrl + config.JwtKeyUri;
         options.ValidateCertificates = config.ValidateCertificates;
+
         if (config.Scope != null)
         {
-            foreach (var scope in config.Scope)
+            foreach (string scope in config.Scope)
             {
                 options.Scope.Add(scope);
             }

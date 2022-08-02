@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Microsoft.Extensions.Options;
 using Steeltoe.Connector.Services;
 using Xunit;
 
@@ -13,10 +14,12 @@ public class OAuthConfigurerTest
     public void Update_WithDefaultConnectorOptions_UpdatesOAuthOptions_AsExpected()
     {
         var opts = new OAuthServiceOptions();
+
         var config = new OAuthConnectorOptions
         {
             ValidateCertificates = false
         };
+
         var configurer = new OAuthConfigurer();
         configurer.UpdateOptions(config, opts);
 
@@ -58,10 +61,10 @@ public class OAuthConfigurerTest
     {
         var config = new OAuthConnectorOptions();
         var configurer = new OAuthConfigurer();
-        var result = configurer.Configure(null, config);
+        IOptions<OAuthServiceOptions> result = configurer.Configure(null, config);
 
         Assert.NotNull(result);
-        var opts = result.Value;
+        OAuthServiceOptions opts = result.Value;
         Assert.NotNull(opts);
 
         Assert.Equal(OAuthConnectorDefaults.DefaultOAuthServiceUrl + OAuthConnectorDefaults.DefaultAccessTokenUri, opts.AccessTokenUrl);
@@ -82,10 +85,10 @@ public class OAuthConfigurerTest
         var si = new SsoServiceInfo("myId", "myClientId", "myClientSecret", "https://foo.bar");
         var config = new OAuthConnectorOptions();
         var configurer = new OAuthConfigurer();
-        var result = configurer.Configure(si, config);
+        IOptions<OAuthServiceOptions> result = configurer.Configure(si, config);
 
         Assert.NotNull(result);
-        var opts = result.Value;
+        OAuthServiceOptions opts = result.Value;
         Assert.NotNull(opts);
 
         Assert.Equal($"https://foo.bar{OAuthConnectorDefaults.DefaultAccessTokenUri}", opts.AccessTokenUrl);

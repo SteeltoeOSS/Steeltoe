@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Net;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace Steeltoe.Common.Net.Test;
@@ -22,7 +22,11 @@ public class InetUtilsTest
     [Trait("Category", "SkipOnMacOS")] // TODO: revisit running this on the MSFT-hosted MacOS agent
     public void TestGetFirstNonLoopbackAddress()
     {
-        var utils = new InetUtils(new InetOptions { UseOnlySiteLocalInterfaces = true }, GetLogger());
+        var utils = new InetUtils(new InetOptions
+        {
+            UseOnlySiteLocalInterfaces = true
+        }, GetLogger());
+
         Assert.NotNull(utils.FindFirstNonLoopbackAddress());
     }
 
@@ -38,7 +42,7 @@ public class InetUtilsTest
     public void TestHostInfo()
     {
         var utils = new InetUtils(new InetOptions(), GetLogger());
-        var info = utils.FindFirstNonLoopbackHostInfo();
+        HostInfo info = utils.FindFirstNonLoopbackHostInfo();
         Assert.NotNull(info.IpAddress);
     }
 
@@ -121,7 +125,7 @@ public class InetUtilsTest
 
     private ILogger GetLogger()
     {
-        var loggerFactory = TestHelpers.GetLoggerFactory();
+        ILoggerFactory loggerFactory = TestHelpers.GetLoggerFactory();
         return loggerFactory.CreateLogger<InetOptions>();
     }
 }

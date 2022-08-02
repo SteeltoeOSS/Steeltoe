@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
@@ -21,7 +22,8 @@ public static class RedisCacheConfigurationExtensions
         return config.CreateRedisServiceConnectorFactory(redisConfig, serviceName);
     }
 
-    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration, string serviceName = null)
+    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, IConfiguration connectorConfiguration,
+        string serviceName = null)
     {
         if (config == null)
         {
@@ -37,7 +39,8 @@ public static class RedisCacheConfigurationExtensions
         return config.CreateRedisServiceConnectorFactory(connectorOptions, serviceName);
     }
 
-    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, RedisCacheConnectorOptions connectorOptions, string serviceName = null)
+    public static RedisServiceConnectorFactory CreateRedisServiceConnectorFactory(this IConfiguration config, RedisCacheConnectorOptions connectorOptions,
+        string serviceName = null)
     {
         if (config == null)
         {
@@ -49,15 +52,33 @@ public static class RedisCacheConfigurationExtensions
             throw new ArgumentNullException(nameof(connectorOptions));
         }
 
-        var redisAssemblies = new[] { "StackExchange.Redis", "StackExchange.Redis.StrongName", "Microsoft.Extensions.Caching.Redis" };
-        var redisTypeNames = new[] { "StackExchange.Redis.ConnectionMultiplexer", "Microsoft.Extensions.Caching.Distributed.IDistributedCache" };
-        var redisOptionNames = new[] { "StackExchange.Redis.ConfigurationOptions", "Microsoft.Extensions.Caching.Redis.RedisCacheOptions" };
+        string[] redisAssemblies = new[]
+        {
+            "StackExchange.Redis",
+            "StackExchange.Redis.StrongName",
+            "Microsoft.Extensions.Caching.Redis"
+        };
 
-        var redisConnection = ReflectionHelpers.FindType(redisAssemblies, redisTypeNames);
-        var redisOptions = ReflectionHelpers.FindType(redisAssemblies, redisOptionNames);
-        var initializer = ReflectionHelpers.FindMethod(redisConnection, "Connect");
+        string[] redisTypeNames = new[]
+        {
+            "StackExchange.Redis.ConnectionMultiplexer",
+            "Microsoft.Extensions.Caching.Distributed.IDistributedCache"
+        };
 
-        var info = serviceName == null ? config.GetSingletonServiceInfo<RedisServiceInfo>() : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+        string[] redisOptionNames = new[]
+        {
+            "StackExchange.Redis.ConfigurationOptions",
+            "Microsoft.Extensions.Caching.Redis.RedisCacheOptions"
+        };
+
+        Type redisConnection = ReflectionHelpers.FindType(redisAssemblies, redisTypeNames);
+        Type redisOptions = ReflectionHelpers.FindType(redisAssemblies, redisOptionNames);
+        MethodInfo initializer = ReflectionHelpers.FindMethod(redisConnection, "Connect");
+
+        RedisServiceInfo info = serviceName == null
+            ? config.GetSingletonServiceInfo<RedisServiceInfo>()
+            : config.GetRequiredServiceInfo<RedisServiceInfo>(serviceName);
+
         return new RedisServiceConnectorFactory(info, connectorOptions, redisConnection, redisOptions, initializer);
     }
 }

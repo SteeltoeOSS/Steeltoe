@@ -33,7 +33,7 @@ public class CosmosDbConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new CosmosDbConnectorOptions(config);
         Assert.Equal("https://localhost:443", options.Host);
@@ -54,9 +54,10 @@ public class CosmosDbConnectorOptionsTest
         {
             ["cosmosdb:client:ConnectionString"] = "notEvenValidConnectionString-iHopeYouKnowBestWhatWorksForYou!"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new CosmosDbConnectorOptions(config);
 
@@ -79,7 +80,7 @@ public class CosmosDbConnectorOptionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new CosmosDbConnectorOptions(config);
 

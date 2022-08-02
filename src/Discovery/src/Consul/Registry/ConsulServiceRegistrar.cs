@@ -13,8 +13,6 @@ namespace Steeltoe.Discovery.Consul.Registry;
 /// </summary>
 public class ConsulServiceRegistrar : IConsulServiceRegistrar
 {
-    internal int IsRunning;
-
     private const int NotRunning = 0;
     private const int Running = 1;
 
@@ -23,8 +21,8 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulDiscoveryOptions _options;
 
-    /// <inheritdoc/>
-    public IConsulRegistration Registration { get; }
+    private bool _isDisposed;
+    internal int IsRunning;
 
     internal ConsulDiscoveryOptions Options
     {
@@ -39,14 +37,26 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         }
     }
 
+    /// <inheritdoc />
+    public IConsulRegistration Registration { get; }
+
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
+    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
-    /// <param name="optionsMonitor">configuration options to use.</param>
-    /// <param name="registration">the registration to register with Consul.</param>
-    /// <param name="logger">optional logger.</param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
+    /// <param name="registry">
+    /// the Consul service registry to use when doing registrations.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// configuration options to use.
+    /// </param>
+    /// <param name="registration">
+    /// the registration to register with Consul.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
+    public ConsulServiceRegistrar(IConsulServiceRegistry registry, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulRegistration registration,
+        ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _optionsMonitor = optionsMonitor ?? throw new ArgumentNullException(nameof(optionsMonitor));
@@ -55,13 +65,22 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar"/> class.
+    /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
     /// </summary>
-    /// <param name="registry">the Consul service registry to use when doing registrations.</param>
-    /// <param name="options">configuration options to use.</param>
-    /// <param name="registration">the registration to register with Consul.</param>
-    /// <param name="logger">optional logger.</param>
-    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration, ILogger<ConsulServiceRegistrar> logger = null)
+    /// <param name="registry">
+    /// the Consul service registry to use when doing registrations.
+    /// </param>
+    /// <param name="options">
+    /// configuration options to use.
+    /// </param>
+    /// <param name="registration">
+    /// the registration to register with Consul.
+    /// </param>
+    /// <param name="logger">
+    /// optional logger.
+    /// </param>
+    public ConsulServiceRegistrar(IConsulServiceRegistry registry, ConsulDiscoveryOptions options, IConsulRegistration registration,
+        ILogger<ConsulServiceRegistrar> logger = null)
     {
         _registry = registry ?? throw new ArgumentNullException(nameof(registry));
         _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -69,7 +88,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         _logger = logger;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Start()
     {
         if (!Options.Enabled)
@@ -91,7 +110,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         }
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Register()
     {
         if (!Options.Register)
@@ -103,7 +122,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         _registry.Register(Registration);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Deregister()
     {
         if (!Options.Register || !Options.Deregister)
@@ -124,8 +143,9 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
 
         _logger?.LogDebug("Starting retryable action ..");
 
-        var attempts = 0;
-        var backOff = options.InitialInterval;
+        int attempts = 0;
+        int backOff = options.InitialInterval;
+
         do
         {
             try
@@ -137,11 +157,12 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
             catch (Exception e)
             {
                 attempts++;
+
                 if (attempts < options.MaxAttempts)
                 {
                     _logger?.LogError(e, "Exception during {attempt} attempts of retryable action, will retry", attempts);
                     Thread.CurrentThread.Join(backOff);
-                    var nextBackOff = (int)(backOff * options.Multiplier);
+                    int nextBackOff = (int)(backOff * options.Multiplier);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }
                 else
@@ -154,9 +175,7 @@ public class ConsulServiceRegistrar : IConsulServiceRegistrar
         while (true);
     }
 
-    private bool _isDisposed;
-
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Dispose()
     {
         Dispose(true);

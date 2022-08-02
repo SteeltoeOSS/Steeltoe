@@ -11,20 +11,17 @@ namespace Steeltoe.Stream.Binder;
 
 public class PartitionHandler
 {
-    internal readonly IPartitionKeyExtractorStrategy PartitionKeyExtractorStrategy;
-    internal readonly IPartitionSelectorStrategy PartitionSelectorStrategy;
-
     private readonly IProducerOptions _producerOptions;
 
     private readonly IExpressionParser _expressionParser;
     private readonly IEvaluationContext _evaluationContext;
+    internal readonly IPartitionKeyExtractorStrategy PartitionKeyExtractorStrategy;
+    internal readonly IPartitionSelectorStrategy PartitionSelectorStrategy;
 
-    public PartitionHandler(
-        IExpressionParser expressionParser,
-        IEvaluationContext evaluationContext,
-        IProducerOptions options,
-        IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy,
-        IPartitionSelectorStrategy partitionSelectorStrategy)
+    public int PartitionCount { get; set; }
+
+    public PartitionHandler(IExpressionParser expressionParser, IEvaluationContext evaluationContext, IProducerOptions options,
+        IPartitionKeyExtractorStrategy partitionKeyExtractorStrategy, IPartitionSelectorStrategy partitionSelectorStrategy)
     {
         _expressionParser = expressionParser;
         _evaluationContext = evaluationContext ?? new StandardEvaluationContext();
@@ -34,16 +31,15 @@ public class PartitionHandler
         PartitionCount = _producerOptions.PartitionCount;
     }
 
-    public int PartitionCount { get; set; }
-
     public int DeterminePartition(IMessage message)
     {
-        var key = ExtractKey(message);
+        object key = ExtractKey(message);
 
         int partition;
+
         if (!string.IsNullOrEmpty(_producerOptions.PartitionSelectorExpression) && _expressionParser != null)
         {
-            var expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
+            IExpression expr = _expressionParser.ParseExpression(_producerOptions.PartitionSelectorExpression);
             partition = expr.GetValue<int>(_evaluationContext, key);
         }
         else
@@ -57,10 +53,11 @@ public class PartitionHandler
 
     private object ExtractKey(IMessage message)
     {
-        var key = InvokeKeyExtractor(message);
+        object key = InvokeKeyExtractor(message);
+
         if (key == null && !string.IsNullOrEmpty(_producerOptions.PartitionKeyExpression) && _expressionParser != null)
         {
-            var expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
+            IExpression expr = _expressionParser.ParseExpression(_producerOptions.PartitionKeyExpression);
             key = expr.GetValue(_evaluationContext ?? new StandardEvaluationContext(), message);
         }
 

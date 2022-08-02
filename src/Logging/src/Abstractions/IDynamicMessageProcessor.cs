@@ -10,10 +10,14 @@ namespace Steeltoe.Extensions.Logging;
 public interface IDynamicMessageProcessor
 {
     /// <summary>
-    /// Called for each log message just after the parameters have been formatted into the log string
-    /// but before the time stamp, category, and level have been applied.
+    /// Called for each log message just after the parameters have been formatted into the log string but before the time stamp, category, and level have
+    /// been applied.
     /// </summary>
-    /// <param name="inputLogMessage">The incoming log message.</param>
-    /// <returns>The updated log message.</returns>
+    /// <param name="inputLogMessage">
+    /// The incoming log message.
+    /// </param>
+    /// <returns>
+    /// The updated log message.
+    /// </returns>
     string Process(string inputLogMessage);
 }

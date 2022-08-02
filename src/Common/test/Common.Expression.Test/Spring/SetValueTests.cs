@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using System.Collections;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
+using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
@@ -58,33 +59,33 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestIsWritableForInvalidExpressions_SPR10610()
     {
-        var lContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext lContext = TestScenarioCreator.GetTestEvaluationContext();
 
         // PROPERTYORFIELDREFERENCE
         // Non existent field (or property):
-        var e1 = Parser.ParseExpression("ArrayContainer.wibble");
+        IExpression e1 = Parser.ParseExpression("ArrayContainer.wibble");
         Assert.False(e1.IsWritable(lContext));
 
-        var e2 = Parser.ParseExpression("ArrayContainer.wibble.foo");
+        IExpression e2 = Parser.ParseExpression("ArrayContainer.wibble.foo");
         Assert.Throws<SpelEvaluationException>(() => e2.IsWritable(lContext));
 
         // org.springframework.expression.spel.SpelEvaluationException: EL1008E:(pos 15): Property or field 'wibble' cannot be found on object of type 'org.springframework.expression.spel.Testresources.ArrayContainer' - maybe not public?
         // at org.springframework.expression.spel.ast.PropertyOrFieldReference.readProperty(PropertyOrFieldReference.java:225)
         // VARIABLE
         // the variable does not exist (but that is OK, we should be writable)
-        var e3 = Parser.ParseExpression("#madeup1");
+        IExpression e3 = Parser.ParseExpression("#madeup1");
         Assert.True(e3.IsWritable(lContext));
 
-        var e4 = Parser.ParseExpression("#madeup2.bar"); // compound expression
+        IExpression e4 = Parser.ParseExpression("#madeup2.bar"); // compound expression
         Assert.False(e4.IsWritable(lContext));
 
         // INDEXER
         // non existent indexer (wibble made up)
-        var e5 = Parser.ParseExpression("ArrayContainer.wibble[99]");
+        IExpression e5 = Parser.ParseExpression("ArrayContainer.wibble[99]");
         Assert.Throws<SpelEvaluationException>(() => e5.IsWritable(lContext));
 
         // non existent indexer (index via a string)
-        var e6 = Parser.ParseExpression("ArrayContainer.ints['abc']");
+        IExpression e6 = Parser.ParseExpression("ArrayContainer.ints['abc']");
         Assert.Throws<SpelEvaluationException>(() => e6.IsWritable(lContext));
     }
 
@@ -169,8 +170,8 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestAssign()
     {
-        var eContext = TestScenarioCreator.GetTestEvaluationContext();
-        var e = Parse("PublicName='Andy'");
+        StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
+        IExpression e = Parse("PublicName='Andy'");
         Assert.False(e.IsWritable(eContext));
         Assert.Equal("Andy", e.GetValue(eContext));
     }
@@ -181,8 +182,8 @@ public class SetValueTests : AbstractExpressionTests
     [Fact]
     public void TestSetGenericMapElementRequiresCoercion()
     {
-        var eContext = TestScenarioCreator.GetTestEvaluationContext();
-        var e = Parse("MapOfStringToBoolean[42]");
+        StandardEvaluationContext eContext = TestScenarioCreator.GetTestEvaluationContext();
+        IExpression e = Parse("MapOfStringToBoolean[42]");
         Assert.Null(e.GetValue(eContext));
 
         // Key should be coerced to string representation of 42
@@ -190,33 +191,36 @@ public class SetValueTests : AbstractExpressionTests
 
         // All keys should be strings
         var ks = Parse("MapOfStringToBoolean.Keys").GetValue<ICollection>(eContext);
-        foreach (var key in ks)
+
+        foreach (object key in ks)
         {
             Assert.IsType<string>(key);
         }
 
         // All values should be booleans
         var vs = Parse("MapOfStringToBoolean.Values").GetValue<ICollection>(eContext);
-        foreach (var val in vs)
+
+        foreach (object val in vs)
         {
             Assert.IsType<bool>(val);
         }
 
         // One final Test check coercion on the key for a map lookup
-        var o = e.GetValue<bool>(eContext);
+        bool o = e.GetValue<bool>(eContext);
         Assert.True(o);
     }
 
     protected void SetValueExpectError(string expression, object value)
     {
-        var e = Parser.ParseExpression(expression);
+        IExpression e = Parser.ParseExpression(expression);
         Assert.NotNull(e);
+
         if (IsDebug)
         {
             SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
         }
 
-        var lContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext lContext = TestScenarioCreator.GetTestEvaluationContext();
         Assert.Throws<SpelEvaluationException>(() => e.SetValue(lContext, value));
     }
 
@@ -224,14 +228,15 @@ public class SetValueTests : AbstractExpressionTests
     {
         try
         {
-            var e = Parser.ParseExpression(expression);
+            IExpression e = Parser.ParseExpression(expression);
             Assert.NotNull(e);
+
             if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
             }
 
-            var lContext = TestScenarioCreator.GetTestEvaluationContext();
+            StandardEvaluationContext lContext = TestScenarioCreator.GetTestEvaluationContext();
             Assert.True(e.IsWritable(lContext));
             e.SetValue(lContext, value);
             Assert.Equal(value, e.GetValue(lContext, value.GetType()));
@@ -250,18 +255,19 @@ public class SetValueTests : AbstractExpressionTests
     {
         try
         {
-            var e = Parser.ParseExpression(expression);
+            IExpression e = Parser.ParseExpression(expression);
             Assert.NotNull(e);
+
             if (IsDebug)
             {
                 SpelUtilities.PrintAbstractSyntaxTree(Console.Out, e);
             }
 
-            var lContext = TestScenarioCreator.GetTestEvaluationContext();
+            StandardEvaluationContext lContext = TestScenarioCreator.GetTestEvaluationContext();
             Assert.True(e.IsWritable(lContext));
             e.SetValue(lContext, value);
-            var a = expectedValue;
-            var b = e.GetValue(lContext);
+            object a = expectedValue;
+            object b = e.GetValue(lContext);
             Assert.Equal(b, a);
         }
         catch (EvaluationException ex)

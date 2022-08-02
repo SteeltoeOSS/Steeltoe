@@ -14,16 +14,25 @@ public static class SqlServerTypeLocator
     /// <summary>
     /// Gets SqlConnection from a SQL Server Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found.</exception>
-    public static Type SqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
+    /// <exception cref="ConnectorException">
+    /// When type is not found.
+    /// </exception>
+    public static Type SqlConnection =>
+        ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "SqlConnection", "a Microsoft SQL Server ADO.NET assembly");
 
     /// <summary>
     /// Gets the list of supported SQL Server Client assemblies.
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "System.Data.SqlClient" };
+    public static string[] Assemblies { get; internal set; } =
+    {
+        "System.Data.SqlClient"
+    };
 
     /// <summary>
     /// Gets the list of SQL Server types that implement IDbConnection.
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "System.Data.SqlClient.SqlConnection" };
+    public static string[] ConnectionTypeNames { get; internal set; } =
+    {
+        "System.Data.SqlClient.SqlConnection"
+    };
 }

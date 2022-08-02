@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Steeltoe.Common.Util;
 using HealthCheckResult = Steeltoe.Common.HealthChecks.HealthCheckResult;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 using MicrosoftHealthStatus = Microsoft.Extensions.Diagnostics.HealthChecks.HealthStatus;
-using Steeltoe.Common.Util;
 
 namespace Steeltoe.Management.Endpoint.Health;
 
@@ -19,20 +19,28 @@ public static class HealthCheckExtensions
             MicrosoftHealthStatus.Healthy => HealthStatus.Up,
             MicrosoftHealthStatus.Degraded => HealthStatus.Warning,
             MicrosoftHealthStatus.Unhealthy => HealthStatus.Down,
-            _ => HealthStatus.Unknown,
+            _ => HealthStatus.Unknown
         };
     }
 
     public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)
     {
-        var context = new HealthCheckContext { Registration = registration };
+        var context = new HealthCheckContext
+        {
+            Registration = registration
+        };
+
         var healthCheckResult = new HealthCheckResult();
+
         try
         {
-            var res = await registration.Factory(provider).CheckHealthAsync(context).ConfigureAwait(false);
+            Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult res = await registration.Factory(provider).CheckHealthAsync(context)
+                .ConfigureAwait(false);
+
             var status = res.Status.ToHealthStatus();
             healthCheckResult.Status = status; // Only used for aggregate doesn't get reported
             healthCheckResult.Description = res.Description;
+
             healthCheckResult.Details = new Dictionary<string, object>(res.Data)
             {
                 { "status", status.ToSnakeCaseString(SnakeCaseStyle.AllCaps) },

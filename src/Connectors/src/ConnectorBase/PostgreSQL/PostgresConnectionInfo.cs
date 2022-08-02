@@ -11,21 +11,28 @@ public class PostgresConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        PostgresServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<PostgresServiceInfo>()
             : configuration.GetRequiredServiceInfo<PostgresServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((PostgresServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((PostgresServiceInfo)serviceInfo, configuration);
+    }
 
-    public bool IsSameType(string serviceType) =>
-        serviceType.Equals("postgres", StringComparison.InvariantCultureIgnoreCase) ||
-        serviceType.Equals("postgresql", StringComparison.InvariantCultureIgnoreCase);
+    public bool IsSameType(string serviceType)
+    {
+        return serviceType.Equals("postgres", StringComparison.InvariantCultureIgnoreCase) ||
+            serviceType.Equals("postgresql", StringComparison.InvariantCultureIgnoreCase);
+    }
 
     public bool IsSameType(IServiceInfo serviceInfo)
-        => serviceInfo is PostgresServiceInfo;
+    {
+        return serviceInfo is PostgresServiceInfo;
+    }
 
     private Connection GetConnection(PostgresServiceInfo info, IConfiguration configuration)
     {

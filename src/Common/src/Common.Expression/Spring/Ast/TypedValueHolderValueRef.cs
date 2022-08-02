@@ -7,7 +7,9 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 public class TypedValueHolderValueRef : IValueRef
 {
     private readonly ITypedValue _typedValue;
-    private readonly SpelNode _node;  // used only for error reporting
+    private readonly SpelNode _node; // used only for error reporting
+
+    public bool IsWritable => false;
 
     public TypedValueHolderValueRef(ITypedValue typedValue, SpelNode node)
     {
@@ -15,12 +17,13 @@ public class TypedValueHolderValueRef : IValueRef
         _node = node;
     }
 
-    public ITypedValue GetValue() => _typedValue;
+    public ITypedValue GetValue()
+    {
+        return _typedValue;
+    }
 
     public void SetValue(object newValue)
     {
         throw new SpelEvaluationException(_node.StartPosition, SpelMessage.NotAssignable, _node.ToStringAst());
     }
-
-    public bool IsWritable => false;
 }

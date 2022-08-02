@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -30,7 +31,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestUnconditional()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         services.AddLogging(b =>
         {
             b.AddDebug();
@@ -48,19 +50,20 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
+
         channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
+
         var listener = new AtomicReference<IConnectionListener>();
-        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-            .Callback<IConnectionListener>(l => listener.Value = l);
+        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>())).Callback<IConnectionListener>(l => listener.Value = l);
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
         var exchange = new DirectExchange("bar");
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        var provider = services.BuildServiceProvider();
-        var context = provider.GetApplicationContext();
+        ServiceProvider provider = services.BuildServiceProvider();
+        IApplicationContext context = provider.GetApplicationContext();
         _ = new RabbitAdmin(context, cf.Object);
         Assert.NotNull(listener.Value);
         listener.Value.OnCreate(conn.Object);
@@ -73,7 +76,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestNoDeclareWithCachedConnections()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         services.AddLogging(b =>
         {
             b.AddDebug();
@@ -90,32 +94,29 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         var connectionNumber = new AtomicInteger(-1);
         var channelNumber = new AtomicInteger(-1);
 
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() =>
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() =>
+        {
+            var connection = new Mock<RC.IConnection>();
+            int connectionNum = connectionNumber.IncrementAndGet();
+            mockConnections.Add(connection.Object);
+            connection.Setup(c => c.IsOpen).Returns(true);
+            connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+
+            connection.Setup(c => c.CreateModel()).Callback(() =>
             {
-                var connection = new Mock<RC.IConnection>();
-                var connectionNum = connectionNumber.IncrementAndGet();
-                mockConnections.Add(connection.Object);
-                connection.Setup(c => c.IsOpen).Returns(true);
-                connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
-                connection.Setup(c => c.CreateModel())
-                    .Callback(() =>
-                    {
-                        var channel = new Mock<RC.IModel>();
-                        mockChannels.Add(channel.Object);
-                        channel.Setup(c => c.IsOpen).Returns(true);
-                        var channelNum = channelNumber.IncrementAndGet();
-                        channel.Setup(c => c.ToString()).Returns($"mockChannel{channelNum}");
-                    })
-                    .Returns(() => mockChannels[channelNumber.Value]);
-            })
-            .Returns(() => mockConnections[connectionNumber.Value]);
+                var channel = new Mock<RC.IModel>();
+                mockChannels.Add(channel.Object);
+                channel.Setup(c => c.IsOpen).Returns(true);
+                int channelNum = channelNumber.IncrementAndGet();
+                channel.Setup(c => c.ToString()).Returns($"mockChannel{channelNum}");
+            }).Returns(() => mockChannels[channelNumber.Value]);
+        }).Returns(() => mockConnections[connectionNumber.Value]);
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
-        var provider = services.BuildServiceProvider();
-        var context = provider.GetApplicationContext();
+        ServiceProvider provider = services.BuildServiceProvider();
+        IApplicationContext context = provider.GetApplicationContext();
         _ = new RabbitAdmin(context, ccf);
         ccf.CreateConnection().Close();
         ccf.Destroy();
@@ -126,7 +127,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestUnconditionalWithExplicitFactory()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         services.AddLogging(b =>
         {
             b.AddDebug();
@@ -144,19 +146,20 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
+
         channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
+
         var listener = new AtomicReference<IConnectionListener>();
-        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-            .Callback<IConnectionListener>(l => listener.Value = l);
+        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>())).Callback<IConnectionListener>(l => listener.Value = l);
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
         var exchange = new DirectExchange("bar");
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        var provider = services.BuildServiceProvider();
-        var context = provider.GetApplicationContext();
+        ServiceProvider provider = services.BuildServiceProvider();
+        IApplicationContext context = provider.GetApplicationContext();
         var admin = new RabbitAdmin(context, cf.Object);
 
         queue.SetAdminsThatShouldDeclare(admin);
@@ -174,7 +177,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestSkipBecauseDifferentFactory()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         services.AddLogging(b =>
         {
             b.AddDebug();
@@ -192,11 +196,12 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
+
         channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
+
         var listener = new AtomicReference<IConnectionListener>();
-        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-            .Callback<IConnectionListener>(l => listener.Value = l);
+        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>())).Callback<IConnectionListener>(l => listener.Value = l);
 
         var queue = new Queue("foo");
         services.AddRabbitQueue(queue);
@@ -204,8 +209,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         services.AddRabbitExchange(exchange);
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null);
         services.AddRabbitBinding(binding);
-        var provider = services.BuildServiceProvider();
-        var context = provider.GetApplicationContext();
+        ServiceProvider provider = services.BuildServiceProvider();
+        IApplicationContext context = provider.GetApplicationContext();
 
         _ = new RabbitAdmin(context, cf.Object);
         var other = new RabbitAdmin(cf.Object);
@@ -225,7 +230,8 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
     public void TestSkipBecauseShouldNotDeclare()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         services.AddLogging(b =>
         {
             b.AddDebug();
@@ -243,29 +249,35 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         conn.Setup(c => c.CreateChannel(false)).Returns(channel.Object);
         conn.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
+
         channel.Setup(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
+
         var listener = new AtomicReference<IConnectionListener>();
-        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
-            .Callback<IConnectionListener>(l => listener.Value = l);
+        cf.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>())).Callback<IConnectionListener>(l => listener.Value = l);
 
         var queue = new Queue("foo")
         {
             ShouldDeclare = false
         };
+
         services.AddRabbitQueue(queue);
+
         var exchange = new DirectExchange("bar")
         {
             ShouldDeclare = false
         };
+
         services.AddRabbitExchange(exchange);
+
         var binding = new Binding("baz", "foo", Binding.DestinationType.Queue, "bar", "foo", null)
         {
             ShouldDeclare = false
         };
+
         services.AddRabbitBinding(binding);
-        var provider = services.BuildServiceProvider();
-        var context = provider.GetApplicationContext();
+        ServiceProvider provider = services.BuildServiceProvider();
+        IApplicationContext context = provider.GetApplicationContext();
 
         _ = new RabbitAdmin(context, cf.Object);
 
@@ -287,22 +299,35 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         _fixture.Channel1.Verify(c => c.QueueBind("foo", "bar", "foo", It.IsAny<IDictionary<string, object>>()));
 
         _fixture.Listener2.Value.OnCreate(_fixture.Conn2.Object);
-        _fixture.Channel2.Verify(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
+
+        _fixture.Channel2.Verify(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Never);
+
         _fixture.Channel2.Verify(c => c.QueueDeclare("baz", true, false, false, It.IsAny<IDictionary<string, object>>()), Times.Never);
         _fixture.Channel2.Verify(c => c.QueueDeclare("qux", true, false, false, It.IsAny<IDictionary<string, object>>()));
-        _fixture.Channel2.Verify(c => c.ExchangeDeclare("bar", "direct", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
+
+        _fixture.Channel2.Verify(c => c.ExchangeDeclare("bar", "direct", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Never);
+
         _fixture.Channel2.Verify(c => c.QueueBind("foo", "bar", "foo", It.IsAny<IDictionary<string, object>>()), Times.Never);
 
         _fixture.Listener3.Value.OnCreate(_fixture.Conn3.Object);
-        _fixture.Channel3.Verify(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
+
+        _fixture.Channel3.Verify(c => c.QueueDeclare("foo", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Never);
+
         var args = new Dictionary<string, object>
         {
             { "added.by.customizer.1", true },
             { "added.by.customizer.2", true }
         };
+
         _fixture.Channel3.Verify(c => c.QueueDeclare("baz", true, false, false, args));
         _fixture.Channel3.Verify(c => c.QueueDeclare("qux", true, false, false, It.IsAny<IDictionary<string, object>>()), Times.Never);
-        _fixture.Channel3.Verify(c => c.ExchangeDeclare("bar", "direct", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Never);
+
+        _fixture.Channel3.Verify(c => c.ExchangeDeclare("bar", "direct", It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Never);
+
         _fixture.Channel3.Verify(c => c.QueueBind("foo", "bar", "foo", It.IsAny<IDictionary<string, object>>()), Times.Never);
     }
 
@@ -317,7 +342,12 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
         Assert.Equal(2, queue.DeclaringAdmins.Count);
         queue.SetAdminsThatShouldDeclare(admin1);
         Assert.Single(queue.DeclaringAdmins);
-        queue.SetAdminsThatShouldDeclare(new object[] { null });
+
+        queue.SetAdminsThatShouldDeclare(new object[]
+        {
+            null
+        });
+
         Assert.Empty(queue.DeclaringAdmins);
         queue.SetAdminsThatShouldDeclare(admin1, admin2);
         Assert.Equal(2, queue.DeclaringAdmins.Count);
@@ -360,11 +390,11 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
 
         public Mock<RC.IModel> Channel3 { get; set; }
 
-        public AtomicReference<IConnectionListener> Listener1 { get; set; } = new ();
+        public AtomicReference<IConnectionListener> Listener1 { get; set; } = new();
 
-        public AtomicReference<IConnectionListener> Listener2 { get; set; } = new ();
+        public AtomicReference<IConnectionListener> Listener2 { get; set; } = new();
 
-        public AtomicReference<IConnectionListener> Listener3 { get; set; } = new ();
+        public AtomicReference<IConnectionListener> Listener3 { get; set; } = new();
 
         public RabbitAdminDeclarationTestStartupFixture()
         {
@@ -404,11 +434,16 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Conn1.Setup(c => c.IsOpen).Returns(true);
                 Channel1.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
-                Channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+
+                Channel1
+                    .Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                        It.IsAny<IDictionary<string, object>>()))
                     .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
+
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener1.Value = l);
+
                 return mockConnectionFactory.Object;
             });
 
@@ -424,11 +459,16 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Conn2.Setup(c => c.IsOpen).Returns(true);
                 Channel2.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
-                Channel2.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+
+                Channel2
+                    .Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                        It.IsAny<IDictionary<string, object>>()))
                     .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
+
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener2.Value = l);
+
                 return mockConnectionFactory.Object;
             });
 
@@ -444,60 +484,74 @@ public class RabbitAdminDeclarationTest : IClassFixture<RabbitAdminDeclarationTe
                 Conn3.Setup(c => c.IsOpen).Returns(true);
                 Channel3.Setup(c => c.IsOpen).Returns(true);
                 var queueName = new AtomicReference<string>();
-                Channel3.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+
+                Channel3
+                    .Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                        It.IsAny<IDictionary<string, object>>()))
                     .Callback<string, bool, bool, bool, IDictionary<string, object>>((a1, _, _, _, _) => queueName.Value = a1)
                     .Returns(() => new RC.QueueDeclareOk(queueName.Value, 0, 0));
+
                 mockConnectionFactory.Setup(f => f.AddConnectionListener(It.IsAny<IConnectionListener>()))
                     .Callback<IConnectionListener>(l => Listener3.Value = l);
+
                 return mockConnectionFactory.Object;
             });
 
             services.AddSingleton(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var cf1 = context.GetService<IConnectionFactory>("cf1");
+
                 var admin = new RabbitAdmin(context, cf1, p.GetService<ILogger<RabbitAdmin>>())
                 {
                     ServiceName = "admin1"
                 };
+
                 return admin;
             });
+
             services.AddSingleton<IRabbitAdmin>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 return context.GetService<RabbitAdmin>("admin1");
             });
 
             services.AddSingleton(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var cf2 = context.GetService<IConnectionFactory>("cf2");
+
                 var admin = new RabbitAdmin(context, cf2, p.GetService<ILogger<RabbitAdmin>>())
                 {
                     ServiceName = "admin2"
                 };
+
                 return admin;
             });
+
             services.AddSingleton<IRabbitAdmin>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 return context.GetService<RabbitAdmin>("admin2");
             });
 
             services.AddSingleton(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 var cf3 = context.GetService<IConnectionFactory>("cf3");
+
                 var admin = new RabbitAdmin(context, cf3, p.GetService<ILogger<RabbitAdmin>>())
                 {
                     ExplicitDeclarationsOnly = true,
                     ServiceName = "admin3"
                 };
+
                 return admin;
             });
+
             services.AddSingleton<IRabbitAdmin>(p =>
             {
-                var context = p.GetApplicationContext();
+                IApplicationContext context = p.GetApplicationContext();
                 return context.GetService<RabbitAdmin>("admin3");
             });
 

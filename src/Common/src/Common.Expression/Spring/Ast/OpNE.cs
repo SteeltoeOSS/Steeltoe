@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -17,8 +17,8 @@ public class OpNe : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var leftValue = LeftOperand.GetValueInternal(state).Value;
-        var rightValue = RightOperand.GetValueInternal(state).Value;
+        object leftValue = LeftOperand.GetValueInternal(state).Value;
+        object rightValue = RightOperand.GetValueInternal(state).Value;
         leftActualDescriptor = CodeFlow.ToDescriptorFromObject(leftValue);
         rightActualDescriptor = CodeFlow.ToDescriptorFromObject(rightValue);
         return BooleanTypedValue.ForValue(!EqualityCheck(state.EvaluationContext, leftValue, rightValue));
@@ -28,30 +28,32 @@ public class OpNe : Operator
     // because we allow simple object comparison
     public override bool IsCompilable()
     {
-        var left = LeftOperand;
-        var right = RightOperand;
+        SpelNode left = LeftOperand;
+        SpelNode right = RightOperand;
+
         if (!left.IsCompilable() || !right.IsCompilable())
         {
             return false;
         }
 
-        var leftDesc = left.ExitDescriptor;
-        var rightDesc = right.ExitDescriptor;
-        var dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
+        TypeDescriptor leftDesc = left.ExitDescriptor;
+        TypeDescriptor rightDesc = right.ExitDescriptor;
+        DescriptorComparison dc = DescriptorComparison.CheckNumericCompatibility(leftDesc, rightDesc, leftActualDescriptor, rightActualDescriptor);
         return !dc.AreNumbers || dc.AreCompatible;
     }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
         CodeFlow.LoadEvaluationContext(gen);
-        var leftDesc = LeftOperand.ExitDescriptor;
-        var rightDesc = RightOperand.ExitDescriptor;
-        var leftPrim = CodeFlow.IsValueType(leftDesc);
-        var rightPrim = CodeFlow.IsValueType(rightDesc);
+        TypeDescriptor leftDesc = LeftOperand.ExitDescriptor;
+        TypeDescriptor rightDesc = RightOperand.ExitDescriptor;
+        bool leftPrim = CodeFlow.IsValueType(leftDesc);
+        bool rightPrim = CodeFlow.IsValueType(rightDesc);
 
         cf.EnterCompilationScope();
         LeftOperand.GenerateCode(gen, cf);
         cf.ExitCompilationScope();
+
         if (leftPrim)
         {
             CodeFlow.InsertBoxIfNecessary(gen, leftDesc);
@@ -60,6 +62,7 @@ public class OpNe : Operator
         cf.EnterCompilationScope();
         RightOperand.GenerateCode(gen, cf);
         cf.ExitCompilationScope();
+
         if (rightPrim)
         {
             CodeFlow.InsertBoxIfNecessary(gen, rightDesc);
@@ -69,7 +72,7 @@ public class OpNe : Operator
         gen.Emit(OpCodes.Call, EqualityCheckMethod);
 
         // Invert the boolean
-        var result = gen.DeclareLocal(typeof(bool));
+        LocalBuilder result = gen.DeclareLocal(typeof(bool));
         gen.Emit(OpCodes.Ldc_I4_0);
         gen.Emit(OpCodes.Ceq);
         gen.Emit(OpCodes.Stloc, result);

@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
 using Steeltoe.Connector.Services;
@@ -11,8 +12,6 @@ namespace Steeltoe.Discovery.Eureka;
 
 public static class EurekaPostConfigurer
 {
-    public const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
-
     internal const string EurekaUriSuffix = "/eureka/";
 
     internal const string RouteRegistrationMethod = "route";
@@ -25,24 +24,30 @@ public static class EurekaPostConfigurer
     internal const string InstanceId = "instanceId";
     internal const string Zone = "zone";
     internal const string UnknownZone = "unknown";
+    public const string SpringCloudDiscoveryRegistrationMethodKey = "spring:cloud:discovery:registrationMethod";
 
     /// <summary>
-    /// Update <see cref="EurekaClientOptions"/> with information from the runtime environment.
+    /// Update <see cref="EurekaClientOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration.</param>
-    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s).</param>
-    /// <param name="clientOptions">Eureka client configuration (for interacting with the Eureka Server).</param>
+    /// <param name="config">
+    /// Application Configuration.
+    /// </param>
+    /// <param name="si">
+    /// <see cref="EurekaServiceInfo" /> for bound Eureka server(s).
+    /// </param>
+    /// <param name="clientOptions">
+    /// Eureka client configuration (for interacting with the Eureka Server).
+    /// </param>
     public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaClientOptions clientOptions)
     {
-        var clientOpts = clientOptions ?? new EurekaClientOptions();
+        EurekaClientOptions clientOpts = clientOptions ?? new EurekaClientOptions();
 
-        if (clientOpts.Enabled &&
-            (Platform.IsContainerized || Platform.IsCloudHosted) &&
-            si == null &&
+        if (clientOpts.Enabled && (Platform.IsContainerized || Platform.IsCloudHosted) && si == null &&
             clientOpts.EurekaServerServiceUrls.Contains(EurekaClientConfig.DefaultServerServiceUrl.TrimEnd('/')) &&
             (clientOpts.ShouldRegisterWithEureka || clientOpts.ShouldFetchRegistry))
         {
-            throw new InvalidOperationException($"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
+            throw new InvalidOperationException(
+                $"Eureka URL {EurekaClientConfig.DefaultServerServiceUrl} is not valid in containerized or cloud environments. Please configure Eureka:Client:ServiceUrl with a non-localhost address or add a service binding.");
         }
 
         if (clientOptions == null || si == null)
@@ -50,7 +55,7 @@ public static class EurekaPostConfigurer
             return;
         }
 
-        var uri = si.Uri;
+        string uri = si.Uri;
 
         if (!uri.EndsWith(EurekaUriSuffix))
         {
@@ -64,22 +69,27 @@ public static class EurekaPostConfigurer
     }
 
     /// <summary>
-    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment.
+    /// Update <see cref="EurekaInstanceOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration.</param>
-    /// <param name="options">Eureka instance information (for identifying the application).</param>
-    /// <param name="instanceInfo">Information about this application instance.</param>
+    /// <param name="config">
+    /// Application Configuration.
+    /// </param>
+    /// <param name="options">
+    /// Eureka instance information (for identifying the application).
+    /// </param>
+    /// <param name="instanceInfo">
+    /// Information about this application instance.
+    /// </param>
     public static void UpdateConfiguration(IConfiguration config, EurekaInstanceOptions options, IApplicationInstanceInfo instanceInfo)
     {
-        var defaultIdEnding =
-            $":{EurekaInstanceConfig.DefaultAppName}:{EurekaInstanceConfig.DefaultNonSecurePort}";
+        string defaultIdEnding = $":{EurekaInstanceConfig.DefaultAppName}:{EurekaInstanceConfig.DefaultNonSecurePort}";
 
         if (EurekaInstanceConfig.DefaultAppName.Equals(options.AppName))
         {
-            var springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
+            string springAppName = instanceInfo?.ApplicationNameInContext(SteeltoeComponent.Discovery);
 
             // this is a bit of a hack, but depending on how we got here, ApplicationNameInContext may or may not know about VCAP
-            if (Platform.IsCloudFoundry && springAppName == System.Reflection.Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
+            if (Platform.IsCloudFoundry && springAppName == Assembly.GetEntryAssembly().GetName().Name && !string.IsNullOrEmpty(instanceInfo?.ApplicationName))
             {
                 options.AppName = instanceInfo.ApplicationName;
             }
@@ -101,7 +111,8 @@ public static class EurekaPostConfigurer
 
         if (string.IsNullOrEmpty(options.RegistrationMethod))
         {
-            var springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
+            string springRegMethod = config.GetValue<string>(SpringCloudDiscoveryRegistrationMethodKey);
+
             if (!string.IsNullOrEmpty(springRegMethod))
             {
                 options.RegistrationMethod = springRegMethod;
@@ -112,7 +123,8 @@ public static class EurekaPostConfigurer
 
         if (options.InstanceId.EndsWith(defaultIdEnding))
         {
-            var springInstanceId = instanceInfo?.InstanceId;
+            string springInstanceId = instanceInfo?.InstanceId;
+
             if (!string.IsNullOrEmpty(springInstanceId))
             {
                 options.InstanceId = springInstanceId;
@@ -127,12 +139,20 @@ public static class EurekaPostConfigurer
     }
 
     /// <summary>
-    /// Update <see cref="EurekaInstanceOptions"/> with information from the runtime environment.
+    /// Update <see cref="EurekaInstanceOptions" /> with information from the runtime environment.
     /// </summary>
-    /// <param name="config">Application Configuration.</param>
-    /// <param name="si"><see cref="EurekaServiceInfo"/> for bound Eureka server(s).</param>
-    /// <param name="instOptions">Eureka instance information (for identifying the application).</param>
-    /// <param name="appInfo">Information about this application instance.</param>
+    /// <param name="config">
+    /// Application Configuration.
+    /// </param>
+    /// <param name="si">
+    /// <see cref="EurekaServiceInfo" /> for bound Eureka server(s).
+    /// </param>
+    /// <param name="instOptions">
+    /// Eureka instance information (for identifying the application).
+    /// </param>
+    /// <param name="appInfo">
+    /// Information about this application instance.
+    /// </param>
     public static void UpdateConfiguration(IConfiguration config, EurekaServiceInfo si, EurekaInstanceOptions instOptions, IApplicationInstanceInfo appInfo)
     {
         if (instOptions == null)
@@ -208,7 +228,7 @@ public static class EurekaPostConfigurer
 
         instOptions.IpAddress = si.ApplicationInfo.InternalIp;
 
-        var map = instOptions.MetadataMap;
+        IDictionary<string, string> map = instOptions.MetadataMap;
         map[CFAppGuid] = si.ApplicationInfo.ApplicationId;
         map[CFInstanceIndex] = si.ApplicationInfo.InstanceIndex.ToString();
         map[InstanceId] = si.ApplicationInfo.InstanceId;

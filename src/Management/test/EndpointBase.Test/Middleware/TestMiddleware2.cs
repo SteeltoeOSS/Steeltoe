@@ -9,7 +9,7 @@ namespace Steeltoe.Management.Endpoint.Middleware.Test;
 internal sealed class TestMiddleware2 : EndpointMiddleware<string, string>
 {
     public TestMiddleware2(IEndpoint<string, string> endpoint, IManagementOptions managementOptions, ILogger logger)
-        : base(endpoint, managementOptions, logger: logger)
+        : base(endpoint, managementOptions, logger)
     {
     }
 }

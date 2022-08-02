@@ -6,13 +6,21 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 #pragma warning disable IDE1006 // Naming Styles
 public class Inventor
 {
-    public List<int> ListOfInteger = new ();
-    public List<bool> BoolList = new ();
-    public Dictionary<string, bool> MapOfStringToBoolean = new ();
-    public Dictionary<int, string> MapOfNumbersUpToTen = new ();
-    public List<int> ListOfNumbersUpToTen = new ();
-    public List<int> ListOneFive = new ();
-    public string[] StringArrayOfThreeItems = { "1", "2", "3" };
+    private PlaceOfBirth _placeOfBirth;
+    public List<int> ListOfInteger = new();
+    public List<bool> BoolList = new();
+    public Dictionary<string, bool> MapOfStringToBoolean = new();
+    public Dictionary<int, string> MapOfNumbersUpToTen = new();
+    public List<int> ListOfNumbersUpToTen = new();
+    public List<int> ListOneFive = new();
+
+    public string[] StringArrayOfThreeItems =
+    {
+        "1",
+        "2",
+        "3"
+    };
+
     public int Counter;
     public string _name;
     public string _name_;
@@ -22,7 +30,39 @@ public class Inventor
     public ArrayContainer ArrayContainer;
     public bool PublicBoolean;
 
-    private PlaceOfBirth _placeOfBirth;
+    public string[] Inventions { get; set; }
+
+    public PlaceOfBirth PlaceOfBirth
+    {
+        get => _placeOfBirth;
+        set
+        {
+            _placeOfBirth = value;
+
+            PlacesLived = new[]
+            {
+                value
+            };
+
+            PlacesLivedList.Add(value);
+        }
+    }
+
+    public string Name { get; }
+
+    public bool WonNobelPrize { get; set; }
+
+    public PlaceOfBirth[] PlacesLived { get; set; }
+
+    public List<PlaceOfBirth> PlacesLivedList { get; set; } = new();
+
+    public bool SomeProperty { get; set; }
+
+    public DateTime BirthDate { get; }
+
+    public string Foo { get; set; }
+
+    public string Nationality { get; }
 
     public Inventor(params string[] strings)
     {
@@ -36,6 +76,7 @@ public class Inventor
         BirthDate = birthdate;
         Nationality = nationality;
         ArrayContainer = new ArrayContainer();
+
         TestDictionary = new Dictionary<string, string>
         {
             { "monday", "montag" },
@@ -46,6 +87,7 @@ public class Inventor
             { "saturday", "samstag" },
             { "sunday", "sonntag" }
         };
+
         ListOneFive.Add(1);
         ListOneFive.Add(5);
         BoolList.Add(false);
@@ -72,22 +114,10 @@ public class Inventor
         MapOfNumbersUpToTen.Add(10, "ten");
     }
 
-    public string[] Inventions { get; set; }
-
-    public PlaceOfBirth PlaceOfBirth
-    {
-        get => _placeOfBirth;
-        set
-        {
-            _placeOfBirth = value;
-            PlacesLived = new[] { value };
-            PlacesLivedList.Add(value);
-        }
-    }
-
     public int ThrowException(int valueIn)
     {
         Counter++;
+
         if (valueIn == 1)
         {
             throw new ArgumentException("IllegalArgumentException for 1");
@@ -110,14 +140,6 @@ public class Inventor
     {
         return pob.City;
     }
-
-    public string Name { get; }
-
-    public bool WonNobelPrize { get; set; }
-
-    public PlaceOfBirth[] PlacesLived { get; set; }
-
-    public List<PlaceOfBirth> PlacesLivedList { get; set; } = new ();
 
     public string Echo(object o)
     {
@@ -146,6 +168,7 @@ public class Inventor
             "14.35",
             "15.45"
         };
+
         return result;
     }
 
@@ -173,14 +196,6 @@ public class Inventor
 
         return strings.Length + i;
     }
-
-    public bool SomeProperty { get; set; }
-
-    public DateTime BirthDate { get; }
-
-    public string Foo { get; set; }
-
-    public string Nationality { get; }
 
     public class TestException : Exception
     {

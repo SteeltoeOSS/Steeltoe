@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Support;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Support;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
@@ -23,11 +23,14 @@ public class BooleanLiteral : Literal
         return _value;
     }
 
-    public override bool IsCompilable() => true;
+    public override bool IsCompilable()
+    {
+        return true;
+    }
 
     public override void GenerateCode(ILGenerator gen, CodeFlow cf)
     {
-        var result = gen.DeclareLocal(typeof(bool));
+        LocalBuilder result = gen.DeclareLocal(typeof(bool));
         gen.Emit(_value.Equals(BooleanTypedValue.True) ? OpCodes.Ldc_I4_1 : OpCodes.Ldc_I4_0);
 
         gen.Emit(OpCodes.Stloc, result);

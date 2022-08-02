@@ -8,6 +8,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class Declarables : IServiceNameAware
 {
+    public List<IDeclarable> DeclarableList { get; }
+
+    public string ServiceName { get; set; }
+
     public Declarables(string name, params IDeclarable[] declarables)
     {
         if (declarables == null)
@@ -29,10 +33,6 @@ public class Declarables : IServiceNameAware
         DeclarableList = new List<IDeclarable>(declarables);
         ServiceName = name ?? throw new ArgumentNullException(nameof(name));
     }
-
-    public List<IDeclarable> DeclarableList { get; }
-
-    public string ServiceName { get; set; }
 
     public IEnumerable<T> GetDeclarablesByType<T>()
     {

@@ -14,6 +14,7 @@ public static class SerialHystrixDashboardData
     public static string ToJsonString(HystrixDashboardStream.DashboardData data)
     {
         using var sw = new StringWriter();
+
         using (var writer = new JsonTextWriter(sw))
         {
             WriteDashboardData(writer, data);
@@ -26,6 +27,7 @@ public static class SerialHystrixDashboardData
     {
         using var sw = new StringWriter();
         using var writer = new JsonTextWriter(sw);
+
         try
         {
             WriteCommandMetrics(writer, commandMetrics);
@@ -42,6 +44,7 @@ public static class SerialHystrixDashboardData
     {
         using var sw = new StringWriter();
         using var writer = new JsonTextWriter(sw);
+
         try
         {
             WriteThreadPoolMetrics(writer, threadPoolMetrics);
@@ -58,6 +61,7 @@ public static class SerialHystrixDashboardData
     {
         using var sw = new StringWriter();
         using var writer = new JsonTextWriter(sw);
+
         try
         {
             WriteCollapserMetrics(writer, collapserMetrics);
@@ -74,17 +78,17 @@ public static class SerialHystrixDashboardData
     {
         var jsonStrings = new List<string>();
 
-        foreach (var commandMetrics in dashboardData.CommandMetrics)
+        foreach (HystrixCommandMetrics commandMetrics in dashboardData.CommandMetrics)
         {
             jsonStrings.Add(ToJsonString(commandMetrics));
         }
 
-        foreach (var threadPoolMetrics in dashboardData.ThreadPoolMetrics)
+        foreach (HystrixThreadPoolMetrics threadPoolMetrics in dashboardData.ThreadPoolMetrics)
         {
             jsonStrings.Add(ToJsonString(threadPoolMetrics));
         }
 
-        foreach (var collapserMetrics in dashboardData.CollapserMetrics)
+        foreach (HystrixCollapserMetrics collapserMetrics in dashboardData.CollapserMetrics)
         {
             jsonStrings.Add(ToJsonString(collapserMetrics));
         }
@@ -97,17 +101,18 @@ public static class SerialHystrixDashboardData
         try
         {
             writer.WriteStartArray();
-            foreach (var commandMetrics in data.CommandMetrics)
+
+            foreach (HystrixCommandMetrics commandMetrics in data.CommandMetrics)
             {
                 WriteCommandMetrics(writer, commandMetrics);
             }
 
-            foreach (var threadPoolMetrics in data.ThreadPoolMetrics)
+            foreach (HystrixThreadPoolMetrics threadPoolMetrics in data.ThreadPoolMetrics)
             {
                 WriteThreadPoolMetrics(writer, threadPoolMetrics);
             }
 
-            foreach (var collapserMetrics in data.CollapserMetrics)
+            foreach (HystrixCollapserMetrics collapserMetrics in data.CollapserMetrics)
             {
                 WriteCollapserMetrics(writer, collapserMetrics);
             }
@@ -122,7 +127,7 @@ public static class SerialHystrixDashboardData
 
     private static void WriteThreadPoolMetrics(JsonTextWriter writer, HystrixThreadPoolMetrics threadPoolMetrics)
     {
-        var key = threadPoolMetrics.ThreadPoolKey;
+        IHystrixThreadPoolKey key = threadPoolMetrics.ThreadPoolKey;
 
         writer.WriteStartObject();
 
@@ -144,7 +149,9 @@ public static class SerialHystrixDashboardData
         writer.WriteLongField("rollingCountCommandRejections", threadPoolMetrics.GetRollingCount(ThreadPoolEventType.Rejected));
 
         writer.WriteIntegerField("propertyValue_queueSizeRejectionThreshold", threadPoolMetrics.Properties.QueueSizeRejectionThreshold);
-        writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds", threadPoolMetrics.Properties.MetricsRollingStatisticalWindowInMilliseconds);
+
+        writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds",
+            threadPoolMetrics.Properties.MetricsRollingStatisticalWindowInMilliseconds);
 
         writer.WriteLongField("reportingHosts", 1); // this will get summed across all instances in a cluster
 
@@ -153,7 +160,7 @@ public static class SerialHystrixDashboardData
 
     private static void WriteCollapserMetrics(JsonTextWriter writer, HystrixCollapserMetrics collapserMetrics)
     {
-        var key = collapserMetrics.CollapserKey;
+        IHystrixCollapserKey key = collapserMetrics.CollapserKey;
 
         writer.WriteStartObject();
 
@@ -191,8 +198,8 @@ public static class SerialHystrixDashboardData
 
     private static void WriteCommandMetrics(JsonTextWriter writer, HystrixCommandMetrics commandMetrics)
     {
-        var key = commandMetrics.CommandKey;
-        var circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
+        IHystrixCommandKey key = commandMetrics.CommandKey;
+        ICircuitBreaker circuitBreaker = HystrixCircuitBreakerFactory.GetInstance(key);
 
         writer.WriteStartObject();
         writer.WriteStringField("type", "HystrixCommand");
@@ -211,7 +218,7 @@ public static class SerialHystrixDashboardData
             writer.WriteBooleanField("isCircuitBreakerOpen", circuitBreaker.IsOpen);
         }
 
-        var healthCounts = commandMetrics.HealthCounts;
+        HealthCounts healthCounts = commandMetrics.HealthCounts;
         writer.WriteIntegerField("errorPercentage", healthCounts.ErrorPercentage);
         writer.WriteLongField("errorCount", healthCounts.ErrorCount);
         writer.WriteLongField("requestCount", healthCounts.TotalRequests);
@@ -264,7 +271,7 @@ public static class SerialHystrixDashboardData
         writer.WriteEndObject();
 
         // property values for reporting what is actually seen by the command rather than what was set somewhere
-        var commandProperties = commandMetrics.Properties;
+        IHystrixCommandOptions commandProperties = commandMetrics.Properties;
 
         writer.WriteIntegerField("propertyValue_circuitBreakerRequestVolumeThreshold", commandProperties.CircuitBreakerRequestVolumeThreshold);
         writer.WriteIntegerField("propertyValue_circuitBreakerSleepWindowInMilliseconds", commandProperties.CircuitBreakerSleepWindowInMilliseconds);
@@ -278,9 +285,16 @@ public static class SerialHystrixDashboardData
         writer.WriteIntegerField("propertyValue_executionTimeoutInMilliseconds", commandProperties.ExecutionTimeoutInMilliseconds);
         writer.WriteBooleanField("propertyValue_executionIsolationThreadInterruptOnTimeout", false);
         writer.WriteStringField("propertyValue_executionIsolationThreadPoolKeyOverride", commandProperties.ExecutionIsolationThreadPoolKeyOverride);
-        writer.WriteIntegerField("propertyValue_executionIsolationSemaphoreMaxConcurrentRequests", commandProperties.ExecutionIsolationSemaphoreMaxConcurrentRequests);
-        writer.WriteIntegerField("propertyValue_fallbackIsolationSemaphoreMaxConcurrentRequests", commandProperties.FallbackIsolationSemaphoreMaxConcurrentRequests);
-        writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds", commandProperties.MetricsRollingStatisticalWindowInMilliseconds);
+
+        writer.WriteIntegerField("propertyValue_executionIsolationSemaphoreMaxConcurrentRequests",
+            commandProperties.ExecutionIsolationSemaphoreMaxConcurrentRequests);
+
+        writer.WriteIntegerField("propertyValue_fallbackIsolationSemaphoreMaxConcurrentRequests",
+            commandProperties.FallbackIsolationSemaphoreMaxConcurrentRequests);
+
+        writer.WriteIntegerField("propertyValue_metricsRollingStatisticalWindowInMilliseconds",
+            commandProperties.MetricsRollingStatisticalWindowInMilliseconds);
+
         writer.WriteBooleanField("propertyValue_requestCacheEnabled", commandProperties.RequestCacheEnabled);
         writer.WriteBooleanField("propertyValue_requestLogEnabled", commandProperties.RequestLogEnabled);
         writer.WriteIntegerField("reportingHosts", 1); // this will get summed across all instances in a cluster

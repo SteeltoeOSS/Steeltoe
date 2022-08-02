@@ -9,8 +9,17 @@ namespace Steeltoe.Management.Endpoint.Metrics;
 public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointOptions
 {
     internal const string ManagementInfoPrefix = "management:endpoints:metrics";
-    internal const string DefaultIngressIgnorePattern = "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
+    internal const string DefaultIngressIgnorePattern =
+        "/cloudfoundryapplication|/cloudfoundryapplication/.*|.*\\.png|.*\\.css|.*\\.js|.*\\.html|/favicon.ico|/hystrix.stream|.*\\.gif";
+
     internal const string DefaultEgressIgnorePattern = "/api/v2/spans|/v2/apps/.*/permissions";
+
+    public string IngressIgnorePattern { get; set; }
+
+    public string EgressIgnorePattern { get; set; }
+
+    public int ScrapeResponseCacheDurationMilliseconds { get; set; }
 
     public MetricsEndpointOptions()
     {
@@ -40,10 +49,4 @@ public class MetricsEndpointOptions : AbstractEndpointOptions, IMetricsEndpointO
 
         ExactMatch = false;
     }
-
-    public string IngressIgnorePattern { get; set; }
-
-    public string EgressIgnorePattern { get; set; }
-
-    public int ScrapeResponseCacheDurationMilliseconds { get; set; }
 }

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Stream.Messaging;
 using System.Reflection;
+using Steeltoe.Stream.Messaging;
 using Xunit;
 
 namespace Steeltoe.Stream.Binding;
@@ -71,14 +71,14 @@ public class BindableProxyGeneratorTest
 
     private sealed class TestBindableFactory : IBindableProxyFactory
     {
+        public MethodInfo Method { get; private set; }
+
+        public Type BindingType { get; }
+
         public TestBindableFactory(Type binding)
         {
             BindingType = binding;
         }
-
-        public MethodInfo Method { get; private set; }
-
-        public Type BindingType { get; }
 
         public object Invoke(MethodInfo info)
         {

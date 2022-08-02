@@ -6,38 +6,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class Binding : AbstractDeclarable, IBinding
 {
-    internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
-    {
-        if (destinationType == DestinationType.Exchange)
-        {
-            return new ExchangeBinding(bindingName, destination, exchange, routingKey, arguments);
-        }
-
-        return new QueueBinding(bindingName, destination, exchange, routingKey, arguments);
-    }
-
-    public enum DestinationType
-    {
-        Queue,
-        Exchange
-    }
-
-    public Binding(string bindingName)
-        : base(null)
-    {
-        BindingName = ServiceName = bindingName;
-    }
-
-    public Binding(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey, Dictionary<string, object> arguments)
-        : base(arguments)
-    {
-        BindingName = ServiceName = bindingName;
-        Destination = destination;
-        Type = destinationType;
-        Exchange = exchange;
-        RoutingKey = routingKey;
-    }
-
     public string ServiceName { get; set; }
 
     public string Destination { get; set; }
@@ -52,9 +20,42 @@ public class Binding : AbstractDeclarable, IBinding
 
     public string BindingName { get; set; }
 
+    public Binding(string bindingName)
+        : base(null)
+    {
+        BindingName = ServiceName = bindingName;
+    }
+
+    public Binding(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey,
+        Dictionary<string, object> arguments)
+        : base(arguments)
+    {
+        BindingName = ServiceName = bindingName;
+        Destination = destination;
+        Type = destinationType;
+        Exchange = exchange;
+        RoutingKey = routingKey;
+    }
+
+    internal static IBinding Create(string bindingName, string destination, DestinationType destinationType, string exchange, string routingKey,
+        Dictionary<string, object> arguments)
+    {
+        if (destinationType == DestinationType.Exchange)
+        {
+            return new ExchangeBinding(bindingName, destination, exchange, routingKey, arguments);
+        }
+
+        return new QueueBinding(bindingName, destination, exchange, routingKey, arguments);
+    }
+
     public override string ToString()
     {
-        return
-            $"Binding [bindingName={BindingName}, destination={Destination}, exchange={Exchange}, routingKey={RoutingKey}, arguments={Arguments}]";
+        return $"Binding [bindingName={BindingName}, destination={Destination}, exchange={Exchange}, routingKey={RoutingKey}, arguments={Arguments}]";
+    }
+
+    public enum DestinationType
+    {
+        Queue,
+        Exchange
     }
 }

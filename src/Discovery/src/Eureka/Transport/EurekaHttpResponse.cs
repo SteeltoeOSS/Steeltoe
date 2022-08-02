@@ -9,7 +9,7 @@ namespace Steeltoe.Discovery.Eureka.Transport;
 
 public class EurekaHttpResponse
 {
-    public HttpStatusCode StatusCode { get; private set; }
+    public HttpStatusCode StatusCode { get; }
 
     public HttpResponseHeaders Headers { get; set; }
 
@@ -23,7 +23,7 @@ public class EurekaHttpResponse
 
 public class EurekaHttpResponse<T> : EurekaHttpResponse
 {
-    public T Response { get; private set; }
+    public T Response { get; }
 
     public EurekaHttpResponse(HttpStatusCode statusCode, T response)
         : base(statusCode)

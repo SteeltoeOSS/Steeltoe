@@ -13,13 +13,14 @@ public class StringToEnumConverter : AbstractGenericConditionalConverter
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        var targetCheck = ConversionUtils.GetNullableElementType(targetType);
+        Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
         return sourceType == typeof(string) && targetCheck.IsEnum;
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
-        var asString = source as string;
+        string asString = source as string;
+
         if (string.IsNullOrEmpty(asString))
         {
             return null;

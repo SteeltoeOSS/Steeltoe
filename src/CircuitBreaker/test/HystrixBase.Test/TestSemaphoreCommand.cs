@@ -15,28 +15,27 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
     public const int FallbackSuccess = 10;
     public const int FallbackNotImplemented = 11;
     public const int FallbackFailure = 12;
+    private readonly int _executionSleep;
 
     public readonly int ResultBehavior;
     public readonly int FallbackBehavior;
-    private readonly int _executionSleep;
 
     public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, int executionSemaphoreCount, int executionSleep, int resultBehavior, int fallbackBehavior)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), executionSemaphoreCount)))
     {
         _executionSleep = executionSleep;
-        this.ResultBehavior = resultBehavior;
-        this.FallbackBehavior = fallbackBehavior;
+        ResultBehavior = resultBehavior;
+        FallbackBehavior = fallbackBehavior;
     }
 
     public TestSemaphoreCommand(TestCircuitBreaker circuitBreaker, SemaphoreSlim semaphore, int executionSleep, int resultBehavior, int fallbackBehavior)
-        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
-            .SetExecutionSemaphore(semaphore)
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics).SetExecutionSemaphore(semaphore)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
     {
         _executionSleep = executionSleep;
-        this.ResultBehavior = resultBehavior;
-        this.FallbackBehavior = fallbackBehavior;
+        ResultBehavior = resultBehavior;
+        FallbackBehavior = fallbackBehavior;
     }
 
     protected override bool Run()
@@ -47,18 +46,18 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
         {
             return true;
         }
-        else if (ResultBehavior == ResultFailure)
+
+        if (ResultBehavior == ResultFailure)
         {
             throw new Exception("TestSemaphoreCommand failure");
         }
-        else if (ResultBehavior == ResultBadRequestException)
+
+        if (ResultBehavior == ResultBadRequestException)
         {
             throw new HystrixBadRequestException("TestSemaphoreCommand BadRequestException");
         }
-        else
-        {
-            throw new InvalidOperationException("Didn't use a proper enum for result behavior");
-        }
+
+        throw new InvalidOperationException("Didn't use a proper enum for result behavior");
     }
 
     protected override bool RunFallback()
@@ -67,15 +66,14 @@ internal sealed class TestSemaphoreCommand : TestHystrixCommand<bool>
         {
             return false;
         }
-        else if (FallbackBehavior == FallbackFailure)
+
+        if (FallbackBehavior == FallbackFailure)
         {
             throw new Exception("fallback failure");
         }
-        else
-        {
-            // FALLBACK_NOT_IMPLEMENTED
-            return base.RunFallback();
-        }
+
+        // FALLBACK_NOT_IMPLEMENTED
+        return base.RunFallback();
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, int executionSemaphoreCount)

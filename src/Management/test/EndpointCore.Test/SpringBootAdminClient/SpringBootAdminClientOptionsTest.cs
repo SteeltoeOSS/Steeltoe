@@ -22,15 +22,21 @@ public class SpringBootAdminClientOptionsTest
     [Fact]
     public void ConstructorFailsWithoutBaseAppUrl()
     {
-        var ex = Assert.Throws<NullReferenceException>(() => new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
+        var ex = Assert.Throws<NullReferenceException>(() =>
+            new SpringBootAdminClientOptions(new ConfigurationBuilder().Build(), new ApplicationInstanceInfo()));
+
         Assert.Contains(":BasePath in order to register with Spring Boot Admin", ex.Message);
     }
 
     [Fact]
     public void ConstructorUsesAppInfo()
     {
-        var appsettings = new Dictionary<string, string> { { "application:Uris:0", "http://somehost" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var appsettings = new Dictionary<string, string>
+        {
+            { "application:Uris:0", "http://somehost" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
         var appInfo = new ApplicationInstanceInfo(config, string.Empty);
 
         var opts = new SpringBootAdminClientOptions(config, appInfo);
@@ -53,7 +59,8 @@ public class SpringBootAdminClientOptionsTest
             ["spring:application:name"] = "MySteeltoeApplication",
             ["ApplicationName"] = "OtherApplicationName"
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
         var opts = new SpringBootAdminClientOptions(config, new ApplicationInstanceInfo(config));
 
@@ -69,8 +76,12 @@ public class SpringBootAdminClientOptionsTest
     [Fact]
     public void Constructor_BindsFallBack()
     {
-        var appsettings = new Dictionary<string, string> { { "spring:boot:admin:client:basepath", "http://somehost" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        var appsettings = new Dictionary<string, string>
+        {
+            { "spring:boot:admin:client:basepath", "http://somehost" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
         var opts = new SpringBootAdminClientOptions(config, new ApplicationInstanceInfo(config));
 

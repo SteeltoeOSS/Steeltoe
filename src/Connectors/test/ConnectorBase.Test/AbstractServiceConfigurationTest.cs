@@ -21,11 +21,14 @@ public class AbstractServiceConfigurationTest
     [Fact]
     public void Constructor_BindsValues()
     {
-        var appsettings = new Dictionary<string, string> { { "test", "myString" } };
+        var appsettings = new Dictionary<string, string>
+        {
+            { "test", "myString" }
+        };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var configuration = new TestServiceConfiguration(config);
         Assert.Equal("myString", configuration.Test);

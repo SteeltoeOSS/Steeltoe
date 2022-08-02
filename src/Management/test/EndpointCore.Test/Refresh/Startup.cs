@@ -11,12 +11,12 @@ namespace Steeltoe.Management.Endpoint.Refresh.Test;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; set; }
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -28,6 +28,7 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<RefreshEndpoint>();

@@ -9,6 +9,10 @@ namespace Steeltoe.Messaging.Handler.Invocation.Test;
 
 internal sealed class ResolvableMethod
 {
+    public MethodInfo Method { get; }
+
+    public ParameterInfo ReturnType => Method.ReturnParameter;
+
     public ResolvableMethod(MethodInfo method)
     {
         if (method == null)
@@ -22,13 +26,6 @@ internal sealed class ResolvableMethod
     public static Builder<T> On<T>()
     {
         return new Builder<T>();
-    }
-
-    public MethodInfo Method { get; }
-
-    public ParameterInfo ReturnType
-    {
-        get { return Method.ReturnParameter; }
     }
 
     public ParameterInfo Arg(Type type)
@@ -60,7 +57,7 @@ internal sealed class ResolvableMethod
     {
         private readonly Type _objectClass;
 
-        private readonly List<IPredicate<MethodInfo>> _filters = new ();
+        private readonly List<IPredicate<MethodInfo>> _filters = new();
 
         public Builder()
         {
@@ -77,13 +74,14 @@ internal sealed class ResolvableMethod
         {
             AddFilter($"argTypes={string.Join<Type>(",", argTypes)}", method =>
             {
-                var paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
+                Type[] paramTypes = method.GetParameters().Select(p => p.ParameterType).ToArray();
+
                 if (paramTypes.Length != argTypes.Length)
                 {
                     return false;
                 }
 
-                for (var i = 0; i < argTypes.Length; i++)
+                for (int i = 0; i < argTypes.Length; i++)
                 {
                     if (argTypes[i] != paramTypes[i])
                     {
@@ -105,10 +103,11 @@ internal sealed class ResolvableMethod
 
         public Builder<T> AnnotationPresent(params Type[] annotationTypes)
         {
-            var message = $"annotationPresent={string.Join<Type>(",", annotationTypes)}";
+            string message = $"annotationPresent={string.Join<Type>(",", annotationTypes)}";
+
             AddFilter(message, method =>
             {
-                foreach (var type in annotationTypes)
+                foreach (Type type in annotationTypes)
                 {
                     if (method.GetCustomAttribute(type) == null)
                     {
@@ -118,17 +117,19 @@ internal sealed class ResolvableMethod
 
                 return true;
             });
+
             return this;
         }
 
         public Builder<T> AnnotationNotPresent(params Type[] annotationTypes)
         {
-            var message = $"annotationNotPresent={string.Join<Type>(",", annotationTypes)}";
+            string message = $"annotationNotPresent={string.Join<Type>(",", annotationTypes)}";
+
             AddFilter(message, method =>
             {
                 if (annotationTypes.Length != 0)
                 {
-                    foreach (var type in annotationTypes)
+                    foreach (Type type in annotationTypes)
                     {
                         if (method.GetCustomAttribute(type) != null)
                         {
@@ -138,17 +139,16 @@ internal sealed class ResolvableMethod
 
                     return true;
                 }
-                else
-                {
-                    return method.GetCustomAttributes().ToList().Count == 0;
-                }
+
+                return method.GetCustomAttributes().ToList().Count == 0;
             });
+
             return this;
         }
 
         public Builder<T> Returning(Type returnType)
         {
-            var message = $"returnType={returnType}";
+            string message = $"returnType={returnType}";
             AddFilter(message, method => method.ReturnType == returnType);
             return this;
         }
@@ -167,7 +167,9 @@ internal sealed class ResolvableMethod
         // }
         public ResolvableMethod Build()
         {
-            var methods = _objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static).Where(IsMatch).ToList();
+            List<MethodInfo> methods = _objectClass.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Static)
+                .Where(IsMatch).ToList();
+
             if (methods.Count == 0)
             {
                 throw new InvalidOperationException($"No matching method: {this}");
@@ -248,7 +250,7 @@ internal sealed class ResolvableMethod
 
         private bool IsMatch(MethodInfo method)
         {
-            foreach (var predicate in _filters)
+            foreach (IPredicate<MethodInfo> predicate in _filters)
             {
                 if (!predicate.Test(method))
                 {
@@ -262,7 +264,7 @@ internal sealed class ResolvableMethod
 
     internal sealed class ArgResolver
     {
-        private readonly List<IPredicate<ParameterInfo>> _filters = new ();
+        private readonly List<IPredicate<ParameterInfo>> _filters = new();
 
         private readonly ResolvableMethod _resolvable;
 
@@ -282,7 +284,7 @@ internal sealed class ResolvableMethod
         {
             _filters.Add(new FuncPredicate(param =>
             {
-                foreach (var attr in annotationTypes)
+                foreach (Type attr in annotationTypes)
                 {
                     if (param.GetCustomAttribute(attr) == null)
                     {
@@ -302,7 +304,7 @@ internal sealed class ResolvableMethod
             {
                 if (annotationTypes.Length > 0)
                 {
-                    foreach (var attr in annotationTypes)
+                    foreach (Type attr in annotationTypes)
                     {
                         if (param.GetCustomAttribute(attr) != null)
                         {
@@ -312,10 +314,8 @@ internal sealed class ResolvableMethod
 
                     return true;
                 }
-                else
-                {
-                    return param.GetCustomAttributes().ToList().Count == 0;
-                }
+
+                return param.GetCustomAttributes().ToList().Count == 0;
             }));
 
             return this;
@@ -340,7 +340,8 @@ internal sealed class ResolvableMethod
         // }
         public ParameterInfo Arg()
         {
-            var matches = ApplyFilters();
+            List<ParameterInfo> matches = ApplyFilters();
+
             if (matches.Count == 0)
             {
                 throw new InvalidOperationException($"No matching arg in method: {_resolvable.Method}");
@@ -348,8 +349,7 @@ internal sealed class ResolvableMethod
 
             if (matches.Count > 1)
             {
-                throw new InvalidOperationException(
-                    $"Multiple matching args in method: {_resolvable.Method} {string.Join(",", matches)}");
+                throw new InvalidOperationException($"Multiple matching args in method: {_resolvable.Method} {string.Join(",", matches)}");
             }
 
             return matches[0];
@@ -358,14 +358,15 @@ internal sealed class ResolvableMethod
         private List<ParameterInfo> ApplyFilters()
         {
             var matches = new List<ParameterInfo>();
-            for (var i = 0; i < _resolvable.Method.GetParameters().Length; i++)
+
+            for (int i = 0; i < _resolvable.Method.GetParameters().Length; i++)
             {
-                var param = _resolvable.Method.GetParameters()[i];
+                ParameterInfo param = _resolvable.Method.GetParameters()[i];
 
                 // param.initParameterNameDiscovery(nameDiscoverer);
-                var allFiltersMatch = true;
+                bool allFiltersMatch = true;
 
-                foreach (var p in _filters)
+                foreach (IPredicate<ParameterInfo> p in _filters)
                 {
                     if (!p.Test(param))
                     {

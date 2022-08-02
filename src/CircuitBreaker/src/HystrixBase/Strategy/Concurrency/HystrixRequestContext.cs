@@ -8,19 +8,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 public class HystrixRequestContext : IDisposable
 {
-    private static readonly AsyncLocal<HystrixRequestContext> RequestVariables = new ();
-
-    internal ConcurrentDictionary<IDisposable, object> State { get; set; }
-
-    private HystrixRequestContext()
-    {
-    }
+    private static readonly AsyncLocal<HystrixRequestContext> RequestVariables = new();
 
     public static bool IsCurrentThreadInitialized
     {
         get
         {
-            var context = RequestVariables.Value;
+            HystrixRequestContext context = RequestVariables.Value;
             return context != null && context.State != null;
         }
     }
@@ -33,11 +27,15 @@ public class HystrixRequestContext : IDisposable
             {
                 return RequestVariables.Value;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
+    }
+
+    internal ConcurrentDictionary<IDisposable, object> State { get; set; }
+
+    private HystrixRequestContext()
+    {
     }
 
     public static void SetContextOnCurrentThread(HystrixRequestContext state)
@@ -51,6 +49,7 @@ public class HystrixRequestContext : IDisposable
         {
             State = new ConcurrentDictionary<IDisposable, object>()
         };
+
         RequestVariables.Value = context;
         return context;
     }
@@ -65,7 +64,7 @@ public class HystrixRequestContext : IDisposable
     {
         if (disposing && State != null)
         {
-            foreach (var v in State.Keys)
+            foreach (IDisposable v in State.Keys)
             {
                 try
                 {

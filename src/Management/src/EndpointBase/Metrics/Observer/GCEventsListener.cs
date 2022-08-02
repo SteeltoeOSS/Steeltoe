@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Metrics;
+using System.Diagnostics.Tracing;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics.Metrics;
-using System.Diagnostics.Tracing;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -31,14 +31,18 @@ public class GCEventsListener : EventSourceListener
     private readonly ILogger<EventSourceListener> _logger;
     private readonly Counter<long> _collectionCount;
     private readonly Counter<double> _memoryUsed;
-    private readonly Dictionary<string, object> _memoryLabels = new () { { "area", "heap" } };
+
+    private readonly Dictionary<string, object> _memoryLabels = new()
+    {
+        { "area", "heap" }
+    };
 
     private List<long> _previousCollectionCounts;
 
     public GCEventsListener(ILogger<EventSourceListener> logger = null)
     {
         _logger = logger;
-        var meter = OpenTelemetryMetrics.Meter;
+        Meter meter = OpenTelemetryMetrics.Meter;
         _memoryUsed = meter.CreateCounter<double>("clr.memory.used");
         _collectionCount = meter.CreateCounter<long>("clr.gc.collections");
     }
@@ -52,7 +56,8 @@ public class GCEventsListener : EventSourceListener
 
         try
         {
-            if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture) || eventData.EventName.Equals(GCHeapStatsV2, StringComparison.InvariantCulture))
+            if (eventData.EventName.Equals(GCHeapStats, StringComparison.InvariantCulture) ||
+                eventData.EventName.Equals(GCHeapStatsV2, StringComparison.InvariantCulture))
             {
                 ExtractAndRecordMetric(EventSourceName, eventData, _memoryLabels, IgnorePayloadNames);
                 RecordAdditionalMetrics(eventData);
@@ -74,20 +79,25 @@ public class GCEventsListener : EventSourceListener
 
     private void RecordAdditionalMetrics(EventWrittenEventArgs eventData)
     {
-        var totalMemory = GC.GetTotalMemory(false);
+        long totalMemory = GC.GetTotalMemory(false);
         _memoryUsed.Add(totalMemory, _memoryLabels.AsReadonlySpan());
         var counts = new List<long>(GC.MaxGeneration);
-        for (var i = 0; i < GC.MaxGeneration; i++)
+
+        for (int i = 0; i < GC.MaxGeneration; i++)
         {
-            var count = (long)GC.CollectionCount(i);
+            long count = (long)GC.CollectionCount(i);
             counts.Add(count);
-            if (_previousCollectionCounts != null && i < _previousCollectionCounts.Count &&
-                _previousCollectionCounts[i] <= count)
+
+            if (_previousCollectionCounts != null && i < _previousCollectionCounts.Count && _previousCollectionCounts[i] <= count)
             {
                 count -= _previousCollectionCounts[i];
             }
 
-            var genKeyLabelSet = new List<KeyValuePair<string, object>> { new (_generationKey, GenerationTagValueName + i) };
+            var genKeyLabelSet = new List<KeyValuePair<string, object>>
+            {
+                new(_generationKey, GenerationTagValueName + i)
+            };
+
             _collectionCount.Add(count, genKeyLabelSet.AsReadonlySpan());
         }
 

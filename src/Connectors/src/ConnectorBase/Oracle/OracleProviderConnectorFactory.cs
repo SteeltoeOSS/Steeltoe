@@ -11,7 +11,9 @@ public class OracleProviderConnectorFactory
 {
     private readonly OracleServiceInfo _info;
     private readonly OracleProviderConnectorOptions _config;
-    private readonly OracleProviderConfigurer _configurer = new ();
+    private readonly OracleProviderConfigurer _configurer = new();
+
+    protected Type ConnectorType { get; set; }
 
     public OracleProviderConnectorFactory()
     {
@@ -24,12 +26,11 @@ public class OracleProviderConnectorFactory
         ConnectorType = type;
     }
 
-    protected Type ConnectorType { get; set; }
-
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -50,6 +51,9 @@ public class OracleProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
+        return ReflectionHelpers.CreateInstance(ConnectorType, new object[]
+        {
+            connectionString
+        });
     }
 }

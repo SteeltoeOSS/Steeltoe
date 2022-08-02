@@ -18,26 +18,27 @@ public class RoundRobinDispatcherConcurrentTest
 
     private readonly UnicastingDispatcher _dispatcher;
 
-    private readonly Mock<IMessage> _messageMock = new ();
+    private readonly Mock<IMessage> _messageMock = new();
 
-    private readonly Mock<IMessageHandler> _handlerMock1 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock1 = new();
 
-    private readonly Mock<IMessageHandler> _handlerMock2 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock2 = new();
 
-    private readonly Mock<IMessageHandler> _handlerMock3 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock3 = new();
 
-    private readonly Mock<IMessageHandler> _handlerMock4 = new ();
+    private readonly Mock<IMessageHandler> _handlerMock4 = new();
 
     private readonly IServiceProvider _provider;
 
     public RoundRobinDispatcherConcurrentTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _provider = services.BuildServiceProvider();
+
         _dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>())
         {
             LoadBalancingStrategy = new RoundRobinLoadBalancingStrategy()
@@ -54,8 +55,9 @@ public class RoundRobinDispatcherConcurrentTest
 
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TotalExecutions);
-        var message = _messageMock.Object;
-        var failed = false;
+        IMessage message = _messageMock.Object;
+        bool failed = false;
+
         void MessageSenderTask()
         {
             start.Wait();
@@ -68,7 +70,7 @@ public class RoundRobinDispatcherConcurrentTest
             allDone.Signal();
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -88,7 +90,8 @@ public class RoundRobinDispatcherConcurrentTest
         // dispatcher has no subscribers (shouldn't lead to deadlock)
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TotalExecutions);
-        var message = _messageMock.Object;
+        IMessage message = _messageMock.Object;
+
         void MessageSenderTask()
         {
             start.Wait();
@@ -106,7 +109,7 @@ public class RoundRobinDispatcherConcurrentTest
             allDone.Signal();
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }
@@ -123,8 +126,9 @@ public class RoundRobinDispatcherConcurrentTest
         _handlerMock1.Setup(h => h.HandleMessage(_messageMock.Object)).Throws(new MessageRejectedException(_messageMock.Object, null));
         var start = new CountdownEvent(1);
         var allDone = new CountdownEvent(TotalExecutions);
-        var message = _messageMock.Object;
-        var failed = false;
+        IMessage message = _messageMock.Object;
+        bool failed = false;
+
         void MessageSenderTask()
         {
             start.Wait();
@@ -139,7 +143,7 @@ public class RoundRobinDispatcherConcurrentTest
             }
         }
 
-        for (var i = 0; i < TotalExecutions; i++)
+        for (int i = 0; i < TotalExecutions; i++)
         {
             Task.Run(MessageSenderTask);
         }

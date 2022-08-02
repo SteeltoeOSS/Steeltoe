@@ -9,6 +9,10 @@ public class Fruit
     public string Name; // accessible as property field
     public string ColorName; // accessible as property through getter/setter
 
+    public Color Color { get; }
+
+    public int StringsCount { get; } = -1;
+
     public Fruit(string name, Color color, string colorName)
     {
         Name = name;
@@ -25,10 +29,6 @@ public class Fruit
     {
         StringsCount = i + strings.Length;
     }
-
-    public Color Color { get; }
-
-    public int StringsCount { get; } = -1;
 
     public override string ToString()
     {

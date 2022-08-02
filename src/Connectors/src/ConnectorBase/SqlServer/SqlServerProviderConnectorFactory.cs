@@ -11,7 +11,9 @@ public class SqlServerProviderConnectorFactory
 {
     private readonly SqlServerServiceInfo _info;
     private readonly SqlServerProviderConnectorOptions _config;
-    private readonly SqlServerProviderConfigurer _configurer = new ();
+    private readonly SqlServerProviderConfigurer _configurer = new();
+
+    protected Type ConnectorType { get; set; }
 
     public SqlServerProviderConnectorFactory()
     {
@@ -24,12 +26,11 @@ public class SqlServerProviderConnectorFactory
         ConnectorType = type;
     }
 
-    protected Type ConnectorType { get; set; }
-
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -50,6 +51,9 @@ public class SqlServerProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        return ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
+        return ReflectionHelpers.CreateInstance(ConnectorType, new object[]
+        {
+            connectionString
+        });
     }
 }

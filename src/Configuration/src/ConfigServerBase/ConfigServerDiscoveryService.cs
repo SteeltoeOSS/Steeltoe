@@ -15,19 +15,19 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 internal sealed class ConfigServerDiscoveryService
 {
+    private bool _usingInitialDiscoveryClient = true;
     internal IConfiguration Configuration;
     internal ConfigServerClientSettings Settings;
     internal ILoggerFactory LogFactory;
     internal ILogger Logger;
     internal IDiscoveryClient DiscoveryClient;
-    private bool _usingInitialDiscoveryClient = true;
 
     internal ConfigServerDiscoveryService(IConfiguration configuration, ConfigServerClientSettings settings, ILoggerFactory logFactory = null)
     {
-        this.Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-        this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-        this.LogFactory = logFactory ?? BootstrapLoggerFactory.Instance;
-        Logger = this.LogFactory.CreateLogger<ConfigServerDiscoveryService>();
+        Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        LogFactory = logFactory ?? BootstrapLoggerFactory.Instance;
+        Logger = LogFactory.CreateLogger<ConfigServerDiscoveryService>();
         SetupDiscoveryClient();
     }
 
@@ -39,28 +39,26 @@ internal sealed class ConfigServerDiscoveryService
         services.TryAdd(ServiceDescriptor.Singleton(typeof(ILogger<>), typeof(Logger<>)));
 
         // force settings to make sure we don't register the app here
-        var cfgBuilder = new ConfigurationBuilder()
-            .AddConfiguration(Configuration)
-            .AddInMemoryCollection(
-                new Dictionary<string, string>
-                {
-                    { "Eureka:Client:ShouldRegisterWithEureka", "false" },
-                    { "Consul:Discovery:Register", "false" }
-                });
+        IConfigurationBuilder cfgBuilder = new ConfigurationBuilder().AddConfiguration(Configuration).AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "Eureka:Client:ShouldRegisterWithEureka", "false" },
+            { "Consul:Discovery:Register", "false" }
+        });
 
         services.AddSingleton<IConfiguration>(cfgBuilder.Build());
         services.AddDiscoveryClient(Configuration);
 
-        using var startupServiceProvider = services.BuildServiceProvider();
+        using ServiceProvider startupServiceProvider = services.BuildServiceProvider();
         DiscoveryClient = startupServiceProvider.GetRequiredService<IDiscoveryClient>();
         Logger.LogDebug("Found Discovery Client of type {DiscoveryClientType}", DiscoveryClient.GetType());
     }
 
     internal IEnumerable<IServiceInstance> GetConfigServerInstances()
     {
-        var attempts = 0;
-        var backOff = Settings.RetryInitialInterval;
+        int attempts = 0;
+        int backOff = Settings.RetryInitialInterval;
         IEnumerable<IServiceInstance> instances;
+
         do
         {
             try
@@ -80,10 +78,11 @@ internal sealed class ConfigServerDiscoveryService
             }
 
             attempts++;
+
             if (attempts <= Settings.RetryAttempts)
             {
                 Thread.CurrentThread.Join(backOff);
-                var nextBackOff = (int)(backOff * Settings.RetryMultiplier);
+                int nextBackOff = (int)(backOff * Settings.RetryMultiplier);
                 backOff = Math.Min(nextBackOff, Settings.RetryMaxInterval);
             }
             else

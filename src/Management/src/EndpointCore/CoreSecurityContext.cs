@@ -18,9 +18,7 @@ internal sealed class CoreSecurityContext : ISecurityContext
 
     public bool HasClaim(EndpointClaim claim)
     {
-        return _context != null
-               && _context.User != null
-               && claim != null && _context.User.HasClaim(claim.Type, claim.Value);
+        return _context != null && _context.User != null && claim != null && _context.User.HasClaim(claim.Type, claim.Value);
     }
 
     public string[] GetRequestComponents()

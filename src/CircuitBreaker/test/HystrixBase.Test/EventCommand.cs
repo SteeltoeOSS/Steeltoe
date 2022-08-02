@@ -43,6 +43,7 @@ internal sealed class EventCommand : HystrixCommand<string>
             GroupKey = HystrixCommandGroupKeyDefault.AsKey("eventGroup"),
             FallbackIsolationSemaphoreMaxConcurrentRequests = 3
         };
+
         return options;
     }
 }

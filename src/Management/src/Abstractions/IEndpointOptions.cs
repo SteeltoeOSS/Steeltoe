@@ -14,9 +14,9 @@ public interface IEndpointOptions
 
     Permissions RequiredPermissions { get; }
 
-    bool IsAccessAllowed(Permissions permissions);
-
-    IEnumerable<string> AllowedVerbs { get;  }
+    IEnumerable<string> AllowedVerbs { get; }
 
     bool ExactMatch { get; }
+
+    bool IsAccessAllowed(Permissions permissions);
 }

@@ -10,6 +10,10 @@ internal sealed class RequestCacheThreadRejectionWithoutFallbackThreadPool : IHy
 {
     private readonly IHystrixTaskScheduler _scheduler = new RequestCacheThreadRejectionWithoutFallbackTaskScheduler(new HystrixThreadPoolOptions());
 
+    public bool IsQueueSpaceAvailable => false;
+
+    public bool IsShutdown => _scheduler.IsShutdown;
+
     public IHystrixTaskScheduler GetScheduler()
     {
         return _scheduler;
@@ -37,15 +41,5 @@ internal sealed class RequestCacheThreadRejectionWithoutFallbackThreadPool : IHy
 
     public void Dispose()
     {
-    }
-
-    public bool IsQueueSpaceAvailable
-    {
-        get { return false; }
-    }
-
-    public bool IsShutdown
-    {
-        get { return _scheduler.IsShutdown; }
     }
 }

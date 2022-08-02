@@ -6,12 +6,15 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class OpDec : Operator
 {
-    private readonly bool _postfix;  // false means prefix
+    private readonly bool _postfix; // false means prefix
+
+    public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");
 
     public OpDec(int startPos, int endPos, bool postfix, params SpelNode[] operands)
         : base("--", startPos, endPos, operands)
     {
         _postfix = postfix;
+
         if (operands == null || operands.Length == 0)
         {
             throw new InvalidOperationException("Operands can not be empty");
@@ -20,14 +23,14 @@ public class OpDec : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var operand = LeftOperand;
+        SpelNode operand = LeftOperand;
 
         // The operand is going to be read and then assigned to, we don't want to evaluate it twice.
-        var lvalue = operand.GetValueRef(state);
+        IValueRef lvalue = operand.GetValueRef(state);
 
-        var operandTypedValue = lvalue.GetValue();
-        var operandValue = operandTypedValue.Value;
-        var returnValue = operandTypedValue;
+        ITypedValue operandTypedValue = lvalue.GetValue();
+        object operandValue = operandTypedValue.Value;
+        ITypedValue returnValue = operandTypedValue;
         ITypedValue newValue = null;
 
         if (IsNumber(operandValue))
@@ -62,10 +65,8 @@ public class OpDec : Operator
                     // This means the operand is not decrementable
                     throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotDecrementable, operand.ToStringAst());
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
         }
 
@@ -81,10 +82,8 @@ public class OpDec : Operator
             {
                 throw new SpelEvaluationException(operand.StartPosition, SpelMessage.OperandNotDecrementable);
             }
-            else
-            {
-                throw;
-            }
+
+            throw;
         }
 
         if (!_postfix)
@@ -100,6 +99,4 @@ public class OpDec : Operator
     {
         return $"{LeftOperand.ToStringAst()}--";
     }
-
-    public override SpelNode RightOperand => throw new InvalidOperationException("No right operand");
 }

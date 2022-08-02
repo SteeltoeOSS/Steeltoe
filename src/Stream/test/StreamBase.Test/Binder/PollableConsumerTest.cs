@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -14,7 +16,6 @@ using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Stream.Binder;
@@ -24,7 +25,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestSimple()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -44,6 +45,7 @@ public class PollableConsumerTest : AbstractTest
             MaxAttempts = 2,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -56,7 +58,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestConvertSimple()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -67,9 +69,13 @@ public class PollableConsumerTest : AbstractTest
         var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
         Assert.NotNull(configurer);
 
-        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        MethodInfo setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
         var messageSource = new TestMessageSource("{\"foo\":\"bar\"}");
-        setter.Invoke(binder, new object[] { messageSource });
+
+        setter.Invoke(binder, new object[]
+        {
+            messageSource
+        });
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
@@ -79,6 +85,7 @@ public class PollableConsumerTest : AbstractTest
             MaxAttempts = 2,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -99,8 +106,11 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestConvertSimpler()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain").BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
+        IServiceProvider serviceProvider =
+            CreateStreamsContainer(searchDirectories, "spring:cloud:stream:bindings:foo:contentType=text/plain").BuildServiceProvider();
+
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -111,20 +121,26 @@ public class PollableConsumerTest : AbstractTest
         Assert.NotNull(configurer);
 
         var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
-        options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
+        options.Value.Bindings.TryGetValue("foo", out BindingOptions bindingOptions);
         Assert.Equal("text/plain", bindingOptions.ContentType);
 
-        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        MethodInfo setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
         var messageSource = new TestMessageSource("foo");
-        setter.Invoke(binder, new object[] { messageSource });
+
+        setter.Invoke(binder, new object[]
+        {
+            messageSource
+        });
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
+
         var properties = new ConsumerOptions
         {
             MaxAttempts = 1,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -132,7 +148,7 @@ public class PollableConsumerTest : AbstractTest
         Assert.True(pollableSource.Poll(handler, typeof(string)));
 
         Assert.IsType<string>(handler.Payload);
-        var str = handler.Payload as string;
+        string str = handler.Payload as string;
         Assert.Equal("foo", str);
 
         Assert.True(pollableSource.Poll(handler, typeof(string)));
@@ -145,7 +161,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestConvertList()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -156,9 +172,13 @@ public class PollableConsumerTest : AbstractTest
         var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
         Assert.NotNull(configurer);
 
-        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        MethodInfo setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
         var messageSource = new TestMessageSource("[{\"foo\":\"bar\"},{\"foo\":\"baz\"}]");
-        setter.Invoke(binder, new object[] { messageSource });
+
+        setter.Invoke(binder, new object[]
+        {
+            messageSource
+        });
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
@@ -168,6 +188,7 @@ public class PollableConsumerTest : AbstractTest
             MaxAttempts = 1,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -183,7 +204,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestConvertMap()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -194,9 +215,13 @@ public class PollableConsumerTest : AbstractTest
         var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
         Assert.NotNull(configurer);
 
-        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        MethodInfo setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
         var messageSource = new TestMessageSource("{\"qux\":{\"foo\":\"bar\"}}");
-        setter.Invoke(binder, new object[] { messageSource });
+
+        setter.Invoke(binder, new object[]
+        {
+            messageSource
+        });
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
         configurer.ConfigurePolledMessageSource(pollableSource, "foo");
@@ -206,6 +231,7 @@ public class PollableConsumerTest : AbstractTest
             MaxAttempts = 1,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -221,10 +247,11 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestEmbedded()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
         IServiceProvider serviceProvider = CreateStreamsContainer(
-            searchDirectories,
-            $"spring:cloud:stream:bindings:foo:consumer:headerMode={HeaderMode.EmbeddedHeaders}").BuildServiceProvider();
+            searchDirectories, $"spring:cloud:stream:bindings:foo:consumer:headerMode={HeaderMode.EmbeddedHeaders}").BuildServiceProvider();
+
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
 
@@ -234,13 +261,17 @@ public class PollableConsumerTest : AbstractTest
         var configurer = serviceProvider.GetService<MessageConverterConfigurer>();
         Assert.NotNull(configurer);
 
-        var setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+        MethodInfo setter = binder.GetType().GetProperty("MessageSourceDelegate").GetSetMethod();
+
         var messageSource = new TestFuncMessageSource(() =>
         {
-            var original = new MessageValues(
-                Encoding.UTF8.GetBytes("foo"),
-                new Dictionary<string, object> { { MessageHeaders.ContentType, "application/octet-stream" } });
-            var payload = Array.Empty<byte>();
+            var original = new MessageValues(Encoding.UTF8.GetBytes("foo"), new Dictionary<string, object>
+            {
+                { MessageHeaders.ContentType, "application/octet-stream" }
+            });
+
+            byte[] payload = Array.Empty<byte>();
+
             try
             {
                 payload = EmbeddedHeaderUtils.EmbedHeaders(original, MessageHeaders.ContentType);
@@ -253,10 +284,13 @@ public class PollableConsumerTest : AbstractTest
             return Message.Create(payload);
         });
 
-        setter.Invoke(binder, new object[] { messageSource });
+        setter.Invoke(binder, new object[]
+        {
+            messageSource
+        });
 
         var options = serviceProvider.GetService<IOptions<BindingServiceOptions>>();
-        options.Value.Bindings.TryGetValue("foo", out var bindingOptions);
+        options.Value.Bindings.TryGetValue("foo", out BindingOptions bindingOptions);
         Assert.Equal(HeaderMode.EmbeddedHeaders, bindingOptions.Consumer.HeaderMode);
 
         var pollableSource = new DefaultPollableMessageSource(serviceProvider.GetService<IApplicationContext>(), messageConverter);
@@ -269,16 +303,16 @@ public class PollableConsumerTest : AbstractTest
         Assert.True(pollableSource.Poll(handler));
 
         Assert.IsType<string>(handler.Payload);
-        var str = handler.Payload as string;
+        string str = handler.Payload as string;
         Assert.Equal("FOO", str);
-        handler.Message.Headers.TryGetValue(MessageHeaders.ContentType, out var contentType);
+        handler.Message.Headers.TryGetValue(MessageHeaders.ContentType, out object contentType);
         Assert.Equal("application/octet-stream", contentType.ToString());
     }
 
     [Fact]
     public void TestErrors()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -297,13 +331,21 @@ public class PollableConsumerTest : AbstractTest
         {
             MaxAttempts = 2,
             BackOffInitialInterval = 0,
-            RetryableExceptions = new List<string> { "!System.InvalidOperationException" }
+            RetryableExceptions = new List<string>
+            {
+                "!System.InvalidOperationException"
+            }
         };
+
         properties.PostProcess("testbinding");
 
         var latch = new CountdownEvent(2);
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as ISubscribableChannel;
+
+        var errorChan =
+            serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as
+                ISubscribableChannel;
+
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
@@ -312,12 +354,12 @@ public class PollableConsumerTest : AbstractTest
         Assert.True(pollableSource.Poll(h1));
         Assert.Equal(2, h1.Count);
 
-        var getter = binder.GetType().GetProperty("LastError").GetGetMethod();
+        MethodInfo getter = binder.GetType().GetProperty("LastError").GetGetMethod();
 
         var lastError = getter.Invoke(binder, Array.Empty<object>()) as IMessage;
         Assert.NotNull(lastError);
 
-        var lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
+        string lastErrorMessage = ((Exception)lastError.Payload).InnerException.Message;
         Assert.Equal("test recoverer", lastErrorMessage);
 
         var h2 = new TestFuncMessageHandler(_ => throw new InvalidOperationException("no retries"));
@@ -333,7 +375,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestErrorsNoRetry()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -352,11 +394,16 @@ public class PollableConsumerTest : AbstractTest
         {
             MaxAttempts = 1
         };
+
         properties.PostProcess("testbinding");
 
         var latch = new CountdownEvent(1);
         binder.BindConsumer("foo", "bar", pollableSource, properties);
-        var errorChan = serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as ISubscribableChannel;
+
+        var errorChan =
+            serviceProvider.GetServices<IMessageChannel>().Single(chan => chan.ServiceName == IntegrationContextUtils.ErrorChannelBeanName) as
+                ISubscribableChannel;
+
         var errorChanHandler = new TestErrorsErrorChannelHandler(latch);
         errorChan.Subscribe(errorChanHandler);
 
@@ -369,7 +416,7 @@ public class PollableConsumerTest : AbstractTest
     [Fact]
     public void TestRequeue()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
         IServiceProvider serviceProvider = CreateStreamsContainer(searchDirectories).BuildServiceProvider();
         var messageConverter = serviceProvider.GetService<ISmartMessageConverter>();
         Assert.NotNull(messageConverter);
@@ -386,11 +433,13 @@ public class PollableConsumerTest : AbstractTest
         var mockCallback = new Mock<IAcknowledgmentCallback>(MockBehavior.Default);
 
         pollableSource.AddInterceptor(new TestRequeueChannelInterceptor(mockCallback));
+
         var properties = new ConsumerOptions
         {
             MaxAttempts = 2,
             BackOffInitialInterval = 0
         };
+
         properties.PostProcess("testbinding");
 
         binder.BindConsumer("foo", "bar", pollableSource, properties);
@@ -405,13 +454,13 @@ public class PollableConsumerTest : AbstractTest
     {
         private readonly CountdownEvent _latch;
 
+        public string ServiceName { get; set; }
+
         public TestErrorsErrorChannelHandler(CountdownEvent latch)
         {
             _latch = latch;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
-
-        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -423,15 +472,15 @@ public class PollableConsumerTest : AbstractTest
     {
         public int Count { get; set; }
 
+        public string ServiceName { get; set; }
+
+        public Action<IMessage> Act { get; }
+
         public TestFuncMessageHandler(Action<IMessage> action)
         {
             Act = action;
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
-
-        public string ServiceName { get; set; }
-
-        public Action<IMessage> Act { get; }
 
         public void HandleMessage(IMessage message)
         {
@@ -442,12 +491,12 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class TestFuncMessageSource : IMessageSource
     {
+        public Func<IMessage> Func { get; }
+
         public TestFuncMessageSource(Func<IMessage> func)
         {
             Func = func;
         }
-
-        public Func<IMessage> Func { get; }
 
         public IMessage Receive()
         {
@@ -476,12 +525,12 @@ public class PollableConsumerTest : AbstractTest
 
         public IMessage Message { get; set; }
 
+        public string ServiceName { get; set; }
+
         public TestConvertSimpleHandler()
         {
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
-
-        public string ServiceName { get; set; }
 
         public void HandleMessage(IMessage message)
         {
@@ -494,19 +543,20 @@ public class PollableConsumerTest : AbstractTest
     {
         public int Count { get; set; }
 
+        public string ServiceName { get; set; }
+
         public TestSimpleHandler()
         {
             ServiceName = $"{GetType().Name}@{GetHashCode()}";
         }
 
-        public string ServiceName { get; set; }
-
         public void HandleMessage(IMessage message)
         {
             Assert.Equal("POLLED DATA", message.Payload);
-            var contentType = message.Headers[MessageHeaders.ContentType];
+            object contentType = message.Headers[MessageHeaders.ContentType];
             Assert.Equal("text/plain", contentType.ToString());
             Count++;
+
             if (Count == 1)
             {
                 throw new Exception("test retry");
@@ -516,19 +566,16 @@ public class PollableConsumerTest : AbstractTest
 
     private sealed class TestRequeueChannelInterceptor : AbstractChannelInterceptor
     {
+        public Mock Mock { get; }
+
         public TestRequeueChannelInterceptor(Mock mock)
         {
             Mock = mock;
         }
 
-        public Mock Mock { get; }
-
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder
-                .FromMessage(message)
-                .SetHeader(IntegrationMessageHeaderAccessor.AcknowledgmentCallback, Mock.Object)
-                .Build();
+            return MessageBuilder.FromMessage(message).SetHeader(IntegrationMessageHeaderAccessor.AcknowledgmentCallback, Mock.Object).Build();
         }
     }
 
@@ -536,10 +583,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder
-                .WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper())
-                .CopyHeaders(message.Headers)
-                .Build();
+            return MessageBuilder.WithPayload(Encoding.UTF8.GetString((byte[])message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
         }
     }
 
@@ -547,10 +591,7 @@ public class PollableConsumerTest : AbstractTest
     {
         public override IMessage PreSend(IMessage message, IMessageChannel channel)
         {
-            return MessageBuilder
-                .WithPayload(((string)message.Payload).ToUpper())
-                .CopyHeaders(message.Headers)
-                .Build();
+            return MessageBuilder.WithPayload(((string)message.Payload).ToUpper()).CopyHeaders(message.Headers).Build();
         }
     }
 

@@ -2,13 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Messaging.RabbitMQ.Core;
@@ -20,23 +21,27 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
     public void ChannelReleasedOnTimeout()
     {
         using var connectionFactory = new CachingConnectionFactory("localhost");
-        using var rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        using RabbitTemplate rabbitTemplate = CreateSendAndReceiveRabbitTemplate(connectionFactory);
         rabbitTemplate.ReplyTimeout = 1;
         var exception = new AtomicReference<Exception>();
         var latch = new CountdownEvent(1);
         rabbitTemplate.ReplyErrorHandler = new TestErrorHandler(exception, latch);
-        var reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
+        object reply = rabbitTemplate.ConvertSendAndReceive<object>(Route, "foo");
         Assert.Null(reply);
-        var directReplyToContainers = rabbitTemplate.DirectReplyToContainers;
-        var container = rabbitTemplate.UsePublisherConnection ? directReplyToContainers[connectionFactory.PublisherConnectionFactory] : directReplyToContainers[connectionFactory];
+        Dictionary<IConnectionFactory, DirectReplyToMessageListenerContainer> directReplyToContainers = rabbitTemplate.DirectReplyToContainers;
+
+        DirectReplyToMessageListenerContainer container = rabbitTemplate.UsePublisherConnection
+            ? directReplyToContainers[connectionFactory.PublisherConnectionFactory]
+            : directReplyToContainers[connectionFactory];
+
         Assert.Empty(container.InUseConsumerChannels);
         Assert.Same(rabbitTemplate.ReplyErrorHandler, container.ErrorHandler);
-        var replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
+        IMessage<byte[]> replyMessage = Message.Create(Encoding.UTF8.GetBytes("foo"), new MessageHeaders());
 
         var ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
         Assert.Contains("No correlation header in reply", ex.Message);
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(replyMessage);
         accessor.CorrelationId = "foo";
 
         ex = Assert.Throws<RabbitRejectAndDoNotRequeueException>(() => rabbitTemplate.OnMessage(replyMessage));
@@ -44,7 +49,7 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
 
         _ = Task.Run(() =>
         {
-            var message = rabbitTemplate.Receive(Route, 10000);
+            IMessage message = rabbitTemplate.Receive(Route, 10000);
             Assert.NotNull(message);
             rabbitTemplate.Send(message.Headers.ReplyTo(), replyMessage);
             return message;
@@ -67,7 +72,7 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
 
     protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
     {
-        var rabbitTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        RabbitTemplate rabbitTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
         rabbitTemplate.UseDirectReplyToContainer = true;
         rabbitTemplate.ServiceName = $"{nameof(RabbitTemplateDirectReplyToContainerIntegrationTest)}.SendReceiveRabbitTemplate";
         return rabbitTemplate;
@@ -75,17 +80,17 @@ public class RabbitTemplateDirectReplyToContainerIntegrationTest : RabbitTemplat
 
     private sealed class TestErrorHandler : IErrorHandler
     {
-        public TestErrorHandler(AtomicReference<Exception> atomicReference, CountdownEvent latch)
-        {
-            AtomicReference = atomicReference;
-            Latch = latch;
-        }
-
         public string ServiceName { get; set; } = nameof(TestErrorHandler);
 
         public AtomicReference<Exception> AtomicReference { get; }
 
         public CountdownEvent Latch { get; }
+
+        public TestErrorHandler(AtomicReference<Exception> atomicReference, CountdownEvent latch)
+        {
+            AtomicReference = atomicReference;
+            Latch = latch;
+        }
 
         public bool HandleError(Exception exception)
         {

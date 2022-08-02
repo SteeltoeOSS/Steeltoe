@@ -12,7 +12,11 @@ public static class KubernetesServiceCollectionExtensions
     /// <summary>
     /// Adds KubernetesApplicationInstanceInfo and ensures startup loggers are replaced by runtime loggers.
     /// </summary>
-    /// <param name="services">Your <see cref="IServiceCollection"/>.</param>
-    public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services) =>
-        services.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>();
+    /// <param name="services">
+    /// Your <see cref="IServiceCollection" />.
+    /// </param>
+    public static IServiceCollection AddKubernetesConfigurationServices(this IServiceCollection services)
+    {
+        return services.AddKubernetesApplicationInstanceInfo().AddHostedService<KubernetesHostedService>();
+    }
 }

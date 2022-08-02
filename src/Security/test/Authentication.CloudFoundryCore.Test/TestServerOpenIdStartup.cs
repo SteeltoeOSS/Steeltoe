@@ -23,26 +23,27 @@ public class TestServerOpenIdStartup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
-        var jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
+        string openIdConfigResponse = Environment.GetEnvironmentVariable("openIdConfigResponse");
+        string jwksResponse = Environment.GetEnvironmentVariable("jwksResponse");
         var mockHttpMessageHandler = new MockHttpMessageHandler();
 
         services.AddOptions();
+
         services.AddAuthentication(options =>
-            {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
-            })
-            .AddCookie(options =>
-            {
-                options.AccessDeniedPath = new PathString("/Home/AccessDenied");
-            })
-            .AddCloudFoundryOpenIdConnect(Configuration, (options, _) =>
-            {
-                mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration").Respond("application/json", openIdConfigResponse);
-                mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
-                options.Backchannel = new HttpClient(mockHttpMessageHandler);
-            });
+        {
+            options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CloudFoundryDefaults.AuthenticationScheme;
+        }).AddCookie(options =>
+        {
+            options.AccessDeniedPath = new PathString("/Home/AccessDenied");
+        }).AddCloudFoundryOpenIdConnect(Configuration, (options, _) =>
+        {
+            mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/.well-known/openid-configuration")
+                .Respond("application/json", openIdConfigResponse);
+
+            mockHttpMessageHandler.Expect(HttpMethod.Get, $"{options.Authority}/token_keys").Respond("application/json", jwksResponse);
+            options.Backchannel = new HttpClient(mockHttpMessageHandler);
+        });
     }
 
     public void Configure(IApplicationBuilder app)

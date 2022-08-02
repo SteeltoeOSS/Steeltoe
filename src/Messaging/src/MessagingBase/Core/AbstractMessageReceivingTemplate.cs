@@ -10,17 +10,24 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 {
     private TDestination _defaultReceiveDestination;
 
-    public virtual TDestination DefaultReceiveDestination
+    protected virtual TDestination RequiredDefaultReceiveDestination
     {
         get
         {
+            if (_defaultReceiveDestination == null)
+            {
+                throw new InvalidOperationException("No default destination configured");
+            }
+
             return _defaultReceiveDestination;
         }
+    }
 
-        set
-        {
-            _defaultReceiveDestination = value;
-        }
+    public virtual TDestination DefaultReceiveDestination
+    {
+        get => _defaultReceiveDestination;
+
+        set => _defaultReceiveDestination = value;
     }
 
     public virtual bool ThrowReceivedExceptions { get; set; }
@@ -42,15 +49,14 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
     public virtual async Task<T> ReceiveAndConvertAsync<T>(TDestination destination, CancellationToken cancellationToken = default)
     {
-        var message = await DoReceiveAsync(destination, cancellationToken);
+        IMessage message = await DoReceiveAsync(destination, cancellationToken);
+
         if (message != null)
         {
             return DoConvert<T>(message);
         }
-        else
-        {
-            return default(T);
-        }
+
+        return default;
     }
 
     public virtual IMessage Receive()
@@ -70,28 +76,14 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
     public virtual T ReceiveAndConvert<T>(TDestination destination)
     {
-        var message = DoReceive(destination);
+        IMessage message = DoReceive(destination);
+
         if (message != null)
         {
             return DoConvert<T>(message);
         }
-        else
-        {
-            return default;
-        }
-    }
 
-    protected virtual TDestination RequiredDefaultReceiveDestination
-    {
-        get
-        {
-            if (_defaultReceiveDestination == null)
-            {
-                throw new InvalidOperationException("No default destination configured");
-            }
-
-            return _defaultReceiveDestination;
-        }
+        return default;
     }
 
     protected abstract Task<IMessage> DoReceiveAsync(TDestination destination, CancellationToken cancellationToken);
@@ -100,17 +92,15 @@ public abstract class AbstractMessageReceivingTemplate<TDestination> : AbstractM
 
     protected virtual T DoConvert<T>(IMessage message)
     {
-        var messageConverter = MessageConverter;
-        var value = messageConverter.FromMessage(message, typeof(T));
+        IMessageConverter messageConverter = MessageConverter;
+        object value = messageConverter.FromMessage(message, typeof(T));
+
         if (value == null)
         {
-            throw new MessageConversionException(
-                message,
+            throw new MessageConversionException(message,
                 $"Unable to convert payload [{message.Payload}] to type [{typeof(T)}] using converter [{messageConverter}]");
         }
 
-        return value is Exception exception && ThrowReceivedExceptions
-            ? throw exception
-            : (T)value;
+        return value is Exception exception && ThrowReceivedExceptions ? throw exception : (T)value;
     }
 }

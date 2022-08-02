@@ -6,12 +6,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public abstract class HystrixKeyDefault : IHystrixKey
 {
+    public string Name { get; }
+
     protected HystrixKeyDefault(string name)
     {
         Name = name;
     }
-
-    public string Name { get; }
 
     public override string ToString()
     {

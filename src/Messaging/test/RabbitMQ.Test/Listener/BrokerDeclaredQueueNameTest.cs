@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
+using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
@@ -14,6 +15,7 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Host;
 using Xunit;
 using RC = RabbitMQ.Client;
+using SimpleMessageConverter = Steeltoe.Messaging.RabbitMQ.Support.Converter.SimpleMessageConverter;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
@@ -26,17 +28,17 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         var latch3 = new CountdownEvent(1);
         var latch4 = new CountdownEvent(2);
         var message = new AtomicReference<IMessage>();
-        var services = CreateContainer();
+        ServiceCollection services = CreateContainer();
         services.AddRabbitQueue(new Queue(string.Empty, false, true, true));
 
         services.AddHostedService<RabbitHostService>();
         services.TryAddSingleton<IApplicationContext, GenericApplicationContext>();
         services.TryAddSingleton<IConnectionFactory, CachingConnectionFactory>();
-        services.TryAddSingleton<Converter.ISmartMessageConverter, RabbitMQ.Support.Converter.SimpleMessageConverter>();
+        services.TryAddSingleton<ISmartMessageConverter, SimpleMessageConverter>();
         services.AddSingleton(p => CreateDmlcContainer(p, latch3, latch4, message));
         services.AddRabbitAdmin();
         services.AddRabbitTemplate();
-        await using var provider = services.BuildServiceProvider();
+        await using ServiceProvider provider = services.BuildServiceProvider();
 
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
 
@@ -47,20 +49,20 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
 
         var queue = provider.GetRequiredService<IQueue>();
-        using var template = provider.GetRabbitTemplate();
-        var firstActualName = queue.ActualName;
+        using RabbitTemplate template = provider.GetRabbitTemplate();
+        string firstActualName = queue.ActualName;
         message.Value = null;
         template.ConvertAndSend(firstActualName, "foo");
 
         Assert.True(latch3.Wait(TimeSpan.FromSeconds(10)));
-        var body = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Value.Payload);
+        string body = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Value.Payload);
         Assert.Equal("foo", body);
         var newConnectionLatch = new CountdownEvent(2);
         var conListener = new TestConnectionListener(newConnectionLatch);
         cf.AddConnectionListener(conListener);
         cf.ResetConnection();
         Assert.True(newConnectionLatch.Wait(TimeSpan.FromSeconds(10)));
-        var secondActualName = queue.ActualName;
+        string secondActualName = queue.ActualName;
         Assert.NotEqual(firstActualName, secondActualName);
         message.Value = null;
         template.ConvertAndSend(secondActualName, "bar");
@@ -70,7 +72,8 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         await container.Stop();
     }
 
-    private DirectMessageListenerContainer CreateDmlcContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4, AtomicReference<IMessage> message)
+    private DirectMessageListenerContainer CreateDmlcContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4,
+        AtomicReference<IMessage> message)
     {
         var cf = services.GetRequiredService<IConnectionFactory>();
         var ctx = services.GetRequiredService<IApplicationContext>();
@@ -89,12 +92,12 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
 
     private sealed class TestConnectionListener : IConnectionListener
     {
+        public CountdownEvent Latch { get; }
+
         public TestConnectionListener(CountdownEvent latch)
         {
             Latch = latch;
         }
-
-        public CountdownEvent Latch { get; }
 
         public void OnClose(IConnection connection)
         {
@@ -115,13 +118,6 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
 
     private sealed class TestMessageListener : IMessageListener
     {
-        public TestMessageListener(CountdownEvent latch1, CountdownEvent latch2, AtomicReference<IMessage> message)
-        {
-            Latch1 = latch1;
-            Latch2 = latch2;
-            Message = message;
-        }
-
         public AcknowledgeMode ContainerAckMode { get; set; }
 
         public CountdownEvent Latch1 { get; }
@@ -130,9 +126,17 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
 
         public AtomicReference<IMessage> Message { get; }
 
+        public TestMessageListener(CountdownEvent latch1, CountdownEvent latch2, AtomicReference<IMessage> message)
+        {
+            Latch1 = latch1;
+            Latch2 = latch2;
+            Message = message;
+        }
+
         public void OnMessage(IMessage message)
         {
             Message.Value = message;
+
             if (!Latch1.IsSet)
             {
                 Latch1.Signal();

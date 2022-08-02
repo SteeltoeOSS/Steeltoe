@@ -17,7 +17,7 @@ public abstract class HystrixBaseOptions
 
     protected virtual bool GetBoolean(string prefix, string key, string property, bool globalDefault, bool? instanceDefaultFromCode)
     {
-        var result = globalDefault;
+        bool result = globalDefault;
         result = Dynamic?.GetBoolean($"{prefix}:default:{property}", result) ?? result; // dynamic global default
         result = instanceDefaultFromCode ?? result; // instance default from code
         result = Dynamic?.GetBoolean($"{prefix}:{key}:{property}", result) ?? result; // dynamic instance value
@@ -26,7 +26,7 @@ public abstract class HystrixBaseOptions
 
     protected virtual int GetInteger(string prefix, string key, string property, int globalDefault, int? instanceDefaultFromCode)
     {
-        var result = globalDefault;
+        int result = globalDefault;
         result = Dynamic?.GetInteger($"{prefix}:default:{property}", result) ?? result; // dynamic global default
         result = instanceDefaultFromCode ?? result; // instance default from code
         result = Dynamic?.GetInteger($"{prefix}:{key}:{property}", result) ?? result; // dynamic instance value
@@ -35,7 +35,7 @@ public abstract class HystrixBaseOptions
 
     protected virtual long GetLong(string prefix, string key, string property, long globalDefault, long? instanceDefaultFromCode)
     {
-        var result = globalDefault;
+        long result = globalDefault;
         result = Dynamic?.GetLong($"{prefix}:default:{property}", result) ?? result; // dynamic global default
         result = instanceDefaultFromCode ?? result; // instance default from code
         result = Dynamic?.GetLong($"{prefix}:{key}:{property}", result) ?? result; // dynamic instance value
@@ -44,7 +44,7 @@ public abstract class HystrixBaseOptions
 
     protected virtual string GetString(string prefix, string key, string property, string globalDefault, string instanceDefaultFromCode)
     {
-        var result = globalDefault;
+        string result = globalDefault;
         result = Dynamic != null ? Dynamic.GetString($"{prefix}:default:{property}", result) : result; // dynamic global default
         result = instanceDefaultFromCode ?? result; // instance default from code
         result = Dynamic != null ? Dynamic.GetString($"{prefix}:{key}:{property}", result) : result; // dynamic instance value

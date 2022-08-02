@@ -7,19 +7,27 @@ namespace Steeltoe.Common.Converter;
 public abstract class AbstractConverter<TSource, TTarget> : AbstractGenericConditionalConverter, IConverter<TSource, TTarget>
 {
     protected AbstractConverter()
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(TSource), typeof(TTarget)) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(TSource), typeof(TTarget))
+        })
     {
     }
 
-    public override bool Matches(Type sourceType, Type targetType) => typeof(TTarget) == targetType;
+    public override bool Matches(Type sourceType, Type targetType)
+    {
+        return typeof(TTarget) == targetType;
+    }
 
     public abstract TTarget Convert(TSource source);
 
     public override object Convert(object source, Type sourceType, Type targetType)
-        => source switch
+    {
+        return source switch
         {
             null => null,
             not TSource => throw new ArgumentException("'source' type invalid"),
             _ => Convert((TSource)source)
         };
+    }
 }

@@ -26,9 +26,18 @@ public class ApplicationTest : AbstractBaseTest
     {
         var infos = new List<InstanceInfo>
         {
-            new () { InstanceId = "1" },
-            new () { InstanceId = "2" },
-            new () { InstanceId = "2" } // Note duplicate
+            new()
+            {
+                InstanceId = "1"
+            },
+            new()
+            {
+                InstanceId = "2"
+            },
+            new()
+            {
+                InstanceId = "2"
+            } // Note duplicate
         };
 
         var app = new Application("foobar", infos);
@@ -46,6 +55,7 @@ public class ApplicationTest : AbstractBaseTest
     public void Add_Adds()
     {
         var app = new Application("foobar");
+
         var info = new InstanceInfo
         {
             InstanceId = "1"
@@ -64,6 +74,7 @@ public class ApplicationTest : AbstractBaseTest
     public void Add_Add_Updates()
     {
         var app = new Application("foobar");
+
         var info = new InstanceInfo
         {
             InstanceId = "1",
@@ -121,7 +132,10 @@ public class ApplicationTest : AbstractBaseTest
                 ServiceUpTimestamp = 1_457_973_741_708
             },
             IsCoordinatingDiscoveryServer = false,
-            Metadata = new Dictionary<string, string> { { "@class", "java.util.Collections$EmptyMap" } },
+            Metadata = new Dictionary<string, string>
+            {
+                { "@class", "java.util.Collections$EmptyMap" }
+            },
             LastUpdatedTimestamp = 1_457_973_741_708,
             LastDirtyTimestamp = 1_457_973_741_708,
             ActionType = ActionType.Added,
@@ -131,7 +145,10 @@ public class ApplicationTest : AbstractBaseTest
         var application = new JsonApplication
         {
             Name = "myApp",
-            Instances = new List<JsonInstanceInfo> { instanceInfo }
+            Instances = new List<JsonInstanceInfo>
+            {
+                instanceInfo
+            }
         };
 
         var app = Application.FromJsonApplication(application);
@@ -143,7 +160,7 @@ public class ApplicationTest : AbstractBaseTest
         Assert.Equal(1, app.Count);
         Assert.Equal(1, app.Instances.Count);
         Assert.NotNull(app.GetInstance("InstanceId"));
-        var info = app.GetInstance("InstanceId");
+        InstanceInfo info = app.GetInstance("InstanceId");
 
         Assert.Equal("InstanceId", info.InstanceId);
         Assert.Equal("myApp", info.AppName);

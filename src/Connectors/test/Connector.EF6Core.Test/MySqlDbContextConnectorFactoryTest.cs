@@ -25,7 +25,7 @@ public class MySqlDbContextConnectorFactoryTest
     {
         var config = new MySqlProviderConnectorOptions();
         const MySqlServiceInfo si = null;
-        var dbContextType = typeof(BadMySqlDbContext);
+        Type dbContextType = typeof(BadMySqlDbContext);
 
         var ex = Assert.Throws<ConnectorException>(() => new MySqlDbContextConnectorFactory(si, config, dbContextType).Create(null));
         Assert.Contains("BadMySqlDbContext", ex.Message);
@@ -42,9 +42,10 @@ public class MySqlDbContextConnectorFactoryTest
             Username = "username",
             Database = "database"
         };
+
         var si = new MySqlServiceInfo("MyId", "mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
         var factory = new MySqlDbContextConnectorFactory(si, config, typeof(GoodMySqlDbContext));
-        var context = factory.Create(null);
+        object context = factory.Create(null);
         Assert.NotNull(context);
         var goodMySqlDbContext = context as GoodMySqlDbContext;
         Assert.NotNull(goodMySqlDbContext);

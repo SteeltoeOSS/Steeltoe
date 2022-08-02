@@ -16,14 +16,14 @@ public class ScopedEurekaHealthCheckHandler : EurekaHealthCheckHandler
     public ScopedEurekaHealthCheckHandler(IServiceScopeFactory scopeFactory, ILogger<ScopedEurekaHealthCheckHandler> logger = null)
         : base(logger)
     {
-        this.ScopeFactory = scopeFactory;
+        ScopeFactory = scopeFactory;
     }
 
     public override InstanceStatus GetStatus(InstanceStatus currentStatus)
     {
-        using var scope = ScopeFactory.CreateScope();
+        using IServiceScope scope = ScopeFactory.CreateScope();
         Contributors = scope.ServiceProvider.GetServices<IHealthContributor>().ToList();
-        var result = base.GetStatus(currentStatus);
+        InstanceStatus result = base.GetStatus(currentStatus);
         Contributors = null;
         return result;
     }

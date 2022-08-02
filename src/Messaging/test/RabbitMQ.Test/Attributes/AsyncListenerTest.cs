@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
@@ -34,19 +35,19 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public async Task TestAsyncListener()
     {
-        var template = _provider.GetRabbitTemplate();
-        var context = _provider.GetApplicationContext();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        IApplicationContext context = _provider.GetApplicationContext();
         var queue1 = context.GetService<IQueue>("queue1");
-        var reply = template.ConvertSendAndReceive<string>(queue1.QueueName, "foo");
+        string reply = template.ConvertSendAndReceive<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply);
 
-        var reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo");
+        string reply2 = await template.ConvertSendAndReceiveAsync<string>(queue1.QueueName, "foo");
         Assert.Equal("FOO", reply2);
         var pp = template.AfterReceivePostProcessors[0] as TemplateAfterReceivePostProcessor;
         Assert.Equal("System.String", pp.TypeId);
 
         var queue2 = context.GetService<IQueue>("queue2");
-        var reply3 = template.ConvertSendAndReceive<string>(queue2.QueueName, "foo");
+        string reply3 = template.ConvertSendAndReceive<string>(queue2.QueueName, "foo");
         Assert.Equal("FOO", reply3);
         Assert.Equal("System.String", pp.TypeId);
 
@@ -65,8 +66,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestRouteToDlq()
     {
-        var template = _provider.GetRabbitTemplate();
-        var context = _provider.GetApplicationContext();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        IApplicationContext context = _provider.GetApplicationContext();
         var queue5 = context.GetService<IQueue>("queue5");
         var listener = _provider.GetService<Listener>();
 
@@ -81,8 +82,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public void TestOverrideDoNotRequeue()
     {
-        var template = _provider.GetRabbitTemplate();
-        var context = _provider.GetApplicationContext();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        IApplicationContext context = _provider.GetApplicationContext();
         var queue7 = context.GetService<IQueue>("queue7");
         Assert.Equal("listen7", template.ConvertSendAndReceive<string>(queue7.QueueName, "foo"));
     }
@@ -98,10 +99,10 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
     [Fact]
     public async Task TestAsyncListenerErrorHandler()
     {
-        var template = _provider.GetRabbitTemplate();
-        var context = _provider.GetApplicationContext();
+        RabbitTemplate template = _provider.GetRabbitTemplate();
+        IApplicationContext context = _provider.GetApplicationContext();
         var queueAsyncErrorHandler = context.GetService<IQueue>("queueAsyncErrorHandler");
-        var reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo");
+        string reply = await template.ConvertSendAndReceiveAsync<string>(queueAsyncErrorHandler.QueueName, "foo");
         Assert.Equal($"{nameof(CustomListenerErrorHandler)} handled/processed", reply);
     }
 
@@ -121,12 +122,11 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
         public ServiceCollection CreateContainer(IConfiguration config = null)
         {
             var services = new ServiceCollection();
-            config ??= new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
-                })
-                .Build();
+
+            config ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
+            }).Build();
 
             services.AddLogging(b =>
             {
@@ -145,6 +145,7 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             services.AddRabbitListenerAttributeProcessor();
             services.AddRabbitConnectionFactory();
             services.AddRabbitAdmin();
+
             services.AddRabbitTemplate((_, t) =>
             {
                 t.SetAfterReceivePostProcessors(new TemplateAfterReceivePostProcessor());
@@ -197,17 +198,17 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
 
     public class Listener
     {
-        public AtomicBoolean FooFirst { get; set; } = new (true);
+        public AtomicBoolean FooFirst { get; set; } = new(true);
 
-        public AtomicBoolean BarFirst { get; set; } = new (true);
+        public AtomicBoolean BarFirst { get; set; } = new(true);
 
-        public CountdownEvent Latch4 { get; set; } = new (1);
+        public CountdownEvent Latch4 { get; set; } = new(1);
 
-        public CountdownEvent Latch5 { get; set; } = new (1);
+        public CountdownEvent Latch5 { get; set; } = new(1);
 
-        public CountdownEvent Latch6 { get; set; } = new (1);
+        public CountdownEvent Latch6 { get; set; } = new(1);
 
-        public AtomicBoolean First7 { get; set; } = new (true);
+        public AtomicBoolean First7 { get; set; } = new(true);
 
         [RabbitListener("queue1", Id = "foo")]
         public Task<string> Listen1(string foo)
@@ -216,10 +217,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             {
                 return Task.FromException<string>(new Exception("Future.exception"));
             }
-            else
-            {
-                return Task.FromResult(foo.ToUpper());
-            }
+
+            return Task.FromResult(foo.ToUpper());
         }
 
         [RabbitListener("queue2", Id = "bar")]
@@ -229,16 +228,17 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             {
                 return Task.FromException<string>(new Exception("Mono.error()"));
             }
-            else
-            {
-                return Task.FromResult(foo.ToUpper());
-            }
+
+            return Task.FromResult(foo.ToUpper());
         }
 
         [RabbitListener("queue3", Id = "baz")]
         public Task<List<string>> Listen3(string foo)
         {
-            return Task.FromResult(new List<string> { foo.ToUpper() });
+            return Task.FromResult(new List<string>
+            {
+                foo.ToUpper()
+            });
         }
 
         [RabbitListener("queue4", Id = "qux")]
@@ -279,10 +279,8 @@ public class AsyncListenerTest : IClassFixture<StartupFixture>
             {
                 return Task.FromException<string>(new ImmediateRequeueException("asyncOverrideDefaultToDLQ"));
             }
-            else
-            {
-                return Task.FromResult("listen7");
-            }
+
+            return Task.FromResult("listen7");
         }
 
         [RabbitListener(Queue = "queueAsyncErrorHandler", Id = "asyncErrorHandler", ErrorHandler = nameof(CustomListenerErrorHandler))]

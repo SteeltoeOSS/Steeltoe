@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Steeltoe.CircuitBreaker.Hystrix.Metric;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy;
@@ -9,7 +10,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.EventNotifier;
 using Steeltoe.CircuitBreaker.Hystrix.Util;
 using Steeltoe.Common;
 using Steeltoe.Common.Util;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -17,16 +17,32 @@ public class HystrixCommandMetrics : HystrixMetrics
 {
     private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
 
+    private static readonly ConcurrentDictionary<string, HystrixCommandMetrics> Metrics = new();
+
+    private readonly AtomicInteger _concurrentExecutionCount = new();
+
+    private readonly RollingCommandEventCounterStream _rollingCommandEventCounterStream;
+    private readonly CumulativeCommandEventCounterStream _cumulativeCommandEventCounterStream;
+    private readonly RollingCommandLatencyDistributionStream _rollingCommandLatencyDistributionStream;
+    private readonly RollingCommandUserLatencyDistributionStream _rollingCommandUserLatencyDistributionStream;
+    private readonly RollingCommandMaxConcurrencyStream _rollingCommandMaxConcurrencyStream;
+
+    private readonly object _syncLock = new();
+
+    private HealthCountsStream _healthCountsStream;
+
     public static Func<long[], HystrixCommandCompletion, long[]> AppendEventToBucket { get; } = (initialCountArray, execution) =>
     {
-        var eventCounts = execution.Eventcounts;
-        foreach (var eventType in AllEventTypes)
+        ExecutionResult.EventCounts eventCounts = execution.Eventcounts;
+
+        foreach (HystrixEventType eventType in AllEventTypes)
         {
             switch (eventType)
             {
-                case HystrixEventType.ExceptionThrown: break; // this is just a sum of other anyway - don't do the work here
+                case HystrixEventType.ExceptionThrown:
+                    break; // this is just a sum of other anyway - don't do the work here
                 default:
-                    var ordinal = (int)eventType;
+                    int ordinal = (int)eventType;
                     initialCountArray[ordinal] += eventCounts.GetCount(eventType);
                     break;
             }
@@ -37,21 +53,21 @@ public class HystrixCommandMetrics : HystrixMetrics
 
     public static Func<long[], long[], long[]> BucketAggregator { get; } = (cumulativeEvents, bucketEventCounts) =>
     {
-        foreach (var eventType in AllEventTypes)
+        foreach (HystrixEventType eventType in AllEventTypes)
         {
             switch (eventType)
             {
                 case HystrixEventType.ExceptionThrown:
-                    foreach (var exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
+                    foreach (HystrixEventType exceptionEventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
                     {
-                        var ordinal1 = (int)eventType;
-                        var ordinal2 = (int)exceptionEventType;
+                        int ordinal1 = (int)eventType;
+                        int ordinal2 = (int)exceptionEventType;
                         cumulativeEvents[ordinal1] += bucketEventCounts[ordinal2];
                     }
 
                     break;
                 default:
-                    var ordinal = (int)eventType;
+                    int ordinal = (int)eventType;
                     cumulativeEvents[ordinal] += bucketEventCounts[ordinal];
                     break;
             }
@@ -60,69 +76,26 @@ public class HystrixCommandMetrics : HystrixMetrics
         return cumulativeEvents;
     };
 
-    private static readonly ConcurrentDictionary<string, HystrixCommandMetrics> Metrics = new ();
+    public IHystrixCommandKey CommandKey { get; }
 
-    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions properties)
-    {
-        return GetInstance(key, commandGroup, null, properties);
-    }
+    public IHystrixCommandGroupKey CommandGroup { get; }
 
-    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey, IHystrixCommandOptions properties)
-    {
-        // attempt to retrieve from cache first
-        var nonNullThreadPoolKey = threadPoolKey ?? HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
+    public IHystrixThreadPoolKey ThreadPoolKey { get; }
 
-        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
-    }
+    public IHystrixCommandOptions Properties { get; }
 
-    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key)
-    {
-        Metrics.TryGetValue(key.Name, out var result);
-        return result;
-    }
+    public int ExecutionTimeMean => _rollingCommandLatencyDistributionStream.LatestMean;
 
-    public static ICollection<HystrixCommandMetrics> GetInstances()
-    {
-        var commandMetrics = new List<HystrixCommandMetrics>();
-        foreach (var tpm in Metrics.Values)
-        {
-            commandMetrics.Add(tpm);
-        }
+    public int TotalTimeMean => _rollingCommandUserLatencyDistributionStream.LatestMean;
 
-        return commandMetrics.AsReadOnly();
-    }
+    public long RollingMaxConcurrentExecutions => _rollingCommandMaxConcurrencyStream.LatestRollingMax;
 
-    internal static void Reset()
-    {
-        foreach (var metricsInstance in GetInstances())
-        {
-            metricsInstance.UnsubscribeAll();
-        }
+    public int CurrentConcurrentExecutionCount => _concurrentExecutionCount.Value;
 
-        RollingCommandEventCounterStream.Reset();
-        CumulativeCommandEventCounterStream.Reset();
-        RollingCommandLatencyDistributionStream.Reset();
-        RollingCommandUserLatencyDistributionStream.Reset();
-        RollingCommandMaxConcurrencyStream.Reset();
-        HystrixThreadEventStream.Reset();
-        HealthCountsStream.Reset();
+    public HealthCounts HealthCounts => _healthCountsStream.Latest;
 
-        Metrics.Clear();
-    }
-
-    private readonly AtomicInteger _concurrentExecutionCount = new ();
-
-    private readonly RollingCommandEventCounterStream _rollingCommandEventCounterStream;
-    private readonly CumulativeCommandEventCounterStream _cumulativeCommandEventCounterStream;
-    private readonly RollingCommandLatencyDistributionStream _rollingCommandLatencyDistributionStream;
-    private readonly RollingCommandUserLatencyDistributionStream _rollingCommandUserLatencyDistributionStream;
-    private readonly RollingCommandMaxConcurrencyStream _rollingCommandMaxConcurrencyStream;
-
-    private readonly object _syncLock = new ();
-
-    private HealthCountsStream _healthCountsStream;
-
-    internal HystrixCommandMetrics(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey, IHystrixCommandOptions properties, HystrixEventNotifier eventNotifier)
+    internal HystrixCommandMetrics(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey,
+        IHystrixCommandOptions properties, HystrixEventNotifier eventNotifier)
         : base(null)
     {
         CommandKey = key;
@@ -139,6 +112,56 @@ public class HystrixCommandMetrics : HystrixMetrics
         _rollingCommandMaxConcurrencyStream = RollingCommandMaxConcurrencyStream.GetInstance(key, properties);
     }
 
+    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixCommandOptions properties)
+    {
+        return GetInstance(key, commandGroup, null, properties);
+    }
+
+    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key, IHystrixCommandGroupKey commandGroup, IHystrixThreadPoolKey threadPoolKey,
+        IHystrixCommandOptions properties)
+    {
+        // attempt to retrieve from cache first
+        IHystrixThreadPoolKey nonNullThreadPoolKey = threadPoolKey ?? HystrixThreadPoolKeyDefault.AsKey(commandGroup.Name);
+
+        return Metrics.GetOrAddEx(key.Name, _ => new HystrixCommandMetrics(key, commandGroup, nonNullThreadPoolKey, properties, HystrixPlugins.EventNotifier));
+    }
+
+    public static HystrixCommandMetrics GetInstance(IHystrixCommandKey key)
+    {
+        Metrics.TryGetValue(key.Name, out HystrixCommandMetrics result);
+        return result;
+    }
+
+    public static ICollection<HystrixCommandMetrics> GetInstances()
+    {
+        var commandMetrics = new List<HystrixCommandMetrics>();
+
+        foreach (HystrixCommandMetrics tpm in Metrics.Values)
+        {
+            commandMetrics.Add(tpm);
+        }
+
+        return commandMetrics.AsReadOnly();
+    }
+
+    internal static void Reset()
+    {
+        foreach (HystrixCommandMetrics metricsInstance in GetInstances())
+        {
+            metricsInstance.UnsubscribeAll();
+        }
+
+        RollingCommandEventCounterStream.Reset();
+        CumulativeCommandEventCounterStream.Reset();
+        RollingCommandLatencyDistributionStream.Reset();
+        RollingCommandUserLatencyDistributionStream.Reset();
+        RollingCommandMaxConcurrencyStream.Reset();
+        HystrixThreadEventStream.Reset();
+        HealthCountsStream.Reset();
+
+        Metrics.Clear();
+    }
+
     /* package */
     internal void ResetStream()
     {
@@ -149,14 +172,6 @@ public class HystrixCommandMetrics : HystrixMetrics
             _healthCountsStream = HealthCountsStream.GetInstance(CommandKey, Properties);
         }
     }
-
-    public IHystrixCommandKey CommandKey { get; }
-
-    public IHystrixCommandGroupKey CommandGroup { get; }
-
-    public IHystrixThreadPoolKey ThreadPoolKey { get; }
-
-    public IHystrixCommandOptions Properties { get; }
 
     public long GetRollingCount(HystrixEventType eventType)
     {
@@ -183,38 +198,26 @@ public class HystrixCommandMetrics : HystrixMetrics
         return _rollingCommandLatencyDistributionStream.GetLatestPercentile(percentile);
     }
 
-    public int ExecutionTimeMean
-    {
-        get { return _rollingCommandLatencyDistributionStream.LatestMean; }
-    }
-
     public int GetTotalTimePercentile(double percentile)
     {
         return _rollingCommandUserLatencyDistributionStream.GetLatestPercentile(percentile);
     }
 
-    public int TotalTimeMean => _rollingCommandUserLatencyDistributionStream.LatestMean;
-
-    public long RollingMaxConcurrentExecutions => _rollingCommandMaxConcurrencyStream.LatestRollingMax;
-
-    public int CurrentConcurrentExecutionCount => _concurrentExecutionCount.Value;
-
     internal void MarkCommandStart(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy)
     {
-        var currentCount = _concurrentExecutionCount.IncrementAndGet();
+        int currentCount = _concurrentExecutionCount.IncrementAndGet();
         HystrixThreadEventStream.GetInstance().CommandExecutionStarted(commandKey, threadPoolKey, isolationStrategy, currentCount);
     }
 
     internal void MarkCommandDone(ExecutionResult executionResult, IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, bool executionStarted)
     {
         HystrixThreadEventStream.GetInstance().ExecutionDone(executionResult, commandKey, threadPoolKey);
+
         if (executionStarted)
         {
             _concurrentExecutionCount.DecrementAndGet();
         }
     }
-
-    public HealthCounts HealthCounts => _healthCountsStream.Latest;
 
     private void UnsubscribeAll()
     {

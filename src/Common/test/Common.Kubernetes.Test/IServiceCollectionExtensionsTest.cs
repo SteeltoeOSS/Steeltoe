@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using k8s;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Common.Kubernetes.Test;
@@ -28,9 +28,9 @@ public class ServiceCollectionExtensionsTest
         Assert.NotNull(serviceCollection.BuildServiceProvider().GetService<IApplicationInstanceInfo>());
 
         serviceCollection.AddKubernetesApplicationInstanceInfo();
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
 
-        var appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
+        IEnumerable<IApplicationInstanceInfo> appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
         Assert.Single(appInfos);
         Assert.NotNull(appInfos.FirstOrDefault());
         Assert.IsType<KubernetesApplicationOptions>(appInfos.FirstOrDefault());
@@ -51,8 +51,8 @@ public class ServiceCollectionExtensionsTest
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
-        var options = serviceCollection.GetKubernetesApplicationOptions();
-        var appInfos = serviceCollection.BuildServiceProvider().GetServices<IApplicationInstanceInfo>();
+        IApplicationInstanceInfo options = serviceCollection.GetKubernetesApplicationOptions();
+        IEnumerable<IApplicationInstanceInfo> appInfos = serviceCollection.BuildServiceProvider().GetServices<IApplicationInstanceInfo>();
 
         Assert.NotNull(options);
         Assert.Single(appInfos);
@@ -74,9 +74,9 @@ public class ServiceCollectionExtensionsTest
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         serviceCollection.AddKubernetesClient();
-        var serviceProvider = serviceCollection.BuildServiceProvider();
+        ServiceProvider serviceProvider = serviceCollection.BuildServiceProvider();
         var client = serviceProvider.GetService<IKubernetes>();
-        var appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
+        IEnumerable<IApplicationInstanceInfo> appInfos = serviceProvider.GetServices<IApplicationInstanceInfo>();
 
         Assert.NotNull(client);
         Assert.Single(appInfos);

@@ -6,6 +6,31 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public static class ClrRuntimeSource
 {
+    public const string DiagnosticName = "Steeltoe.ClrMetrics";
+    public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
+    public const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
+
+    public static HeapMetrics GetHeapMetrics()
+    {
+        long totalMemory = GC.GetTotalMemory(false);
+
+        var counts = new List<long>(GC.MaxGeneration);
+
+        for (int i = 0; i < GC.MaxGeneration; i++)
+        {
+            counts.Add(GC.CollectionCount(i));
+        }
+
+        return new HeapMetrics(totalMemory, counts);
+    }
+
+    public static ThreadMetrics GetThreadMetrics()
+    {
+        ThreadPool.GetAvailableThreads(out int availWorkerThreads, out int availCompPortThreads);
+        ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompPortThreads);
+        return new ThreadMetrics(availWorkerThreads, availCompPortThreads, maxWorkerThreads, maxCompPortThreads);
+    }
+
     public struct HeapMetrics
     {
         public HeapMetrics(long total, IList<long> collections)
@@ -32,29 +57,5 @@ public static class ClrRuntimeSource
         public long AvailableThreadCompletionPort;
         public long MaxThreadPoolWorkers;
         public long MaxThreadCompletionPort;
-    }
-
-    public const string DiagnosticName = "Steeltoe.ClrMetrics";
-    public const string HeapEvent = "Steeltoe.ClrMetrics.Heap";
-    public const string ThreadsEvent = "Steeltoe.ClrMetrics.Threads";
-
-    public static HeapMetrics GetHeapMetrics()
-    {
-        long totalMemory = GC.GetTotalMemory(false);
-
-        List<long> counts = new List<long>(GC.MaxGeneration);
-        for (int i = 0; i < GC.MaxGeneration; i++)
-        {
-            counts.Add(GC.CollectionCount(i));
-        }
-
-        return new HeapMetrics(totalMemory, counts);
-    }
-
-    public static ThreadMetrics GetThreadMetrics()
-    {
-        ThreadPool.GetAvailableThreads(out int availWorkerThreads, out int availCompPortThreads);
-        ThreadPool.GetMaxThreads(out int maxWorkerThreads, out int maxCompPortThreads);
-        return new ThreadMetrics(availWorkerThreads, availCompPortThreads, maxWorkerThreads, maxCompPortThreads);
     }
 }

@@ -2,15 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Security.Claims;
+using System.Text.Encodings.Web;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Text.Encodings.Web;
-using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
@@ -21,10 +22,12 @@ public class CloudFoundryOAuthHandlerTest
     public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsValidTokenInfo()
     {
         var handler = new TestMessageHandler();
-        var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(TestHelpers.GetValidTokenRequestResponse())
         };
+
         handler.Response = response;
 
         var client = new HttpClient(handler);
@@ -34,8 +37,8 @@ public class CloudFoundryOAuthHandlerTest
             Backchannel = client
         };
 
-        var testHandler = GetTestHandler(opts);
-        var resp = await testHandler.TestExchangeCodeAsync("code", "redirectUri");
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
+        OAuthTokenResponse resp = await testHandler.TestExchangeCodeAsync("code", "redirectUri");
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
@@ -52,20 +55,23 @@ public class CloudFoundryOAuthHandlerTest
     public async Task ExchangeCodeAsync_SendsTokenRequest_ReturnsErrorResponse()
     {
         var handler = new TestMessageHandler();
-        var response = new HttpResponseMessage(System.Net.HttpStatusCode.BadRequest)
+
+        var response = new HttpResponseMessage(HttpStatusCode.BadRequest)
         {
             Content = new StringContent(string.Empty)
         };
+
         handler.Response = response;
 
         var client = new HttpClient(handler);
+
         var opts = new CloudFoundryOAuthOptions
         {
             Backchannel = client
         };
 
-        var testHandler = GetTestHandler(opts);
-        var resp = await testHandler.TestExchangeCodeAsync("code", "http://redirectUri");
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
+        OAuthTokenResponse resp = await testHandler.TestExchangeCodeAsync("code", "http://redirectUri");
 
         Assert.NotNull(handler.LastRequest);
         Assert.Equal(HttpMethod.Post, handler.LastRequest.Method);
@@ -80,10 +86,12 @@ public class CloudFoundryOAuthHandlerTest
     public void BuildChallengeUrl_CreatesCorrectUrl()
     {
         var handler = new TestMessageHandler();
-        var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(TestHelpers.GetValidTokenRequestResponse())
         };
+
         handler.Response = response;
 
         var client = new HttpClient(handler);
@@ -92,27 +100,32 @@ public class CloudFoundryOAuthHandlerTest
         {
             Backchannel = client
         };
-        var testHandler = GetTestHandler(opts);
+
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
         var props = new AuthenticationProperties();
-        var result = testHandler.TestBuildChallengeUrl(props, "https://foo.bar/redirect");
-        Assert.Equal("http://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=https%3A%2F%2Ffoo.bar%2Fredirect&scope=", result);
+        string result = testHandler.TestBuildChallengeUrl(props, "https://foo.bar/redirect");
+
+        Assert.Equal(
+            "http://Default_OAuthServiceUrl/oauth/authorize?response_type=code&client_id=Default_ClientId&redirect_uri=https%3A%2F%2Ffoo.bar%2Fredirect&scope=",
+            result);
     }
 
     [Fact]
     public void GetTokenInfoRequestParameters_ReturnsCorrectly()
     {
         var client = new HttpClient(new TestMessageHandler());
+
         var opts = new CloudFoundryOAuthOptions
         {
             Backchannel = client
         };
 
-        var testHandler = GetTestHandler(opts);
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-        var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-        var tokens = OAuthTokenResponse.Success(payload);
-        var parameters = testHandler.GetTokenInfoRequestParameters(tokens);
+        JsonDocument payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+        OAuthTokenResponse tokens = OAuthTokenResponse.Success(payload);
+        Dictionary<string, string> parameters = testHandler.GetTokenInfoRequestParameters(tokens);
         Assert.NotNull(parameters);
 
         Assert.Equal(parameters["token"], tokens.AccessToken);
@@ -122,16 +135,18 @@ public class CloudFoundryOAuthHandlerTest
     public void GetTokenInfoRequestMessage_ReturnsCorrectly()
     {
         var client = new HttpClient(new TestMessageHandler());
+
         var opts = new CloudFoundryOAuthOptions
         {
             Backchannel = client
         };
-        var testHandler = GetTestHandler(opts);
 
-        var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-        var tokens = OAuthTokenResponse.Success(payload);
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
-        var message = testHandler.GetTokenInfoRequestMessage(tokens);
+        JsonDocument payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+        OAuthTokenResponse tokens = OAuthTokenResponse.Success(payload);
+
+        HttpRequestMessage message = testHandler.GetTokenInfoRequestMessage(tokens);
         Assert.NotNull(message);
         var content = message.Content as FormUrlEncodedContent;
         Assert.NotNull(content);
@@ -144,23 +159,27 @@ public class CloudFoundryOAuthHandlerTest
     public async Task CreateTicketAsync_SendsTokenInfoRequest_ReturnsValidTokenInfo()
     {
         var handler = new TestMessageHandler();
-        var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(TestHelpers.GetValidTokenInfoRequestResponse())
         };
+
         handler.Response = response;
 
         var client = new HttpClient(handler);
+
         var opts = new CloudFoundryOAuthOptions
         {
             Backchannel = client
         };
-        var testHandler = GetTestHandler(opts);
+
+        MyTestCloudFoundryHandler testHandler = GetTestHandler(opts);
 
         var identity = new ClaimsIdentity();
 
-        var payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
-        var tokens = OAuthTokenResponse.Success(payload);
+        JsonDocument payload = JsonDocument.Parse(TestHelpers.GetValidTokenInfoRequestResponse());
+        OAuthTokenResponse tokens = OAuthTokenResponse.Success(payload);
         await testHandler.TestCreateTicketAsync(identity, new AuthenticationProperties(), tokens);
 
         Assert.NotNull(handler.LastRequest);
@@ -182,9 +201,11 @@ public class CloudFoundryOAuthHandlerTest
         var encoder = UrlEncoder.Default;
         var clock = new TestClock();
         var testHandler = new MyTestCloudFoundryHandler(monitor, loggerFactory, encoder, clock);
+
         testHandler.InitializeAsync(
             new AuthenticationScheme(CloudFoundryDefaults.AuthenticationScheme, CloudFoundryDefaults.AuthenticationScheme, typeof(CloudFoundryOAuthHandler)),
             new DefaultHttpContext()).Wait();
+
         return testHandler;
     }
 }

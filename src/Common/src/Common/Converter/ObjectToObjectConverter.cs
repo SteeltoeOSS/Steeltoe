@@ -9,14 +9,17 @@ namespace Steeltoe.Common.Converter;
 
 public class ObjectToObjectConverter : AbstractGenericConditionalConverter
 {
-    private static readonly ConcurrentDictionary<Type, MemberInfo> ConversionMemberCache = new ();
+    private static readonly ConcurrentDictionary<Type, MemberInfo> ConversionMemberCache = new();
 
     public ObjectToObjectConverter()
         : base(GetConvertiblePairs())
     {
     }
 
-    public override bool Matches(Type sourceType, Type targetType) => sourceType != targetType && HasConversionMethodOrConstructor(targetType, sourceType);
+    public override bool Matches(Type sourceType, Type targetType)
+    {
+        return sourceType != targetType && HasConversionMethodOrConstructor(targetType, sourceType);
+    }
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
@@ -25,9 +28,9 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var sourceClass = sourceType;
-        var targetClass = targetType;
-        var member = GetValidatedMember(targetClass, sourceClass);
+        Type sourceClass = sourceType;
+        Type targetClass = targetType;
+        MemberInfo member = GetValidatedMember(targetClass, sourceClass);
 
         try
         {
@@ -35,11 +38,18 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             {
                 return !method.IsStatic
                     ? method.Invoke(source, Array.Empty<object>())
-                    : method.Invoke(null, new[] { source });
+                    : method.Invoke(null, new[]
+                    {
+                        source
+                    });
             }
-            else if (member is ConstructorInfo ctor)
+
+            if (member is ConstructorInfo ctor)
             {
-                return ctor.Invoke(new[] { source });
+                return ctor.Invoke(new[]
+                {
+                    source
+                });
             }
         }
         catch (TargetInvocationException ex)
@@ -52,30 +62,40 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
         }
 
         throw new InvalidOperationException(string.Format(
-            "No To{1}() method exists on {0}, " +
-            "and no static ValueOf/Of/From({0}) method or {1}({0}) constructor exists on {1}.",
-            sourceClass.Name,
+            "No To{1}() method exists on {0}, " + "and no static ValueOf/Of/From({0}) method or {1}({0}) constructor exists on {1}.", sourceClass.Name,
             targetClass.Name));
     }
 
-    internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass) => GetValidatedMember(targetClass, sourceClass) != null;
+    internal static bool HasConversionMethodOrConstructor(Type targetClass, Type sourceClass)
+    {
+        return GetValidatedMember(targetClass, sourceClass) != null;
+    }
 
-    private static ISet<(Type Source, Type Target)> GetConvertiblePairs() => new HashSet<(Type Source, Type Target)> { (typeof(object), typeof(object)) };
+    private static ISet<(Type Source, Type Target)> GetConvertiblePairs()
+    {
+        return new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(object), typeof(object))
+        };
+    }
 
     private static MemberInfo GetValidatedMember(Type targetClass, Type sourceClass)
     {
-        if (ConversionMemberCache.TryGetValue(targetClass, out var member) && IsApplicable(member, sourceClass))
+        if (ConversionMemberCache.TryGetValue(targetClass, out MemberInfo member) && IsApplicable(member, sourceClass))
         {
             return member;
         }
 
         member = DetermineToMethod(targetClass, sourceClass);
+
         if (member == null)
         {
             member = DetermineFactoryMethod(targetClass, sourceClass);
+
             if (member == null)
             {
                 member = DetermineFactoryConstructor(targetClass, sourceClass);
+
                 if (member == null)
                 {
                     return null;
@@ -88,12 +108,14 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
     }
 
     private static bool IsApplicable(MemberInfo member, Type sourceClass)
-        => member switch
+    {
+        return member switch
         {
             MethodInfo method => !method.IsStatic ? method.DeclaringType.IsAssignableFrom(sourceClass) : method.GetParameters()[0].ParameterType == sourceClass,
             ConstructorInfo ctor => ctor.GetParameters()[0].ParameterType == sourceClass,
             _ => false
         };
+    }
 
     private static MethodInfo DetermineToMethod(Type targetClass, Type sourceClass)
     {
@@ -103,7 +125,7 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var method = ConversionUtils.GetMethodIfAvailable(sourceClass, $"To{targetClass.Name}");
+        MethodInfo method = ConversionUtils.GetMethodIfAvailable(sourceClass, $"To{targetClass.Name}");
         return method != null && !method.IsStatic && targetClass.IsAssignableFrom(method.ReturnType) ? method : null;
     }
 
@@ -115,10 +137,12 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var method = ConversionUtils.GetStaticMethod(targetClass, "ValueOf", sourceClass);
+        MethodInfo method = ConversionUtils.GetStaticMethod(targetClass, "ValueOf", sourceClass);
+
         if (method == null)
         {
             method = ConversionUtils.GetStaticMethod(targetClass, "Of", sourceClass);
+
             if (method == null)
             {
                 method = ConversionUtils.GetStaticMethod(targetClass, "From", sourceClass);
@@ -129,5 +153,7 @@ public class ObjectToObjectConverter : AbstractGenericConditionalConverter
     }
 
     private static ConstructorInfo DetermineFactoryConstructor(Type targetClass, Type sourceClass)
-        => ConversionUtils.GetConstructorIfAvailable(targetClass, sourceClass);
+    {
+        return ConversionUtils.GetConstructorIfAvailable(targetClass, sourceClass);
+    }
 }

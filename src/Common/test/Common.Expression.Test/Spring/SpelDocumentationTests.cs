@@ -2,29 +2,35 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System.Reflection;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelDocumentationTests : AbstractExpressionTests
 {
-    private static readonly Inventor Tesla = new ("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
+    private static readonly Inventor Tesla = new("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian")
     {
         PlaceOfBirth = new PlaceOfBirth("SmilJan"),
         Inventions = new[]
         {
-            "Telephone repeater", "Rotating magnetic field principle",
-            "Polyphase alternating-current system", "Induction motor", "Alternating-current power transmission",
-            "Tesla coil transformer", "Wireless communication", "Radio", "Fluorescent lights"
+            "Telephone repeater",
+            "Rotating magnetic field principle",
+            "Polyphase alternating-current system",
+            "Induction motor",
+            "Alternating-current power transmission",
+            "Tesla coil transformer",
+            "Wireless communication",
+            "Radio",
+            "Fluorescent lights"
         }
     };
 
-    private static readonly Inventor Pupin = new ("Pupin", new DateTime(1856, 7, 9), "Idvor")
+    private static readonly Inventor Pupin = new("Pupin", new DateTime(1856, 7, 9), "Idvor")
     {
         PlaceOfBirth = new PlaceOfBirth("Idvor")
     };
@@ -54,12 +60,12 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var tesla = new Inventor("Nikola Tesla", new DateTime(1856, 7, 9), "Serbian");
 
         var parser = new SpelExpressionParser();
-        var exp = parser.ParseExpression("Name");
+        IExpression exp = parser.ParseExpression("Name");
 
         var context = new StandardEvaluationContext();
         context.SetRootObject(tesla);
 
-        var name = (string)exp.GetValue(context);
+        string name = (string)exp.GetValue(context);
         Assert.Equal("Nikola Tesla", name);
     }
 
@@ -71,8 +77,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.SetRootObject(Tesla);
 
-        var exp = parser.ParseExpression("Name == 'Nikola Tesla'");
-        var isEqual = exp.GetValue<bool>(context);
+        IExpression exp = parser.ParseExpression("Name == 'Nikola Tesla'");
+        bool isEqual = exp.GetValue<bool>(context);
         Assert.True(isEqual);
     }
 
@@ -89,30 +95,30 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var parser = new SpelExpressionParser();
 
-        var helloWorld = (string)parser.ParseExpression("'Hello World'").GetValue(); // evaluates to "Hello World"
+        string helloWorld = (string)parser.ParseExpression("'Hello World'").GetValue(); // evaluates to "Hello World"
         Assert.Equal("Hello World", helloWorld);
 
-        var avogadrosNumber = parser.ParseExpression("6.0221415E+23").GetValue<double>();
+        double avogadrosNumber = parser.ParseExpression("6.0221415E+23").GetValue<double>();
         Assert.InRange(avogadrosNumber, 6.0221415E+23, 6.0221415E+23);
 
-        var maxValue = parser.ParseExpression("0x7FFFFFFF").GetValue<int>();  // evaluates to 2147483647
+        int maxValue = parser.ParseExpression("0x7FFFFFFF").GetValue<int>(); // evaluates to 2147483647
         Assert.Equal(int.MaxValue, maxValue);
 
-        var trueValue = parser.ParseExpression("true").GetValue<bool>();
+        bool trueValue = parser.ParseExpression("true").GetValue<bool>();
         Assert.True(trueValue);
 
-        var nullValue = parser.ParseExpression("null").GetValue();
+        object nullValue = parser.ParseExpression("null").GetValue();
         Assert.Null(nullValue);
     }
 
     [Fact]
     public void TestPropertyAccess()
     {
-        var context = TestScenarioCreator.GetTestEvaluationContext();
-        var year = Parser.ParseExpression("BirthDate.Year + 1900").GetValue<int>(context); // 1856
+        StandardEvaluationContext context = TestScenarioCreator.GetTestEvaluationContext();
+        int year = Parser.ParseExpression("BirthDate.Year + 1900").GetValue<int>(context); // 1856
         Assert.Equal(3756, year);
 
-        var city = (string)Parser.ParseExpression("PlaceOfBirth.City").GetValue(context);
+        string city = (string)Parser.ParseExpression("PlaceOfBirth.City").GetValue(context);
         Assert.Equal("SmilJan", city);
     }
 
@@ -122,20 +128,28 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var parser = new SpelExpressionParser();
 
         // Inventions Array
-        var teslaContext = TestScenarioCreator.GetTestEvaluationContext();
+        StandardEvaluationContext teslaContext = TestScenarioCreator.GetTestEvaluationContext();
 
         // teslaContext.SetRootObject(tesla);
         // Evaluates to "Induction motor"
-        var invention = parser.ParseExpression("Inventions[3]").GetValue<string>(teslaContext);
+        string invention = parser.ParseExpression("Inventions[3]").GetValue<string>(teslaContext);
         Assert.Equal("Induction motor", invention);
 
         // Members List
         var societyContext = new StandardEvaluationContext();
-        var ieee = new InstituteOfElectricalAndElectronicsEngineers { Members = { [0] = Tesla } };
+
+        var ieee = new InstituteOfElectricalAndElectronicsEngineers
+        {
+            Members =
+            {
+                [0] = Tesla
+            }
+        };
+
         societyContext.SetRootObject(ieee);
 
         // Evaluates to "Nikola Tesla"
-        var name = parser.ParseExpression("Members[0].Name").GetValue<string>(societyContext);
+        string name = parser.ParseExpression("Members[0].Name").GetValue<string>(societyContext);
         Assert.Equal("Nikola Tesla", name);
 
         // List and Array navigation
@@ -155,7 +169,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.NotNull(president);
 
         // Evaluates to "Idvor"
-        var city = Parser.ParseExpression("Officers['president'].PlaceOfBirth.City").GetValue<string>(societyContext);
+        string city = Parser.ParseExpression("Officers['president'].PlaceOfBirth.City").GetValue<string>(societyContext);
         Assert.NotNull(city);
 
         // setting values
@@ -173,14 +187,14 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestMethodInvocation2()
     {
         // string literal, Evaluates to "bc"
-        var c = Parser.ParseExpression("'abc'.Substring(1, 2)").GetValue<string>();
+        string c = Parser.ParseExpression("'abc'.Substring(1, 2)").GetValue<string>();
         Assert.Equal("bc", c);
 
         var societyContext = new StandardEvaluationContext();
         societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
 
         // Evaluates to true
-        var isMember = Parser.ParseExpression("IsMember('Mihajlo Pupin')").GetValue<bool>(societyContext);
+        bool isMember = Parser.ParseExpression("IsMember('Mihajlo Pupin')").GetValue<bool>(societyContext);
         Assert.True(isMember);
     }
 
@@ -188,7 +202,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestRelationalOperators()
     {
-        var result = Parser.ParseExpression("2 == 2").GetValue<bool>();
+        bool result = Parser.ParseExpression("2 == 2").GetValue<bool>();
         Assert.True(result);
 
         // Evaluates to false
@@ -204,11 +218,11 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestOtherOperators()
     {
         // Evaluates to false
-        var falseValue = Parser.ParseExpression("'xyz' instanceof T(int)").GetValue<bool>();
+        bool falseValue = Parser.ParseExpression("'xyz' instanceof T(int)").GetValue<bool>();
         Assert.False(falseValue);
 
         // Evaluates to true
-        var trueValue = Parser.ParseExpression("'5.00' matches '^-?\\d+(\\.\\d{2})?$'").GetValue<bool>();
+        bool trueValue = Parser.ParseExpression("'5.00' matches '^-?\\d+(\\.\\d{2})?$'").GetValue<bool>();
         Assert.True(trueValue);
 
         // Evaluates to false
@@ -226,12 +240,12 @@ public class SpelDocumentationTests : AbstractExpressionTests
         // -- AND --
 
         // Evaluates to false
-        var falseValue = Parser.ParseExpression("true and false").GetValue<bool>();
+        bool falseValue = Parser.ParseExpression("true and false").GetValue<bool>();
         Assert.False(falseValue);
 
         // Evaluates to true
-        var expression = "IsMember('Nikola Tesla') and IsMember('Mihajlo Pupin')";
-        var trueValue = Parser.ParseExpression(expression).GetValue<bool>(societyContext);
+        string expression = "IsMember('Nikola Tesla') and IsMember('Mihajlo Pupin')";
+        bool trueValue = Parser.ParseExpression(expression).GetValue<bool>(societyContext);
         Assert.True(trueValue);
 
         // -- OR --
@@ -262,42 +276,42 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestNumericalOperators()
     {
         // Addition
-        var two = Parser.ParseExpression("1 + 1").GetValue<int>(); // 2
+        int two = Parser.ParseExpression("1 + 1").GetValue<int>(); // 2
         Assert.Equal(2, two);
 
-        var testString = Parser.ParseExpression("'Test' + ' ' + 'string'").GetValue<string>(); // 'Test string'
+        string testString = Parser.ParseExpression("'Test' + ' ' + 'string'").GetValue<string>(); // 'Test string'
         Assert.Equal("Test string", testString);
 
         // Subtraction
-        var four = Parser.ParseExpression("1 - -3").GetValue<int>(); // 4
+        int four = Parser.ParseExpression("1 - -3").GetValue<int>(); // 4
         Assert.Equal(4, four);
 
-        var d = Parser.ParseExpression("1000.00 - 1e4").GetValue<double>(); // -9000
+        double d = Parser.ParseExpression("1000.00 - 1e4").GetValue<double>(); // -9000
         Assert.InRange(d, -9000.0d, -9000.0d);
 
         // Multiplication
-        var six = Parser.ParseExpression("-2 * -3").GetValue<int>(); // 6
+        int six = Parser.ParseExpression("-2 * -3").GetValue<int>(); // 6
         Assert.Equal(6, six);
 
-        var twentyFour = Parser.ParseExpression("2.0 * 3e0 * 4").GetValue<double>(); // 24.0
+        double twentyFour = Parser.ParseExpression("2.0 * 3e0 * 4").GetValue<double>(); // 24.0
         Assert.InRange(twentyFour, 24.0d, 24.0d);
 
         // Division
-        var minusTwo = Parser.ParseExpression("6 / -3").GetValue<int>(); // -2
+        int minusTwo = Parser.ParseExpression("6 / -3").GetValue<int>(); // -2
         Assert.Equal(-2, minusTwo);
 
-        var one = Parser.ParseExpression("8.0 / 4e0 / 2").GetValue<double>(); // 1.0
+        double one = Parser.ParseExpression("8.0 / 4e0 / 2").GetValue<double>(); // 1.0
         Assert.InRange(one, 1.0d, 1.0d);
 
         // Modulus
-        var three = Parser.ParseExpression("7 % 4").GetValue<int>(); // 3
+        int three = Parser.ParseExpression("7 % 4").GetValue<int>(); // 3
         Assert.Equal(3, three);
 
-        var oneInt = Parser.ParseExpression("8 / 5 % 2").GetValue<int>(); // 1
+        int oneInt = Parser.ParseExpression("8 / 5 % 2").GetValue<int>(); // 1
         Assert.Equal(1, oneInt);
 
         // Operator precedence
-        var minusTwentyOne = Parser.ParseExpression("1+2-3*8").GetValue<int>(); // -21
+        int minusTwentyOne = Parser.ParseExpression("1+2-3*8").GetValue<int>(); // -21
         Assert.Equal(-21, minusTwentyOne);
     }
 
@@ -314,7 +328,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Assert.Equal("Alexander Seovic2", Parser.ParseExpression("Foo").GetValue<string>(inventorContext));
 
         // alternatively
-        var alexander = Parser.ParseExpression("Foo = 'Alexandar Seovic'").GetValue<string>(inventorContext);
+        string alexander = Parser.ParseExpression("Foo = 'Alexandar Seovic'").GetValue<string>(inventorContext);
         Assert.Equal("Alexandar Seovic", Parser.ParseExpression("Foo").GetValue<string>(inventorContext));
         Assert.Equal("Alexandar Seovic", alexander);
     }
@@ -325,7 +339,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var dateClass = Parser.ParseExpression("T(DateTime)").GetValue<Type>();
         Assert.Equal(typeof(DateTime), dateClass);
-        var trueValue = Parser.ParseExpression("T(TypeCode).Double < T(TypeCode).Decimal").GetValue<bool>();
+        bool trueValue = Parser.ParseExpression("T(TypeCode).Double < T(TypeCode).Decimal").GetValue<bool>();
         Assert.True(trueValue);
     }
 
@@ -335,11 +349,16 @@ public class SpelDocumentationTests : AbstractExpressionTests
     {
         var societyContext = new StandardEvaluationContext();
         societyContext.SetRootObject(new InstituteOfElectricalAndElectronicsEngineers());
-        var einstein = Parser.ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')").GetValue<Inventor>();
+
+        var einstein = Parser
+            .ParseExpression("new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein',new DateTime(1879, 3, 14), 'German')")
+            .GetValue<Inventor>();
+
         Assert.Equal("Albert Einstein", einstein.Name);
 
         // create new inventor instance within add method of List
-        Parser.ParseExpression("Members2.Add(new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein', 'German'))").GetValue(societyContext);
+        Parser.ParseExpression("Members2.Add(new Steeltoe.Common.Expression.Internal.Spring.TestResources.Inventor('Albert Einstein', 'German'))")
+            .GetValue(societyContext);
     }
 
     // 7.5.8
@@ -361,7 +380,16 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public void TestSpecialVariables()
     {
         // create an array of integers
-        var primes = new List<int> { 2, 3, 5, 7, 11, 13, 17 };
+        var primes = new List<int>
+        {
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17
+        };
 
         // create parser and set variable 'primes' as the array of integers
         var parser = new SpelExpressionParser();
@@ -384,7 +412,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         var context = new StandardEvaluationContext();
         context.RegisterFunction("reversestring", typeof(StringUtils).GetMethod(nameof(StringUtils.ReverseString), BindingFlags.Public | BindingFlags.Static));
 
-        var helloWorldReversed = parser.ParseExpression("#reversestring('hello world')").GetValue<string>(context);
+        string helloWorldReversed = parser.ParseExpression("#reversestring('hello world')").GetValue<string>(context);
         Assert.Equal("dlrow olleh", helloWorldReversed);
     }
 
@@ -392,7 +420,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestTernary()
     {
-        var falseString = Parser.ParseExpression("false ? 'trueExp' : 'falseExp'").GetValue<string>();
+        string falseString = Parser.ParseExpression("false ? 'trueExp' : 'falseExp'").GetValue<string>();
         Assert.Equal("falseExp", falseString);
 
         var societyContext = new StandardEvaluationContext();
@@ -401,10 +429,10 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Parser.ParseExpression("Name").SetValue(societyContext, "IEEE");
         societyContext.SetVariable("queryName", "Nikola Tesla");
 
-        var expression = "IsMember(#queryName)? #queryName + ' is a member of the ' "
-                         + "+ Name + ' Society' : #queryName + ' is not a member of the ' + Name + ' Society'";
+        string expression = "IsMember(#queryName)? #queryName + ' is a member of the ' " +
+            "+ Name + ' Society' : #queryName + ' is not a member of the ' + Name + ' Society'";
 
-        var queryResultString = Parser.ParseExpression(expression).GetValue<string>(societyContext);
+        string queryResultString = Parser.ParseExpression(expression).GetValue<string>(societyContext);
         Assert.Equal("Nikola Tesla is a member of the IEEE Society", queryResultString);
 
         // queryResultstring = "Nikola Tesla is a member of the IEEE Society"
@@ -425,7 +453,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
     [Fact]
     public void TestTemplating()
     {
-        var randomPhrase = Parser.ParseExpression("random number is ${new Random().Next()}", new TemplatedParserContext()).GetValue<string>();
+        string randomPhrase = Parser.ParseExpression("random number is ${new Random().Next()}", new TemplatedParserContext()).GetValue<string>();
         Assert.StartsWith("random number", randomPhrase);
     }
 
@@ -434,7 +462,8 @@ public class SpelDocumentationTests : AbstractExpressionTests
         public static string ReverseString(string input)
         {
             var backwards = new StringBuilder();
-            for (var i = 0; i < input.Length; i++)
+
+            for (int i = 0; i < input.Length; i++)
             {
                 backwards.Append(input[input.Length - 1 - i]);
             }
@@ -446,17 +475,21 @@ public class SpelDocumentationTests : AbstractExpressionTests
     public class InstituteOfElectricalAndElectronicsEngineers
     {
         public Inventor[] Members = new Inventor[1];
-        public List<object> Members2 = new ();
-        public Dictionary<string, object> Officers = new ();
-        public List<Dictionary<string, object>> Reverse = new ();
+        public List<object> Members2 = new();
+        public Dictionary<string, object> Officers = new();
+        public List<Dictionary<string, object>> Reverse = new();
+
+        public string Name { get; set; }
 
         public InstituteOfElectricalAndElectronicsEngineers()
         {
             Officers.Add("president", Pupin);
+
             var list = new List<object>
             {
                 Tesla
             };
+
             Officers.Add("advisors", list);
             Members2.Add(Tesla);
             Members2.Add(Pupin);
@@ -468,8 +501,6 @@ public class SpelDocumentationTests : AbstractExpressionTests
         {
             return true;
         }
-
-        public string Name { get; set; }
     }
 
     public class TemplatedParserContext : IParserContext

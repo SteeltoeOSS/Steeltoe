@@ -14,7 +14,7 @@ namespace Steeltoe.Integration.Channel.Test;
 
 public class DispatchingChannelErrorHandlingTest
 {
-    private readonly CountdownEvent _latch = new (1);
+    private readonly CountdownEvent _latch = new(1);
 
     private readonly IServiceCollection _services;
 
@@ -22,7 +22,7 @@ public class DispatchingChannelErrorHandlingTest
     {
         _services = new ServiceCollection();
         _services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         _services.AddSingleton<IConfiguration>(config);
         _services.AddSingleton<IApplicationContext, GenericApplicationContext>();
     }
@@ -30,11 +30,11 @@ public class DispatchingChannelErrorHandlingTest
     [Fact]
     public void HandlerThrowsExceptionPublishSubscribeWithoutScheduler()
     {
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>());
         var handler = new ThrowingHandler();
         channel.Subscribe(handler);
-        var message = IntegrationMessageBuilder.WithPayload("test").Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").Build();
         Assert.Throws<MessageDeliveryException>(() => channel.Send(message));
     }
 
@@ -44,7 +44,7 @@ public class DispatchingChannelErrorHandlingTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new PublishSubscribeChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
@@ -52,10 +52,10 @@ public class DispatchingChannelErrorHandlingTest
         var throwingHandler = new ThrowMessageExceptionHandler();
         channel.Subscribe(throwingHandler);
         defaultErrorChannel.Subscribe(resultHandler);
-        var message = IntegrationMessageBuilder.WithPayload("test").Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").Build();
         channel.Send(message);
         Assert.True(_latch.Wait(10000));
-        var errorMessage = resultHandler.LastMessage;
+        IMessage errorMessage = resultHandler.LastMessage;
         Assert.IsType<MessagingException>(errorMessage.Payload);
         var exceptionPayload = (MessagingException)errorMessage.Payload;
         Assert.IsType<NotSupportedException>(exceptionPayload.InnerException);
@@ -69,7 +69,7 @@ public class DispatchingChannelErrorHandlingTest
         _services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
         _services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         _services.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "errorChannel"));
-        var provider = _services.BuildServiceProvider();
+        ServiceProvider provider = _services.BuildServiceProvider();
 
         var defaultErrorChannel = provider.GetService<IMessageChannel>() as DirectChannel;
         var channel = new TaskSchedulerChannel(provider.GetService<IApplicationContext>(), TaskScheduler.Default);
@@ -77,10 +77,10 @@ public class DispatchingChannelErrorHandlingTest
         var throwingHandler = new ThrowMessageExceptionHandler();
         channel.Subscribe(throwingHandler);
         defaultErrorChannel.Subscribe(resultHandler);
-        var message = IntegrationMessageBuilder.WithPayload("test").Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").Build();
         channel.Send(message);
         Assert.True(_latch.Wait(10000));
-        var errorMessage = resultHandler.LastMessage;
+        IMessage errorMessage = resultHandler.LastMessage;
         Assert.IsType<MessagingException>(errorMessage.Payload);
         var exceptionPayload = (MessagingException)errorMessage.Payload;
         Assert.IsType<NotSupportedException>(exceptionPayload.InnerException);
@@ -90,9 +90,8 @@ public class DispatchingChannelErrorHandlingTest
 
     private sealed class ThrowMessageExceptionHandler : IMessageHandler
     {
+        public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
         public string ServiceName { get; set; } = nameof(ThrowMessageExceptionHandler);
-
-        public Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
 
         public void HandleMessage(IMessage message)
         {
@@ -102,9 +101,8 @@ public class DispatchingChannelErrorHandlingTest
 
     private sealed class ThrowingHandler : IMessageHandler
     {
+        public readonly Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
         public string ServiceName { get; set; } = nameof(ThrowingHandler);
-
-        public Exception ExceptionToThrow = new NotSupportedException("intentional test failure");
 
         public void HandleMessage(IMessage message)
         {
@@ -116,16 +114,16 @@ public class DispatchingChannelErrorHandlingTest
     {
         private readonly CountdownEvent _latch;
 
+        public volatile IMessage LastMessage;
+
+        public volatile Thread LastThread;
+
+        public string ServiceName { get; set; } = nameof(ResultHandler);
+
         public ResultHandler(CountdownEvent latch)
         {
             _latch = latch;
         }
-
-        public string ServiceName { get; set; } = nameof(ResultHandler);
-
-        public volatile IMessage LastMessage;
-
-        public volatile Thread LastThread;
 
         public void HandleMessage(IMessage message)
         {

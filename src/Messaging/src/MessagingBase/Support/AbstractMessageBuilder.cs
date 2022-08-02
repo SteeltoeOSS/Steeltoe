@@ -37,7 +37,7 @@ public abstract class AbstractMessageBuilder
 
     protected AbstractMessageBuilder(object payload, MessageHeaderAccessor accessor)
     {
-        this.Payload = payload ?? throw new ArgumentNullException(nameof(payload));
+        Payload = payload ?? throw new ArgumentNullException(nameof(payload));
         OriginalMessage = null;
         headerAccessor = accessor ?? throw new ArgumentNullException(nameof(accessor));
     }
@@ -71,7 +71,7 @@ public abstract class AbstractMessageBuilder
             return OriginalMessage;
         }
 
-        var headersToUse = headerAccessor.ToMessageHeaders();
+        IMessageHeaders headersToUse = headerAccessor.ToMessageHeaders();
         return Message.Create(Payload, headersToUse, Payload.GetType());
     }
 }

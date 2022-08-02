@@ -125,11 +125,12 @@ public class HystrixRollingPercentileTest
 
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
-        var previousTime = 0;
-        foreach (var sample in SampleDataHolder1.Data)
+        int previousTime = 0;
+
+        foreach (int[] sample in SampleDataHolder1.Data)
         {
-            var timeInMillisecondsSinceStart = sample[0];
-            var latency = sample[1];
+            int timeInMillisecondsSinceStart = sample[0];
+            int latency = sample[1];
             time.Increment(timeInMillisecondsSinceStart - previousTime);
             previousTime = timeInMillisecondsSinceStart;
             p.AddValue(latency);
@@ -149,7 +150,7 @@ public class HystrixRollingPercentileTest
         /*
          * In a loop as a use case was found where very different values were calculated in subsequent requests.
          */
-        for (var i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             if (p.GetPercentile(50) > 5)
             {
@@ -168,12 +169,13 @@ public class HystrixRollingPercentileTest
     {
         _output.WriteLine("\n\n***************************** testSampleDataOverTime2 \n");
         var time = new MockedTime();
-        var previousTime = 0;
+        int previousTime = 0;
         var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, Enabled);
-        foreach (var sample in SampleDataHolder2.Data)
+
+        foreach (int[] sample in SampleDataHolder2.Data)
         {
-            var timeInMillisecondsSinceStart = sample[0];
-            var latency = sample[1];
+            int timeInMillisecondsSinceStart = sample[0];
+            int latency = sample[1];
             time.Increment(timeInMillisecondsSinceStart - previousTime);
             previousTime = timeInMillisecondsSinceStart;
             p.AddValue(latency);
@@ -228,7 +230,8 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestPercentileAlgorithm_Extremes()
     {
-        var p = new PercentileSnapshot(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 800, 768, 657, 700, 867);
+        var p = new PercentileSnapshot(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+            2, 2, 2, 2, 2, 800, 768, 657, 700, 867);
 
         _output.WriteLine("0.01: " + p.GetPercentile(0.01));
         _output.WriteLine("10th: " + p.GetPercentile(10));
@@ -241,6 +244,7 @@ public class HystrixRollingPercentileTest
         Assert.Equal(2, p.GetPercentile(50));
         Assert.Equal(2, p.GetPercentile(10));
         Assert.Equal(2, p.GetPercentile(75));
+
         if (p.GetPercentile(95) < 600)
         {
             Assert.True(false, $"We expect the 90th to be over 600 to show the extremes but got: {p.GetPercentile(90)}");
@@ -255,7 +259,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestPercentileAlgorithm_HighPercentile()
     {
-        var p = GetPercentileForValues(1, 2, 3);
+        PercentileSnapshot p = GetPercentileForValues(1, 2, 3);
         Assert.Equal(2, p.GetPercentile(50));
         Assert.Equal(3, p.GetPercentile(75));
     }
@@ -263,7 +267,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestPercentileAlgorithm_LowPercentile()
     {
-        var p = GetPercentileForValues(1, 2);
+        PercentileSnapshot p = GetPercentileForValues(1, 2);
         Assert.Equal(1, p.GetPercentile(25));
         Assert.Equal(2, p.GetPercentile(75));
     }
@@ -271,7 +275,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestPercentileAlgorithm_Percentiles()
     {
-        var p = GetPercentileForValues(10, 30, 20, 40);
+        PercentileSnapshot p = GetPercentileForValues(10, 30, 20, 40);
         Assert.Equal(22, p.GetPercentile(30));
         Assert.Equal(20, p.GetPercentile(25));
         Assert.Equal(40, p.GetPercentile(75));
@@ -285,7 +289,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestPercentileAlgorithm_NISTExample()
     {
-        var p = GetPercentileForValues(951772, 951567, 951937, 951959, 951442, 950610, 951591, 951195, 951772, 950925, 951990, 951682);
+        PercentileSnapshot p = GetPercentileForValues(951772, 951567, 951937, 951959, 951442, 950610, 951591, 951195, 951772, 950925, 951990, 951682);
         Assert.Equal(951983, p.GetPercentile(90));
         Assert.Equal(951990, p.GetPercentile(100));
     }
@@ -294,12 +298,13 @@ public class HystrixRollingPercentileTest
     public void TestDoesNothingWhenDisabled()
     {
         var time = new MockedTime();
-        var previousTime = 0;
+        int previousTime = 0;
         var p = new HystrixRollingPercentile(time, TimeInMilliseconds, NumberOfBuckets, BucketDataLength, false);
-        foreach (var sample in SampleDataHolder2.Data)
+
+        foreach (int[] sample in SampleDataHolder2.Data)
         {
-            var timeInMillisecondsSinceStart = sample[0];
-            var latency = sample[1];
+            int timeInMillisecondsSinceStart = sample[0];
+            int latency = sample[1];
             time.Increment(timeInMillisecondsSinceStart - previousTime);
             previousTime = timeInMillisecondsSinceStart;
             p.AddValue(latency);
@@ -316,8 +321,8 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        var numThreads = 1000;  // .NET Core StackOverflow
-        var numIterations = 1_000_000;
+        int numThreads = 1000; // .NET Core StackOverflow
+        int numIterations = 1_000_000;
 
         var latch = new CountdownEvent(numThreads);
 
@@ -325,6 +330,7 @@ public class HystrixRollingPercentileTest
 
         var r = new Random();
         var cts = new CancellationTokenSource();
+
         Task.Run(() =>
         {
             while (!cts.Token.IsCancellationRequested)
@@ -333,15 +339,17 @@ public class HystrixRollingPercentileTest
             }
         });
 
-        for (var i = 0; i < numThreads; i++)
+        for (int i = 0; i < numThreads; i++)
         {
-            var threadId = i;
+            int threadId = i;
+
             Task.Run(() =>
             {
-                for (var j = 1; j < (numIterations / numThreads) + 1; j++)
+                for (int j = 1; j < numIterations / numThreads + 1; j++)
                 {
-                    var nextInt = r.Next(100);
+                    int nextInt = r.Next(100);
                     p.AddValue(nextInt);
+
                     if (threadId == 0)
                     {
                         time.Increment(1);
@@ -363,7 +371,9 @@ public class HystrixRollingPercentileTest
         }
 
         aggregateMetrics.AddAndGet(p.Mean + p.GetPercentile(10) + p.GetPercentile(50) + p.GetPercentile(90));
-        _output.WriteLine(p.Mean + " : " + p.GetPercentile(50) + " : " + p.GetPercentile(75) + " : " + p.GetPercentile(90) + " : " + p.GetPercentile(95) + " : " + p.GetPercentile(99));
+
+        _output.WriteLine(p.Mean + " : " + p.GetPercentile(50) + " : " + p.GetPercentile(75) + " : " + p.GetPercentile(90) + " : " + p.GetPercentile(95) +
+            " : " + p.GetPercentile(99));
     }
 
     [Fact]
@@ -372,8 +382,8 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        var numThreads = 10;
-        var numIterations = 1000;
+        int numThreads = 10;
+        int numIterations = 1000;
 
         var latch = new CountdownEvent(numThreads);
 
@@ -381,22 +391,20 @@ public class HystrixRollingPercentileTest
 
         var added = new AtomicInteger(0);
 
-        for (var i = 0; i < numThreads; i++)
+        for (int i = 0; i < numThreads; i++)
         {
-            var t = new Task(
-                () =>
+            var t = new Task(() =>
+            {
+                for (int j = 1; j < numIterations / numThreads + 1; j++)
                 {
-                    for (var j = 1; j < (numIterations / numThreads) + 1; j++)
-                    {
-                        var nextInt = r.Next(100);
-                        p.AddValue(nextInt);
-                        added.GetAndIncrement();
-                    }
+                    int nextInt = r.Next(100);
+                    p.AddValue(nextInt);
+                    added.GetAndIncrement();
+                }
 
-                    latch.SignalEx();
-                },
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning);
+                latch.SignalEx();
+            }, CancellationToken.None, TaskCreationOptions.LongRunning);
+
             t.Start();
         }
 
@@ -414,7 +422,7 @@ public class HystrixRollingPercentileTest
     [Fact]
     public void TestThreadSafetyMulti()
     {
-        for (var i = 0; i < 100; i++)
+        for (int i = 0; i < 100; i++)
         {
             TestThreadSafety();
         }

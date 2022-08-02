@@ -6,6 +6,8 @@ namespace Steeltoe.Common.Util;
 
 public interface IAttributeAccessor
 {
+    string[] AttributeNames { get; }
+
     void SetAttribute(string name, object value);
 
     object GetAttribute(string name);
@@ -13,6 +15,4 @@ public interface IAttributeAccessor
     object RemoveAttribute(string name);
 
     bool HasAttribute(string name);
-
-    string[] AttributeNames { get; }
 }

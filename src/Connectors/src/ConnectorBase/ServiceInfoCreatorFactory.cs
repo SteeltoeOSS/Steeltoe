@@ -9,14 +9,18 @@ namespace Steeltoe.Connector;
 
 internal static class ServiceInfoCreatorFactory
 {
-    private static readonly object Lock = new ();
+    private static readonly object Lock = new();
     private static ServiceInfoCreator _serviceInfoCreator;
 
     /// <summary>
-    /// Build or return the relevant <see cref="ServiceInfoCreator"/>.
+    /// Build or return the relevant <see cref="ServiceInfoCreator" />.
     /// </summary>
-    /// <param name="configuration">Application <see cref="IConfiguration"/>.</param>
-    /// <returns>Singleton <see cref="ServiceInfoCreator"/>.</returns>
+    /// <param name="configuration">
+    /// Application <see cref="IConfiguration" />.
+    /// </param>
+    /// <returns>
+    /// Singleton <see cref="ServiceInfoCreator" />.
+    /// </returns>
     internal static ServiceInfoCreator GetServiceInfoCreator(IConfiguration configuration)
     {
         if (configuration is null)
@@ -26,17 +30,23 @@ internal static class ServiceInfoCreatorFactory
 
         lock (Lock)
         {
-            if (_serviceInfoCreator != null && configuration == _serviceInfoCreator.Configuration && (bool)_serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
+            if (_serviceInfoCreator != null && configuration == _serviceInfoCreator.Configuration &&
+                (bool)_serviceInfoCreator.GetType().GetProperty("IsRelevant").GetValue(null))
             {
                 return _serviceInfoCreator;
             }
 
-            var alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();
-            foreach (var alternateInfoCreator in alternateInfoCreators)
+            IEnumerable<Type> alternateInfoCreators = ReflectionHelpers.FindTypeFromAssemblyAttribute<ServiceInfoCreatorAssemblyAttribute>();
+
+            foreach (Type alternateInfoCreator in alternateInfoCreators)
             {
                 if ((bool)alternateInfoCreator.GetProperty("IsRelevant").GetValue(null))
                 {
-                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[] { configuration });
+                    _serviceInfoCreator = (ServiceInfoCreator)alternateInfoCreator.GetMethod(nameof(ServiceInfoCreator.Instance)).Invoke(null, new[]
+                    {
+                        configuration
+                    });
+
                     return _serviceInfoCreator;
                 }
             }

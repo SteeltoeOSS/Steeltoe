@@ -2,26 +2,26 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Common.Diagnostics;
-using System.Collections.Concurrent;
-using System.Diagnostics;
 
 namespace Steeltoe.Management.Endpoint.Trace;
 
 public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceRepository
 {
-    internal ConcurrentQueue<HttpTrace> Queue = new ();
-
     private const string DiagnosticName = "Microsoft.AspNetCore";
     private const string DefaultObserverName = "HttpTraceDiagnosticObserver";
     private const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     private readonly ILogger<TraceDiagnosticObserver> _logger;
     private readonly ITraceOptions _options;
+    internal ConcurrentQueue<HttpTrace> Queue = new();
 
     public HttpTraceDiagnosticObserver(ITraceOptions options, ILogger<TraceDiagnosticObserver> logger = null)
         : base(DefaultObserverName, DiagnosticName, logger)
@@ -42,7 +42,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
             return;
         }
 
-        var current = Activity.Current;
+        Activity current = Activity.Current;
+
         if (current == null)
         {
             return;
@@ -53,11 +54,11 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
             return;
         }
 
-        GetProperty(value, out var context);
+        GetProperty(value, out HttpContext context);
 
         if (context != null)
         {
-            var trace = MakeTrace(context, current.Duration);
+            HttpTrace trace = MakeTrace(context, current.Duration);
             Queue.Enqueue(trace);
 
             if (Queue.Count > _options.Capacity && !Queue.TryDequeue(out _))
@@ -69,8 +70,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal HttpTrace MakeTrace(HttpContext context, TimeSpan duration)
     {
-        var req = context.Request;
-        var res = context.Response;
+        HttpRequest req = context.Request;
+        HttpResponse res = context.Response;
 
         var request = new Request(req.Method, GetRequestUri(req), GetHeaders(req.Headers), GetRemoteAddress(context));
         var response = new Response(res.StatusCode, GetHeaders(res.Headers));
@@ -81,7 +82,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal long GetJavaTime(long ticks)
     {
-        var javaTicks = ticks - BaseTime.Ticks;
+        long javaTicks = ticks - BaseTime.Ticks;
         return javaTicks / 10000;
     }
 
@@ -93,7 +94,7 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
 
     protected internal string GetTimeTaken(TimeSpan duration)
     {
-        var timeInMilliseconds = (long)duration.TotalMilliseconds;
+        long timeInMilliseconds = (long)duration.TotalMilliseconds;
         return timeInMilliseconds.ToString();
     }
 
@@ -120,7 +121,8 @@ public class HttpTraceDiagnosticObserver : DiagnosticObserver, IHttpTraceReposit
     protected internal Dictionary<string, string[]> GetHeaders(IHeaderDictionary headers)
     {
         var result = new Dictionary<string, string[]>();
-        foreach (var h in headers)
+
+        foreach (KeyValuePair<string, StringValues> h in headers)
         {
             // Add filtering
             result.Add(h.Key.ToLowerInvariant(), h.Value.ToArray());

@@ -26,12 +26,12 @@ public class ServiceCollectionExtensionsTest
     public void AddCloudFoundryCertificateAuth_AddsServices()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddLogging();
 
         services.AddCloudFoundryCertificateAuth();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         Assert.NotNull(provider.GetRequiredService<IOptions<CertificateOptions>>());
         Assert.NotNull(provider.GetRequiredService<ICertificateRotationService>());

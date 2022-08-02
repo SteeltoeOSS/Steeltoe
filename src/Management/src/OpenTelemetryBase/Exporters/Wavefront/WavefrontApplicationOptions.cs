@@ -10,12 +10,6 @@ public class WavefrontApplicationOptions
 {
     internal const string WavefrontPrefix = "wavefront:application";
 
-    public WavefrontApplicationOptions(IConfiguration config)
-    {
-        var section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
-        section.Bind(this);
-    }
-
     public string Source { get; set; }
 
     public string Name { get; set; }
@@ -23,4 +17,10 @@ public class WavefrontApplicationOptions
     public string Service { get; set; }
 
     public string Cluster { get; set; }
+
+    public WavefrontApplicationOptions(IConfiguration config)
+    {
+        IConfigurationSection section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
+        section.Bind(this);
+    }
 }

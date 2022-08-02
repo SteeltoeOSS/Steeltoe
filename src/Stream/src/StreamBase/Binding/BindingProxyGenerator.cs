@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Castle.DynamicProxy;
 using System.Reflection;
+using Castle.DynamicProxy;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -23,7 +23,7 @@ public class BindingProxyGenerator
 
         var generator = new ProxyGenerator();
         Func<MethodInfo, object> del = factory.Invoke;
-        var proxy = generator.CreateInterfaceProxyWithoutTarget(factory.BindingType, new BindingInterceptor(del));
+        object proxy = generator.CreateInterfaceProxyWithoutTarget(factory.BindingType, new BindingInterceptor(del));
         return proxy;
     }
 
@@ -38,7 +38,7 @@ public class BindingProxyGenerator
 
         public void Intercept(IInvocation invocation)
         {
-            var result = _impl.DynamicInvoke(invocation.Method);
+            object result = _impl.DynamicInvoke(invocation.Method);
             invocation.ReturnValue = result;
         }
     }

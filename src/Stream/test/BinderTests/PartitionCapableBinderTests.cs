@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Lifecycle;
 using Steeltoe.Common.Util;
@@ -10,7 +12,7 @@ using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Support;
 using Steeltoe.Stream.Binder.Rabbit.Config;
-using System.Text;
+using Steeltoe.Stream.Config;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -31,26 +33,24 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     [Fact]
     public void TestAnonymousGroup()
     {
-        var binder = GetBinder();
+        TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
-        var producerOptions = GetProducerOptions("input", bindingsOptions);
-        var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
-        var output = CreateBindableChannel("output", producerBindingOptions);
+        ProducerOptions producerOptions = GetProducerOptions("input", bindingsOptions);
+        BindingOptions producerBindingOptions = CreateProducerBindingOptions(producerOptions);
+        DirectChannel output = CreateBindableChannel("output", producerBindingOptions);
 
-        var consumerOptions = GetConsumerOptions("output", bindingsOptions);
-        var delimiter = GetDestinationNameDelimiter();
-        var producerBinding = binder.BindProducer($"defaultGroup{delimiter}0", output, producerBindingOptions.Producer);
+        ConsumerOptions consumerOptions = GetConsumerOptions("output", bindingsOptions);
+        string delimiter = GetDestinationNameDelimiter();
+        IBinding producerBinding = binder.BindProducer($"defaultGroup{delimiter}0", output, producerBindingOptions.Producer);
 
         var input1 = new QueueChannel();
-        var binding1 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input1, consumerOptions);
+        IBinding binding1 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input1, consumerOptions);
 
         var input2 = new QueueChannel();
-        var binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
+        IBinding binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
 
-        var testPayload1 = $"foo-{Guid.NewGuid()}";
-        output.Send(MessageBuilder.WithPayload(testPayload1)
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
-            .Build());
+        string testPayload1 = $"foo-{Guid.NewGuid()}";
+        output.Send(MessageBuilder.WithPayload(testPayload1).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
         var receivedMessage1 = (Message<byte[]>)Receive(input1);
         Assert.NotNull(receivedMessage1);
@@ -62,17 +62,13 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
         binding2.Unbind();
 
-        var testPayload2 = $"foo-{Guid.NewGuid()}";
+        string testPayload2 = $"foo-{Guid.NewGuid()}";
 
-        output.Send(MessageBuilder.WithPayload(testPayload2)
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
-            .Build());
+        output.Send(MessageBuilder.WithPayload(testPayload2).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
         binding2 = binder.BindConsumer($"defaultGroup{delimiter}0", null, input2, consumerOptions);
-        var testPayload3 = $"foo-{Guid.NewGuid()}";
-        output.Send(MessageBuilder.WithPayload(testPayload3)
-            .SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain)
-            .Build());
+        string testPayload3 = $"foo-{Guid.NewGuid()}";
+        output.Send(MessageBuilder.WithPayload(testPayload3).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build());
 
         receivedMessage1 = (Message<byte[]>)Receive(input1);
         Assert.NotNull(receivedMessage1);
@@ -93,22 +89,27 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     [Fact]
     public void TestOneRequiredGroup()
     {
-        var binder = GetBinder();
+        TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
-        var producerOptions = GetProducerOptions("input", bindingsOptions);
-        var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
-        var output = CreateBindableChannel("output", producerBindingOptions);
+        ProducerOptions producerOptions = GetProducerOptions("input", bindingsOptions);
+        BindingOptions producerBindingOptions = CreateProducerBindingOptions(producerOptions);
+        DirectChannel output = CreateBindableChannel("output", producerBindingOptions);
 
-        var consumerOptions = GetConsumerOptions("output", bindingsOptions);
+        ConsumerOptions consumerOptions = GetConsumerOptions("output", bindingsOptions);
 
-        var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
-        producerOptions.RequiredGroups = new List<string> { "test1" };
-        var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
-        var testPayload = $"foo-{Guid.NewGuid()}";
+        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
+
+        producerOptions.RequiredGroups = new List<string>
+        {
+            "test1"
+        };
+
+        IBinding producerBinding = binder.BindProducer(testDestination, output, producerOptions);
+        string testPayload = $"foo-{Guid.NewGuid()}";
 
         output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
         var inbound1 = new QueueChannel();
-        var consumerBinding = binder.BindConsumer(testDestination, "test1", inbound1, consumerOptions);
+        IBinding consumerBinding = binder.BindConsumer(testDestination, "test1", inbound1, consumerOptions);
         var receivedMessage1 = (Message<byte[]>)Receive(inbound1);
 
         Assert.NotNull(receivedMessage1);
@@ -121,27 +122,32 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     [Fact]
     public void TestTwoRequiredGroups()
     {
-        var binder = GetBinder();
+        TTestBinder binder = GetBinder();
         var bindingsOptions = new RabbitBindingsOptions();
-        var producerOptions = GetProducerOptions("input", bindingsOptions);
-        var producerBindingOptions = CreateProducerBindingOptions(producerOptions);
-        var output = CreateBindableChannel("output", producerBindingOptions);
+        ProducerOptions producerOptions = GetProducerOptions("input", bindingsOptions);
+        BindingOptions producerBindingOptions = CreateProducerBindingOptions(producerOptions);
+        DirectChannel output = CreateBindableChannel("output", producerBindingOptions);
 
-        var testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
-        producerOptions.RequiredGroups = new List<string> { "test1", "test2" };
+        string testDestination = $"testDestination{Guid.NewGuid().ToString().Replace("-", string.Empty)}";
 
-        var producerBinding = binder.BindProducer(testDestination, output, producerOptions);
+        producerOptions.RequiredGroups = new List<string>
+        {
+            "test1",
+            "test2"
+        };
 
-        var testPayload = $"foo-{Guid.NewGuid()}";
+        IBinding producerBinding = binder.BindProducer(testDestination, output, producerOptions);
+
+        string testPayload = $"foo-{Guid.NewGuid()}";
 
         output.Send(MessageBuilder.WithPayload(testPayload).SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
         var inbound1 = new QueueChannel();
 
-        var consumerOptions = GetConsumerOptions("output", bindingsOptions);
-        var consumerBinding1 = binder.BindConsumer(testDestination, "test1", inbound1, consumerOptions);
+        ConsumerOptions consumerOptions = GetConsumerOptions("output", bindingsOptions);
+        IBinding consumerBinding1 = binder.BindConsumer(testDestination, "test1", inbound1, consumerOptions);
 
         var inbound2 = new QueueChannel();
-        var consumerBinding2 = binder.BindConsumer(testDestination, "test2", inbound2, consumerOptions);
+        IBinding consumerBinding2 = binder.BindConsumer(testDestination, "test2", inbound2, consumerOptions);
 
         var receivedMessage1 = (Message<byte[]>)Receive(inbound1);
         Assert.NotNull(receivedMessage1);
@@ -161,44 +167,58 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
     public void TestPartitionedModuleSpel()
     {
         var bindingsOptions = new RabbitBindingsOptions();
-        var binder = GetBinder(bindingsOptions);
+        TTestBinder binder = GetBinder(bindingsOptions);
 
-        var consumerProperties = GetConsumerOptions("input", bindingsOptions);
+        ConsumerOptions consumerProperties = GetConsumerOptions("input", bindingsOptions);
         consumerProperties.Concurrency = 2;
         consumerProperties.InstanceIndex = 0;
         consumerProperties.InstanceCount = 3;
         consumerProperties.Partitioned = true;
 
-        var delimiter = GetDestinationNameDelimiter();
+        string delimiter = GetDestinationNameDelimiter();
+
         var input0 = new QueueChannel
         {
             ComponentName = "test.input0S"
         };
 
-        var input0Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input0, consumerProperties);
+        IBinding input0Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input0, consumerProperties);
 
         consumerProperties.InstanceIndex = 1;
-        var input1 = new QueueChannel { ComponentName = "test.input1S" };
-        var input1Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input1, consumerProperties);
+
+        var input1 = new QueueChannel
+        {
+            ComponentName = "test.input1S"
+        };
+
+        IBinding input1Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input1, consumerProperties);
 
         consumerProperties.InstanceIndex = 2;
-        var input2 = new QueueChannel { ComponentName = "test.input2S" };
-        var input2Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input2, consumerProperties);
 
-        var producerProperties = GetProducerOptions("output", bindingsOptions);
-        var rabbitProducerOptions = bindingsOptions.GetRabbitProducerOptions("output");
+        var input2 = new QueueChannel
+        {
+            ComponentName = "test.input2S"
+        };
+
+        IBinding input2Binding = binder.BindConsumer($"part{delimiter}0", "testPartitionedModuleSpEL", input2, consumerProperties);
+
+        ProducerOptions producerProperties = GetProducerOptions("output", bindingsOptions);
+        RabbitProducerOptions rabbitProducerOptions = bindingsOptions.GetRabbitProducerOptions("output");
         rabbitProducerOptions.RoutingKeyExpression = "'part.0'";
         producerProperties.PartitionKeyExpression = "Payload";
-        producerProperties.PartitionSelectorExpression = "ToString()"; // For strings, Java hash is not equivalent to GetHashCode, but for 0,1,2 ToString() is equivalent to hash.
+
+        producerProperties.PartitionSelectorExpression =
+            "ToString()"; // For strings, Java hash is not equivalent to GetHashCode, but for 0,1,2 ToString() is equivalent to hash.
+
         producerProperties.PartitionCount = 3;
-        var output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
+        DirectChannel output = CreateBindableChannel("output", CreateProducerBindingOptions(producerProperties));
         output.ComponentName = "test.output";
 
-        var outputBinding = binder.BindProducer($"part{delimiter}0", output, producerProperties);
+        IBinding outputBinding = binder.BindProducer($"part{delimiter}0", output, producerProperties);
 
         try
         {
-            var endpoint = ExtractEndpoint(outputBinding);
+            ILifecycle endpoint = ExtractEndpoint(outputBinding);
             CheckRkExpressionForPartitionedModuleSpel(endpoint);
         }
         catch (Exception ex)
@@ -206,18 +226,20 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
             _logger?.LogError(ex, ex.Message);
         }
 
-        var message2 = MessageBuilder.WithPayload("2").SetHeader("correlationId", "foo").SetHeader("contentType", MimeTypeUtils.TextPlain).SetHeader("sequenceNumber", 42).SetHeader("sequenceSize", 43).Build();
+        IMessage message2 = MessageBuilder.WithPayload("2").SetHeader("correlationId", "foo").SetHeader("contentType", MimeTypeUtils.TextPlain)
+            .SetHeader("sequenceNumber", 42).SetHeader("sequenceSize", 43).Build();
+
         output.Send(message2);
         output.Send(MessageBuilder.WithPayload("1").SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
         output.Send(MessageBuilder.WithPayload("0").SetHeader("contentType", MimeTypeUtils.TextPlain).Build());
 
-        var receive0 = Receive(input0);
+        IMessage receive0 = Receive(input0);
         Assert.NotNull(receive0);
 
-        var receive1 = Receive(input1);
+        IMessage receive1 = Receive(input1);
         Assert.NotNull(receive1);
 
-        var receive2 = Receive(input2);
+        IMessage receive2 = Receive(input2);
         Assert.NotNull(receive2);
 
         Func<IMessage, bool> correlationHeadersForPayload2 = m =>
@@ -225,6 +247,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
             var accessor = new IntegrationMessageHeaderAccessor(m);
             return "foo".Equals(accessor.GetCorrelationId()) && accessor.GetSequenceNumber() == 42 && accessor.GetSequenceSize() == 43;
         };
+
         if (UsesExplicitRouting())
         {
             Assert.Equal("0", ((byte[])receive0.Payload).GetString());
@@ -234,7 +257,13 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         }
         else
         {
-            var receivedMessages = new List<IMessage> { receive0, receive1, receive2 };
+            var receivedMessages = new List<IMessage>
+            {
+                receive0,
+                receive1,
+                receive2
+            };
+
             Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "0");
             Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "1");
             Assert.Contains(receivedMessages, m => ((byte[])m.Payload).ToString() == "2");
@@ -262,21 +291,21 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
 
     protected TValue GetFieldValue<TValue>(object current, string name)
     {
-        var fi = current.GetType().GetField(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        FieldInfo fi = current.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         return (TValue)fi.GetValue(current);
     }
 
     protected TValue GetPropertyValue<TValue>(object current, string name)
     {
-        var pi = current.GetType().GetProperty(name, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        PropertyInfo pi = current.GetType().GetProperty(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
         return (TValue)pi.GetValue(current);
     }
 
     protected virtual void CheckRkExpressionForPartitionedModuleSpel(object endpoint)
     {
-        var routingExpression = GetEndpointRouting(endpoint);
-        var delimiter = GetDestinationNameDelimiter();
-        var dest = $"{GetExpectedRoutingBaseDestination($"part{delimiter}0", "test")}-' + Headers['partition']";
+        string routingExpression = GetEndpointRouting(endpoint);
+        string delimiter = GetDestinationNameDelimiter();
+        string dest = $"{GetExpectedRoutingBaseDestination($"part{delimiter}0", "test")}-' + Headers['partition']";
         Assert.Contains(dest, routingExpression);
     }
 }

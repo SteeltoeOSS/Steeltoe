@@ -8,12 +8,22 @@ using Microsoft.Extensions.Logging;
 namespace Steeltoe.Common.Logging;
 
 /// <summary>
-/// Allows early utilization of log infrastructure before log config is even read. Any providers spawned are instantly switched over to
-/// real log providers as the application utilization progresses.
-/// This class should only be used by components that need logging infrastructure before Service Container is available.
+/// Allows early utilization of log infrastructure before log config is even read. Any providers spawned are instantly switched over to real log
+/// providers as the application utilization progresses. This class should only be used by components that need logging infrastructure before Service
+/// Container is available.
 /// </summary>
 internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 {
+    private readonly Dictionary<string, BootstrapLoggerInst> _loggers = new();
+
+    private readonly object _lock = new();
+
+    private readonly Action<ILoggingBuilder, IConfiguration> _bootstrapLoggingBuilder;
+
+    private ILoggerFactory _factoryInstance;
+
+    private ILoggerFactory _factory;
+
     public UpgradableBootstrapLoggerFactory()
         : this(DefaultConfigure)
     {
@@ -22,29 +32,19 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     public UpgradableBootstrapLoggerFactory(Action<ILoggingBuilder, IConfiguration> bootstrapLoggingBuilder)
     {
         _bootstrapLoggingBuilder = bootstrapLoggingBuilder;
+
         _factoryInstance = LoggerFactory.Create(builder =>
         {
-            var config = new ConfigurationBuilder()
-                .AddInMemoryCollection(new Dictionary<string, string>
-                {
-                    { "Logging:LogLevel:Default", "Information" },
-                    { "Logging:LogLevel:Microsoft", "Warning" },
-                    { "Logging:LogLevel:Microsoft.Hosting.Lifetime", "Information" },
-                })
-                .AddEnvironmentVariables()
-                .AddCommandLine(Environment.GetCommandLineArgs())
-                .Build();
+            IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+            {
+                { "Logging:LogLevel:Default", "Information" },
+                { "Logging:LogLevel:Microsoft", "Warning" },
+                { "Logging:LogLevel:Microsoft.Hosting.Lifetime", "Information" }
+            }).AddEnvironmentVariables().AddCommandLine(Environment.GetCommandLineArgs()).Build();
+
             _bootstrapLoggingBuilder(builder, config);
         });
     }
-
-    private readonly Dictionary<string, BootstrapLoggerInst> _loggers = new ();
-
-    private readonly object _lock = new ();
-
-    private ILoggerFactory _factoryInstance;
-
-    private ILoggerFactory _factory;
 
     /// <summary>
     /// Updates existing loggers to use configuration from the supplied config.
@@ -61,7 +61,7 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
             return;
         }
 
-        var newLogger = LoggerFactory.Create(builder => _bootstrapLoggingBuilder(builder, value));
+        ILoggerFactory newLogger = LoggerFactory.Create(builder => _bootstrapLoggingBuilder(builder, value));
         Update(newLogger);
     }
 
@@ -79,7 +79,8 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
         {
             _factoryInstance.Dispose();
             _factoryInstance = value;
-            foreach (var logger in _loggers.Values)
+
+            foreach (BootstrapLoggerInst logger in _loggers.Values)
             {
                 logger.Logger = _factoryInstance.CreateLogger(logger.Name);
             }
@@ -87,8 +88,6 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
 
         _factory = value;
     }
-
-    private readonly Action<ILoggingBuilder, IConfiguration> _bootstrapLoggingBuilder;
 
     public void Dispose()
     {
@@ -110,9 +109,9 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
     {
         lock (_lock)
         {
-            if (!_loggers.TryGetValue(categoryName, out var logger))
+            if (!_loggers.TryGetValue(categoryName, out BootstrapLoggerInst logger))
             {
-                var innerLogger = _factoryInstance.CreateLogger(categoryName);
+                ILogger innerLogger = _factoryInstance.CreateLogger(categoryName);
                 logger = new BootstrapLoggerInst(innerLogger, categoryName);
                 _loggers.Add(categoryName, logger);
             }
@@ -121,7 +120,10 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
         }
     }
 
-    private static void DefaultConfigure(ILoggingBuilder builder, IConfiguration configuration) => builder.AddConsole().AddConfiguration(configuration.GetSection("Logging"));
+    private static void DefaultConfigure(ILoggingBuilder builder, IConfiguration configuration)
+    {
+        builder.AddConsole().AddConfiguration(configuration.GetSection("Logging"));
+    }
 
     internal sealed class BootstrapLoggerInst : ILogger
     {
@@ -132,14 +134,22 @@ internal sealed class UpgradableBootstrapLoggerFactory : IBootstrapLoggerFactory
         public BootstrapLoggerInst(ILogger logger, string name)
         {
             Name = name;
-            this.Logger = logger;
+            Logger = logger;
         }
 
-        public IDisposable BeginScope<TState>(TState state) => Logger.BeginScope(state);
+        public IDisposable BeginScope<TState>(TState state)
+        {
+            return Logger.BeginScope(state);
+        }
 
-        public bool IsEnabled(LogLevel logLevel) => Logger.IsEnabled(logLevel);
+        public bool IsEnabled(LogLevel logLevel)
+        {
+            return Logger.IsEnabled(logLevel);
+        }
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter) =>
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+        {
             Logger.Log(logLevel, eventId, state, exception, formatter);
+        }
     }
 }

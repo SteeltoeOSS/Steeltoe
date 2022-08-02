@@ -24,7 +24,7 @@ public class TestServerStartup
 
     public void Configure(IApplicationBuilder app)
     {
-        var addresses = ExpectedAddresses;
+        List<string> addresses = ExpectedAddresses;
         Assert.Equal(addresses, app.ServerFeatures.Get<IServerAddressesFeature>()?.Addresses);
         ExpectedAddresses = null;
     }

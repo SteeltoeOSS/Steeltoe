@@ -6,6 +6,12 @@ namespace Steeltoe.Connector.Services;
 
 public class SsoServiceInfo : ServiceInfo
 {
+    public string ClientId { get; internal set; }
+
+    public string ClientSecret { get; internal set; }
+
+    public string AuthDomain { get; internal set; }
+
     public SsoServiceInfo(string id, string clientId, string clientSecret, string domain)
         : base(id)
     {
@@ -13,10 +19,4 @@ public class SsoServiceInfo : ServiceInfo
         ClientSecret = clientSecret;
         AuthDomain = domain;
     }
-
-    public string ClientId { get; internal set; }
-
-    public string ClientSecret { get; internal set; }
-
-    public string AuthDomain { get; internal set; }
 }

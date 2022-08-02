@@ -34,9 +34,10 @@ public class DiskSpaceContributorOptionsTest : BaseTest
             ["management:endpoints:health:diskspace:path"] = "foobar",
             ["management:endpoints:health:diskspace:threshold"] = "5"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new DiskSpaceContributorOptions(config);
         Assert.Equal("foobar", opts.Path);

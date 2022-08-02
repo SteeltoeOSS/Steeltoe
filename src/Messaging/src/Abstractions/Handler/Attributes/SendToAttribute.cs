@@ -5,23 +5,24 @@
 namespace Steeltoe.Messaging.Handler.Attributes;
 
 /// <summary>
-///  Attribute that indicates a method's return value should be converted to a
-///  message if necessary and sent to the specified destination.
+/// Attribute that indicates a method's return value should be converted to a message if necessary and sent to the specified destination.
 /// </summary>
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
 public class SendToAttribute : Attribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="SendToAttribute"/> class.
+    /// Gets the destinations for any messages created by the method.
     /// </summary>
-    /// <param name="destinations">the destinations for the message created.</param>
+    public virtual string[] Destinations { get; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="SendToAttribute" /> class.
+    /// </summary>
+    /// <param name="destinations">
+    /// the destinations for the message created.
+    /// </param>
     public SendToAttribute(params string[] destinations)
     {
         Destinations = destinations;
     }
-
-    /// <summary>
-    /// Gets the destinations for any messages created by the method.
-    /// </summary>
-    public virtual string[] Destinations { get; }
 }

@@ -6,6 +6,8 @@ namespace Steeltoe.Management.Endpoint.SpringBootAdminClient;
 
 internal static class DictionaryExtensions
 {
-    internal static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from) =>
+    internal static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
+    {
         from?.ToList().ForEach(to.Add);
+    }
 }

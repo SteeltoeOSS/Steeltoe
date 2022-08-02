@@ -23,11 +23,8 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public IKubernetes KubernetesClient { get; set; }
 
-    public KubernetesDiscoveryClient(
-        DefaultIsServicePortSecureResolver isServicePortSecureResolver,
-        IKubernetes kubernetesClient,
-        IOptionsMonitor<KubernetesDiscoveryOptions> discoveryOptions,
-        ILogger<KubernetesDiscoveryClient> logger = null)
+    public KubernetesDiscoveryClient(DefaultIsServicePortSecureResolver isServicePortSecureResolver, IKubernetes kubernetesClient,
+        IOptionsMonitor<KubernetesDiscoveryOptions> discoveryOptions, ILogger<KubernetesDiscoveryClient> logger = null)
     {
         _isServicePortSecureResolver = isServicePortSecureResolver;
         KubernetesClient = kubernetesClient;
@@ -41,26 +38,16 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         {
             return Array.Empty<string>();
         }
-        else
+
+        string labelSelectorValue = labels != null ? string.Join(",", labels.Keys.Select(k => $"{k}={labels[k]}")) : null;
+
+        if (_discoveryOptions.CurrentValue.AllNamespaces)
         {
-            var labelSelectorValue =
-                labels != null ?
-                    string.Join(",", labels.Keys.Select(k => $"{k}={labels[k]}")) :
-                    null;
-            if (_discoveryOptions.CurrentValue.AllNamespaces)
-            {
-                return KubernetesClient.ListServiceForAllNamespaces(
-                        labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
-            }
-            else
-            {
-                return KubernetesClient.ListNamespacedService(
-                        namespaceParameter: _discoveryOptions.CurrentValue.Namespace,
-                        labelSelector: labelSelectorValue).Items
-                    .Select(service => service.Metadata.Name).ToList();
-            }
+            return KubernetesClient.ListServiceForAllNamespaces(labelSelector: labelSelectorValue).Items.Select(service => service.Metadata.Name).ToList();
         }
+
+        return KubernetesClient.ListNamespacedService(_discoveryOptions.CurrentValue.Namespace, labelSelector: labelSelectorValue).Items
+            .Select(service => service.Metadata.Name).ToList();
     }
 
     public IList<IServiceInstance> GetInstances(string serviceId)
@@ -70,18 +57,18 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
             throw new ArgumentNullException(nameof(serviceId));
         }
 
-        var endpoints = _discoveryOptions.CurrentValue.AllNamespaces
+        IList<V1Endpoints> endpoints = _discoveryOptions.CurrentValue.AllNamespaces
             ? KubernetesClient.ListEndpointsForAllNamespaces(fieldSelector: $"metadata.name={serviceId}").Items
             : KubernetesClient.ListNamespacedEndpoints(
-                _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace,
-                fieldSelector: $"metadata.name={serviceId}").Items;
+                _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace, fieldSelector: $"metadata.name={serviceId}").Items;
 
-        var subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
+        IEnumerable<EndpointSubsetNs> subsetsNs = endpoints.Select(GetSubsetsFromEndpoints);
 
         var serviceInstances = new List<IServiceInstance>();
+
         if (subsetsNs.Any())
         {
-            foreach (var es in subsetsNs)
+            foreach (EndpointSubsetNs es in subsetsNs)
             {
                 serviceInstances.AddRange(GetNamespacedServiceInstances(es, serviceId));
             }
@@ -92,17 +79,16 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     public IServiceInstance GetLocalServiceInstance()
     {
-        var instances = GetInstances(_discoveryOptions.CurrentValue.ServiceName);
+        IList<IServiceInstance> instances = GetInstances(_discoveryOptions.CurrentValue.ServiceName);
+
         if (instances.Count == 1)
         {
             return instances.First();
         }
-        else
-        {
-            // todo: identify which instance is actually correct!
-            _logger?.LogWarning("The local service instance was requested, but what we returned might not be correct!");
-            return instances[0];
-        }
+
+        // todo: identify which instance is actually correct!
+        _logger?.LogWarning("The local service instance was requested, but what we returned might not be correct!");
+        return instances[0];
     }
 
     public Task ShutdownAsync()
@@ -112,53 +98,50 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     private IList<IServiceInstance> GetNamespacedServiceInstances(EndpointSubsetNs es, string serviceId)
     {
-        var k8SNamespace = es.Namespace;
-        var subsets = es.EndpointSubsets;
+        string k8SNamespace = es.Namespace;
+        IList<V1EndpointSubset> subsets = es.EndpointSubsets;
         var instances = new List<IServiceInstance>();
+
         if (subsets.Any())
         {
-            var service = KubernetesClient.ListNamespacedService(
-                namespaceParameter: k8SNamespace,
-                fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
-            var serviceMetadata = GetServiceMetadata(service);
-            var metadataProps = _discoveryOptions.CurrentValue.Metadata;
+            V1Service service = KubernetesClient.ListNamespacedService(k8SNamespace, fieldSelector: $"metadata.name={serviceId}").Items.FirstOrDefault();
+            IDictionary<string, string> serviceMetadata = GetServiceMetadata(service);
+            Metadata metadataProps = _discoveryOptions.CurrentValue.Metadata;
 
-            foreach (var subset in subsets)
+            foreach (V1EndpointSubset subset in subsets)
             {
                 // Extend the service metadata map with per-endpoint port information (if requested)
                 var endpointMetadata = new Dictionary<string, string>(serviceMetadata);
+
                 if (metadataProps.AddPorts)
                 {
-                    var ports = subset.Ports
-                        .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+                    Dictionary<string, string> ports = subset.Ports.Where(p => !string.IsNullOrWhiteSpace(p.Name))
                         .ToDictionary(p => p.Name, p => p.Port.ToString());
 
-                    var portMetadata = GetDictionaryWithPrefixedKeys(ports, metadataProps.PortsPrefix);
+                    IDictionary<string, string> portMetadata = GetDictionaryWithPrefixedKeys(ports, metadataProps.PortsPrefix);
 
-                    foreach (var portMetadataRecord in portMetadata)
+                    foreach (KeyValuePair<string, string> portMetadataRecord in portMetadata)
                     {
                         endpointMetadata.Add(portMetadataRecord.Key, portMetadataRecord.Value);
                     }
                 }
 
-                var addresses = subset.Addresses;
-                foreach (var endpointAddress in addresses)
+                IList<V1EndpointAddress> addresses = subset.Addresses;
+
+                foreach (V1EndpointAddress endpointAddress in addresses)
                 {
                     string instanceId = null;
+
                     if (endpointAddress.TargetRef != null)
                     {
                         instanceId = endpointAddress.TargetRef.Uid;
                     }
 
-                    var endpointPort = FindEndpointPort(subset);
-                    instances.Add(
-                        new KubernetesServiceInstance(
-                            instanceId,
-                            serviceId,
-                            endpointAddress,
-                            endpointPort,
-                            endpointMetadata,
-                            _isServicePortSecureResolver.Resolve(new Input(service?.Metadata.Name, endpointPort.Port, service?.Metadata.Labels, service?.Metadata.Annotations))));
+                    Corev1EndpointPort endpointPort = FindEndpointPort(subset);
+
+                    instances.Add(new KubernetesServiceInstance(instanceId, serviceId, endpointAddress, endpointPort, endpointMetadata,
+                        _isServicePortSecureResolver.Resolve(new Input(service?.Metadata.Name, endpointPort.Port, service?.Metadata.Labels,
+                            service?.Metadata.Annotations))));
                 }
             }
         }
@@ -169,12 +152,13 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
     private IDictionary<string, string> GetServiceMetadata(V1Service service)
     {
         var serviceMetadata = new Dictionary<string, string>();
-        var metadataProps = _discoveryOptions.CurrentValue.Metadata;
+        Metadata metadataProps = _discoveryOptions.CurrentValue.Metadata;
+
         if (metadataProps.AddLabels)
         {
-            var labelMetadata = GetDictionaryWithPrefixedKeys(
-                service.Metadata.Labels, metadataProps.LabelsPrefix);
-            foreach (var label in labelMetadata)
+            IDictionary<string, string> labelMetadata = GetDictionaryWithPrefixedKeys(service.Metadata.Labels, metadataProps.LabelsPrefix);
+
+            foreach (KeyValuePair<string, string> label in labelMetadata)
             {
                 serviceMetadata.Add(label.Key, label.Value);
             }
@@ -182,10 +166,9 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
         if (metadataProps.AddAnnotations)
         {
-            var annotationMetadata = GetDictionaryWithPrefixedKeys(
-                service.Metadata.Annotations,
-                metadataProps.AnnotationsPrefix);
-            foreach (var annotation in annotationMetadata)
+            IDictionary<string, string> annotationMetadata = GetDictionaryWithPrefixedKeys(service.Metadata.Annotations, metadataProps.AnnotationsPrefix);
+
+            foreach (KeyValuePair<string, string> annotation in annotationMetadata)
             {
                 serviceMetadata.Add(annotation.Key, annotation.Value);
             }
@@ -196,18 +179,18 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
 
     private Corev1EndpointPort FindEndpointPort(V1EndpointSubset subset)
     {
-        var ports = subset.Ports;
+        IList<Corev1EndpointPort> ports = subset.Ports;
         Corev1EndpointPort endpointPort;
+
         if (ports.Count == 1)
         {
             endpointPort = ports[0];
         }
         else
         {
-            endpointPort = ports
-                .FirstOrDefault(port =>
-                    string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
-                    _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
+            endpointPort = ports.FirstOrDefault(port =>
+                string.IsNullOrEmpty(_discoveryOptions.CurrentValue.PrimaryPortName) ||
+                _discoveryOptions.CurrentValue.PrimaryPortName.ToUpper().Equals(port.Name.ToUpper()));
         }
 
         return endpointPort;
@@ -216,7 +199,10 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
     private EndpointSubsetNs GetSubsetsFromEndpoints(V1Endpoints endpoints)
     {
         // Start with config or default
-        var es = new EndpointSubsetNs { Namespace = _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace };
+        var es = new EndpointSubsetNs
+        {
+            Namespace = _discoveryOptions.CurrentValue.Namespace ?? DefaultNamespace
+        };
 
         if (endpoints?.Subsets == null)
         {
@@ -232,13 +218,19 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
     /// <summary>
     /// Returns a new dictionary with supplied prefix applied to all keys.
     /// </summary>
-    /// <param name="dict">Dictionary with keys for prefixing.</param>
-    /// <param name="prefix">Prefix to add to keys.</param>
-    /// <returns>A new dictionary that contains all the entries of the original dictionary with the keys prefixed.</returns>
-    /// <remarks>If the prefix is null or empty, the dictionary itself is returned unchanged.</remarks>
-    private IDictionary<string, string> GetDictionaryWithPrefixedKeys(
-        IDictionary<string, string> dict,
-        string prefix)
+    /// <param name="dict">
+    /// Dictionary with keys for prefixing.
+    /// </param>
+    /// <param name="prefix">
+    /// Prefix to add to keys.
+    /// </param>
+    /// <returns>
+    /// A new dictionary that contains all the entries of the original dictionary with the keys prefixed.
+    /// </returns>
+    /// <remarks>
+    /// If the prefix is null or empty, the dictionary itself is returned unchanged.
+    /// </remarks>
+    private IDictionary<string, string> GetDictionaryWithPrefixedKeys(IDictionary<string, string> dict, string prefix)
     {
         if (dict == null)
         {
@@ -252,7 +244,8 @@ public class KubernetesDiscoveryClient : IDiscoveryClient
         }
 
         var prefixedDict = new Dictionary<string, string>();
-        foreach (var entry in dict)
+
+        foreach (KeyValuePair<string, string> entry in dict)
         {
             prefixedDict.Add($"{prefix}{entry.Key}", entry.Key);
         }

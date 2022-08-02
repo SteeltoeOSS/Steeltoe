@@ -27,11 +27,12 @@ public class MongoDbConnectorFactoryTest
             Server = "localhost",
             Port = 27016,
             Password = "password",
-            Username = "username",
+            Username = "username"
         };
+
         var si = new MongoDbServiceInfo("MyId", "mongodb://localhost:27017");
         var factory = new MongoDbConnectorFactory(si, config, MongoDbTypeLocator.MongoClient);
-        var connection = factory.Create(null);
+        object connection = factory.Create(null);
         Assert.NotNull(connection);
     }
 
@@ -39,6 +40,7 @@ public class MongoDbConnectorFactoryTest
     public void UpdateConfiguration_WithNullMongoDbServiceInfo_ReturnsExpected()
     {
         var configurer = new MongoDbProviderConfigurer();
+
         var config = new MongoDbConnectorOptions
         {
             Server = "localhost",
@@ -47,6 +49,7 @@ public class MongoDbConnectorFactoryTest
             Password = "password",
             Database = "database"
         };
+
         configurer.UpdateConfiguration(null, config);
 
         Assert.Equal("localhost", config.Server);
@@ -61,6 +64,7 @@ public class MongoDbConnectorFactoryTest
     public void UpdateConfiguration_WithMongoDbServiceInfo_ReturnsExpected()
     {
         var configurer = new MongoDbProviderConfigurer();
+
         var config = new MongoDbConnectorOptions
         {
             Server = "localhost",
@@ -69,6 +73,7 @@ public class MongoDbConnectorFactoryTest
             Password = "password",
             Database = "database"
         };
+
         var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
         configurer.UpdateConfiguration(si, config);
@@ -93,7 +98,7 @@ public class MongoDbConnectorFactoryTest
         };
 
         var configurer = new MongoDbProviderConfigurer();
-        var opts = configurer.Configure(null, config);
+        string opts = configurer.Configure(null, config);
         Assert.Equal("mongodb://username:password@localhost:1234/database", opts);
     }
 
@@ -112,7 +117,7 @@ public class MongoDbConnectorFactoryTest
         var configurer = new MongoDbProviderConfigurer();
         var si = new MongoDbServiceInfo("MyId", "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
-        var opts = configurer.Configure(si, config);
+        string opts = configurer.Configure(si, config);
 
         Assert.Equal("mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355", opts);
         Assert.DoesNotContain("localhost", opts);

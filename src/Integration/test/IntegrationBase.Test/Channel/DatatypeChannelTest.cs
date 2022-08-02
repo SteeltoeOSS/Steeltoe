@@ -33,7 +33,7 @@ public class DataTypeChannelTest
     [Fact]
     public void UnsupportedTypeButConversionServiceSupports()
     {
-        var channel = CreateChannel(typeof(int));
+        QueueChannel channel = CreateChannel(typeof(int));
         IConversionService conversionService = new DefaultConversionService();
         var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
@@ -43,7 +43,7 @@ public class DataTypeChannelTest
     [Fact]
     public void UnsupportedTypeAndConversionServiceDoesNotSupport()
     {
-        var channel = CreateChannel(typeof(int));
+        QueueChannel channel = CreateChannel(typeof(int));
         IConversionService conversionService = new DefaultConversionService();
         var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
@@ -53,7 +53,7 @@ public class DataTypeChannelTest
     [Fact]
     public void UnsupportedTypeButCustomConversionServiceSupports()
     {
-        var channel = CreateChannel(typeof(int));
+        QueueChannel channel = CreateChannel(typeof(int));
         GenericConversionService conversionService = new DefaultConversionService();
         conversionService.AddConverter(new BoolToIntConverter());
         var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
@@ -69,18 +69,24 @@ public class DataTypeChannelTest
         var convService = new GenericConversionService();
         convService.AddConverter(converter);
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IConversionService>(convService);
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
         services.AddSingleton<DefaultDataTypeChannelMessageConverter>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
+
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {
-            DataTypes = new List<Type> { typeof(int), typeof(DateTime) }
+            DataTypes = new List<Type>
+            {
+                typeof(int),
+                typeof(DateTime)
+            }
         };
+
         Assert.True(channel.Send(Message.Create(true)));
         Assert.Equal(1, channel.Receive().Payload);
     }
@@ -92,6 +98,7 @@ public class DataTypeChannelTest
         Assert.True(channel.Send(Message.Create("test1")));
         Assert.True(channel.Send(Message.Create(2)));
         Exception exception = null;
+
         try
         {
             channel.Send(Message.Create<DateTime>(default));
@@ -121,14 +128,14 @@ public class DataTypeChannelTest
     [Fact]
     public void GenericConverters()
     {
-        var channel = CreateChannel(typeof(Foo));
+        QueueChannel channel = CreateChannel(typeof(Foo));
         var conversionService = new DefaultConversionService();
         conversionService.AddConverter(new StringToBarConverter());
         conversionService.AddConverter(new IntegerToBazConverter());
         var converter = new DefaultDataTypeChannelMessageConverter(conversionService);
         channel.MessageConverter = converter;
         Assert.True(channel.Send(Message.Create("foo")));
-        var outMessage = channel.Receive(0);
+        IMessage outMessage = channel.Receive(0);
         Assert.IsType<Bar>(outMessage.Payload);
         Assert.True(channel.Send(Message.Create(42)));
         outMessage = channel.Receive(0);
@@ -138,26 +145,31 @@ public class DataTypeChannelTest
     private static QueueChannel CreateChannel(params Type[] dataTypes)
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
+
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), "testChannel")
         {
             DataTypes = new List<Type>(dataTypes)
         };
+
         return channel;
     }
 
     private sealed class BoolToIntConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(bool), typeof(int)) };
+        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        {
+            (typeof(bool), typeof(int))
+        };
 
         public object Convert(object source, Type sourceType, Type targetType)
         {
-            var asBool = (bool)source;
+            bool asBool = (bool)source;
             return asBool ? 1 : 0;
         }
     }
@@ -176,7 +188,11 @@ public class DataTypeChannelTest
 
     private sealed class StringToBarConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(string), typeof(Foo)), (typeof(string), typeof(Bar)) };
+        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        {
+            (typeof(string), typeof(Foo)),
+            (typeof(string), typeof(Bar))
+        };
 
         public object Convert(object source, Type sourceType, Type targetType)
         {
@@ -186,7 +202,11 @@ public class DataTypeChannelTest
 
     private sealed class IntegerToBazConverter : IGenericConverter
     {
-        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)> { (typeof(int), typeof(Foo)), (typeof(int), typeof(Baz)) };
+        public ISet<(Type Source, Type Target)> ConvertibleTypes { get; } = new HashSet<(Type, Type)>
+        {
+            (typeof(int), typeof(Foo)),
+            (typeof(int), typeof(Baz))
+        };
 
         public object Convert(object source, Type sourceType, Type targetType)
         {

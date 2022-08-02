@@ -8,6 +8,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskScheduler
 {
+    private const int DefaultMinWorkThreads = 50;
     protected int corePoolSize;
     protected TimeSpan keepAliveTime;
     protected int maximumPoolSize;
@@ -18,32 +19,6 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
     protected int runningTasks;
     protected int completedTasks;
     protected bool allowMaxToDivergeFromCore;
-
-    private const int DefaultMinWorkThreads = 50;
-
-    protected HystrixTaskScheduler(IHystrixThreadPoolOptions options)
-    {
-        if (options.MaximumSize < 1)
-        {
-            throw new ArgumentOutOfRangeException("maximumPoolSize");
-        }
-
-        if (options.CoreSize < 0)
-        {
-            throw new ArgumentOutOfRangeException("corePoolSize");
-        }
-
-        allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;
-        corePoolSize = options.CoreSize;
-        maximumPoolSize = options.MaximumSize;
-        keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
-        queueSize = options.MaxQueueSize;
-        queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
-
-        System.Threading.ThreadPool.GetMinThreads(out var workThreads, out var compThreads);
-
-        System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DefaultMinWorkThreads), compThreads);
-    }
 
     public virtual int CurrentActiveCount => runningTasks;
 
@@ -84,15 +59,39 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
 
     public virtual bool IsQueueSpaceAvailable => false;
 
+    public override int MaximumConcurrencyLevel => maximumPoolSize;
+
+    public bool IsShutdown => shutdown;
+
+    protected HystrixTaskScheduler(IHystrixThreadPoolOptions options)
+    {
+        if (options.MaximumSize < 1)
+        {
+            throw new ArgumentOutOfRangeException("maximumPoolSize");
+        }
+
+        if (options.CoreSize < 0)
+        {
+            throw new ArgumentOutOfRangeException("corePoolSize");
+        }
+
+        allowMaxToDivergeFromCore = options.AllowMaximumSizeToDivergeFromCoreSize;
+        corePoolSize = options.CoreSize;
+        maximumPoolSize = options.MaximumSize;
+        keepAliveTime = TimeSpan.FromMinutes(options.KeepAliveTimeMinutes);
+        queueSize = options.MaxQueueSize;
+        queueSizeRejectionThreshold = options.QueueSizeRejectionThreshold;
+
+        System.Threading.ThreadPool.GetMinThreads(out int workThreads, out int compThreads);
+
+        System.Threading.ThreadPool.SetMinThreads(Math.Max(workThreads, DefaultMinWorkThreads), compThreads);
+    }
+
     public void Dispose()
     {
         Dispose(true);
         GC.SuppressFinalize(this);
     }
-
-    public override int MaximumConcurrencyLevel => maximumPoolSize;
-
-    public bool IsShutdown => shutdown;
 
     protected virtual void Dispose(bool disposing)
     {
@@ -106,20 +105,19 @@ public abstract class HystrixTaskScheduler : TaskScheduler, IHystrixTaskSchedule
 
     protected void RunContinuation(Task task)
     {
-        System.Threading.ThreadPool.QueueUserWorkItem(
-            t =>
+        System.Threading.ThreadPool.QueueUserWorkItem(t =>
+        {
+            if (t is Task item)
             {
-                if (t is Task item)
+                try
                 {
-                    try
-                    {
-                        TryExecuteTask(item);
-                    }
-                    catch (Exception)
-                    {
-                        // Log
-                    }
+                    TryExecuteTask(item);
                 }
-            }, task);
+                catch (Exception)
+                {
+                    // Log
+                }
+            }
+        }, task);
     }
 }

@@ -20,13 +20,16 @@ public static class EnableBindingsExtensions
             throw new ArgumentNullException(nameof(services));
         }
 
-        var type = typeof(T);
-        var attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr.GetType() == typeof(EnableBindingAttribute));
+        Type type = typeof(T);
+        object attr = type.GetCustomAttributes(true).SingleOrDefault(attr => attr.GetType() == typeof(EnableBindingAttribute));
 
         if (attr != null)
         {
             var enableBindingAttribute = (EnableBindingAttribute)attr;
-            var filtered = enableBindingAttribute.Bindings.Where(b => b.Name != nameof(ISource) && b.Name != nameof(ISink) && b.Name != nameof(IProcessor)).ToArray(); // These are added by default
+
+            Type[] filtered = enableBindingAttribute.Bindings.Where(b => b.Name != nameof(ISource) && b.Name != nameof(ISink) && b.Name != nameof(IProcessor))
+                .ToArray(); // These are added by default
+
             if (filtered.Length > 0)
             {
                 services.AddStreamBindings(filtered);
@@ -126,7 +129,7 @@ public static class EnableBindingsExtensions
     internal static void AddBindings(this IServiceCollection services, Type[] bindings)
     {
         // TODO: Verify all binding types unique
-        foreach (var binding in bindings)
+        foreach (Type binding in bindings)
         {
             // Validate binding interface
             if (!binding.IsInterface || !binding.IsPublic || binding.IsGenericType)
@@ -146,7 +149,7 @@ public static class EnableBindingsExtensions
         // Add the IBindable for this binding (i.e. BindableProxyFactory)
         services.AddSingleton<IBindable>(p =>
         {
-            var bindingTargetFactories = p.GetServices<IBindingTargetFactory>();
+            IEnumerable<IBindingTargetFactory> bindingTargetFactories = p.GetServices<IBindingTargetFactory>();
             return new BindableProxyFactory(binding, bindingTargetFactories);
         });
 
@@ -154,8 +157,9 @@ public static class EnableBindingsExtensions
         services.AddSingleton(binding, p =>
         {
             // Find the bindabe for this binding
-            var bindables = p.GetServices<IBindable>();
-            var bindable = bindables.SingleOrDefault(b => b.BindingType == binding);
+            IEnumerable<IBindable> bindables = p.GetServices<IBindable>();
+            IBindable bindable = bindables.SingleOrDefault(b => b.BindingType == binding);
+
             if (bindable == null)
             {
                 throw new InvalidOperationException("Unable to find bindable for binding");
@@ -164,8 +168,9 @@ public static class EnableBindingsExtensions
             return BindingProxyGenerator.CreateProxy((BindableProxyFactory)bindable);
         });
 
-        var derivedInterfaces = binding.FindInterfaces((_, _) => true, null).ToList();
-        foreach (var derived in derivedInterfaces)
+        List<Type> derivedInterfaces = binding.FindInterfaces((_, _) => true, null).ToList();
+
+        foreach (Type derived in derivedInterfaces)
         {
             services.AddSingleton(derived, p => p.GetService(binding));
         }
@@ -173,15 +178,17 @@ public static class EnableBindingsExtensions
 
     internal static void AddBindableTargets(this IServiceCollection services, Type binding)
     {
-        var bindables = BindingHelpers.CollectBindables(binding);
-        foreach (var bindable in bindables.Values)
+        IDictionary<string, Bindable> bindables = BindingHelpers.CollectBindables(binding);
+
+        foreach (Bindable bindable in bindables.Values)
         {
             // Add bindable defined in a binding
-            var bindableTargetType = bindable.BindingTargetType;
+            Type bindableTargetType = bindable.BindingTargetType;
+
             services.AddSingleton(bindableTargetType, p =>
             {
-                var impl = p.GetRequiredService(binding);
-                var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
+                object impl = p.GetRequiredService(binding);
+                object result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
                 return result;
             });
 
@@ -190,8 +197,8 @@ public static class EnableBindingsExtensions
             {
                 services.AddSingleton(typeof(IMessageChannel), p =>
                 {
-                    var impl = p.GetRequiredService(binding);
-                    var result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
+                    object impl = p.GetRequiredService(binding);
+                    object result = bindable.FactoryMethod.Invoke(impl, Array.Empty<object>());
                     return result;
                 });
             }

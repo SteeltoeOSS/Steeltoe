@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -14,7 +14,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
 {
     public const string DefaultServiceName = nameof(DefaultMessageHandlerMethodFactory);
 
-    protected readonly HandlerMethodArgumentResolverComposite ArgumentResolvers = new ();
+    protected readonly HandlerMethodArgumentResolverComposite ArgumentResolvers = new();
 
     public virtual string ServiceName { get; set; } = DefaultServiceName;
 
@@ -44,7 +44,8 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         MessageConverter = converter;
     }
 
-    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers, IApplicationContext context = null)
+    public DefaultMessageHandlerMethodFactory(IConversionService conversionService, IMessageConverter converter, List<IHandlerMethodArgumentResolver> resolvers,
+        IApplicationContext context = null)
     {
         ConversionService = conversionService;
         MessageConverter = converter;
@@ -84,6 +85,7 @@ public class DefaultMessageHandlerMethodFactory : IMessageHandlerMethodFactory
         {
             MessageMethodArgumentResolvers = ArgumentResolvers
         };
+
         return handlerMethod;
     }
 

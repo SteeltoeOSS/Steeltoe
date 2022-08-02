@@ -11,7 +11,9 @@ public class CosmosDbConnectorFactory
 {
     private readonly CosmosDbServiceInfo _info;
     private readonly CosmosDbConnectorOptions _config;
-    private readonly CosmosDbProviderConfigurer _configurer = new ();
+    private readonly CosmosDbProviderConfigurer _configurer = new();
+
+    protected Type ConnectorType { get; set; }
 
     public CosmosDbConnectorFactory()
     {
@@ -24,12 +26,11 @@ public class CosmosDbConnectorFactory
         ConnectorType = type;
     }
 
-    protected Type ConnectorType { get; set; }
-
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -51,6 +52,11 @@ public class CosmosDbConnectorFactory
     public virtual object CreateConnection(string connectionString, object clientOptions = null)
     {
         clientOptions ??= Activator.CreateInstance(CosmosDbTypeLocator.CosmosClientOptions);
-        return ReflectionHelpers.CreateInstance(ConnectorType, new[] { connectionString, clientOptions });
+
+        return ReflectionHelpers.CreateInstance(ConnectorType, new[]
+        {
+            connectionString,
+            clientOptions
+        });
     }
 }

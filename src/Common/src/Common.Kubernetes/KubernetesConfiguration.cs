@@ -6,5 +6,5 @@ namespace Steeltoe.Common.Kubernetes;
 
 public class KubernetesConfiguration : WatchableResource
 {
-    public List<string> Paths { get; set; } = new ();
+    public List<string> Paths { get; set; } = new();
 }

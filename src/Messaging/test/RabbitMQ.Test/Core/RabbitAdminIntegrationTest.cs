@@ -2,18 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Support;
 using Steeltoe.Messaging.Support;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 using RC = RabbitMQ.Client;
@@ -29,7 +30,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public RabbitAdminIntegrationTest()
     {
         _services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
+
         _services.AddLogging(b =>
         {
             b.AddDebug();
@@ -42,14 +44,6 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitAdmin((_, a) => a.AutoStartup = true);
     }
 
-    public void Dispose()
-    {
-        var admin = _provider.GetRabbitAdmin();
-        admin?.DeleteQueue("test.queue");
-
-        _provider.Dispose();
-    }
-
     [Fact]
     public void TestStartupWithLazyDeclaration()
     {
@@ -57,7 +51,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitQueue(queue);
         _provider = _services.BuildServiceProvider();
 
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
         // A new connection is initialized so the queue is declared
         Assert.True(rabbitAdmin.DeleteQueue(queue.QueueName));
@@ -70,19 +64,22 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         {
             f.Host = "localhost";
         });
+
         _services.AddRabbitConnectionFactory("connectionFactory2", (_, f) =>
         {
             f.Host = "localhost";
         });
+
         _provider = _services.BuildServiceProvider();
 
         var queue = new Queue("test.queue", false, true, true);
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.DeleteQueue(queue.QueueName);
 
-        var context = _provider.GetApplicationContext();
+        IApplicationContext context = _provider.GetApplicationContext();
         var admin1 = new RabbitAdmin(context, context.GetService<IConnectionFactory>("connectionFactory1"));
         admin1.DeclareQueue(queue);
+
         try
         {
             var admin2 = new RabbitAdmin(context, context.GetService<IConnectionFactory>("connectionFactory2"));
@@ -107,14 +104,16 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         {
             f.Host = "localhost";
         });
+
         _services.AddRabbitConnectionFactory("connectionFactory2", (_, f) =>
         {
             f.Host = "localhost";
         });
+
         _provider = _services.BuildServiceProvider();
         var queue = new Queue("test.queue", false, false, true);
 
-        var context = _provider.GetApplicationContext();
+        IApplicationContext context = _provider.GetApplicationContext();
         var cf1 = context.GetService<IConnectionFactory>("connectionFactory1");
         var cf2 = context.GetService<IConnectionFactory>("connectionFactory2");
         var admin1 = new RabbitAdmin(context, cf1);
@@ -132,11 +131,11 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitQueue(queue);
         _provider = _services.BuildServiceProvider();
 
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
         Assert.True(QueueExists(queue));
 
-        var cf = _provider.GetRabbitConnectionFactory();
+        IConnectionFactory cf = _provider.GetRabbitConnectionFactory();
         cf.Destroy();
         Assert.False(QueueExists(queue));
 
@@ -154,11 +153,11 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitQueue(queue);
         _provider = _services.BuildServiceProvider();
 
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
         Assert.True(QueueExists(queue));
 
-        var cf = _provider.GetRabbitConnectionFactory();
+        IConnectionFactory cf = _provider.GetRabbitConnectionFactory();
         cf.Destroy();
         Assert.True(QueueExists(queue));
 
@@ -176,14 +175,14 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         _provider = _services.BuildServiceProvider();
         var queue = new Queue(string.Empty, true, false, true);
-        var rabbitAdmin = _provider.GetRabbitAdmin();
-        var generatedName = rabbitAdmin.DeclareQueue(queue);
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
+        string generatedName = rabbitAdmin.DeclareQueue(queue);
 
         Assert.Equal(string.Empty, queue.QueueName);
         var queueWithGeneratedName = new Queue(generatedName, true, false, true);
         Assert.True(QueueExists(queueWithGeneratedName));
 
-        var cf = _provider.GetRabbitConnectionFactory();
+        IConnectionFactory cf = _provider.GetRabbitConnectionFactory();
         cf.Destroy();
         Assert.True(QueueExists(queueWithGeneratedName));
 
@@ -204,7 +203,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var exchange = new DirectExchange(string.Empty);
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.DeclareExchange(exchange);
 
         // Pass by virtue of RabbitMQ not firing a 403 reply code
@@ -220,7 +219,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _services.AddRabbitExchange(exchange);
         _provider = _services.BuildServiceProvider();
 
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
 
         // Pass by virtue of RabbitMQ not firing a 403 reply code
@@ -230,8 +229,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public void TestDeleteExchangeWithDefaultExchange()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
-        var result = rabbitAdmin.DeleteExchange(string.Empty);
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
+        bool result = rabbitAdmin.DeleteExchange(string.Empty);
         Assert.True(result);
     }
 
@@ -239,14 +238,16 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public async Task TestDeleteExchangeWithInternalOption()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
-        var exchangeName = "test.exchange.internal";
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
+        string exchangeName = "test.exchange.internal";
+
         AbstractExchange exchange = new DirectExchange(exchangeName)
         {
             IsInternal = true
         };
+
         rabbitAdmin.DeclareExchange(exchange);
-        var exchange2 = await GetExchange(exchangeName);
+        IConfiguration exchange2 = await GetExchange(exchangeName);
         Assert.Equal("direct", exchange2.GetValue<string>("type"));
 
         // TODO: No way to declare internal exchange in .NET, is possible in Java
@@ -260,9 +261,9 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public void TestDeclareBindingWithDefaultExchangeImplicitBinding()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         var exchange = new DirectExchange(string.Empty);
-        var queueName = "test.queue";
+        string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
         var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
@@ -277,14 +278,14 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var exchange = new DirectExchange(string.Empty);
         _services.AddRabbitExchange(exchange);
-        var queueName = "test.queue";
+        string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
         var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
         _services.AddRabbitBinding(binding);
         _provider = _services.BuildServiceProvider();
 
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.Initialize();
 
         // Pass by virtue of RabbitMQ not firing a 403 reply code for both exchange and binding declaration
@@ -298,9 +299,9 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
 #pragma warning restore S2699 // Tests should include assertions
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
-        var queueName = "test.queue";
+        string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
@@ -314,11 +315,11 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public void TestDeclareBindingWithDefaultExchangeNonImplicitBinding()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
         var exchange = new DirectExchange(string.Empty);
 
-        var queueName = "test.queue";
+        string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
@@ -326,6 +327,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         var ex = Assert.Throws<RabbitIOException>(() => rabbitAdmin.DeclareBinding(binding));
         Exception cause = ex;
         Exception rootCause = null;
+
         while (cause != null)
         {
             rootCause = cause;
@@ -341,17 +343,18 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var exchange = new DirectExchange(string.Empty);
         _services.AddRabbitExchange(exchange);
-        var queueName = "test.queue";
+        string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
         var binding = new Binding("baz", queueName, DestinationType.Queue, exchange.ExchangeName, "test.routingKey", null);
         _services.AddRabbitBinding(binding);
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.RetryTemplate = null;
         var ex = Assert.Throws<RabbitIOException>(() => rabbitAdmin.DeclareBinding(binding));
         Exception cause = ex;
         Exception rootCause = null;
+
         while (cause != null)
         {
             rootCause = cause;
@@ -366,7 +369,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public void TestQueueDeclareBad()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         rabbitAdmin.IgnoreDeclarationExceptions = true;
         var queue = new AnonymousQueue();
         Assert.Equal(queue.QueueName, rabbitAdmin.DeclareQueue(queue));
@@ -379,14 +382,17 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     public async Task TestDeclareDelayedExchange()
     {
         _provider = _services.BuildServiceProvider();
-        var rabbitAdmin = _provider.GetRabbitAdmin();
+        RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
+
         var exchange = new DirectExchange("test.delayed.exchange")
         {
             IsDelayed = true
         };
+
         var queue = new Queue(Guid.NewGuid().ToString(), true, false, false);
-        var exchangeName = exchange.ExchangeName;
+        string exchangeName = exchange.ExchangeName;
         var binding = new Binding("baz", queue.QueueName, DestinationType.Queue, exchangeName, queue.QueueName, null);
+
         try
         {
             rabbitAdmin.DeclareExchange(exchange);
@@ -395,7 +401,8 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         {
             if (RabbitUtils.IsExchangeDeclarationFailure(e))
             {
-                var inner = e.InnerException;
+                Exception inner = e.InnerException;
+
                 if (inner.Message.Contains("exchange type 'x-delayed-message'"))
                 {
                     return; // Broker doesn't support?
@@ -407,21 +414,23 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
 
         rabbitAdmin.DeclareQueue(queue);
         rabbitAdmin.DeclareBinding(binding);
-        var cf = _provider.GetRabbitConnectionFactory();
+        IConnectionFactory cf = _provider.GetRabbitConnectionFactory();
         var pp = new TestPostProcessor();
+
         var template = new RabbitTemplate(cf)
         {
             ReceiveTimeout = 10000
         };
+
         template.ConvertAndSend(exchangeName, queue.QueueName, "foo", pp);
-        var headers = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders());
+        RabbitHeaderAccessor headers = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders());
         headers.Delay = 500;
-        var send = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("foo")).SetHeaders(headers).Build();
+        IMessage send = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("foo")).SetHeaders(headers).Build();
         template.Send(exchangeName, queue.QueueName, send);
-        var t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var received = template.Receive(queue.QueueName);
+        long t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        IMessage received = template.Receive(queue.QueueName);
         Assert.NotNull(received);
-        var delay = received.Headers.ReceivedDelay();
+        int? delay = received.Headers.ReceivedDelay();
         Assert.NotNull(delay);
         Assert.Equal(500, delay.Value);
         received = template.Receive(queue.QueueName);
@@ -429,26 +438,32 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         delay = received.Headers.ReceivedDelay();
         Assert.NotNull(delay);
         Assert.Equal(1000, delay.Value);
-        var t2 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-        var dif = t2 - t1;
+        long t2 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long dif = t2 - t1;
         Assert.InRange(dif, 950, 1250);
-        var config = await GetExchange(exchangeName);
+        IConfiguration config = await GetExchange(exchangeName);
         Assert.Equal("direct", config.GetValue<string>("x-delayed-type") ?? config.GetValue<string>("arguments:x-delayed-type"));
         Assert.Equal("x-delayed-message", config.GetValue<string>("type"));
+    }
+
+    public void Dispose()
+    {
+        RabbitAdmin admin = _provider.GetRabbitAdmin();
+        admin?.DeleteQueue("test.queue");
+
+        _provider.Dispose();
     }
 
     private async Task<IConfiguration> GetExchange(string exchangeName)
     {
         var client = new HttpClient();
-        var authToken = Encoding.ASCII.GetBytes("guest:guest");
+        byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        var result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
+        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/exchanges/%2F/{exchangeName}");
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var config = new ConfigurationBuilder()
-            .AddJsonStream(await result.Content.ReadAsStreamAsync())
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddJsonStream(await result.Content.ReadAsStreamAsync()).Build();
         return config;
     }
 
@@ -458,11 +473,13 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         {
             HostName = "localhost"
         };
-        var connection = cf.CreateConnection();
-        var channel = connection.CreateModel();
+
+        RC.IConnection connection = cf.CreateConnection();
+        RC.IModel channel = connection.CreateModel();
+
         try
         {
-            var result = channel.QueueDeclarePassive(queue.QueueName);
+            RC.QueueDeclareOk result = channel.QueueDeclarePassive(queue.QueueName);
             return result != null;
         }
         catch (Exception e)
@@ -484,7 +501,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
 
         public IMessage PostProcessMessage(IMessage message)
         {
-            var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+            RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
             accessor.Delay = 1000;
             return message;
         }

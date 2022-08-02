@@ -38,22 +38,22 @@ internal abstract class KubernetesProviderBase : ConfigurationProvider
 
     protected void StartPolling(int interval)
     {
-        Task.Factory.StartNew(
-            () =>
+        Task.Factory.StartNew(() =>
+        {
+            Polling = true;
+
+            while (Polling)
             {
-                Polling = true;
-                while (Polling)
+                Thread.Sleep(TimeSpan.FromSeconds(interval));
+                Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
+                Load();
+
+                if (CancellationToken.IsCancellationRequested)
                 {
-                    Thread.Sleep(TimeSpan.FromSeconds(interval));
-                    Logger?.LogTrace("Interval completed for {namespace}.{name}, beginning reload", Settings.Namespace, Settings.Name);
-                    Load();
-                    if (CancellationToken.IsCancellationRequested)
-                    {
-                        Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
-                        break;
-                    }
+                    Logger?.LogTrace("Cancellation requested for {namespace}.{name}, shutting down", Settings.Namespace, Settings.Name);
+                    break;
                 }
-            },
-            CancellationToken);
+            }
+        }, CancellationToken);
     }
 }

@@ -14,59 +14,40 @@ namespace Steeltoe.Discovery.Eureka;
 
 public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 {
-    private sealed class EurekaHttpClientInternal : EurekaHttpClient
-    {
-        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
-
-        protected override IEurekaClientConfig Config => _configOptions.CurrentValue;
-
-        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null, IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
-        {
-            base.config = null;
-            _configOptions = config ?? throw new ArgumentNullException(nameof(config));
-            base.handlerProvider = handlerProvider;
-            Initialize(new Dictionary<string, string>(), logFactory);
-            base.httpClient = httpClient;
-        }
-    }
-
     private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
     private readonly IServiceInstance _thisInstance;
 
     public override IEurekaClientConfig ClientConfig => _configOptions.CurrentValue;
 
-    public EurekaDiscoveryClient(
-        IOptionsMonitor<EurekaClientOptions> clientConfig,
-        IOptionsMonitor<EurekaInstanceOptions> instConfig,
-        EurekaApplicationInfoManager appInfoManager,
-        IEurekaHttpClient httpClient = null,
-        ILoggerFactory logFactory = null,
-        IHttpClientHandlerProvider handlerProvider = null,
-        HttpClient netHttpClient = null)
-        : base(appInfoManager, logFactory)
-    {
-        _thisInstance = new ThisServiceInstance(instConfig);
-        _configOptions = clientConfig;
-        base.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
-
-        Initialize();
-    }
-
     public IList<string> Services => GetServices();
 
     public string Description => "Spring Cloud Eureka Client";
 
+    public EurekaDiscoveryClient(IOptionsMonitor<EurekaClientOptions> clientConfig, IOptionsMonitor<EurekaInstanceOptions> instConfig,
+        EurekaApplicationInfoManager appInfoManager, IEurekaHttpClient httpClient = null, ILoggerFactory logFactory = null,
+        IHttpClientHandlerProvider handlerProvider = null, HttpClient netHttpClient = null)
+        : base(appInfoManager, logFactory)
+    {
+        _thisInstance = new ThisServiceInstance(instConfig);
+        _configOptions = clientConfig;
+        this.httpClient = httpClient ?? new EurekaHttpClientInternal(clientConfig, logFactory, handlerProvider, netHttpClient);
+
+        Initialize();
+    }
+
     public IList<string> GetServices()
     {
-        var applications = Applications;
+        Applications applications = Applications;
+
         if (applications == null)
         {
             return new List<string>();
         }
 
-        var registered = applications.GetRegisteredApplications();
+        IList<Application> registered = applications.GetRegisteredApplications();
         var names = new List<string>();
-        foreach (var app in registered)
+
+        foreach (Application app in registered)
         {
             if (app.Instances.Count == 0)
             {
@@ -81,9 +62,10 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
 
     public IList<IServiceInstance> GetInstances(string serviceId)
     {
-        var infos = GetInstancesByVipAddress(serviceId, false);
+        IList<InstanceInfo> infos = GetInstancesByVipAddress(serviceId, false);
         var instances = new List<IServiceInstance>();
-        foreach (var info in infos)
+
+        foreach (InstanceInfo info in infos)
         {
             logger?.LogDebug($"GetInstances returning: {info}");
             instances.Add(new EurekaServiceInstance(info));
@@ -92,11 +74,31 @@ public class EurekaDiscoveryClient : DiscoveryClient, IDiscoveryClient
         return instances;
     }
 
-    public IServiceInstance GetLocalServiceInstance() => _thisInstance;
+    public IServiceInstance GetLocalServiceInstance()
+    {
+        return _thisInstance;
+    }
 
     public override T.Task ShutdownAsync()
     {
         appInfoManager.InstanceStatus = InstanceStatus.Down;
         return base.ShutdownAsync();
+    }
+
+    private sealed class EurekaHttpClientInternal : EurekaHttpClient
+    {
+        private readonly IOptionsMonitor<EurekaClientOptions> _configOptions;
+
+        protected override IEurekaClientConfig Config => _configOptions.CurrentValue;
+
+        public EurekaHttpClientInternal(IOptionsMonitor<EurekaClientOptions> config, ILoggerFactory logFactory = null,
+            IHttpClientHandlerProvider handlerProvider = null, HttpClient httpClient = null)
+        {
+            this.config = null;
+            _configOptions = config ?? throw new ArgumentNullException(nameof(config));
+            this.handlerProvider = handlerProvider;
+            Initialize(new Dictionary<string, string>(), logFactory);
+            this.httpClient = httpClient;
+        }
     }
 }

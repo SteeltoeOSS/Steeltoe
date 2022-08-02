@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using StackExchange.Redis;
 using Steeltoe.Connector.Services;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Connector.Redis.Test;
@@ -61,6 +61,7 @@ public class RedisCacheConfigurerTest
     public void Configure_NoServiceInfo_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
+
         var config = new RedisCacheConnectorOptions
         {
             Host = "localhost",
@@ -68,7 +69,8 @@ public class RedisCacheConfigurerTest
             Password = "password",
             InstanceName = "instanceId"
         };
-        var opts = configurer.Configure(null, config);
+
+        RedisCacheConnectorOptions opts = configurer.Configure(null, config);
         Assert.NotNull(opts);
         var redisOptions = (RedisCacheOptions)opts.ToMicrosoftExtensionObject(typeof(RedisCacheOptions));
         Assert.NotNull(redisOptions);
@@ -81,6 +83,7 @@ public class RedisCacheConfigurerTest
     public void Configure_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
+
         var config = new RedisCacheConnectorOptions
         {
             Host = "localhost",
@@ -88,8 +91,9 @@ public class RedisCacheConfigurerTest
             Password = "password",
             InstanceName = "instanceId"
         };
+
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
-        var connectionSettings = configurer.Configure(si, config);
+        RedisCacheConnectorOptions connectionSettings = configurer.Configure(si, config);
         Assert.NotNull(connectionSettings);
 
         Assert.Equal("foobar:4321,password=sipassword,allowAdmin=false,abortConnect=true,resolveDns=false,ssl=false", connectionSettings.ToString());
@@ -100,6 +104,7 @@ public class RedisCacheConfigurerTest
     public void ConfigureConnection_NoServiceInfo_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
+
         var config = new RedisCacheConnectorOptions
         {
             Host = "localhost",
@@ -107,7 +112,7 @@ public class RedisCacheConfigurerTest
             Password = "password"
         };
 
-        var opts = configurer.Configure(null, config);
+        RedisCacheConnectorOptions opts = configurer.Configure(null, config);
         Assert.NotNull(opts);
 
         Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);
@@ -122,15 +127,17 @@ public class RedisCacheConfigurerTest
     public void ConfigureConnection_ServiceInfoOverridesConfig_ReturnsExpected()
     {
         var configurer = new RedisCacheConfigurer();
+
         var config = new RedisCacheConnectorOptions
         {
             Host = "localhost",
             Port = 1234,
             Password = "password"
         };
+
         var si = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "foobar", 4321, "sipassword");
 
-        var opts = configurer.Configure(si, config);
+        RedisCacheConnectorOptions opts = configurer.Configure(si, config);
         Assert.NotNull(opts);
 
         Assert.NotNull(((ConfigurationOptions)opts.ToStackExchangeObject(typeof(ConfigurationOptions))).EndPoints);

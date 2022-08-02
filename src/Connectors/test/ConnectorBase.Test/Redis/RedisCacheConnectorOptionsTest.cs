@@ -46,7 +46,7 @@ public class RedisCacheConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RedisCacheConnectorOptions(config);
         Assert.Equal("localhost", options.Host);
@@ -78,9 +78,10 @@ public class RedisCacheConnectorOptionsTest
         {
             ["redis:client:ConnectionString"] = "Server=fake;Database=test;Uid=steeltoe;Pwd=password;"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RedisCacheConnectorOptions(config);
 
@@ -105,7 +106,7 @@ public class RedisCacheConnectorOptionsTest
         configurationBuilder.AddInMemoryCollection(appsettings);
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddCloudFoundry();
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new RedisCacheConnectorOptions(config);
 

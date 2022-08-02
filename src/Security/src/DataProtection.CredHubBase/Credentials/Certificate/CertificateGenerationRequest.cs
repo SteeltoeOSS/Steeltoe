@@ -7,15 +7,29 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class CertificateGenerationRequest : CredHubGenerateRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="CertificateGenerationRequest"/> class.
-    /// Use to request a new Certificate.
+    /// Initializes a new instance of the <see cref="CertificateGenerationRequest" /> class. Use to request a new Certificate.
     /// </summary>
-    /// <param name="credentialName">Name of the credential.</param>
-    /// <param name="parameters">Variables for certificate generation.</param>
-    /// <param name="overwriteMode">Overwrite existing credential (default: no-overwrite).</param>
+    /// <param name="credentialName">
+    /// Name of the credential.
+    /// </param>
+    /// <param name="parameters">
+    /// Variables for certificate generation.
+    /// </param>
+    /// <param name="overwriteMode">
+    /// Overwrite existing credential (default: no-overwrite).
+    /// </param>
     public CertificateGenerationRequest(string credentialName, CertificateGenerationParameters parameters, OverwriteMode overwriteMode = OverwriteMode.Converge)
     {
-        var subjects = new List<string> { parameters.CommonName, parameters.Organization, parameters.OrganizationUnit, parameters.Locality, parameters.State, parameters.Country };
+        var subjects = new List<string>
+        {
+            parameters.CommonName,
+            parameters.Organization,
+            parameters.OrganizationUnit,
+            parameters.Locality,
+            parameters.State,
+            parameters.Country
+        };
+
         if (!AtLeastOneProvided(subjects))
         {
             throw new ArgumentException("At least one subject value, such as common name or organization must be defined to generate the certificate");
@@ -34,7 +48,7 @@ public class CertificateGenerationRequest : CredHubGenerateRequest
 
     private bool AtLeastOneProvided(List<string> parameters)
     {
-        foreach (var s in parameters)
+        foreach (string s in parameters)
         {
             if (!string.IsNullOrEmpty(s))
             {

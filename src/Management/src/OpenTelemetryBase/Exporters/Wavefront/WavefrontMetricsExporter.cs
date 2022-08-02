@@ -24,8 +24,9 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
         Options = options as WavefrontExporterOptions ?? throw new ArgumentNullException(nameof(options));
         _logger = logger;
 
-        var token = string.Empty;
-        var uri = Options.Uri;
+        string token = string.Empty;
+        string uri = Options.Uri;
+
         if (Options.Uri.StartsWith("proxy://"))
         {
             uri = $"http{Options.Uri.Substring("proxy".Length)}"; // Proxy reporting is now http on newer proxies.
@@ -36,19 +37,17 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
             token = Options.ApiToken ?? throw new ArgumentNullException(nameof(Options.ApiToken));
         }
 
-        var flushInterval = Math.Max(Options.Step / 1000, 1); // Minimum of 1 second
+        int flushInterval = Math.Max(Options.Step / 1000, 1); // Minimum of 1 second
 
-        _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token)
-            .MaxQueueSize(Options.MaxQueueSize)
-            .BatchSize(Options.BatchSize)
-            .FlushIntervalSeconds(flushInterval)
-            .Build();
+        _wavefrontSender = new WavefrontDirectIngestionClient.Builder(uri, token).MaxQueueSize(Options.MaxQueueSize).BatchSize(Options.BatchSize)
+            .FlushIntervalSeconds(flushInterval).Build();
     }
 
     public override ExportResult Export(in Batch<Metric> batch)
     {
         int metricCount = 0;
-        foreach (var metric in batch)
+
+        foreach (Metric metric in batch)
         {
             bool isLong = ((int)metric.MetricType & 0b_0000_1111) == 0x0a; // I8 : signed 8 byte integer
             bool isSum = metric.MetricType.IsSum();
@@ -57,10 +56,11 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
             {
                 if (!metric.MetricType.IsHistogram())
                 {
-                    foreach (ref readonly var metricPoint in metric.GetMetricPoints())
+                    foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
                     {
-                        var timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
+                        long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
                         double doubleValue;
+
                         if (isLong)
                         {
                             doubleValue = isSum ? metricPoint.GetSumLong() : metricPoint.GetGaugeLastValueLong();
@@ -70,7 +70,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
                             doubleValue = isSum ? metricPoint.GetSumDouble() : metricPoint.GetGaugeLastValueDouble();
                         }
 
-                        var tags = GetTags(metricPoint.Tags);
+                        IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
                         _wavefrontSender.SendMetric(metric.Name.ToLower(), doubleValue, timestamp, Options.Source, tags);
                         metricCount++;
@@ -78,12 +78,12 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
                 }
                 else
                 {
-                    foreach (ref readonly var metricPoint in metric.GetMetricPoints())
+                    foreach (ref readonly MetricPoint metricPoint in metric.GetMetricPoints())
                     {
-                        var timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
+                        long timestamp = metricPoint.EndTime.ToUnixTimeMilliseconds();
 
                         // TODO: Setup custom aggregations to compute distributions
-                        var tags = GetTags(metricPoint.Tags);
+                        IDictionary<string, string> tags = GetTags(metricPoint.Tags);
 
                         _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_count", metricPoint.GetHistogramCount(), timestamp, Options.Source, tags);
                         _wavefrontSender.SendMetric($"{metric.Name.ToLower()}_sum", metricPoint.GetHistogramSum(), timestamp, Options.Source, tags);
@@ -103,7 +103,7 @@ public class WavefrontMetricsExporter : BaseExporter<Metric>
 
     private IDictionary<string, string> GetTags(ReadOnlyTagCollection inputTags)
     {
-        var tags = inputTags.AsDictionary();
+        IDictionary<string, string> tags = inputTags.AsDictionary();
         tags.Add("application", Options.Name.ToLower());
         tags.Add("service", Options.Service.ToLower());
         tags.Add("component", "wavefront-metrics-exporter");

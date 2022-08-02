@@ -22,11 +22,15 @@ public class ConfigServerHostedServiceTest
     {
         var configurationRoot = new ConfigurationRoot(new List<IConfigurationProvider>
         {
-            new ConfigServerConfigurationProvider(new ConfigServerClientSettings { Enabled = false })
+            new ConfigServerConfigurationProvider(new ConfigServerClientSettings
+            {
+                Enabled = false
+            })
         });
+
         var service = new ConfigServerHostedService(configurationRoot, null);
 
-        var startStopAction = async () =>
+        Func<Task> startStopAction = async () =>
         {
             await service.StartAsync(default);
             await service.StopAsync(default);
@@ -40,12 +44,20 @@ public class ConfigServerHostedServiceTest
     {
         var placeholder = new PlaceholderResolverProvider(new List<IConfigurationProvider>
         {
-            new ConfigServerConfigurationProvider(new ConfigServerClientSettings { Enabled = false })
+            new ConfigServerConfigurationProvider(new ConfigServerClientSettings
+            {
+                Enabled = false
+            })
         });
-        var configRoot = new ConfigurationRoot(new List<IConfigurationProvider> { placeholder });
+
+        var configRoot = new ConfigurationRoot(new List<IConfigurationProvider>
+        {
+            placeholder
+        });
+
         var service = new ConfigServerHostedService(configRoot, null);
 
-        var startStopAction = async () =>
+        Func<Task> startStopAction = async () =>
         {
             await service.StartAsync(default);
             await service.StopAsync(default);
@@ -62,7 +74,7 @@ public class ConfigServerHostedServiceTest
         configurationManager.AddConfigServer();
         var service = new ConfigServerHostedService(configurationManager, null);
 
-        var startStopAction = async () =>
+        Func<Task> startStopAction = async () =>
         {
             await service.StartAsync(default);
             await service.StopAsync(default);

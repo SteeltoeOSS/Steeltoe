@@ -62,12 +62,12 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static Dictionary<string, string> SingleServerAsDictionary = new ()
+    public static Dictionary<string, string> SingleServerAsDictionary = new()
     {
         { "services:p-redis:0:name", "myRedisService" },
         { "services:p-redis:0:tags:0", "redis" },
         { "services:p-redis:0:credentials:host", "192.168.0.103" },
         { "services:p-redis:0:credentials:password", "133de7c8-9f3a-4df1-8a10-676ba7ddaa10" },
-        { "services:p-redis:0:credentials:port", "60287" },
+        { "services:p-redis:0:credentials:port", "60287" }
     };
 }

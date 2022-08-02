@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
@@ -9,7 +10,6 @@ using Newtonsoft.Json.Linq;
 using Steeltoe.CircuitBreaker.Hystrix.Config;
 using Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 using Steeltoe.CircuitBreaker.Hystrix.Test;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers.Test;
@@ -27,14 +27,14 @@ public class HystrixConfigStreamControllerTest : HystrixTestBase
     [Fact]
     public async Task Endpoint_ReturnsHeaders()
     {
-        var builder = new WebHostBuilder().UseStartup<Startup>();
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
+        HttpClient client = server.CreateClient();
 
         client.BaseAddress = new Uri("http://localhost/");
-        var result = await client.SendAsync(
-            new HttpRequestMessage(HttpMethod.Get, "hystrix/config.stream"),
-            HttpCompletionOption.ResponseHeadersRead);
+
+        HttpResponseMessage result = await client.SendAsync(
+            new HttpRequestMessage(HttpMethod.Get, "hystrix/config.stream"), HttpCompletionOption.ResponseHeadersRead);
 
         Assert.NotNull(result);
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
@@ -52,24 +52,24 @@ public class HystrixConfigStreamControllerTest : HystrixTestBase
     [Fact]
     public void Endpoint_ReturnsData()
     {
-        var builder = new WebHostBuilder().UseStartup<Startup>();
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>();
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
+        HttpClient client = server.CreateClient();
 
         client.BaseAddress = new Uri("http://localhost/");
-        var result = client.GetStreamAsync("hystrix/config.stream").GetAwaiter().GetResult();
+        Stream result = client.GetStreamAsync("hystrix/config.stream").GetAwaiter().GetResult();
 
-        var client2 = server.CreateClient();
-        var cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
+        HttpClient client2 = server.CreateClient();
+        HttpResponseMessage cmdResult = client2.GetAsync("test/test.command").GetAwaiter().GetResult();
         Assert.Equal(HttpStatusCode.OK, cmdResult.StatusCode);
 
         var reader = new StreamReader(result);
-        var data = reader.ReadLine();
+        string data = reader.ReadLine();
         reader.Dispose();
 
         Assert.False(string.IsNullOrEmpty(data));
         Assert.StartsWith("data: ", data);
-        var jsonObject = data.Substring(6);
+        string jsonObject = data.Substring(6);
         var dict = JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonObject);
         Assert.NotNull(dict);
 

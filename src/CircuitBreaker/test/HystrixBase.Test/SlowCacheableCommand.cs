@@ -8,14 +8,15 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class SlowCacheableCommand : TestHystrixCommand<string>
 {
-    public volatile bool Executed;
-    private readonly string _value;
     private readonly int _duration;
+    public volatile bool Executed;
+
+    protected override string CacheKey { get; }
 
     public SlowCacheableCommand(TestCircuitBreaker circuitBreaker, string value, int duration)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
     {
-        _value = value;
+        CacheKey = value;
         _duration = duration;
     }
 
@@ -25,11 +26,6 @@ internal sealed class SlowCacheableCommand : TestHystrixCommand<string>
         Time.Wait(_duration);
 
         Output?.WriteLine("successfully executed");
-        return _value;
-    }
-
-    protected override string CacheKey
-    {
-        get { return _value; }
+        return CacheKey;
     }
 }

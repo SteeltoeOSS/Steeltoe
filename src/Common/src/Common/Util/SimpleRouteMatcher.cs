@@ -6,12 +6,12 @@ namespace Steeltoe.Common.Util;
 
 public class SimpleRouteMatcher : IRouteMatcher
 {
+    public IPathMatcher PathMatcher { get; }
+
     public SimpleRouteMatcher(IPathMatcher pathMatcher)
     {
         PathMatcher = pathMatcher ?? throw new ArgumentNullException(nameof(pathMatcher));
     }
-
-    public IPathMatcher PathMatcher { get; }
 
     public IRoute ParseRoute(string routeValue)
     {
@@ -50,11 +50,11 @@ public class SimpleRouteMatcher : IRouteMatcher
 
     private sealed class DefaultRoute : IRoute
     {
+        public string Value { get; }
+
         public DefaultRoute(string path)
         {
             Value = path;
         }
-
-        public string Value { get; }
     }
 }

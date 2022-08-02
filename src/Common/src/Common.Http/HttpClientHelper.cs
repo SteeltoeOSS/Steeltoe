@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Security;
@@ -11,39 +10,50 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Common.Http;
 
 public static class HttpClientHelper
 {
-    public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
-
     private const int DefaultGetAccessTokenTimeout = 10000; // Milliseconds
     private const bool DefaultValidateCertificates = true;
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> _reflectedDelegate;
 
     private static Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> DefaultDelegate { get; } = (_, _, _, _) => true;
+    public static string SteeltoeUserAgent { get; } = $"Steeltoe/{typeof(HttpClientHelper).Assembly.GetName().Version}";
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not remote certificates should be validated.</param>
-    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
+    /// <param name="validateCertificates">
+    /// Whether or not remote certificates should be validated.
+    /// </param>
+    /// <param name="timeoutMillis">
+    /// Timeout in milliseconds.
+    /// </param>
     public static HttpClient GetHttpClient(bool validateCertificates, int timeoutMillis)
     {
         return GetHttpClient(validateCertificates, null, timeoutMillis);
     }
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not remote certificates should be validated.</param>
-    /// <param name="handler">A pre-defined <see cref="HttpClientHandler"/>.</param>
-    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
+    /// <param name="validateCertificates">
+    /// Whether or not remote certificates should be validated.
+    /// </param>
+    /// <param name="handler">
+    /// A pre-defined <see cref="HttpClientHandler" />.
+    /// </param>
+    /// <param name="timeoutMillis">
+    /// Timeout in milliseconds.
+    /// </param>
     public static HttpClient GetHttpClient(bool validateCertificates, HttpClientHandler handler, int timeoutMillis)
     {
         HttpClient client;
+
         if (Platform.IsFullFramework)
         {
             client = handler == null ? new HttpClient() : new HttpClient(handler);
@@ -70,27 +80,35 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent"/>.
+    /// Gets an HttpClient with user agent <see cref="SteeltoeUserAgent" />.
     /// </summary>
-    /// <param name="handler">A pre-defined <see cref="HttpMessageHandler"/>.</param>
-    /// <param name="timeoutMillis">Timeout in milliseconds.</param>
+    /// <param name="handler">
+    /// A pre-defined <see cref="HttpMessageHandler" />.
+    /// </param>
+    /// <param name="timeoutMillis">
+    /// Timeout in milliseconds.
+    /// </param>
     public static HttpClient GetHttpClient(HttpMessageHandler handler, int timeoutMillis = 1500)
     {
-        var client = handler == null ? new HttpClient() : new HttpClient(handler);
+        HttpClient client = handler == null ? new HttpClient() : new HttpClient(handler);
         client.Timeout = TimeSpan.FromMilliseconds(timeoutMillis);
         client.DefaultRequestHeaders.UserAgent.ParseAdd(SteeltoeUserAgent);
         return client;
     }
 
     /// <summary>
-    /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework"/>.
+    /// Disable certificate validation on demand. Has no effect unless <see cref="Platform.IsFullFramework" />.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not certificates should be validated.</param>
-    /// <param name="protocolType"><see cref="SecurityProtocolType"/>.</param>
-    /// <param name="prevValidator">Pre-existing certificate validation callback.</param>
-    public static void ConfigureCertificateValidation(
-        bool validateCertificates,
-        out SecurityProtocolType protocolType,
+    /// <param name="validateCertificates">
+    /// Whether or not certificates should be validated.
+    /// </param>
+    /// <param name="protocolType">
+    /// <see cref="SecurityProtocolType" />.
+    /// </param>
+    /// <param name="prevValidator">
+    /// Pre-existing certificate validation callback.
+    /// </param>
+    public static void ConfigureCertificateValidation(bool validateCertificates, out SecurityProtocolType protocolType,
         out RemoteCertificateValidationCallback prevValidator)
     {
         prevValidator = null;
@@ -110,14 +128,18 @@ public static class HttpClientHelper
     }
 
     /// <summary>
-    /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework"/>.
+    /// Returns certificate validation to its original state. Has no effect unless <see cref="Platform.IsFullFramework" />.
     /// </summary>
-    /// <param name="validateCertificates">Whether or not certificates should be validated.</param>
-    /// <param name="protocolType"><see cref="SecurityProtocolType"/>.</param>
-    /// <param name="prevValidator">Pre-existing certificate validation callback.</param>
-    public static void RestoreCertificateValidation(
-        bool validateCertificates,
-        SecurityProtocolType protocolType,
+    /// <param name="validateCertificates">
+    /// Whether or not certificates should be validated.
+    /// </param>
+    /// <param name="protocolType">
+    /// <see cref="SecurityProtocolType" />.
+    /// </param>
+    /// <param name="prevValidator">
+    /// Pre-existing certificate validation callback.
+    /// </param>
+    public static void RestoreCertificateValidation(bool validateCertificates, SecurityProtocolType protocolType,
         RemoteCertificateValidationCallback prevValidator)
     {
         if (Platform.IsFullFramework && !validateCertificates)
@@ -139,16 +161,22 @@ public static class HttpClientHelper
     /// <summary>
     /// Creates an <see cref="HttpRequestMessage" /> from the provided information.
     /// </summary>
-    /// <param name="method"><see cref="HttpMethod"/>.</param>
-    /// <param name="requestUri">The remote Uri.</param>
-    /// <param name="getAccessToken">A means of including a bearer token.</param>
+    /// <param name="method">
+    /// <see cref="HttpMethod" />.
+    /// </param>
+    /// <param name="requestUri">
+    /// The remote Uri.
+    /// </param>
+    /// <param name="getAccessToken">
+    /// A means of including a bearer token.
+    /// </param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, Func<string> getAccessToken)
     {
-        var request = GetRequestMessage(method, requestUri, null, null);
+        HttpRequestMessage request = GetRequestMessage(method, requestUri, null, null);
 
         if (getAccessToken != null)
         {
-            var accessToken = getAccessToken();
+            string accessToken = getAccessToken();
 
             if (accessToken != null)
             {
@@ -163,10 +191,18 @@ public static class HttpClientHelper
     /// <summary>
     /// Creates an <see cref="HttpRequestMessage" /> from the provided information.
     /// </summary>
-    /// <param name="method"><see cref="HttpMethod"/>.</param>
-    /// <param name="requestUri">The remote Uri.</param>
-    /// <param name="userName">Optional Basic Auth Username. Not used unless password is not null or empty.</param>
-    /// <param name="password">Optional Basic Auth Password.</param>
+    /// <param name="method">
+    /// <see cref="HttpMethod" />.
+    /// </param>
+    /// <param name="requestUri">
+    /// The remote Uri.
+    /// </param>
+    /// <param name="userName">
+    /// Optional Basic Auth Username. Not used unless password is not null or empty.
+    /// </param>
+    /// <param name="password">
+    /// Optional Basic Auth Password.
+    /// </param>
     public static HttpRequestMessage GetRequestMessage(HttpMethod method, string requestUri, string userName, string password)
     {
         if (method == null)
@@ -180,25 +216,18 @@ public static class HttpClientHelper
         }
 
         var request = new HttpRequestMessage(method, requestUri);
+
         if (!string.IsNullOrEmpty(password))
         {
-            var auth = new AuthenticationHeaderValue(
-                "Basic",
-                GetEncodedUserPassword(userName, password));
+            var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(userName, password));
             request.Headers.Authorization = auth;
         }
 
         return request;
     }
 
-    public static Task<string> GetAccessToken(
-        string accessTokenUri,
-        string clientId,
-        string clientSecret,
-        int timeout = DefaultGetAccessTokenTimeout,
-        bool validateCertificates = DefaultValidateCertificates,
-        HttpClient httpClient = null,
-        ILogger logger = null)
+    public static Task<string> GetAccessToken(string accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
+        bool validateCertificates = DefaultValidateCertificates, HttpClient httpClient = null, ILogger logger = null)
     {
         if (string.IsNullOrEmpty(accessTokenUri))
         {
@@ -209,14 +238,8 @@ public static class HttpClientHelper
         return GetAccessToken(parsedUri, clientId, clientSecret, timeout, validateCertificates, null, httpClient, logger);
     }
 
-    public static Task<string> GetAccessToken(
-        Uri accessTokenUri,
-        string clientId,
-        string clientSecret,
-        int timeout = DefaultGetAccessTokenTimeout,
-        bool validateCertificates = DefaultValidateCertificates,
-        Dictionary<string, string> additionalParams = null,
-        HttpClient httpClient = null,
+    public static Task<string> GetAccessToken(Uri accessTokenUri, string clientId, string clientSecret, int timeout = DefaultGetAccessTokenTimeout,
+        bool validateCertificates = DefaultValidateCertificates, Dictionary<string, string> additionalParams = null, HttpClient httpClient = null,
         ILogger logger = null)
     {
         if (accessTokenUri is null)
@@ -242,46 +265,45 @@ public static class HttpClientHelper
         return GetAccessTokenInternal(accessTokenUri, clientId, clientSecret, timeout, validateCertificates, httpClient, additionalParams, logger);
     }
 
-    private static async Task<string> GetAccessTokenInternal(
-        Uri accessTokenUri,
-        string clientId,
-        string clientSecret,
-        int timeout,
-        bool validateCertificates,
-        HttpClient httpClient,
-        Dictionary<string, string> additionalParams,
-        ILogger logger)
+    private static async Task<string> GetAccessTokenInternal(Uri accessTokenUri, string clientId, string clientSecret, int timeout, bool validateCertificates,
+        HttpClient httpClient, Dictionary<string, string> additionalParams, ILogger logger)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
         logger?.LogInformation("HttpClient not provided, a new instance will be created and disposed after retrieving a token");
-        var client = httpClient ?? GetHttpClient(validateCertificates, timeout);
+        HttpClient client = httpClient ?? GetHttpClient(validateCertificates, timeout);
 
         // If certificate validation is disabled, inject a callback to handle properly
-        ConfigureCertificateValidation(validateCertificates, out var prevProtocols, out var prevValidator);
+        ConfigureCertificateValidation(validateCertificates, out SecurityProtocolType prevProtocols, out RemoteCertificateValidationCallback prevValidator);
 
         var auth = new AuthenticationHeaderValue("Basic", GetEncodedUserPassword(clientId, clientSecret));
         request.Headers.Authorization = auth;
 
-        var parameters = additionalParams is null
-            ? new Dictionary<string, string> { { "grant_type", "client_credentials" } }
-            : new Dictionary<string, string>(additionalParams) { { "grant_type", "client_credentials" } };
+        Dictionary<string, string> parameters = additionalParams is null
+            ? new Dictionary<string, string>
+            {
+                { "grant_type", "client_credentials" }
+            }
+            : new Dictionary<string, string>(additionalParams)
+            {
+                { "grant_type", "client_credentials" }
+            };
 
         request.Content = new FormUrlEncodedContent(parameters);
 
         try
         {
-            using var response = await client.SendAsync(request).ConfigureAwait(false);
+            using HttpResponseMessage response = await client.SendAsync(request).ConfigureAwait(false);
+
             if (!response.IsSuccessStatusCode)
             {
-                logger?.LogInformation(
-                    "GetAccessToken returned status: {0} while obtaining access token from: {1}",
-                    response.StatusCode,
+                logger?.LogInformation("GetAccessToken returned status: {0} while obtaining access token from: {1}", response.StatusCode,
                     WebUtility.UrlEncode(accessTokenUri.OriginalString));
+
                 return null;
             }
 
-            var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
-            var token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
+            JsonDocument payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
+            JsonElement token = payload.RootElement.EnumerateObject().FirstOrDefault(n => n.Name.Equals("access_token")).Value;
 
             if (httpClient is null)
             {
@@ -314,13 +336,13 @@ public static class HttpClientHelper
             return _reflectedDelegate;
         }
 
-        var property = typeof(HttpClientHandler).GetProperty(
-            "DangerousAcceptAnyServerCertificateValidator",
-            BindingFlags.Public | BindingFlags.Static);
+        PropertyInfo property = typeof(HttpClientHandler).GetProperty(
+            "DangerousAcceptAnyServerCertificateValidator", BindingFlags.Public | BindingFlags.Static);
 
         if (property != null)
         {
             _reflectedDelegate = property.GetValue(null) as Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool>;
+
             if (_reflectedDelegate != null)
             {
                 return _reflectedDelegate;

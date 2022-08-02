@@ -6,12 +6,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common;
 
 public class LiteralExpression : IExpression
 {
+    public string ExpressionString { get; }
+
     public LiteralExpression(string literalValue)
     {
         ExpressionString = literalValue;
     }
-
-    public string ExpressionString { get; }
 
     public string GetValue()
     {

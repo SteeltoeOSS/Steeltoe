@@ -2,17 +2,17 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using System.Reflection.Emit;
+using Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class CodeFlow
 {
-    private static readonly Dictionary<Type, TypeDescriptor> Primitives = new ();
+    private static readonly Dictionary<Type, TypeDescriptor> Primitives = new();
     private readonly CompiledExpression _compiledExpression;
     private readonly Stack<List<TypeDescriptor>> _compilationScopes;
-    private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new ();
+    private readonly List<Action<ILGenerator, CodeFlow>> _initGenerators = new();
     private int _nextFieldId = 1;
 
     static CodeFlow()
@@ -71,7 +71,7 @@ public class CodeFlow
             return TypeDescriptor.Object;
         }
 
-        var desc = ToDescriptor(value.GetType());
+        TypeDescriptor desc = ToDescriptor(value.GetType());
 
         if (desc.IsBoxable)
         {
@@ -93,7 +93,7 @@ public class CodeFlow
 
     public static bool IsIntegerForNumericOp(object value)
     {
-        var valueType = value?.GetType();
+        Type valueType = value?.GetType();
 
         // Other .NET types, what about long?
         return valueType == typeof(int) || valueType == typeof(short) || valueType == typeof(byte);
@@ -126,7 +126,8 @@ public class CodeFlow
             return descriptor == TypeDescriptor.D || descriptor == TypeDescriptor.F || descriptor == TypeDescriptor.I || descriptor == TypeDescriptor.J;
         }
 
-        return descriptor == TypeDescriptor.D.Boxed() || descriptor == TypeDescriptor.F.Boxed() || descriptor == TypeDescriptor.I.Boxed() || descriptor == TypeDescriptor.J.Boxed();
+        return descriptor == TypeDescriptor.D.Boxed() || descriptor == TypeDescriptor.F.Boxed() || descriptor == TypeDescriptor.I.Boxed() ||
+            descriptor == TypeDescriptor.J.Boxed();
     }
 
     public static TypeDescriptor ToPrimitiveTargetDescriptor(TypeDescriptor descriptor)
@@ -164,7 +165,8 @@ public class CodeFlow
         {
             return desc2 == desc1.Boxed();
         }
-        else if (desc2.IsPrimitive)
+
+        if (desc2.IsPrimitive)
         {
             return desc1 == desc2.Boxed();
         }
@@ -189,7 +191,8 @@ public class CodeFlow
     {
         if (IsValueType(stackDescriptor))
         {
-            if (stackDescriptor == TypeDescriptor.I || stackDescriptor == TypeDescriptor.B || stackDescriptor == TypeDescriptor.S || stackDescriptor == TypeDescriptor.C)
+            if (stackDescriptor == TypeDescriptor.I || stackDescriptor == TypeDescriptor.B || stackDescriptor == TypeDescriptor.S ||
+                stackDescriptor == TypeDescriptor.C)
             {
                 if (targetDescriptor == TypeDescriptor.D)
                 {
@@ -313,9 +316,10 @@ public class CodeFlow
 
     public static TypeDescriptor[] ToDescriptors(Type[] types)
     {
-        var typesCount = types.Length;
+        int typesCount = types.Length;
         var descriptors = new TypeDescriptor[typesCount];
-        for (var p = 0; p < typesCount; p++)
+
+        for (int p = 0; p < typesCount; p++)
         {
             descriptors[p] = ToDescriptor(types[p]);
         }
@@ -325,7 +329,8 @@ public class CodeFlow
 
     public void UnboxBooleanIfNecessary(ILGenerator gen)
     {
-        var lastDescriptor = LastDescriptor();
+        TypeDescriptor lastDescriptor = LastDescriptor();
+
         if (lastDescriptor == TypeDescriptor.Z.Boxed())
         {
             gen.Emit(OpCodes.Unbox_Any, lastDescriptor.Value);
@@ -336,11 +341,18 @@ public class CodeFlow
     {
         if (_initGenerators.Count > 0)
         {
-            var methodName = $"SpelExpressionInit{compilationId}";
-            var method = new DynamicMethod(methodName, typeof(void), new[] { typeof(SpelCompiledExpression), typeof(object), typeof(IEvaluationContext) }, typeof(SpelCompiledExpression));
-            var ilGenerator = method.GetILGenerator(4096);
+            string methodName = $"SpelExpressionInit{compilationId}";
 
-            foreach (var generator in _initGenerators)
+            var method = new DynamicMethod(methodName, typeof(void), new[]
+            {
+                typeof(SpelCompiledExpression),
+                typeof(object),
+                typeof(IEvaluationContext)
+            }, typeof(SpelCompiledExpression));
+
+            ILGenerator ilGenerator = method.GetILGenerator(4096);
+
+            foreach (Action<ILGenerator, CodeFlow> generator in _initGenerators)
             {
                 generator(ilGenerator, this);
             }
@@ -373,7 +385,8 @@ public class CodeFlow
 
     public TypeDescriptor LastDescriptor()
     {
-        var top = _compilationScopes.Peek();
+        List<TypeDescriptor> top = _compilationScopes.Peek();
+
         if (top == null || top.Count == 0)
         {
             return null;

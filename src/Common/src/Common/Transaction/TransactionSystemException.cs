@@ -6,6 +6,10 @@ namespace Steeltoe.Common.Transaction;
 
 public class TransactionSystemException : TransactionException
 {
+    public Exception ApplicationException { get; private set; }
+
+    public Exception OriginalException => ApplicationException ?? InnerException;
+
     public TransactionSystemException(string msg)
         : base(msg)
     {
@@ -15,10 +19,6 @@ public class TransactionSystemException : TransactionException
         : base(msg, cause)
     {
     }
-
-    public Exception ApplicationException { get; private set; }
-
-    public Exception OriginalException => ApplicationException ?? InnerException;
 
     public void InitApplicationException(Exception exception)
     {

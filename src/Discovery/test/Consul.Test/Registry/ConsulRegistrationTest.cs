@@ -33,7 +33,10 @@ public class ConsulRegistrationTest
             Name = "name",
             Address = "address",
             Port = 1234,
-            Tags = new[] { "foo=bar" }
+            Tags = new[]
+            {
+                "foo=bar"
+            }
         };
 
         var options = new ConsulDiscoveryOptions();
@@ -54,12 +57,16 @@ public class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions
         {
-            Tags = new List<string> { "foo=bar" },
+            Tags = new List<string>
+            {
+                "foo=bar"
+            },
             InstanceZone = "instancezone",
             InstanceGroup = "instancegroup",
             Scheme = "https"
         };
-        var result = ConsulRegistration.CreateTags(options);
+
+        string[] result = ConsulRegistration.CreateTags(options);
         Assert.Equal(4, result.Length);
         Assert.Contains("foo=bar", result);
         Assert.Contains("zone=instancezone", result);
@@ -72,7 +79,7 @@ public class ConsulRegistrationTest
     {
         var options = new ConsulDiscoveryOptions();
         var appsettings = new Dictionary<string, string>();
-        var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
         var appInstanceInfo = new ApplicationInstanceInfo(config);
 
         // default value is assembly name
@@ -112,22 +119,20 @@ public class ConsulRegistrationTest
     public void Tags_MapTo_Metadata()
     {
         // arrange some tags in configuration
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "consul:discovery:tags:0", "key0=value0" },
-                { "consul:discovery:tags:1", "key1=value1" },
-                { "consul:discovery:tags:2", "keyvalue" }
-            })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "consul:discovery:tags:0", "key0=value0" },
+            { "consul:discovery:tags:1", "key1=value1" },
+            { "consul:discovery:tags:2", "keyvalue" }
+        }).Build();
 
         // bind to options
         var options = new ConsulDiscoveryOptions();
         config.Bind(ConsulDiscoveryOptions.ConsulDiscoveryConfigurationPrefix, options);
-        var tags = ConsulRegistration.CreateTags(options);
+        string[] tags = ConsulRegistration.CreateTags(options);
 
         // act - get metadata from tags
-        var result = ConsulServerUtils.GetMetadata(tags);
+        IDictionary<string, string> result = ConsulServerUtils.GetMetadata(tags);
         Assert.Contains(result, k => k.Key == "key0");
         Assert.Equal("value0", result["key0"]);
         Assert.Contains(result, k => k.Key == "key1");
@@ -139,9 +144,13 @@ public class ConsulRegistrationTest
     [Fact]
     public void GetDefaultInstanceId_ReturnsExpected()
     {
-        var appsettings = new Dictionary<string, string> { { "consul:discovery:serviceName", "serviceName" } };
-        var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
-        var result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
+        var appsettings = new Dictionary<string, string>
+        {
+            { "consul:discovery:serviceName", "serviceName" }
+        };
+
+        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        string result = ConsulRegistration.GetDefaultInstanceId(new ApplicationInstanceInfo(config));
         Assert.StartsWith("serviceName:", result);
 
         appsettings.Add("spring:application:instance_id", "springid");
@@ -163,14 +172,12 @@ public class ConsulRegistrationTest
             InstanceId = "instanceId"
         };
 
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        }).Build();
 
-        var result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
+        string result = ConsulRegistration.GetInstanceId(options, new ApplicationInstanceInfo(config));
         Assert.Equal("instanceId", result);
 
         options.InstanceId = null;
@@ -195,7 +202,7 @@ public class ConsulRegistrationTest
     public void CreateCheck_ReturnsExpected()
     {
         var options = new ConsulDiscoveryOptions();
-        var result = ConsulRegistration.CreateCheck(1234, options);
+        AgentServiceCheck result = ConsulRegistration.CreateCheck(1234, options);
         Assert.NotNull(result);
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.Heartbeat.Ttl), result.TTL);
         Assert.Equal(DateTimeConversions.ToTimeSpan(options.HealthCheckCriticalTimeout), result.DeregisterCriticalServiceAfter);
@@ -203,7 +210,7 @@ public class ConsulRegistrationTest
         options.Heartbeat = null;
         Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(0, options));
 
-        var port = 1234;
+        int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
         Assert.Equal(uri.ToString(), result.HTTP);
@@ -221,12 +228,10 @@ public class ConsulRegistrationTest
             Port = 1100
         };
 
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:application:name", "foobar" }
-            })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:application:name", "foobar" }
+        }).Build();
 
         var reg = ConsulRegistration.CreateRegistration(options, new ApplicationInstanceInfo(config));
 
@@ -235,7 +240,7 @@ public class ConsulRegistrationTest
         Assert.Equal("foobar", reg.ServiceId);
         Assert.Equal(options.HostName, reg.Host);
         Assert.Equal(1100, reg.Port);
-        var hostName = options.HostName;
+        string hostName = options.HostName;
         Assert.Equal(new Uri($"http://{hostName}:1100"), reg.Uri);
         Assert.NotNull(reg.Service);
 

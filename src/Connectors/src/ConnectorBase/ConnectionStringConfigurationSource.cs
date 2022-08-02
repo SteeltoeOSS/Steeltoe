@@ -17,9 +17,12 @@ public class ConnectionStringConfigurationSource : IConfigurationSource
             throw new ArgumentNullException(nameof(sources));
         }
 
-        this.Sources = new List<IConfigurationSource>(sources);
+        Sources = new List<IConfigurationSource>(sources);
     }
 
     /// <inheritdoc />
-    public IConfigurationProvider Build(IConfigurationBuilder builder) => new ConnectionStringConfigurationProvider(Sources.Select(s => s.Build(builder)));
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        return new ConnectionStringConfigurationProvider(Sources.Select(s => s.Build(builder)));
+    }
 }

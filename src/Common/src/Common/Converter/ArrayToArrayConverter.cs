@@ -9,7 +9,10 @@ public class ArrayToArrayConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public ArrayToArrayConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(object[]), typeof(object[])) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(object[]), typeof(object[]))
+        })
     {
         _conversionService = conversionService;
     }
@@ -21,14 +24,14 @@ public class ArrayToArrayConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
-        var targetElement = ConversionUtils.GetElementType(targetType);
-        var sourceElement = ConversionUtils.GetElementType(sourceType);
+        Type targetElement = ConversionUtils.GetElementType(targetType);
+        Type sourceElement = ConversionUtils.GetElementType(sourceType);
+
         if (targetElement != null && _conversionService.CanBypassConvert(sourceElement, targetElement))
         {
             return source;
@@ -36,10 +39,11 @@ public class ArrayToArrayConverter : AbstractGenericConditionalConverter
 
         var sourceArray = source as Array;
         var targetArray = Array.CreateInstance(targetElement, sourceArray.GetLength(0));
-        var i = 0;
-        foreach (var elem in sourceArray)
+        int i = 0;
+
+        foreach (object elem in sourceArray)
         {
-            var newElem = _conversionService.Convert(elem, sourceElement, targetElement);
+            object newElem = _conversionService.Convert(elem, sourceElement, targetElement);
             targetArray.SetValue(newElem, i++);
         }
 

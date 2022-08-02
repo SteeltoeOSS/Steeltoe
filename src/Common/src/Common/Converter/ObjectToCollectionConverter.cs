@@ -30,8 +30,8 @@ public class ObjectToCollectionConverter : AbstractToCollectionConverter
             return null;
         }
 
-        var elementDesc = ConversionUtils.GetElementType(targetType);
-        var target = ConversionUtils.CreateCompatListFor(targetType);
+        Type elementDesc = ConversionUtils.GetElementType(targetType);
+        IList target = ConversionUtils.CreateCompatListFor(targetType);
 
         if (elementDesc == null)
         {
@@ -39,7 +39,7 @@ public class ObjectToCollectionConverter : AbstractToCollectionConverter
         }
         else
         {
-            var singleElement = ConversionService.Convert(source, sourceType, elementDesc);
+            object singleElement = ConversionService.Convert(source, sourceType, elementDesc);
             target.Add(singleElement);
         }
 
@@ -53,7 +53,7 @@ public class ObjectToCollectionConverter : AbstractToCollectionConverter
             (typeof(object), typeof(ICollection)),
             (typeof(object), typeof(ICollection<>)),
             (typeof(object), typeof(IEnumerable)),
-            (typeof(object), typeof(IEnumerable<>)),
+            (typeof(object), typeof(IEnumerable<>))
         };
     }
 }

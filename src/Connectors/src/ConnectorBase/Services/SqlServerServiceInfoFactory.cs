@@ -25,16 +25,16 @@ public class SqlServerServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        var uri = GetUriFromCredentials(binding.Credentials);
-        var username = GetUsernameFromCredentials(binding.Credentials);
-        var password = GetPasswordFromCredentials(binding.Credentials);
+        string uri = GetUriFromCredentials(binding.Credentials);
+        string username = GetUsernameFromCredentials(binding.Credentials);
+        string password = GetPasswordFromCredentials(binding.Credentials);
 
         if (uri == null)
         {
-            var host = GetHostFromCredentials(binding.Credentials);
-            var port = GetPortFromCredentials(binding.Credentials);
+            string host = GetHostFromCredentials(binding.Credentials);
+            int port = GetPortFromCredentials(binding.Credentials);
 
-            var database = GetStringFromCredentials(binding.Credentials, "name");
+            string database = GetStringFromCredentials(binding.Credentials, "name");
 
             if (host != null)
             {
@@ -51,9 +51,7 @@ public class SqlServerServiceInfoFactory : ServiceInfoFactory
         {
             return new SqlServerServiceInfo(id, url);
         }
-        else
-        {
-            return new SqlServerServiceInfo(id, url, username, password);
-        }
+
+        return new SqlServerServiceInfo(id, url, username, password);
     }
 }

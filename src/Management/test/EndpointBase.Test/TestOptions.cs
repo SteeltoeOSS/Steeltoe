@@ -18,13 +18,21 @@ internal sealed class TestOptions : IEndpointOptions
 
     public bool IsEnabled => Enabled.Value;
 
-    public bool IsSensitive => throw new System.NotImplementedException();
+    public bool IsSensitive => throw new NotImplementedException();
 
-    public bool? Sensitive => throw new System.NotImplementedException();
+    public bool? Sensitive => throw new NotImplementedException();
 
-    public IEnumerable<string> AllowedVerbs { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public IEnumerable<string> AllowedVerbs
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
 
-    public bool ExactMatch { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
+    public bool ExactMatch
+    {
+        get => throw new NotImplementedException();
+        set => throw new NotImplementedException();
+    }
 
     public bool IsAccessAllowed(Permissions permissions)
     {

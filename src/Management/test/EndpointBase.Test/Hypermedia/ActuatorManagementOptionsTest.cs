@@ -23,7 +23,7 @@ public class ActuatorManagementOptionsTest : BaseTest
     public void Constructor_InitializesWithDefaultsOnCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var opts = new ActuatorManagementOptions(config);
         Assert.Equal("/actuator", opts.Path);
@@ -46,12 +46,12 @@ public class ActuatorManagementOptionsTest : BaseTest
         var appsettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:path"] = "/management"
         };
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new ActuatorManagementOptions(config);
 
@@ -68,14 +68,14 @@ public class ActuatorManagementOptionsTest : BaseTest
         var appsettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
-            ["management:endpoints:path"] = "/management",
+            ["management:endpoints:path"] = "/management"
         };
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new ActuatorManagementOptions(config);
 
@@ -93,13 +93,13 @@ public class ActuatorManagementOptionsTest : BaseTest
     {
         var appsettings = new Dictionary<string, string>
         {
-            ["management:endpoints:path"] = "/cloudfoundryapplication",
+            ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", "something");
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new ActuatorManagementOptions(config);
 

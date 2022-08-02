@@ -19,7 +19,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthActuator_ThrowsOnNulls()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const IHealthAggregator aggregator = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => EndpointServiceCollectionExtensions.AddHealthActuator(null));
@@ -34,29 +34,31 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthActuator_AddsCorrectServicesWithDefaultHealthAggregator()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:health:enabled"] = "true"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         services.AddHealthActuator(config, new DefaultHealthAggregator(), typeof(DiskSpaceContributor));
 
         services.Configure<HealthCheckServiceOptions>(config);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IHealthOptions>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<HealthEndpointCore>();
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
-        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
-        var contributorList = contributors.ToList();
+        List<IHealthContributor> contributorList = contributors.ToList();
         Assert.Single(contributorList);
     }
 
@@ -64,29 +66,31 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddHealthActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication",
             ["management:endpoints:health:enabled"] = "true"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         services.AddHealthActuator(config);
 
         services.Configure<HealthCheckServiceOptions>(config);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IHealthOptions>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<HealthEndpointCore>();
         Assert.NotNull(ep);
         var agg = serviceProvider.GetService<IHealthAggregator>();
         Assert.NotNull(agg);
-        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
-        var contributorsList = contributors.ToList();
+        List<IHealthContributor> contributorsList = contributors.ToList();
         Assert.Equal(3, contributorsList.Count);
         var availability = serviceProvider.GetService<ApplicationAvailability>();
         Assert.NotNull(availability);
@@ -97,10 +101,10 @@ public class EndpointServiceCollectionTest : BaseTest
     {
         var services = new ServiceCollection();
         EndpointServiceCollectionExtensions.AddHealthContributors(services, typeof(TestContributor));
-        var serviceProvider = services.BuildServiceProvider();
-        var contributors = serviceProvider.GetServices<IHealthContributor>();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        IEnumerable<IHealthContributor> contributors = serviceProvider.GetServices<IHealthContributor>();
         Assert.NotNull(contributors);
-        var contributorsList = contributors.ToList();
+        List<IHealthContributor> contributorsList = contributors.ToList();
         Assert.Single(contributorsList);
     }
 }

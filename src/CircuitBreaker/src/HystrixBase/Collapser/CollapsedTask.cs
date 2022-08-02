@@ -10,6 +10,8 @@ internal sealed class CollapsedTask<TBatchReturn, TResponse, TRequestArgument> :
 {
     private readonly RequestCollapser<TBatchReturn, TResponse, TRequestArgument> _rq;
 
+    public int IntervalTimeInMilliseconds => _rq.Properties.TimerDelayInMilliseconds;
+
     public CollapsedTask(RequestCollapser<TBatchReturn, TResponse, TRequestArgument> rq)
     {
         _rq = rq;
@@ -21,7 +23,7 @@ internal sealed class CollapsedTask<TBatchReturn, TResponse, TRequestArgument> :
         {
             // we fetch current so that when multiple threads race
             // we can do compareAndSet with the expected/new to ensure only one happens
-            var currentBatch = _rq.Batch.Value;
+            RequestBatch<TBatchReturn, TResponse, TRequestArgument> currentBatch = _rq.Batch.Value;
 
             // 1) it can be null if it got shutdown
             // 2) we don't execute this batch if it has no requests and let it wait until next tick to be executed
@@ -36,6 +38,4 @@ internal sealed class CollapsedTask<TBatchReturn, TResponse, TRequestArgument> :
             // logger.error("Error occurred trying to execute callable inside CollapsedTask from Timer.", e);
         }
     }
-
-    public int IntervalTimeInMilliseconds => _rq.Properties.TimerDelayInMilliseconds;
 }

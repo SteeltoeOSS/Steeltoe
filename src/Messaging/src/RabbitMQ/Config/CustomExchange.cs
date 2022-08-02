@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class CustomExchange : AbstractExchange, ICustomExchange
 {
+    public override string Type { get; }
+
     public CustomExchange(string name, string type)
         : base(name)
     {
@@ -23,6 +25,4 @@ public class CustomExchange : AbstractExchange, ICustomExchange
     {
         Type = type;
     }
-
-    public override string Type { get; }
 }

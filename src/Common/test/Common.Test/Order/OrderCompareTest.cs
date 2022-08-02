@@ -49,11 +49,11 @@ public class OrderCompareTest
 
     private sealed class StubOrdered : IOrdered
     {
+        public int Order { get; }
+
         public StubOrdered(int order)
         {
             Order = order;
         }
-
-        public int Order { get; }
     }
 }

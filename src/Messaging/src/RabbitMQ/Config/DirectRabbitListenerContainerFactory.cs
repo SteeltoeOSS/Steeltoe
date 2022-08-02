@@ -15,23 +15,6 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 {
     public const string DefaultServiceName = "rabbitListenerContainerFactory";
 
-    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
-        : base(applicationContext, loggerFactory)
-    {
-    }
-
-    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-        : base(applicationContext, connectionFactory, loggerFactory)
-    {
-    }
-
-    [ActivatorUtilitiesConstructor]
-    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
-        : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
-    {
-        Configure(Options);
-    }
-
     public int? MonitorInterval { get; set; }
 
     public int? ConsumersPerQueue { get; set; } = 1;
@@ -39,6 +22,25 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
     public int? MessagesPerAck { get; set; }
 
     public int? AckTimeout { get; set; }
+
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, loggerFactory)
+    {
+    }
+
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IConnectionFactory connectionFactory,
+        ILoggerFactory loggerFactory = null)
+        : base(applicationContext, connectionFactory, loggerFactory)
+    {
+    }
+
+    [ActivatorUtilitiesConstructor]
+    public DirectRabbitListenerContainerFactory(IApplicationContext applicationContext, IOptionsMonitor<RabbitOptions> optionsMonitor,
+        IConnectionFactory connectionFactory, ILoggerFactory loggerFactory = null)
+        : base(applicationContext, optionsMonitor, connectionFactory, loggerFactory)
+    {
+        Configure(Options);
+    }
 
     protected override DirectMessageListenerContainer CreateContainerInstance()
     {
@@ -48,6 +50,7 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
     protected override void InitializeContainer(DirectMessageListenerContainer instance, IRabbitListenerEndpoint endpoint)
     {
         base.InitializeContainer(instance, endpoint);
+
         if (MonitorInterval.HasValue)
         {
             instance.MonitorInterval = MonitorInterval.Value;
@@ -75,9 +78,10 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
 
     private void Configure(RabbitOptions options)
     {
-        var containerOptions = options.Listener.Direct;
+        RabbitOptions.DirectContainerOptions containerOptions = options.Listener.Direct;
         AutoStartup = containerOptions.AutoStartup;
         PossibleAuthenticationFailureFatal = containerOptions.PossibleAuthenticationFailureFatal;
+
         if (containerOptions.AcknowledgeMode.HasValue)
         {
             AcknowledgeMode = containerOptions.AcknowledgeMode.Value;
@@ -89,14 +93,16 @@ public class DirectRabbitListenerContainerFactory : AbstractRabbitListenerContai
         }
 
         DefaultRequeueRejected = containerOptions.DefaultRequeueRejected;
+
         if (containerOptions.IdleEventInterval.HasValue)
         {
-            var asMilliseconds = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
+            int asMilliseconds = (int)containerOptions.IdleEventInterval.Value.TotalMilliseconds;
             IdleEventInterval = asMilliseconds;
         }
 
         MissingQueuesFatal = containerOptions.MissingQueuesFatal;
-        var retry = containerOptions.Retry;
+        RabbitOptions.ListenerRetryOptions retry = containerOptions.Retry;
+
         if (retry.Enabled)
         {
             // RetryInterceptorBuilder <?, ?> builder = (retryConfig.isStateless())

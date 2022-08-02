@@ -6,14 +6,14 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 
 public class HystrixConcurrencyStrategyDefault : HystrixConcurrencyStrategy
 {
-    private static readonly HystrixConcurrencyStrategyDefault Instance = new ();
+    private static readonly HystrixConcurrencyStrategyDefault Instance = new();
+
+    private HystrixConcurrencyStrategyDefault()
+    {
+    }
 
     public static HystrixConcurrencyStrategy GetInstance()
     {
         return Instance;
-    }
-
-    private HystrixConcurrencyStrategyDefault()
-    {
     }
 }

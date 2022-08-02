@@ -42,16 +42,21 @@ public static class UriExtensions
     /// <summary>
     /// Parse a querystring into a dictionary of key value pairs.
     /// </summary>
-    /// <param name="querystring">The querystring to parse.</param>
-    /// <returns>Pairs of keys and values.</returns>
+    /// <param name="querystring">
+    /// The querystring to parse.
+    /// </param>
+    /// <returns>
+    /// Pairs of keys and values.
+    /// </returns>
     public static Dictionary<string, string> ParseQuerystring(string querystring)
     {
         var result = new Dictionary<string, string>();
-        foreach (var pair in querystring.Split('&'))
+
+        foreach (string pair in querystring.Split('&'))
         {
             if (!string.IsNullOrEmpty(pair))
             {
-                var kvp = pair.Split('=');
+                string[] kvp = pair.Split('=');
                 result.Add(WebUtility.UrlDecode(kvp[0]), WebUtility.UrlDecode(kvp[1]));
             }
         }

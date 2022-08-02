@@ -15,5 +15,8 @@ public class TestConfigServerConfigurationSource : IConfigurationSource
         _provider = provider;
     }
 
-    public IConfigurationProvider Build(IConfigurationBuilder builder) => _provider;
+    public IConfigurationProvider Build(IConfigurationBuilder builder)
+    {
+        return _provider;
+    }
 }

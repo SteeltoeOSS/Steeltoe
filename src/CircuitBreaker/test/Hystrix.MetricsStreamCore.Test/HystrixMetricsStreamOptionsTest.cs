@@ -16,7 +16,7 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     [Fact]
     public void Configure_SetsProperties()
     {
-        var json = @"
+        string json = @"
                 {
                     ""hystrix"" : {
                         ""stream"": {
@@ -24,10 +24,11 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", json);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", json);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var builder = new ConfigurationBuilder();
         builder.SetBasePath(directory);
         builder.AddJsonFile(fileName);
@@ -36,11 +37,11 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
         services.Configure<HystrixMetricsStreamOptions>(config.GetSection("hystrix:stream"));
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var options = provider.GetService<IOptions<HystrixMetricsStreamOptions>>();
         Assert.NotNull(options);
-        var opts = options.Value;
+        HystrixMetricsStreamOptions opts = options.Value;
         Assert.NotNull(opts);
         Assert.False(opts.ValidateCertificates);
         Assert.Equal(500, opts.SendRate);

@@ -9,6 +9,8 @@ namespace Steeltoe.Common.Test.Options;
 
 internal sealed class TestOptions : AbstractOptions
 {
+    public string Foo { get; set; }
+
     public TestOptions(IConfigurationRoot root, string prefix)
         : base(root, prefix)
     {
@@ -18,6 +20,4 @@ internal sealed class TestOptions : AbstractOptions
         : base(config)
     {
     }
-
-    public string Foo { get; set; }
 }

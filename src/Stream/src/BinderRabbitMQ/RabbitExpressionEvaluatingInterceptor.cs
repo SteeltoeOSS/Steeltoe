@@ -15,8 +15,6 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
     public const string RoutingKeyHeader = "scst_routingKey";
     public const string DelayHeader = "scst_delay";
 
-    public int Order => 0;
-
     private IExpressionParser Parser { get; } = new SpelExpressionParser();
 
     private IExpression RoutingKeyExpression { get; }
@@ -24,6 +22,8 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
     private IExpression DelayExpression { get; }
 
     private IEvaluationContext EvaluationContext { get; }
+
+    public int Order => 0;
 
     public RabbitExpressionEvaluatingInterceptor(IExpression routingKeyExpression, IExpression delayExpression, IEvaluationContext evaluationContext)
     {
@@ -64,7 +64,8 @@ public class RabbitExpressionEvaluatingInterceptor : IChannelInterceptor
 
     public IMessage PreSend(IMessage message, IMessageChannel channel)
     {
-        var builder = IntegrationMessageBuilder.FromMessage(message);
+        IntegrationMessageBuilder builder = IntegrationMessageBuilder.FromMessage(message);
+
         if (RoutingKeyExpression != null)
         {
             builder.SetHeader(RoutingKeyHeader, RoutingKeyExpression.GetValue(EvaluationContext, message));

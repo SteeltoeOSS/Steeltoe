@@ -12,7 +12,7 @@ public class AttributeAccessorTest
 
     private const string Value = "bar";
 
-    private readonly SimpleAttributeAccessor _attributeAccessor = new ();
+    private readonly SimpleAttributeAccessor _attributeAccessor = new();
 
     [Fact]
     public void SetAndGet()
@@ -43,7 +43,7 @@ public class AttributeAccessorTest
     {
         _attributeAccessor.SetAttribute(Name, Value);
         _attributeAccessor.SetAttribute("abc", "123");
-        var attributeNames = _attributeAccessor.AttributeNames;
+        string[] attributeNames = _attributeAccessor.AttributeNames;
         Assert.Contains(Name, attributeNames);
         Assert.Contains("abc", attributeNames);
     }

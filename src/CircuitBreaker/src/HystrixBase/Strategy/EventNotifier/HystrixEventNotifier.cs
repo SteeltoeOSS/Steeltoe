@@ -11,7 +11,8 @@ public abstract class HystrixEventNotifier
         // do nothing
     }
 
-    public void MarkCommandExecution(IHystrixCommandKey key, ExecutionIsolationStrategy isolationStrategy, int duration, IList<HystrixEventType> eventsDuringExecution)
+    public void MarkCommandExecution(IHystrixCommandKey key, ExecutionIsolationStrategy isolationStrategy, int duration,
+        IList<HystrixEventType> eventsDuringExecution)
     {
         // do nothing
     }

@@ -70,7 +70,7 @@ public class CertificateGenerationParameters : KeyParameters
     public string CertificateAuthority { get; set; }
 
     /// <summary>
-    ///  Gets or sets a value indicating whether whether to generate credential value as a certificate authority.
+    /// Gets or sets a value indicating whether whether to generate credential value as a certificate authority.
     /// </summary>
     [JsonPropertyName("is_ca")]
     public bool IsCertificateAuthority { get; set; }

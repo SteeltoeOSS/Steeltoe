@@ -8,50 +8,20 @@ namespace Steeltoe.Common.Http.Test;
 
 internal sealed class TestServiceInstance : IServiceInstance
 {
+    public string Host => throw new NotImplementedException();
+
+    public bool IsSecure => throw new NotImplementedException();
+
+    public IDictionary<string, string> Metadata => throw new NotImplementedException();
+
+    public int Port => throw new NotImplementedException();
+
+    public string ServiceId => throw new NotImplementedException();
+
+    public Uri Uri { get; }
+
     public TestServiceInstance(Uri uri)
     {
         Uri = uri;
     }
-
-    public string Host
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public bool IsSecure
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public IDictionary<string, string> Metadata
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public int Port
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public string ServiceId
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public Uri Uri { get; private set; }
 }

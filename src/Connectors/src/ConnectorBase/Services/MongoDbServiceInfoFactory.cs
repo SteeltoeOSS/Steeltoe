@@ -17,7 +17,7 @@ public class MongoDbServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        var uri = GetUriFromCredentials(binding.Credentials);
+        string uri = GetUriFromCredentials(binding.Credentials);
         return new MongoDbServiceInfo(binding.Name, uri);
     }
 }

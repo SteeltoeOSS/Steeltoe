@@ -21,7 +21,7 @@ public class CorrelationIdTest
     public CorrelationIdTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IDestinationResolver<IMessageChannel>, DefaultMessageChannelDestinationResolver>();
@@ -35,17 +35,19 @@ public class CorrelationIdTest
     public async Task TestCorrelationIdPassedIfAvailable()
     {
         object correlationId = "123-ABC";
-        var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
         var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+
         var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
         {
             OutputChannel = outputChannel
         };
+
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
-        var reply = outputChannel.Receive(0);
+        IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
         Assert.Equal(correlationId, accessor.GetCorrelationId());
     }
@@ -54,17 +56,19 @@ public class CorrelationIdTest
     public async Task TestCorrelationIdCopiedFromMessageCorrelationIdIfAvailable()
     {
         object correlationId = "correlationId";
-        var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
         var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+
         var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanUpperCase())
         {
             OutputChannel = outputChannel
         };
+
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
-        var reply = outputChannel.Receive(0);
+        IMessage reply = outputChannel.Receive(0);
         var accessor1 = new IntegrationMessageHeaderAccessor(reply);
         var accessor2 = new IntegrationMessageHeaderAccessor(message);
         Assert.Equal(accessor2.GetCorrelationId(), accessor1.GetCorrelationId());
@@ -74,17 +78,19 @@ public class CorrelationIdTest
     public async Task TestCorrelationNotPassedFromRequestHeaderIfAlreadySetByHandler()
     {
         object correlationId = "123-ABC";
-        var message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
+        IMessage message = IntegrationMessageBuilder.WithPayload("test").SetCorrelationId(correlationId).Build();
         var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+
         var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
         {
             OutputChannel = outputChannel
         };
+
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
-        var reply = outputChannel.Receive(0);
+        IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
         Assert.Equal("456-XYZ", accessor.GetCorrelationId());
     }
@@ -95,14 +101,16 @@ public class CorrelationIdTest
         IMessage message = Message.Create("test");
         var inputChannel = new DirectChannel(_provider.GetService<IApplicationContext>());
         var outputChannel = new QueueChannel(_provider.GetService<IApplicationContext>(), 1);
+
         var serviceActivator = new ServiceActivatingHandler(_provider.GetService<IApplicationContext>(), new TestBeanCreateMessage())
         {
             OutputChannel = outputChannel
         };
+
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
         await endpoint.Start();
         Assert.True(inputChannel.Send(message));
-        var reply = outputChannel.Receive(0);
+        IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
         Assert.Equal("456-XYZ", accessor.GetCorrelationId());
     }
@@ -111,7 +119,7 @@ public class CorrelationIdTest
     {
         public object ProcessMessage(IMessage message)
         {
-            var str = message.Payload as string;
+            string str = message.Payload as string;
             return str.ToUpper();
         }
     }
@@ -120,7 +128,7 @@ public class CorrelationIdTest
     {
         public object ProcessMessage(IMessage message)
         {
-            var str = message.Payload as string;
+            string str = message.Payload as string;
             return IntegrationMessageBuilder.WithPayload(str).SetCorrelationId("456-XYZ").Build();
         }
     }

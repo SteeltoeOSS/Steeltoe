@@ -51,14 +51,20 @@ public interface IConnectionFactory : IDisposable, IServiceNameAware
     /// <summary>
     /// Add a connection listener to this factory.
     /// </summary>
-    /// <param name="connectionListener">the listener to add.</param>
+    /// <param name="connectionListener">
+    /// the listener to add.
+    /// </param>
     void AddConnectionListener(IConnectionListener connectionListener);
 
     /// <summary>
     /// Remove a connection factory from this factory.
     /// </summary>
-    /// <param name="connectionListener">the listener to remove.</param>
-    /// <returns>true if removed.</returns>
+    /// <param name="connectionListener">
+    /// the listener to remove.
+    /// </param>
+    /// <returns>
+    /// true if removed.
+    /// </returns>
     bool RemoveConnectionListener(IConnectionListener connectionListener);
 
     /// <summary>
@@ -69,12 +75,13 @@ public interface IConnectionFactory : IDisposable, IServiceNameAware
     /// <summary>
     /// Create a connection.
     /// </summary>
-    /// <returns>the connection if successful.</returns>
+    /// <returns>
+    /// the connection if successful.
+    /// </returns>
     IConnection CreateConnection();
 
     /// <summary>
-    /// Close underlying shared connection. The factory is still able to create new connections
-    /// after this call.
+    /// Close underlying shared connection. The factory is still able to create new connections after this call.
     /// </summary>
     void Destroy();
 }

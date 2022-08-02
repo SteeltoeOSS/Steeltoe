@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
@@ -16,7 +18,6 @@ using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Integration.Handler;
@@ -26,15 +27,20 @@ public class MethodInvokingMessageProcessorTest
     [Fact]
     public async Task TestMessageHandlerMethodFactoryOverride()
     {
-        var serviceCollection = GetDefaultContainer();
+        IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<MyConfiguration>();
         var f = new DefaultMessageHandlerMethodFactory();
-        f.SetArgumentResolvers(new List<IHandlerMethodArgumentResolver> { new TestHandlerMethodArgumentResolver() });
+
+        f.SetArgumentResolvers(new List<IHandlerMethodArgumentResolver>
+        {
+            new TestHandlerMethodArgumentResolver()
+        });
+
         serviceCollection.AddSingleton<IMessageHandlerMethodFactory>(f);
 
-        var container = serviceCollection.BuildServiceProvider();
-        var lifeCycleProcessor = await Start(container);
+        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ILifecycleProcessor lifeCycleProcessor = await Start(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("foo");
@@ -48,17 +54,17 @@ public class MethodInvokingMessageProcessorTest
     [Fact]
     public async Task TestHandlerInheritanceMethodImplInSuper()
     {
-        var serviceCollection = GetDefaultContainer();
+        IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<B1>();
-        var container = serviceCollection.BuildServiceProvider();
-        var lifeCycleProcessor = await Start(container);
+        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ILifecycleProcessor lifeCycleProcessor = await Start(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var received = outChan.Receive();
+        IMessage received = outChan.Receive();
         Assert.Equal("A1", received.Headers.Get<string>("A1"));
 
         await lifeCycleProcessor.Stop();
@@ -67,17 +73,17 @@ public class MethodInvokingMessageProcessorTest
     [Fact]
     public async Task TestHandlerInheritanceMethodImplInSubClass()
     {
-        var serviceCollection = GetDefaultContainer();
+        IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<C2>();
-        var container = serviceCollection.BuildServiceProvider();
-        var lifeCycleProcessor = await Start(container);
+        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ILifecycleProcessor lifeCycleProcessor = await Start(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var received = outChan.Receive();
+        IMessage received = outChan.Receive();
         Assert.Equal("C2", received.Headers.Get<string>("C2"));
 
         await lifeCycleProcessor.Stop();
@@ -86,17 +92,17 @@ public class MethodInvokingMessageProcessorTest
     [Fact]
     public async Task TestHandlerInheritanceMethodImplInSubClassAndSuper()
     {
-        var serviceCollection = GetDefaultContainer();
+        IServiceCollection serviceCollection = GetDefaultContainer();
 
         serviceCollection.AddServiceActivators<C3>();
-        var container = serviceCollection.BuildServiceProvider();
-        var lifeCycleProcessor = await Start(container);
+        ServiceProvider container = serviceCollection.BuildServiceProvider();
+        ILifecycleProcessor lifeCycleProcessor = await Start(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
         channel.Send(Message.Create(string.Empty));
         var outChan = appContext.GetService<IPollableChannel>("out");
-        var received = outChan.Receive();
+        IMessage received = outChan.Receive();
         Assert.Equal("C3", received.Headers.Get<string>("C3"));
 
         await lifeCycleProcessor.Stop();
@@ -106,10 +112,10 @@ public class MethodInvokingMessageProcessorTest
     public void PayloadAsMethodParameterAndObjectAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnObject));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnObject));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create("testing"));
+        object result = processor.ProcessMessage(Message.Create("testing"));
         Assert.Equal("testing-1", result);
     }
 
@@ -117,10 +123,10 @@ public class MethodInvokingMessageProcessorTest
     public void TestPayloadCoercedToString()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnObject));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnObject));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create(123_456_789));
+        object result = processor.ProcessMessage(Message.Create(123_456_789));
         Assert.Equal("123456789-1", result);
     }
 
@@ -128,8 +134,8 @@ public class MethodInvokingMessageProcessorTest
     public void PayloadAsMethodParameterAndMessageAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnMessage));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndReturnMessage));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var result = processor.ProcessMessage(Message.Create("testing")) as IMessage;
         Assert.NotNull(result);
@@ -140,10 +146,10 @@ public class MethodInvokingMessageProcessorTest
     public void MessageAsMethodParameterAndObjectAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageAndReturnObject));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageAndReturnObject));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create("testing"));
+        object result = processor.ProcessMessage(Message.Create("testing"));
         Assert.NotNull(result);
         Assert.Equal("testing-3", result);
     }
@@ -152,8 +158,8 @@ public class MethodInvokingMessageProcessorTest
     public void MessageAsMethodParameterAndMessageAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageAndReturnMessage));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageAndReturnMessage));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var result = processor.ProcessMessage(Message.Create("testing")) as IMessage;
         Assert.NotNull(result);
@@ -164,8 +170,8 @@ public class MethodInvokingMessageProcessorTest
     public void MessageSubclassAsMethodParameterAndMessageAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageSubclassAndReturnMessage));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageSubclassAndReturnMessage));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var result = processor.ProcessMessage(Message.Create("testing")) as IMessage;
         Assert.NotNull(result);
@@ -176,8 +182,8 @@ public class MethodInvokingMessageProcessorTest
     public void MessageSubclassAsMethodParameterAndMessageSubclassAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageSubclassAndReturnMessageSubclass));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptMessageSubclassAndReturnMessageSubclass));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var result = processor.ProcessMessage(Message.Create("testing")) as IMessage;
         Assert.NotNull(result);
@@ -188,11 +194,11 @@ public class MethodInvokingMessageProcessorTest
     public void PayloadAndHeaderAnnotationMethodParametersAndObjectAsReturnValue()
     {
         var testService = new TestService();
-        var method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndHeaderAndReturnObject));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestService).GetMethod(nameof(TestService.AcceptPayloadAndHeaderAndReturnObject));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var request = MessageBuilder.WithPayload("testing").SetHeader("number", 123).Build();
-        var result = processor.ProcessMessage(request);
+        IMessage request = MessageBuilder.WithPayload("testing").SetHeader("number", 123).Build();
+        object result = processor.ProcessMessage(request);
         Assert.NotNull(result);
         Assert.Equal("testing-123", result);
     }
@@ -215,10 +221,10 @@ public class MethodInvokingMessageProcessorTest
     public void MessageOnlyWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.MessageOnly));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.MessageOnly));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create("foo"));
+        object result = processor.ProcessMessage(Message.Create("foo"));
         Assert.Equal("foo", result);
     }
 
@@ -226,10 +232,10 @@ public class MethodInvokingMessageProcessorTest
     public void PayloadWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create(123));
+        object result = processor.ProcessMessage(Message.Create(123));
         Assert.Equal(123, result);
     }
 
@@ -237,10 +243,10 @@ public class MethodInvokingMessageProcessorTest
     public void ConvertedPayloadWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var result = processor.ProcessMessage(Message.Create("456"));
+        object result = processor.ProcessMessage(Message.Create("456"));
         Assert.Equal(456, result);
     }
 
@@ -248,8 +254,8 @@ public class MethodInvokingMessageProcessorTest
     public void ConversionFailureWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.IntegerMethod));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var ex = Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
         Assert.IsType<MessageConversionException>(ex.InnerException);
@@ -259,7 +265,7 @@ public class MethodInvokingMessageProcessorTest
     public void FilterSelectsAnnotationMethodsOnly()
     {
         var service = new OverloadedMethodService();
-        var context = GetDefaultContext();
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, service, typeof(ServiceActivatorAttribute));
         processor.ProcessMessage(MessageBuilder.WithPayload(123).Build());
         Assert.NotNull(service.LastArg);
@@ -271,8 +277,8 @@ public class MethodInvokingMessageProcessorTest
     public void TestProcessMessageRuntimeException()
     {
         var testService = new TestErrorService();
-        var method = typeof(TestErrorService).GetMethod(nameof(TestErrorService.Error));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestErrorService).GetMethod(nameof(TestErrorService.Error));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var ex = Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
         Assert.IsType<InvalidOperationException>(ex.InnerException);
@@ -282,8 +288,8 @@ public class MethodInvokingMessageProcessorTest
     public void TestProcessMessageCheckedException()
     {
         var testService = new TestErrorService();
-        var method = typeof(TestErrorService).GetMethod(nameof(TestErrorService.Checked));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(TestErrorService).GetMethod(nameof(TestErrorService.Checked));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
         var ex = Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(Message.Create("foo")));
         Assert.IsType<CheckedException>(ex.InnerException);
@@ -293,11 +299,11 @@ public class MethodInvokingMessageProcessorTest
     public void MessageAndHeaderWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.MessageAndHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.MessageAndHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var request = MessageBuilder.WithPayload("foo").SetHeader("number", 42).Build();
-        var result = processor.ProcessMessage(request);
+        IMessage request = MessageBuilder.WithPayload("foo").SetHeader("number", 42).Build();
+        object result = processor.ProcessMessage(request);
         Assert.NotNull(result);
         Assert.Equal("foo-42", result);
     }
@@ -306,14 +312,11 @@ public class MethodInvokingMessageProcessorTest
     public void MultipleHeadersWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.TwoHeaders));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.TwoHeaders));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var request = MessageBuilder.WithPayload("foo")
-            .SetHeader("number", 42)
-            .SetHeader("prop", "bar")
-            .Build();
-        var result = processor.ProcessMessage(request);
+        IMessage request = MessageBuilder.WithPayload("foo").SetHeader("number", 42).SetHeader("prop", "bar").Build();
+        object result = processor.ProcessMessage(request);
         Assert.NotNull(result);
         Assert.Equal("bar-42", result);
     }
@@ -322,23 +325,16 @@ public class MethodInvokingMessageProcessorTest
     public void OptionalAndRequiredWithAnnotatedMethod()
     {
         var testService = new AnnotatedTestService();
-        var method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.OptionalAndRequiredHeader));
-        var context = GetDefaultContext();
+        MethodInfo method = typeof(AnnotatedTestService).GetMethod(nameof(AnnotatedTestService.OptionalAndRequiredHeader));
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, testService, method);
-        var message = MessageBuilder.WithPayload("foo")
-            .SetHeader("num", 42)
-            .Build();
-        var result = processor.ProcessMessage(message);
+        IMessage message = MessageBuilder.WithPayload("foo").SetHeader("num", 42).Build();
+        object result = processor.ProcessMessage(message);
         Assert.Equal("null42", result);
-        message = MessageBuilder.WithPayload("foo")
-            .SetHeader("prop", "bar")
-            .SetHeader("num", 42)
-            .Build();
+        message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").SetHeader("num", 42).Build();
         result = processor.ProcessMessage(message);
         Assert.Equal("bar42", result);
-        message = MessageBuilder.WithPayload("foo")
-            .SetHeader("prop", "bar")
-            .Build();
+        message = MessageBuilder.WithPayload("foo").SetHeader("prop", "bar").Build();
         var ex = Assert.Throws<MessageHandlingException>(() => processor.ProcessMessage(message));
         Assert.Contains("num", ex.InnerException.Message);
     }
@@ -347,7 +343,7 @@ public class MethodInvokingMessageProcessorTest
     public void TestPrivateMethod()
     {
         var service = new Foo();
-        var context = GetDefaultContext();
+        IApplicationContext context = GetDefaultContext();
         var processor = new MethodInvokingMessageProcessor<object>(context, service, typeof(ServiceActivatorAttribute));
         Assert.Equal("FOO", processor.ProcessMessage(Message.Create("foo")));
         Assert.Equal("BAR", processor.ProcessMessage(Message.Create("bar")));
@@ -357,10 +353,12 @@ public class MethodInvokingMessageProcessorTest
     {
         var serviceCollection = new ServiceCollection();
         var configBuilder = new ConfigurationBuilder();
+
         var context = new GenericApplicationContext(serviceCollection.BuildServiceProvider(), configBuilder.Build())
         {
             ServiceExpressionResolver = new StandardServiceExpressionResolver()
         };
+
         return context;
     }
 
@@ -377,9 +375,10 @@ public class MethodInvokingMessageProcessorTest
     private IServiceCollection GetDefaultContainer()
     {
         var serviceCollection = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         serviceCollection.AddSingleton<IConfiguration>(config);
         serviceCollection.AddLogging();
+
         serviceCollection.AddGenericApplicationContext((_, context) =>
         {
             context.ServiceExpressionResolver = new StandardServiceExpressionResolver();
@@ -472,7 +471,8 @@ public class MethodInvokingMessageProcessorTest
             return (prop ?? "null") + num;
         }
 
-        public string OptionalAndRequiredDottedHeader([Header(Name = "dot1.foo", Required = false)] string prop, [Header(Name = "dot2.baz")] int num, [Header("'dotted.literal'")] string dotted)
+        public string OptionalAndRequiredDottedHeader([Header(Name = "dot1.foo", Required = false)] string prop, [Header(Name = "dot2.baz")] int num,
+            [Header("'dotted.literal'")] string dotted)
         {
             return prop + num + dotted;
         }
@@ -481,7 +481,7 @@ public class MethodInvokingMessageProcessorTest
         // {
         //    return properties;
         // }
-        public System.Collections.IDictionary MapMethod(System.Collections.IDictionary map)
+        public IDictionary MapMethod(IDictionary map)
         {
             return map;
         }
@@ -619,7 +619,7 @@ public class MethodInvokingMessageProcessorTest
     {
         public object ResolveArgument(ParameterInfo parameter, IMessage message)
         {
-            var names = ((string)message.Payload).Split(" ");
+            string[] names = ((string)message.Payload).Split(" ");
             return new Person(names[0], names[1]);
         }
 

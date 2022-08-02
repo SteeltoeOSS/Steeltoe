@@ -66,16 +66,16 @@ public class PropertyAccessTests : AbstractExpressionTests
         // names the String class as the type it is interested in so is chosen in preference to
         // any 'default' ones
         ctx.AddPropertyAccessor(new StringyPropertyAccessor());
-        var expr = parser.ParseRaw("new String('hello').flibbles");
-        var i = expr.GetValue(ctx, typeof(int));
+        IExpression expr = parser.ParseRaw("new String('hello').flibbles");
+        object i = expr.GetValue(ctx, typeof(int));
         Assert.Equal(7, (int)i);
 
         // The reflection one will be used for other properties...
         expr = parser.ParseRaw("new String('hello').Length");
-        var o = expr.GetValue(ctx);
+        object o = expr.GetValue(ctx);
         Assert.NotNull(o);
 
-        var expression = parser.ParseRaw("new String('hello').flibbles");
+        IExpression expression = parser.ParseRaw("new String('hello').flibbles");
         expression.SetValue(ctx, 99);
         i = expression.GetValue(ctx, typeof(int));
         Assert.Equal(99, (int)i);
@@ -94,7 +94,7 @@ public class PropertyAccessTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         // reflective property accessor is the only one by default
-        var propertyAccessors = ctx.PropertyAccessors;
+        List<IPropertyAccessor> propertyAccessors = ctx.PropertyAccessors;
         Assert.Single(propertyAccessors);
 
         var spa = new StringyPropertyAccessor();
@@ -113,8 +113,8 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void TestAccessingPropertyOfClass()
     {
-        var expression = Parser.ParseExpression("FullName");
-        var value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
+        IExpression expression = Parser.ParseExpression("FullName");
+        object value = expression.GetValue(new StandardEvaluationContext(typeof(string)));
         Assert.Equal("System.String", value);
     }
 
@@ -122,14 +122,24 @@ public class PropertyAccessTests : AbstractExpressionTests
     public void ShouldAlwaysUsePropertyAccessorFromEvaluationContext()
     {
         var parser = new SpelExpressionParser();
-        var expression = parser.ParseExpression("name");
+        IExpression expression = parser.ParseExpression("name");
 
         var context = new StandardEvaluationContext();
-        context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object> { { "name", "Ollie" } }));
+
+        context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object>
+        {
+            { "name", "Ollie" }
+        }));
+
         Assert.Equal("Ollie", expression.GetValue(context));
 
         context = new StandardEvaluationContext();
-        context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object> { { "name", "Jens" } }));
+
+        context.AddPropertyAccessor(new ConfigurablePropertyAccessor(new Dictionary<string, object>
+        {
+            { "name", "Jens" }
+        }));
+
         Assert.Equal("Jens", expression.GetValue(context));
     }
 
@@ -142,16 +152,16 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void NoGetClassAccess()
     {
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
         Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("'a'.GetType().Name").GetValue(context));
     }
 
     [Fact]
     public void PropertyReadOnly()
     {
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
 
-        var expr = Parser.ParseExpression("Name");
+        IExpression expr = Parser.ParseExpression("Name");
         var target = new Person("p1");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
@@ -163,9 +173,9 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void PropertyReadWrite()
     {
-        var context = SimpleEvaluationContext.ForReadWriteDataBinding().Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadWriteDataBinding().Build();
 
-        var expr = Parser.ParseExpression("Name");
+        IExpression expr = Parser.ParseExpression("Name");
         var target = new Person("p1");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
@@ -184,10 +194,10 @@ public class PropertyAccessTests : AbstractExpressionTests
     public void PropertyReadWriteWithRootObject()
     {
         var target = new Person("p1");
-        var context = SimpleEvaluationContext.ForReadWriteDataBinding().WithRootObject(target).Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadWriteDataBinding().WithRootObject(target).Build();
         Assert.Same(target, context.RootObject.Value);
 
-        var expr = Parser.ParseExpression("Name");
+        IExpression expr = Parser.ParseExpression("Name");
         Assert.Equal("p1", expr.GetValue(context, target));
         target.Name = "p2";
         Assert.Equal("p2", expr.GetValue(context, target));
@@ -204,7 +214,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void PropertyAccessWithoutMethodResolver()
     {
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
         var target = new Person("p1");
         Assert.Throws<SpelEvaluationException>(() => Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
     }
@@ -212,7 +222,7 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void PropertyAccessWithInstanceMethodResolver()
     {
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().WithInstanceMethods().Build();
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().WithInstanceMethods().Build();
         var target = new Person("p1");
         Assert.Equal("1", Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
     }
@@ -221,8 +231,9 @@ public class PropertyAccessTests : AbstractExpressionTests
     public void PropertyAccessWithInstanceMethodResolverAndTypedRootObject()
     {
         var target = new Person("p1");
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().
-            WithInstanceMethods().WithTypedRootObject(target, typeof(object)).Build();
+
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().WithInstanceMethods().WithTypedRootObject(target, typeof(object))
+            .Build();
 
         Assert.Equal("1", Parser.ParseExpression("Name.Substring(1)").GetValue(context, target));
         Assert.Same(target, context.RootObject.Value);
@@ -232,8 +243,8 @@ public class PropertyAccessTests : AbstractExpressionTests
     [Fact]
     public void PropertyAccessWithArrayIndexOutOfBounds()
     {
-        var context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
-        var expression = Parser.ParseExpression("StringArrayOfThreeItems[3]");
+        SimpleEvaluationContext context = SimpleEvaluationContext.ForReadOnlyDataBinding().Build();
+        IExpression expression = Parser.ParseExpression("StringArrayOfThreeItems[3]");
         var ex = Assert.Throws<SpelEvaluationException>(() => expression.GetValue(context, new Inventor()));
         Assert.Equal(SpelMessage.ArrayIndexOutOfBounds, ex.MessageCode);
     }
@@ -244,7 +255,10 @@ public class PropertyAccessTests : AbstractExpressionTests
 
         public IList<Type> GetSpecificTargetClasses()
         {
-            return new[] { typeof(string) };
+            return new[]
+            {
+                typeof(string)
+            };
         }
 
         public bool CanRead(IEvaluationContext context, object target, string name)

@@ -6,27 +6,28 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binder;
+using Steeltoe.Stream.StubBinder1;
 
-[assembly: Binder(Steeltoe.Stream.StubBinder1.StubBinder1.BinderName, typeof(Steeltoe.Stream.StubBinder1.Startup))]
+[assembly: Binder(StubBinder1.BinderName, typeof(Startup))]
 
 namespace Steeltoe.Stream.StubBinder1;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; }
+
+    public bool ConfigureServicesInvoked { get; set; }
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
 
-    public IConfiguration Configuration { get; }
-
-    public bool ConfigureServicesInvoked { get; set; }
-
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
         ConfigureServicesInvoked = true; // Testing
-        var config = Configuration.GetSection("binder1");
+        IConfigurationSection config = Configuration.GetSection("binder1");
         config["name"] = "foobar"; // Unit test checks for this change to verify access to configuration
         services.AddSingleton<IBinder, StubBinder1>();
     }

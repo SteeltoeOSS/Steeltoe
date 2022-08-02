@@ -11,20 +11,27 @@ public class CosmosDbReadOnlyConnectionInfo : IConnectionInfo
 {
     public Connection Get(IConfiguration configuration, string serviceName)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        CosmosDbServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? configuration.GetSingletonServiceInfo<CosmosDbServiceInfo>()
             : configuration.GetRequiredServiceInfo<CosmosDbServiceInfo>(serviceName);
+
         return GetConnection(info, configuration);
     }
 
     public Connection Get(IConfiguration configuration, IServiceInfo serviceInfo)
-        => GetConnection((CosmosDbServiceInfo)serviceInfo, configuration);
+    {
+        return GetConnection((CosmosDbServiceInfo)serviceInfo, configuration);
+    }
 
     public bool IsSameType(string serviceType)
-        => serviceType.Equals("cosmosdb-readonly", StringComparison.InvariantCultureIgnoreCase);
+    {
+        return serviceType.Equals("cosmosdb-readonly", StringComparison.InvariantCultureIgnoreCase);
+    }
 
     public bool IsSameType(IServiceInfo serviceInfo)
-        => serviceInfo is CosmosDbServiceInfo && serviceInfo.Id.Contains("readonly");
+    {
+        return serviceInfo is CosmosDbServiceInfo && serviceInfo.Id.Contains("readonly");
+    }
 
     private Connection GetConnection(CosmosDbServiceInfo info, IConfiguration configuration)
     {

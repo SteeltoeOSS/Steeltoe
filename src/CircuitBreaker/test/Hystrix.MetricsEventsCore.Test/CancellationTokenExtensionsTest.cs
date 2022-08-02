@@ -12,7 +12,7 @@ public class CancellationTokenExtensionsTest
     public void GetAwaiter_WithCancel_IsCompleted()
     {
         var tokenSource = new CancellationTokenSource();
-        var awaiter = tokenSource.Token.GetAwaiter();
+        CancellationTokenExtensions.CancellationTokenAwaiter awaiter = tokenSource.Token.GetAwaiter();
         Assert.False(awaiter.IsCompleted);
         tokenSource.Cancel();
         Assert.True(awaiter.IsCompleted);

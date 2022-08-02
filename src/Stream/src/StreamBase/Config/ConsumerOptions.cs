@@ -19,14 +19,17 @@ public class ConsumerOptions : IConsumerOptions
     private const bool UseNativeDecodingDefault = false;
     private const bool MultiplexDefault = false;
 
-    public ConsumerOptions()
-    {
-    }
+    bool IConsumerOptions.AutoStartup => AutoStartup.Value;
 
-    public ConsumerOptions(string bindingName)
-    {
-        BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
-    }
+    bool IConsumerOptions.IsPartitioned => Partitioned.Value;
+
+    bool IConsumerOptions.DefaultRetryable => DefaultRetryable.Value;
+
+    HeaderMode IConsumerOptions.HeaderMode => HeaderMode.Value;
+
+    bool IConsumerOptions.UseNativeDecoding => UseNativeDecoding.GetValueOrDefault();
+
+    bool IConsumerOptions.Multiplex => Multiplex.GetValueOrDefault();
 
     public string BindingName { get; set; }
 
@@ -60,17 +63,14 @@ public class ConsumerOptions : IConsumerOptions
 
     public bool? Multiplex { get; set; }
 
-    bool IConsumerOptions.AutoStartup => AutoStartup.Value;
+    public ConsumerOptions()
+    {
+    }
 
-    bool IConsumerOptions.IsPartitioned => Partitioned.Value;
-
-    bool IConsumerOptions.DefaultRetryable => DefaultRetryable.Value;
-
-    HeaderMode IConsumerOptions.HeaderMode => HeaderMode.Value;
-
-    bool IConsumerOptions.UseNativeDecoding => UseNativeDecoding.GetValueOrDefault();
-
-    bool IConsumerOptions.Multiplex => Multiplex.GetValueOrDefault();
+    public ConsumerOptions(string bindingName)
+    {
+        BindingName = bindingName ?? throw new ArgumentNullException(nameof(bindingName));
+    }
 
     public IConsumerOptions Clone()
     {

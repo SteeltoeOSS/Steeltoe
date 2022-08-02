@@ -6,7 +6,12 @@ namespace Steeltoe.Connector.Services;
 
 public class SqlServerServiceInfo : UriServiceInfo
 {
-    public static readonly string[] SqlServerScheme = { "sqlserver", "jdbc:sqlserver", "mssql" };
+    public static readonly string[] SqlServerScheme =
+    {
+        "sqlserver",
+        "jdbc:sqlserver",
+        "mssql"
+    };
 
     public SqlServerServiceInfo(string id, string url)
         : base(id, url)

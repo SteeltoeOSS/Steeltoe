@@ -17,7 +17,7 @@ namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class MessageListenerAdapterTest
 {
-    private readonly SimpleService _simpleService = new ();
+    private readonly SimpleService _simpleService = new();
 
     private readonly MessageHeaders _messageProperties;
 
@@ -27,8 +27,9 @@ public class MessageListenerAdapterTest
     {
         var headers = new Dictionary<string, object>
         {
-            { MessageHeaders.ContentType,  MimeTypeUtils.TextPlainValue }
+            { MessageHeaders.ContentType, MimeTypeUtils.TextPlainValue }
         };
+
         _messageProperties = new MessageHeaders(headers);
         _adapter = new MessageListenerAdapter(null);
     }
@@ -42,7 +43,7 @@ public class MessageListenerAdapterTest
         var testDelegate = new TestDelegate(called);
         extendedAdapter.Instance = testDelegate;
         extendedAdapter.ContainerAckMode = AcknowledgeMode.Manual;
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         extendedAdapter.OnMessage(Message.Create(bytes, _messageProperties), channelMock.Object);
         Assert.True(called.Value);
     }
@@ -52,8 +53,8 @@ public class MessageListenerAdapterTest
     {
         var called = new AtomicBoolean(false);
         var delegate1 = new TestDelegate1(called);
-        _adapter.Instance = @delegate1;
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        _adapter.Instance = delegate1;
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
     }
@@ -64,7 +65,7 @@ public class MessageListenerAdapterTest
         var called = new AtomicBoolean(false);
         var delegate2 = new TestDelegate2(called);
         _adapter = new MessageListenerAdapter(null, delegate2, nameof(TestDelegate2.MyPojoMessageMethod));
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.True(called.Value);
     }
@@ -74,7 +75,7 @@ public class MessageListenerAdapterTest
     {
         _adapter.DefaultListenerMethod = "Handle";
         _adapter.Instance = _simpleService;
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         _adapter.OnMessage(Message.Create(bytes, _messageProperties), null);
         Assert.Equal("Handle", _simpleService.Called);
     }
@@ -87,12 +88,13 @@ public class MessageListenerAdapterTest
             { "foo", "Handle" },
             { "bar", "NotDefinedOnInterface" }
         };
+
         _adapter.DefaultListenerMethod = "AnotherHandle";
         _adapter.SetQueueOrTagToMethodName(map);
         _adapter.Instance = _simpleService;
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, _messageProperties);
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        IMessage<byte[]> message = Message.Create(bytes, _messageProperties);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(message);
         accessor.ConsumerQueue = "foo";
         accessor.ConsumerTag = "bar";
         _adapter.OnMessage(message, null);
@@ -120,20 +122,19 @@ public class MessageListenerAdapterTest
         var throwable = new AtomicReference<Exception>();
         _adapter.RecoveryCallback = new TestRecoveryCallback(replyMessage, replyAddress, throwable);
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(_messageProperties);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(_messageProperties);
         accessor.ReplyTo = "foo/bar";
         var ex = new Exception();
         var mockChannel = new Mock<RC.IModel>();
-        mockChannel.Setup(c => c.BasicPublish("foo", "bar", false, It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()))
-            .Throws(ex);
+        mockChannel.Setup(c => c.BasicPublish("foo", "bar", false, It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>())).Throws(ex);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, _messageProperties);
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        IMessage<byte[]> message = Message.Create(bytes, _messageProperties);
         _adapter.OnMessage(message, mockChannel.Object);
         Assert.Equal("Handle", _simpleService.Called);
         Assert.NotNull(replyMessage.Value);
         Assert.NotNull(replyAddress.Value);
-        var address = replyAddress.Value;
+        Address address = replyAddress.Value;
         Assert.Equal("foo", address.ExchangeName);
         Assert.Equal("bar", address.RoutingKey);
         Assert.Same(ex, throwable.Value);
@@ -144,17 +145,18 @@ public class MessageListenerAdapterTest
     {
         var called = new CountdownEvent(1);
         var @delegate = new TestAsyncDelegate();
+
         _adapter = new MessageListenerAdapter(null, @delegate, nameof(TestAsyncDelegate.MyPojoMessageMethod))
         {
             ContainerAckMode = AcknowledgeMode.Manual,
             ResponseExchange = "default"
         };
+
         var mockChannel = new Mock<RC.IModel>();
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        mockChannel.Setup(c => c.BasicAck(It.IsAny<ulong>(), false))
-            .Callback(() => called.Signal());
-        var bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
-        var message = Message.Create(bytes, _messageProperties);
+        mockChannel.Setup(c => c.BasicAck(It.IsAny<ulong>(), false)).Callback(() => called.Signal());
+        byte[] bytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
+        IMessage<byte[]> message = Message.Create(bytes, _messageProperties);
         _adapter.OnMessage(message, mockChannel.Object);
         Assert.True(called.Wait(TimeSpan.FromSeconds(10)));
     }
@@ -273,6 +275,7 @@ public class MessageListenerAdapterTest
             Assert.NotNull(channel);
             Assert.NotNull(message);
             ulong deliveryTag = 0;
+
             if (message.Headers.DeliveryTag().HasValue)
             {
                 deliveryTag = message.Headers.DeliveryTag().Value;
@@ -293,7 +296,12 @@ public class MessageListenerAdapterTest
 
         protected override object[] BuildListenerArguments(object extractedMessage, RC.IModel channel, IMessage message)
         {
-            return new[] { extractedMessage, channel, message };
+            return new[]
+            {
+                extractedMessage,
+                channel,
+                message
+            };
         }
     }
 }

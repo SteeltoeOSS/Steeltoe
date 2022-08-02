@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Steeltoe.Stream.Attributes;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Binding;
 
@@ -31,10 +31,12 @@ public static class BindingHelpers
 
     internal static void CollectFromProperties(Type binding, IDictionary<string, Bindable> targets)
     {
-        var infos = binding.GetProperties(BindingFlags.Instance | BindingFlags.Public);
-        foreach (var info in infos)
+        PropertyInfo[] infos = binding.GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+        foreach (PropertyInfo info in infos)
         {
-            var getMethod = info.GetGetMethod();
+            MethodInfo getMethod = info.GetGetMethod();
+
             if (getMethod != null)
             {
                 if (info.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
@@ -65,7 +67,7 @@ public static class BindingHelpers
             }
         }
 
-        foreach (var @interface in binding.GetInterfaces())
+        foreach (Type @interface in binding.GetInterfaces())
         {
             CollectFromProperties(@interface, targets);
         }
@@ -73,8 +75,9 @@ public static class BindingHelpers
 
     internal static void CollectFromMethods(Type binding, IDictionary<string, Bindable> components)
     {
-        var methods = binding.GetMethods(BindingFlags.Instance | BindingFlags.Public);
-        foreach (var method in methods)
+        MethodInfo[] methods = binding.GetMethods(BindingFlags.Instance | BindingFlags.Public);
+
+        foreach (MethodInfo method in methods)
         {
             if (method.GetCustomAttribute(typeof(InputAttribute)) is InputAttribute attribute)
             {
@@ -103,7 +106,7 @@ public static class BindingHelpers
             }
         }
 
-        foreach (var @interface in binding.GetInterfaces())
+        foreach (Type @interface in binding.GetInterfaces())
         {
             CollectFromMethods(@interface, components);
         }

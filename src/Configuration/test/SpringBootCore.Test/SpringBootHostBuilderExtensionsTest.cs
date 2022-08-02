@@ -30,13 +30,11 @@ public class SpringBootHostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        var hostBuilder = new WebHostBuilder()
-            .UseStartup<TestServerStartup>()
-            .AddSpringBootConfiguration();
+        IWebHostBuilder hostBuilder = new WebHostBuilder().UseStartup<TestServerStartup>().AddSpringBootConfiguration();
 
         using var server = new TestServer(hostBuilder);
-        var services = TestServerStartup.ServiceProvider;
-        var config = services.GetServices<IConfiguration>().SingleOrDefault();
+        IServiceProvider services = TestServerStartup.ServiceProvider;
+        IConfiguration config = services.GetServices<IConfiguration>().SingleOrDefault();
 
         Assert.NotNull(config["foo:bar"]);
         Assert.Equal("value", config["foo:bar"]);
@@ -47,14 +45,16 @@ public class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void WebHostConfiguresIConfiguration_CmdLine()
     {
-        var hostBuilder = WebHost.CreateDefaultBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
-            .UseStartup<TestServerStartup>()
-            .AddSpringBootConfiguration();
+        IWebHostBuilder hostBuilder = WebHost.CreateDefaultBuilder(new[]
+        {
+            "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
+            "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
+        }).UseStartup<TestServerStartup>().AddSpringBootConfiguration();
 
         using var server = new TestServer(hostBuilder);
 
-        var services = TestServerStartup.ServiceProvider;
-        var config = services.GetServices<IConfiguration>().SingleOrDefault();
+        IServiceProvider services = TestServerStartup.ServiceProvider;
+        IConfiguration config = services.GetServices<IConfiguration>().SingleOrDefault();
 
         Assert.NotNull(config["spring:cloud:stream:bindings:input:destination"]);
         Assert.Equal("testDestination", config["spring:cloud:stream:bindings:input:destination"]);
@@ -68,10 +68,9 @@ public class SpringBootHostBuilderExtensionsTest
     {
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
-        var hostBuilder = new HostBuilder()
-            .AddSpringBootConfiguration();
-        var host = hostBuilder.Build();
-        var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
+        IHostBuilder hostBuilder = new HostBuilder().AddSpringBootConfiguration();
+        IHost host = hostBuilder.Build();
+        IConfiguration config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
         Assert.NotNull(config["foo:bar"]);
         Assert.Equal("value", config["foo:bar"]);
@@ -82,11 +81,14 @@ public class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void GenericHostConfiguresIConfiguration_CmdLine()
     {
-        var hostBuilder = Host.CreateDefaultBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" })
-            .AddSpringBootConfiguration();
+        IHostBuilder hostBuilder = Host.CreateDefaultBuilder(new[]
+        {
+            "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
+            "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
+        }).AddSpringBootConfiguration();
 
-        using var host = hostBuilder.Build();
-        var config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
+        using IHost host = hostBuilder.Build();
+        IConfiguration config = host.Services.GetServices<IConfiguration>().SingleOrDefault();
 
         Assert.NotNull(config["spring:cloud:stream:bindings:input:destination"]);
         Assert.Equal("testDestination", config["spring:cloud:stream:bindings:input:destination"]);
@@ -107,10 +109,10 @@ public class SpringBootHostBuilderExtensionsTest
     public void WebApplicationConfiguresIConfiguration_Spring_Application_Json()
     {
         Environment.SetEnvironmentVariable("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder();
 
         hostBuilder.AddSpringBootConfiguration();
-        var host = hostBuilder.Build();
+        WebApplication host = hostBuilder.Build();
 
         var config = host.Services.GetService<IConfiguration>();
 
@@ -123,10 +125,15 @@ public class SpringBootHostBuilderExtensionsTest
     [Fact]
     public void WebApplicationConfiguresIConfiguration_CmdLine()
     {
-        var hostBuilder = TestHelpers.GetTestWebApplicationBuilder(new[] { "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination", "Spring.Cloud.Stream.Bindings.Input.Group=testGroup" });
+        WebApplicationBuilder hostBuilder = TestHelpers.GetTestWebApplicationBuilder(new[]
+        {
+            "Spring.Cloud.Stream.Bindings.Input.Destination=testDestination",
+            "Spring.Cloud.Stream.Bindings.Input.Group=testGroup"
+        });
+
         hostBuilder.AddSpringBootConfiguration();
 
-        using var host = hostBuilder.Build();
+        using WebApplication host = hostBuilder.Build();
         var config = host.Services.GetService<IConfiguration>();
 
         Assert.NotNull(config["spring:cloud:stream:bindings:input:destination"]);

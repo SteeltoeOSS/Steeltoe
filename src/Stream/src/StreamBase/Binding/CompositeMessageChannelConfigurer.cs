@@ -11,15 +11,14 @@ public class CompositeMessageChannelConfigurer : IMessageChannelAndSourceConfigu
 {
     private readonly List<IMessageChannelConfigurer> _messageChannelConfigurers;
 
-    public CompositeMessageChannelConfigurer(
-        IEnumerable<IMessageChannelConfigurer> messageChannelConfigurers)
+    public CompositeMessageChannelConfigurer(IEnumerable<IMessageChannelConfigurer> messageChannelConfigurers)
     {
         _messageChannelConfigurers = messageChannelConfigurers.ToList();
     }
 
     public void ConfigureInputChannel(IMessageChannel messageChannel, string channelName)
     {
-        foreach (var messageChannelConfigurer in _messageChannelConfigurers)
+        foreach (IMessageChannelConfigurer messageChannelConfigurer in _messageChannelConfigurers)
         {
             messageChannelConfigurer.ConfigureInputChannel(messageChannel, channelName);
         }
@@ -27,7 +26,7 @@ public class CompositeMessageChannelConfigurer : IMessageChannelAndSourceConfigu
 
     public void ConfigureOutputChannel(IMessageChannel messageChannel, string channelName)
     {
-        foreach (var messageChannelConfigurer in _messageChannelConfigurers)
+        foreach (IMessageChannelConfigurer messageChannelConfigurer in _messageChannelConfigurers)
         {
             messageChannelConfigurer.ConfigureOutputChannel(messageChannel, channelName);
         }
@@ -35,7 +34,7 @@ public class CompositeMessageChannelConfigurer : IMessageChannelAndSourceConfigu
 
     public void ConfigurePolledMessageSource(IPollableMessageSource binding, string name)
     {
-        foreach (var channelConfigurer in _messageChannelConfigurers)
+        foreach (IMessageChannelConfigurer channelConfigurer in _messageChannelConfigurers)
         {
             if (channelConfigurer is IMessageChannelAndSourceConfigurer configurer)
             {

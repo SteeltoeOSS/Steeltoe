@@ -36,7 +36,7 @@ public class ConsulHeartbeatOptionsTest
             IntervalRatio = ratio
         };
 
-        var period = opts.ComputeHeartbeatInterval();
+        TimeSpan period = opts.ComputeHeartbeatInterval();
         Assert.Equal(TimeSpan.FromMilliseconds(expected), period);
     }
 }

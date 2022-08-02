@@ -6,7 +6,7 @@ namespace Steeltoe.Common.Retry;
 
 public abstract class RetryTemplate : IRetryOperation
 {
-    protected List<IRetryListener> listeners = new ();
+    protected List<IRetryListener> listeners = new();
 
     public void RegisterListener(IRetryListener listener)
     {

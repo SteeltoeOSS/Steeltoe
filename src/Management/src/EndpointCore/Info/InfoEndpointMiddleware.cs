@@ -13,8 +13,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 {
     private readonly RequestDelegate _next;
 
-    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions, ILogger<InfoEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+    public InfoEndpointMiddleware(RequestDelegate next, InfoEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<InfoEndpointMiddleware> logger = null)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
@@ -33,7 +34,7 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
 
     protected internal Task HandleInfoRequestAsync(HttpContext context)
     {
-        var serialInfo = HandleRequest();
+        string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {0}", serialInfo);
 
         context.HandleContentNegotiation(logger);

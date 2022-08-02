@@ -27,17 +27,12 @@ public class KubernetesServiceInstance : IServiceInstance
 
     public bool IsSecure { get; }
 
-    public Uri Uri => new ($"{GetScheme()}{Colon}{Dsl}{Host}{Colon}{Port}");
+    public Uri Uri => new($"{GetScheme()}{Colon}{Dsl}{Host}{Colon}{Port}");
 
     public IDictionary<string, string> Metadata { get; }
 
-    public KubernetesServiceInstance(
-        string instanceId,
-        string serviceId,
-        V1EndpointAddress endpointAddress,
-        Corev1EndpointPort endpointPort,
-        IDictionary<string, string> metadata,
-        bool isSecure)
+    public KubernetesServiceInstance(string instanceId, string serviceId, V1EndpointAddress endpointAddress, Corev1EndpointPort endpointPort,
+        IDictionary<string, string> metadata, bool isSecure)
     {
         InstanceId = instanceId;
         ServiceId = serviceId;

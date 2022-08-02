@@ -6,11 +6,10 @@ namespace Steeltoe.Discovery.Eureka.Task;
 
 internal sealed class TimedTask
 {
-    public string Name { get; private set; }
-
-    public Action Task { get; private set; }
-
     private int _taskRunning;
+    public string Name { get; }
+
+    public Action Task { get; }
 
     public TimedTask(string name, Action task)
     {
@@ -33,10 +32,6 @@ internal sealed class TimedTask
             }
 
             Interlocked.Exchange(ref _taskRunning, 0);
-        }
-        else
-        {
-            // Log, already running
         }
     }
 }

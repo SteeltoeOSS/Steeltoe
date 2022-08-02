@@ -14,16 +14,26 @@ public static class MySqlTypeLocator
     /// <summary>
     /// Gets a list of supported MySQL assemblies.
     /// </summary>
-    public static string[] Assemblies { get; internal set; } = { "MySql.Data", "MySqlConnector" };
+    public static string[] Assemblies { get; internal set; } =
+    {
+        "MySql.Data",
+        "MySqlConnector"
+    };
 
     /// <summary>
     /// Gets a list of MySQL types that implement IDbConnection.
     /// </summary>
-    public static string[] ConnectionTypeNames { get; internal set; } = { "MySql.Data.MySqlClient.MySqlConnection", "MySqlConnector.MySqlConnection" };
+    public static string[] ConnectionTypeNames { get; internal set; } =
+    {
+        "MySql.Data.MySqlClient.MySqlConnection",
+        "MySqlConnector.MySqlConnection"
+    };
 
     /// <summary>
     /// Gets MySqlConnection from a MySQL Library.
     /// </summary>
-    /// <exception cref="ConnectorException">When type is not found.</exception>
+    /// <exception cref="ConnectorException">
+    /// When type is not found.
+    /// </exception>
     public static Type MySqlConnection => ReflectionHelpers.FindTypeOrThrow(Assemblies, ConnectionTypeNames, "MySqlConnection", "a MySql ADO.NET assembly");
 }

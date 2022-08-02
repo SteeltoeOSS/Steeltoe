@@ -9,6 +9,8 @@ namespace Steeltoe.Integration.Util;
 
 public class BeanFactoryTypeConverter : ITypeConverter
 {
+    public IConversionService ConversionService { get; set; }
+
     public BeanFactoryTypeConverter()
     {
         ConversionService = DefaultConversionService.Singleton;
@@ -18,8 +20,6 @@ public class BeanFactoryTypeConverter : ITypeConverter
     {
         ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
     }
-
-    public IConversionService ConversionService { get; set; }
 
     public bool CanConvert(Type sourceType, Type targetType)
     {
@@ -32,9 +32,7 @@ public class BeanFactoryTypeConverter : ITypeConverter
         {
             return ConversionService.Convert(value, sourceType, targetType);
         }
-        else
-        {
-            throw new NotImplementedException("Cannot be converted by default service");
-        }
+
+        throw new NotImplementedException("Cannot be converted by default service");
     }
 }

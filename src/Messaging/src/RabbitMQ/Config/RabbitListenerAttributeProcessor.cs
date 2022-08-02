@@ -2,6 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Reflection;
+using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Configuration;
 using Steeltoe.Common.Contexts;
@@ -14,9 +18,6 @@ using Steeltoe.Messaging.RabbitMQ.Attributes;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
-using System.Collections;
-using System.Reflection;
-using System.Text;
 
 namespace Steeltoe.Messaging.RabbitMQ.Config;
 
@@ -30,23 +31,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     private int _counter;
     private IApplicationContext _applicationContext;
 
-    public RabbitListenerAttributeProcessor(
-        IApplicationContext applicationContext,
-        IRabbitListenerEndpointRegistry endpointRegistry,
-        IRabbitListenerEndpointRegistrar registrar,
-        IMessageHandlerMethodFactory messageHandlerMethodFactory,
-        IEnumerable<RabbitListenerMetadata> rabbitListeners,
-        ILoggerFactory loggerFactory = null)
-    {
-        ApplicationContext = applicationContext;
-        EndpointRegistry = endpointRegistry;
-        registrar.EndpointRegistry = endpointRegistry;
-        Registrar = registrar;
-        MessageHandlerMethodFactory = messageHandlerMethodFactory;
-        _rabbitListenerMetadata = rabbitListeners.ToList();
-        _loggerFactory = loggerFactory;
-        _logger = _loggerFactory?.CreateLogger<RabbitListenerAttributeProcessor>();
-    }
+    internal IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
 
     public IApplicationContext ApplicationContext
     {
@@ -54,6 +39,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         set
         {
             _applicationContext = value;
+
             if (_applicationContext != null)
             {
                 Resolver = _applicationContext.ServiceExpressionResolver ?? new StandardServiceExpressionResolver();
@@ -80,19 +66,32 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
-    internal IMessageHandlerMethodFactory MessageHandlerMethodFactory { get; set; }
+    public RabbitListenerAttributeProcessor(IApplicationContext applicationContext, IRabbitListenerEndpointRegistry endpointRegistry,
+        IRabbitListenerEndpointRegistrar registrar, IMessageHandlerMethodFactory messageHandlerMethodFactory,
+        IEnumerable<RabbitListenerMetadata> rabbitListeners, ILoggerFactory loggerFactory = null)
+    {
+        ApplicationContext = applicationContext;
+        EndpointRegistry = endpointRegistry;
+        registrar.EndpointRegistry = endpointRegistry;
+        Registrar = registrar;
+        MessageHandlerMethodFactory = messageHandlerMethodFactory;
+        _rabbitListenerMetadata = rabbitListeners.ToList();
+        _loggerFactory = loggerFactory;
+        _logger = _loggerFactory?.CreateLogger<RabbitListenerAttributeProcessor>();
+    }
 
     public void Initialize()
     {
         _logger?.LogDebug("RabbitListenerAttributeProcessor initializing");
 
-        foreach (var metadata in _rabbitListenerMetadata)
+        foreach (RabbitListenerMetadata metadata in _rabbitListenerMetadata)
         {
-            var bean = CreateTargetBean(metadata.TargetClass);
-            var beanName = metadata.TargetClass.Name;
-            foreach (var lm in metadata.ListenerMethods)
+            object bean = CreateTargetBean(metadata.TargetClass);
+            string beanName = metadata.TargetClass.Name;
+
+            foreach (RabbitListenerMetadata.ListenerMethod lm in metadata.ListenerMethods)
             {
-                foreach (var rabbitListener in lm.Attributes)
+                foreach (RabbitListenerAttribute rabbitListener in lm.Attributes)
                 {
                     ProcessAmqpListener(rabbitListener, lm.Method, bean, beanName);
                 }
@@ -105,8 +104,9 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
 
         Registrar.ApplicationContext = ApplicationContext;
-        var instances = ApplicationContext.GetServices<IRabbitListenerConfigurer>();
-        foreach (var configurer in instances)
+        IEnumerable<IRabbitListenerConfigurer> instances = ApplicationContext.GetServices<IRabbitListenerConfigurer>();
+
+        foreach (IRabbitListenerConfigurer configurer in instances)
         {
             configurer.ConfigureRabbitListeners(Registrar);
         }
@@ -116,7 +116,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             Registrar.ContainerFactoryServiceName = ContainerFactoryServiceName;
         }
 
-        var handlerMethodFactory = Registrar.MessageHandlerMethodFactory;
+        IMessageHandlerMethodFactory handlerMethodFactory = Registrar.MessageHandlerMethodFactory;
+
         if (handlerMethodFactory != null)
         {
             MessageHandlerMethodFactory = handlerMethodFactory;
@@ -130,9 +131,11 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         var checkedMethods = new List<MethodInfo>();
         MethodInfo defaultMethod = null;
-        foreach (var method in multiMethods)
+
+        foreach (MethodInfo method in multiMethods)
         {
             var attribute = method.GetCustomAttribute<RabbitHandlerAttribute>();
+
             if (attribute == null)
             {
                 throw new InvalidOperationException("MultiMethod must contain RabbitHandlerAttribute");
@@ -140,7 +143,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
             if (attribute.IsDefault)
             {
-                var toAssert = defaultMethod;
+                MethodInfo toAssert = defaultMethod;
+
                 if (toAssert != null)
                 {
                     throw new InvalidOperationException($"Only one RabbitHandlerAttribute can be marked 'isDefault', found: {toAssert} and {method}");
@@ -153,7 +157,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             checkedMethods.Add(method);
         }
 
-        foreach (var classLevelListener in classLevelListeners)
+        foreach (RabbitListenerAttribute classLevelListener in classLevelListeners)
         {
             var endpoint = new MultiMethodRabbitListenerEndpoint(ApplicationContext, checkedMethods, defaultMethod, bean, _loggerFactory);
             ProcessListener(endpoint, classLevelListener, bean, bean.GetType(), beanName);
@@ -169,13 +173,15 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         endpoint.ApplicationContext = ApplicationContext;
         endpoint.ReturnExceptions = ResolveExpressionAsBoolean(rabbitListener.ReturnExceptions, "ReturnExceptions");
 
-        var group = rabbitListener.Group;
+        string group = rabbitListener.Group;
+
         if (!string.IsNullOrEmpty(group))
         {
             endpoint.Group = group;
         }
 
-        var autoStartup = rabbitListener.AutoStartup;
+        string autoStartup = rabbitListener.AutoStartup;
+
         if (!string.IsNullOrEmpty(autoStartup))
         {
             endpoint.AutoStartup = ResolveExpressionAsBoolean(autoStartup, "AutoStartup");
@@ -189,7 +195,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         ResolveAdmin(endpoint, rabbitListener, target);
         ResolveAckMode(endpoint, rabbitListener);
         ResolvePostProcessor(endpoint, rabbitListener, target, beanName);
-        var factory = ResolveContainerFactory(rabbitListener, target, beanName);
+        IRabbitListenerContainerFactory factory = ResolveContainerFactory(rabbitListener, target, beanName);
 
         Registrar.RegisterEndpoint(endpoint, factory);
     }
@@ -197,16 +203,19 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     private void ProcessAmqpListener(RabbitListenerAttribute rabbitListener, MethodInfo method, object bean, string beanName)
     {
         _logger?.LogDebug("Adding RabbitListener method {method} from type {type}", method.ToString(), method.DeclaringType);
+
         var endpoint = new MethodRabbitListenerEndpoint(ApplicationContext, method, bean, _loggerFactory)
         {
             Method = method
         };
+
         ProcessListener(endpoint, rabbitListener, bean, method, beanName);
     }
 
     private void ResolvePostProcessor(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener, object target, string name)
     {
-        var ppBeanName = Resolve(rabbitListener.ReplyPostProcessor);
+        string ppBeanName = Resolve(rabbitListener.ReplyPostProcessor);
+
         if (!string.IsNullOrEmpty(ppBeanName))
         {
             if (ApplicationContext == null)
@@ -215,9 +224,11 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             }
 
             var pp = ApplicationContext.GetService<IReplyPostProcessor>(ppBeanName);
+
             if (pp == null)
             {
-                throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{target}], no IReplyPostProcessor with id '{name}' was found");
+                throw new InvalidOperationException(
+                    $"Could not register rabbit listener endpoint on [{target}], no IReplyPostProcessor with id '{name}' was found");
             }
 
             endpoint.ReplyPostProcessor = pp;
@@ -227,7 +238,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     private IRabbitListenerContainerFactory ResolveContainerFactory(RabbitListenerAttribute rabbitListener, object factoryTarget, string name)
     {
         IRabbitListenerContainerFactory factory = null;
-        var containerFactoryBeanName = Resolve(rabbitListener.ContainerFactory);
+        string containerFactoryBeanName = Resolve(rabbitListener.ContainerFactory);
+
         if (!string.IsNullOrEmpty(containerFactoryBeanName))
         {
             if (ApplicationContext == null)
@@ -236,9 +248,11 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             }
 
             factory = ApplicationContext.GetService<IRabbitListenerContainerFactory>(containerFactoryBeanName);
+
             if (factory == null)
             {
-                throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{factoryTarget}], no IRabbitListenerContainerFactory with id '{containerFactoryBeanName}' was found");
+                throw new InvalidOperationException(
+                    $"Could not register rabbit listener endpoint on [{factoryTarget}], no IRabbitListenerContainerFactory with id '{containerFactoryBeanName}' was found");
             }
         }
 
@@ -247,7 +261,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ResolveAdmin(MethodRabbitListenerEndpoint endpoint, RabbitListenerAttribute rabbitListener, object adminTarget)
     {
-        var rabbitAdmin = Resolve(rabbitListener.Admin);
+        string rabbitAdmin = Resolve(rabbitListener.Admin);
+
         if (!string.IsNullOrEmpty(rabbitAdmin))
         {
             if (ApplicationContext == null)
@@ -256,9 +271,11 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
             }
 
             endpoint.Admin = ApplicationContext.GetService<IRabbitAdmin>(rabbitAdmin);
+
             if (endpoint.Admin == null)
             {
-                throw new InvalidOperationException($"Could not register rabbit listener endpoint on [{adminTarget}], no RabbitAdmin with id '{rabbitAdmin}' was found");
+                throw new InvalidOperationException(
+                    $"Could not register rabbit listener endpoint on [{adminTarget}], no RabbitAdmin with id '{rabbitAdmin}' was found");
             }
         }
     }
@@ -267,7 +284,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(rabbitListener.ErrorHandler))
         {
-            var errorHandler = ResolveExpression(rabbitListener.ErrorHandler, typeof(IRabbitListenerErrorHandler), "ErrorHandler");
+            object errorHandler = ResolveExpression(rabbitListener.ErrorHandler, typeof(IRabbitListenerErrorHandler), "ErrorHandler");
+
             switch (errorHandler)
             {
                 case IRabbitListenerErrorHandler rabbitListenerErrorHandler:
@@ -280,6 +298,7 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
                     }
 
                     endpoint.ErrorHandler = ApplicationContext.GetService<IRabbitListenerErrorHandler>(errorHandlerName);
+
                     if (endpoint.ErrorHandler == null)
                     {
                         throw new InvalidOperationException($"Failed to resolve ErrorHandler by name using: {errorHandlerName}");
@@ -296,7 +315,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(rabbitListener.AckMode))
         {
-            var ackMode = ResolveExpression(rabbitListener.AckMode, typeof(AcknowledgeMode), "AckMode");
+            object ackMode = ResolveExpression(rabbitListener.AckMode, typeof(AcknowledgeMode), "AckMode");
+
             if (ackMode is AcknowledgeMode mode)
             {
                 endpoint.AckMode = mode;
@@ -316,14 +336,16 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(value))
         {
-            var resolved = ResolveExpression(value, typeof(bool), propertyName);
+            object resolved = ResolveExpression(value, typeof(bool), propertyName);
+
             if (resolved is bool boolean)
             {
                 return boolean;
             }
-            else if (resolved is string resolvedString)
+
+            if (resolved is string resolvedString)
             {
-                if (bool.TryParse(resolvedString, out var result))
+                if (bool.TryParse(resolvedString, out bool result))
                 {
                     return result;
                 }
@@ -339,12 +361,14 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     {
         if (!string.IsNullOrEmpty(value))
         {
-            var resolved = ResolveExpression(value, typeof(int), propertyName);
+            object resolved = ResolveExpression(value, typeof(int), propertyName);
+
             if (resolved is int resolvedInt)
             {
                 return resolvedInt;
             }
-            else if (resolved is string resolvedString && int.TryParse(resolvedString, out var result))
+
+            if (resolved is string resolvedString && int.TryParse(resolvedString, out int result))
             {
                 return result;
             }
@@ -358,19 +382,21 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
     private string[] ResolveQueues(RabbitListenerAttribute rabbitListener)
     {
         // var allQueues = ApplicationContext.GetServices<IQueue>()
-        var queues = rabbitListener.Queues;
+        string[] queues = rabbitListener.Queues;
 
         var result = new List<string>();
+
         if (queues.Length > 0)
         {
-            foreach (var queueExpression in queues)
+            foreach (string queueExpression in queues)
             {
                 ResolveQueue(queueExpression, result);
             }
         }
 
         // var allBindings = ApplicationContext.GetServices<IBinding>()
-        var bindings = rabbitListener.Bindings;
+        string[] bindings = rabbitListener.Bindings;
+
         if (bindings.Length > 0)
         {
             ResolveBindingDeclaration(rabbitListener, result);
@@ -381,7 +407,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ResolveQueue(string queueExpression, List<string> results)
     {
-        var qRef = queueExpression;
+        string qRef = queueExpression;
+
         if (ResolveExpression(queueExpression, typeof(IQueue), "Queue(s)") is not IQueue queue)
         {
             qRef = Resolve(queueExpression);
@@ -398,12 +425,13 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ResolveBindingDeclaration(RabbitListenerAttribute rabbitListener, List<string> results)
     {
-        foreach (var bindingExpression in rabbitListener.Bindings)
+        foreach (string bindingExpression in rabbitListener.Bindings)
         {
             if (ResolveExpression(bindingExpression, typeof(IBinding), "Binding(s)") is not IBinding binding)
             {
-                var bindingName = Resolve(bindingExpression);
+                string bindingName = Resolve(bindingExpression);
                 binding = ApplicationContext.GetService<IBinding>(bindingName);
+
                 if (binding == null)
                 {
                     throw new InvalidOperationException($"Unable to resolve binding: {bindingExpression} using: {bindingName}");
@@ -416,7 +444,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
 
     private void ResolveAsString(object resolvedValue, List<string> result, bool canBeQueue, string what)
     {
-        var resolvedValueToUse = resolvedValue;
+        object resolvedValueToUse = resolvedValue;
+
         if (resolvedValue is string[] v)
         {
             resolvedValueToUse = new List<string>(v);
@@ -432,30 +461,33 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         }
         else if (resolvedValueToUse is IEnumerable enumerable)
         {
-            foreach (var o in enumerable)
+            foreach (object o in enumerable)
             {
                 ResolveAsString(o, result, canBeQueue, what);
             }
         }
         else
         {
-            throw new InvalidOperationException(
-                string.Format("RabbitListenerAttribute " + what + " can't resolve {0} as a String[] or a String " + (canBeQueue ? "or a Queue" : string.Empty), resolvedValue));
+            throw new InvalidOperationException(string.Format(
+                "RabbitListenerAttribute " + what + " can't resolve {0} as a String[] or a String " + (canBeQueue ? "or a Queue" : string.Empty),
+                resolvedValue));
         }
     }
 
     private object ResolveExpression(string value, Type expectedType, string propertyName)
     {
-        var resolvedValue = Resolve(value);
+        string resolvedValue = Resolve(value);
         return Resolver.Evaluate(resolvedValue, ExpressionContext);
     }
 
     private string Resolve(string value)
     {
-        var result = value;
+        string result = value;
+
         if (ApplicationContext != null)
         {
-            var config = ApplicationContext.Configuration;
+            IConfiguration config = ApplicationContext.Configuration;
+
             if (config != null)
             {
                 result = PropertyPlaceholderHelper.ResolvePlaceholders(value, config, _logger);
@@ -471,10 +503,8 @@ public class RabbitListenerAttributeProcessor : IRabbitListenerAttributeProcesso
         {
             return Resolve(rabbitListener.Id);
         }
-        else
-        {
-            return $"Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#{Interlocked.Increment(ref _counter)}";
-        }
+
+        return $"Steeltoe.Messaging.Rabbit.RabbitListenerEndpointContainer#{Interlocked.Increment(ref _counter)}";
     }
 
     private object CreateTargetBean(Type implementation)

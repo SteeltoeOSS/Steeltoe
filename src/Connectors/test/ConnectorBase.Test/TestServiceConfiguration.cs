@@ -8,10 +8,10 @@ namespace Steeltoe.Connector.Test;
 
 internal sealed class TestServiceConfiguration : AbstractServiceConnectorOptions
 {
+    public string Test { get; set; }
+
     public TestServiceConfiguration(IConfiguration config)
         : base(config)
     {
     }
-
-    public string Test { get; set; }
 }

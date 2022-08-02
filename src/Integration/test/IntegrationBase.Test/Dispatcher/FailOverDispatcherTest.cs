@@ -19,7 +19,7 @@ public class FailOverDispatcherTest
     public FailOverDispatcherTest()
     {
         var services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         services.AddSingleton<IMessageBuilderFactory, DefaultMessageBuilderFactory>();
@@ -59,6 +59,7 @@ public class FailOverDispatcherTest
         var target = new CountingTestEndpoint(false);
         dispatcher.AddHandler(target);
         dispatcher.AddHandler(target);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test"));
@@ -82,6 +83,7 @@ public class FailOverDispatcherTest
         dispatcher.AddHandler(target2);
         dispatcher.AddHandler(target3);
         dispatcher.RemoveHandler(target2);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test"));
@@ -104,6 +106,7 @@ public class FailOverDispatcherTest
         dispatcher.AddHandler(target1);
         dispatcher.AddHandler(target2);
         dispatcher.AddHandler(target3);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test1"));
@@ -115,6 +118,7 @@ public class FailOverDispatcherTest
 
         Assert.Equal(3, target1.Counter + target2.Counter + target3.Counter);
         dispatcher.RemoveHandler(target2);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test2"));
@@ -126,6 +130,7 @@ public class FailOverDispatcherTest
 
         Assert.Equal(5, target1.Counter + target2.Counter + target3.Counter);
         dispatcher.RemoveHandler(target1);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test3"));
@@ -144,6 +149,7 @@ public class FailOverDispatcherTest
         var dispatcher = new UnicastingDispatcher(_provider.GetService<IApplicationContext>());
         var target1 = new CountingTestEndpoint(false);
         dispatcher.AddHandler(target1);
+
         try
         {
             dispatcher.Dispatch(Message.Create("test1"));
@@ -196,6 +202,7 @@ public class FailOverDispatcherTest
         dispatcher.AddHandler(target1);
         dispatcher.AddHandler(target2);
         dispatcher.AddHandler(target3);
+
         try
         {
             Assert.False(dispatcher.Dispatch(Message.Create("test")));
@@ -223,12 +230,13 @@ public class FailOverDispatcherTest
 
         public CountingTestEndpoint(bool shouldAccept)
         {
-            this.ShouldAccept = shouldAccept;
+            ShouldAccept = shouldAccept;
         }
 
         public void HandleMessage(IMessage message)
         {
             Counter++;
+
             if (!ShouldAccept)
             {
                 throw new MessageRejectedException(message, "intentional test failure");
@@ -243,7 +251,7 @@ public class FailOverDispatcherTest
 
         public LatchedProcessor(CountdownEvent latch)
         {
-            this.Latch = latch;
+            Latch = latch;
         }
 
         public object ProcessMessage(IMessage message)

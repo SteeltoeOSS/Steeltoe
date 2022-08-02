@@ -20,9 +20,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddLoggersActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddLoggersActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddLoggersActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -30,6 +30,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddLoggersActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
+
         var appsettings = new Dictionary<string, string>
         {
             ["management:endpoints:enabled"] = "true",
@@ -39,14 +40,16 @@ public class EndpointServiceCollectionTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
+
         services.AddLogging(builder =>
         {
             builder.AddConfiguration(config);
             builder.AddDynamicConsole();
         });
+
         services.AddLoggersActuator(config);
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         var options = serviceProvider.GetService<ILoggersOptions>();
         var ep = serviceProvider.GetService<LoggersEndpoint>();

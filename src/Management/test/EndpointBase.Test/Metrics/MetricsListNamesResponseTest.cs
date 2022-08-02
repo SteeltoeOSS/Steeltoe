@@ -17,6 +17,7 @@ public class MetricsListNamesResponseTest : BaseTest
             "foo.bar",
             "bar.foo"
         };
+
         var resp = new MetricsListNamesResponse(names);
         Assert.NotNull(resp.Names);
         Assert.Same(names, resp.Names);
@@ -30,8 +31,9 @@ public class MetricsListNamesResponseTest : BaseTest
             "foo.bar",
             "bar.foo"
         };
+
         var resp = new MetricsListNamesResponse(names);
-        var result = Serialize(resp);
+        string result = Serialize(resp);
         Assert.Equal("{\"names\":[\"foo.bar\",\"bar.foo\"]}", result);
     }
 }

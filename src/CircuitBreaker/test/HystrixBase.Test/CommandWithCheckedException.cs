@@ -7,8 +7,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 internal sealed class CommandWithCheckedException : TestHystrixCommand<bool>
 {
     public CommandWithCheckedException(TestCircuitBreaker circuitBreaker)
-        : base(TestPropsBuilder()
-            .SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics))
     {
     }
 

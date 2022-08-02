@@ -23,26 +23,18 @@ public static class MappingUtils
      * @param headersMappedLast true if headers are mapped after conversion.
      * @return the mapped Message.
      */
-    public static IMessage MapMessage(
-        IMessage requestMessage,
-        IMessageConverter converter,
-        IRabbitHeaderMapper headerMapper,
-        MessageDeliveryMode defaultDeliveryMode,
-        bool headersMappedLast)
+    public static IMessage MapMessage(IMessage requestMessage, IMessageConverter converter, IRabbitHeaderMapper headerMapper,
+        MessageDeliveryMode defaultDeliveryMode, bool headersMappedLast)
     {
         return DoMapMessage(requestMessage, converter, headerMapper, defaultDeliveryMode, headersMappedLast, false);
     }
 
-    private static IMessage DoMapMessage(
-        IMessage message,
-        IMessageConverter converter,
-        IRabbitHeaderMapper headerMapper,
-        MessageDeliveryMode defaultDeliveryMode,
-        bool headersMappedLast,
-        bool reply)
+    private static IMessage DoMapMessage(IMessage message, IMessageConverter converter, IRabbitHeaderMapper headerMapper,
+        MessageDeliveryMode defaultDeliveryMode, bool headersMappedLast, bool reply)
     {
         var targetHeaders = new MessageHeaders();
         IMessage amqpMessage;
+
         if (!headersMappedLast)
         {
             MapHeaders(message.Headers, targetHeaders, headerMapper, reply);
@@ -56,6 +48,7 @@ public static class MappingUtils
         //    }
         // }
         amqpMessage = converter.ToMessage(message.Payload, targetHeaders);
+
         if (headersMappedLast)
         {
             MapHeaders(message.Headers, targetHeaders, headerMapper, reply);
@@ -65,11 +58,7 @@ public static class MappingUtils
         return amqpMessage;
     }
 
-    private static void MapHeaders(
-        IMessageHeaders messageHeaders,
-        IMessageHeaders targetHeaders,
-        IRabbitHeaderMapper headerMapper,
-        bool reply)
+    private static void MapHeaders(IMessageHeaders messageHeaders, IMessageHeaders targetHeaders, IRabbitHeaderMapper headerMapper, bool reply)
     {
         if (reply)
         {

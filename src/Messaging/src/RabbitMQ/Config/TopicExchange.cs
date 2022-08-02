@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class TopicExchange : AbstractExchange, ITopicExchange
 {
+    public override string Type { get; } = ExchangeType.Topic;
+
     public TopicExchange(string name)
         : base(name)
     {
@@ -20,6 +22,4 @@ public class TopicExchange : AbstractExchange, ITopicExchange
         : base(name, durable, autoDelete, arguments)
     {
     }
-
-    public override string Type { get; } = ExchangeType.Topic;
 }

@@ -24,16 +24,21 @@ public class OracleDbContextConnectorFactory : OracleProviderConnectorFactory
 
     public override object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
-            result = ReflectionHelpers.CreateInstance(ConnectorType, new object[] { connectionString });
+            result = ReflectionHelpers.CreateInstance(ConnectorType, new object[]
+            {
+                connectionString
+            });
         }
 
         if (result == null)
         {
-            throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor", ConnectorType));
+            throw new ConnectorException(string.Format("Unable to create instance of '{0}', are you missing 'public {0}(string connectionString)' constructor",
+                ConnectorType));
         }
 
         return result;

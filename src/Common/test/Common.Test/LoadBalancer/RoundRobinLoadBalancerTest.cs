@@ -23,22 +23,55 @@ public class RoundRobinLoadBalancerTest
     {
         var services = new List<ConfigurationServiceInstance>
         {
-            new () { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
-            new () { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
-            new () { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
-            new () { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
-            new () { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
-            new () { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitball",
+                Port = 8000,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitballer",
+                Port = 8001
+            },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitballerz",
+                Port = 8002
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "vegemite",
+                Port = 8010,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "carrot",
+                Port = 8011
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "beet",
+                Port = 8012
+            }
         };
+
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
         var loadBalancer = new RoundRobinLoadBalancer(provider);
 
         Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}fruitService"]);
         Assert.Throws<KeyNotFoundException>(() => loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}vegetableService"]);
-        var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
+        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
         await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
-        var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
         Assert.Equal(1, loadBalancer.NextIndexForService[$"{loadBalancer.IndexKeyPrefix}fruitservice"]);
         Assert.Equal(8000, fruitResult.Port);
@@ -51,20 +84,53 @@ public class RoundRobinLoadBalancerTest
     {
         var services = new List<ConfigurationServiceInstance>
         {
-            new () { ServiceId = "fruitservice", Host = "fruitball", Port = 8000, IsSecure = true },
-            new () { ServiceId = "fruitservice", Host = "fruitballer", Port = 8001 },
-            new () { ServiceId = "fruitservice", Host = "fruitballerz", Port = 8002 },
-            new () { ServiceId = "vegetableservice", Host = "vegemite", Port = 8010, IsSecure = true },
-            new () { ServiceId = "vegetableservice", Host = "carrot", Port = 8011 },
-            new () { ServiceId = "vegetableservice", Host = "beet", Port = 8012 },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitball",
+                Port = 8000,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitballer",
+                Port = 8001
+            },
+            new()
+            {
+                ServiceId = "fruitservice",
+                Host = "fruitballerz",
+                Port = 8002
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "vegemite",
+                Port = 8010,
+                IsSecure = true
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "carrot",
+                Port = 8011
+            },
+            new()
+            {
+                ServiceId = "vegetableservice",
+                Host = "beet",
+                Port = 8012
+            }
         };
+
         var serviceOptions = new TestOptionsMonitor<List<ConfigurationServiceInstance>>(services);
         var provider = new ConfigurationServiceInstanceProvider(serviceOptions);
         var loadBalancer = new RoundRobinLoadBalancer(provider, GetCache());
 
-        var fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
+        Uri fruitResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://fruitservice/api"));
         await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
-        var vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
+        Uri vegResult = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://vegetableservice/api"));
 
         Assert.Equal(8000, fruitResult.Port);
         Assert.Equal(8011, vegResult.Port);
@@ -74,7 +140,7 @@ public class RoundRobinLoadBalancerTest
     {
         var services = new ServiceCollection();
         services.AddDistributedMemoryCache();
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
 
         return serviceProvider.GetService<IDistributedCache>();
     }

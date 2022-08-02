@@ -2,20 +2,46 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Steeltoe.Connector.Services;
-using System.Security.Claims;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 internal static class CloudFoundryOpenIdConnectConfigurer
 {
+    internal static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = context =>
+    {
+        // get claimsId
+        var claimsId = context.Principal.Identity as ClaimsIdentity;
+
+        // get scopes
+        string scopes = context.TokenEndpointResponse.Scope;
+
+        // make sure id has scopes
+        foreach (string scope in scopes.Split(' '))
+        {
+            if (!claimsId.Claims.Any(c => c.Type == "scope" && c.Value.Equals(scope)))
+            {
+                claimsId.AddClaim(new Claim("scope", scope));
+            }
+        }
+
+        return Task.FromResult(0);
+    };
+
     /// <summary>
     /// Maps service info credentials and 'security:oauth2:client' info onto OpenIdConnectOptions.
     /// </summary>
-    /// <param name="si">Service info credentials parsed from VCAP_SERVICES.</param>
-    /// <param name="openIdOptions">OpenId Connect options to be configured.</param>
-    /// <param name="cloudFoundryOptions">Cloud Foundry-related OpenId Connect configuration options.</param>
+    /// <param name="si">
+    /// Service info credentials parsed from VCAP_SERVICES.
+    /// </param>
+    /// <param name="openIdOptions">
+    /// OpenId Connect options to be configured.
+    /// </param>
+    /// <param name="cloudFoundryOptions">
+    /// Cloud Foundry-related OpenId Connect configuration options.
+    /// </param>
     internal static void Configure(SsoServiceInfo si, OpenIdConnectOptions openIdOptions, CloudFoundryOpenIdConnectOptions cloudFoundryOptions)
     {
         if (openIdOptions == null || cloudFoundryOptions == null)
@@ -51,7 +77,7 @@ internal static class CloudFoundryOpenIdConnectConfigurer
         // add other scopes
         if (!string.IsNullOrEmpty(cloudFoundryOptions.AdditionalScopes))
         {
-            foreach (var s in cloudFoundryOptions.AdditionalScopes.Split(' '))
+            foreach (string s in cloudFoundryOptions.AdditionalScopes.Split(' '))
             {
                 if (!openIdOptions.Scope.Contains(s))
                 {
@@ -60,34 +86,11 @@ internal static class CloudFoundryOpenIdConnectConfigurer
             }
         }
 
-        openIdOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(
-            cloudFoundryOptions.TokenValidationParameters,
-            openIdOptions.Authority + CloudFoundryDefaults.JwtTokenUri,
-            openIdOptions.BackchannelHttpHandler,
-            cloudFoundryOptions.ValidateCertificates,
+        openIdOptions.TokenValidationParameters = CloudFoundryHelper.GetTokenValidationParameters(cloudFoundryOptions.TokenValidationParameters,
+            openIdOptions.Authority + CloudFoundryDefaults.JwtTokenUri, openIdOptions.BackchannelHttpHandler, cloudFoundryOptions.ValidateCertificates,
             cloudFoundryOptions.BaseOptions(openIdOptions.ClientId));
 
         // the ClaimsIdentity is built off the id_token, but scopes are returned in the access_token. Copy them as claims
         openIdOptions.Events.OnTokenValidated = MapScopesToClaims;
     }
-
-    internal static readonly Func<TokenValidatedContext, Task> MapScopesToClaims = context =>
-    {
-        // get claimsId
-        var claimsId = context.Principal.Identity as ClaimsIdentity;
-
-        // get scopes
-        var scopes = context.TokenEndpointResponse.Scope;
-
-        // make sure id has scopes
-        foreach (var scope in scopes.Split(' '))
-        {
-            if (!claimsId.Claims.Any(c => c.Type == "scope" && c.Value.Equals(scope)))
-            {
-                claimsId.AddClaim(new Claim("scope", scope));
-            }
-        }
-
-        return Task.FromResult(0);
-    };
 }

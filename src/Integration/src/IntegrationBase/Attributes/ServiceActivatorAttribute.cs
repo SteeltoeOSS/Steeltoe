@@ -7,6 +7,18 @@ namespace Steeltoe.Integration.Attributes;
 [AttributeUsage(AttributeTargets.Method)]
 public class ServiceActivatorAttribute : Attribute
 {
+    public string InputChannel { get; set; } = string.Empty;
+
+    public string OutputChannel { get; set; } = string.Empty;
+
+    public string RequiresReply { get; set; } = string.Empty;
+
+    public string SendTimeout { get; set; } = string.Empty;
+
+    public string AutoStartup { get; set; } = string.Empty;
+
+    public string Phase { get; set; } = string.Empty;
+
     public ServiceActivatorAttribute()
     {
     }
@@ -55,16 +67,4 @@ public class ServiceActivatorAttribute : Attribute
         AutoStartup = autoStartup.ToString();
         Phase = phase.ToString();
     }
-
-    public string InputChannel { get; set; } = string.Empty;
-
-    public string OutputChannel { get; set; } = string.Empty;
-
-    public string RequiresReply { get; set; } = string.Empty;
-
-    public string SendTimeout { get; set; } = string.Empty;
-
-    public string AutoStartup { get; set; } = string.Empty;
-
-    public string Phase { get; set; } = string.Empty;
 }

@@ -14,7 +14,7 @@ public class ExposureTest
     public void ExposureReturnsDefaults()
     {
         var appSettings = new Dictionary<string, string>();
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var exp = new Exposure(config);
 
@@ -33,7 +33,8 @@ public class ExposureTest
             ["management:endpoints:actuator:exposure:exclude:0"] = "trace",
             ["management:endpoints:actuator:exposure:exclude:1"] = "env"
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var exp = new Exposure(config);
 
@@ -51,7 +52,8 @@ public class ExposureTest
             ["management:endpoints:web:exposure:include"] = "heapdump,env",
             ["management:endpoints:web:exposure:exclude"] = "dbmigrations,info"
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var exp = new Exposure(config);
 
@@ -68,7 +70,8 @@ public class ExposureTest
         {
             ["management:endpoints:web:exposure:include"] = "heapdump;env"
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var exp = new Exposure(config);
 

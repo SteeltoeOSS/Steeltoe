@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Claims;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Test;
-using System.Security.Claims;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Health.Test;
@@ -44,9 +44,10 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:groups:lIveness:include"] = "diskSpace",
             ["management:endpoints:health:groups:rEadinEss:include"] = "diskSpace"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new HealthEndpointOptions(config);
         var cloudOpts = new CloudFoundryEndpointOptions(config);
@@ -75,9 +76,10 @@ public class HealthEndpointOptionsTest : BaseTest
             ["management:endpoints:health:claim:value"] = "claimvalue",
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new HealthEndpointOptions(config);
         Assert.NotNull(opts.Claim);
@@ -92,9 +94,10 @@ public class HealthEndpointOptionsTest : BaseTest
         {
             ["management:endpoints:health:role"] = "roleclaimvalue"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new HealthEndpointOptions(config);
         Assert.NotNull(opts.Claim);

@@ -23,7 +23,7 @@ public class RabbitMQProviderConfigurer
 
         if (!string.IsNullOrEmpty(si.Uri))
         {
-            if (si.Scheme.Equals(RabbitMQProviderConnectorOptions.DefaultSslScheme, System.StringComparison.OrdinalIgnoreCase))
+            if (si.Scheme.Equals(RabbitMQProviderConnectorOptions.DefaultSslScheme, StringComparison.OrdinalIgnoreCase))
             {
                 configuration.SslEnabled = true;
                 configuration.SslPort = si.Port;

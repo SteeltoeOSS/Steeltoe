@@ -11,19 +11,6 @@ namespace Steeltoe.Messaging.Handler.Attributes;
 public class HeaderAttribute : Attribute
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="HeaderAttribute"/> class.
-    /// </summary>
-    /// <param name="name">the name of the request header to bind to.</param>
-    /// <param name="defaultValue">the default value to use as a fallback.</param>
-    /// <param name="required">is the header required.</param>
-    public HeaderAttribute(string name = null, string defaultValue = null, bool required = true)
-    {
-        Name = name ?? string.Empty;
-        Required = required;
-        DefaultValue = defaultValue;
-    }
-
-    /// <summary>
     /// Gets or sets the name of the header to bind to.
     /// </summary>
     public virtual string Name { get; set; }
@@ -37,4 +24,23 @@ public class HeaderAttribute : Attribute
     /// Gets or sets the default value to use if header is missing.
     /// </summary>
     public virtual string DefaultValue { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="HeaderAttribute" /> class.
+    /// </summary>
+    /// <param name="name">
+    /// the name of the request header to bind to.
+    /// </param>
+    /// <param name="defaultValue">
+    /// the default value to use as a fallback.
+    /// </param>
+    /// <param name="required">
+    /// is the header required.
+    /// </param>
+    public HeaderAttribute(string name = null, string defaultValue = null, bool required = true)
+    {
+        Name = name ?? string.Empty;
+        Required = required;
+        DefaultValue = defaultValue;
+    }
 }

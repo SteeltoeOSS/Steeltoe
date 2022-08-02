@@ -6,17 +6,17 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public class PendingConfirm
 {
-    public PendingConfirm(CorrelationData correlationData, long timestamp)
-    {
-        CorrelationInfo = correlationData;
-        Timestamp = timestamp;
-    }
-
     public CorrelationData CorrelationInfo { get; }
 
     public long Timestamp { get; }
 
     public string Cause { get; set; }
+
+    public PendingConfirm(CorrelationData correlationData, long timestamp)
+    {
+        CorrelationInfo = correlationData;
+        Timestamp = timestamp;
+    }
 
     public override string ToString()
     {

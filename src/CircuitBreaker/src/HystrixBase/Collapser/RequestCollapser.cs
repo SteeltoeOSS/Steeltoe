@@ -10,16 +10,17 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
 {
     private readonly HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> _commandCollapser;
-    private readonly AtomicReference<TimerReference> _timerListenerReference = new ();
-    private readonly AtomicBoolean _timerListenerRegistered = new ();
+    private readonly AtomicReference<TimerReference> _timerListenerReference = new();
+    private readonly AtomicBoolean _timerListenerRegistered = new();
     private readonly ICollapserTimer _timer;
     private readonly HystrixConcurrencyStrategy _concurrencyStrategy;
 
-    public AtomicReference<RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>> Batch { get; } = new ();
+    public AtomicReference<RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>> Batch { get; } = new();
 
     public IHystrixCollapserOptions Properties { get; }
 
-    internal RequestCollapser(HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser, IHystrixCollapserOptions properties, ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
+    internal RequestCollapser(HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> commandCollapser, IHystrixCollapserOptions properties,
+        ICollapserTimer timer, HystrixConcurrencyStrategy concurrencyStrategy)
     {
         // the command with implementation of abstract methods we need
         _commandCollapser = commandCollapser;
@@ -43,30 +44,30 @@ public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
         // loop until succeed (compare-and-set spin-loop)
         while (true)
         {
-            var b = Batch.Value;
+            RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument> b = Batch.Value;
+
             if (b == null)
             {
                 throw new InvalidOperationException("Submitting requests after collapser is shutdown");
             }
 
-            var response = b.Offer(arg, token);
+            CollapsedRequest<TRequestResponse, TRequestArgument> response = b.Offer(arg, token);
 
             // it will always get an CollapsedRequest unless we hit the max batch size
             if (response != null)
             {
                 return response;
             }
-            else
-            {
-                // this batch can't accept requests so create a new one and set it if another thread doesn't beat us
-                CreateNewBatchAndExecutePreviousIfNeeded(b);
-            }
+
+            // this batch can't accept requests so create a new one and set it if another thread doesn't beat us
+            CreateNewBatchAndExecutePreviousIfNeeded(b);
         }
     }
 
     public void Shutdown()
     {
-        var currentBatch = Batch.GetAndSet(null);
+        RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument> currentBatch = Batch.GetAndSet(null);
+
         if (currentBatch != null)
         {
             currentBatch.Shutdown();
@@ -86,7 +87,8 @@ public class RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument>
             throw new InvalidOperationException("Trying to start null batch which means it was shutdown already.");
         }
 
-        if (Batch.CompareAndSet(previousBatch, new RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>(Properties, _commandCollapser, Properties.MaxRequestsInBatch)))
+        if (Batch.CompareAndSet(previousBatch,
+            new RequestBatch<TBatchReturn, TRequestResponse, TRequestArgument>(Properties, _commandCollapser, Properties.MaxRequestsInBatch)))
         {
             previousBatch.ExecuteBatchIfNotAlreadyStarted();
         }

@@ -8,9 +8,13 @@ namespace Steeltoe.Connector.Services;
 
 public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 {
-    public static readonly Tags RabbitServiceTags = new ("rabbit");
+    private static readonly string[] Scheme =
+    {
+        RabbitMQServiceInfo.AmqpScheme,
+        RabbitMQServiceInfo.AmqpSecureScheme
+    };
 
-    private static readonly string[] Scheme = { RabbitMQServiceInfo.AmqpScheme, RabbitMQServiceInfo.AmqpSecureScheme };
+    public static readonly Tags RabbitServiceTags = new("rabbit");
 
     public RabbitMQServiceInfoFactory()
         : base(RabbitServiceTags, Scheme)
@@ -19,7 +23,8 @@ public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 
     public override bool Accepts(Service binding)
     {
-        var result = base.Accepts(binding);
+        bool result = base.Accepts(binding);
+
         if (result)
         {
             result = !HystrixRabbitMQServiceInfoFactory.HystrixRabbitServiceTags.ContainsOne(binding.Tags);
@@ -30,13 +35,13 @@ public class RabbitMQServiceInfoFactory : ServiceInfoFactory
 
     public override IServiceInfo Create(Service binding)
     {
-        var uri = GetUriFromCredentials(binding.Credentials);
-        var managementUri = GetStringFromCredentials(binding.Credentials, "http_api_uri");
+        string uri = GetUriFromCredentials(binding.Credentials);
+        string managementUri = GetStringFromCredentials(binding.Credentials, "http_api_uri");
 
         if (binding.Credentials.ContainsKey("uris"))
         {
-            var uris = GetListFromCredentials(binding.Credentials, "uris");
-            var managementUris = GetListFromCredentials(binding.Credentials, "http_api_uris");
+            List<string> uris = GetListFromCredentials(binding.Credentials, "uris");
+            List<string> managementUris = GetListFromCredentials(binding.Credentials, "http_api_uris");
             return new RabbitMQServiceInfo(binding.Name, uri, managementUri, uris, managementUris);
         }
 

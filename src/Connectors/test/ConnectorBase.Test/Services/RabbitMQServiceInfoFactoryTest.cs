@@ -20,7 +20,7 @@ public class RabbitMQServiceInfoFactoryTest
     [Fact]
     public void Accept_AcceptsValidServiceBinding()
     {
-        var s = CreateRabbitMQService();
+        Service s = CreateRabbitMQService();
         Assert.NotNull(s);
 
         var factory = new RabbitMQServiceInfoFactory();
@@ -41,9 +41,10 @@ public class RabbitMQServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") }
             }
         };
+
         var factory = new RabbitMQServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -62,9 +63,10 @@ public class RabbitMQServiceInfoFactoryTest
                 { "name", new Credential("cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355") },
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
-                { "uri", new Credential("amqps://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
+                { "uri", new Credential("amqps://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") }
             }
         };
+
         var factory = new RabbitMQServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -85,9 +87,13 @@ public class RabbitMQServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("amqp://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "http_api_uri", new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/") }
+                {
+                    "http_api_uri",
+                    new Credential("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/")
+                }
             }
         };
+
         var factory = new RabbitMQServiceInfoFactory();
         Assert.True(factory.Accepts(s));
     }
@@ -98,7 +104,11 @@ public class RabbitMQServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-mysql",
-            Tags = new[] { "foobar", "relational" },
+            Tags = new[]
+            {
+                "foobar",
+                "relational"
+            },
             Name = "mySqlService",
             Plan = "100mb-dev",
             Credentials = new Credential
@@ -109,9 +119,13 @@ public class RabbitMQServiceInfoFactoryTest
                 { "username", new Credential("Dd6O1BPXUHdrmzbP") },
                 { "password", new Credential("7E1LxXnlH2hhlPVt") },
                 { "uri", new Credential("mysql://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?reconnect=true") },
-                { "jdbcUrl", new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt") }
+                {
+                    "jdbcUrl",
+                    new Credential("jdbc:mysql://192.168.0.90:3306/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355?user=Dd6O1BPXUHdrmzbP&password=7E1LxXnlH2hhlPVt")
+                }
             }
         };
+
         var factory = new RabbitMQServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -122,7 +136,12 @@ public class RabbitMQServiceInfoFactoryTest
         var s = new Service
         {
             Label = "p-circuit-breaker-dashboard",
-            Tags = new[] { "circuit-breaker", "hystrix-amqp", "spring-cloud" },
+            Tags = new[]
+            {
+                "circuit-breaker",
+                "hystrix-amqp",
+                "spring-cloud"
+            },
             Name = "myHystrixService",
             Plan = "standard",
             Credentials = new Credential
@@ -134,12 +153,17 @@ public class RabbitMQServiceInfoFactoryTest
                     {
                         { "username", new Credential("a0f39f25-28a2-438e-a0e7-6c09d6d34dbd") },
                         { "password", new Credential("1clgf5ipeop36437dmr2em4duk") },
-                        { "uri", new Credential("amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120") },
+                        {
+                            "uri",
+                            new Credential(
+                                "amqp://a0f39f25-28a2-438e-a0e7-6c09d6d34dbd:1clgf5ipeop36437dmr2em4duk@192.168.1.55/06f0b204-9f95-4829-a662-844d3c3d6120")
+                        },
                         { "ssl", new Credential("false") }
                     }
                 }
             }
         };
+
         var factory = new RabbitMQServiceInfoFactory();
         Assert.False(factory.Accepts(s));
     }
@@ -147,7 +171,7 @@ public class RabbitMQServiceInfoFactoryTest
     [Fact]
     public void Create_CreatesValidServiceBinding()
     {
-        var s = CreateRabbitMQService();
+        Service s = CreateRabbitMQService();
         var factory = new RabbitMQServiceInfoFactory();
         var info = factory.Create(s) as RabbitMQServiceInfo;
         Assert.NotNull(info);
@@ -164,13 +188,16 @@ public class RabbitMQServiceInfoFactoryTest
         Assert.Equal("amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81/fb03d693-91fe-4dc5-8203-ff7a6390df66", info.Uri);
         Assert.NotNull(info.ManagementUris);
         Assert.Single(info.ManagementUris);
-        Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/", info.ManagementUris[0]);
+
+        Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/",
+            info.ManagementUris[0]);
+
         Assert.Equal("https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/", info.ManagementUri);
     }
 
     private static Service CreateRabbitMQService()
     {
-        var environment = @"
+        string environment = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -231,9 +258,9 @@ public class RabbitMQServiceInfoFactoryTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var opt = new CloudFoundryServicesOptions(config);
-        var section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
+        IConfigurationSection section = config.GetSection(CloudFoundryServicesOptions.ServicesConfigRoot);
         section.Bind(opt);
         Assert.Single(opt.Services);
 

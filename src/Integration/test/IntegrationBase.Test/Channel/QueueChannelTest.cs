@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Threading.Channels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging;
 using Xunit;
-using Channels = System.Threading.Channels;
 
 namespace Steeltoe.Integration.Channel.Test;
 
@@ -19,7 +19,7 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         services.AddSingleton<IConfiguration>(config);
         services.AddSingleton<IApplicationContext, GenericApplicationContext>();
         _provider = services.BuildServiceProvider();
@@ -30,17 +30,20 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var latch = new CountdownEvent(1);
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+
         Task.Run(() =>
         {
-            var message = channel.Receive();
+            IMessage message = channel.Receive();
+
             if (message != null)
             {
                 latch.Signal();
             }
         });
+
         channel.Send(Message.Create("testing"));
         Assert.True(latch.Wait(10000));
     }
@@ -50,18 +53,26 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var latch = new CountdownEvent(1);
-        var chan = Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = Channels.BoundedChannelFullMode.DropWrite });
+
+        var chan = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        {
+            FullMode = BoundedChannelFullMode.DropWrite
+        });
+
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
+
         Task.Run(() =>
         {
-            var message = channel.Receive();
+            IMessage message = channel.Receive();
+
             if (message != null)
             {
                 latch.Signal();
             }
         });
+
         channel.Send(Message.Create("testing"));
         Assert.True(latch.Wait(10000));
     }
@@ -71,18 +82,26 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var latch = new CountdownEvent(1);
-        var chan = Channels.Channel.CreateBounded<IMessage>(new Channels.BoundedChannelOptions(int.MaxValue) { FullMode = Channels.BoundedChannelFullMode.DropWrite });
+
+        var chan = System.Threading.Channels.Channel.CreateBounded<IMessage>(new BoundedChannelOptions(int.MaxValue)
+        {
+            FullMode = BoundedChannelFullMode.DropWrite
+        });
+
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), chan);
+
         Task.Run(() =>
         {
-            var message = channel.Receive(1);
+            IMessage message = channel.Receive(1);
+
             if (message != null)
             {
                 latch.Signal();
             }
         });
+
         channel.Send(Message.Create("testing"));
         Assert.True(latch.Wait(10000));
     }
@@ -92,17 +111,20 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var latch = new CountdownEvent(1);
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
+
         Task.Run(() =>
         {
-            var message = channel.Receive(1);
+            IMessage message = channel.Receive(1);
+
             if (message != null)
             {
                 latch.Signal();
             }
         });
+
         channel.Send(Message.Create("testing"));
         Assert.True(latch.Wait(10000));
     }
@@ -112,14 +134,15 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
+        ServiceProvider provider = services.BuildServiceProvider();
+        bool messageNull = false;
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch1 = new CountdownEvent(1);
         var latch2 = new CountdownEvent(1);
+
         void ReceiveAction1()
         {
-            var message = channel.Receive(0);
+            IMessage message = channel.Receive(0);
             messageNull = message == null;
             latch1.Signal();
         }
@@ -127,9 +150,11 @@ public class QueueChannelTest
         Task.Run(ReceiveAction1);
         Assert.True(latch1.Wait(10000));
         channel.Send(Message.Create("testing"));
+
         void ReceiveAction2()
         {
-            var message = channel.Receive(0);
+            IMessage message = channel.Receive(0);
+
             if (message != null)
             {
                 latch2.Signal();
@@ -145,17 +170,19 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
+        ServiceProvider provider = services.BuildServiceProvider();
+        bool messageNull = false;
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
+
         Task.Run(async () =>
         {
-            var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
+            IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;
             latch.Signal();
         });
+
         cancellationTokenSource.Cancel();
         Assert.True(latch.Wait(10000));
         Assert.True(messageNull);
@@ -166,13 +193,14 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
+        ServiceProvider provider = services.BuildServiceProvider();
+        bool messageNull = false;
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
+
         Task.Run(() =>
         {
-            var message = channel.Receive(5);
+            IMessage message = channel.Receive(5);
             messageNull = message == null;
             latch.Signal();
         });
@@ -186,18 +214,20 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
-        var messageNull = false;
+        ServiceProvider provider = services.BuildServiceProvider();
+        bool messageNull = false;
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
         cancellationTokenSource.CancelAfter(10000);
+
         Task.Run(async () =>
         {
-            var message = await channel.ReceiveAsync(cancellationTokenSource.Token);
+            IMessage message = await channel.ReceiveAsync(cancellationTokenSource.Token);
             messageNull = message == null;
             latch.Signal();
         });
+
         cancellationTokenSource.Cancel();
         Assert.True(latch.Wait(10000));
         Assert.True(messageNull);
@@ -208,15 +238,15 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 3);
-        var result1 = channel.Send(Message.Create("test-1"));
+        bool result1 = channel.Send(Message.Create("test-1"));
         Assert.True(result1);
-        var result2 = channel.Send(Message.Create("test-2"), 100);
+        bool result2 = channel.Send(Message.Create("test-2"), 100);
         Assert.True(result2);
-        var result3 = channel.Send(Message.Create("test-3"), 0);
+        bool result3 = channel.Send(Message.Create("test-3"), 0);
         Assert.True(result3);
-        var result4 = channel.Send(Message.Create("test-4"), 0);
+        bool result4 = channel.Send(Message.Create("test-4"), 0);
         Assert.False(result4);
     }
 
@@ -225,12 +255,13 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var result1 = channel.Send(Message.Create("test-1"));
+        bool result1 = channel.Send(Message.Create("test-1"));
         Assert.True(result1);
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
+
         Task.Run(async () =>
         {
             await channel.SendAsync(Message.Create("test-2"), cancellationTokenSource.Token);
@@ -247,11 +278,12 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var result1 = channel.Send(Message.Create("test-1"));
+        bool result1 = channel.Send(Message.Create("test-1"));
         Assert.True(result1);
         var latch = new CountdownEvent(1);
+
         Task.Run(() =>
         {
             channel.Send(Message.Create("test-2"), 5);
@@ -266,12 +298,13 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 1);
-        var result1 = channel.Send(Message.Create("test-1"));
+        bool result1 = channel.Send(Message.Create("test-1"));
         Assert.True(result1);
         var latch = new CountdownEvent(1);
         var cancellationTokenSource = new CancellationTokenSource();
+
         Task.Run(async () =>
         {
             cancellationTokenSource.CancelAfter(5);
@@ -287,17 +320,17 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>(), 2);
-        var message1 = Message.Create("test1");
-        var message2 = Message.Create("test2");
-        var message3 = Message.Create("test3");
+        IMessage<string> message1 = Message.Create("test1");
+        IMessage<string> message2 = Message.Create("test2");
+        IMessage<string> message3 = Message.Create("test3");
         Assert.True(channel.Send(message1));
         Assert.True(channel.Send(message2));
         Assert.False(channel.Send(message3, 0));
         Assert.Equal(2, channel.QueueSize);
         Assert.Equal(2 - 2, channel.RemainingCapacity);
-        var clearedMessages = channel.Clear();
+        IList<IMessage> clearedMessages = channel.Clear();
         Assert.NotNull(clearedMessages);
         Assert.Equal(2, clearedMessages.Count);
         Assert.Equal(0, channel.QueueSize);
@@ -310,9 +343,9 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
-        var clearedMessages = channel.Clear();
+        IList<IMessage> clearedMessages = channel.Clear();
         Assert.NotNull(clearedMessages);
         Assert.Empty(clearedMessages);
     }
@@ -322,7 +355,7 @@ public class QueueChannelTest
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         var channel = new QueueChannel(provider.GetService<IApplicationContext>());
         Assert.Throws<NotSupportedException>(() => channel.Purge(null));
     }

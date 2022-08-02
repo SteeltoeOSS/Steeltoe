@@ -8,9 +8,8 @@ namespace Steeltoe.Common.Util;
 
 public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget>
 {
-    public TTarget DefaultValue { get; set; }
-
     protected ConcurrentDictionary<Type, TTarget> TypeMap { get; set; }
+    public TTarget DefaultValue { get; set; }
 
     public SubclassClassifier()
         : this(default)
@@ -35,17 +34,18 @@ public class SubclassClassifier<TSource, TTarget> : IClassifier<TSource, TTarget
             return DefaultValue;
         }
 
-        var clazz = classifiable.GetType();
+        Type clazz = classifiable.GetType();
 
-        if (TypeMap.TryGetValue(clazz, out var result))
+        if (TypeMap.TryGetValue(clazz, out TTarget result))
         {
             return result;
         }
 
         // check for subclasses
-        var foundValue = false;
+        bool foundValue = false;
         var value = default(TTarget);
-        for (var cls = clazz; !cls.Equals(typeof(object)); cls = cls.BaseType)
+
+        for (Type cls = clazz; !cls.Equals(typeof(object)); cls = cls.BaseType)
         {
             if (TypeMap.TryGetValue(cls, out value))
             {

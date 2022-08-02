@@ -21,7 +21,7 @@ public class JsonStreamConfigurationSourceTest
     [Fact]
     public void Build_WithStreamSource_ReturnsExpected()
     {
-        var environment = @"
+        string environment = @"
                 {
                   ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                   ""application_name"": ""my-app"",
@@ -42,11 +42,12 @@ public class JsonStreamConfigurationSourceTest
                   ""users"": null,
                   ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                   }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(environment);
         var source = new JsonStreamConfigurationSource(memStream);
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
 
         Assert.Equal("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3", root["application_id"]);
         Assert.Equal("1024", root["limits:disk"]);

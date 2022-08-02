@@ -113,10 +113,11 @@ public static class ObjectUtils
             return false;
         }
 
-        for (var i = 0; i < o1.Length; i++)
+        for (int i = 0; i < o1.Length; i++)
         {
-            var item1 = o1[i];
-            var item2 = o2[i];
+            T item1 = o1[i];
+            T item2 = o2[i];
+
             if (!(item1 == null ? item2 == null : item1.Equals(item2)))
             {
                 return false;
@@ -133,10 +134,11 @@ public static class ObjectUtils
             return 0;
         }
 
-        var hash = InitialHash;
-        foreach (var element in array)
+        int hash = InitialHash;
+
+        foreach (T element in array)
         {
-            hash = (Multiplier * hash) + NullSafeHashCode(element);
+            hash = Multiplier * hash + NullSafeHashCode(element);
         }
 
         return hash;

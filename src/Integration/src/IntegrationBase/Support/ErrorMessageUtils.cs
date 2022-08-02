@@ -16,6 +16,7 @@ public static class ErrorMessageUtils
     public static IAttributeAccessor GetAttributeAccessor(IMessage inputMessage, IMessage failedMessage)
     {
         AbstractAttributeAccessor attributes = new ErrorMessageAttributes();
+
         if (inputMessage != null)
         {
             attributes.SetAttribute(InputMessageContextKey, inputMessage);

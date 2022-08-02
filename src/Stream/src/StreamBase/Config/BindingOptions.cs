@@ -10,6 +10,10 @@ public class BindingOptions : IBindingOptions
 {
     public static readonly MimeType DefaultContentType = MimeTypeUtils.ApplicationJson;
 
+    IConsumerOptions IBindingOptions.Consumer => Consumer;
+
+    IProducerOptions IBindingOptions.Producer => Producer;
+
     public string Destination { get; set; }
 
     public string Group { get; set; }
@@ -21,10 +25,6 @@ public class BindingOptions : IBindingOptions
     public ConsumerOptions Consumer { get; set; }
 
     public ProducerOptions Producer { get; set; }
-
-    IConsumerOptions IBindingOptions.Consumer { get => Consumer; }
-
-    IProducerOptions IBindingOptions.Producer { get => Producer; }
 
     internal void PostProcess(string name, BindingOptions @default)
     {

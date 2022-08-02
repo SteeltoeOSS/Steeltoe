@@ -8,10 +8,10 @@ namespace Steeltoe.Integration.Channel;
 
 public class TaskSchedulerChannelWriter : AbstractSubscribableChannelWriter
 {
+    public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)channel;
+
     public TaskSchedulerChannelWriter(TaskSchedulerChannel channel, ILogger logger = null)
         : base(channel, logger)
     {
     }
-
-    public new TaskSchedulerChannel Channel => (TaskSchedulerChannel)channel;
 }

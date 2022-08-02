@@ -9,26 +9,21 @@ using Steeltoe.Integration.Support;
 using Steeltoe.Integration.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
+using Steeltoe.Messaging.Support;
 
 namespace Steeltoe.Integration;
 
 public class ErrorMessagePublisher
 {
+    private readonly IApplicationContext _context;
     protected readonly MessagingTemplate InnerMessagingTemplate;
     protected readonly ILogger Logger;
-
-    private readonly IApplicationContext _context;
     private IIntegrationServices _integrationServices;
     private IDestinationResolver<IMessageChannel> _channelResolver;
     private IMessageChannel _channel;
     private IErrorMessageStrategy _errorMessageStrategy = new DefaultErrorMessageStrategy();
 
-    public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
-    {
-        _context = context;
-        this.Logger = logger;
-        InnerMessagingTemplate = new MessagingTemplate(context);
-    }
+    protected virtual MessagingTemplate MessagingTemplate => InnerMessagingTemplate;
 
     public IIntegrationServices IntegrationServices
     {
@@ -41,15 +36,9 @@ public class ErrorMessagePublisher
 
     public virtual IErrorMessageStrategy ErrorMessageStrategy
     {
-        get
-        {
-            return _errorMessageStrategy;
-        }
+        get => _errorMessageStrategy;
 
-        set
-        {
-            _errorMessageStrategy = value ?? throw new ArgumentNullException("errorMessageStrategy must not be null");
-        }
+        set => _errorMessageStrategy = value ?? throw new ArgumentNullException("errorMessageStrategy must not be null");
     }
 
     public virtual IMessageChannel Channel
@@ -61,25 +50,16 @@ public class ErrorMessagePublisher
             return _channel;
         }
 
-        set
-        {
-            _channel = value;
-        }
+        set => _channel = value;
     }
 
     public virtual string ChannelName { get; set; }
 
     public virtual int SendTimeout
     {
-        get
-        {
-            return InnerMessagingTemplate.SendTimeout;
-        }
+        get => InnerMessagingTemplate.SendTimeout;
 
-        set
-        {
-            InnerMessagingTemplate.SendTimeout = value;
-        }
+        set => InnerMessagingTemplate.SendTimeout = value;
     }
 
     public virtual IDestinationResolver<IMessageChannel> ChannelResolver
@@ -90,15 +70,14 @@ public class ErrorMessagePublisher
             return _channelResolver;
         }
 
-        set
-        {
-            _channelResolver = value ?? throw new ArgumentNullException("channelResolver must not be null");
-        }
+        set => _channelResolver = value ?? throw new ArgumentNullException("channelResolver must not be null");
     }
 
-    protected virtual MessagingTemplate MessagingTemplate
+    public ErrorMessagePublisher(IApplicationContext context, ILogger logger = null)
     {
-        get { return InnerMessagingTemplate; }
+        _context = context;
+        Logger = logger;
+        InnerMessagingTemplate = new MessagingTemplate(context);
     }
 
     public virtual void Publish(MessagingException exception)
@@ -125,15 +104,16 @@ public class ErrorMessagePublisher
     {
         PopulateChannel();
 
-        var payload = DeterminePayload(exception, context);
-        var errorMessage = _errorMessageStrategy.BuildErrorMessage(payload, context);
+        Exception payload = DeterminePayload(exception, context);
+        ErrorMessage errorMessage = _errorMessageStrategy.BuildErrorMessage(payload, context);
 
         InnerMessagingTemplate.Send(errorMessage);
     }
 
     protected virtual Exception DeterminePayload(Exception exception, IAttributeAccessor context)
     {
-        var lastThrowable = exception;
+        Exception lastThrowable = exception;
+
         if (lastThrowable == null)
         {
             lastThrowable = PayloadWhenNull(context);
@@ -141,6 +121,7 @@ public class ErrorMessagePublisher
         else if (lastThrowable is not MessagingException)
         {
             var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FailedMessageContextKey);
+
             lastThrowable = message == null
                 ? new MessagingException(lastThrowable.Message, lastThrowable)
                 : new MessagingException(message, lastThrowable.Message, lastThrowable);
@@ -152,6 +133,7 @@ public class ErrorMessagePublisher
     protected virtual Exception PayloadWhenNull(IAttributeAccessor context)
     {
         var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FailedMessageContextKey);
+
         return message == null
             ? new MessagingException("No root cause exception available")
             : new MessagingException(message, "No root cause exception available");
@@ -163,7 +145,7 @@ public class ErrorMessagePublisher
         {
             if (_channel == null)
             {
-                var recoveryChannelName = ChannelName ?? IntegrationContextUtils.ErrorChannelBeanName;
+                string recoveryChannelName = ChannelName ?? IntegrationContextUtils.ErrorChannelBeanName;
 
                 if (_channelResolver != null)
                 {

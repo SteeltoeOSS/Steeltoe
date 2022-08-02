@@ -12,6 +12,15 @@ public class MappingDescription
 {
     public const string AllHttpMethods = "GET || PUT || POST || DELETE || HEAD || OPTIONS";
 
+    [JsonPropertyName("handler")]
+    public string Handler { get; }
+
+    [JsonPropertyName("predicate")]
+    public string Predicate { get; }
+
+    [JsonPropertyName("details")]
+    public object Details { get; } // Always null for .NET
+
     public MappingDescription(string routeHandler, IRouteDetails routeDetails)
     {
         if (routeDetails == null)
@@ -38,15 +47,6 @@ public class MappingDescription
         Predicate = CreatePredicateString(routeDetails);
         Handler = CreateHandlerString(routeHandler);
     }
-
-    [JsonPropertyName("handler")]
-    public string Handler { get; }
-
-    [JsonPropertyName("predicate")]
-    public string Predicate { get; }
-
-    [JsonPropertyName("details")]
-    public object Details { get; } // Always null for .NET
 
     private string CreateHandlerString(MethodInfo actionHandlerMethod)
     {

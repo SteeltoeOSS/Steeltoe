@@ -11,6 +11,28 @@ namespace Steeltoe.Integration.Channel;
 
 public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollableChannel, ITaskSchedulerChannelInterceptorAware
 {
+    public int TaskSchedulerInterceptorsSize { get; private set; }
+
+    public override List<IChannelInterceptor> ChannelInterceptors
+    {
+        get => base.ChannelInterceptors;
+
+        set
+        {
+            base.ChannelInterceptors = value;
+
+            foreach (IChannelInterceptor interceptor in value)
+            {
+                if (interceptor is ITaskSchedulerChannelInterceptor)
+                {
+                    TaskSchedulerInterceptorsSize++;
+                }
+            }
+        }
+    }
+
+    public virtual bool HasTaskSchedulerInterceptors => TaskSchedulerInterceptorsSize > 0;
+
     protected AbstractPollableChannel(IApplicationContext context, ILogger logger = null)
         : base(context, logger)
     {
@@ -20,8 +42,6 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
         : base(context, name, logger)
     {
     }
-
-    public int TaskSchedulerInterceptorsSize { get; private set; }
 
     public virtual ValueTask<IMessage> ReceiveAsync(CancellationToken cancellationToken = default)
     {
@@ -44,21 +64,21 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
         {
             return DoReceive();
         }
-        else
-        {
-            using var source = new CancellationTokenSource();
-            source.CancelAfter(timeout);
-            return DoReceive(source.Token);
-        }
+
+        using var source = new CancellationTokenSource();
+        source.CancelAfter(timeout);
+        return DoReceive(source.Token);
     }
 
     protected virtual IMessage DoReceive(CancellationToken cancellationToken = default)
     {
-        var interceptorList = Interceptors;
+        ChannelInterceptorList interceptorList = Interceptors;
         Stack<IChannelInterceptor> interceptorStack = null;
+
         try
         {
             Logger?.LogTrace("PreReceive on channel '" + this + "'");
+
             if (interceptorList.Count > 0)
             {
                 interceptorStack = new Stack<IChannelInterceptor>();
@@ -69,7 +89,7 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
                 }
             }
 
-            var message = DoReceiveInternal(cancellationToken);
+            IMessage message = DoReceiveInternal(cancellationToken);
 
             if (message == null)
             {
@@ -97,29 +117,10 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
     protected abstract IMessage DoReceiveInternal(CancellationToken cancellationToken);
 
-    public override List<IChannelInterceptor> ChannelInterceptors
-    {
-        get
-        {
-            return base.ChannelInterceptors;
-        }
-
-        set
-        {
-            base.ChannelInterceptors = value;
-            foreach (var interceptor in value)
-            {
-                if (interceptor is ITaskSchedulerChannelInterceptor)
-                {
-                    TaskSchedulerInterceptorsSize++;
-                }
-            }
-        }
-    }
-
     public override void AddInterceptor(IChannelInterceptor interceptor)
     {
         base.AddInterceptor(interceptor);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             TaskSchedulerInterceptorsSize++;
@@ -129,6 +130,7 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
     public override void AddInterceptor(int index, IChannelInterceptor interceptor)
     {
         base.AddInterceptor(index, interceptor);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             TaskSchedulerInterceptorsSize++;
@@ -137,7 +139,8 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
     public override bool RemoveInterceptor(IChannelInterceptor interceptor)
     {
-        var removed = base.RemoveInterceptor(interceptor);
+        bool removed = base.RemoveInterceptor(interceptor);
+
         if (removed && interceptor is ITaskSchedulerChannelInterceptor)
         {
             TaskSchedulerInterceptorsSize--;
@@ -148,17 +151,13 @@ public abstract class AbstractPollableChannel : AbstractMessageChannel, IPollabl
 
     public override IChannelInterceptor RemoveInterceptor(int index)
     {
-        var interceptor = base.RemoveInterceptor(index);
+        IChannelInterceptor interceptor = base.RemoveInterceptor(index);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             TaskSchedulerInterceptorsSize--;
         }
 
         return interceptor;
-    }
-
-    public virtual bool HasTaskSchedulerInterceptors
-    {
-        get { return TaskSchedulerInterceptorsSize > 0; }
     }
 }

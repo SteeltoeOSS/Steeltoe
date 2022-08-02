@@ -11,13 +11,13 @@ namespace Steeltoe.Extensions.Logging.Test;
 
 public class DynamicLoggerProviderTest
 {
-    private readonly Dictionary<string, string> _defaultAppSettings = new ()
+    private readonly Dictionary<string, string> _defaultAppSettings = new()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Information",
         ["Logging:LogLevel:System"] = "Information",
         ["Logging:LogLevel:Microsoft"] = "Information",
-        ["Logging:LogLevel:A"] = "Information",
+        ["Logging:LogLevel:A"] = "Information"
     };
 
     private readonly IConfigurationRoot _defaultConfiguration;
@@ -30,9 +30,9 @@ public class DynamicLoggerProviderTest
     [Fact]
     public void Create_CreatesCorrectLogger()
     {
-        var provider = GetLoggerProvider(_defaultConfiguration);
+        ILoggerProvider provider = GetLoggerProvider(_defaultConfiguration);
 
-        var logger = provider.CreateLogger("A.B.C.D.TestClass");
+        ILogger logger = provider.CreateLogger("A.B.C.D.TestClass");
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Information), "Information is not enabled when it should be");
         Assert.False(logger.IsEnabled(LogLevel.Debug), "Debug is enabled when it shouldn't be");
@@ -43,7 +43,7 @@ public class DynamicLoggerProviderTest
     {
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
-        var logger = provider.CreateLogger("A.B.C.D.TestClass");
+        ILogger logger = provider.CreateLogger("A.B.C.D.TestClass");
 
         Assert.NotNull(logger);
         Assert.True(logger.IsEnabled(LogLevel.Critical));
@@ -68,9 +68,9 @@ public class DynamicLoggerProviderTest
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         // act I: with original setup
-        var childLogger = provider.CreateLogger("A.B.C");
-        var configurations = provider.GetLoggerConfigurations();
-        var tierOneNamespace = configurations.First(n => n.Name == "A");
+        ILogger childLogger = provider.CreateLogger("A.B.C");
+        ICollection<ILoggerConfiguration> configurations = provider.GetLoggerConfigurations();
+        ILoggerConfiguration tierOneNamespace = configurations.First(n => n.Name == "A");
 
         // assert I: base namespace is in the response, correctly
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -79,7 +79,7 @@ public class DynamicLoggerProviderTest
         provider.SetLogLevel("A.B", LogLevel.Trace);
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
-        var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
+        ILoggerConfiguration tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
         // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -91,7 +91,7 @@ public class DynamicLoggerProviderTest
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
         tierTwoNamespace = configurations.First(n => n.Name == "A.B");
-        var grandchildLogger = provider.CreateLogger("A.B.C.D");
+        ILogger grandchildLogger = provider.CreateLogger("A.B.C.D");
 
         // assert again
         Assert.Equal(LogLevel.Error, tierOneNamespace.EffectiveLevel);
@@ -107,9 +107,9 @@ public class DynamicLoggerProviderTest
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         // act I: with original setup
-        var firstLogger = provider.CreateLogger("A.B.C");
-        var configurations = provider.GetLoggerConfigurations();
-        var tierOneNamespace = configurations.First(n => n.Name == "A");
+        ILogger firstLogger = provider.CreateLogger("A.B.C");
+        ICollection<ILoggerConfiguration> configurations = provider.GetLoggerConfigurations();
+        ILoggerConfiguration tierOneNamespace = configurations.First(n => n.Name == "A");
 
         // assert I: base namespace is in the response, correctly
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -118,7 +118,7 @@ public class DynamicLoggerProviderTest
         provider.SetLogLevel("A.B", LogLevel.Trace);
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
-        var tierTwoNamespace = configurations.First(n => n.Name == "A.B");
+        ILoggerConfiguration tierTwoNamespace = configurations.First(n => n.Name == "A.B");
 
         // assert II: base hasn't changed but the one set at runtime and all descendants (including a concrete logger) have
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -130,7 +130,7 @@ public class DynamicLoggerProviderTest
         configurations = provider.GetLoggerConfigurations();
         tierOneNamespace = configurations.First(n => n.Name == "A");
         tierTwoNamespace = configurations.First(n => n.Name == "A.B");
-        var secondLogger = provider.CreateLogger("A.B.C.D");
+        ILogger secondLogger = provider.CreateLogger("A.B.C.D");
 
         // assert again
         Assert.Equal(LogLevel.Information, tierOneNamespace.EffectiveLevel);
@@ -145,7 +145,7 @@ public class DynamicLoggerProviderTest
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
         _ = provider.CreateLogger("A.B.C.D.TestClass");
 
-        var logConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> logConfig = provider.GetLoggerConfigurations();
         Assert.Equal(6, logConfig.Count);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
         Assert.Contains(new DynamicLoggerConfiguration("A.B.C.D.TestClass", null, LogLevel.Information), logConfig);
@@ -161,7 +161,7 @@ public class DynamicLoggerProviderTest
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
 
         _ = provider.CreateLogger("A.B.C.D.TestClass");
-        var logConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> logConfig = provider.GetLoggerConfigurations();
 
         Assert.Equal(6, logConfig.Count);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), logConfig);
@@ -187,10 +187,10 @@ public class DynamicLoggerProviderTest
     public void SetLogLevel_Works_OnDefault()
     {
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
-        var originalLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Trace);
-        var updatedLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> updatedLogConfig = provider.GetLoggerConfigurations();
 
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
@@ -200,12 +200,12 @@ public class DynamicLoggerProviderTest
     public void ResetLogLevel_Works_OnDefault()
     {
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
-        var originalLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> originalLogConfig = provider.GetLoggerConfigurations();
 
         provider.SetLogLevel("Default", LogLevel.Trace);
-        var updatedLogConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> updatedLogConfig = provider.GetLoggerConfigurations();
         provider.SetLogLevel("Default", null);
-        var resetConfig = provider.GetLoggerConfigurations();
+        ICollection<ILoggerConfiguration> resetConfig = provider.GetLoggerConfigurations();
 
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Information), originalLogConfig);
         Assert.Contains(new DynamicLoggerConfiguration("Default", LogLevel.Information, LogLevel.Trace), updatedLogConfig);
@@ -216,7 +216,7 @@ public class DynamicLoggerProviderTest
     public void LoggerLogs_At_Configured_Setting()
     {
         var provider = GetLoggerProvider(_defaultConfiguration) as DynamicConsoleLoggerProvider;
-        var logger = provider.CreateLogger("A.B.C.D.TestClass");
+        ILogger logger = provider.CreateLogger("A.B.C.D.TestClass");
 
         // act I - log at all levels, expect Info and above to work
         using (var unConsole = new ConsoleOutputBorrower())
@@ -226,7 +226,7 @@ public class DynamicLoggerProviderTest
             // pause the thread to allow the logging to happen
             Thread.Sleep(100);
 
-            var logged = unConsole.ToString();
+            string logged = unConsole.ToString();
 
             // assert I
             Assert.Contains("Critical message", logged);
@@ -239,6 +239,7 @@ public class DynamicLoggerProviderTest
 
         // act II - adjust rules, expect Error and above to work
         provider.SetLogLevel("A.B.C.D", LogLevel.Error);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
@@ -246,7 +247,7 @@ public class DynamicLoggerProviderTest
             // pause the thread to allow the logging to happen
             Thread.Sleep(100);
 
-            var logged2 = unConsole.ToString();
+            string logged2 = unConsole.ToString();
 
             // assert II
             Assert.Contains("Critical message", logged2);
@@ -259,6 +260,7 @@ public class DynamicLoggerProviderTest
 
         // act III - adjust rules, expect Trace and above to work
         provider.SetLogLevel("A", LogLevel.Trace);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
@@ -266,7 +268,7 @@ public class DynamicLoggerProviderTest
             // pause the thread to allow the logging to happen
             Thread.Sleep(100);
 
-            var logged3 = unConsole.ToString();
+            string logged3 = unConsole.ToString();
 
             // assert III
             Assert.Contains("Critical message", logged3);
@@ -279,6 +281,7 @@ public class DynamicLoggerProviderTest
 
         // act IV - adjust rules, expect nothing to work
         provider.SetLogLevel("A", LogLevel.None);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
@@ -286,7 +289,7 @@ public class DynamicLoggerProviderTest
             // pause the thread to allow the logging to happen
             Thread.Sleep(100);
 
-            var logged4 = unConsole.ToString();
+            string logged4 = unConsole.ToString();
 
             // assert IV
             Assert.DoesNotContain("Critical message", logged4);
@@ -299,6 +302,7 @@ public class DynamicLoggerProviderTest
 
         // act V - reset the rules, expect Info and above to work
         provider.SetLogLevel("A", null);
+
         using (var unConsole = new ConsoleOutputBorrower())
         {
             WriteLogEntries(logger);
@@ -306,7 +310,7 @@ public class DynamicLoggerProviderTest
             // pause the thread to allow the logging to happen
             Thread.Sleep(100);
 
-            var logged5 = unConsole.ToString();
+            string logged5 = unConsole.ToString();
 
             // assert V
             Assert.NotNull(provider.GetLoggerConfigurations().First(c => c.Name == "A"));
@@ -331,11 +335,8 @@ public class DynamicLoggerProviderTest
 
     private ILoggerProvider GetLoggerProvider(IConfiguration config)
     {
-        var serviceProvider = new ServiceCollection()
-            .AddLogging(builder => builder
-                .AddConfiguration(config.GetSection("Logging"))
-                .AddDynamicConsole()
-                .AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
+        ServiceProvider serviceProvider = new ServiceCollection().AddLogging(builder =>
+                builder.AddConfiguration(config.GetSection("Logging")).AddDynamicConsole().AddFilter<DynamicConsoleLoggerProvider>(null, LogLevel.Trace))
             .BuildServiceProvider();
 
         return serviceProvider.GetRequiredService<ILoggerProvider>();

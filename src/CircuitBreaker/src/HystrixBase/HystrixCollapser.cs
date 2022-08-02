@@ -2,22 +2,33 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Steeltoe.CircuitBreaker.Hystrix.Collapser;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestArgument> : HystrixCollapserBase, IHystrixExecutable<TRequestResponse>
 {
-    protected internal CancellationToken Token;
-
     private readonly RequestCollapserFactory _collapserFactory;
     private readonly HystrixRequestCache _requestCache;
     private readonly HystrixCollapserMetrics _metrics;
+    protected internal CancellationToken Token;
+
+    private IHystrixCollapserOptions Properties => _collapserFactory.Properties;
+
+    protected virtual string CacheKey => null;
+
+    public virtual IHystrixCollapserKey CollapserKey => _collapserFactory.CollapserKey;
+
+    public virtual RequestCollapserScope Scope => _collapserFactory.Scope;
+
+    public virtual HystrixCollapserMetrics Metrics => _metrics;
+
+    public abstract TRequestArgument RequestArgument { get; }
 
     protected HystrixCollapser()
         : this(null, RequestCollapserScope.Request)
@@ -44,31 +55,22 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     {
     }
 
-    protected HystrixCollapser(IHystrixCollapserKey collapserKey, RequestCollapserScope scope, ICollapserTimer timer, IHystrixCollapserOptions optionsDefault, HystrixCollapserMetrics metrics)
+    protected HystrixCollapser(IHystrixCollapserKey collapserKey, RequestCollapserScope scope, ICollapserTimer timer, IHystrixCollapserOptions optionsDefault,
+        HystrixCollapserMetrics metrics)
     {
         if (collapserKey == null || string.IsNullOrWhiteSpace(collapserKey.Name))
         {
-            var defaultKeyName = GetDefaultNameFromClass(GetType());
+            string defaultKeyName = GetDefaultNameFromClass(GetType());
             collapserKey = HystrixCollapserKeyDefault.AsKey(defaultKeyName);
         }
 
-        var options = HystrixOptionsFactory.GetCollapserOptions(collapserKey, optionsDefault);
+        IHystrixCollapserOptions options = HystrixOptionsFactory.GetCollapserOptions(collapserKey, optionsDefault);
         _collapserFactory = new RequestCollapserFactory(collapserKey, scope, timer, options);
         _requestCache = HystrixRequestCache.GetInstance(collapserKey);
         _metrics = metrics ?? HystrixCollapserMetrics.GetInstance(collapserKey, options);
 
         HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCollapser(collapserKey, _metrics, options);
     }
-
-    public virtual IHystrixCollapserKey CollapserKey => _collapserFactory.CollapserKey;
-
-    public virtual RequestCollapserScope Scope => _collapserFactory.Scope;
-
-    public virtual HystrixCollapserMetrics Metrics => _metrics;
-
-    public abstract TRequestArgument RequestArgument { get; }
-
-    private IHystrixCollapserOptions Properties => _collapserFactory.Properties;
 
     public TRequestResponse Execute()
     {
@@ -89,42 +91,38 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
     public Task<TRequestResponse> ExecuteAsync(CancellationToken token)
     {
-        this.Token = token;
-        var toStart = ToTask();
+        Token = token;
+        Task<TRequestResponse> toStart = ToTask();
         return toStart;
     }
 
     public Task<TRequestResponse> ToTask()
     {
-        var requestCollapser = _collapserFactory.GetRequestCollapser(this);
+        RequestCollapser<TBatchReturn, TRequestResponse, TRequestArgument> requestCollapser = _collapserFactory.GetRequestCollapser(this);
         CollapsedRequest<TRequestResponse, TRequestArgument> request = null;
 
-        if (AddCacheEntryIfAbsent(CacheKey, out var entry))
+        if (AddCacheEntryIfAbsent(CacheKey, out HystrixCachedTask<TRequestResponse> entry))
         {
             _metrics.MarkResponseFromCache();
-            var origTask = entry.CachedTask;
+            Task<TRequestResponse> origTask = entry.CachedTask;
             request = entry.CachedTask.AsyncState as CollapsedRequest<TRequestResponse, TRequestArgument>;
             request.AddLinkedToken(Token);
-            var continued = origTask.ContinueWith(
-                parent =>
-                {
-                    if (parent.AsyncState is CollapsedRequest<TRequestResponse, TRequestArgument> req)
-                    {
-                        if (req.Exception != null)
-                        {
-                            throw req.Exception;
-                        }
 
-                        return req.Response;
-                    }
-                    else
+            Task<TRequestResponse> continued = origTask.ContinueWith(parent =>
+            {
+                if (parent.AsyncState is CollapsedRequest<TRequestResponse, TRequestArgument> req)
+                {
+                    if (req.Exception != null)
                     {
-                        throw new InvalidOperationException("Missing AsyncState from parent task");
+                        throw req.Exception;
                     }
-                },
-                Token,
-                TaskContinuationOptions.ExecuteSynchronously,
-                TaskScheduler.Current);
+
+                    return req.Response;
+                }
+
+                throw new InvalidOperationException("Missing AsyncState from parent task");
+            }, Token, TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Current);
+
             return continued;
         }
 
@@ -143,27 +141,28 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
     public IObservable<TRequestResponse> Observe()
     {
         var subject = new ReplaySubject<TRequestResponse>();
-        var observable = ToObservable();
-        var disposable = observable.Subscribe(subject);
+        IObservable<TRequestResponse> observable = ToObservable();
+        IDisposable disposable = observable.Subscribe(subject);
         return subject.Finally(() => disposable.Dispose());
     }
 
     public IObservable<TRequestResponse> Observe(CancellationToken token)
     {
         var subject = new ReplaySubject<TRequestResponse>();
-        var observable = ToObservable();
+        IObservable<TRequestResponse> observable = ToObservable();
         observable.Subscribe(subject, token);
         return observable;
     }
 
     public IObservable<TRequestResponse> ToObservable()
     {
-        var observable = Observable.FromAsync(ct =>
+        IObservable<TRequestResponse> observable = Observable.FromAsync(ct =>
         {
             Token = ct;
-            var toStart = ToTask();
+            Task<TRequestResponse> toStart = ToTask();
             return toStart;
         });
+
         return observable;
     }
 
@@ -171,17 +170,23 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
     protected abstract void MapResponseToRequests(TBatchReturn batchResponse, ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> requests);
 
-    protected virtual ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> ShardRequests(ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> requests)
+    protected virtual ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> ShardRequests(
+        ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> requests)
     {
-        return new List<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> { requests };
+        return new List<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>>
+        {
+            requests
+        };
     }
 
     protected bool AddCacheEntryIfAbsent(string cacheKey, out HystrixCachedTask<TRequestResponse> entry)
     {
         var newEntry = new HystrixCachedTask<TRequestResponse>();
+
         if (Properties.RequestCacheEnabled && cacheKey != null)
         {
             entry = _requestCache.PutIfAbsent(cacheKey, newEntry);
+
             if (entry != null)
             {
                 return true;
@@ -192,24 +197,25 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
         return false;
     }
 
-    protected virtual string CacheKey => null;
-
     internal static void Reset()
     {
         RequestCollapserFactory.Reset();
     }
 
-    internal ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> DoShardRequests(ICollection<CollapsedRequest<TRequestResponse, TRequestArgument>> requests)
+    internal ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> DoShardRequests(
+        ICollection<CollapsedRequest<TRequestResponse, TRequestArgument>> requests)
     {
-        ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> theRequests = new List<ICollapsedRequest<TRequestResponse, TRequestArgument>>(requests);
-        var shards = ShardRequests(theRequests);
+        ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> theRequests =
+            new List<ICollapsedRequest<TRequestResponse, TRequestArgument>>(requests);
+
+        ICollection<ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>>> shards = ShardRequests(theRequests);
         _metrics.MarkShards(shards.Count);
         return shards;
     }
 
     internal HystrixCommand<TBatchReturn> DoCreateObservableCommand(ICollection<ICollapsedRequest<TRequestResponse, TRequestArgument>> requests)
     {
-        var command = CreateCommand(requests);
+        HystrixCommand<TBatchReturn> command = CreateCommand(requests);
 
         command.MarkAsCollapsedCommand(CollapserKey, requests.Count);
         _metrics.MarkBatch(requests.Count);
@@ -224,7 +230,7 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
     protected virtual Exception DecomposeException(Exception e)
     {
-        var message = $"{GetType()} HystrixCollapser failed while executing.";
+        string message = $"{GetType()} HystrixCollapser failed while executing.";
 
         // logger.debug(message, e); // debug only since we're throwing the exception and someone higher will do something with it
         return new HystrixRuntimeException(FailureType.CommandException, GetType(), message, e, null);
@@ -232,12 +238,12 @@ public abstract class HystrixCollapser<TBatchReturn, TRequestResponse, TRequestA
 
     private static string GetDefaultNameFromClass(Type cls)
     {
-        if (DefaultNameCache.TryGetValue(cls, out var fromCache))
+        if (DefaultNameCache.TryGetValue(cls, out string fromCache))
         {
             return fromCache;
         }
 
-        var name = cls.Name;
+        string name = cls.Name;
         DefaultNameCache.TryAdd(cls, name);
         return name;
     }

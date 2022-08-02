@@ -5,7 +5,7 @@
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
 /// <summary>
-/// A key to represent a <seealso cref="IHystrixThreadPool"/> for monitoring, metrics publishing, caching and other such uses.
+/// A key to represent a <seealso cref="IHystrixThreadPool" /> for monitoring, metrics publishing, caching and other such uses.
 /// </summary>
 public interface IHystrixThreadPoolKey : IHystrixKey
 {

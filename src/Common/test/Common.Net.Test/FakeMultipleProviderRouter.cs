@@ -15,7 +15,7 @@ internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
 
     public FakeMultipleProviderRouter(bool shouldConnect = true)
     {
-        this.ShouldConnect = shouldConnect;
+        ShouldConnect = shouldConnect;
     }
 
     public int AddConnection(WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags)
@@ -33,19 +33,19 @@ internal sealed class FakeMultipleProviderRouter : IMultipleProviderRouter
         throw new NotImplementedException();
     }
 
-    public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags, string lpAccessName, string lpBufferSize, string lpResult)
+    public int UseConnection(IntPtr hwndOwner, WindowsNetworkFileShare.NetResource netResource, string password, string username, int flags,
+        string lpAccessName, string lpBufferSize, string lpResult)
     {
         NetworkPath = netResource.RemoteName;
-        this.Username = username;
-        this.Password = password;
+        Username = username;
+        Password = password;
+
         if (ShouldConnect)
         {
             return 0;
         }
-        else
-        {
-            // throw "bad device" error
-            return 1200;
-        }
+
+        // throw "bad device" error
+        return 1200;
     }
 }

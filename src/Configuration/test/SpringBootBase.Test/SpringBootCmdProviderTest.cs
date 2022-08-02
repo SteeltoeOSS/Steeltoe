@@ -12,12 +12,14 @@ public class SpringBootCmdProviderTest
     [Fact]
     public void TryGet_Key()
     {
-        var config = new ConfigurationBuilder()
-            .AddCommandLine(new[] { "spring.cloud.stream.bindings.input=test" })
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddCommandLine(new[]
+        {
+            "spring.cloud.stream.bindings.input=test"
+        }).Build();
+
         var prov = new SpringBootCmdProvider(config);
         prov.Load();
-        prov.TryGet("spring:cloud:stream:bindings:input", out var value);
+        prov.TryGet("spring:cloud:stream:bindings:input", out string value);
         Assert.NotNull(value);
         Assert.Equal("test", value);
     }

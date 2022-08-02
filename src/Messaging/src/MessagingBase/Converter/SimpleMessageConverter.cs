@@ -15,7 +15,7 @@ public class SimpleMessageConverter : IMessageConverter
 
     public virtual object FromMessage(IMessage message, Type targetType)
     {
-        var payload = message.Payload;
+        object payload = message.Payload;
         return ClassUtils.IsAssignableValue(targetType, payload) ? payload : null;
     }
 
@@ -28,7 +28,8 @@ public class SimpleMessageConverter : IMessageConverter
     {
         if (headers != null)
         {
-            var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
+            MessageHeaderAccessor accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
+
             if (accessor != null && accessor.IsMutable)
             {
                 return MessageBuilder.CreateMessage(payload, accessor.MessageHeaders);

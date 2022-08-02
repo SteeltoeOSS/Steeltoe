@@ -13,15 +13,15 @@ public class ErrorHandlingMessageHandlingRunnable : IMessageHandlingRunnable
     private readonly IMessageHandlingRunnable _runnable;
     private readonly IErrorHandler _errorHandler;
 
+    public IMessage Message => _runnable.Message;
+
+    public IMessageHandler MessageHandler => _runnable.MessageHandler;
+
     public ErrorHandlingMessageHandlingRunnable(IMessageHandlingRunnable runnable, IErrorHandler errorHandler)
     {
         _runnable = runnable ?? throw new ArgumentNullException(nameof(runnable));
         _errorHandler = errorHandler ?? throw new ArgumentNullException(nameof(errorHandler));
     }
-
-    public IMessage Message => _runnable.Message;
-
-    public IMessageHandler MessageHandler => _runnable.MessageHandler;
 
     public bool Run()
     {

@@ -2,38 +2,63 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using HdrHistogram;
-using Steeltoe.Common.Util;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Observable.Aliases;
 using System.Reactive.Subjects;
+using HdrHistogram;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 
 public class RollingDistributionStream<TEvent> : RollingDistributionStreamBase
     where TEvent : IHystrixEvent
 {
-    private readonly BehaviorSubject<CachedValuesHistogram> _rollingDistribution = new (CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
+    private readonly BehaviorSubject<CachedValuesHistogram> _rollingDistribution = new(CachedValuesHistogram.BackedBy(CachedValuesHistogram.GetNewHistogram()));
     private readonly IObservable<CachedValuesHistogram> _rollingDistributionStream;
-    private readonly AtomicReference<IDisposable> _rollingDistributionSubscription = new (null);
+    private readonly AtomicReference<IDisposable> _rollingDistributionSubscription = new(null);
 
-    protected RollingDistributionStream(IHystrixEventStream<TEvent> stream, int numBuckets, int bucketSizeInMs, Func<LongHistogram, TEvent, LongHistogram> addValuesToBucket)
+    public int LatestMean
+    {
+        get
+        {
+            CachedValuesHistogram latest = Latest;
+
+            if (latest != null)
+            {
+                return latest.GetMean();
+            }
+
+            return 0;
+        }
+    }
+
+    public CachedValuesHistogram Latest
+    {
+        get
+        {
+            _rollingDistribution.TryGetValue(out CachedValuesHistogram value);
+            return value;
+        }
+    }
+
+    protected RollingDistributionStream(IHystrixEventStream<TEvent> stream, int numBuckets, int bucketSizeInMs,
+        Func<LongHistogram, TEvent, LongHistogram> addValuesToBucket)
     {
         var emptyDistributionsToStart = new List<LongHistogram>();
-        for (var i = 0; i < numBuckets; i++)
+
+        for (int i = 0; i < numBuckets; i++)
         {
             emptyDistributionsToStart.Add(CachedValuesHistogram.GetNewHistogram());
         }
 
         Func<IObservable<TEvent>, IObservable<LongHistogram>> reduceBucketToSingleDistribution = bucket =>
         {
-            var result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), addValuesToBucket).Select(n => n);
+            IObservable<LongHistogram> result = bucket.Aggregate(CachedValuesHistogram.GetNewHistogram(), addValuesToBucket).Select(n => n);
             return result;
         };
 
-        _rollingDistributionStream = stream
-            .Observe()
+        _rollingDistributionStream = stream.Observe()
             .Window(TimeSpan.FromMilliseconds(bucketSizeInMs), NewThreadScheduler.Default) // stream of unaggregated buckets
             .SelectMany(d => reduceBucketToSingleDistribution(d)) // stream of aggregated Histograms
             .StartWith(emptyDistributionsToStart) // stream of aggregated Histograms that starts with n empty
@@ -48,33 +73,16 @@ public class RollingDistributionStream<TEvent> : RollingDistributionStreamBase
         return _rollingDistributionStream;
     }
 
-    public int LatestMean
-    {
-        get
-        {
-            var latest = Latest;
-            if (latest != null)
-            {
-                return latest.GetMean();
-            }
-            else
-            {
-                return 0;
-            }
-        }
-    }
-
     public int GetLatestPercentile(double percentile)
     {
-        var latest = Latest;
+        CachedValuesHistogram latest = Latest;
+
         if (latest != null)
         {
             return latest.GetValueAtPercentile(percentile);
         }
-        else
-        {
-            return 0;
-        }
+
+        return 0;
     }
 
     public void StartCachingStreamValuesIfUnstarted()
@@ -82,7 +90,8 @@ public class RollingDistributionStream<TEvent> : RollingDistributionStreamBase
         if (_rollingDistributionSubscription.Value == null)
         {
             // the stream is not yet started
-            var candidateSubscription = Observe().Subscribe(_rollingDistribution);
+            IDisposable candidateSubscription = Observe().Subscribe(_rollingDistribution);
+
             if (_rollingDistributionSubscription.CompareAndSet(null, candidateSubscription))
             {
                 // won the race to set the subscription
@@ -95,18 +104,10 @@ public class RollingDistributionStream<TEvent> : RollingDistributionStreamBase
         }
     }
 
-    public CachedValuesHistogram Latest
-    {
-        get
-        {
-            _rollingDistribution.TryGetValue(out var value);
-            return value;
-        }
-    }
-
     public void Unsubscribe()
     {
-        var s = _rollingDistributionSubscription.Value;
+        IDisposable s = _rollingDistributionSubscription.Value;
+
         if (s != null)
         {
             s.Dispose();

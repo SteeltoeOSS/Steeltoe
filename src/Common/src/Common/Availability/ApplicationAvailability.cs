@@ -8,20 +8,29 @@ namespace Steeltoe.Common.Availability;
 
 public class ApplicationAvailability
 {
+    private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new();
+    private readonly ILogger<ApplicationAvailability> _logger;
     public readonly string LivenessKey = "Liveness";
     public readonly string ReadinessKey = "Readiness";
-    private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new ();
-    private readonly ILogger<ApplicationAvailability> _logger;
-
-    public ApplicationAvailability(ILogger<ApplicationAvailability> logger = null) => _logger = logger;
-
-    public IAvailabilityState GetLivenessState() => GetAvailabilityState(LivenessKey);
 
     public event EventHandler LivenessChanged;
 
-    public IAvailabilityState GetReadinessState() => GetAvailabilityState(ReadinessKey);
-
     public event EventHandler ReadinessChanged;
+
+    public ApplicationAvailability(ILogger<ApplicationAvailability> logger = null)
+    {
+        _logger = logger;
+    }
+
+    public IAvailabilityState GetLivenessState()
+    {
+        return GetAvailabilityState(LivenessKey);
+    }
+
+    public IAvailabilityState GetReadinessState()
+    {
+        return GetAvailabilityState(ReadinessKey);
+    }
 
     public IAvailabilityState GetAvailabilityState(string availabilityType)
     {
@@ -38,9 +47,15 @@ public class ApplicationAvailability
     /// <summary>
     /// Set the availability state for a given availability type.
     /// </summary>
-    /// <param name="stateKey">String name for the type of state to set. See <see cref="LivenessKey" /> or <see cref="ReadinessKey" /> for convenience.</param>
-    /// <param name="newState">The new <see cref="IAvailabilityState"/>.</param>
-    /// <param name="caller">Logged at trace level for tracking origin of state change.</param>
+    /// <param name="stateKey">
+    /// String name for the type of state to set. See <see cref="LivenessKey" /> or <see cref="ReadinessKey" /> for convenience.
+    /// </param>
+    /// <param name="newState">
+    /// The new <see cref="IAvailabilityState" />.
+    /// </param>
+    /// <param name="caller">
+    /// Logged at trace level for tracking origin of state change.
+    /// </param>
     public void SetAvailabilityState(string stateKey, IAvailabilityState newState, string caller)
     {
         if ((stateKey.Equals(LivenessKey) && newState is not LivenessState) || (stateKey.Equals(ReadinessKey) && newState is not ReadinessState))
@@ -50,6 +65,7 @@ public class ApplicationAvailability
 
         _logger?.LogTrace("{stateKey} availability has been set to {newState} by {caller}", stateKey, newState, caller ?? "unspecified");
         _availabilityStates[stateKey] = newState;
+
         if (stateKey == LivenessKey)
         {
             LivenessChanged?.Invoke(this, new AvailabilityEventArgs(newState));

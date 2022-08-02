@@ -24,7 +24,7 @@ public static class CollapserEventTypeHelper
             HystrixRollingNumberEvent.CollapserBatch => CollapserEventType.BatchExecuted,
             HystrixRollingNumberEvent.CollapserRequestBatched => CollapserEventType.AddedToBatch,
             HystrixRollingNumberEvent.ResponseFromCache => CollapserEventType.ResponseFromCache,
-            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.Collapser : {@event}"),
+            _ => throw new ArgumentOutOfRangeException($"Not an event that can be converted to HystrixEventType.Collapser : {@event}")
         };
     }
 }

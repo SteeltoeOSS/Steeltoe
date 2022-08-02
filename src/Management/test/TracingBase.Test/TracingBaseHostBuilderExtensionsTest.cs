@@ -22,14 +22,16 @@ public class TracingBaseHostBuilderExtensionsTest : TestBase
     {
         var hostBuilder = new HostBuilder();
         IServiceCollection services = null;
+
         hostBuilder.ConfigureServices(svc =>
         {
             services = svc;
             svc.AddSingleton(GetConfiguration());
             svc.AddDistributedTracing();
         });
+
         hostBuilder.Build();
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceCollectionBase(serviceProvider);
     }

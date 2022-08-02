@@ -14,48 +14,33 @@ namespace Steeltoe.Messaging.RabbitMQ.Core;
 public class BatchingRabbitTemplate : RabbitTemplate
 {
     private readonly IBatchingStrategy _batchingStrategy;
-    private readonly object _batchLock = new ();
+    private readonly object _batchLock = new();
     private CancellationTokenSource _cancellationTokenSource;
     private Task _scheduledTask;
     private int _count;
 
-    public BatchingRabbitTemplate(
-        IOptionsMonitor<RabbitOptions> optionsMonitor,
-        IConnectionFactory connectionFactory,
-        ISmartMessageConverter messageConverter,
-        IBatchingStrategy batchingStrategy,
-        ILogger logger = null)
+    public BatchingRabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
+        IBatchingStrategy batchingStrategy, ILogger logger = null)
         : base(optionsMonitor, connectionFactory, messageConverter, logger)
     {
         _batchingStrategy = batchingStrategy;
     }
 
-    public BatchingRabbitTemplate(
-        RabbitOptions options,
-        IConnectionFactory connectionFactory,
-        ISmartMessageConverter messageConverter,
-        IBatchingStrategy batchingStrategy,
-        ILogger logger = null)
+    public BatchingRabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, ISmartMessageConverter messageConverter,
+        IBatchingStrategy batchingStrategy, ILogger logger = null)
         : base(options, connectionFactory, messageConverter, logger)
     {
         _batchingStrategy = batchingStrategy;
     }
 
-    public BatchingRabbitTemplate(
-        IOptionsMonitor<RabbitOptions> optionsMonitor,
-        IConnectionFactory connectionFactory,
-        IBatchingStrategy batchingStrategy,
+    public BatchingRabbitTemplate(IOptionsMonitor<RabbitOptions> optionsMonitor, IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy,
         ILogger logger = null)
         : base(optionsMonitor, connectionFactory, logger)
     {
         _batchingStrategy = batchingStrategy;
     }
 
-    public BatchingRabbitTemplate(
-        RabbitOptions options,
-        IConnectionFactory connectionFactory,
-        IBatchingStrategy batchingStrategy,
-        ILogger logger = null)
+    public BatchingRabbitTemplate(RabbitOptions options, IConnectionFactory connectionFactory, IBatchingStrategy batchingStrategy, ILogger logger = null)
         : base(options, connectionFactory, logger)
     {
         _batchingStrategy = batchingStrategy;
@@ -77,6 +62,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
         lock (_batchLock)
         {
             _count++;
+
             if (correlationData != null)
             {
                 Logger?.LogDebug("Cannot use batching with correlation data");
@@ -88,7 +74,8 @@ public class BatchingRabbitTemplate : RabbitTemplate
                 // {
                 //    _cancellationTokenSource.Cancel(false);
                 // }
-                var batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
+                MessageBatch? batch = _batchingStrategy.AddToBatch(exchange, routingKey, message);
+
                 if (batch != null)
                 {
                     if (_scheduledTask != null)
@@ -100,11 +87,12 @@ public class BatchingRabbitTemplate : RabbitTemplate
                     base.Send(batch.Value.Exchange, batch.Value.RoutingKey, batch.Value.Message, null);
                 }
 
-                var next = _batchingStrategy.NextRelease();
+                DateTime? next = _batchingStrategy.NextRelease();
+
                 if (next != null && _scheduledTask == null)
                 {
                     _cancellationTokenSource = new CancellationTokenSource();
-                    var delay = next.Value - DateTime.Now;
+                    TimeSpan delay = next.Value - DateTime.Now;
                     _scheduledTask = Task.Run(() => ReleaseBatches(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
                 }
             }
@@ -124,6 +112,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
     private async Task ReleaseBatches(TimeSpan delay, CancellationToken cancellationToken)
     {
         await Task.Delay(delay, cancellationToken);
+
         if (cancellationToken.IsCancellationRequested)
         {
             return;
@@ -131,7 +120,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
 
         lock (_batchLock)
         {
-            foreach (var batch in _batchingStrategy.ReleaseBatches())
+            foreach (MessageBatch batch in _batchingStrategy.ReleaseBatches())
             {
                 if (cancellationToken.IsCancellationRequested)
                 {

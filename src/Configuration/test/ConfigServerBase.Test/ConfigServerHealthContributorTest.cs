@@ -25,14 +25,15 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
             { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.NotNull(contributor.Provider);
@@ -46,13 +47,14 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:uri", "http://localhost:8888/" },
             { "spring:cloud:config:name", "myName" },
             { "spring:cloud:config:label", "myLabel" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.NotNull(contributor.FindProvider(config));
@@ -67,13 +69,14 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:name", "myName" },
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:timeToLive", "100000" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.Equal(100000, contributor.GetTimeToLive());
@@ -88,13 +91,14 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:name", "myName" },
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.True(contributor.IsEnabled());
@@ -110,13 +114,14 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.True(contributor.IsCacheStale(0)); // No cache established yet
@@ -137,20 +142,22 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "1" },
+            { "spring:cloud:config:timeout", "1" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
 
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config)
         {
             Cached = new ConfigEnvironment()
         };
-        var lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
-        var sources = contributor.GetPropertySources();
+
+        long lastAccess = contributor.LastAccess = DateTimeOffset.Now.ToUnixTimeMilliseconds() - 100;
+        IList<PropertySource> sources = contributor.GetPropertySources();
 
         Assert.NotEqual(lastAccess, contributor.LastAccess);
         Assert.Null(sources);
@@ -167,15 +174,16 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.Null(contributor.Provider);
-        var health = contributor.Health();
+        HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -191,16 +199,17 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "false" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.NotNull(contributor.Provider);
-        var health = contributor.Health();
+        HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
     }
@@ -216,16 +225,17 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         Assert.NotNull(contributor.Provider);
-        var health = contributor.Health();
+        HealthCheckResult health = contributor.Health();
         Assert.NotNull(health);
         Assert.Equal(HealthStatus.Unknown, health.Status);
         Assert.True(health.Details.ContainsKey("error"));
@@ -241,20 +251,23 @@ public class ConfigServerHealthContributorTest
             { "spring:cloud:config:label", "myLabel" },
             { "spring:cloud:config:health:enabled", "true" },
             { "spring:cloud:config:health:timeToLive", "1" },
-            { "spring:cloud:config:timeout", "10" },
+            { "spring:cloud:config:timeout", "10" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var contributor = new ConfigServerHealthContributor(config);
         var health = new HealthCheckResult();
+
         var sources = new List<PropertySource>
         {
-            new ("foo", new Dictionary<string, object>()),
-            new ("bar", new Dictionary<string, object>()),
+            new("foo", new Dictionary<string, object>()),
+            new("bar", new Dictionary<string, object>())
         };
+
         contributor.UpdateHealth(health, sources);
 
         Assert.Equal(HealthStatus.Up, health.Status);

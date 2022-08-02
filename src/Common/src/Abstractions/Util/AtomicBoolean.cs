@@ -8,6 +8,13 @@ public class AtomicBoolean
 {
     private volatile int _value;
 
+    public bool Value
+    {
+        get => _value != 0;
+
+        set => _value = value ? 1 : 0;
+    }
+
     public AtomicBoolean()
         : this(false)
     {
@@ -18,24 +25,17 @@ public class AtomicBoolean
         Value = value;
     }
 
-    public bool Value
-    {
-        get => _value != 0;
-
-        set => _value = value ? 1 : 0;
-    }
-
     public bool CompareAndSet(bool expected, bool update)
     {
-        var expectedInt = expected ? 1 : 0;
-        var updateInt = update ? 1 : 0;
+        int expectedInt = expected ? 1 : 0;
+        int updateInt = update ? 1 : 0;
         return Interlocked.CompareExchange(ref _value, updateInt, expectedInt) == expectedInt;
     }
 
     public bool GetAndSet(bool newValue)
     {
-        var newValueInt = newValue ? 1 : 0;
-        var previous = Interlocked.Exchange(ref _value, newValueInt);
+        int newValueInt = newValue ? 1 : 0;
+        int previous = Interlocked.Exchange(ref _value, newValueInt);
         return previous == 1;
     }
 }

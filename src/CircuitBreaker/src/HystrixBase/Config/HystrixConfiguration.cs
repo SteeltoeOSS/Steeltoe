@@ -6,8 +6,13 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Config;
 
 public class HystrixConfiguration
 {
-    public HystrixConfiguration(
-        Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig,
+    public Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> CommandConfig { get; }
+
+    public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> ThreadPoolConfig { get; }
+
+    public Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> CollapserConfig { get; }
+
+    public HystrixConfiguration(Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig,
         Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> threadPoolConfig,
         Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> collapserConfig)
     {
@@ -16,17 +21,10 @@ public class HystrixConfiguration
         CollapserConfig = collapserConfig;
     }
 
-    public static HystrixConfiguration From(
-        Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig,
+    public static HystrixConfiguration From(Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> commandConfig,
         Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> threadPoolConfig,
         Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> collapserConfig)
     {
         return new HystrixConfiguration(commandConfig, threadPoolConfig, collapserConfig);
     }
-
-    public Dictionary<IHystrixCommandKey, HystrixCommandConfiguration> CommandConfig { get; }
-
-    public Dictionary<IHystrixThreadPoolKey, HystrixThreadPoolConfiguration> ThreadPoolConfig { get; }
-
-    public Dictionary<IHystrixCollapserKey, HystrixCollapserConfiguration> CollapserConfig { get; }
 }

@@ -2,46 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Connector.SqlServer;
 
 public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 {
+    private const string SqlClientSectionPrefix = "sqlserver:credentials";
     public const string DefaultServer = "localhost";
     public const int DefaultPort = 1433;
-    private const string SqlClientSectionPrefix = "sqlserver:credentials";
     private readonly bool _cloudFoundryConfigFound;
 
-    public SqlServerProviderConnectorOptions()
-    {
-    }
-
-    public SqlServerProviderConnectorOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        var section = config.GetSection(SqlClientSectionPrefix);
-
-        section.Bind(this);
-
-        if (Uri != null)
-        {
-            Server = Uri.Split(':')[2].Substring(2);
-        }
-
-        Username = Uid;
-        Database = Db;
-        Password = Pw;
-
-        section.Bind(this);
-
-        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
-    }
+    internal Dictionary<string, string> Options { get; set; } = new();
 
     public string ConnectionString { get; set; }
 
@@ -73,10 +46,39 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
     /// <summary>
     /// Gets or sets the length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error.
     /// </summary>
-    /// <remarks>Default value is 15.</remarks>
+    /// <remarks>
+    /// Default value is 15.
+    /// </remarks>
     public int? Timeout { get; set; }
 
-    internal Dictionary<string, string> Options { get; set; } = new ();
+    public SqlServerProviderConnectorOptions()
+    {
+    }
+
+    public SqlServerProviderConnectorOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        IConfigurationSection section = config.GetSection(SqlClientSectionPrefix);
+
+        section.Bind(this);
+
+        if (Uri != null)
+        {
+            Server = Uri.Split(':')[2].Substring(2);
+        }
+
+        Username = Uid;
+        Database = Db;
+        Password = Pw;
+
+        section.Bind(this);
+
+        _cloudFoundryConfigFound = config.HasCloudFoundryServiceConfigurations();
+    }
 
     public override string ToString()
     {
@@ -95,7 +97,7 @@ public class SqlServerProviderConnectorOptions : AbstractServiceConnectorOptions
 
         if (Options != null && Options.Any())
         {
-            foreach (var o in Options)
+            foreach (KeyValuePair<string, string> o in Options)
             {
                 AddKeyValue(sb, o.Key, o.Value);
             }

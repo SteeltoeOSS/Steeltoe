@@ -12,23 +12,6 @@ public class EurekaClientConfig : IEurekaClientConfig
     public const int DefaultEurekaServerRetryCount = 3;
     public const string DefaultServerServiceUrl = "http://localhost:8761/eureka/";
 
-    public EurekaClientConfig()
-    {
-        RegistryFetchIntervalSeconds = DefaultRegistryFetchIntervalSeconds;
-        ShouldGZipContent = true;
-        EurekaServerConnectTimeoutSeconds = DefaultEurekaServerConnectTimeoutSeconds;
-        ShouldRegisterWithEureka = true;
-        ShouldDisableDelta = false;
-        ShouldFilterOnlyUpInstances = true;
-        ShouldFetchRegistry = true;
-        ShouldOnDemandUpdateStatusChange = true;
-        EurekaServerServiceUrls = DefaultServerServiceUrl;
-        ValidateCertificates = true;
-        EurekaServerRetryCount = DefaultEurekaServerRetryCount;
-        HealthCheckEnabled = true;
-        HealthContribEnabled = true;
-    }
-
     // Configuration property: eureka:client:registryFetchIntervalSeconds
     public int RegistryFetchIntervalSeconds { get; set; }
 
@@ -77,4 +60,21 @@ public class EurekaClientConfig : IEurekaClientConfig
     public bool HealthContribEnabled { get; set; }
 
     public string HealthMonitoredApps { get; set; }
+
+    public EurekaClientConfig()
+    {
+        RegistryFetchIntervalSeconds = DefaultRegistryFetchIntervalSeconds;
+        ShouldGZipContent = true;
+        EurekaServerConnectTimeoutSeconds = DefaultEurekaServerConnectTimeoutSeconds;
+        ShouldRegisterWithEureka = true;
+        ShouldDisableDelta = false;
+        ShouldFilterOnlyUpInstances = true;
+        ShouldFetchRegistry = true;
+        ShouldOnDemandUpdateStatusChange = true;
+        EurekaServerServiceUrls = DefaultServerServiceUrl;
+        ValidateCertificates = true;
+        EurekaServerRetryCount = DefaultEurekaServerRetryCount;
+        HealthCheckEnabled = true;
+        HealthContribEnabled = true;
+    }
 }

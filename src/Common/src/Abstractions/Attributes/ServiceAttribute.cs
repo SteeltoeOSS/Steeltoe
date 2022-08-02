@@ -7,6 +7,8 @@ namespace Steeltoe.Common.Attributes;
 [AttributeUsage(AttributeTargets.Method)]
 public class ServiceAttribute : Attribute
 {
+    public string Name { get; } = string.Empty;
+
     public ServiceAttribute()
     {
     }
@@ -15,6 +17,4 @@ public class ServiceAttribute : Attribute
     {
         Name = name;
     }
-
-    public string Name { get; } = string.Empty;
 }

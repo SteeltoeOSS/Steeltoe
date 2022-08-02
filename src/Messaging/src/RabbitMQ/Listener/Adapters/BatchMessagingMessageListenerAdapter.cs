@@ -2,33 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
+using System.Reflection;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Batch;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Collections;
-using System.Reflection;
-using RC=RabbitMQ.Client;
+using Steeltoe.Messaging.Support;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdapter, IChannelAwareBatchMessageListener
 {
-    public BatchMessagingMessageListenerAdapter(
-        IApplicationContext context,
-        object bean,
-        MethodInfo method,
-        bool returnExceptions,
-        IRabbitListenerErrorHandler errorHandler,
-        IBatchingStrategy batchingStrategy,
-        ILogger logger = null)
+    private IBatchingStrategy BatchingStrategy { get; }
+
+    public BatchMessagingMessageListenerAdapter(IApplicationContext context, object bean, MethodInfo method, bool returnExceptions,
+        IRabbitListenerErrorHandler errorHandler, IBatchingStrategy batchingStrategy, ILogger logger = null)
         : base(context, bean, method, returnExceptions, errorHandler, true, logger)
     {
         BatchingStrategy = batchingStrategy ?? new SimpleBatchingStrategy(0, 0, 0L);
     }
-
-    private IBatchingStrategy BatchingStrategy { get; }
 
     public override void OnMessageBatch(List<IMessage> messages, RC.IModel channel)
     {
@@ -37,7 +32,8 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         if (IsMessageByteArrayList)
         {
             var list = new List<IMessage<byte[]>>();
-            foreach (var m in messages)
+
+            foreach (IMessage m in messages)
             {
                 list.Add((IMessage<byte[]>)m);
             }
@@ -48,8 +44,9 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         {
             if (IsMessageList)
             {
-                var messagingMessages = CreateMessageList(InferredArgumentType);
-                foreach (var message in messages)
+                IList messagingMessages = CreateMessageList(InferredArgumentType);
+
+                foreach (IMessage message in messages)
                 {
                     messagingMessages.Add(ToMessagingMessage(message));
                 }
@@ -58,12 +55,13 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
             }
             else
             {
-                var payloads = CreateList(InferredArgumentType);
+                IList payloads = CreateList(InferredArgumentType);
 
-                foreach (var message in messages)
+                foreach (IMessage message in messages)
                 {
                     PreProcessMessage(message);
-                    var convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
+                    object convertedObject = MessageConverter.FromMessage(message, InferredArgumentType);
+
                     if (convertedObject == null)
                     {
                         throw new MessageConversionException("Message converter returned null");
@@ -88,14 +86,14 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
 
     protected IList CreateMessageList(Type type)
     {
-        var messageType = typeof(IMessage<>).MakeGenericType(type);
-        var listType = typeof(List<>).MakeGenericType(messageType);
+        Type messageType = typeof(IMessage<>).MakeGenericType(type);
+        Type listType = typeof(List<>).MakeGenericType(messageType);
         return (IList)Activator.CreateInstance(listType);
     }
 
     protected IList CreateList(Type type)
     {
-        var listType = typeof(List<>).MakeGenericType(type);
+        Type listType = typeof(List<>).MakeGenericType(type);
         return (IList)Activator.CreateInstance(listType);
     }
 
@@ -104,9 +102,11 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         if (BatchingStrategy.CanDebatch(amqpMessage.Headers))
         {
             var list = new List<object>();
+
             BatchingStrategy.DeBatch(amqpMessage, _ =>
             {
-                var convertedObject = MessageConverter.FromMessage(amqpMessage, null);
+                object convertedObject = MessageConverter.FromMessage(amqpMessage, null);
+
                 if (convertedObject == null)
                 {
                     throw new MessageConversionException("Message converter returned null");
@@ -119,15 +119,19 @@ public class BatchMessagingMessageListenerAdapter : MessagingMessageListenerAdap
         }
 
         PreProcessMessage(amqpMessage);
-        var headers = amqpMessage.Headers;
-        var convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
+        IMessageHeaders headers = amqpMessage.Headers;
+        object convertedObject = MessageConverter.FromMessage(amqpMessage, InferredArgumentType);
+
         if (convertedObject == null)
         {
             throw new MessageConversionException("Message converter returned null");
         }
 
-        var builder = convertedObject is IMessage message1 ? RabbitMessageBuilder.FromMessage(message1) : RabbitMessageBuilder.WithPayload(convertedObject);
-        var message = builder.CopyHeadersIfAbsent(headers).Build();
+        AbstractMessageBuilder builder = convertedObject is IMessage message1
+            ? RabbitMessageBuilder.FromMessage(message1)
+            : RabbitMessageBuilder.WithPayload(convertedObject);
+
+        IMessage message = builder.CopyHeadersIfAbsent(headers).Build();
         return message;
     }
 }

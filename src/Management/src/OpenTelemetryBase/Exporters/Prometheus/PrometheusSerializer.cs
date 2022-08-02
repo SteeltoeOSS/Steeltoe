@@ -9,10 +9,9 @@ using System.Runtime.CompilerServices;
 namespace Steeltoe.Management.OpenTelemetry.Exporters.Prometheus;
 
 /// <summary>
-/// Basic PrometheusSerializer which has no OpenTelemetry dependency.
-/// Copied from OpenTelemetry.Net project.
+/// Basic PrometheusSerializer which has no OpenTelemetry dependency. Copied from OpenTelemetry.Net project.
 /// </summary>
-internal static partial class PrometheusSerializer
+internal static class PrometheusSerializer
 {
     private const byte AsciiQuotationMark = 0x22; // '"'
     private const byte AsciiFullStop = 0x2E; // '.'
@@ -54,7 +53,7 @@ internal static partial class PrometheusSerializer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteAsciiStringNoEscape(byte[] buffer, int cursor, string value)
     {
-        foreach (var ch in value)
+        foreach (char ch in value)
         {
             buffer[cursor++] = unchecked((byte)ch);
         }
@@ -91,9 +90,10 @@ internal static partial class PrometheusSerializer
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static int WriteUnicodeString(byte[] buffer, int cursor, string value)
     {
-        foreach (var ch in value)
+        foreach (char ch in value)
         {
-            var ordinal = (ushort)ch;
+            ushort ordinal = (ushort)ch;
+
             switch (ordinal)
             {
                 case AsciiReverseSolidus:
@@ -118,20 +118,18 @@ internal static partial class PrometheusSerializer
     {
         Debug.Assert(!string.IsNullOrEmpty(value), $"{nameof(value)} should not be null or empty.");
 
-        var ordinal = (ushort)value[0];
+        ushort ordinal = (ushort)value[0];
 
         if (ordinal >= '0' && ordinal <= '9')
         {
             buffer[cursor++] = unchecked((byte)'_');
         }
 
-        foreach (var ch in value)
+        foreach (char ch in value)
         {
             ordinal = ch;
 
-            if ((ordinal >= 'A' && ordinal <= 'Z') ||
-                (ordinal >= 'a' && ordinal <= 'z') ||
-                (ordinal >= '0' && ordinal <= '9'))
+            if ((ordinal >= 'A' && ordinal <= 'Z') || (ordinal >= 'a' && ordinal <= 'z') || (ordinal >= '0' && ordinal <= '9'))
             {
                 buffer[cursor++] = unchecked((byte)ordinal);
             }
@@ -149,9 +147,10 @@ internal static partial class PrometheusSerializer
     {
         Debug.Assert(value != null, $"{nameof(value)} should not be null.");
 
-        foreach (var ch in value)
+        foreach (char ch in value)
         {
-            var ordinal = (ushort)ch;
+            ushort ordinal = (ushort)ch;
+
             switch (ordinal)
             {
                 case AsciiQuotationMark:
@@ -194,9 +193,10 @@ internal static partial class PrometheusSerializer
     {
         Debug.Assert(!string.IsNullOrEmpty(metricName), $"{nameof(metricName)} should not be null or empty.");
 
-        foreach (var ch in metricName)
+        foreach (char ch in metricName)
         {
-            var ordinal = (ushort)ch;
+            ushort ordinal = (ushort)ch;
+
             switch (ordinal)
             {
                 case AsciiFullStop:
@@ -213,13 +213,11 @@ internal static partial class PrometheusSerializer
         {
             buffer[cursor++] = unchecked((byte)'_');
 
-            foreach (var ch in metricUnit)
+            foreach (char ch in metricUnit)
             {
-                var ordinal = (ushort)ch;
+                ushort ordinal = (ushort)ch;
 
-                if ((ordinal >= 'A' && ordinal <= 'Z') ||
-                    (ordinal >= 'a' && ordinal <= 'z') ||
-                    (ordinal >= '0' && ordinal <= '9'))
+                if ((ordinal >= 'A' && ordinal <= 'Z') || (ordinal >= 'a' && ordinal <= 'z') || (ordinal >= '0' && ordinal <= '9'))
                 {
                     buffer[cursor++] = unchecked((byte)ordinal);
                 }

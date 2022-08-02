@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reflection;
+using Steeltoe.Common.Util;
 
 namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
@@ -17,10 +17,15 @@ public class ReflectiveMethodExecutor : IMethodExecutor
 
     private Type _publicDeclaringClass;
 
+    public MethodInfo Method { get; }
+
+    public bool DidArgumentConversionOccur { get; private set; }
+
     public ReflectiveMethodExecutor(MethodInfo method)
     {
         Method = method;
         _methodToInvoke = ClassUtils.GetInterfaceMethodIfPossible(method);
+
         if (method.IsVarArgs())
         {
             _varargsPosition = method.GetParameters().Length - 1;
@@ -30,8 +35,6 @@ public class ReflectiveMethodExecutor : IMethodExecutor
             _varargsPosition = null;
         }
     }
-
-    public MethodInfo Method { get; }
 
     public Type GetPublicDeclaringClass()
     {
@@ -67,19 +70,18 @@ public class ReflectiveMethodExecutor : IMethodExecutor
         return null;
     }
 
-    public bool DidArgumentConversionOccur { get; private set; }
-
     public ITypedValue Execute(IEvaluationContext context, object target, params object[] arguments)
     {
         try
         {
             DidArgumentConversionOccur = ReflectionHelper.ConvertArguments(context.TypeConverter, arguments, Method, _varargsPosition);
+
             if (Method.IsVarArgs())
             {
                 arguments = ReflectionHelper.SetupArgumentsForVarargsInvocation(ClassUtils.GetParameterTypes(Method), arguments);
             }
 
-            var value = _methodToInvoke.Invoke(target, arguments);
+            object value = _methodToInvoke.Invoke(target, arguments);
             return new TypedValue(value, value?.GetType() ?? Method.ReturnType);
         }
         catch (Exception ex)

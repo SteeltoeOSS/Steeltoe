@@ -9,14 +9,14 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
-/// Computes the Eureka InstanceStatus from all of the Steeltoe Health contributors registered for the application.
-/// When this handler is added to the container it registers with the DiscoveryClient as a IHealthCheckHandler.
-/// The DiscoveryClient will then call it each time it is computing the InstanceStatus of the application.
+/// Computes the Eureka InstanceStatus from all of the Steeltoe Health contributors registered for the application. When this handler is added to the
+/// container it registers with the DiscoveryClient as a IHealthCheckHandler. The DiscoveryClient will then call it each time it is computing the
+/// InstanceStatus of the application.
 /// </summary>
 public class EurekaHealthCheckHandler : IHealthCheckHandler
 {
-    protected internal IList<IHealthContributor> Contributors;
     private readonly ILogger _logger;
+    protected internal IList<IHealthContributor> Contributors;
 
     public EurekaHealthCheckHandler(ILogger logger = null)
     {
@@ -26,20 +26,21 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
     public EurekaHealthCheckHandler(IEnumerable<IHealthContributor> contributors, ILogger<EurekaHealthCheckHandler> logger = null)
         : this(logger)
     {
-        this.Contributors = contributors.ToList();
+        Contributors = contributors.ToList();
     }
 
     public virtual InstanceStatus GetStatus(InstanceStatus currentStatus)
     {
-        var results = DoHealthChecks(Contributors);
-        var status = AggregateStatus(results);
+        List<HealthCheckResult> results = DoHealthChecks(Contributors);
+        HealthStatus status = AggregateStatus(results);
         return MapToInstanceStatus(status);
     }
 
     protected internal virtual List<HealthCheckResult> DoHealthChecks(IList<IHealthContributor> contributors)
     {
         var results = new List<HealthCheckResult>();
-        foreach (var contributor in contributors)
+
+        foreach (IHealthContributor contributor in contributors)
         {
             try
             {
@@ -59,7 +60,7 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
         var considered = new List<HealthStatus>();
 
         // Filter out warnings, ignored
-        foreach (var result in results)
+        foreach (HealthCheckResult result in results)
         {
             if (result.Status != HealthStatus.Warning)
             {
@@ -75,7 +76,8 @@ public class EurekaHealthCheckHandler : IHealthCheckHandler
 
         // Compute final
         var final = HealthStatus.Unknown;
-        foreach (var status in considered)
+
+        foreach (HealthStatus status in considered)
         {
             if (status > final)
             {

@@ -7,7 +7,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
+using Steeltoe.Messaging.RabbitMQ.Support.Converter;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -40,10 +42,11 @@ public class EnableRabbitReturnTypesTest
         };
 
         ServiceProvider provider = null;
+
         try
         {
             provider = await CreateAndStartServices(null, queues, typeof(Listener));
-            var template = provider.GetRabbitTemplate();
+            RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.1", "3");
             Assert.NotNull(reply);
             var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.1", "4");
@@ -51,7 +54,7 @@ public class EnableRabbitReturnTypesTest
         }
         finally
         {
-            var admin = provider.GetRabbitAdmin();
+            RabbitAdmin admin = provider.GetRabbitAdmin();
             admin.DeleteQueue(Q1);
             admin.DeleteQueue(Q2);
             admin.DeleteQueue(Q3);
@@ -72,10 +75,11 @@ public class EnableRabbitReturnTypesTest
         };
 
         ServiceProvider provider = null;
+
         try
         {
             provider = await CreateAndStartServices(null, queues, typeof(Listener));
-            var template = provider.GetRabbitTemplate();
+            RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.2", "3");
             Assert.NotNull(reply);
             var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.2", "4");
@@ -83,7 +87,7 @@ public class EnableRabbitReturnTypesTest
         }
         finally
         {
-            var admin = provider.GetRabbitAdmin();
+            RabbitAdmin admin = provider.GetRabbitAdmin();
             admin.DeleteQueue(Q1);
             admin.DeleteQueue(Q2);
             admin.DeleteQueue(Q3);
@@ -104,16 +108,17 @@ public class EnableRabbitReturnTypesTest
         };
 
         ServiceProvider provider = null;
+
         try
         {
             provider = await CreateAndStartServices(null, queues, typeof(Listener));
-            var template = provider.GetRabbitTemplate();
+            RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<List<Three>>("EnableRabbitReturnTypesTests.3", "3");
             Assert.NotNull(reply);
         }
         finally
         {
-            var admin = provider.GetRabbitAdmin();
+            RabbitAdmin admin = provider.GetRabbitAdmin();
             admin.DeleteQueue(Q1);
             admin.DeleteQueue(Q2);
             admin.DeleteQueue(Q3);
@@ -134,10 +139,11 @@ public class EnableRabbitReturnTypesTest
         };
 
         ServiceProvider provider = null;
+
         try
         {
             provider = await CreateAndStartServices(null, queues, typeof(Listener));
-            var template = provider.GetRabbitTemplate();
+            RabbitTemplate template = provider.GetRabbitTemplate();
             var reply = template.ConvertSendAndReceive<Three>("EnableRabbitReturnTypesTests.4", "3");
             Assert.NotNull(reply);
             var reply2 = template.ConvertSendAndReceive<Four>("EnableRabbitReturnTypesTests.4", "4");
@@ -145,7 +151,7 @@ public class EnableRabbitReturnTypesTest
         }
         finally
         {
-            var admin = provider.GetRabbitAdmin();
+            RabbitAdmin admin = provider.GetRabbitAdmin();
             admin.DeleteQueue(Q1);
             admin.DeleteQueue(Q2);
             admin.DeleteQueue(Q3);
@@ -154,71 +160,14 @@ public class EnableRabbitReturnTypesTest
         }
     }
 
-    public class Listener
-    {
-        [RabbitListener("EnableRabbitReturnTypesTests.1")]
-
-        public IOne Listen1(string input)
-        {
-            _output.WriteLine("Listen1 " + input);
-            if ("3".Equals(input))
-            {
-                return new Three();
-            }
-            else
-            {
-                return new Four();
-            }
-        }
-
-        [RabbitListener("EnableRabbitReturnTypesTests.2")]
-        public Two Listen2(string input)
-        {
-            _output.WriteLine("Listen2 " + input);
-            if ("3".Equals(input))
-            {
-                return new Three();
-            }
-            else
-            {
-                return new Four();
-            }
-        }
-
-        [RabbitListener("EnableRabbitReturnTypesTests.3")]
-        public List<Three> Listen3(string input)
-        {
-            _output.WriteLine("Listen3 " + input);
-            var list = new List<Three>
-            {
-                new ()
-            };
-            return list;
-        }
-
-        [RabbitListener("EnableRabbitReturnTypesTests.4")]
-        public IOne Listen4(string input)
-        {
-            _output.WriteLine("Listen4 " + input);
-            if ("3".Equals(input))
-            {
-                return new Three();
-            }
-            else
-            {
-                return new Four();
-            }
-        }
-    }
-
     public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
     {
         var services = new ServiceCollection();
-        var config = configuration ?? new ConfigurationBuilder().Build();
+        IConfiguration config = configuration ?? new ConfigurationBuilder().Build();
 
         services.AddSingleton(config);
         services.AddRabbitHostingServices();
-        services.AddRabbitMessageConverter<Support.Converter.JsonMessageConverter>();
+        services.AddRabbitMessageConverter<JsonMessageConverter>();
         services.AddRabbitMessageHandlerMethodFactory();
         services.AddRabbitListenerEndpointRegistry();
         services.AddRabbitListenerEndpointRegistrar();
@@ -234,15 +183,70 @@ public class EnableRabbitReturnTypesTest
         services.AddRabbitTemplate();
         services.AddRabbitQueues(queues.ToArray());
 
-        foreach (var listener in listeners)
+        foreach (Type listener in listeners)
         {
             services.AddSingleton(listener);
         }
 
         services.AddRabbitListeners(config, listeners);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
         await provider.GetRequiredService<IHostedService>().StartAsync(default);
         return provider;
+    }
+
+    public class Listener
+    {
+        [RabbitListener("EnableRabbitReturnTypesTests.1")]
+        public IOne Listen1(string input)
+        {
+            _output.WriteLine("Listen1 " + input);
+
+            if ("3".Equals(input))
+            {
+                return new Three();
+            }
+
+            return new Four();
+        }
+
+        [RabbitListener("EnableRabbitReturnTypesTests.2")]
+        public Two Listen2(string input)
+        {
+            _output.WriteLine("Listen2 " + input);
+
+            if ("3".Equals(input))
+            {
+                return new Three();
+            }
+
+            return new Four();
+        }
+
+        [RabbitListener("EnableRabbitReturnTypesTests.3")]
+        public List<Three> Listen3(string input)
+        {
+            _output.WriteLine("Listen3 " + input);
+
+            var list = new List<Three>
+            {
+                new()
+            };
+
+            return list;
+        }
+
+        [RabbitListener("EnableRabbitReturnTypesTests.4")]
+        public IOne Listen4(string input)
+        {
+            _output.WriteLine("Listen4 " + input);
+
+            if ("3".Equals(input))
+            {
+                return new Three();
+            }
+
+            return new Four();
+        }
     }
 
     public interface IOne

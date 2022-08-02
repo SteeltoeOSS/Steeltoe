@@ -26,14 +26,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChanel.Setup(c => c.IsOpen).Returns(true);
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-        var con = ccf.CreateConnection();
-        var channel = con.CreateChannel();
-        channel.Close();  // should be ignored, and placed into channel cache.
+        IConnection con = ccf.CreateConnection();
+        RC.IModel channel = con.CreateChannel();
+        channel.Close(); // should be ignored, and placed into channel cache.
         con.Close(); // should be ignored
-        var con2 = ccf.CreateConnection();
+        IConnection con2 = ccf.CreateConnection();
 
         // Will retrieve same channel object that was just put into channel cache
-        var channel2 = con2.CreateChannel();
+        RC.IModel channel2 = con2.CreateChannel();
         channel2.Close(); // should be ignored
         con2.Close(); // should be ignored
 
@@ -55,14 +55,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChanel.Setup(c => c.IsOpen).Returns(true);
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-        var con = ccf.PublisherConnectionFactory.CreateConnection();
-        var channel = con.CreateChannel();
-        channel.Close();  // should be ignored, and placed into channel cache.
+        IConnection con = ccf.PublisherConnectionFactory.CreateConnection();
+        RC.IModel channel = con.CreateChannel();
+        channel.Close(); // should be ignored, and placed into channel cache.
         con.Close(); // should be ignored
-        var con2 = ccf.PublisherConnectionFactory.CreateConnection();
+        IConnection con2 = ccf.PublisherConnectionFactory.CreateConnection();
 
         // Will retrieve same channel object that was just put into channel cache
-        var channel2 = con2.CreateChannel();
+        RC.IModel channel2 = con2.CreateChannel();
         channel2.Close(); // should be ignored
         con2.Close(); // should be ignored
 
@@ -83,22 +83,21 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
-        mockConnection.SetupSequence(c => c.CreateModel())
-            .Returns(mockChannel1.Object)
-            .Returns(mockChanel2.Object)
-            .Returns(mockTxChanel.Object);
+        mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChanel2.Object).Returns(mockTxChanel.Object);
 
         mockChannel1.Setup(c => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
         mockChanel2.Setup(c => c.BasicGet("foo", false)).Returns(new RC.BasicGetResult(0, false, null, null, 1, null, null));
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
         mockChanel2.Setup(c => c.IsOpen).Returns(true);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             ChannelCacheSize = 2
         };
-        var con = ccf.CreateConnection();
-        var channel1 = con.CreateChannel();
-        var channel2 = con.CreateChannel();
+
+        IConnection con = ccf.CreateConnection();
+        RC.IModel channel1 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         var txChannel = (IChannelProxy)con.CreateChannel(true);
         Assert.True(txChannel.IsTransactional);
         mockTxChanel.Verify(c => c.TxSelect(), Times.Once);
@@ -108,8 +107,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel1.Close(); // should be ignored, and add last into channel cache.
         channel2.Close(); // should be ignored, and add last into channel cache.
 
-        var ch1 = con.CreateChannel(); // remove first entry in cache
-        var ch2 = con.CreateChannel(); // remove first entry in cache
+        RC.IModel ch1 = con.CreateChannel(); // remove first entry in cache
+        RC.IModel ch2 = con.CreateChannel(); // remove first entry in cache
 
         Assert.NotSame(ch1, ch2);
         Assert.Same(ch1, channel1);
@@ -135,10 +134,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockChanel2 = new Mock<RC.IModel>();
         var mockChanel3 = new Mock<RC.IModel>();
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
-        mockConnection.SetupSequence(c => c.CreateModel())
-            .Returns(mockChannel1.Object)
-            .Returns(mockChanel2.Object)
-            .Returns(mockChanel3.Object);
+        mockConnection.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChanel2.Object).Returns(mockChanel3.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
 
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
@@ -150,13 +146,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCacheSize = 1
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
 
         // cache size is 1, but the other connection is not released yet so this
         // creates a new one
-        var channel2 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         Assert.NotSame(channel1, channel2);
 
         // should be ignored, and added last into channel cache.
@@ -166,10 +162,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel2.Close();
 
         // remove first entry in cache (channel1)
-        var ch1 = con.CreateChannel();
+        RC.IModel ch1 = con.CreateChannel();
 
         // create a new channel
-        var ch2 = con.CreateChannel();
+        RC.IModel ch2 = con.CreateChannel();
 
         Assert.NotSame(ch1, ch2);
         Assert.Same(channel1, ch1);
@@ -205,9 +201,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCheckoutTimeout = 10
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
+
         try
         {
             con.CreateChannel();
@@ -222,7 +219,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel1.Close();
 
         // remove first entry in cache (channel1)
-        var ch1 = con.CreateChannel();
+        RC.IModel ch1 = con.CreateChannel();
 
         Assert.Same(channel1, ch1);
         ch1.Close();
@@ -244,8 +241,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var brokerDown = new AtomicBoolean(false);
 
-        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection.Object)
+        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object)
             .Throws(new RabbitConnectException(null)) // Happens when broker down
             .Returns(mockConnection.Object);
 
@@ -260,9 +256,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCheckoutTimeout = 10
         };
 
-        var con = ccf.CreateConnection(); // .Returns(mockConnection.Object)
+        IConnection con = ccf.CreateConnection(); // .Returns(mockConnection.Object)
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
+
         try
         {
             con.CreateChannel();
@@ -274,13 +271,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
 
         channel1.Close();
-        var ch1 = con.CreateChannel();
+        RC.IModel ch1 = con.CreateChannel();
         Assert.Same(channel1, ch1);
 
         ch1.Close();
 
         // Connection will report not open, will try to create new one
         brokerDown.Value = true;
+
         try
         {
             // .Throws(new AmqpConnectException(null)) thrown
@@ -316,7 +314,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCheckoutTimeout = 10
         };
 
-        var con1 = ccf.CreateConnection(); // .Returns(mockConnection.Object)
+        IConnection con1 = ccf.CreateConnection(); // .Returns(mockConnection.Object)
+
         try
         {
             ccf.CreateConnection();
@@ -329,7 +328,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         // should be ignored, and added to cache
         con1.Close();
-        var con2 = ccf.CreateConnection();
+        IConnection con2 = ccf.CreateConnection();
         Assert.Same(con1, con2);
 
         var latch2 = new CountdownEvent(1);
@@ -337,6 +336,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var connection = new AtomicReference<IConnection>();
 
         ccf.ChannelCheckoutTimeout = 30_000;
+
         _ = Task.Run(() =>
         {
             latch1.Signal();
@@ -371,8 +371,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
         var mockChannel1 = new Mock<RC.IModel>();
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection.Object);
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
@@ -383,14 +382,16 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCheckoutTimeout = 10_000
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
         var channelOne = new AtomicReference<RC.IModel>();
         var latch = new CountdownEvent(1);
+
         _ = Task.Run(async () =>
         {
-            var channel1 = con.CreateChannel();
+            RC.IModel channel1 = con.CreateChannel();
             latch.Signal();
             channelOne.Value = channel1;
+
             try
             {
                 await Task.Delay(100);
@@ -401,8 +402,9 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
                 // Ignore
             }
         });
+
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
-        var channel2 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         Assert.Same(channelOne.Value, channel2);
 
         channel2.Close();
@@ -432,8 +434,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnection = new Mock<RC.IConnection>();
         var mockChannel1 = new Mock<RC.IModel>();
         var mockProperties = new Mock<RC.IBasicProperties>();
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection.Object);
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
 
@@ -441,19 +442,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannel1.Setup(c => c.IsOpen).Returns(() => open.Value);
         mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(mockProperties.Object);
         mockChannel1.Setup(c => c.NextPublishSeqNo).Returns(1);
+
         mockChannel1.Setup(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()))
             .Callback(() => open.Value = false);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             ChannelCacheSize = 1,
             ChannelCheckoutTimeout = 1,
             PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated
         };
+
         var rabbitTemplate = new RabbitTemplate(ccf);
         rabbitTemplate.ConvertAndSend("foo", "bar");
         open.Value = true;
         rabbitTemplate.ConvertAndSend("foo", "bar");
-        mockChannel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()), Times.Exactly(2));
+
+        mockChannel1.Verify(c => c.BasicPublish(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<RC.IBasicProperties>(), It.IsAny<byte[]>()),
+            Times.Exactly(2));
     }
 
     [Fact]
@@ -466,18 +472,19 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             ChannelCacheSize = 1,
             ChannelCheckoutTimeout = 10
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
 
         Assert.Single(ccf.CheckoutPermits.Values);
-        var slim = ccf.CheckoutPermits.Values.Single();
+        SemaphoreSlim slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(0, slim.CurrentCount);
 
         channel1.Close();
@@ -510,18 +517,19 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             ChannelCacheSize = 1,
             ChannelCheckoutTimeout = 10
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
 
         Assert.Single(ccf.CheckoutPermits.Values);
-        var slim = ccf.CheckoutPermits.Values.Single();
+        SemaphoreSlim slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(0, slim.CurrentCount);
 
         channel1.Close();
@@ -557,20 +565,20 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCacheSize = 1
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
 
-        var channel1 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
         channel1.Close();
 
-        var channel2 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         channel2.Close();
 
         Assert.Same(channel1, channel2);
 
-        var ch1 = con.CreateChannel(); // remove first entry in cache
+        RC.IModel ch1 = con.CreateChannel(); // remove first entry in cache
 
         // (channel1)
-        var ch2 = con.CreateChannel(); // create new channel
+        RC.IModel ch2 = con.CreateChannel(); // create new channel
 
         Assert.NotSame(ch1, ch2);
         Assert.Same(ch1, channel1);
@@ -605,18 +613,18 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             ChannelCacheSize = 1
         };
 
-        var con = ccf.CreateConnection();
-        var channel1 = con.CreateChannel(true);
+        IConnection con = ccf.CreateConnection();
+        RC.IModel channel1 = con.CreateChannel(true);
         channel1.TxSelect();
         channel1.Close(); // should be ignored, and add last into channel cache.
 
         // When a channel is created as non-transactional we should create a new one.
-        var channel2 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         channel2.Close(); // should be ignored, and add last into channel cache.
         Assert.NotSame(channel1, channel2);
 
-        var ch1 = con.CreateChannel(true); // remove first entry in cache (channel1)
-        var ch2 = con.CreateChannel(); // create new channel
+        RC.IModel ch1 = con.CreateChannel(true); // remove first entry in cache (channel1)
+        RC.IModel ch2 = con.CreateChannel(); // create new channel
 
         Assert.NotSame(ch1, ch2);
         Assert.Same(channel1, ch1);
@@ -647,17 +655,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockChannel2 = new Mock<RC.IModel>();
         var mockChannel3 = new Mock<RC.IModel>();
 
-        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection1.Object)
-            .Returns(mockConnection2.Object);
+        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection1.Object).Returns(mockConnection2.Object);
 
-        mockConnection1.SetupSequence(c => c.CreateModel())
-            .Returns(mockChannel1.Object)
-            .Returns(mockChannel2.Object);
+        mockConnection1.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChannel2.Object);
         mockConnection1.Setup(c => c.IsOpen).Returns(true);
 
-        mockConnection2.SetupSequence(c => c.CreateModel())
-            .Returns(mockChannel3.Object);
+        mockConnection2.SetupSequence(c => c.CreateModel()).Returns(mockChannel3.Object);
         mockConnection2.Setup(c => c.IsOpen).Returns(true);
 
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
@@ -668,27 +671,28 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             ChannelCacheSize = 2
         };
-        var con = ccf.CreateConnection();
+
+        IConnection con = ccf.CreateConnection();
 
         // This will return a proxy that suppresses calls to close
-        var channel1 = con.CreateChannel();
-        var channel2 = con.CreateChannel();
+        RC.IModel channel1 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
 
         // Should be ignored, and add last into channel cache.
         channel1.Close();
         channel2.Close();
 
         // remove first entry in cache (channel1)
-        var ch1 = con.CreateChannel();
+        RC.IModel ch1 = con.CreateChannel();
 
         // remove first entry in cache (channel2)
-        var ch2 = con.CreateChannel();
+        RC.IModel ch2 = con.CreateChannel();
 
         Assert.Same(channel1, ch1);
         Assert.Same(channel2, ch2);
 
-        var target1 = ((IChannelProxy)ch1).TargetChannel;
-        var target2 = ((IChannelProxy)ch2).TargetChannel;
+        RC.IModel target1 = ((IChannelProxy)ch1).TargetChannel;
+        RC.IModel target2 = ((IChannelProxy)ch2).TargetChannel;
 
         Assert.NotSame(target1, target2);
 
@@ -698,7 +702,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         // com.rabbitmq.client.Connection conDelegate = targetDelegate(con);
         var asProxy = con as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        var conDelegate = asProxy.TargetConnection.Connection;
+        RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
 
         ccf.Destroy();
 
@@ -707,14 +711,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         mockChannel2.Verify(c => c.Close());
 
-        var con1 = ccf.CreateConnection();
+        IConnection con1 = ccf.CreateConnection();
 
         // assertThat(targetDelegate(con1)).isNotSameAs(conDelegate);
         var asProxy1 = con1 as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        var conDelegate1 = asProxy1.TargetConnection.Connection;
+        RC.IConnection conDelegate1 = asProxy1.TargetConnection.Connection;
         Assert.NotSame(conDelegate, conDelegate1);
 
-        var channel3 = con.CreateChannel();
+        RC.IModel channel3 = con.CreateChannel();
 
         Assert.NotSame(channel1, channel3);
         Assert.NotSame(channel2, channel3);
@@ -732,12 +736,17 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
         var called = new AtomicInteger(0);
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
-        connectionFactory.SetChannelListeners(new List<IChannelListener> { new TestWithChannelListenerListener(called) });
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+
+        connectionFactory.SetChannelListeners(new List<IChannelListener>
+        {
+            new TestWithChannelListenerListener(called)
+        });
+
         ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
 
-        var con = connectionFactory.CreateConnection();
-        var channel = con.CreateChannel();
+        IConnection con = connectionFactory.CreateConnection();
+        RC.IModel channel = con.CreateChannel();
         Assert.Equal(1, called.Value);
 
         channel.Close();
@@ -762,9 +771,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnection2 = new Mock<RC.IConnection>();
         mockConnection2.Setup(c => c.ToString()).Returns("conn2");
         var mockChannel1 = new Mock<RC.IModel>();
-        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection1.Object)
-            .Returns(mockConnection2.Object);
+        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection1.Object).Returns(mockConnection2.Object);
         mockConnection1.Setup(c => c.IsOpen).Returns(true);
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
         mockConnection1.Setup(c => c.CreateModel()).Returns(mockChannel1.Object);
@@ -773,24 +780,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var created = new AtomicReference<IConnection>();
         var closed = new AtomicReference<IConnection>();
         var timesClosed = new AtomicInteger(0);
-        var connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
+        AbstractConnectionFactory connectionFactory = CreateConnectionFactory(mockConnectionFactory.Object);
         connectionFactory.AddConnectionListener(new TestWithConnectionListenerListener(created, closed, timesClosed));
         ((CachingConnectionFactory)connectionFactory).ChannelCacheSize = 1;
-        var con = connectionFactory.CreateConnection();
-        var channel = con.CreateChannel();
+        IConnection con = connectionFactory.CreateConnection();
+        RC.IModel channel = con.CreateChannel();
         Assert.Same(created.Value, con);
         channel.Close();
 
         con.Close();
         mockConnection1.Verify(c => c.Close(), Times.Never);
 
-        var same = connectionFactory.CreateConnection();
+        IConnection same = connectionFactory.CreateConnection();
         channel = con.CreateChannel();
         Assert.Same(same, con);
         channel.Close();
 
         var asProxy = con as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        var conDelegate = asProxy.TargetConnection.Connection;
+        RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
 
         mockConnection1.Setup(c => c.IsOpen).Returns(false);
         mockChannel1.Setup(c => c.IsOpen).Returns(false);
@@ -799,10 +806,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         channel.Close();
         Assert.Equal(1, timesClosed.Value);
 
-        var notSame = connectionFactory.CreateConnection();
+        IConnection notSame = connectionFactory.CreateConnection();
 
         var asProxy1 = notSame as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        var conDelegate1 = asProxy1.TargetConnection.Connection;
+        RC.IConnection conDelegate1 = asProxy1.TargetConnection.Connection;
         Assert.NotSame(conDelegate, conDelegate1);
         Assert.Same(closed.Value, con);
         Assert.Same(created.Value, notSame);
@@ -825,26 +832,25 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var connectionNumber = new AtomicInteger();
         var channelNumber = new AtomicInteger();
 
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() =>
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() =>
+        {
+            var connection = new Mock<RC.IConnection>();
+
+            connection.Setup(c => c.CreateModel()).Callback(() =>
             {
-                var connection = new Mock<RC.IConnection>();
-                connection.Setup(c => c.CreateModel())
-                    .Callback(() =>
-                    {
-                        var channel = new Mock<RC.IModel>();
-                        channel.Setup(c => c.IsOpen).Returns(true);
-                        var channelNum = channelNumber.IncrementAndGet();
-                        channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
-                        mockChannels.Add(channel);
-                    })
-                    .Returns(() => mockChannels[channelNumber.Value - 1].Object);
-                var connectionNum = connectionNumber.IncrementAndGet();
-                connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
-                connection.Setup(c => c.IsOpen).Returns(true);
-                mockConnections.Add(connection);
-            })
-            .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
+                var channel = new Mock<RC.IModel>();
+                channel.Setup(c => c.IsOpen).Returns(true);
+                int channelNum = channelNumber.IncrementAndGet();
+                channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                mockChannels.Add(channel);
+            }).Returns(() => mockChannels[channelNumber.Value - 1].Object);
+
+            int connectionNum = connectionNumber.IncrementAndGet();
+            connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+            connection.Setup(c => c.IsOpen).Returns(true);
+            mockConnections.Add(connection);
+        }).Returns(() => mockConnections[connectionNumber.Value - 1].Object);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
 
         Assert.Empty(ccf.AllocatedConnections);
@@ -852,19 +858,22 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var createNotification = new AtomicReference<RC.IConnection>();
         var closedNotification = new AtomicReference<RC.IConnection>();
-        ccf.SetConnectionListeners(
-            new List<IConnectionListener> { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
 
-        var con1 = ccf.CreateConnection();
+        ccf.SetConnectionListeners(new List<IConnectionListener>
+        {
+            new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification)
+        });
+
+        IConnection con1 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con1);
         Assert.Single(ccf.AllocatedConnections);
         Assert.Empty(ccf.IdleConnections);
 
         Assert.NotNull(createNotification.Value);
-        var val = createNotification.GetAndSet(null);
+        RC.IConnection val = createNotification.GetAndSet(null);
         Assert.Same(val, mockConnections[0].Object);
 
-        var channel1 = con1.CreateChannel();
+        RC.IModel channel1 = con1.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel1);
         channel1.Close();
 
@@ -878,9 +887,9 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Null(closedNotification.Value);
 
         // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
-        var con2 = ccf.CreateConnection();
+        IConnection con2 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con2);
-        var channel2 = con2.CreateChannel();
+        RC.IModel channel2 = con2.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel2);
         channel2.Close();
         mockChannels[0].Verify(c => c.Close(), Times.Never);
@@ -914,10 +923,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Single(ccf.IdleConnections);
         Assert.Null(closedNotification.Value);
 
-        var con3 = ccf.CreateConnection();
+        IConnection con3 = ccf.CreateConnection();
         Assert.Null(createNotification.Value);
         VerifyConnectionIs(mockConnections[0].Object, con3);
-        var channel3 = con3.CreateChannel();
+        RC.IModel channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel3);
 
         Assert.Equal(2, ccf.AllocatedConnections.Count);
@@ -1003,26 +1012,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var connectionNumber = new AtomicInteger();
         var channelNumber = new AtomicInteger();
 
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() =>
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() =>
+        {
+            var connection = new Mock<RC.IConnection>();
+
+            connection.Setup(c => c.CreateModel()).Callback(() =>
             {
-                var connection = new Mock<RC.IConnection>();
-                connection.Setup(c => c.CreateModel())
-                    .Callback(() =>
-                    {
-                        var channel = new Mock<RC.IModel>();
-                        channel.Setup(c => c.IsOpen).Returns(true);
-                        var channelNum = channelNumber.IncrementAndGet();
-                        channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
-                        mockChannels.Add(channel);
-                    })
-                    .Returns(() => mockChannels[channelNumber.Value - 1].Object);
-                var connectionNum = connectionNumber.IncrementAndGet();
-                connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
-                connection.Setup(c => c.IsOpen).Returns(true);
-                mockConnections.Add(connection);
-            })
-            .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
+                var channel = new Mock<RC.IModel>();
+                channel.Setup(c => c.IsOpen).Returns(true);
+                int channelNum = channelNumber.IncrementAndGet();
+                channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                mockChannels.Add(channel);
+            }).Returns(() => mockChannels[channelNumber.Value - 1].Object);
+
+            int connectionNum = connectionNumber.IncrementAndGet();
+            connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+            connection.Setup(c => c.IsOpen).Returns(true);
+            mockConnections.Add(connection);
+        }).Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
@@ -1035,19 +1042,22 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         var createNotification = new AtomicReference<RC.IConnection>();
         var closedNotification = new AtomicReference<RC.IConnection>();
-        ccf.SetConnectionListeners(
-            new List<IConnectionListener> { new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification) });
 
-        var con1 = ccf.CreateConnection();
+        ccf.SetConnectionListeners(new List<IConnectionListener>
+        {
+            new TestWithConnectionFactoryCachedConnectionListener(createNotification, closedNotification)
+        });
+
+        IConnection con1 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con1);
         Assert.Single(ccf.AllocatedConnections);
         Assert.Empty(ccf.IdleConnections);
 
         Assert.NotNull(createNotification.Value);
-        var val = createNotification.GetAndSet(null);
+        RC.IConnection val = createNotification.GetAndSet(null);
         Assert.Same(val, mockConnections[0].Object);
 
-        var channel1 = con1.CreateChannel();
+        RC.IModel channel1 = con1.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel1);
         channel1.Close();
 
@@ -1063,9 +1073,9 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Null(closedNotification.Value);
 
         // Will retrieve same connection that was just put into cache, and reuse single channel from cache as well
-        var con2 = ccf.CreateConnection();
+        IConnection con2 = ccf.CreateConnection();
         VerifyConnectionIs(mockConnections[0].Object, con2);
-        var channel2 = con2.CreateChannel();
+        RC.IModel channel2 = con2.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel2);
         channel2.Close();
         mockChannels[0].Verify(c => c.Close(), Times.Never);
@@ -1099,10 +1109,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Single(ccf.IdleConnections);
         Assert.Null(closedNotification.Value);
 
-        var con3 = ccf.CreateConnection();
+        IConnection con3 = ccf.CreateConnection();
         Assert.Null(createNotification.Value);
         VerifyConnectionIs(mockConnections[0].Object, con3);
-        var channel3 = con3.CreateChannel();
+        RC.IModel channel3 = con3.CreateChannel();
         VerifyChannelIs(mockChannels[0].Object, channel3);
 
         Assert.Equal(2, ccf.AllocatedConnections.Count);
@@ -1130,7 +1140,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         // verify(mockChannels.get(1), never()).close();
         Assert.Equal(2, ccf.IdleConnections.Count);
-        using var idleEnumerator = ccf.IdleConnections.GetEnumerator();
+        using LinkedList<CachingConnectionFactory.ChannelCachingConnectionProxy>.Enumerator idleEnumerator = ccf.IdleConnections.GetEnumerator();
         Assert.True(idleEnumerator.MoveNext());
         VerifyConnectionIs(mockConnections[1].Object, idleEnumerator.Current);
         Assert.True(idleEnumerator.MoveNext());
@@ -1174,12 +1184,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Equal(2, ccf.AllocatedConnections.Count);
         Assert.Equal(2, ccf.IdleConnections.Count);
 
-        var con4 = ccf.CreateConnection();
+        IConnection con4 = ccf.CreateConnection();
         Assert.Same(con3, con4);
         Assert.Single(ccf.IdleConnections);
-        var channelA = con4.CreateChannel();
-        var channelB = con4.CreateChannel();
-        var channelC = con4.CreateChannel();
+        RC.IModel channelA = con4.CreateChannel();
+        RC.IModel channelB = con4.CreateChannel();
+        RC.IModel channelC = con4.CreateChannel();
         channelA.Close();
         var con4Proxy = con4 as CachingConnectionFactory.ChannelCachingConnectionProxy;
         Assert.Single(ccf.AllocatedConnectionNonTransactionalChannels[con4Proxy]);
@@ -1207,26 +1217,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var connectionNumber = new AtomicInteger();
         var channelNumber = new AtomicInteger();
 
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() =>
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() =>
+        {
+            var connection = new Mock<RC.IConnection>();
+
+            connection.Setup(c => c.CreateModel()).Callback(() =>
             {
-                var connection = new Mock<RC.IConnection>();
-                connection.Setup(c => c.CreateModel())
-                    .Callback(() =>
-                    {
-                        var channel = new Mock<RC.IModel>();
-                        channel.Setup(c => c.IsOpen).Returns(true);
-                        var channelNum = channelNumber.IncrementAndGet();
-                        channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
-                        mockChannels.Add(channel);
-                    })
-                    .Returns(() => mockChannels[channelNumber.Value - 1].Object);
-                var connectionNum = connectionNumber.IncrementAndGet();
-                connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
-                connection.Setup(c => c.IsOpen).Returns(true);
-                mockConnections.Add(connection);
-            })
-            .Returns(() => mockConnections[connectionNumber.Value - 1].Object);
+                var channel = new Mock<RC.IModel>();
+                channel.Setup(c => c.IsOpen).Returns(true);
+                int channelNum = channelNumber.IncrementAndGet();
+                channel.Setup(c => c.ToString()).Returns($"mockChannel{connectionNumber}:{channelNum}");
+                mockChannels.Add(channel);
+            }).Returns(() => mockChannels[channelNumber.Value - 1].Object);
+
+            int connectionNum = connectionNumber.IncrementAndGet();
+            connection.Setup(c => c.ToString()).Returns($"mockConnection{connectionNum}");
+            connection.Setup(c => c.IsOpen).Returns(true);
+            mockConnections.Add(connection);
+        }).Returns(() => mockConnections[connectionNumber.Value - 1].Object);
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
@@ -1236,9 +1244,9 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         Assert.Empty(ccf.AllocatedConnections);
         Assert.Empty(ccf.IdleConnections);
 
-        var conn1 = ccf.CreateConnection();
-        var conn2 = ccf.CreateConnection();
-        var conn3 = ccf.CreateConnection();
+        IConnection conn1 = ccf.CreateConnection();
+        IConnection conn2 = ccf.CreateConnection();
+        IConnection conn3 = ccf.CreateConnection();
         Assert.Equal(3, ccf.AllocatedConnections.Count);
         Assert.Empty(ccf.IdleConnections);
         conn1.Close();
@@ -1249,7 +1257,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
 
         mockConnections[0].Setup(c => c.IsOpen).Returns(false);
         mockConnections[1].Setup(c => c.IsOpen).Returns(false);
-        var conn4 = ccf.CreateConnection();
+        IConnection conn4 = ccf.CreateConnection();
         Assert.Equal(3, ccf.AllocatedConnections.Count);
         Assert.Equal(2, ccf.IdleConnections.Count);
         Assert.Same(conn4, conn3);
@@ -1280,10 +1288,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     public void SetAddressesEmpty()
     {
         var mock = new Mock<RC.ConnectionFactory>();
+
         var ccf = new CachingConnectionFactory(mock.Object)
         {
             Host = "abc"
         };
+
         ccf.SetAddresses(string.Empty);
         ccf.CreateConnection();
         mock.VerifyGet(f => f.AutomaticRecoveryEnabled);
@@ -1296,8 +1306,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
-        mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
+        mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>())).Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1");
         ccf.CreateConnection();
@@ -1312,8 +1321,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         var mock = new Mock<RC.ConnectionFactory>();
         IList<RC.AmqpTcpEndpoint> captured = null;
-        mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
+        mock.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>())).Callback<IList<RC.AmqpTcpEndpoint>, string>((arg1, _) => captured = arg1);
         mock.Setup(f => f.AutomaticRecoveryEnabled).Returns(true);
         var ccf = new CachingConnectionFactory(mock.Object);
         ccf.SetAddresses("mq1,mq2");
@@ -1331,10 +1339,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     {
         var uri = new Uri("amqp://localhost:1234/%2f");
         var mock = new Mock<RC.IConnectionFactory>();
+
         var ccf = new CachingConnectionFactory(mock.Object)
         {
             Uri = uri
         };
+
         ccf.CreateConnection();
         mock.VerifySet(f => f.Uri = uri);
         mock.Verify(f => f.CreateConnection(It.IsAny<string>()));
@@ -1352,12 +1362,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockChannel.SetupSequence(c => c.IsOpen).Returns(true).Returns(false);
 
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
-        var con = ccf.CreateConnection();
-        var channel1 = con.CreateChannel();
+        IConnection con = ccf.CreateConnection();
+        RC.IModel channel1 = con.CreateChannel();
         channel1.Close(); // should be ignored, and placed into channel cache.
         channel1.Close(); // physically closed, so remove from the cache.
         channel1.Close(); // physically closed and removed from the cache  before, so void "close".
-        var channel2 = con.CreateChannel();
+        RC.IModel channel2 = con.CreateChannel();
         Assert.NotSame(channel1, channel2);
     }
 
@@ -1380,19 +1390,21 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var pccMock = new Mock<IPublisherCallbackChannel>();
         pccMock.Setup(p => p.IsOpen).Returns(true);
         var asyncClosingLatch = new CountdownEvent(1);
-        pccMock.Setup(p => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
-            .Callback(() => asyncClosingLatch.Signal());
+        pccMock.Setup(p => p.WaitForConfirmsOrDie(It.IsAny<TimeSpan>())).Callback(() => asyncClosingLatch.Signal());
         var closeLatch = new CountdownEvent(1);
         ccf.PublisherCallbackChannelFactory = new TestOrderlyShutdownPublisherCallbackChannelFactory(pccMock);
-        pccMock.Setup(p => p.Close())
-            .Callback(() =>
-            {
-                closeLatch.Signal();
-            });
-        var channel = ccf.CreateConnection().CreateChannel();
+
+        pccMock.Setup(p => p.Close()).Callback(() =>
+        {
+            closeLatch.Signal();
+        });
+
+        RC.IModel channel = ccf.CreateConnection().CreateChannel();
+
         Task.Run(() =>
         {
             RabbitUtils.SetPhysicalCloseRequired(channel, true);
+
             try
             {
                 channel.Close();
@@ -1402,6 +1414,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
                 // ignore
             }
         });
+
         Assert.True(asyncClosingLatch.Wait(TimeSpan.FromSeconds(10)));
         ccf.Destroy();
         Assert.True(closeLatch.Wait(TimeSpan.FromSeconds(10)));
@@ -1417,11 +1430,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.IsOpen).Returns(true);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection)
         {
             ChannelCheckoutTimeout = 60_000
         };
-        var t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+        long t1 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         ccf.CreateConnection();
         Assert.True(DateTimeOffset.Now.ToUnixTimeMilliseconds() - t1 < 30_000);
     }
@@ -1433,22 +1448,24 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var mockConnection = new Mock<RC.IConnection>();
         var mockChannel = new Mock<RC.IModel>();
+
         mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<IList<RC.AmqpTcpEndpoint>>()))
-            .Callback<IList<RC.AmqpTcpEndpoint>>(arg1 => captors.Add(arg1))
-            .Returns(mockConnection.Object);
+            .Callback<IList<RC.AmqpTcpEndpoint>>(arg1 => captors.Add(arg1)).Returns(mockConnection.Object);
+
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object, false, CachingConnectionFactory.CachingMode.Connection);
         ccf.SetAddresses("host1:5672,host2:5672,host3:5672");
         ccf.ShuffleAddresses = true;
-        for (var i = 0; i < 100; i++)
+
+        for (int i = 0; i < 100; i++)
         {
             ccf.CreateConnection();
         }
 
         ccf.Destroy();
-        var firstAddress = captors.SelectMany(e => e).Select(e => e.HostName).Distinct().ToList();
+        List<string> firstAddress = captors.SelectMany(e => e).Select(e => e.HostName).Distinct().ToList();
         firstAddress.Sort();
         Assert.Equal(3, firstAddress.Count);
         Assert.Equal("host1", firstAddress[0]);
@@ -1460,10 +1477,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     public void ConfirmsSimple()
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+
         var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             PublisherConfirmType = CachingConnectionFactory.ConfirmType.None
         };
+
         Assert.False(cf.IsSimplePublisherConfirms);
         cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Simple;
         Assert.True(cf.IsSimplePublisherConfirms);
@@ -1477,10 +1496,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     public void ConfirmsCorrelated()
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
+
         var cf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             PublisherConfirmType = CachingConnectionFactory.ConfirmType.None
         };
+
         Assert.False(cf.IsPublisherConfirms);
         cf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated;
         Assert.True(cf.IsPublisherConfirms);
@@ -1509,19 +1530,19 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             mockChannel1.Setup(c => c.IsOpen).Returns(true);
 
             var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
+
             if (confirms)
             {
                 ccf.PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated;
             }
 
-            var con = ccf.CreateConnection();
-            var channel = con.CreateChannel();
+            IConnection con = ccf.CreateConnection();
+            RC.IModel channel = con.CreateChannel();
             RabbitUtils.SetPhysicalCloseRequired(channel, true);
             mockChannel1.Setup(c => c.IsOpen).Returns(true);
             var physicalCloseLatch = new CountdownEvent(1);
 
-            mockChannel1.Setup(c => c.Close())
-                .Callback(() => physicalCloseLatch.Signal());
+            mockChannel1.Setup(c => c.Close()).Callback(() => physicalCloseLatch.Signal());
             channel.Close();
             RabbitUtils.SetPhysicalCloseRequired(channel, false);
             con.Close(); // should be ignored
@@ -1543,7 +1564,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
     private void VerifyConnectionIs(RC.IConnection mockConnection, object con)
     {
         var asProxy = con as CachingConnectionFactory.ChannelCachingConnectionProxy;
-        var conDelegate = asProxy.TargetConnection.Connection;
+        RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
         Assert.Same(mockConnection, conDelegate);
     }
 
@@ -1553,22 +1574,22 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockConnection = new Mock<RC.IConnection>();
         var mockChannel = new Mock<RC.IModel>();
         var mockProperties = new Mock<RC.IBasicProperties>();
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection.Object);
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.CreateModel()).Returns(mockChannel.Object);
         mockConnection.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(mockProperties.Object);
         var confirmsLatch = new CountdownEvent(1);
-        mockChannel.Setup(c => c.WaitForConfirmsOrDie(It.IsAny<TimeSpan>()))
-            .Callback(() =>
-            {
-                confirmsLatch.Wait(TimeSpan.FromSeconds(10));
-            });
+
+        mockChannel.Setup(c => c.WaitForConfirmsOrDie(It.IsAny<TimeSpan>())).Callback(() =>
+        {
+            confirmsLatch.Wait(TimeSpan.FromSeconds(10));
+        });
 
         mockChannel.SetupAdd(c => c.BasicAcks += It.IsAny<EventHandler<BasicAckEventArgs>>());
 
         mockChannel.Setup(c => c.NextPublishSeqNo).Returns(1);
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object)
         {
             ChannelCacheSize = 1,
@@ -1576,11 +1597,12 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
             PublisherConfirmType = CachingConnectionFactory.ConfirmType.Correlated
         };
 
-        var con = ccf.CreateConnection();
+        IConnection con = ccf.CreateConnection();
         var rabbitTemplate = new RabbitTemplate(ccf);
+
         if (physicalClose)
         {
-            var channel1 = con.CreateChannel();
+            RC.IModel channel1 = con.CreateChannel();
             RabbitUtils.SetPhysicalCloseRequired(channel1, physicalClose);
             channel1.Close();
         }
@@ -1590,11 +1612,13 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
 
         Assert.Throws<RabbitTimeoutException>(() => con.CreateChannel());
-        var n = 0;
+        int n = 0;
+
         if (physicalClose)
         {
             confirmsLatch.Signal();
             RC.IModel channel2 = null;
+
             while (channel2 == null && n++ < 100)
             {
                 try
@@ -1611,8 +1635,14 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         }
         else
         {
-            mockChannel.Raise(m => m.BasicAcks += null, new BasicAckEventArgs { DeliveryTag = 1, Multiple = false });
-            var ok = false;
+            mockChannel.Raise(m => m.BasicAcks += null, new BasicAckEventArgs
+            {
+                DeliveryTag = 1,
+                Multiple = false
+            });
+
+            bool ok = false;
+
             while (!ok && n++ < 100)
             {
                 try
@@ -1639,16 +1669,10 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         var mockChanel2 = new Mock<RC.IModel>();
         var mockChanel3 = new Mock<RC.IModel>();
         var mockChanel4 = new Mock<RC.IModel>();
-        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>()))
-            .Returns(mockConnection1.Object)
-            .Returns(mockConnection2.Object);
-        mockConnection1.SetupSequence(c => c.CreateModel())
-            .Returns(mockChannel1.Object)
-            .Returns(mockChanel2.Object);
+        mockConnectionFactory.SetupSequence(f => f.CreateConnection(It.IsAny<string>())).Returns(mockConnection1.Object).Returns(mockConnection2.Object);
+        mockConnection1.SetupSequence(c => c.CreateModel()).Returns(mockChannel1.Object).Returns(mockChanel2.Object);
         mockConnection1.Setup(c => c.IsOpen).Returns(true);
-        mockConnection2.SetupSequence(c => c.CreateModel())
-            .Returns(mockChanel3.Object)
-            .Returns(mockChanel4.Object);
+        mockConnection2.SetupSequence(c => c.CreateModel()).Returns(mockChanel3.Object).Returns(mockChanel4.Object);
         mockConnection2.Setup(c => c.IsOpen).Returns(true);
 
         mockChannel1.Setup(c => c.IsOpen).Returns(true);
@@ -1663,11 +1687,11 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         };
 
         ccf.AddConnectionListener(new TestCheckoutsWithRefreshedConnectionGutsListener());
-        var con = ccf.CreateConnection();
-        var channel1 = con.CreateChannel();
+        IConnection con = ccf.CreateConnection();
+        RC.IModel channel1 = con.CreateChannel();
 
         Assert.Single(ccf.CheckoutPermits.Values);
-        var slim = ccf.CheckoutPermits.Values.Single();
+        SemaphoreSlim slim = ccf.CheckoutPermits.Values.Single();
         Assert.Equal(1, slim.CurrentCount);
 
         channel1.Close();
@@ -1720,7 +1744,8 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         private readonly AtomicReference<RC.IConnection> _createNotification;
         private readonly AtomicReference<RC.IConnection> _closedNotification;
 
-        public TestWithConnectionFactoryCachedConnectionListener(AtomicReference<RC.IConnection> createNotification, AtomicReference<RC.IConnection> closedNotification)
+        public TestWithConnectionFactoryCachedConnectionListener(AtomicReference<RC.IConnection> createNotification,
+            AtomicReference<RC.IConnection> closedNotification)
         {
             _createNotification = createNotification;
             _closedNotification = closedNotification;
@@ -1730,7 +1755,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             Assert.Null(_closedNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
-            var conDelegate = asProxy.TargetConnection.Connection;
+            RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
             _closedNotification.Value = conDelegate;
         }
 
@@ -1738,7 +1763,7 @@ public class CachingConnectionFactoryTest : AbstractConnectionFactoryTest
         {
             Assert.Null(_createNotification.Value);
             var asProxy = connection as CachingConnectionFactory.ChannelCachingConnectionProxy;
-            var conDelegate = asProxy.TargetConnection.Connection;
+            RC.IConnection conDelegate = asProxy.TargetConnection.Connection;
             _createNotification.Value = conDelegate;
         }
 

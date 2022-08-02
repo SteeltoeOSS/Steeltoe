@@ -11,6 +11,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 
 public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor, IOrdered
 {
+    public int Order { get; set; }
+
+    public bool AlwaysDecompress { get; }
+
     protected AbstractDecompressingPostProcessor()
         : this(false)
     {
@@ -21,26 +25,24 @@ public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor
         AlwaysDecompress = alwaysDecompress;
     }
 
-    public int Order { get; set; }
-
-    public bool AlwaysDecompress { get; }
-
     public virtual IMessage PostProcessMessage(IMessage message)
     {
-        var autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SpringAutoDecompress);
+        bool? autoDecompress = message.Headers.Get<bool?>(RabbitMessageHeaders.SpringAutoDecompress);
+
         if (AlwaysDecompress || (autoDecompress != null && autoDecompress.Value))
         {
             try
             {
                 var compressed = new MemoryStream((byte[])message.Payload);
-                var decompressor = GetDeCompressorStream(compressed);
+                Stream decompressor = GetDeCompressorStream(compressed);
                 var outStream = new MemoryStream();
                 decompressor.CopyTo(outStream);
                 decompressor.Close();
 
-                var headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
-                var encoding = headers.ContentEncoding;
-                var colonAt = encoding.IndexOf(':');
+                RabbitHeaderAccessor headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
+                string encoding = headers.ContentEncoding;
+                int colonAt = encoding.IndexOf(':');
+
                 if (colonAt > 0)
                 {
                     encoding = encoding.Substring(0, colonAt);
@@ -61,10 +63,8 @@ public abstract class AbstractDecompressingPostProcessor : IMessagePostProcessor
                 throw new RabbitIOException(e);
             }
         }
-        else
-        {
-            return message;
-        }
+
+        return message;
     }
 
     public IMessage PostProcessMessage(IMessage message, CorrelationData correlation)

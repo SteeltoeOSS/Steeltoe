@@ -10,16 +10,6 @@ public class DefaultTransactionStatus : AbstractTransactionStatus
 {
     private readonly ILogger _logger;
 
-    public DefaultTransactionStatus(object transaction, bool newTransaction, bool newSynchronization, bool readOnly, object suspendedResources, ILogger logger)
-    {
-        Transaction = transaction;
-        NewTransaction = newTransaction;
-        IsNewSynchronization = newSynchronization;
-        IsReadOnly = readOnly;
-        _logger = logger;
-        SuspendedResources = suspendedResources;
-    }
-
     public object Transaction { get; }
 
     public bool HasTransaction => Transaction != null;
@@ -36,6 +26,22 @@ public class DefaultTransactionStatus : AbstractTransactionStatus
 
     public bool IsTransactionSavepointManager => Transaction is ISavepointManager;
 
+    public override bool IsGlobalRollbackOnly
+    {
+        get => Transaction is ISmartTransactionObject transactionObject && transactionObject.IsRollbackOnly;
+        set => base.IsGlobalRollbackOnly = value;
+    }
+
+    public DefaultTransactionStatus(object transaction, bool newTransaction, bool newSynchronization, bool readOnly, object suspendedResources, ILogger logger)
+    {
+        Transaction = transaction;
+        NewTransaction = newTransaction;
+        IsNewSynchronization = newSynchronization;
+        IsReadOnly = readOnly;
+        _logger = logger;
+        SuspendedResources = suspendedResources;
+    }
+
     public override void Flush()
     {
         if (Transaction is ISmartTransactionObject transactionObject)
@@ -44,15 +50,10 @@ public class DefaultTransactionStatus : AbstractTransactionStatus
         }
     }
 
-    public override bool IsGlobalRollbackOnly
-    {
-        get => Transaction is ISmartTransactionObject transactionObject && transactionObject.IsRollbackOnly;
-        set => base.IsGlobalRollbackOnly = value;
-    }
-
     protected override ISavepointManager GetSavepointManager()
     {
-        var transaction = Transaction;
+        object transaction = Transaction;
+
         if (transaction is not ISavepointManager savepointManager)
         {
             throw new NestedTransactionNotSupportedException($"Transaction object [{Transaction}] does not support savepoints");

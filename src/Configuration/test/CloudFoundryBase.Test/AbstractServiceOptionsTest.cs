@@ -21,7 +21,7 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_BindsConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
             {
                 ""vcap"": {
                     ""services"" : {
@@ -64,10 +64,11 @@ public class AbstractServiceOptionsTest
                     }
                 }
             }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var opt = new MySqlServiceOption();
         opt.Bind(config, "mySql2");
@@ -83,17 +84,18 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_DoesNotBindsConfiguration()
     {
-        var configJson = @"
+        string configJson = @"
             {
                 ""foo"": {
                     ""bar"" : {
                     }
                 }
             }";
-        var memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
+
+        MemoryStream memStream = CloudFoundryConfigurationProvider.GetMemoryStream(configJson);
         var jsonSource = new JsonStreamConfigurationSource(memStream);
-        var builder = new ConfigurationBuilder().Add(jsonSource);
-        var config = builder.Build();
+        IConfigurationBuilder builder = new ConfigurationBuilder().Add(jsonSource);
+        IConfigurationRoot config = builder.Build();
 
         var opt = new MySqlServiceOption();
         opt.Bind(config, "mySql2");

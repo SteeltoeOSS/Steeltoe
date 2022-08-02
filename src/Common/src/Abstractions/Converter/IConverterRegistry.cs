@@ -12,6 +12,8 @@ public interface IConverterRegistry
     /// <summary>
     /// Adds a generic converter to this registry.
     /// </summary>
-    /// <param name="converter">the converter to add.</param>
+    /// <param name="converter">
+    /// the converter to add.
+    /// </param>
     void AddConverter(IGenericConverter converter);
 }

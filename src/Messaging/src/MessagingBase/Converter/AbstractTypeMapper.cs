@@ -12,9 +12,9 @@ public abstract class AbstractTypeMapper
     public const string DefaultContentClassIdFieldName = MessageHeaders.ContentTypeId;
     public const string DefaultKeyClassIdFieldName = MessageHeaders.KeyTypeId;
 
-    private readonly Dictionary<Type, string> _classIdMapping = new ();
+    private readonly Dictionary<Type, string> _classIdMapping = new();
 
-    public Dictionary<string, Type> IdClassMapping { get; } = new ();
+    public Dictionary<string, Type> IdClassMapping { get; } = new();
 
     public string ClassIdFieldName { get; internal set; } = DefaultClassIdFieldName;
 
@@ -24,7 +24,7 @@ public abstract class AbstractTypeMapper
 
     public void SetIdClassMapping(Dictionary<string, Type> mapping)
     {
-        foreach (var entry in mapping)
+        foreach (KeyValuePair<string, Type> entry in mapping)
         {
             IdClassMapping[entry.Key] = entry.Value;
         }
@@ -34,17 +34,17 @@ public abstract class AbstractTypeMapper
 
     protected virtual void AddHeader(IMessageHeaders headers, string headerName, Type clazz)
     {
-        var accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
+        MessageHeaderAccessor accessor = MessageHeaderAccessor.GetMutableAccessor(headers);
         accessor.SetHeader(headerName, _classIdMapping.ContainsKey(clazz) ? _classIdMapping[clazz] : GetClassName(clazz));
     }
 
     protected virtual string RetrieveHeader(IMessageHeaders headers, string headerName)
     {
-        var classId = RetrieveHeaderAsString(headers, headerName);
+        string classId = RetrieveHeaderAsString(headers, headerName);
+
         if (classId == null)
         {
-            throw new MessageConversionException(
-                $"failed to convert Message content. Could not resolve {headerName} in header");
+            throw new MessageConversionException($"failed to convert Message content. Could not resolve {headerName} in header");
         }
 
         return classId;
@@ -52,8 +52,9 @@ public abstract class AbstractTypeMapper
 
     protected virtual string RetrieveHeaderAsString(IMessageHeaders headers, string headerName)
     {
-        var classIdFieldNameValue = headers.Get<object>(headerName);
+        object classIdFieldNameValue = headers.Get<object>(headerName);
         string classId = null;
+
         if (classIdFieldNameValue != null)
         {
             classId = classIdFieldNameValue.ToString();
@@ -76,15 +77,14 @@ public abstract class AbstractTypeMapper
     {
         if (IsContainerType(type))
         {
-            var typedef = type.GetGenericTypeDefinition();
+            Type typedef = type.GetGenericTypeDefinition();
+
             if (typeof(Dictionary<,>) == typedef)
             {
                 return type.GetGenericArguments()[1];
             }
-            else
-            {
-                return type.GetGenericArguments()[0];
-            }
+
+            return type.GetGenericArguments()[0];
         }
 
         return null;
@@ -94,13 +94,10 @@ public abstract class AbstractTypeMapper
     {
         if (type.IsGenericType)
         {
-            var typedef = type.GetGenericTypeDefinition();
-            if (typeof(Dictionary<,>) == typedef
-                || typeof(List<>) == typedef
-                || typeof(HashSet<>) == typedef
-                || typeof(LinkedList<>) == typedef
-                || typeof(Stack<>) == typedef
-                || typeof(Queue<>) == typedef)
+            Type typedef = type.GetGenericTypeDefinition();
+
+            if (typeof(Dictionary<,>) == typedef || typeof(List<>) == typedef || typeof(HashSet<>) == typedef || typeof(LinkedList<>) == typedef ||
+                typeof(Stack<>) == typedef || typeof(Queue<>) == typedef)
             {
                 return true;
             }
@@ -113,7 +110,8 @@ public abstract class AbstractTypeMapper
     {
         if (IsContainerType(type))
         {
-            var typedef = type.GetGenericTypeDefinition();
+            Type typedef = type.GetGenericTypeDefinition();
+
             if (typeof(Dictionary<,>) == typedef)
             {
                 return type.GetGenericArguments()[0];
@@ -136,10 +134,11 @@ public abstract class AbstractTypeMapper
     private void CreateReverseMap()
     {
         _classIdMapping.Clear();
-        foreach (var entry in IdClassMapping)
+
+        foreach (KeyValuePair<string, Type> entry in IdClassMapping)
         {
-            var id = entry.Key;
-            var clazz = entry.Value;
+            string id = entry.Key;
+            Type clazz = entry.Value;
             _classIdMapping[clazz] = id;
         }
     }

@@ -62,7 +62,7 @@ public class MySqlServiceCollectionExtensionsTest
     public void AddMySqlHealthContributor_NoVCAPs_AddsIHealthContributor()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddMySqlHealthContributor(config);
 
@@ -74,7 +74,7 @@ public class MySqlServiceCollectionExtensionsTest
     public void AddMySqlHealthContributor_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlHealthContributor(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -90,7 +90,7 @@ public class MySqlServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddMySqlHealthContributor(config));
         Assert.Contains("Multiple", ex.Message);
@@ -102,7 +102,7 @@ public class MySqlServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddMySqlHealthContributor(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;

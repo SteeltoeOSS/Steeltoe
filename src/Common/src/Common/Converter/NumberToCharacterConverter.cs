@@ -25,7 +25,7 @@ public class NumberToCharacterConverter : AbstractGenericConverter
             (typeof(ulong), typeof(char)),
             (typeof(long), typeof(char)),
             (typeof(short), typeof(char)),
-            (typeof(ushort), typeof(char)),
+            (typeof(ushort), typeof(char))
         };
     }
 }

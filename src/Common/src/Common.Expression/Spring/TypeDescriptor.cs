@@ -6,40 +6,34 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class TypeDescriptor
 {
-    public static readonly TypeDescriptor V = new (typeof(void));
-    public static readonly TypeDescriptor I = new (typeof(int));
-    public static readonly TypeDescriptor J = new (typeof(long));
-    public static readonly TypeDescriptor F = new (typeof(float));
-    public static readonly TypeDescriptor D = new (typeof(double));
-    public static readonly TypeDescriptor B = new (typeof(byte));
-    public static readonly TypeDescriptor C = new (typeof(char));
-    public static readonly TypeDescriptor S = new (typeof(short));
-    public static readonly TypeDescriptor Z = new (typeof(bool));
-    public static readonly TypeDescriptor A = new (typeof(sbyte));
-    public static readonly TypeDescriptor M = new (typeof(ushort));
-    public static readonly TypeDescriptor N = new (typeof(uint));
-    public static readonly TypeDescriptor O = new (typeof(ulong));
-    public static readonly TypeDescriptor P = new (typeof(IntPtr));
-    public static readonly TypeDescriptor Q = new (typeof(UIntPtr));
+    public static readonly TypeDescriptor V = new(typeof(void));
+    public static readonly TypeDescriptor I = new(typeof(int));
+    public static readonly TypeDescriptor J = new(typeof(long));
+    public static readonly TypeDescriptor F = new(typeof(float));
+    public static readonly TypeDescriptor D = new(typeof(double));
+    public static readonly TypeDescriptor B = new(typeof(byte));
+    public static readonly TypeDescriptor C = new(typeof(char));
+    public static readonly TypeDescriptor S = new(typeof(short));
+    public static readonly TypeDescriptor Z = new(typeof(bool));
+    public static readonly TypeDescriptor A = new(typeof(sbyte));
+    public static readonly TypeDescriptor M = new(typeof(ushort));
+    public static readonly TypeDescriptor N = new(typeof(uint));
+    public static readonly TypeDescriptor O = new(typeof(ulong));
+    public static readonly TypeDescriptor P = new(typeof(IntPtr));
+    public static readonly TypeDescriptor Q = new(typeof(UIntPtr));
 
-    public static readonly TypeDescriptor Object = new (typeof(object));
-    public static readonly TypeDescriptor String = new (typeof(string));
-    public static readonly TypeDescriptor Type = new (typeof(Type));
+    public static readonly TypeDescriptor Object = new(typeof(object));
+    public static readonly TypeDescriptor String = new(typeof(string));
+    public static readonly TypeDescriptor Type = new(typeof(Type));
 
     private TypeDescriptor _boxed;
     private TypeDescriptor _unBoxed;
-
-    public TypeDescriptor(Type type, bool boxed = false)
-    {
-        Value = type;
-        IsBoxed = boxed;
-    }
 
     public Type Value { get; }
 
     public bool IsBoxed { get; }
 
-    public bool IsValueType => Value.IsValueType;  // Returns true for typeof(void)
+    public bool IsValueType => Value.IsValueType; // Returns true for typeof(void)
 
     public bool IsReferenceType => !IsValueType && !IsBoxed;
 
@@ -54,6 +48,12 @@ public class TypeDescriptor
     public bool IsVoid => Value == typeof(void);
 
     public bool IsBoxable => IsValueType && !IsBoxed && !IsVoid;
+
+    public TypeDescriptor(Type type, bool boxed = false)
+    {
+        Value = type;
+        IsBoxed = boxed;
+    }
 
     public TypeDescriptor UnBox()
     {
@@ -91,6 +91,31 @@ public class TypeDescriptor
         return _boxed;
     }
 
+    public override bool Equals(object obj)
+    {
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj is not TypeDescriptor other)
+        {
+            return false;
+        }
+
+        return other.Value == Value && other.IsBoxed == IsBoxed;
+    }
+
+    public override int GetHashCode()
+    {
+        return Value.GetHashCode();
+    }
+
+    public override string ToString()
+    {
+        return Value.ToString();
+    }
+
 #pragma warning disable S3875 // "operator==" should not be overloaded on reference types
     public static bool operator ==(TypeDescriptor lhs, TypeDescriptor rhs)
     {
@@ -112,30 +137,4 @@ public class TypeDescriptor
         return !(lhs == rhs);
     }
 #pragma warning restore S3875 // "operator==" should not be overloaded on reference types
-
-    public override bool Equals(object obj)
-    {
-        if (ReferenceEquals(this, obj))
-        {
-            return true;
-        }
-
-        if (obj is not TypeDescriptor other)
-        {
-            return false;
-        }
-
-        return other.Value == Value &&
-               other.IsBoxed == IsBoxed;
-    }
-
-    public override int GetHashCode()
-    {
-        return Value.GetHashCode();
-    }
-
-    public override string ToString()
-    {
-        return Value.ToString();
-    }
 }

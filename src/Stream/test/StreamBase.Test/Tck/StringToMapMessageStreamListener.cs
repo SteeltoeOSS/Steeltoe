@@ -17,7 +17,7 @@ public class StringToMapMessageStreamListener
     public string Echo(IMessage<Dictionary<object, object>> value)
     {
         Assert.IsType<Dictionary<object, object>>(value.Payload);
-        value.Payload.TryGetValue("name", out var result);
+        value.Payload.TryGetValue("name", out object result);
         return (string)result;
     }
 }

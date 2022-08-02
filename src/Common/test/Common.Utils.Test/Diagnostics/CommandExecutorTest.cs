@@ -16,7 +16,7 @@ public class CommandExecutorTest
     {
         var executor = new CommandExecutor();
 
-        var result = await executor.ExecuteAsync("dotnet --help");
+        CommandResult result = await executor.ExecuteAsync("dotnet --help");
 
         result.ExitCode.Should().Be(0);
         result.Output.Should().Contain("Usage: dotnet");
@@ -27,9 +27,10 @@ public class CommandExecutorTest
     {
         var executor = new CommandExecutor();
 
-        var result = await executor.ExecuteAsync("dotnet --no-such-option");
+        CommandResult result = await executor.ExecuteAsync("dotnet --no-such-option");
 
         result.ExitCode.Should().NotBe(0);
+
         try
         {
             result.Error.Should().Contain("Unknown option: --no-such-option");
@@ -46,7 +47,10 @@ public class CommandExecutorTest
     {
         var executor = new CommandExecutor();
 
-        Func<Task> act = async () => { await executor.ExecuteAsync("no-such-command"); };
+        Func<Task> act = async () =>
+        {
+            await executor.ExecuteAsync("no-such-command");
+        };
 
         await act.Should().ThrowAsync<CommandException>().WithMessage("'no-such-command' failed to start*");
     }

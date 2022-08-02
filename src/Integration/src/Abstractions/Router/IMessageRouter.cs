@@ -7,7 +7,7 @@ using Steeltoe.Messaging;
 namespace Steeltoe.Integration;
 
 /// <summary>
-///  Routers implementing this interface have a default output channel.
+/// Routers implementing this interface have a default output channel.
 /// </summary>
 public interface IMessageRouter
 {

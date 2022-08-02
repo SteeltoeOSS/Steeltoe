@@ -9,7 +9,10 @@ public class ArrayToObjectConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public ArrayToObjectConverter(IConversionService conversionService)
-        : base(new HashSet<(Type Source, Type Target)> { (typeof(object[]), typeof(object)) })
+        : base(new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(object[]), typeof(object))
+        })
     {
         _conversionService = conversionService;
     }
@@ -21,8 +24,7 @@ public class ArrayToObjectConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -38,12 +40,13 @@ public class ArrayToObjectConverter : AbstractGenericConditionalConverter
         }
 
         var sourceArray = source as Array;
+
         if (sourceArray.GetLength(0) == 0)
         {
             return null;
         }
 
-        var firstElement = sourceArray.GetValue(0);
+        object firstElement = sourceArray.GetValue(0);
         return _conversionService.Convert(firstElement, firstElement.GetType(), targetType);
     }
 }

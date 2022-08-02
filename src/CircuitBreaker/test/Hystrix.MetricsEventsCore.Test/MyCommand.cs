@@ -7,10 +7,7 @@ namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Test;
 internal sealed class MyCommand : HystrixCommand<int>
 {
     public MyCommand()
-        : base(
-            HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"),
-            () => 1,
-            () => 2)
+        : base(HystrixCommandGroupKeyDefault.AsKey("MyCommandGroup"), () => 1, () => 2)
     {
     }
 }

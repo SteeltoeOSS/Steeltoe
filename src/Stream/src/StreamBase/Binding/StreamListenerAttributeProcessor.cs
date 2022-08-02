@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal;
@@ -9,6 +10,7 @@ using Steeltoe.Integration.Handler;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Core;
 using Steeltoe.Messaging.Handler.Attributes.Support;
+using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Config;
 
@@ -16,25 +18,21 @@ namespace Steeltoe.Stream.Binding;
 
 public class StreamListenerAttributeProcessor
 {
-    internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> MappedListenerMethods = new ();
-
     private readonly IApplicationContext _context;
     private readonly IOptionsMonitor<SpringIntegrationOptions> _springIntegrationOptionsMonitor;
     private readonly IDestinationResolver<IMessageChannel> _binderAwareChannelResolver;
     private readonly IMessageHandlerMethodFactory _messageHandlerMethodFactory;
     private readonly List<IStreamListenerSetupMethodOrchestrator> _methodOrchestrators;
     private readonly List<IStreamListenerMethod> _streamListenerMethods;
+    internal readonly Dictionary<string, List<StreamListenerHandlerMethodMapping>> MappedListenerMethods = new();
+
+    private SpringIntegrationOptions IntegrationOptions => _springIntegrationOptionsMonitor.CurrentValue;
 
 #pragma warning disable S107 // Methods should not have too many parameters
-    public StreamListenerAttributeProcessor(
-        IApplicationContext context,
-        IOptionsMonitor<SpringIntegrationOptions> springIntegrationOptionsMonitor,
-        IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters,
-        IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters,
-        IDestinationResolver<IMessageChannel> binderAwareChannelResolver,
-        IMessageHandlerMethodFactory messageHandlerMethodFactory,
-        IEnumerable<IStreamListenerSetupMethodOrchestrator> methodOrchestrators,
-        IEnumerable<IStreamListenerMethod> methods)
+    public StreamListenerAttributeProcessor(IApplicationContext context, IOptionsMonitor<SpringIntegrationOptions> springIntegrationOptionsMonitor,
+        IEnumerable<IStreamListenerParameterAdapter> streamListenerParameterAdapters, IEnumerable<IStreamListenerResultAdapter> streamListenerResultAdapters,
+        IDestinationResolver<IMessageChannel> binderAwareChannelResolver, IMessageHandlerMethodFactory messageHandlerMethodFactory,
+        IEnumerable<IStreamListenerSetupMethodOrchestrator> methodOrchestrators, IEnumerable<IStreamListenerMethod> methods)
 #pragma warning restore S107 // Methods should not have too many parameters
     {
         _context = context;
@@ -43,15 +41,9 @@ public class StreamListenerAttributeProcessor
         _messageHandlerMethodFactory = messageHandlerMethodFactory;
         _streamListenerMethods = methods.ToList();
         _methodOrchestrators = methodOrchestrators.ToList();
-        _methodOrchestrators.Add(new DefaultStreamListenerSetupMethodOrchestrator(this, context, streamListenerParameterAdapters, streamListenerResultAdapters));
-    }
 
-    private SpringIntegrationOptions IntegrationOptions
-    {
-        get
-        {
-            return _springIntegrationOptionsMonitor.CurrentValue;
-        }
+        _methodOrchestrators.Add(
+            new DefaultStreamListenerSetupMethodOrchestrator(this, context, streamListenerParameterAdapters, streamListenerResultAdapters));
     }
 
     public void Initialize()
@@ -61,20 +53,23 @@ public class StreamListenerAttributeProcessor
             return;
         }
 
-        foreach (var method in _streamListenerMethods)
+        foreach (IStreamListenerMethod method in _streamListenerMethods)
         {
             DoPostProcess(method);
         }
 
-        foreach (var mappedBindingEntry in MappedListenerMethods)
+        foreach (KeyValuePair<string, List<StreamListenerHandlerMethodMapping>> mappedBindingEntry in MappedListenerMethods)
         {
             var handlers = new List<DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper>();
-            foreach (var mapping in mappedBindingEntry.Value)
-            {
-                var targetBean = CreateTargetBean(mapping.Implementation);
 
-                var invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetBean, mapping.Method);
-                var streamListenerMessageHandler = new StreamListenerMessageHandler(_context, invocableHandlerMethod, mapping.CopyHeaders, IntegrationOptions.MessageHandlerNotPropagatedHeaders);
+            foreach (StreamListenerHandlerMethodMapping mapping in mappedBindingEntry.Value)
+            {
+                object targetBean = CreateTargetBean(mapping.Implementation);
+
+                IInvocableHandlerMethod invocableHandlerMethod = _messageHandlerMethodFactory.CreateInvocableHandlerMethod(targetBean, mapping.Method);
+
+                var streamListenerMessageHandler = new StreamListenerMessageHandler(_context, invocableHandlerMethod, mapping.CopyHeaders,
+                    IntegrationOptions.MessageHandlerNotPropagatedHeaders);
 
                 if (!string.IsNullOrEmpty(mapping.DefaultOutputChannel))
                 {
@@ -84,24 +79,28 @@ public class StreamListenerAttributeProcessor
                 if (!string.IsNullOrEmpty(mapping.Condition))
                 {
                     var parser = _context.GetService<IExpressionParser>();
+
                     if (parser == null)
                     {
                         throw new InvalidOperationException("StreamListener attribute contains a 'Condition', but no Expression parser is configured");
                     }
 
-                    var conditionAsString = ResolveExpressionAsString(mapping.Condition);
-                    var condition = parser.ParseExpression(conditionAsString);
-                    handlers.Add(new DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper(condition, streamListenerMessageHandler));
+                    string conditionAsString = ResolveExpressionAsString(mapping.Condition);
+                    IExpression condition = parser.ParseExpression(conditionAsString);
+
+                    handlers.Add(new DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper(condition,
+                        streamListenerMessageHandler));
                 }
                 else
                 {
-                    handlers.Add(new DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper(null, streamListenerMessageHandler));
+                    handlers.Add(new DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper(null,
+                        streamListenerMessageHandler));
                 }
             }
 
             if (handlers.Count > 1)
             {
-                foreach (var h in handlers)
+                foreach (DispatchingStreamListenerMessageHandler.ConditionalStreamListenerMessageHandlerWrapper h in handlers)
                 {
                     if (!h.IsVoid)
                     {
@@ -142,7 +141,7 @@ public class StreamListenerAttributeProcessor
 
     internal void AddMappedListenerMethod(string key, StreamListenerHandlerMethodMapping mappedMethod)
     {
-        if (!MappedListenerMethods.TryGetValue(key, out var mappings))
+        if (!MappedListenerMethods.TryGetValue(key, out List<StreamListenerHandlerMethodMapping> mappings))
         {
             mappings = new List<StreamListenerHandlerMethodMapping>();
             MappedListenerMethods.Add(key, mappings);
@@ -158,7 +157,7 @@ public class StreamListenerAttributeProcessor
 
     private static string ResolveExpressionAsString(string value)
     {
-        var resolvedValue = value;
+        string resolvedValue = value;
 
         if (value.StartsWith("#{") && value.EndsWith("}"))
         {
@@ -183,17 +182,18 @@ public class StreamListenerAttributeProcessor
 
     private void DoPostProcess(IStreamListenerMethod listenerMethod)
     {
-        var method = listenerMethod.Method;
-        var streamListener = PostProcessAttribute(listenerMethod.Attribute);
-        var beanType = listenerMethod.ImplementationType;
+        MethodInfo method = listenerMethod.Method;
+        StreamListenerAttribute streamListener = PostProcessAttribute(listenerMethod.Attribute);
+        Type beanType = listenerMethod.ImplementationType;
 
-        var orchestrators = _methodOrchestrators.Select(o => o.Supports(method) ? o : null);
+        IEnumerable<IStreamListenerSetupMethodOrchestrator> orchestrators = _methodOrchestrators.Select(o => o.Supports(method) ? o : null);
+
         if (orchestrators.Count() != 1)
         {
             throw new InvalidOperationException("Unable to determine IStreamListenerSetupMethodOrchestrator to utilize");
         }
 
-        var orchestrator = orchestrators.Single();
+        IStreamListenerSetupMethodOrchestrator orchestrator = orchestrators.Single();
         orchestrator.OrchestrateStreamListener(streamListener, method, beanType);
     }
 }

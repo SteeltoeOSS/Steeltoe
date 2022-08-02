@@ -13,7 +13,11 @@ public class MetricTagTest : BaseTest
     [Fact]
     public void Constructor_SetsValues()
     {
-        var tags = new HashSet<string> { "tagValue" };
+        var tags = new HashSet<string>
+        {
+            "tagValue"
+        };
+
         var metricTag = new MetricTag("tagname", tags);
         Assert.Equal("tagname", metricTag.Tag);
         Assert.Same(tags, metricTag.Values);
@@ -22,9 +26,13 @@ public class MetricTagTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var tags = new HashSet<string> { "tagValue" };
+        var tags = new HashSet<string>
+        {
+            "tagValue"
+        };
+
         var metricTag = new MetricTag("tagname", tags);
-        var result = Serialize(metricTag);
+        string result = Serialize(metricTag);
         Assert.Equal("{\"tag\":\"tagname\",\"values\":[\"tagValue\"]}", result);
     }
 }

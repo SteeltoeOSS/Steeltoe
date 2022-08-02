@@ -15,6 +15,8 @@ internal sealed class BinderErrorChannel : PublishSubscribeChannel, ILastSubscri
 
     private volatile ILastSubscriberMessageHandler _finalHandler;
 
+    public int Subscribers => _subscribers;
+
     public BinderErrorChannel(IApplicationContext context, string name, ILogger logger)
         : base(context, name, logger)
     {
@@ -23,6 +25,7 @@ internal sealed class BinderErrorChannel : PublishSubscribeChannel, ILastSubscri
     public override bool Subscribe(IMessageHandler handler)
     {
         Interlocked.Increment(ref _subscribers);
+
         if (handler is ILastSubscriberMessageHandler && _finalHandler != null)
         {
             throw new InvalidOperationException("Only one LastSubscriberMessageHandler is allowed");
@@ -33,7 +36,8 @@ internal sealed class BinderErrorChannel : PublishSubscribeChannel, ILastSubscri
             base.Unsubscribe(_finalHandler);
         }
 
-        var result = base.Subscribe(handler);
+        bool result = base.Subscribe(handler);
+
         if (_finalHandler != null)
         {
             base.Subscribe(_finalHandler);
@@ -52,6 +56,4 @@ internal sealed class BinderErrorChannel : PublishSubscribeChannel, ILastSubscri
         Interlocked.Decrement(ref _subscribers);
         return base.Unsubscribe(handler);
     }
-
-    public int Subscribers => _subscribers;
 }

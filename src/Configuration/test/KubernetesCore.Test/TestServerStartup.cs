@@ -9,11 +9,6 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes.Test;
 
 public class TestServerStartup
 {
-    public TestServerStartup()
-    {
-        LastRequest = null;
-    }
-
     public static string Response { get; set; }
 
     public static int ReturnStatus { get; set; } = 200;
@@ -21,6 +16,11 @@ public class TestServerStartup
     public static HttpRequest LastRequest { get; set; }
 
     public static int RequestCount { get; set; }
+
+    public TestServerStartup()
+    {
+        LastRequest = null;
+    }
 
     public void Configure(IApplicationBuilder app)
     {

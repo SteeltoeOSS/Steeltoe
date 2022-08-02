@@ -8,22 +8,24 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public abstract class Literal : SpelNode
 {
+    public string OriginalValue { get; }
+
     protected Literal(string originalValue, int startPos, int endPos)
         : base(startPos, endPos)
     {
         OriginalValue = originalValue;
     }
 
-    public string OriginalValue { get; }
-
     public static Literal GetIntLiteral(string numberToken, int startPos, int endPos, NumberStyles radix)
     {
         try
         {
-            var value = int.Parse(numberToken, radix);
+            int value = int.Parse(numberToken, radix);
+
             if (radix == NumberStyles.HexNumber && value < 0)
             {
-                throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NotAnInteger, numberToken));
+                throw new InternalParseException(
+                    new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NotAnInteger, numberToken));
             }
 
             return new IntLiteral(numberToken, startPos, endPos, value);
@@ -38,7 +40,8 @@ public abstract class Literal : SpelNode
     {
         try
         {
-            var value = long.Parse(numberToken, radix);
+            long value = long.Parse(numberToken, radix);
+
             if (radix == NumberStyles.HexNumber && value < 0)
             {
                 throw new InternalParseException(new SpelParseException(startPos, new FormatException("Hex parse error"), SpelMessage.NotALong, numberToken));
@@ -56,15 +59,16 @@ public abstract class Literal : SpelNode
     {
         try
         {
-            var toParse = GetNumberLiteral(numberToken);
+            string toParse = GetNumberLiteral(numberToken);
+
             if (isFloat)
             {
-                var value = float.Parse(toParse);
+                float value = float.Parse(toParse);
                 return new FloatLiteral(numberToken, startPos, endPos, value);
             }
             else
             {
-                var value = double.Parse(toParse);
+                double value = double.Parse(toParse);
                 return new RealLiteral(numberToken, startPos, endPos, value);
             }
         }
@@ -76,9 +80,7 @@ public abstract class Literal : SpelNode
 
     public static string GetNumberLiteral(string numberToken)
     {
-        if (numberToken[numberToken.Length - 1] == 'd' ||
-            numberToken[numberToken.Length - 1] == 'D' ||
-            numberToken[numberToken.Length - 1] == 'f' ||
+        if (numberToken[numberToken.Length - 1] == 'd' || numberToken[numberToken.Length - 1] == 'D' || numberToken[numberToken.Length - 1] == 'f' ||
             numberToken[numberToken.Length - 1] == 'F')
         {
             return numberToken.Substring(0, numberToken.Length - 1);

@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Management.Tracing.Test;
@@ -14,7 +14,7 @@ public class TracingOptionsTest
     [Fact]
     public void InitializedWithDefaults()
     {
-        var config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
+        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(new Dictionary<string, string>());
         var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
         Assert.Equal(Assembly.GetEntryAssembly().GetName().Name, opts.Name);
@@ -42,10 +42,10 @@ public class TracingOptionsTest
             ["management:tracing:egressIgnorePattern"] = "pattern",
             ["management:tracing:alwaysSample"] = "true",
             ["management:tracing:neverSample"] = "true",
-            ["management:tracing:useShortTraceIds"] = "true",
+            ["management:tracing:useShortTraceIds"] = "true"
         };
 
-        var config = TestHelpers.GetConfigurationFromDictionary(appsettings);
+        IConfiguration config = TestHelpers.GetConfigurationFromDictionary(appsettings);
         var opts = new TracingOptions(new ApplicationInstanceInfo(config), config);
 
         Assert.Equal("foobar", opts.Name);
@@ -62,7 +62,7 @@ public class TracingOptionsTest
         var appsettings = new Dictionary<string, string>();
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
         var appInstanceInfo = new ApplicationInstanceInfo(config);
 
         // Uses Assembly name as default

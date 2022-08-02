@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -21,22 +22,21 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestDefaultGroup()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo").BuildServiceProvider();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
+        IBinder binder = factory.GetBinder("mock");
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
+        Mock<IBinder> mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
-        var bindings = service.BindConsumer(inputChannel, "input");
+        ICollection<IBinding> bindings = service.BindConsumer(inputChannel, "input");
 
         Assert.Single(bindings);
-        var binding = bindings.First();
-        var mockBinding = Mock.Get(binding);
+        IBinding binding = bindings.First();
+        Mock<IBinding> mockBinding = Mock.Get(binding);
 
         service.UnbindConsumers("input");
 
@@ -47,28 +47,25 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestMultipleConsumerBindings()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=foo,bar")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo,bar").BuildServiceProvider();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
+        IBinder binder = factory.GetBinder("mock");
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
+        Mock<IBinder> mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
-        var bindings = service.BindConsumer(inputChannel, "input");
+        ICollection<IBinding> bindings = service.BindConsumer(inputChannel, "input");
 
-        var bindingsAsList = bindings.ToList();
+        List<IBinding> bindingsAsList = bindings.ToList();
 
         Assert.Equal(2, bindingsAsList.Count);
-        var binding1 = bindingsAsList[0];
-        var binding2 = bindingsAsList[1];
-        var mockBinding1 = Mock.Get(binding1);
-        var mockBinding2 = Mock.Get(binding2);
+        IBinding binding1 = bindingsAsList[0];
+        IBinding binding2 = bindingsAsList[1];
+        Mock<IBinding> mockBinding1 = Mock.Get(binding1);
+        Mock<IBinding> mockBinding2 = Mock.Get(binding2);
 
         service.UnbindConsumers("input");
 
@@ -82,25 +79,23 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestConsumerBindingWhenMultiplexingIsEnabled()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=foo,bar",
-                "spring.cloud.stream.bindings.input.consumer.multiplex=true")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo,bar",
+            "spring.cloud.stream.bindings.input.consumer.multiplex=true").BuildServiceProvider();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
+        IBinder binder = factory.GetBinder("mock");
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
+        Mock<IBinder> mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
-        var bindings = service.BindConsumer(inputChannel, "input");
+        ICollection<IBinding> bindings = service.BindConsumer(inputChannel, "input");
 
         Assert.Single(bindings);
-        var binding = bindings.First();
-        var mockBinding = Mock.Get(binding);
+        IBinding binding = bindings.First();
+        Mock<IBinding> mockBinding = Mock.Get(binding);
 
         service.UnbindConsumers("input");
 
@@ -111,25 +106,23 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestExplicitGroup()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=foo",
-                "spring.cloud.stream.bindings.input.group=fooGroup")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo",
+            "spring.cloud.stream.bindings.input.group=fooGroup").BuildServiceProvider();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("mock");
+        IBinder binder = factory.GetBinder("mock");
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var mockBinder = Mock.Get(binder);
+        Mock<IBinder> mockBinder = Mock.Get(binder);
 
         var service = provider.GetService<BindingService>();
-        var bindings = service.BindConsumer(inputChannel, "input");
+        ICollection<IBinding> bindings = service.BindConsumer(inputChannel, "input");
 
         Assert.Single(bindings);
-        var binding = bindings.First();
-        var mockBinding = Mock.Get(binding);
+        IBinding binding = bindings.First();
+        Mock<IBinding> mockBinding = Mock.Get(binding);
 
         service.UnbindConsumers("input");
 
@@ -140,12 +133,10 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestProducerPropertiesValidation()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.output.destination=foo",
-                "spring.cloud.stream.bindings.output.producer.partitionCount=0")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.output.destination=foo",
+            "spring.cloud.stream.bindings.output.producer.partitionCount=0").BuildServiceProvider();
 
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
@@ -156,29 +147,22 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public async Task TestDefaultPropertyBehavior()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithBinding(
-            searchDirectories,
-            typeof(IFooBinding),
-            "spring.cloud.stream.default.contentType=text/plain",
-            "spring.cloud.stream.bindings.input1.contentType=application/json",
-            "spring.cloud.stream.default.group=foo",
-            "spring.cloud.stream.bindings.input2.group=bar",
-            "spring.cloud.stream.default.consumer.concurrency=5",
-            "spring.cloud.stream.bindings.input2.consumer.concurrency=1",
-            "spring.cloud.stream.bindings.input1.consumer.partitioned=true",
-            "spring.cloud.stream.default.producer.partitionCount=10",
-            "spring.cloud.stream.bindings.output2.producer.partitionCount=1",
-            "spring.cloud.stream.bindings.inputXyz.contentType=application/json",
-            "spring.cloud.stream.bindings.inputFooBar.contentType=application/avro",
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceCollection container = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooBinding),
+            "spring.cloud.stream.default.contentType=text/plain", "spring.cloud.stream.bindings.input1.contentType=application/json",
+            "spring.cloud.stream.default.group=foo", "spring.cloud.stream.bindings.input2.group=bar", "spring.cloud.stream.default.consumer.concurrency=5",
+            "spring.cloud.stream.bindings.input2.consumer.concurrency=1", "spring.cloud.stream.bindings.input1.consumer.partitioned=true",
+            "spring.cloud.stream.default.producer.partitionCount=10", "spring.cloud.stream.bindings.output2.producer.partitionCount=1",
+            "spring.cloud.stream.bindings.inputXyz.contentType=application/json", "spring.cloud.stream.bindings.inputFooBar.contentType=application/avro",
             "spring.cloud.stream.bindings.input_snake_case.contentType=application/avro");
 
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var bindServiceOptions = provider.GetService<IOptionsMonitor<BindingServiceOptions>>();
-        var bindings = bindServiceOptions.CurrentValue.Bindings;
+        Dictionary<string, BindingOptions> bindings = bindServiceOptions.CurrentValue.Bindings;
 
         Assert.Equal("application/json", bindings["input1"].ContentType);
         Assert.Equal("text/plain", bindings["input2"].ContentType);
@@ -199,12 +183,10 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestConsumerPropertiesValidation()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=foo",
-                "spring.cloud.stream.bindings.input.consumer.concurrency=0")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=foo",
+            "spring.cloud.stream.bindings.input.consumer.concurrency=0").BuildServiceProvider();
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
 
@@ -215,14 +197,11 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestUnknownBinderOnBindingFailure()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=fooInput",
-                "spring.cloud.stream.bindings.input.binder=mock",
-                "spring.cloud.stream.bindings.output.destination=fooOutput",
-                "spring.cloud.stream.bindings.output.binder=mockError")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=fooInput",
+            "spring.cloud.stream.bindings.input.binder=mock", "spring.cloud.stream.bindings.output.destination=fooOutput",
+            "spring.cloud.stream.bindings.output.binder=mockError").BuildServiceProvider();
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
@@ -239,18 +218,14 @@ public class BindingServiceTest : AbstractTest
     public void TestUnrecognizedBinderAllowedIfNotUsed()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
-        var mockAssembly = $"{searchDirectories[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.MockBinder.dll";
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=fooInput",
-                "spring.cloud.stream.bindings.output.destination=fooOutput",
-                "spring.cloud.stream.defaultBinder=mock1",
-                $"spring.cloud.stream.binders.mock1.configureclass={mockBinder}",
-                $"spring.cloud.stream.binders.mock1.configureassembly={mockAssembly}",
-                "spring.cloud.stream.binders.kafka1.configureclass=kafka")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+        string mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
+        string mockAssembly = $"{searchDirectories[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.MockBinder.dll";
+
+        ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=fooInput",
+            "spring.cloud.stream.bindings.output.destination=fooOutput", "spring.cloud.stream.defaultBinder=mock1",
+            $"spring.cloud.stream.binders.mock1.configureclass={mockBinder}", $"spring.cloud.stream.binders.mock1.configureassembly={mockAssembly}",
+            "spring.cloud.stream.binders.kafka1.configureclass=kafka").BuildServiceProvider();
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
         IMessageChannel outputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
@@ -263,31 +238,30 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestResolveBindableType()
     {
-        var bindableType = GenericsUtils.GetParameterType(typeof(FooBinder), typeof(IBinder<>), 0);
+        Type bindableType = GenericsUtils.GetParameterType(typeof(FooBinder), typeof(IBinder<>), 0);
         Assert.Same(typeof(SomeBindableType), bindableType);
     }
 
     [Fact]
     public void TestLateBindingConsumer()
     {
-        var searchDirectories = GetSearchDirectories("StubBinder1");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.destination=foo",
-                "spring.cloud.stream.bindingretryinterval=1")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("StubBinder1");
+
+        ServiceProvider provider = CreateStreamsContainer(
+            searchDirectories, "spring.cloud.stream.bindings.input.destination=foo", "spring.cloud.stream.bindingretryinterval=1").BuildServiceProvider();
 
         var service = provider.GetService<BindingService>();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("binder1");
-        var prop = binder.GetType().GetProperty("BindConsumerFunc");
+        IBinder binder = factory.GetBinder("binder1");
+        PropertyInfo prop = binder.GetType().GetProperty("BindConsumerFunc");
         var fail = new CountdownEvent(2);
         var mockBinding = new Mock<IBinding>();
 
         Func<string, string, object, IConsumerOptions, IBinding> func = (_, _, _, _) =>
         {
             fail.Signal();
+
             if (fail.CurrentCount == 1)
             {
                 throw new Exception("fail");
@@ -295,10 +269,14 @@ public class BindingServiceTest : AbstractTest
 
             return mockBinding.Object;
         };
-        prop.GetSetMethod().Invoke(binder, new object[] { func });
+
+        prop.GetSetMethod().Invoke(binder, new object[]
+        {
+            func
+        });
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var bindings = service.BindConsumer(inputChannel, "input");
+        ICollection<IBinding> bindings = service.BindConsumer(inputChannel, "input");
         Assert.True(fail.IsSet);
         Assert.Single(bindings);
         Assert.Same(mockBinding.Object, bindings.Single());
@@ -309,25 +287,24 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public void TestLateBindingProducer()
     {
-        var searchDirectories = GetSearchDirectories("StubBinder1");
-        var provider = CreateStreamsContainer(
-                searchDirectories,
-                "spring.cloud.stream.bindings.output.destination=foo",
-                "spring.cloud.stream.bindingretryinterval=1")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("StubBinder1");
+
+        ServiceProvider provider = CreateStreamsContainer(
+            searchDirectories, "spring.cloud.stream.bindings.output.destination=foo", "spring.cloud.stream.bindingretryinterval=1").BuildServiceProvider();
 
         var service = provider.GetService<BindingService>();
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder("binder1");
+        IBinder binder = factory.GetBinder("binder1");
 
         var fail = new CountdownEvent(2);
         var mockBinding = new Mock<IBinding>();
-        var prop = binder.GetType().GetProperty("BindProducerFunc");
+        PropertyInfo prop = binder.GetType().GetProperty("BindProducerFunc");
 
         Func<string, object, IProducerOptions, IBinding> func = (_, _, _) =>
         {
             fail.Signal();
+
             if (fail.CurrentCount == 1)
             {
                 throw new Exception("fail");
@@ -335,10 +312,14 @@ public class BindingServiceTest : AbstractTest
 
             return mockBinding.Object;
         };
-        prop.GetSetMethod().Invoke(binder, new object[] { func });
+
+        prop.GetSetMethod().Invoke(binder, new object[]
+        {
+            func
+        });
 
         IMessageChannel inputChannel = new DirectChannel(provider.GetService<IApplicationContext>());
-        var binding = service.BindProducer(inputChannel, "output");
+        IBinding binding = service.BindProducer(inputChannel, "output");
 
         Assert.True(fail.IsSet);
         Assert.NotNull(binding);
@@ -350,19 +331,18 @@ public class BindingServiceTest : AbstractTest
     [Fact]
     public async Task TestBindingAutoStartup()
     {
-        var searchDirectories = GetSearchDirectories("TestBinder");
-        var provider = CreateStreamsContainerWithISinkBinding(
-                searchDirectories,
-                "spring.cloud.stream.bindings.input.consumer.autostartup=false")
+        List<string> searchDirectories = GetSearchDirectories("TestBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring.cloud.stream.bindings.input.consumer.autostartup=false")
             .BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var service = provider.GetService<BindingService>();
-        var bindings = service.ConsumerBindings;
-        bindings.TryGetValue("input", out var inputBindings);
+        IDictionary<string, List<IBinding>> bindings = service.ConsumerBindings;
+        bindings.TryGetValue("input", out List<IBinding> inputBindings);
         Assert.Single(inputBindings);
-        var binding = inputBindings[0];
+        IBinding binding = inputBindings[0];
         Assert.False(binding.IsRunning);
     }
 

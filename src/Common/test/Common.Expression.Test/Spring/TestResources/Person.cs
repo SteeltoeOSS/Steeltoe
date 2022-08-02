@@ -6,6 +6,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 
 public class Person
 {
+    public string Name { get; set; }
+
+    public Company Company { get; }
+
     public Person(string name)
     {
         Name = name;
@@ -16,8 +20,4 @@ public class Person
         Name = name;
         Company = company;
     }
-
-    public string Name { get; set; }
-
-    public Company Company { get; }
 }

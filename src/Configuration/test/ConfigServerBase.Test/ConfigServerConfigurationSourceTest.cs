@@ -27,10 +27,19 @@ public class ConfigServerConfigurationSourceTest
     {
         var settings = new ConfigServerClientSettings();
         var memSource = new MemoryConfigurationSource();
-        IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
+
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
+
         ILoggerFactory factory = new LoggerFactory();
 
-        var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object> { { "foo", "bar" } }, factory);
+        var source = new ConfigServerConfigurationSource(settings, sources, new Dictionary<string, object>
+        {
+            { "foo", "bar" }
+        }, factory);
+
         Assert.Equal(settings, source.DefaultSettings);
         Assert.Equal(factory, source.LogFactory);
         Assert.Null(source.Configuration);
@@ -40,7 +49,7 @@ public class ConfigServerConfigurationSourceTest
         Assert.Single(source.Properties);
         Assert.Equal("bar", source.Properties["foo"]);
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection().Build();
         source = new ConfigServerConfigurationSource(settings, config, factory);
         Assert.Equal(settings, source.DefaultSettings);
         Assert.Equal(factory, source.LogFactory);
@@ -55,10 +64,14 @@ public class ConfigServerConfigurationSourceTest
     {
         var settings = new ConfigServerClientSettings();
         var memSource = new MemoryConfigurationSource();
-        IList<IConfigurationSource> sources = new List<IConfigurationSource> { memSource };
+
+        IList<IConfigurationSource> sources = new List<IConfigurationSource>
+        {
+            memSource
+        };
 
         var source = new ConfigServerConfigurationSource(settings, sources);
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<ConfigServerConfigurationProvider>(provider);
     }
 }

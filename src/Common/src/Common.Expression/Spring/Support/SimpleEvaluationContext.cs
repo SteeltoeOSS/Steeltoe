@@ -8,16 +8,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class SimpleEvaluationContext : IEvaluationContext
 {
-    private static readonly List<IConstructorResolver> EmptyConstructorResolver = new ();
-    private readonly Dictionary<string, object> _variables = new ();
-
-    private SimpleEvaluationContext(List<IPropertyAccessor> accessors, List<IMethodResolver> resolvers, ITypeConverter converter, ITypedValue rootObject)
-    {
-        PropertyAccessors = accessors;
-        MethodResolvers = resolvers;
-        TypeConverter = converter ?? new StandardTypeConverter();
-        RootObject = rootObject ?? TypedValue.Null;
-    }
+    private static readonly List<IConstructorResolver> EmptyConstructorResolver = new();
+    private readonly Dictionary<string, object> _variables = new();
 
     public ITypedValue RootObject { get; }
 
@@ -37,13 +29,22 @@ public class SimpleEvaluationContext : IEvaluationContext
 
     public IOperatorOverloader OperatorOverloader { get; } = new StandardOperatorOverloader();
 
+    private SimpleEvaluationContext(List<IPropertyAccessor> accessors, List<IMethodResolver> resolvers, ITypeConverter converter, ITypedValue rootObject)
+    {
+        PropertyAccessors = accessors;
+        MethodResolvers = resolvers;
+        TypeConverter = converter ?? new StandardTypeConverter();
+        RootObject = rootObject ?? TypedValue.Null;
+    }
+
     public static Builder ForPropertyAccessors(params IPropertyAccessor[] accessors)
     {
-        foreach (var accessor in accessors)
+        foreach (IPropertyAccessor accessor in accessors)
         {
             if (accessor.GetType() == typeof(ReflectivePropertyAccessor))
             {
-                throw new InvalidOperationException("SimpleEvaluationContext is not designed for use with a plain " + "ReflectivePropertyAccessor. Consider using DataBindingPropertyAccessor or a custom subclass.");
+                throw new InvalidOperationException("SimpleEvaluationContext is not designed for use with a plain " +
+                    "ReflectivePropertyAccessor. Consider using DataBindingPropertyAccessor or a custom subclass.");
             }
         }
 
@@ -67,20 +68,20 @@ public class SimpleEvaluationContext : IEvaluationContext
 
     public object LookupVariable(string name)
     {
-        _variables.TryGetValue(name, out var result);
+        _variables.TryGetValue(name, out object result);
         return result;
     }
 
     public T LookupVariable<T>(string name)
     {
-        _variables.TryGetValue(name, out var result);
+        _variables.TryGetValue(name, out object result);
         return (T)result;
     }
 
     public class Builder
     {
         private readonly List<IPropertyAccessor> _accessors;
-        private List<IMethodResolver> _resolvers = new ();
+        private List<IMethodResolver> _resolvers = new();
         private ITypeConverter _typeConverter;
         private ITypedValue _rootObject;
 
@@ -91,11 +92,12 @@ public class SimpleEvaluationContext : IEvaluationContext
 
         public Builder WithMethodResolvers(params IMethodResolver[] resolvers)
         {
-            foreach (var resolver in resolvers)
+            foreach (IMethodResolver resolver in resolvers)
             {
                 if (resolver.GetType() == typeof(ReflectiveMethodResolver))
                 {
-                    throw new InvalidOperationException("SimpleEvaluationContext is not designed for use with a plain " + "ReflectiveMethodResolver. Consider using DataBindingMethodResolver or a custom subclass.");
+                    throw new InvalidOperationException("SimpleEvaluationContext is not designed for use with a plain " +
+                        "ReflectiveMethodResolver. Consider using DataBindingMethodResolver or a custom subclass.");
                 }
             }
 
@@ -105,7 +107,11 @@ public class SimpleEvaluationContext : IEvaluationContext
 
         public Builder WithInstanceMethods()
         {
-            _resolvers = new List<IMethodResolver> { DataBindingMethodResolver.ForInstanceMethodInvocation() };
+            _resolvers = new List<IMethodResolver>
+            {
+                DataBindingMethodResolver.ForInstanceMethodInvocation()
+            };
+
             return this;
         }
 

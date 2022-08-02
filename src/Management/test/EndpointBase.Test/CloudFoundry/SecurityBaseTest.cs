@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Management.Endpoint.CloudFoundry;
+using System.Net;
 using System.Net.Http.Json;
+using Steeltoe.Management.Endpoint.CloudFoundry;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Test.CloudFoundry;
@@ -29,7 +30,7 @@ public class SecurityBaseTest : BaseTest
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(cloudOpts);
         var securityBase = new SecurityBase(cloudOpts, managementOptions);
-        var result = await securityBase.GetPermissionsAsync("testToken");
+        SecurityResult result = await securityBase.GetPermissionsAsync("testToken");
         Assert.NotNull(result);
     }
 
@@ -40,11 +41,15 @@ public class SecurityBaseTest : BaseTest
         var managementOptions = new CloudFoundryManagementOptions();
         managementOptions.EndpointOptions.Add(cloudOpts);
         var securityBase = new SecurityBase(cloudOpts, managementOptions);
-        var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK);
-        var perms = new Dictionary<string, object> { { "read_sensitive_data", true } };
+        var response = new HttpResponseMessage(HttpStatusCode.OK);
+
+        var perms = new Dictionary<string, object>
+        {
+            { "read_sensitive_data", true }
+        };
 
         response.Content = JsonContent.Create(perms);
-        var result = await securityBase.GetPermissions(response);
+        Permissions result = await securityBase.GetPermissions(response);
         Assert.Equal(Permissions.Full, result);
     }
 }

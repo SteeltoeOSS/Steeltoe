@@ -35,7 +35,7 @@ public class StandardComponentsTests
     public void TestStandardTypeLocator()
     {
         var tl = new StandardTypeLocator();
-        var prefixes = tl.ImportPrefixes;
+        List<string> prefixes = tl.ImportPrefixes;
         Assert.Single(prefixes);
         tl.RegisterImport("System.Collections");
         prefixes = tl.ImportPrefixes;

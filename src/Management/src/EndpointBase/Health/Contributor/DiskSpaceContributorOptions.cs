@@ -11,6 +11,10 @@ public class DiskSpaceContributorOptions
     private const string ManagementInfoPrefix = "management:endpoints:health:diskspace";
     private const long DefaultThreshold = 10 * 1024 * 1024;
 
+    public string Path { get; set; }
+
+    public long Threshold { get; set; } = -1;
+
     public DiskSpaceContributorOptions()
     {
         Path = ".";
@@ -24,7 +28,8 @@ public class DiskSpaceContributorOptions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var section = config.GetSection(ManagementInfoPrefix);
+        IConfigurationSection section = config.GetSection(ManagementInfoPrefix);
+
         if (section != null)
         {
             section.Bind(this);
@@ -40,8 +45,4 @@ public class DiskSpaceContributorOptions
             Threshold = DefaultThreshold;
         }
     }
-
-    public string Path { get; set; }
-
-    public long Threshold { get; set; } = -1;
 }

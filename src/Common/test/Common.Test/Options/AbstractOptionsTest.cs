@@ -23,12 +23,13 @@ public class AbstractOptionsTest
     public void Constructors_BindsValues()
     {
         var builder = new ConfigurationBuilder();
+
         builder.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "foo", "bar" }
         });
 
-        var root = builder.Build();
+        IConfigurationRoot root = builder.Build();
         IConfiguration config = root;
 
         var opt1 = new TestOptions(root);
@@ -38,11 +39,13 @@ public class AbstractOptionsTest
         Assert.Equal("bar", opt2.Foo);
 
         var builder2 = new ConfigurationBuilder();
+
         builder2.AddInMemoryCollection(new Dictionary<string, string>
         {
             { "prefix:foo", "bar" }
         });
-        var root2 = builder2.Build();
+
+        IConfigurationRoot root2 = builder2.Build();
         var opt3 = new TestOptions(root2, "prefix");
         Assert.Equal("bar", opt3.Foo);
     }

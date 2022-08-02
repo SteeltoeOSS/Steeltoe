@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using k8s;
 using k8s.Models;
 using Microsoft.Extensions.Configuration.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Rest;
 using Steeltoe.Common.Kubernetes;
-using System.Net;
 
 namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
@@ -29,7 +29,9 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
     {
         try
         {
-            var configMapResponse = K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+            HttpOperationResponse<V1ConfigMap> configMapResponse =
+                K8sClient.ReadNamespacedConfigMapWithHttpMessagesAsync(Settings.Name, Settings.Namespace).GetAwaiter().GetResult();
+
             ProcessData(configMapResponse.Body);
             EnableReloading();
         }
@@ -37,7 +39,9 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         {
             if (e.Response.StatusCode == HttpStatusCode.Forbidden)
             {
-                Logger?.LogCritical(e, "Failed to retrieve config map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions", Settings.Name, Settings.Namespace);
+                Logger?.LogCritical(e,
+                    "Failed to retrieve config map '{configMapName}' in namespace '{configMapNamespace}'. Confirm that your service account has the necessary permissions",
+                    Settings.Name, Settings.Namespace);
             }
             else if (e.Response.StatusCode == HttpStatusCode.NotFound)
             {
@@ -60,13 +64,19 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private static IDictionary<string, string> ParseConfigMapFile(Stream jsonFileContents)
     {
-        var exposedJsonConfigurationProvider =
-            new ExposedJsonStreamConfigurationParser(new JsonStreamConfigurationSource { Stream = jsonFileContents });
+        var exposedJsonConfigurationProvider = new ExposedJsonStreamConfigurationParser(new JsonStreamConfigurationSource
+        {
+            Stream = jsonFileContents
+        });
+
         exposedJsonConfigurationProvider.Load();
         return exposedJsonConfigurationProvider.GetData();
     }
 
-    private static string NormalizeKey(string key) => key.Replace("__", ":");
+    private static string NormalizeKey(string key)
+    {
+        return key.Replace("__", ":");
+    }
 
     private void EnableReloading()
     {
@@ -89,26 +99,29 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
 
     private void EnableEventReloading()
     {
-        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(
-            Settings.Name,
-            Settings.Namespace,
-            onEvent: (eventType, item) =>
-            {
-                Logger?.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(), Settings.Name, item?.Data?.Count);
-                switch (eventType)
+        ConfigMapWatcher = K8sClient.WatchNamespacedConfigMapAsync(Settings.Name, Settings.Namespace, onEvent: (eventType, item) =>
                 {
-                    case WatchEventType.Added:
-                    case WatchEventType.Modified:
-                    case WatchEventType.Deleted:
-                        ProcessData(item);
-                        break;
-                    default:
-                        Logger?.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
-                        break;
-                }
-            },
-            onError: exception => Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
-            onClosed: () => Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name)).GetAwaiter().GetResult();
+                    Logger?.LogInformation("Received {eventType} event for ConfigMap {configMapName} with {entries} values", eventType.ToString(),
+                        Settings.Name,
+                        item?.Data?.Count);
+
+                    switch (eventType)
+                    {
+                        case WatchEventType.Added:
+                        case WatchEventType.Modified:
+                        case WatchEventType.Deleted:
+                            ProcessData(item);
+                            break;
+                        default:
+                            Logger?.LogDebug("Event type {eventType} is not supported, no action has been taken", eventType);
+                            break;
+                    }
+                },
+                onError: exception =>
+                    Logger?.LogCritical(exception, "ConfigMap watcher on {namespace}.{name} encountered an error!", Settings.Namespace, Settings.Name),
+                onClosed: () => Logger?.LogInformation("ConfigMap watcher on {namespace}.{name} connection has closed", Settings.Namespace, Settings.Name))
+            .GetAwaiter()
+            .GetResult();
     }
 
     private void ProcessData(V1ConfigMap item)
@@ -120,16 +133,17 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         }
 
         var configMapContents = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+
         if (item?.Data != null)
         {
-            foreach (var data in item?.Data)
+            foreach (KeyValuePair<string, string> data in item?.Data)
             {
                 if (IsAppsettingsKey(data.Key))
                 {
-                    using var stream = GenerateStreamFromString(data.Value);
-                    var jsonConfiguration = ParseConfigMapFile(stream);
+                    using Stream stream = GenerateStreamFromString(data.Value);
+                    IDictionary<string, string> jsonConfiguration = ParseConfigMapFile(stream);
 
-                    foreach (var jsonKey in jsonConfiguration.Keys)
+                    foreach (string jsonKey in jsonConfiguration.Keys)
                     {
                         configMapContents[NormalizeKey(jsonKey)] = jsonConfiguration[jsonKey];
                     }
@@ -147,7 +161,7 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
     private bool IsAppsettingsKey(string key)
     {
         return key.StartsWith(ConfigFileKeyPrefix, StringComparison.InvariantCultureIgnoreCase) &&
-               key.EndsWith(ConfigFileKeySuffix, StringComparison.InvariantCultureIgnoreCase);
+            key.EndsWith(ConfigFileKeySuffix, StringComparison.InvariantCultureIgnoreCase);
     }
 
     private Stream GenerateStreamFromString(string s)
@@ -161,10 +175,9 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
     }
 
     /// <summary>
-    /// A private class to get access to Data while still using the JsonStreamConfigurationProvider
-    /// to parse the value of an appsettings.json key in a ConfigMap.
-    /// This requires a dependency on the Microsoft.Extensions.Configuration.Json package,
-    /// but will ensure users' appsettings.json values will be parsed consistently.
+    /// A private class to get access to Data while still using the JsonStreamConfigurationProvider to parse the value of an appsettings.json key in a
+    /// ConfigMap. This requires a dependency on the Microsoft.Extensions.Configuration.Json package, but will ensure users' appsettings.json values will be
+    /// parsed consistently.
     /// </summary>
     private sealed class ExposedJsonStreamConfigurationParser : JsonStreamConfigurationProvider
     {
@@ -173,6 +186,9 @@ internal sealed class KubernetesConfigMapProvider : KubernetesProviderBase, IDis
         {
         }
 
-        public IDictionary<string, string> GetData() => Data;
+        public IDictionary<string, string> GetData()
+        {
+            return Data;
+        }
     }
 }

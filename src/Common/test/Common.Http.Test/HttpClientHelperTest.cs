@@ -4,6 +4,7 @@
 
 using System.Net;
 using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using Xunit;
 
@@ -14,7 +15,7 @@ public class HttpClientHelperTest
     [Fact]
     public void GetHttpClient_SetsTimeout()
     {
-        var client = HttpClientHelper.GetHttpClient(false, 100);
+        HttpClient client = HttpClientHelper.GetHttpClient(false, 100);
         Assert.Equal(100, client.Timeout.TotalMilliseconds);
     }
 
@@ -111,20 +112,20 @@ public class HttpClientHelperTest
     [Fact]
     public void GetEncodedUserPassword_Nulls()
     {
-        var result = HttpClientHelper.GetEncodedUserPassword(null, null);
+        string result = HttpClientHelper.GetEncodedUserPassword(null, null);
         Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"{string.Empty}:{string.Empty}")), result);
 
-        var result2 = HttpClientHelper.GetEncodedUserPassword("foo", null);
+        string result2 = HttpClientHelper.GetEncodedUserPassword("foo", null);
         Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"foo:{string.Empty}")), result2);
 
-        var result3 = HttpClientHelper.GetEncodedUserPassword(null, "bar");
+        string result3 = HttpClientHelper.GetEncodedUserPassword(null, "bar");
         Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes($"{string.Empty}:bar")), result3);
     }
 
     [Fact]
     public void GetEncodedUserPassword_NotNulls()
     {
-        var result = HttpClientHelper.GetEncodedUserPassword("foo", "bar");
+        string result = HttpClientHelper.GetEncodedUserPassword("foo", "bar");
         Assert.Equal(Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar")), result);
     }
 
@@ -138,7 +139,7 @@ public class HttpClientHelperTest
     [Fact]
     public void GetRequestMessage_CreatesCorrectMessage()
     {
-        var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", null, null);
+        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", null, null);
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
         Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
@@ -148,12 +149,12 @@ public class HttpClientHelperTest
     [Fact]
     public void GetRequestMessage_CreatesCorrectMessage_WithBasicAuth()
     {
-        var message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", "foo", "bar");
+        HttpRequestMessage message = HttpClientHelper.GetRequestMessage(HttpMethod.Put, "https://localhost/foobar", "foo", "bar");
         Assert.NotNull(message);
         Assert.Equal(HttpMethod.Put, message.Method);
         Assert.Equal("https://localhost/foobar", message.RequestUri.ToString());
         Assert.NotNull(message.Headers.Authorization);
-        var bytes = Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar"));
+        string bytes = Convert.ToBase64String(Encoding.ASCII.GetBytes("foo" + ":" + "bar"));
         Assert.Equal("Basic", message.Headers.Authorization.Scheme);
         Assert.Equal(bytes, message.Headers.Authorization.Parameter);
     }
@@ -169,7 +170,7 @@ public class HttpClientHelperTest
     [Fact]
     public void GetDisableDelegate_ReturnsExpected()
     {
-        var del1 = HttpClientHelper.GetDisableDelegate();
+        Func<HttpRequestMessage, X509Certificate2, X509Chain, SslPolicyErrors, bool> del1 = HttpClientHelper.GetDisableDelegate();
 
         if (Platform.IsFullFramework)
         {

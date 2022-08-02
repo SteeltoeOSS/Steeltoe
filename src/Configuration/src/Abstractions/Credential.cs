@@ -11,6 +11,8 @@ namespace Steeltoe.Extensions.Configuration;
 [TypeConverter(typeof(CredentialConverter))]
 public class Credential : Dictionary<string, Credential>
 {
+    public string Value { get; }
+
     public Credential()
     {
     }
@@ -19,8 +21,6 @@ public class Credential : Dictionary<string, Credential>
     {
         Value = value;
     }
-
-    public string Value { get; }
 
     protected Credential(SerializationInfo info, StreamingContext context)
         : base(info, context)

@@ -2,28 +2,28 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+using System.Reflection;
 using Steeltoe.Common.Converter;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.Support;
-using System.Globalization;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support.Test;
 
 public class DefaultMessageHandlerMethodFactoryTest
 {
-    private readonly SampleBean _sample = new ();
+    private readonly SampleBean _sample = new();
 
     [Fact]
     public void CustomConversion()
     {
         var conversionService = new GenericConversionService();
         conversionService.AddConverter(new SampleBeanConverter());
-        var instance = CreateInstance(conversionService);
+        DefaultMessageHandlerMethodFactory instance = CreateInstance(conversionService);
 
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
 
         invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(_sample).Build());
         AssertMethodInvocation(_sample, "SimpleString");
@@ -33,9 +33,9 @@ public class DefaultMessageHandlerMethodFactoryTest
     public void CustomConversionServiceFailure()
     {
         var conversionService = new GenericConversionService();
-        var instance = CreateInstance(conversionService);
+        DefaultMessageHandlerMethodFactory instance = CreateInstance(conversionService);
         Assert.False(conversionService.CanConvert(typeof(int), typeof(string)));
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
         Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
     }
 
@@ -43,9 +43,9 @@ public class DefaultMessageHandlerMethodFactoryTest
     public void CustomMessageConverterFailure()
     {
         IMessageConverter messageConverter = new ByteArrayMessageConverter();
-        var instance = CreateInstance(messageConverter);
+        DefaultMessageHandlerMethodFactory instance = CreateInstance(messageConverter);
 
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
         Assert.Throws<MessageConversionException>(() => invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build()));
     }
 
@@ -56,9 +56,10 @@ public class DefaultMessageHandlerMethodFactoryTest
         {
             new CustomHandlerMethodArgumentResolver()
         };
-        var instance = CreateInstance(customResolvers);
 
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
+        DefaultMessageHandlerMethodFactory instance = CreateInstance(customResolvers);
+
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
 
         invocableHandlerMethod.Invoke(MessageBuilder.WithPayload(123).Build());
         AssertMethodInvocation(_sample, "CustomArgumentResolver");
@@ -68,21 +69,23 @@ public class DefaultMessageHandlerMethodFactoryTest
     public void OverrideArgumentResolvers()
     {
         var instance = new DefaultMessageHandlerMethodFactory();
+
         var customResolvers = new List<IHandlerMethodArgumentResolver>
         {
             new CustomHandlerMethodArgumentResolver()
         };
+
         instance.SetArgumentResolvers(customResolvers); // Override defaults
 
-        var message = MessageBuilder.WithPayload("sample").Build();
+        IMessage message = MessageBuilder.WithPayload("sample").Build();
 
         // This will work as the local resolver is set
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "CustomArgumentResolver", typeof(CultureInfo));
         invocableHandlerMethod.Invoke(message);
         AssertMethodInvocation(_sample, "CustomArgumentResolver");
 
         // This won't work as no resolver is known for the payload
-        var invocableHandlerMethod2 = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
+        IInvocableHandlerMethod invocableHandlerMethod2 = CreateInvocableHandlerMethod(instance, "SimpleString", typeof(string));
         Assert.Throws<MethodArgumentResolutionException>(() => invocableHandlerMethod2.Invoke(message));
     }
 
@@ -90,7 +93,7 @@ public class DefaultMessageHandlerMethodFactoryTest
     public void NoValidationByDefault()
     {
         var instance = new DefaultMessageHandlerMethodFactory();
-        var invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
+        IInvocableHandlerMethod invocableHandlerMethod = CreateInvocableHandlerMethod(instance, "PayloadValidation", typeof(string));
         invocableHandlerMethod.Invoke(MessageBuilder.WithPayload("failure").Build());
         AssertMethodInvocation(_sample, "PayloadValidation");
     }
@@ -120,7 +123,7 @@ public class DefaultMessageHandlerMethodFactoryTest
 
     private MethodInfo GetListenerMethod(string methodName, params Type[] parameterTypes)
     {
-        var method = typeof(SampleBean).GetMethod(methodName, parameterTypes);
+        MethodInfo method = typeof(SampleBean).GetMethod(methodName, parameterTypes);
         Assert.NotNull(method);
         return method;
     }
@@ -140,7 +143,7 @@ public class DefaultMessageHandlerMethodFactoryTest
 
     internal sealed class SampleBean
     {
-        public readonly Dictionary<string, bool> Invocations = new ();
+        public readonly Dictionary<string, bool> Invocations = new();
 
         public void SimpleString(string value)
         {

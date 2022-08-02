@@ -6,6 +6,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixCollapserEvent : IHystrixEvent
 {
+    public IHystrixCollapserKey CollapserKey { get; }
+
+    public CollapserEventType EventType { get; }
+
+    public int Count { get; }
+
     protected HystrixCollapserEvent(IHystrixCollapserKey collapserKey, CollapserEventType eventType, int count)
     {
         CollapserKey = collapserKey;
@@ -17,12 +23,6 @@ public class HystrixCollapserEvent : IHystrixEvent
     {
         return new HystrixCollapserEvent(collapserKey, eventType, count);
     }
-
-    public IHystrixCollapserKey CollapserKey { get; }
-
-    public CollapserEventType EventType { get; }
-
-    public int Count { get; }
 
     public override string ToString()
     {

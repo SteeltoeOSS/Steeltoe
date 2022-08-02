@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Data;
 using Xunit;
 
 namespace Steeltoe.Connector.SqlServer.Test;
@@ -63,7 +63,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_NoVCAPs_AddsSqlServerConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddSqlServerConnection(config);
 
@@ -75,7 +75,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
     public void AddSqlServerConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -91,7 +91,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddSqlServerConnection(config));
         Assert.Contains("Multiple", ex.Message);
@@ -107,13 +107,13 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddSqlServerConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("de5aa3a747c134b3d8780f8cc80be519e", connString);
         Assert.Contains("1433", connString);
         Assert.Contains("192.168.0.80", connString);
@@ -131,13 +131,13 @@ public class SqlServerProviderServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddSqlServerConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
+        string connString = service.ConnectionString;
         Assert.Contains("Initial Catalog=testdb", connString);
         Assert.Contains("1433", connString);
         Assert.Contains("Data Source=ajaganathansqlserver", connString);
@@ -153,17 +153,17 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
         builder.AddInMemoryCollection(appsettings);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddSqlServerConnection(config);
 
         var service = services.BuildServiceProvider().GetService<IDbConnection>();
         Assert.NotNull(service);
-        var connString = service.ConnectionString;
-        Assert.Contains("f1egl8ify4;", connString);                                                     // database
-        Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net,1433", connString);  // host:port
-        Assert.Contains("rgmm5zlri4;", connString);                                                     // user
-        Assert.Contains("737mAU1pj6HcBxzw;", connString);                                               // password
+        string connString = service.ConnectionString;
+        Assert.Contains("f1egl8ify4;", connString); // database
+        Assert.Contains("fe049939-64f1-44f5-9f84-073ed5c82088.database.windows.net,1433", connString); // host:port
+        Assert.Contains("rgmm5zlri4;", connString); // user
+        Assert.Contains("737mAU1pj6HcBxzw;", connString); // password
 
         // other components of the url from the service broker should carry through to the connection string
         Assert.Contains("encrypt=true;", connString);
@@ -176,7 +176,7 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddSqlServerConnection(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RelationalDbHealthContributor;
@@ -190,10 +190,10 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<SqlServerConnectionInfo>();
+        Connection ci = cm.Get<SqlServerConnectionInfo>();
         services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
         services.AddSqlServerConnection(config);
@@ -208,10 +208,10 @@ public class SqlServerProviderServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<SqlServerConnectionInfo>();
+        Connection ci = cm.Get<SqlServerConnectionInfo>();
         services.AddHealthChecks().AddSqlServer(ci.ConnectionString, name: ci.Name);
 
         services.AddSqlServerConnection(config, addSteeltoeHealthChecks: true);

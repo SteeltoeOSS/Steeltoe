@@ -6,21 +6,24 @@ namespace Steeltoe.Connector.Services;
 
 public class Tags
 {
+    public IEnumerable<string> Values { get; protected internal set; }
+
     public Tags(string tag)
-        : this(new[] { tag })
+        : this(new[]
+        {
+            tag
+        })
     {
     }
 
     public Tags(string[] tags)
     {
-        Values = tags ?? System.Array.Empty<string>();
+        Values = tags ?? Array.Empty<string>();
     }
 
     internal Tags()
     {
     }
-
-    public IEnumerable<string> Values { get; protected internal set; }
 
     public bool ContainsOne(IEnumerable<string> tags)
     {
@@ -41,7 +44,7 @@ public class Tags
     {
         if (tag != null && Values != null)
         {
-            foreach (var t in Values)
+            foreach (string t in Values)
             {
                 if (tag.StartsWith(t))
                 {

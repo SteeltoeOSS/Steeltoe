@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 using Steeltoe.CircuitBreaker.Hystrix.Collapser;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
@@ -10,7 +11,6 @@ using Steeltoe.CircuitBreaker.Hystrix.Strategy.Concurrency;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
 using Steeltoe.CircuitBreaker.Hystrix.ThreadPool;
 using Steeltoe.Common.Util;
-using System.Text;
 using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
@@ -90,6 +90,7 @@ public abstract class HystrixTestBase : IDisposable
     public virtual bool WaitForHealthCountToUpdate(string commandKey, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
     {
         var stream = HealthCountsStream.GetInstance(commandKey);
+
         if (stream == null)
         {
             return false;
@@ -100,21 +101,24 @@ public abstract class HystrixTestBase : IDisposable
 
     public virtual bool WaitForObservableToUpdate<T>(IObservable<T> observable, int numberOfUpdates, int maxTimeToWait, ITestOutputHelper output = null)
     {
-        var updated = false;
-        var number = numberOfUpdates;
+        bool updated = false;
+        int number = numberOfUpdates;
 
         using (observable.Subscribe(item =>
-               {
-                   number--;
-                   if (number <= 0)
-                   {
-                       updated = true;
-                       output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : required updates received");
-                   }
+        {
+            number--;
 
-                   output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item);
-                   output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-               }))
+            if (number <= 0)
+            {
+                updated = true;
+                output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : required updates received");
+            }
+
+            output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : " + item);
+
+            output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " +
+                HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        }))
         {
             output?.WriteLine("WaitForObservableToUpdate @ " + Time.CurrentTimeMillis + " : Starting wait");
             return Time.WaitUntil(() => updated, maxTimeToWait);
@@ -123,21 +127,26 @@ public abstract class HystrixTestBase : IDisposable
 
     public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int maxWaitTime, ITestOutputHelper output = null)
     {
-        var current = observer.TickCount;
-        var countToWait = count;
+        int current = observer.TickCount;
+        int countToWait = count;
 
-        output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " +
+            HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
         output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
         return Time.WaitUntil(() => observer.TickCount >= current + countToWait, maxWaitTime);
     }
 
-    public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime, ITestOutputHelper output = null)
+    public virtual bool WaitForLatchedObserverToUpdate<T>(TestObserverBase<T> observer, int count, int minWaitTime, int maxWaitTime,
+        ITestOutputHelper output = null)
     {
-        var current = observer.TickCount;
-        var countToWait = count;
-        var minTime = Time.CurrentTimeMillis + minWaitTime;
+        int current = observer.TickCount;
+        int countToWait = count;
+        long minTime = Time.CurrentTimeMillis + minWaitTime;
 
-        output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+        output?.WriteLine("WaitForObservableToUpdate ReqLog" + "@ " + Time.CurrentTimeMillis + " : " +
+            HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
+
         output?.WriteLine("WaitForLatchedObserverToUpdate @ " + Time.CurrentTimeMillis + " Starting wait");
         return Time.WaitUntil(() => observer.TickCount >= current + countToWait && Time.CurrentTimeMillis >= minTime, maxWaitTime);
     }
@@ -146,7 +155,8 @@ public abstract class HystrixTestBase : IDisposable
     {
         var sb = new StringBuilder();
         sb.Append('[');
-        foreach (var eventType in HystrixEventTypeHelper.Values)
+
+        foreach (HystrixEventType eventType in HystrixEventTypeHelper.Values)
         {
             if (eventCounts[(int)eventType] > 0)
             {

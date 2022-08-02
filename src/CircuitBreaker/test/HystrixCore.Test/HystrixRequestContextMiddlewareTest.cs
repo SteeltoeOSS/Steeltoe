@@ -19,6 +19,7 @@ public class HystrixRequestContextMiddlewareTest
             Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
             return Task.FromResult(1);
         };
+
         var life = new TestLifecycle();
         var reqContext = new HystrixRequestContextMiddleware(del, life);
         HttpContext context = new DefaultHttpContext();
@@ -35,6 +36,7 @@ public class HystrixRequestContextMiddlewareTest
             Assert.True(HystrixRequestContext.IsCurrentThreadInitialized);
             return Task.FromResult(1);
         };
+
         var life = new TestLifecycle();
         _ = new HystrixRequestContextMiddleware(del, life);
         Assert.True(life.Registered);
@@ -45,11 +47,10 @@ public class HystrixRequestContextMiddlewareTest
     private sealed class TestLifecycle : IApplicationLifetime
 #pragma warning restore CS0618 // Type or member is obsolete
     {
+        private readonly CancellationTokenSource _stoppingSource = new();
         public bool Registered;
 
-        private readonly CancellationTokenSource _stoppingSource = new ();
-
-        public CancellationToken ApplicationStarted => throw new System.NotImplementedException();
+        public CancellationToken ApplicationStarted => throw new NotImplementedException();
 
         public CancellationToken ApplicationStopping
         {
@@ -60,7 +61,7 @@ public class HystrixRequestContextMiddlewareTest
             }
         }
 
-        public CancellationToken ApplicationStopped => throw new System.NotImplementedException();
+        public CancellationToken ApplicationStopped => throw new NotImplementedException();
 
         public void StopApplication()
         {

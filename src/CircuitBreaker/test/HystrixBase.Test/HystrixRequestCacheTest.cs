@@ -22,9 +22,9 @@ public class HystrixRequestCacheTest : HystrixTestBase
     {
         try
         {
-            var t1 = Task.FromResult("a1");
-            var t2 = Task.FromResult("a2");
-            var t3 = Task.FromResult("b1");
+            Task<string> t1 = Task.FromResult("a1");
+            Task<string> t2 = Task.FromResult("a2");
+            Task<string> t3 = Task.FromResult("b1");
 
             var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
             cache1.PutIfAbsent("valueA", t1);
@@ -32,7 +32,7 @@ public class HystrixRequestCacheTest : HystrixTestBase
             cache1.PutIfAbsent("valueB", t3);
 
             var cache2 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command2"));
-            var t4 = Task.FromResult("a3");
+            Task<string> t4 = Task.FromResult("a3");
             cache2.PutIfAbsent("valueA", t4);
 
             Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
@@ -51,6 +51,7 @@ public class HystrixRequestCacheTest : HystrixTestBase
         }
 
         context = HystrixRequestContext.InitializeContext();
+
         try
         {
             // with a new context  the instance should have nothing in it
@@ -69,7 +70,8 @@ public class HystrixRequestCacheTest : HystrixTestBase
     {
         context.Dispose();
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any"));
+        await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1")).Get<Task<string>>("any"));
     }
 
     [Fact]
@@ -78,7 +80,7 @@ public class HystrixRequestCacheTest : HystrixTestBase
         try
         {
             var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
-            var t1 = Task.FromResult("a1");
+            Task<string> t1 = Task.FromResult("a1");
             cache1.PutIfAbsent("valueA", t1);
             Assert.Equal("a1", cache1.Get<Task<string>>("valueA").GetAwaiter().GetResult());
             cache1.Clear("valueA");
@@ -96,7 +98,7 @@ public class HystrixRequestCacheTest : HystrixTestBase
         context.Dispose();
 
         var cache1 = HystrixRequestCache.GetInstance(HystrixCommandKeyDefault.AsKey("command1"));
-        var t1 = Task.FromResult("a1");
+        Task<string> t1 = Task.FromResult("a1");
 
         // this should fail, as there's no HystrixRequestContext instance to place the cache into
         await Assert.ThrowsAsync<InvalidOperationException>(() => cache1.PutIfAbsent("valueA", t1));

@@ -23,8 +23,8 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
 
         if (sourceType.IsArray && ConversionUtils.CanCreateCompatListFor(targetType))
         {
-            return ConversionUtils.CanConvertElements(
-                ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType), ConversionService);
+            return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), ConversionUtils.GetElementType(targetType),
+                ConversionService);
         }
 
         return false;
@@ -37,10 +37,11 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
             return null;
         }
 
-        var len = asArray.GetLength(0);
-        var arrayElementType = ConversionUtils.GetElementType(asArray.GetType());
+        int len = asArray.GetLength(0);
+        Type arrayElementType = ConversionUtils.GetElementType(asArray.GetType());
 
-        var list = ConversionUtils.CreateCompatListFor(targetType);
+        IList list = ConversionUtils.CreateCompatListFor(targetType);
+
         if (list == null)
         {
             throw new InvalidOperationException("Unable to create compatible list");
@@ -48,18 +49,19 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
 
         if (!targetType.IsGenericType)
         {
-            for (var i = 0; i < len; i++)
+            for (int i = 0; i < len; i++)
             {
                 list.Add(asArray.GetValue(i));
             }
         }
         else
         {
-            var targetElementType = ConversionUtils.GetElementType(targetType);
-            for (var i = 0; i < len; i++)
+            Type targetElementType = ConversionUtils.GetElementType(targetType);
+
+            for (int i = 0; i < len; i++)
             {
-                var sourceElement = asArray.GetValue(i);
-                var targetElement = ConversionService.Convert(sourceElement, arrayElementType, targetElementType);
+                object sourceElement = asArray.GetValue(i);
+                object targetElement = ConversionService.Convert(sourceElement, arrayElementType, targetElementType);
                 list.Add(targetElement);
             }
         }
@@ -74,7 +76,7 @@ public class ArrayToCollectionConverter : AbstractToCollectionConverter
             (typeof(object[]), typeof(ICollection)),
             (typeof(object[]), typeof(ICollection<>)),
             (typeof(object[]), typeof(IEnumerable)),
-            (typeof(object[]), typeof(IEnumerable<>)),
+            (typeof(object[]), typeof(IEnumerable<>))
         };
     }
 }

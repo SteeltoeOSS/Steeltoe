@@ -10,32 +10,76 @@ public class ExecutionResult
 {
     private static readonly IList<HystrixEventType> AllEventTypes = HystrixEventTypeHelper.Values;
     private static readonly int NumEventTypes = AllEventTypes.Count;
-    private static readonly BitArray ExceptionProducingEvents = new (NumEventTypes);
-    private static readonly BitArray TerminalEvents = new (NumEventTypes);
+    private static readonly BitArray ExceptionProducingEvents = new(NumEventTypes);
+    private static readonly BitArray TerminalEvents = new(NumEventTypes);
+
+    public EventCounts Eventcounts { get; }
+
+    public long StartTimestamp { get; }
+
+    /// <summary>
+    /// Gets amount of time spent in run() method.
+    /// </summary>
+    public int ExecutionLatency { get; }
+
+    /// <summary>
+    /// Gets time elapsed between caller thread submitting request and response being visible to it.
+    /// </summary>
+    public int UserThreadLatency { get; }
+
+    public long CommandRunStartTimeInNanoseconds => StartTimestamp * 1000 * 1000;
+
+    public Exception Exception { get; }
+
+    public Exception ExecutionException { get; }
+
+    public IHystrixCollapserKey CollapserKey { get; }
+
+    public bool IsResponseSemaphoreRejected => Eventcounts.Contains(HystrixEventType.SemaphoreRejected);
+
+    public bool IsResponseThreadPoolRejected => Eventcounts.Contains(HystrixEventType.ThreadPoolRejected);
+
+    public bool IsResponseRejected => IsResponseThreadPoolRejected || IsResponseSemaphoreRejected;
+
+    public List<HystrixEventType> OrderedList
+    {
+        get
+        {
+            var eventList = new List<HystrixEventType>();
+
+            foreach (HystrixEventType eventType in AllEventTypes)
+            {
+                if (Eventcounts.Contains(eventType))
+                {
+                    eventList.Add(eventType);
+                }
+            }
+
+            return eventList;
+        }
+    }
+
+    public bool IsExecutedInThread { get; }
+
+    public bool ExecutionOccurred { get; }
+
+    public bool ContainsTerminalEvent => Eventcounts.ContainsAnyOf(TerminalEvents);
 
     static ExecutionResult()
     {
-        foreach (var eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
+        foreach (HystrixEventType eventType in HystrixEventTypeHelper.ExceptionProducingEventTypes)
         {
             ExceptionProducingEvents.Set((int)eventType, true);
         }
 
-        foreach (var eventType in HystrixEventTypeHelper.TerminalEventTypes)
+        foreach (HystrixEventType eventType in HystrixEventTypeHelper.TerminalEventTypes)
         {
             TerminalEvents.Set((int)eventType, true);
         }
     }
 
-    private ExecutionResult(
-        EventCounts eventCounts,
-        long startTimestamp,
-        int executionLatency,
-        int userThreadLatency,
-        Exception failedExecutionException,
-        Exception executionException,
-        bool executionOccurred,
-        bool isExecutedInThread,
-        IHystrixCollapserKey collapserKey)
+    private ExecutionResult(EventCounts eventCounts, long startTimestamp, int executionLatency, int userThreadLatency, Exception failedExecutionException,
+        Exception executionException, bool executionOccurred, bool isExecutedInThread, IHystrixCollapserKey collapserKey)
     {
         Eventcounts = eventCounts;
         StartTimestamp = startTimestamp;
@@ -46,6 +90,117 @@ public class ExecutionResult
         ExecutionOccurred = executionOccurred;
         IsExecutedInThread = isExecutedInThread;
         CollapserKey = collapserKey;
+    }
+
+    public static ExecutionResult From(params HystrixEventType[] eventTypes)
+    {
+        bool didExecutionOccur = false;
+
+        foreach (HystrixEventType eventType in eventTypes)
+        {
+            if (DidExecutionOccur(eventType))
+            {
+                didExecutionOccur = true;
+            }
+        }
+
+        return new ExecutionResult(new EventCounts(eventTypes), -1L, -1, -1, null, null, didExecutionOccur, false, null);
+    }
+
+    public ExecutionResult SetExecutionOccurred()
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, UserThreadLatency, Exception, ExecutionException, true, IsExecutedInThread,
+            CollapserKey);
+    }
+
+    public ExecutionResult SetExecutionLatency(int executionLatency)
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, executionLatency, UserThreadLatency, Exception, ExecutionException, ExecutionOccurred,
+            IsExecutedInThread, CollapserKey);
+    }
+
+    public ExecutionResult SetException(Exception e)
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, UserThreadLatency, e, ExecutionException, ExecutionOccurred,
+            IsExecutedInThread, CollapserKey);
+    }
+
+    public ExecutionResult SetExecutionException(Exception executionException)
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, UserThreadLatency, Exception, executionException, ExecutionOccurred,
+            IsExecutedInThread, CollapserKey);
+    }
+
+    public ExecutionResult SetInvocationStartTime(long inStartTimestamp)
+    {
+        return new ExecutionResult(Eventcounts, inStartTimestamp, ExecutionLatency, UserThreadLatency, Exception, ExecutionException, ExecutionOccurred,
+            IsExecutedInThread, CollapserKey);
+    }
+
+    public ExecutionResult SetExecutedInThread()
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, UserThreadLatency, Exception, ExecutionException, ExecutionOccurred, true,
+            CollapserKey);
+    }
+
+    public ExecutionResult SetNotExecutedInThread()
+    {
+        return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, UserThreadLatency, Exception, ExecutionException, ExecutionOccurred, false,
+            CollapserKey);
+    }
+
+    public ExecutionResult MarkCollapsed(IHystrixCollapserKey collapserKey, int sizeOfBatch)
+    {
+        return new ExecutionResult(Eventcounts.Plus(HystrixEventType.Collapsed, sizeOfBatch), StartTimestamp, ExecutionLatency, UserThreadLatency, Exception,
+            ExecutionException, ExecutionOccurred, IsExecutedInThread, collapserKey);
+    }
+
+    public ExecutionResult MarkUserThreadCompletion(long userThreadLatency)
+    {
+        if (StartTimestamp > 0 && !IsResponseRejected)
+        {
+            /* execution time (must occur before terminal state otherwise a race condition can occur if requested by client) */
+            return new ExecutionResult(Eventcounts, StartTimestamp, ExecutionLatency, (int)userThreadLatency, Exception, ExecutionException, ExecutionOccurred,
+                IsExecutedInThread, CollapserKey);
+        }
+
+        return this;
+    }
+
+    public ExecutionResult AddEvent(HystrixEventType eventType)
+    {
+        return new ExecutionResult(Eventcounts.Plus(eventType), StartTimestamp, ExecutionLatency, UserThreadLatency, Exception, ExecutionException,
+            ExecutionOccurred, IsExecutedInThread, CollapserKey);
+    }
+
+    public ExecutionResult AddEvent(int executionLatency, HystrixEventType eventType)
+    {
+        if (StartTimestamp >= 0 && !IsResponseRejected)
+        {
+            return new ExecutionResult(Eventcounts.Plus(eventType), StartTimestamp, executionLatency, UserThreadLatency, Exception, ExecutionException,
+                ExecutionOccurred, IsExecutedInThread, CollapserKey);
+        }
+
+        return AddEvent(eventType);
+    }
+
+    public override string ToString()
+    {
+        return
+            $"ExecutionResult{{eventCounts={Eventcounts}, failedExecutionException={Exception}, executionException={ExecutionException}, startTimestamp={StartTimestamp}, executionLatency={ExecutionLatency}, userThreadLatency={UserThreadLatency}, executionOccurred={ExecutionOccurred}, isExecutedInThread={IsExecutedInThread}, collapserKey={CollapserKey}}}";
+    }
+
+    private static bool DidExecutionOccur(HystrixEventType eventType)
+    {
+        return eventType switch
+        {
+            HystrixEventType.Success => true,
+            HystrixEventType.Failure => true,
+            HystrixEventType.BadRequest => true,
+            HystrixEventType.Timeout => true,
+            HystrixEventType.Cancelled => true,
+            _ => false
+        };
     }
 
     public sealed class EventCounts
@@ -74,10 +229,11 @@ public class ExecutionResult
         internal EventCounts(HystrixEventType[] eventTypes)
         {
             var newBitSet = new BitArray(NumEventTypes);
-            var localNumEmits = 0;
-            var localNumFallbackEmits = 0;
-            var localNumCollapsed = 0;
-            foreach (var eventType in eventTypes)
+            int localNumEmits = 0;
+            int localNumFallbackEmits = 0;
+            int localNumCollapsed = 0;
+
+            foreach (HystrixEventType eventType in eventTypes)
             {
                 switch (eventType)
                 {
@@ -117,7 +273,7 @@ public class ExecutionResult
                 return false;
             }
 
-            for (var i = 0; i < other.Length; i++)
+            for (int i = 0; i < other.Length; i++)
             {
                 if (i >= _events.Length)
                 {
@@ -141,7 +297,7 @@ public class ExecutionResult
                 HystrixEventType.FallbackEmit => _numFallbackEmissions,
                 HystrixEventType.ExceptionThrown => ContainsAnyOf(ExceptionProducingEvents) ? 1 : 0,
                 HystrixEventType.Collapsed => _numCollapsed,
-                _ => Contains(eventType) ? 1 : 0,
+                _ => Contains(eventType) ? 1 : 0
             };
         }
 
@@ -157,19 +313,19 @@ public class ExecutionResult
                 return false;
             }
 
-            return _numEmissions == other._numEmissions && _numFallbackEmissions == other._numFallbackEmissions && _numCollapsed == other._numCollapsed && Equals(other._events);
+            return _numEmissions == other._numEmissions && _numFallbackEmissions == other._numFallbackEmissions && _numCollapsed == other._numCollapsed &&
+                Equals(other._events);
         }
 
         public override int GetHashCode()
         {
-            var eventsHashCode = GetHashCode(_events);
+            int eventsHashCode = GetHashCode(_events);
             return HashCode.Combine(eventsHashCode, _numEmissions, _numFallbackEmissions, _numCollapsed);
         }
 
         public override string ToString()
         {
-            return
-                $"EventCounts{{events={_events}, numEmissions={_numEmissions}, numFallbackEmissions={_numFallbackEmissions}, numCollapsed={_numCollapsed}}}";
+            return $"EventCounts{{events={_events}, numEmissions={_numEmissions}, numFallbackEmissions={_numFallbackEmissions}, numCollapsed={_numCollapsed}}}";
         }
 
         internal EventCounts Plus(HystrixEventType eventType)
@@ -180,9 +336,10 @@ public class ExecutionResult
         internal EventCounts Plus(HystrixEventType eventType, int count)
         {
             var newBitSet = new BitArray(_events);
-            var localNumEmits = _numEmissions;
-            var localNumFallbackEmits = _numFallbackEmissions;
-            var localNumCollapsed = _numCollapsed;
+            int localNumEmits = _numEmissions;
+            int localNumFallbackEmits = _numFallbackEmissions;
+            int localNumCollapsed = _numCollapsed;
+
             switch (eventType)
             {
                 case HystrixEventType.Emit:
@@ -212,7 +369,7 @@ public class ExecutionResult
                 return false;
             }
 
-            for (var i = 0; i < _events.Length; i++)
+            for (int i = 0; i < _events.Length; i++)
             {
                 if (_events[i] != other[i])
                 {
@@ -226,268 +383,16 @@ public class ExecutionResult
         private int GetHashCode(BitArray bits)
         {
             long h = 1234;
-            var copy = new int[bits.Length];
+            int[] copy = new int[bits.Length];
             ICollection asCollection = bits;
             asCollection.CopyTo(copy, 0);
-            for (var i = copy.Length; --i >= 0;)
+
+            for (int i = copy.Length; --i >= 0;)
             {
                 h ^= copy[i] * (i + 1);
             }
 
             return (int)((h >> 32) ^ h);
         }
-    }
-
-    public static ExecutionResult From(params HystrixEventType[] eventTypes)
-    {
-        var didExecutionOccur = false;
-        foreach (var eventType in eventTypes)
-        {
-            if (DidExecutionOccur(eventType))
-            {
-                didExecutionOccur = true;
-            }
-        }
-
-        return new ExecutionResult(new EventCounts(eventTypes), -1L, -1, -1, null, null, didExecutionOccur, false, null);
-    }
-
-    public ExecutionResult SetExecutionOccurred()
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            true,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetExecutionLatency(int executionLatency)
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            executionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetException(Exception e)
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            e,
-            ExecutionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetExecutionException(Exception executionException)
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            executionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetInvocationStartTime(long inStartTimestamp)
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            inStartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetExecutedInThread()
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            true,
-            CollapserKey);
-    }
-
-    public ExecutionResult SetNotExecutedInThread()
-    {
-        return new ExecutionResult(
-            Eventcounts,
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            false,
-            CollapserKey);
-    }
-
-    public ExecutionResult MarkCollapsed(IHystrixCollapserKey collapserKey, int sizeOfBatch)
-    {
-        return new ExecutionResult(
-            Eventcounts.Plus(HystrixEventType.Collapsed, sizeOfBatch),
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            collapserKey);
-    }
-
-    public ExecutionResult MarkUserThreadCompletion(long userThreadLatency)
-    {
-        if (StartTimestamp > 0 && !IsResponseRejected)
-        {
-            /* execution time (must occur before terminal state otherwise a race condition can occur if requested by client) */
-            return new ExecutionResult(
-                Eventcounts,
-                StartTimestamp,
-                ExecutionLatency,
-                (int)userThreadLatency,
-                Exception,
-                ExecutionException,
-                ExecutionOccurred,
-                IsExecutedInThread,
-                CollapserKey);
-        }
-        else
-        {
-            return this;
-        }
-    }
-
-    public ExecutionResult AddEvent(HystrixEventType eventType)
-    {
-        return new ExecutionResult(
-            Eventcounts.Plus(eventType),
-            StartTimestamp,
-            ExecutionLatency,
-            UserThreadLatency,
-            Exception,
-            ExecutionException,
-            ExecutionOccurred,
-            IsExecutedInThread,
-            CollapserKey);
-    }
-
-    public ExecutionResult AddEvent(int executionLatency, HystrixEventType eventType)
-    {
-        if (StartTimestamp >= 0 && !IsResponseRejected)
-        {
-            return new ExecutionResult(
-                Eventcounts.Plus(eventType),
-                StartTimestamp,
-                executionLatency,
-                UserThreadLatency,
-                Exception,
-                ExecutionException,
-                ExecutionOccurred,
-                IsExecutedInThread,
-                CollapserKey);
-        }
-        else
-        {
-            return AddEvent(eventType);
-        }
-    }
-
-    public EventCounts Eventcounts { get; }
-
-    public long StartTimestamp { get; }
-
-    /// <summary>
-    /// Gets amount of time spent in run() method.
-    /// </summary>
-    public int ExecutionLatency { get; }
-
-    /// <summary>
-    /// Gets time elapsed between caller thread submitting request and response being visible to it.
-    /// </summary>
-    public int UserThreadLatency { get; }
-
-    public long CommandRunStartTimeInNanoseconds => StartTimestamp * 1000 * 1000;
-
-    public Exception Exception { get; }
-
-    public Exception ExecutionException { get; }
-
-    public IHystrixCollapserKey CollapserKey { get; }
-
-    public bool IsResponseSemaphoreRejected => Eventcounts.Contains(HystrixEventType.SemaphoreRejected);
-
-    public bool IsResponseThreadPoolRejected => Eventcounts.Contains(HystrixEventType.ThreadPoolRejected);
-
-    public bool IsResponseRejected => IsResponseThreadPoolRejected || IsResponseSemaphoreRejected;
-
-    public List<HystrixEventType> OrderedList
-    {
-        get
-        {
-            var eventList = new List<HystrixEventType>();
-            foreach (var eventType in AllEventTypes)
-            {
-                if (Eventcounts.Contains(eventType))
-                {
-                    eventList.Add(eventType);
-                }
-            }
-
-            return eventList;
-        }
-    }
-
-    public bool IsExecutedInThread { get; }
-
-    public bool ExecutionOccurred { get; }
-
-    public bool ContainsTerminalEvent => Eventcounts.ContainsAnyOf(TerminalEvents);
-
-    public override string ToString()
-    {
-        return
-            $"ExecutionResult{{eventCounts={Eventcounts}, failedExecutionException={Exception}, executionException={ExecutionException}, startTimestamp={StartTimestamp}, executionLatency={ExecutionLatency}, userThreadLatency={UserThreadLatency}, executionOccurred={ExecutionOccurred}, isExecutedInThread={IsExecutedInThread}, collapserKey={CollapserKey}}}";
-    }
-
-    private static bool DidExecutionOccur(HystrixEventType eventType)
-    {
-        return eventType switch
-        {
-            HystrixEventType.Success => true,
-            HystrixEventType.Failure => true,
-            HystrixEventType.BadRequest => true,
-            HystrixEventType.Timeout => true,
-            HystrixEventType.Cancelled => true,
-            _ => false,
-        };
     }
 }

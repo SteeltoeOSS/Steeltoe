@@ -7,10 +7,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [AttributeUsage(AttributeTargets.Method)]
 public class RabbitHandlerAttribute : Attribute
 {
+    public bool IsDefault { get; set; }
+
     public RabbitHandlerAttribute(bool isDefault = false)
     {
         IsDefault = isDefault;
     }
-
-    public bool IsDefault { get; set; }
 }

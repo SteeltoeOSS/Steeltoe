@@ -27,7 +27,10 @@ public class InetOptions
             return new List<string>();
         }
 
-        return IgnoredInterfaces.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        return IgnoredInterfaces.Split(new[]
+        {
+            ','
+        }, StringSplitOptions.RemoveEmptyEntries);
     }
 
     internal IEnumerable<string> GetPreferredNetworks()
@@ -37,6 +40,9 @@ public class InetOptions
             return new List<string>();
         }
 
-        return PreferredNetworks.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+        return PreferredNetworks.Split(new[]
+        {
+            ','
+        }, StringSplitOptions.RemoveEmptyEntries);
     }
 }

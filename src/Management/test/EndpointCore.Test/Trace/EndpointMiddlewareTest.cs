@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -11,21 +12,20 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using System.Net;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Trace.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new ()
+    private static readonly Dictionary<string, string> AppSettings = new()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
         ["management:endpoints:enabled"] = "true",
-        ["management:endpoints:trace:enabled"] = "true",
+        ["management:endpoints:trace:enabled"] = "true"
     };
 
     [Fact]
@@ -38,11 +38,11 @@ public class EndpointMiddlewareTest : BaseTest
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
         var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
-        var context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/httptrace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
-        var json = await rdr.ReadToEndAsync();
+        string json = await rdr.ReadToEndAsync();
         Assert.Equal("[]", json);
     }
 
@@ -56,20 +56,18 @@ public class EndpointMiddlewareTest : BaseTest
         var obs = new TraceDiagnosticObserver(opts);
         var ep = new TestTraceEndpoint(opts, obs);
         var middle = new TraceEndpointMiddleware(null, ep, managementOptions);
-        var context = CreateRequest("GET", "/cloudfoundryapplication/trace");
+        HttpContext context = CreateRequest("GET", "/cloudfoundryapplication/trace");
         await middle.HandleTraceRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
-        var json = await rdr.ReadToEndAsync();
+        string json = await rdr.ReadToEndAsync();
         Assert.Equal("[]", json);
     }
 
     [Fact]
     public async Task TraceActuator_ReturnsExpectedData()
     {
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webHostContext.Configuration);
@@ -77,10 +75,10 @@ public class EndpointMiddlewareTest : BaseTest
             });
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var result = await client.GetAsync("http://localhost/cloudfoundryapplication/httptrace");
+        HttpClient client = server.CreateClient();
+        HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/httptrace");
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var json = await result.Content.ReadAsStringAsync();
+        string json = await result.Content.ReadAsStringAsync();
         Assert.NotNull(json);
     }
 
@@ -110,6 +108,7 @@ public class EndpointMiddlewareTest : BaseTest
         {
             TraceIdentifier = Guid.NewGuid().ToString()
         };
+
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
         context.Request.Path = new PathString(path);

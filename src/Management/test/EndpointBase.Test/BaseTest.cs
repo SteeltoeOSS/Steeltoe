@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
@@ -11,8 +13,6 @@ using Steeltoe.Management.Endpoint.Metrics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Exporters;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
@@ -40,9 +40,7 @@ public abstract class BaseTest : IDisposable
 
     public string Serialize<T>(T value)
     {
-        return JsonSerializer.Serialize(
-            value,
-            GetSerializerOptions());
+        return JsonSerializer.Serialize(value, GetSerializerOptions());
     }
 
     public JsonSerializerOptions GetSerializerOptions()
@@ -52,16 +50,19 @@ public abstract class BaseTest : IDisposable
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
+
         options.Converters.Add(new HealthConverter());
         options.Converters.Add(new MetricsResponseConverter());
         return options;
     }
 
-    public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter, string name = null, string version = null)
+    public MeterProvider GetTestMetrics(IViewRegistry viewRegistry, SteeltoeExporter steeltoeExporter, SteeltoePrometheusExporter prometheusExporter,
+        string name = null, string version = null)
     {
-        var builder = Sdk.CreateMeterProviderBuilder()
+        MeterProviderBuilder builder = Sdk.CreateMeterProviderBuilder()
             .AddMeter(name ?? OpenTelemetryMetrics.InstrumentationName, version ?? OpenTelemetryMetrics.InstrumentationVersion)
             .AddRegisteredViews(viewRegistry);
+
         if (steeltoeExporter != null)
         {
             builder.AddSteeltoeExporter(steeltoeExporter);

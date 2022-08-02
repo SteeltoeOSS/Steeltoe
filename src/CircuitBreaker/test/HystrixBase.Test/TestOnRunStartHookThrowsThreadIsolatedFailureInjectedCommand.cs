@@ -11,8 +11,10 @@ internal sealed class TestOnRunStartHookThrowsThreadIsolatedFailureInjectedComma
 {
     private readonly AtomicBoolean _executionAttempted;
 
-    public TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand(ExecutionIsolationStrategy isolationStrategy, AtomicBoolean executionAttempted, HystrixCommandExecutionHook failureInjectionHook)
-        : base(TestPropsBuilder().SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), isolationStrategy)), failureInjectionHook)
+    public TestOnRunStartHookThrowsThreadIsolatedFailureInjectedCommand(ExecutionIsolationStrategy isolationStrategy, AtomicBoolean executionAttempted,
+        HystrixCommandExecutionHook failureInjectionHook)
+        : base(TestPropsBuilder().SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), isolationStrategy)),
+            failureInjectionHook)
     {
         _executionAttempted = executionAttempted;
     }

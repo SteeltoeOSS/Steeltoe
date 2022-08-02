@@ -66,6 +66,7 @@ public class ExpressionException : Exception
             output.Append("Expression [");
             output.Append(ExpressionString);
             output.Append(']');
+
             if (Position >= 0)
             {
                 output.Append(" @");
@@ -76,9 +77,7 @@ public class ExpressionException : Exception
             output.Append(SimpleMessage);
             return output.ToString();
         }
-        else
-        {
-            return SimpleMessage;
-        }
+
+        return SimpleMessage;
     }
 }

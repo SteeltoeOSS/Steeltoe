@@ -25,7 +25,9 @@ public class KubernetesDiscoveryOptions
 
     /// <summary>
     /// Gets or sets a value representing the namespace the service is being deployed to.
-    /// <para>If AllNamespaces = false, will only discover services in this namespace. </para>
+    /// <para>
+    /// If AllNamespaces = false, will only discover services in this namespace.
+    /// </para>
     /// If AllNamespaces = true, this + ServiceName is used to identify the local service instance.
     /// </summary>
     public string Namespace { get; set; } = "default";
@@ -33,7 +35,11 @@ public class KubernetesDiscoveryOptions
     /// <summary>
     /// Gets or sets a list of port numbers that are considered secure and use HTTPS.
     /// </summary>
-    public List<int> KnownSecurePorts { get; set; } = new () { 443, 8443 };
+    public List<int> KnownSecurePorts { get; set; } = new()
+    {
+        443,
+        8443
+    };
 
     /// <summary>
     /// Gets or sets a list of labels to filter on when fetching services from the Kubernetes API.
@@ -48,12 +54,14 @@ public class KubernetesDiscoveryOptions
     /// <summary>
     /// Gets or sets additional service data.
     /// </summary>
-    public Metadata Metadata { get; set; } = new ();
+    public Metadata Metadata { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the time in seconds that service instance cache records should remain active.
     /// </summary>
-    /// <remarks>configuration property: eureka:client:cacheTTL.</remarks>
+    /// <remarks>
+    /// configuration property: eureka:client:cacheTTL.
+    /// </remarks>
     public int CacheTtl { get; set; } = 15;
 
     public override string ToString()

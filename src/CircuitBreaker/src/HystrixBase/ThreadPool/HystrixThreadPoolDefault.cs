@@ -15,10 +15,27 @@ public class HystrixThreadPoolDefault : IHystrixThreadPool
     private readonly HystrixThreadPoolMetrics _metrics;
     private readonly int _queueSize;
 
+    public bool IsQueueSpaceAvailable
+    {
+        get
+        {
+            if (_queueSize <= 0)
+            {
+                // we don't have a queue so we won't look for space but instead
+                // let the thread-pool reject or not
+                return true;
+            }
+
+            return _taskScheduler.IsQueueSpaceAvailable;
+        }
+    }
+
+    public bool IsShutdown => _taskScheduler.IsShutdown;
+
     public HystrixThreadPoolDefault(IHystrixThreadPoolKey threadPoolKey, IHystrixThreadPoolOptions propertiesDefaults)
     {
-        var properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
-        var concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
+        IHystrixThreadPoolOptions properties = HystrixOptionsFactory.GetThreadPoolOptions(threadPoolKey, propertiesDefaults);
+        HystrixConcurrencyStrategy concurrencyStrategy = HystrixPlugins.ConcurrencyStrategy;
         _queueSize = properties.MaxQueueSize;
         _metrics = HystrixThreadPoolMetrics.GetInstance(threadPoolKey, concurrencyStrategy.GetTaskScheduler(properties), properties);
         _taskScheduler = _metrics.TaskScheduler;
@@ -64,27 +81,5 @@ public class HystrixThreadPoolDefault : IHystrixThreadPool
         {
             _taskScheduler?.Dispose();
         }
-    }
-
-    public bool IsQueueSpaceAvailable
-    {
-        get
-        {
-            if (_queueSize <= 0)
-            {
-                // we don't have a queue so we won't look for space but instead
-                // let the thread-pool reject or not
-                return true;
-            }
-            else
-            {
-                return _taskScheduler.IsQueueSpaceAvailable;
-            }
-        }
-    }
-
-    public bool IsShutdown
-    {
-        get { return _taskScheduler.IsShutdown; }
     }
 }

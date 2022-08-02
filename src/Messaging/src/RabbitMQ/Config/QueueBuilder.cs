@@ -8,41 +8,16 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class QueueBuilder : AbstractBuilder
 {
-    public class OverFlow
-    {
-        public static OverFlow DropHead { get; } = new ("drop-head");
-
-        public static OverFlow RejectPublish { get; } = new ("reject-publish");
-
-        public string Value { get; }
-
-        private OverFlow(string value)
-        {
-            Value = value;
-        }
-    }
-
-    public class MasterLocator
-    {
-        public static MasterLocator MinMasters { get; } = new ("min-masters");
-
-        public static MasterLocator ClientLocal { get; } = new ("client-local");
-
-        public static MasterLocator Random { get; } = new ("random");
-
-        public string Value { get; }
-
-        private MasterLocator(string value)
-        {
-            Value = value;
-        }
-    }
-
     private static readonly INamingStrategy NamingStrategy = Base64UrlNamingStrategy.Default;
     private readonly string _name;
     private bool _durable;
     private bool _exclusive;
     private bool _autoDelete;
+
+    private QueueBuilder(string name)
+    {
+        _name = name;
+    }
 
     public static QueueBuilder Durable()
     {
@@ -67,11 +42,6 @@ public class QueueBuilder : AbstractBuilder
         return new QueueBuilder(name);
     }
 
-    private QueueBuilder(string name)
-    {
-        _name = name;
-    }
-
     public QueueBuilder Exclusive()
     {
         _exclusive = true;
@@ -92,8 +62,9 @@ public class QueueBuilder : AbstractBuilder
 
     public QueueBuilder WithArguments(Dictionary<string, object> arguments)
     {
-        var args = GetOrCreateArguments();
-        foreach (var arg in arguments)
+        Dictionary<string, object> args = GetOrCreateArguments();
+
+        foreach (KeyValuePair<string, object> arg in arguments)
         {
             args[arg.Key] = arg.Value;
         }
@@ -169,5 +140,35 @@ public class QueueBuilder : AbstractBuilder
     public IQueue Build()
     {
         return new Queue(_name, _durable, _exclusive, _autoDelete, Arguments);
+    }
+
+    public class OverFlow
+    {
+        public static OverFlow DropHead { get; } = new("drop-head");
+
+        public static OverFlow RejectPublish { get; } = new("reject-publish");
+
+        public string Value { get; }
+
+        private OverFlow(string value)
+        {
+            Value = value;
+        }
+    }
+
+    public class MasterLocator
+    {
+        public static MasterLocator MinMasters { get; } = new("min-masters");
+
+        public static MasterLocator ClientLocal { get; } = new("client-local");
+
+        public static MasterLocator Random { get; } = new("random");
+
+        public string Value { get; }
+
+        private MasterLocator(string value)
+        {
+            Value = value;
+        }
     }
 }

@@ -25,21 +25,19 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
         HystrixPlugins.RegisterMetricsPublisher(publisher);
         var factory = new HystrixMetricsPublisherFactory();
         var threads = new List<Task>();
-        for (var i = 0; i < 20; i++)
+
+        for (int i = 0; i < 20; i++)
         {
-            threads.Add(new Task(
-                () =>
-                {
-                    factory.GetPublisherForCommand(TestCommandKey.TestA, null, null, null, null);
-                    factory.GetPublisherForCommand(TestCommandKey.TestB, null, null, null, null);
-                    factory.GetPublisherForThreadPool(TestThreadPoolKey.TestA, null, null);
-                },
-                CancellationToken.None,
-                TaskCreationOptions.LongRunning));
+            threads.Add(new Task(() =>
+            {
+                factory.GetPublisherForCommand(TestCommandKey.TestA, null, null, null, null);
+                factory.GetPublisherForCommand(TestCommandKey.TestB, null, null, null, null);
+                factory.GetPublisherForThreadPool(TestThreadPoolKey.TestA, null, null);
+            }, CancellationToken.None, TaskCreationOptions.LongRunning));
         }
 
         // start them
-        foreach (var t in threads)
+        foreach (Task t in threads)
         {
             t.Start();
         }
@@ -61,13 +59,13 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
         // precondition: HystrixMetricsPublisherFactory class is not loaded. Calling HystrixPlugins.reset() here should be good enough to run this with other tests.
 
         // set first custom publisher
-        var key = HystrixCommandKeyDefault.AsKey("key");
+        IHystrixCommandKey key = HystrixCommandKeyDefault.AsKey("key");
         IHystrixMetricsPublisherCommand firstCommand = new HystrixMetricsPublisherCommandDefault(key, null, null, null, null);
         HystrixMetricsPublisher firstPublisher = new CustomPublisher(firstCommand);
         HystrixPlugins.RegisterMetricsPublisher(firstPublisher);
 
         // ensure that first custom publisher is used
-        var cmd = HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(key, null, null, null, null);
+        IHystrixMetricsPublisherCommand cmd = HystrixMetricsPublisherFactory.CreateOrRetrievePublisherForCommand(key, null, null, null, null);
         Assert.True(firstCommand == cmd);
 
         // reset, then change to second custom publisher
@@ -114,15 +112,17 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestHystrixMetricsPublisher : HystrixMetricsPublisher
     {
-        public AtomicInteger CommandCounter = new ();
-        public AtomicInteger ThreadCounter = new ();
+        public readonly AtomicInteger CommandCounter = new();
+        public readonly AtomicInteger ThreadCounter = new();
 
-        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey,
+            HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
             return new MyHystrixMetricsPublisherCommand(CommandCounter);
         }
 
-        public override IHystrixMetricsPublisherThreadPool GetMetricsPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
+        public override IHystrixMetricsPublisherThreadPool GetMetricsPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey,
+            HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
         {
             return new MyHystrixMetricsPublisherThreadPool(ThreadCounter);
         }
@@ -130,8 +130,8 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestCommandKey : HystrixCommandKeyDefault
     {
-        public static TestCommandKey TestA = new ("TEST_A");
-        public static TestCommandKey TestB = new ("TEST_B");
+        public static readonly TestCommandKey TestA = new("TEST_A");
+        public static readonly TestCommandKey TestB = new("TEST_B");
 
         public TestCommandKey(string name)
             : base(name)
@@ -141,7 +141,7 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
 
     private sealed class TestThreadPoolKey : HystrixThreadPoolKeyDefault
     {
-        public static TestThreadPoolKey TestA = new ("TEST_A");
+        public static readonly TestThreadPoolKey TestA = new("TEST_A");
 
         public TestThreadPoolKey(string name)
             : base(name)
@@ -158,7 +158,8 @@ public class HystrixMetricsPublisherFactoryTest : HystrixTestBase
             _commandToReturn = commandToReturn;
         }
 
-        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+        public override IHystrixMetricsPublisherCommand GetMetricsPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandGroupKey,
+            HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
         {
             return _commandToReturn;
         }

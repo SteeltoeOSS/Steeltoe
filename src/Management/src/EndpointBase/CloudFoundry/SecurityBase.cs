@@ -2,18 +2,22 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Security;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Common.Http;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text.Json;
 
 namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class SecurityBase
 {
-    public readonly int DefaultGetPermissionsTimeout = 5000;   // Milliseconds
+    private readonly ICloudFoundryOptions _options;
+    private readonly IManagementOptions _managementOptions;
+    private readonly ILogger _logger;
+    public readonly int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public readonly string ApplicationIdMissingMessage = "Application id is not available";
     public readonly string EndpointNotConfiguredMessage = "Endpoint is not available";
     public readonly string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
@@ -23,9 +27,6 @@ public class SecurityBase
     public readonly string AuthorizationHeader = "Authorization";
     public readonly string Bearer = "bearer";
     public readonly string ReadSensitiveData = "read_sensitive_data";
-    private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _managementOptions;
-    private readonly ILogger _logger;
     private HttpClient _httpClient;
 
     public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)
@@ -38,7 +39,7 @@ public class SecurityBase
 
     public bool IsCloudFoundryRequest(string requestPath)
     {
-        var contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
+        string contextPath = _managementOptions == null ? _options.Path : _managementOptions.Path;
         return requestPath.StartsWith(contextPath, StringComparison.InvariantCultureIgnoreCase);
     }
 
@@ -63,26 +64,24 @@ public class SecurityBase
             return new SecurityResult(HttpStatusCode.Unauthorized, AuthorizationHeaderInvalid);
         }
 
-        var checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
+        string checkPermissionsUri = $"{_options.CloudFoundryApi}/v2/apps/{_options.ApplicationId}/permissions";
         var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
         var auth = new AuthenticationHeaderValue("bearer", token);
         request.Headers.Authorization = auth;
 
         // If certificate validation is disabled, inject a callback to handle properly
-        HttpClientHelper.ConfigureCertificateValidation(
-            _options.ValidateCertificates,
-            out var prevProtocols,
-            out var prevValidator);
+        HttpClientHelper.ConfigureCertificateValidation(_options.ValidateCertificates, out SecurityProtocolType prevProtocols,
+            out RemoteCertificateValidationCallback prevValidator);
+
         try
         {
             _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
-            using var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            using HttpResponseMessage response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                _logger?.LogInformation(
-                    "Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}",
-                    response.StatusCode,
+                _logger?.LogInformation("Cloud Foundry returned status: {HttpStatus} while obtaining permissions from: {PermissionsUri}", response.StatusCode,
                     checkPermissionsUri);
 
                 return response.StatusCode == HttpStatusCode.Forbidden
@@ -94,7 +93,9 @@ public class SecurityBase
         }
         catch (Exception e)
         {
-            _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e, checkPermissionsUri);
+            _logger?.LogError("Cloud Foundry returned exception: {SecurityException} while obtaining permissions from: {PermissionsUri}", e,
+                checkPermissionsUri);
+
             return new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
         }
         finally
@@ -105,7 +106,7 @@ public class SecurityBase
 
     public async Task<Permissions> GetPermissions(HttpResponseMessage response)
     {
-        var json = string.Empty;
+        string json = string.Empty;
         var permissions = Permissions.None;
 
         try
@@ -116,9 +117,9 @@ public class SecurityBase
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
-            if (result.TryGetValue(ReadSensitiveData, out var perm))
+            if (result.TryGetValue(ReadSensitiveData, out JsonElement perm))
             {
-                var boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
+                bool boolResult = JsonSerializer.Deserialize<bool>(perm.GetRawText());
                 permissions = boolResult ? Permissions.Full : Permissions.Restricted;
             }
         }

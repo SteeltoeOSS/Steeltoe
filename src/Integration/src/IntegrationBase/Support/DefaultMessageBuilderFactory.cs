@@ -12,7 +12,7 @@ public class DefaultMessageBuilderFactory : IMessageBuilderFactory
 
     public void AddReadOnlyHeaders(params string[] readOnlyHeaders)
     {
-        foreach (var h in readOnlyHeaders)
+        foreach (string h in readOnlyHeaders)
         {
             ReadOnlyHeaders.Add(h);
         }
@@ -20,25 +20,21 @@ public class DefaultMessageBuilderFactory : IMessageBuilderFactory
 
     public IMessageBuilder<T> FromMessage<T>(IMessage<T> message)
     {
-        return IntegrationMessageBuilder<T>.FromMessage(message)
-            .ReadOnlyHeaders(ReadOnlyHeaders);
+        return IntegrationMessageBuilder<T>.FromMessage(message).ReadOnlyHeaders(ReadOnlyHeaders);
     }
 
     public IMessageBuilder FromMessage(IMessage message)
     {
-        return IntegrationMessageBuilder.FromMessage(message)
-            .ReadOnlyHeaders(ReadOnlyHeaders);
+        return IntegrationMessageBuilder.FromMessage(message).ReadOnlyHeaders(ReadOnlyHeaders);
     }
 
     public IMessageBuilder<T> WithPayload<T>(T payload)
     {
-        return IntegrationMessageBuilder<T>.WithPayload(payload)
-            .ReadOnlyHeaders(ReadOnlyHeaders);
+        return IntegrationMessageBuilder<T>.WithPayload(payload).ReadOnlyHeaders(ReadOnlyHeaders);
     }
 
     public IMessageBuilder WithPayload(object payload)
     {
-        return IntegrationMessageBuilder.WithPayload(payload)
-            .ReadOnlyHeaders(ReadOnlyHeaders);
+        return IntegrationMessageBuilder.WithPayload(payload).ReadOnlyHeaders(ReadOnlyHeaders);
     }
 }

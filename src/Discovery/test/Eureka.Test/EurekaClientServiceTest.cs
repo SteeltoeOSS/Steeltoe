@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -16,11 +17,12 @@ public class EurekaClientServiceTest
         {
             { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        var options = EurekaClientService.ConfigureClientOptions(config);
+        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(config);
         Assert.Equal("https://foo.bar:8761/eureka/", options.EurekaServerServiceUrls);
         Assert.True(options.ShouldFetchRegistry);
         Assert.False(options.ShouldRegisterWithEureka);
@@ -33,12 +35,13 @@ public class EurekaClientServiceTest
         {
             { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        var options = EurekaClientService.ConfigureClientOptions(config);
-        var lookupClient = EurekaClientService.GetLookupClient(options, null);
+        EurekaClientOptions options = EurekaClientService.ConfigureClientOptions(config);
+        EurekaClientService.LookupClient lookupClient = EurekaClientService.GetLookupClient(options, null);
         Assert.NotNull(lookupClient);
         Assert.NotNull(lookupClient.ClientConfig);
         Assert.Equal("https://foo.bar:8761/eureka/", lookupClient.ClientConfig.EurekaServerServiceUrls);
@@ -56,10 +59,11 @@ public class EurekaClientServiceTest
         {
             { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        var config = builder.Build();
-        var result = EurekaClientService.GetInstances(config, "testService");
+        IConfigurationRoot config = builder.Build();
+        IList<IServiceInstance> result = EurekaClientService.GetInstances(config, "testService");
         Assert.NotNull(result);
         Assert.Empty(result);
     }
@@ -71,10 +75,11 @@ public class EurekaClientServiceTest
         {
             { "eureka:client:serviceUrl", "https://foo.bar:8761/eureka/" }
         };
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        var config = builder.Build();
-        var result = EurekaClientService.GetServices(config);
+        IConfigurationRoot config = builder.Build();
+        IList<string> result = EurekaClientService.GetServices(config);
         Assert.NotNull(result);
         Assert.Empty(result);
     }

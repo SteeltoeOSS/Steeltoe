@@ -49,7 +49,12 @@ public class RabbitProducerOptions : RabbitCommonOptions
         BatchTimeout ??= defaultOptions?.BatchTimeout ?? 5000;
         Transacted ??= defaultOptions?.Transacted ?? false;
         DeliveryMode ??= defaultOptions?.DeliveryMode ?? MessageDeliveryMode.Persistent;
-        HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string> { "*" };
+
+        HeaderPatterns ??= defaultOptions?.HeaderPatterns ?? new List<string>
+        {
+            "*"
+        };
+
         DelayExpression ??= defaultOptions?.DelayExpression;
         RoutingKeyExpression ??= defaultOptions?.RoutingKeyExpression;
         ConfirmAckChannel ??= defaultOptions?.ConfirmAckChannel;

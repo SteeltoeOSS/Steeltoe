@@ -17,7 +17,7 @@ public abstract class AbstractTest
 {
     protected virtual ServiceCollection CreateStreamsContainerWithDefaultBindings(List<string> searchDirectories, params string[] properties)
     {
-        var container = CreateStreamsContainer(searchDirectories, properties);
+        ServiceCollection container = CreateStreamsContainer(searchDirectories, properties);
         container.AddDefaultBindings();
         return container;
     }
@@ -34,9 +34,10 @@ public abstract class AbstractTest
 
     protected virtual ServiceCollection CreateStreamsContainer(List<string> searchDirectories, params string[] properties)
     {
-        var configuration = CreateTestConfiguration(properties);
+        IConfiguration configuration = CreateTestConfiguration(properties);
         var container = new ServiceCollection();
         container.AddOptions();
+
         container.AddLogging(b =>
         {
             b.AddDebug();
@@ -49,6 +50,7 @@ public abstract class AbstractTest
         container.AddCoreServices();
         container.AddIntegrationServices();
         container.AddStreamCoreServices(configuration);
+
         if (searchDirectories == null || searchDirectories.Count == 0)
         {
             container.AddBinderServices(configuration);
@@ -65,35 +67,35 @@ public abstract class AbstractTest
 
     protected virtual ServiceCollection CreateStreamsContainerWithBinding(List<string> searchDirectories, Type bindingType, params string[] properties)
     {
-        var collection = CreateStreamsContainer(searchDirectories, properties);
+        ServiceCollection collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddStreamBindings(bindingType);
         return collection;
     }
 
     protected virtual ServiceCollection CreateStreamsContainerWithIProcessorBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(searchDirectories, properties);
+        ServiceCollection collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddProcessorStreamBinding();
         return collection;
     }
 
     protected virtual ServiceCollection CreateStreamsContainerWithISinkBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(searchDirectories, properties);
+        ServiceCollection collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddSinkStreamBinding();
         return collection;
     }
 
     protected virtual ServiceCollection CreateStreamsContainerWithISourceBinding(List<string> searchDirectories, params string[] properties)
     {
-        var collection = CreateStreamsContainer(searchDirectories, properties);
+        ServiceCollection collection = CreateStreamsContainer(searchDirectories, properties);
         collection.AddSourceStreamBinding();
         return collection;
     }
 
     protected virtual IConfiguration CreateTestConfiguration(params string[] properties)
     {
-        var keyValuePairs = ParseProperties(properties);
+        List<KeyValuePair<string, string>> keyValuePairs = ParseProperties(properties);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(keyValuePairs);
         return configurationBuilder.Build();
@@ -103,11 +105,11 @@ public abstract class AbstractTest
     {
         var results = new List<string>();
 
-        var currentDirectory = Environment.CurrentDirectory;
+        string currentDirectory = Environment.CurrentDirectory;
 
-        foreach (var name in names)
+        foreach (string name in names)
         {
-            var dir = currentDirectory.Replace("StreamBase.Test", name);
+            string dir = currentDirectory.Replace("StreamBase.Test", name);
             results.Add(dir);
         }
 
@@ -117,14 +119,15 @@ public abstract class AbstractTest
     protected virtual List<KeyValuePair<string, string>> ParseProperties(string[] properties)
     {
         var result = new List<KeyValuePair<string, string>>();
+
         if (properties == null)
         {
             return result;
         }
 
-        foreach (var prop in properties)
+        foreach (string prop in properties)
         {
-            var split = prop.Split("=");
+            string[] split = prop.Split("=");
             split[0] = split[0].Replace('.', ':');
             result.Add(new KeyValuePair<string, string>(split[0], split[1]));
         }

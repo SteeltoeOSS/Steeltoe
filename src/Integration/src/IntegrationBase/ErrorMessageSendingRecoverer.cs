@@ -38,10 +38,10 @@ public class ErrorMessageSendingRecoverer : ErrorMessagePublisher, IRecoveryCall
     protected override Exception PayloadWhenNull(IAttributeAccessor context)
     {
         var message = (IMessage)context.GetAttribute(ErrorMessageUtils.FailedMessageContextKey);
-        var description =
+
+        string description =
             $"No retry exception available; this can occur, for example, if the RetryPolicy allowed zero attempts to execute the handler; RetryContext: {context}";
-        return message == null
-            ? new RetryExceptionNotAvailableException(description)
-            : new RetryExceptionNotAvailableException(message, description);
+
+        return message == null ? new RetryExceptionNotAvailableException(description) : new RetryExceptionNotAvailableException(message, description);
     }
 }

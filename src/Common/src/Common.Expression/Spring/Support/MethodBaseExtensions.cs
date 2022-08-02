@@ -15,21 +15,23 @@ public static class MethodBaseExtensions
             return false;
         }
 
-        var parameters = method.GetParameters();
+        ParameterInfo[] parameters = method.GetParameters();
+
         if (parameters.Length == 0)
         {
             return false;
         }
 
-        var lastParam = parameters[parameters.Length - 1];
+        ParameterInfo lastParam = parameters[parameters.Length - 1];
         return lastParam.GetCustomAttribute<ParamArrayAttribute>() != null;
     }
 
     public static Type[] GetParameterTypes(this MethodBase method)
     {
-        var param = method.GetParameters();
+        ParameterInfo[] param = method.GetParameters();
         var result = new Type[param.Length];
-        for (var i = 0; i < param.Length; i++)
+
+        for (int i = 0; i < param.Length; i++)
         {
             result[i] = param[i].ParameterType;
         }

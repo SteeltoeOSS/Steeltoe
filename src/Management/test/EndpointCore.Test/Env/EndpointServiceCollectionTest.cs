@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Steeltoe.Common;
 using Steeltoe.Management.Endpoint.Test;
 using Xunit;
@@ -19,9 +20,9 @@ public class EndpointServiceCollectionTest : BaseTest
         IServiceCollection services2 = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddEnvActuator());
         Assert.Contains(nameof(services), ex.Message);
-        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddEnvActuator(config));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services2.AddEnvActuator());
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -29,7 +30,7 @@ public class EndpointServiceCollectionTest : BaseTest
     public void AddEnvActuator_AddsCorrectServices()
     {
         var services = new ServiceCollection();
-        var host = HostingHelpers.GetHostingEnvironment();
+        IHostEnvironment host = HostingHelpers.GetHostingEnvironment();
         services.AddSingleton(host);
 
         var appSettings = new Dictionary<string, string>
@@ -37,14 +38,15 @@ public class EndpointServiceCollectionTest : BaseTest
             ["management:endpoints:enabled"] = "false",
             ["management:endpoints:path"] = "/cloudfoundryapplication"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         services.AddSingleton<IConfiguration>(config);
 
         services.AddEnvActuator(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var options = serviceProvider.GetService<IEnvOptions>();
         Assert.NotNull(options);
         var ep = serviceProvider.GetService<EnvEndpoint>();

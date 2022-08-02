@@ -2,8 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Configuration;
 using System.ComponentModel;
+using System.Reflection;
+using Microsoft.Extensions.Configuration;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -19,33 +20,11 @@ public class RabbitBindingsOptionsTest
         _output = output;
     }
 
-    public static class AssertOptionEquals
-    {
-        public class OptionEqualsException : EqualException
-        {
-            public OptionEqualsException(string expected, string actual, string optionName)
-                : base(expected, actual)
-            {
-                UserMessage = optionName;
-            }
-
-            public override string Message => $"{UserMessage} {base.Message}";
-        }
-
-        public static void Equal(string expected, string actual, string optionName)
-        {
-            if (!expected.Equals(actual, StringComparison.OrdinalIgnoreCase))
-            {
-                throw new OptionEqualsException(expected, actual, optionName);
-            }
-        }
-    }
-
     [Fact]
     public void InitializeAll_FromDefaultValues()
     {
         var builder = new ConfigurationBuilder();
-        var config = builder.Build().GetSection("spring:cloud:stream:rabbit");
+        IConfigurationSection config = builder.Build().GetSection("spring:cloud:stream:rabbit");
         var options = new RabbitBindingsOptions(config);
         options.PostProcess();
         Assert.NotNull(options.Default);
@@ -62,6 +41,7 @@ public class RabbitBindingsOptionsTest
     public void InitializeAll_FromConfigValues()
     {
         var builder = new ConfigurationBuilder();
+
         var dict = new Dictionary<string, string>
         {
             { "spring:cloud:stream:rabbit:default:consumer:autoBindDlq", "true" },
@@ -192,12 +172,12 @@ public class RabbitBindingsOptionsTest
             { "spring:cloud:stream:rabbit:binder:nodes:0", "nodes0" },
             { "spring:cloud:stream:rabbit:binder:nodes:1", "nodes1" },
             { "spring:cloud:stream:rabbit:binder:compressionLevel", "NoCompression" },
-            { "spring:cloud:stream:rabbit:binder:connectionNamePrefix", "connectionNamePrefix" },
+            { "spring:cloud:stream:rabbit:binder:connectionNamePrefix", "connectionNamePrefix" }
         };
 
         builder.AddInMemoryCollection(dict);
 
-        var config = builder.Build().GetSection(RabbitBindingsOptions.Prefix);
+        IConfigurationSection config = builder.Build().GetSection(RabbitBindingsOptions.Prefix);
         var options = new RabbitBindingsOptions(config);
         options.PostProcess();
         Assert.NotNull(options.Default);
@@ -209,21 +189,23 @@ public class RabbitBindingsOptionsTest
         Assert.True(options.Default.Producer.AutoBindDlq);
         Assert.Equal(10000, options.Default.Producer.DlqMaxLength);
 
-        var inputBinding = options.GetRabbitConsumerOptions("input");
+        RabbitConsumerOptions inputBinding = options.GetRabbitConsumerOptions("input");
         Assert.NotNull(inputBinding);
         Assert.NotSame(options.Default.Consumer, inputBinding);
-        var outputBinding = options.GetRabbitProducerOptions("output");
+        RabbitProducerOptions outputBinding = options.GetRabbitProducerOptions("output");
         Assert.NotNull(outputBinding);
         Assert.NotSame(options.Default.Producer, outputBinding);
 
-        var inputBindingsKey = "bindings:input:consumer";
-        foreach (var tuple in GetOptionsConfigPairs(config, inputBinding, inputBindingsKey))
+        string inputBindingsKey = "bindings:input:consumer";
+
+        foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(config, inputBinding, inputBindingsKey))
         {
             AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{inputBindingsKey}:{tuple.Item1}");
         }
 
-        var outputBindingsKey = "bindings:output:producer";
-        foreach (var tuple in GetOptionsConfigPairs(config, outputBinding, outputBindingsKey))
+        string outputBindingsKey = "bindings:output:producer";
+
+        foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(config, outputBinding, outputBindingsKey))
         {
             AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{outputBindingsKey}:{tuple.Item1}");
         }
@@ -231,14 +213,16 @@ public class RabbitBindingsOptionsTest
 
     private IEnumerable<Tuple<string, string, string>> GetOptionsConfigPairs(IConfigurationSection config, object optionsObject, string inputBindingsKey)
     {
-        var inputBindingSection = config.GetSection(inputBindingsKey);
-        var children = inputBindingSection.GetChildren();
-        foreach (var child in children)
+        IConfigurationSection inputBindingSection = config.GetSection(inputBindingsKey);
+        IEnumerable<IConfigurationSection> children = inputBindingSection.GetChildren();
+
+        foreach (IConfigurationSection child in children)
         {
             _output.WriteLine(child.Key + ":" + child.Value);
-            var pi = optionsObject.GetType().GetProperty(child.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
+            PropertyInfo pi = optionsObject.GetType().GetProperty(child.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 
             object value = null;
+
             if (pi == null)
             {
                 // Check for dictionary Type
@@ -266,7 +250,7 @@ public class RabbitBindingsOptionsTest
 
             if (child.Value == null)
             {
-                foreach (var kvp in GetOptionsConfigPairs(inputBindingSection, value, child.Key))
+                foreach (Tuple<string, string, string> kvp in GetOptionsConfigPairs(inputBindingSection, value, child.Key))
                 {
                     yield return kvp;
                 }
@@ -283,6 +267,28 @@ public class RabbitBindingsOptionsTest
                 }
 
                 yield return new Tuple<string, string, string>($"{inputBindingsKey}:{child.Key}", value?.ToString(), childValue);
+            }
+        }
+    }
+
+    public static class AssertOptionEquals
+    {
+        public static void Equal(string expected, string actual, string optionName)
+        {
+            if (!expected.Equals(actual, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new OptionEqualsException(expected, actual, optionName);
+            }
+        }
+
+        public class OptionEqualsException : EqualException
+        {
+            public override string Message => $"{UserMessage} {base.Message}";
+
+            public OptionEqualsException(string expected, string actual, string optionName)
+                : base(expected, actual)
+            {
+                UserMessage = optionName;
             }
         }
     }

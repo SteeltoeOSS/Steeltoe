@@ -22,18 +22,27 @@ public class EnvironmentDescriptorTest : BaseTest
     [Fact]
     public void JsonSerialization_ReturnsExpected()
     {
-        var profiles = new List<string> { "foobar" };
+        var profiles = new List<string>
+        {
+            "foobar"
+        };
+
         var properties = new Dictionary<string, PropertyValueDescriptor>
         {
             { "key1", new PropertyValueDescriptor("value") },
-            { "key2", new PropertyValueDescriptor(false) },
+            { "key2", new PropertyValueDescriptor(false) }
         };
+
         var propertySourceDescriptors = new List<PropertySourceDescriptor>
         {
-            new ("name", properties)
+            new("name", properties)
         };
+
         var environmentDescriptor = new EnvironmentDescriptor(profiles, propertySourceDescriptors);
-        var result = Serialize(environmentDescriptor);
-        Assert.Equal("{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}]}", result);
+        string result = Serialize(environmentDescriptor);
+
+        Assert.Equal(
+            "{\"activeProfiles\":[\"foobar\"],\"propertySources\":[{\"name\":\"name\",\"properties\":{\"key1\":{\"value\":\"value\"},\"key2\":{\"value\":false}}}]}",
+            result);
     }
 }

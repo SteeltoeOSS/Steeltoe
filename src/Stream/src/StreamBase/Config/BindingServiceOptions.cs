@@ -8,12 +8,45 @@ namespace Steeltoe.Stream.Config;
 
 public class BindingServiceOptions // : IBindingServiceOptions
 {
-    public const string Prefix = "spring:cloud:stream";
-
     private const int InstanceIndexDefault = 0;
     private const int InstanceCountDefault = 1;
     private const int BindingRetryIntervalDefault = 30;
     private const bool OverrideCloudConnectorsDefault = false;
+    public const string Prefix = "spring:cloud:stream";
+
+    public int InstanceIndex { get; set; } = int.MinValue;
+
+    public int InstanceCount { get; set; } = int.MinValue;
+
+    public string DefaultBinder { get; set; }
+
+    public int BindingRetryInterval { get; set; } = int.MinValue;
+
+    public bool? OverrideCloudConnectors { get; set; }
+
+    public List<string> DynamicDestinations { get; set; }
+
+    public Dictionary<string, BinderOptions> Binders { get; set; }
+
+    public Dictionary<string, BindingOptions> Bindings { get; set; }
+
+    public BindingOptions Default { get; set; }
+
+    public BindingServiceOptions()
+    {
+        PostProcess();
+    }
+
+    internal BindingServiceOptions(IConfiguration config)
+    {
+        if (config == null)
+        {
+            throw new ArgumentNullException(nameof(config));
+        }
+
+        config.Bind(this);
+        PostProcess();
+    }
 
     internal void PostProcess()
     {
@@ -43,50 +76,16 @@ public class BindingServiceOptions // : IBindingServiceOptions
             Default.PostProcess("default", null);
         }
 
-        foreach (var binding in Bindings)
+        foreach (KeyValuePair<string, BindingOptions> binding in Bindings)
         {
             binding.Value.PostProcess(binding.Key, Default);
         }
 
-        foreach (var binder in Binders)
+        foreach (KeyValuePair<string, BinderOptions> binder in Binders)
         {
             binder.Value.PostProcess();
         }
     }
-
-    public BindingServiceOptions()
-    {
-        PostProcess();
-    }
-
-    internal BindingServiceOptions(IConfiguration config)
-    {
-        if (config == null)
-        {
-            throw new ArgumentNullException(nameof(config));
-        }
-
-        config.Bind(this);
-        PostProcess();
-    }
-
-    public int InstanceIndex { get; set; } = int.MinValue;
-
-    public int InstanceCount { get; set; } = int.MinValue;
-
-    public string DefaultBinder { get; set; }
-
-    public int BindingRetryInterval { get; set; } = int.MinValue;
-
-    public bool? OverrideCloudConnectors { get; set; }
-
-    public List<string> DynamicDestinations { get; set; }
-
-    public Dictionary<string, BinderOptions> Binders { get; set; }
-
-    public Dictionary<string, BindingOptions> Bindings { get; set; }
-
-    public BindingOptions Default { get; set; }
 
     public string GetBinder(string name)
     {
@@ -103,12 +102,13 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
             ["dynamicDestinations"] = DynamicDestinations
         };
-        foreach (var entry in Bindings)
+
+        foreach (KeyValuePair<string, BindingOptions> entry in Bindings)
         {
             options.Add(entry.Key, entry.Value);
         }
 
-        foreach (var entry in Binders)
+        foreach (KeyValuePair<string, BinderOptions> entry in Binders)
         {
             options.Add(entry.Key, entry.Value);
         }
@@ -119,7 +119,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
     public BindingOptions GetBindingOptions(string name)
     {
         MakeBindingIfNecessary(name);
-        var options = Bindings[name];
+        BindingOptions options = Bindings[name];
         options.Destination ??= name;
 
         return options;
@@ -132,8 +132,9 @@ public class BindingServiceOptions // : IBindingServiceOptions
             throw new ArgumentNullException(nameof(inputBindingName));
         }
 
-        var bindingOptions = GetBindingOptions(inputBindingName);
-        var consumerOptions = bindingOptions.Consumer;
+        BindingOptions bindingOptions = GetBindingOptions(inputBindingName);
+        ConsumerOptions consumerOptions = bindingOptions.Consumer;
+
         if (consumerOptions == null)
         {
             consumerOptions = new ConsumerOptions();
@@ -162,8 +163,9 @@ public class BindingServiceOptions // : IBindingServiceOptions
             throw new ArgumentNullException(nameof(outputBindingName));
         }
 
-        var bindingOptions = GetBindingOptions(outputBindingName);
-        var producerOptions = bindingOptions.Producer;
+        BindingOptions bindingOptions = GetBindingOptions(outputBindingName);
+        ProducerOptions producerOptions = bindingOptions.Producer;
+
         if (producerOptions == null)
         {
             producerOptions = new ProducerOptions();
@@ -202,7 +204,7 @@ public class BindingServiceOptions // : IBindingServiceOptions
 
     internal void BindToDefaults(string binding)
     {
-        var options = Default.Clone(true);
+        BindingOptions options = Default.Clone(true);
         Bindings[binding] = options;
     }
 }

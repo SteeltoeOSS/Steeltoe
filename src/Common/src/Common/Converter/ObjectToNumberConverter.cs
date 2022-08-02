@@ -25,7 +25,7 @@ public class ObjectToNumberConverter : AbstractToNumberConverter
             (typeof(object), typeof(ushort)),
             (typeof(object), typeof(decimal)),
             (typeof(object), typeof(byte)),
-            (typeof(object), typeof(sbyte)),
+            (typeof(object), typeof(sbyte))
         };
     }
 }

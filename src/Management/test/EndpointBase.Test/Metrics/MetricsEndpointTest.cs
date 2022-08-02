@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Metrics;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Metrics;
 using Steeltoe.Management.Endpoint.Test;
@@ -42,12 +43,12 @@ public class MetricsEndpointTest : BaseTest
 
             tc.GetService<MeterProvider>();
             var ep = tc.GetService<IMetricsEndpoint>();
-            var requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
+            Counter<long> requests = OpenTelemetryMetrics.Meter.CreateCounter<long>("http.server.requests");
             requests.Add(1);
-            var memory = OpenTelemetryMetrics.Meter.CreateCounter<double>("gc.memory.used");
+            Counter<double> memory = OpenTelemetryMetrics.Meter.CreateCounter<double>("gc.memory.used");
             memory.Add(25);
 
-            var result = ep.Invoke(null);
+            IMetricsResponse result = ep.Invoke(null);
             Assert.NotNull(result);
             Assert.IsType<MetricsListNamesResponse>(result);
             var resp = result as MetricsListNamesResponse;
@@ -64,9 +65,10 @@ public class MetricsEndpointTest : BaseTest
             {
                 services.AddMetricsActuatorServices(configuration);
             };
+
             tc.GetService<MeterProvider>();
             var ep = tc.GetService<IMetricsEndpoint>();
-            var result = ep.Invoke(null);
+            IMetricsResponse result = ep.Invoke(null);
             Assert.NotNull(result);
 
             Assert.IsType<MetricsListNamesResponse>(result);
@@ -79,24 +81,32 @@ public class MetricsEndpointTest : BaseTest
     public void Invoke_WithMetricsRequest_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddMetricsActuatorServices(configuration);
         };
+
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
-        var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
+        Counter<double> testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test5");
         long allKeysSum = 0;
-        var labels = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
 
-        for (var i = 0; i < 10; i++)
+        var labels = new Dictionary<string, object>
+        {
+            { "a", "v1" },
+            { "b", "v1" },
+            { "c", "v1" }
+        };
+
+        for (int i = 0; i < 10; i++)
         {
             allKeysSum += i;
             testMeasure.Add(i, labels.AsReadonlySpan());
         }
 
-        var tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
+        List<KeyValuePair<string, string>> tags = labels.Select(x => new KeyValuePair<string, string>(x.Key, x.Value.ToString())).ToList();
         var req = new MetricsRequest("test.test5", tags);
         var resp = ep.Invoke(req) as MetricsResponse;
         Assert.NotNull(resp);
@@ -106,7 +116,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
 
-        var sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Total);
+        MetricSample sample = resp.Measurements.SingleOrDefault(x => x.Statistic == MetricStatistic.Total);
         Assert.NotNull(sample);
         Assert.Equal(allKeysSum, sample.Value);
 
@@ -153,20 +163,22 @@ public class MetricsEndpointTest : BaseTest
     public void GetMetricSamples_ReturnsExpectedCounter()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddMetricsActuatorServices(configuration);
         };
+
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
-        var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
+        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test7");
         counter.Add(100);
 
-        ep.GetMetricsCollection(out var measurements, out _);
+        ep.GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out _);
         Assert.NotNull(measurements);
         Assert.Single(measurements.Values);
-        var sample = measurements.Values.FirstOrDefault()[0];
+        MetricSample sample = measurements.Values.FirstOrDefault()[0];
         Assert.Equal(100, sample.Value);
         Assert.Equal(MetricStatistic.Total, sample.Statistic);
     }
@@ -248,13 +260,15 @@ public class MetricsEndpointTest : BaseTest
     public void GetAvailableTags_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddMetricsActuatorServices(configuration);
         };
+
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
-        var counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
+        Counter<double> counter = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test2");
 
         var v1Tags = new Dictionary<string, object>
         {
@@ -273,16 +287,16 @@ public class MetricsEndpointTest : BaseTest
         counter.Add(1, v1Tags.AsReadonlySpan());
         counter.Add(1, v2Tags.AsReadonlySpan());
 
-        ep.GetMetricsCollection(out _, out var tagDictionary);
+        ep.GetMetricsCollection(out _, out MetricsCollection<List<MetricTag>> tagDictionary);
 
         Assert.NotNull(tagDictionary);
         Assert.Single(tagDictionary.Values);
 
-        var tags = tagDictionary["test.test2"];
+        List<MetricTag> tags = tagDictionary["test.test2"];
 
         Assert.Equal(3, tags.Count);
 
-        var tag = tags[0];
+        MetricTag tag = tags[0];
         Assert.NotNull(tag);
         Assert.Contains("v1", tag.Values);
         Assert.Contains("v2", tag.Values);
@@ -297,7 +311,7 @@ public class MetricsEndpointTest : BaseTest
         Assert.Contains("v1", tag.Values);
         Assert.Contains("v2", tag.Values);
 
-        var counter2 = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test3");
+        Counter<double> counter2 = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.test3");
 
         counter2.Add(1);
 
@@ -314,78 +328,88 @@ public class MetricsEndpointTest : BaseTest
     public void GetMetricMeasurements_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddMetricsActuatorServices(configuration);
         };
+
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<MetricsEndpoint>();
 
-        var testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
+        Histogram<double> testMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("test.test1");
+
         var context1 = new Dictionary<string, object>
         {
             { "a", "v1" },
             { "b", "v1" },
             { "c", "v1" }
         };
+
         var context2 = new Dictionary<string, object>
         {
-            { "a", "v1" },
+            { "a", "v1" }
         };
+
         var context3 = new Dictionary<string, object>
         {
-            { "b", "v1" },
+            { "b", "v1" }
         };
+
         var context4 = new Dictionary<string, object>
         {
-            { "c", "v1" },
+            { "c", "v1" }
         };
 
         long allKeysSum = 0;
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             allKeysSum += i;
             testMeasure.Record(i, context1.AsReadonlySpan());
         }
 
         long aSum = 0;
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             aSum += i;
             testMeasure.Record(i, context2.AsReadonlySpan());
         }
 
         long bSum = 0;
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             bSum += i;
             testMeasure.Record(i, context3.AsReadonlySpan());
         }
 
         long cSum = 0;
-        for (var i = 0; i < 10; i++)
+
+        for (int i = 0; i < 10; i++)
         {
             cSum += i;
             testMeasure.Record(i, context4.AsReadonlySpan());
         }
 
-        ep.GetMetricsCollection(out var measurements, out _);
+        ep.GetMetricsCollection(out MetricsCollection<List<MetricSample>> measurements, out _);
         Assert.NotNull(measurements);
         Assert.Single(measurements);
 
-        var measurement = measurements["test.test1"];
+        List<MetricSample> measurement = measurements["test.test1"];
         Assert.Equal(4, measurement.Count);
 
-        var sample = measurement[0];
+        MetricSample sample = measurement[0];
         Assert.Equal(allKeysSum, sample.Value);
         Assert.Equal(MetricStatistic.Total, sample.Statistic);
 
         var aTags = new List<KeyValuePair<string, string>>
         {
-            new ("a", "v1"),
+            new("a", "v1")
         };
 
-        var result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
+        List<MetricSample> result = ep.GetMetricSamplesByTags(measurements, "test.test1", aTags);
         Assert.NotNull(result);
         Assert.Single(result);
 
@@ -395,7 +419,7 @@ public class MetricsEndpointTest : BaseTest
 
         var bTags = new List<KeyValuePair<string, string>>
         {
-            new ("b", "v1"),
+            new("b", "v1")
         };
 
         result = ep.GetMetricSamplesByTags(measurements, "test.test1", bTags);
@@ -410,7 +434,7 @@ public class MetricsEndpointTest : BaseTest
 
         var cTags = new List<KeyValuePair<string, string>>
         {
-            new ("c", "v1"),
+            new("c", "v1")
         };
 
         result = ep.GetMetricSamplesByTags(measurements, "test.test1", cTags);
@@ -423,8 +447,8 @@ public class MetricsEndpointTest : BaseTest
 
         var abTags = new List<KeyValuePair<string, string>>
         {
-            new ("a", "v1"),
-            new ("b", "v1"),
+            new("a", "v1"),
+            new("b", "v1")
         };
 
         result = ep.GetMetricSamplesByTags(measurements, "test.test1", abTags);
@@ -438,9 +462,10 @@ public class MetricsEndpointTest : BaseTest
 
         var acTags = new List<KeyValuePair<string, string>>
         {
-            new ("a", "v1"),
-            new ("c", "v1"),
+            new("a", "v1"),
+            new("c", "v1")
         };
+
         result = ep.GetMetricSamplesByTags(measurements, "test.test1", acTags);
 
         Assert.NotNull(result);
@@ -453,9 +478,10 @@ public class MetricsEndpointTest : BaseTest
 
         var bcTags = new List<KeyValuePair<string, string>>
         {
-            new ("b", "v1"),
-            new ("c", "v1"),
+            new("b", "v1"),
+            new("c", "v1")
         };
+
         result = ep.GetMetricSamplesByTags(measurements, "test.test1", bcTags);
 
         Assert.NotNull(result);
@@ -471,17 +497,26 @@ public class MetricsEndpointTest : BaseTest
     public void GetMetric_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddMetricsActuatorServices(configuration);
         };
+
         tc.GetService<MeterProvider>();
         var ep = tc.GetService<IMetricsEndpoint>();
 
-        var testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
-        var labels = new Dictionary<string, object> { { "a", "v1" }, { "b", "v1" }, { "c", "v1" } };
+        Counter<double> testMeasure = OpenTelemetryMetrics.Meter.CreateCounter<double>("test.total");
+
+        var labels = new Dictionary<string, object>
+        {
+            { "a", "v1" },
+            { "b", "v1" },
+            { "c", "v1" }
+        };
 
         double allKeysSum = 0;
+
         for (double i = 0; i < 10; i++)
         {
             allKeysSum += i;
@@ -498,7 +533,7 @@ public class MetricsEndpointTest : BaseTest
 
         Assert.NotNull(resp.Measurements);
         Assert.Single(resp.Measurements);
-        var sample = resp.Measurements[0];
+        MetricSample sample = resp.Measurements[0];
         Assert.Equal(MetricStatistic.Total, sample.Statistic);
         Assert.Equal(allKeysSum, sample.Value);
 

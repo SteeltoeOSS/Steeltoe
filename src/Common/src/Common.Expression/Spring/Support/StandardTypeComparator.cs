@@ -32,33 +32,37 @@ public class StandardTypeComparator : ITypeComparator
         {
             return secondObject == null ? 0 : -1;
         }
-        else if (secondObject == null)
+
+        if (secondObject == null)
         {
-            return 1;  // firstObject cannot be null at this point
+            return 1; // firstObject cannot be null at this point
         }
 
         if (firstObject is decimal || secondObject is decimal)
         {
-            var leftNum = Convert.ToDecimal(firstObject);
-            var rightNum = Convert.ToDecimal(secondObject);
+            decimal leftNum = Convert.ToDecimal(firstObject);
+            decimal rightNum = Convert.ToDecimal(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (firstObject is double || secondObject is double)
+
+        if (firstObject is double || secondObject is double)
         {
-            var leftNum = Convert.ToDouble(firstObject);
-            var rightNum = Convert.ToDouble(secondObject);
+            double leftNum = Convert.ToDouble(firstObject);
+            double rightNum = Convert.ToDouble(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (firstObject is float || secondObject is float)
+
+        if (firstObject is float || secondObject is float)
         {
-            var leftNum = Convert.ToSingle(firstObject);
-            var rightNum = Convert.ToSingle(secondObject);
+            float leftNum = Convert.ToSingle(firstObject);
+            float rightNum = Convert.ToSingle(secondObject);
             return leftNum.CompareTo(rightNum);
         }
-        else if (firstObject is long || secondObject is long)
+
+        if (firstObject is long || secondObject is long)
         {
-            var leftNum = Convert.ToInt64(firstObject);
-            var rightNum = Convert.ToInt64(secondObject);
+            long leftNum = Convert.ToInt64(firstObject);
+            long rightNum = Convert.ToInt64(secondObject);
             return leftNum.CompareTo(rightNum);
         }
 

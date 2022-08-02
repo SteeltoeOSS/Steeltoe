@@ -14,7 +14,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
     private readonly RequestDelegate _next;
 
     public EnvEndpointMiddleware(RequestDelegate next, EnvEndpoint endpoint, IManagementOptions managementOptions, ILogger<EnvEndpointMiddleware> logger = null)
-        : base(endpoint, managementOptions, logger: logger)
+        : base(endpoint, managementOptions, logger)
     {
         _next = next;
     }
@@ -31,7 +31,7 @@ public class EnvEndpointMiddleware : EndpointMiddleware<EnvironmentDescriptor>
 
     protected internal Task HandleEnvRequestAsync(HttpContext context)
     {
-        var serialInfo = HandleRequest();
+        string serialInfo = HandleRequest();
         logger?.LogDebug("Returning: {0}", serialInfo);
 
         context.HandleContentNegotiation(logger);

@@ -6,12 +6,12 @@ namespace Steeltoe.CircuitBreaker.Hystrix.CircuitBreaker;
 
 public class NoOpCircuitBreaker : ICircuitBreaker
 {
+    public bool AllowRequest => true;
+
+    public bool IsOpen => false;
+
     public void MarkSuccess()
     {
         // Don't do anything here (no-operation)
     }
-
-    public bool AllowRequest => true;
-
-    public bool IsOpen => false;
 }

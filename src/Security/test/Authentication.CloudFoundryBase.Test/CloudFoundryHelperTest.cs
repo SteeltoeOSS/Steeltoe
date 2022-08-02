@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text.Json;
+using Microsoft.IdentityModel.Tokens;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
@@ -12,17 +13,17 @@ public class CloudFoundryHelperTest
     [Fact]
     public void GetBackChannelHandler_ReturnsExpected()
     {
-        var result1 = CloudFoundryHelper.GetBackChannelHandler(false);
+        HttpMessageHandler result1 = CloudFoundryHelper.GetBackChannelHandler(false);
         Assert.NotNull(result1);
 
-        var result2 = CloudFoundryHelper.GetBackChannelHandler(true);
+        HttpMessageHandler result2 = CloudFoundryHelper.GetBackChannelHandler(true);
         Assert.Null(result2);
     }
 
     [Fact]
     public void GetTokenValidationParameters_ReturnsExpected()
     {
-        var parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "https://foo.bar.com/keyurl", null, false);
+        TokenValidationParameters parameters = CloudFoundryHelper.GetTokenValidationParameters(null, "https://foo.bar.com/keyurl", null, false);
         Assert.False(parameters.ValidateAudience, "Audience validation should not be enabled by default");
         Assert.True(parameters.ValidateIssuer, "Issuer validation should be enabled by default");
         Assert.NotNull(parameters.IssuerValidator);
@@ -33,27 +34,27 @@ public class CloudFoundryHelperTest
     [Fact]
     public void GetExpTime_FindsTime()
     {
-        var info = TestHelpers.GetValidTokenInfoRequestResponse();
-        var payload = JsonDocument.Parse(info).RootElement;
-        var dateTime = CloudFoundryHelper.GetExpTime(payload);
+        string info = TestHelpers.GetValidTokenInfoRequestResponse();
+        JsonElement payload = JsonDocument.Parse(info).RootElement;
+        DateTime dateTime = CloudFoundryHelper.GetExpTime(payload);
         Assert.Equal(new DateTime(2016, 9, 2, 8, 04, 23, DateTimeKind.Utc), dateTime);
     }
 
     [Fact]
     public void GetIssueTime_FindsTime()
     {
-        var info = TestHelpers.GetValidTokenInfoRequestResponse();
-        var payload = JsonDocument.Parse(info).RootElement;
-        var dateTime = CloudFoundryHelper.GetIssueTime(payload);
+        string info = TestHelpers.GetValidTokenInfoRequestResponse();
+        JsonElement payload = JsonDocument.Parse(info).RootElement;
+        DateTime dateTime = CloudFoundryHelper.GetIssueTime(payload);
         Assert.Equal(new DateTime(2016, 9, 1, 20, 04, 23, DateTimeKind.Utc), dateTime);
     }
 
     [Fact]
     public void GetScopes_FindsScopes()
     {
-        var info = TestHelpers.GetValidTokenInfoRequestResponse();
-        var payload = JsonDocument.Parse(info).RootElement;
-        var scopes = CloudFoundryHelper.GetScopes(payload);
+        string info = TestHelpers.GetValidTokenInfoRequestResponse();
+        JsonElement payload = JsonDocument.Parse(info).RootElement;
+        List<string> scopes = CloudFoundryHelper.GetScopes(payload);
         Assert.Contains("openid", scopes);
         Assert.Single(scopes);
     }

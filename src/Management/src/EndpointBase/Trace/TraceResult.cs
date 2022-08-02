@@ -8,15 +8,15 @@ namespace Steeltoe.Management.Endpoint.Trace;
 
 public class TraceResult
 {
-    public TraceResult(long timestamp, Dictionary<string, object> info)
-    {
-        TimeStamp = timestamp;
-        Info = info ?? throw new ArgumentNullException(nameof(info));
-    }
-
     [JsonPropertyName("timestamp")]
     public long TimeStamp { get; }
 
     [JsonPropertyName("info")]
     public Dictionary<string, object> Info { get; }
+
+    public TraceResult(long timestamp, Dictionary<string, object> info)
+    {
+        TimeStamp = timestamp;
+        Info = info ?? throw new ArgumentNullException(nameof(info));
+    }
 }

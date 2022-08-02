@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.Discovery;
 using Xunit;
 
 namespace Steeltoe.Discovery.Eureka.Test;
@@ -32,7 +33,7 @@ public class EurekaDiscoveryClientTest : AbstractBaseTest
         Assert.NotNull(client.Services);
         Assert.Empty(client.Services);
 
-        var thisService = client.GetLocalServiceInstance();
+        IServiceInstance thisService = client.GetLocalServiceInstance();
         Assert.NotNull(thisService);
         Assert.Equal(instanceConfig.GetHostName(false), thisService.Host);
         Assert.Equal(instanceConfig.SecurePortEnabled, thisService.IsSecure);
@@ -40,8 +41,8 @@ public class EurekaDiscoveryClientTest : AbstractBaseTest
         Assert.Equal(instanceConfig.NonSecurePort, thisService.Port);
         Assert.Equal(instanceConfig.AppName, thisService.ServiceId);
         Assert.NotNull(thisService.Uri);
-        var scheme = instanceConfig.SecurePortEnabled ? "https" : "http";
-        var uriPort = instanceConfig.SecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
+        string scheme = instanceConfig.SecurePortEnabled ? "https" : "http";
+        int uriPort = instanceConfig.SecurePortEnabled ? instanceConfig.SecurePort : instanceConfig.NonSecurePort;
         var uri = new Uri($"{scheme}://{instanceConfig.GetHostName(false)}:{uriPort}");
         Assert.Equal(uri, thisService.Uri);
     }

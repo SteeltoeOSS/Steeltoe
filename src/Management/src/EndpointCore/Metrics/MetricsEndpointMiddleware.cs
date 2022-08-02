@@ -2,11 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Management.Endpoint.ContentNegotiation;
 using Steeltoe.Management.Endpoint.Middleware;
-using System.Net;
 
 namespace Steeltoe.Management.Endpoint.Metrics;
 
@@ -14,7 +15,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 {
     private readonly RequestDelegate _next;
 
-    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions, ILogger<MetricsEndpointMiddleware> logger = null)
+    public MetricsEndpointMiddleware(RequestDelegate next, MetricsEndpoint endpoint, IManagementOptions managementOptions,
+        ILogger<MetricsEndpointMiddleware> logger = null)
         : base(endpoint, managementOptions, logger)
     {
         _next = next;
@@ -32,24 +34,25 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     public override string HandleRequest(MetricsRequest arg)
     {
-        var result = endpoint.Invoke(arg);
+        IMetricsResponse result = endpoint.Invoke(arg);
         return result == null ? null : Serialize(result);
     }
 
     protected internal async Task HandleMetricsRequestAsync(HttpContext context)
     {
-        var request = context.Request;
-        var response = context.Response;
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
 
         logger?.LogDebug("Incoming path: {0}", request.Path.Value);
 
-        var metricName = GetMetricName(request);
+        string metricName = GetMetricName(request);
+
         if (!string.IsNullOrEmpty(metricName))
         {
             // GET /metrics/{metricName}?tag=key:value&tag=key:value
-            var tags = ParseTags(request.Query);
+            List<KeyValuePair<string, string>> tags = ParseTags(request.Query);
             var metricRequest = new MetricsRequest(metricName, tags);
-            var serialInfo = HandleRequest(metricRequest);
+            string serialInfo = HandleRequest(metricRequest);
 
             if (serialInfo != null)
             {
@@ -64,7 +67,7 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
         else
         {
             // GET /metrics
-            var serialInfo = HandleRequest(null);
+            string serialInfo = HandleRequest(null);
             logger?.LogDebug("Returning: {0}", serialInfo);
 
             context.HandleContentNegotiation(logger);
@@ -80,8 +83,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
             return GetMetricName(request, endpoint.Path);
         }
 
-        var path = $"{managementOptions.Path}/{endpoint.Id}".Replace("//", "/");
-        var metricName = GetMetricName(request, path);
+        string path = $"{managementOptions.Path}/{endpoint.Id}".Replace("//", "/");
+        string metricName = GetMetricName(request, path);
 
         return metricName;
     }
@@ -89,18 +92,20 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     protected internal List<KeyValuePair<string, string>> ParseTags(IQueryCollection query)
     {
         var results = new List<KeyValuePair<string, string>>();
+
         if (query == null)
         {
             return results;
         }
 
-        foreach (var q in query)
+        foreach (KeyValuePair<string, StringValues> q in query)
         {
             if (q.Key.Equals("tag", StringComparison.InvariantCultureIgnoreCase))
             {
-                foreach (var kvp in q.Value)
+                foreach (string kvp in q.Value)
                 {
-                    var pair = ParseTag(kvp);
+                    KeyValuePair<string, string>? pair = ParseTag(kvp);
+
                     if (pair != null && !results.Contains(pair.Value))
                     {
                         results.Add(pair.Value);
@@ -114,7 +119,11 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
 
     protected internal KeyValuePair<string, string>? ParseTag(string kvp)
     {
-        var str = kvp.Split(new[] { ':' }, 2);
+        string[] str = kvp.Split(new[]
+        {
+            ':'
+        }, 2);
+
         if (str != null && str.Length == 2)
         {
             return new KeyValuePair<string, string>(str[0], str[1]);
@@ -126,7 +135,8 @@ public class MetricsEndpointMiddleware : EndpointMiddleware<IMetricsResponse, Me
     private string GetMetricName(HttpRequest request, string path)
     {
         var epPath = new PathString(path);
-        if (request.Path.StartsWithSegments(epPath, out var remaining) && remaining.HasValue)
+
+        if (request.Path.StartsWithSegments(epPath, out PathString remaining) && remaining.HasValue)
         {
             return remaining.Value.TrimStart('/');
         }

@@ -15,6 +15,12 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 {
     protected readonly ILogger Logger;
 
+    public bool AutoDecompress { get; }
+
+    public bool CopyHeaders { get; set; }
+
+    public int Order { get; set; }
+
     protected AbstractCompressingPostProcessor(ILogger logger = null)
         : this(true, logger)
     {
@@ -26,23 +32,17 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
         AutoDecompress = autoDecompress;
     }
 
-    public bool AutoDecompress { get; }
-
-    public bool CopyHeaders { get; set; }
-
-    public int Order { get; set; }
-
     public virtual IMessage PostProcessMessage(IMessage message)
     {
         try
         {
             var zipped = new MemoryStream();
-            var compressor = GetCompressorStream(zipped);
+            Stream compressor = GetCompressorStream(zipped);
             var payStream = new MemoryStream((byte[])message.Payload);
             payStream.CopyTo(compressor);
             compressor.Close();
 
-            var compressed = zipped.ToArray();
+            byte[] compressed = zipped.ToArray();
 
             Logger?.LogTrace("Compressed " + ((byte[])message.Payload).Length + " to " + compressed.Length);
 
@@ -61,7 +61,8 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
 
     protected virtual IMessage CreateMessage(IMessage message, byte[] compressed)
     {
-        var headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
+        RabbitHeaderAccessor headers = RabbitHeaderAccessor.GetMutableAccessor(message.Headers);
+
         if (CopyHeaders)
         {
             headers = RabbitHeaderAccessor.GetMutableAccessor(new MessageHeaders(message.Headers, message.Headers.Id, message.Headers.Timestamp));
@@ -72,9 +73,7 @@ public abstract class AbstractCompressingPostProcessor : IMessagePostProcessor, 
             headers.SetHeader(RabbitMessageHeaders.SpringAutoDecompress, true);
         }
 
-        headers.ContentEncoding = message.Headers.ContentEncoding() == null
-            ? GetEncoding()
-            : $"{GetEncoding()}:{message.Headers.ContentEncoding()}";
+        headers.ContentEncoding = message.Headers.ContentEncoding() == null ? GetEncoding() : $"{GetEncoding()}:{message.Headers.ContentEncoding()}";
 
         return Message.Create(compressed, headers.ToMessageHeaders());
     }

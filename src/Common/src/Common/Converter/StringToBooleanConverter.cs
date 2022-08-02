@@ -6,9 +6,21 @@ namespace Steeltoe.Common.Converter;
 
 public class StringToBooleanConverter : AbstractGenericConditionalConverter
 {
-    private static readonly ISet<string> TrueValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "true", "on", "yes", "1" };
+    private static readonly ISet<string> TrueValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+    {
+        "true",
+        "on",
+        "yes",
+        "1"
+    };
 
-    private static readonly ISet<string> FalseValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase) { "false", "off", "no", "0" };
+    private static readonly ISet<string> FalseValues = new HashSet<string>(StringComparer.InvariantCultureIgnoreCase)
+    {
+        "false",
+        "off",
+        "no",
+        "0"
+    };
 
     public StringToBooleanConverter()
         : base(null)
@@ -17,7 +29,7 @@ public class StringToBooleanConverter : AbstractGenericConditionalConverter
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        var targetCheck = ConversionUtils.GetNullableElementType(targetType);
+        Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
         return sourceType == typeof(string) && targetCheck == typeof(bool);
     }
 
@@ -28,7 +40,8 @@ public class StringToBooleanConverter : AbstractGenericConditionalConverter
             return null;
         }
 
-        var value = ((string)source).Trim();
+        string value = ((string)source).Trim();
+
         if (string.IsNullOrEmpty(value))
         {
             return null;
@@ -38,13 +51,12 @@ public class StringToBooleanConverter : AbstractGenericConditionalConverter
         {
             return true;
         }
-        else if (FalseValues.Contains(value))
+
+        if (FalseValues.Contains(value))
         {
             return false;
         }
-        else
-        {
-            throw new ArgumentException($"Invalid boolean value '{source}'");
-        }
+
+        throw new ArgumentException($"Invalid boolean value '{source}'");
     }
 }

@@ -12,10 +12,7 @@ public class AbstractDestination
 
     internal ISubscribableChannel Channel
     {
-        get
-        {
-            return _channel;
-        }
+        get => _channel;
 
         set
         {

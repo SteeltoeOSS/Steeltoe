@@ -11,7 +11,10 @@ public class CollectionToObjectConverter : AbstractGenericConditionalConverter
     private readonly IConversionService _conversionService;
 
     public CollectionToObjectConverter(IConversionService conversionService, ISet<(Type Source, Type Target)> convertableTypes = null)
-        : base(convertableTypes ?? new HashSet<(Type Source, Type Target)> { (typeof(ICollection), typeof(object)) })
+        : base(convertableTypes ?? new HashSet<(Type Source, Type Target)>
+        {
+            (typeof(ICollection), typeof(object))
+        })
     {
         _conversionService = conversionService;
     }
@@ -23,8 +26,7 @@ public class CollectionToObjectConverter : AbstractGenericConditionalConverter
             return false;
         }
 
-        return ConversionUtils.CanConvertElements(
-            ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
+        return ConversionUtils.CanConvertElements(ConversionUtils.GetElementType(sourceType), targetType, _conversionService);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
@@ -40,12 +42,13 @@ public class CollectionToObjectConverter : AbstractGenericConditionalConverter
         }
 
         var sourceCollection = source as ICollection;
+
         if (sourceCollection.Count == 0)
         {
             return null;
         }
 
-        var enumerator = sourceCollection.GetEnumerator();
+        IEnumerator enumerator = sourceCollection.GetEnumerator();
         enumerator.MoveNext();
 
         return _conversionService.Convert(enumerator.Current, enumerator.Current.GetType(), targetType);

@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Converter;
 using System.Reflection;
+using Steeltoe.Common.Converter;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -24,6 +24,7 @@ public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMetho
     protected override NamedValueInfo CreateNamedValueInfo(ParameterInfo parameter)
     {
         var annotation = parameter.GetCustomAttribute<DestinationVariableAttribute>();
+
         if (annotation == null)
         {
             throw new InvalidOperationException("No DestinationVariable annotation");
@@ -34,9 +35,10 @@ public class DestinationVariableMethodArgumentResolver : AbstractNamedValueMetho
 
     protected override object ResolveArgumentInternal(ParameterInfo parameter, IMessage message, string name)
     {
-        var headers = message.Headers;
-        headers.TryGetValue(DestinationTemplateVariablesHeader, out var obj);
+        IMessageHeaders headers = message.Headers;
+        headers.TryGetValue(DestinationTemplateVariablesHeader, out object obj);
         object result = null;
+
         if (obj is IDictionary<string, object> vars)
         {
             vars.TryGetValue(name, out result);

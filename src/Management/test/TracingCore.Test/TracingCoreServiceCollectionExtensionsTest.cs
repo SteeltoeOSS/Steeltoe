@@ -23,9 +23,9 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_ConfiguresExpectedDefaults()
     {
-        var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracingAspNetCore().BuildServiceProvider();
 
         ValidateServiceCollectionCommon(serviceProvider);
         ValidateServiceContainerCore(serviceProvider);
@@ -35,9 +35,9 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresIncludedExporters()
     {
-        var services = new ServiceCollection().AddSingleton(GetConfiguration());
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration());
 
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
         var hst = serviceProvider.GetService<IHostedService>();
         Assert.NotNull(hst);
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
@@ -49,14 +49,13 @@ public class TracingCoreServiceCollectionExtensionsTest : TestBase
     [Fact]
     public void AddDistributedTracingAspNetCore_WiresWavefrontExporters()
     {
-        var services = new ServiceCollection()
-            .AddSingleton(GetConfiguration(new Dictionary<string, string>
-            {
-                { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
-                { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
-            }));
+        IServiceCollection services = new ServiceCollection().AddSingleton(GetConfiguration(new Dictionary<string, string>
+        {
+            { "management:metrics:export:wavefront:uri", "https://test.wavefront.com" },
+            { "management:metrics:export:wavefront:apiToken", "fakeSecret" }
+        }));
 
-        var serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
+        ServiceProvider serviceProvider = services.AddDistributedTracing(null).BuildServiceProvider();
 
         var tracerProvider = serviceProvider.GetService<TracerProvider>();
         Assert.NotNull(tracerProvider);

@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
-using System.Collections.Concurrent;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
 
@@ -13,14 +13,8 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
     public const string DefaultServiceName = nameof(RabbitListenerEndpointRegistry);
 
     private readonly ILogger _logger;
-    private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new ();
+    private readonly ConcurrentDictionary<string, IMessageListenerContainer> _listenerContainers = new();
     private bool _isDisposed;
-
-    public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
-    {
-        _logger = logger;
-        ApplicationContext = applicationContext;
-    }
 
     public IApplicationContext ApplicationContext { get; set; }
 
@@ -32,6 +26,12 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public string ServiceName { get; set; } = DefaultServiceName;
 
+    public RabbitListenerEndpointRegistry(IApplicationContext applicationContext, ILogger logger = null)
+    {
+        _logger = logger;
+        ApplicationContext = applicationContext;
+    }
+
     public IMessageListenerContainer GetListenerContainer(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -39,7 +39,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             throw new ArgumentException(nameof(id));
         }
 
-        _listenerContainers.TryGetValue(id, out var messageListenerContainer);
+        _listenerContainers.TryGetValue(id, out IMessageListenerContainer messageListenerContainer);
         return messageListenerContainer;
     }
 
@@ -70,7 +70,8 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             throw new ArgumentNullException(nameof(factory));
         }
 
-        var id = endpoint.Id;
+        string id = endpoint.Id;
+
         if (string.IsNullOrEmpty(id))
         {
             throw new ArgumentException("Endpoint id must not be empty");
@@ -83,10 +84,11 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
                 throw new InvalidOperationException($"Another endpoint is already registered with id '{id}'");
             }
 
-            var container = CreateListenerContainer(endpoint, factory);
+            IMessageListenerContainer container = CreateListenerContainer(endpoint, factory);
             _listenerContainers.TryAdd(id, container);
 
-            if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null && ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
+            if (!string.IsNullOrEmpty(endpoint.Group) && ApplicationContext != null &&
+                ApplicationContext.GetService<IMessageListenerContainerCollection>(endpoint.Group) is MessageListenerContainerCollection containerCollection)
             {
                 containerCollection.AddContainer(container);
             }
@@ -104,7 +106,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public IMessageListenerContainer UnregisterListenerContainer(string id)
     {
-        _listenerContainers.TryRemove(id, out var removed);
+        _listenerContainers.TryRemove(id, out IMessageListenerContainer removed);
         return removed;
     }
 
@@ -118,7 +120,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
     {
         if (disposing && !_isDisposed)
         {
-            foreach (var listenerContainer in _listenerContainers.Values)
+            foreach (IMessageListenerContainer listenerContainer in _listenerContainers.Values)
             {
                 if (listenerContainer is IDisposable disposable)
                 {
@@ -139,20 +141,23 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public async Task Stop(Action callback)
     {
-        var containers = _listenerContainers.Values;
+        ICollection<IMessageListenerContainer> containers = _listenerContainers.Values;
+
         if (containers.Count > 0)
         {
-            var count = containers.Count;
+            int count = containers.Count;
+
             Action aggCallback = () =>
             {
-                var result = Interlocked.Decrement(ref count);
+                int result = Interlocked.Decrement(ref count);
+
                 if (result == 0)
                 {
                     callback();
                 }
             };
 
-            foreach (var listenerContainer in containers)
+            foreach (IMessageListenerContainer listenerContainer in containers)
             {
                 try
                 {
@@ -172,7 +177,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public async Task Stop()
     {
-        foreach (var listenerContainer in _listenerContainers.Values)
+        foreach (IMessageListenerContainer listenerContainer in _listenerContainers.Values)
         {
             try
             {
@@ -187,7 +192,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     public async Task Start()
     {
-        foreach (var listenerContainer in _listenerContainers.Values)
+        foreach (IMessageListenerContainer listenerContainer in _listenerContainers.Values)
         {
             if (listenerContainer.IsAutoStartup)
             {
@@ -198,7 +203,7 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
 
     protected IMessageListenerContainer CreateListenerContainer(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory factory)
     {
-        var listenerContainer = factory.CreateListenerContainer(endpoint);
+        IMessageListenerContainer listenerContainer = factory.CreateListenerContainer(endpoint);
 
         try
         {
@@ -209,7 +214,8 @@ public class RabbitListenerEndpointRegistry : IRabbitListenerEndpointRegistry
             throw new TypeInitializationException("Failed to initialize message listener container", ex);
         }
 
-        var containerPhase = listenerContainer.Phase;
+        int containerPhase = listenerContainer.Phase;
+
         if (containerPhase < int.MaxValue)
         {
             // a custom phase value

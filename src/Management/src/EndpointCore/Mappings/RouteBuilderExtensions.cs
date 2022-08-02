@@ -11,7 +11,9 @@ public static class RouteBuilderExtensions
     /// <summary>
     /// Add routes from RouteBuilder to mappings actuator.
     /// </summary>
-    /// <param name="builder">Your RouteBuilder builder.</param>
+    /// <param name="builder">
+    /// Your RouteBuilder builder.
+    /// </param>
     public static void AddRoutesToMappingsActuator(this IRouteBuilder builder)
     {
         if (builder == null)
@@ -20,7 +22,8 @@ public static class RouteBuilderExtensions
         }
 
         var routeMappings = builder.ServiceProvider.GetService(typeof(IRouteMappings)) as IRouteMappings;
-        foreach (var router in builder.Routes)
+
+        foreach (IRouter router in builder.Routes)
         {
             routeMappings.Routers.Add(router);
         }

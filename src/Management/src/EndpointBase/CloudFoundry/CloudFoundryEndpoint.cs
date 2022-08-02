@@ -12,6 +12,8 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
     private readonly ILogger<CloudFoundryEndpoint> _logger;
     private readonly IManagementOptions _managementOption;
 
+    protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
+
     public CloudFoundryEndpoint(ICloudFoundryOptions options, CloudFoundryManagementOptions managementOptions, ILogger<CloudFoundryEndpoint> logger = null)
         : base(options)
     {
@@ -29,8 +31,6 @@ public class CloudFoundryEndpoint : AbstractEndpoint<Links, string>, ICloudFound
 
         _logger = logger;
     }
-
-    protected new ICloudFoundryOptions Options => options as ICloudFoundryOptions;
 
     public override Links Invoke(string baseUrl)
     {

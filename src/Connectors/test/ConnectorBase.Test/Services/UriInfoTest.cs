@@ -11,7 +11,7 @@ public class UriInfoTest
     [Fact]
     public void Constructor_Uri()
     {
-        var uri = "mysql://joe:joes_password@localhost:1527/big_db";
+        string uri = "mysql://joe:joes_password@localhost:1527/big_db";
         var result = new UriInfo(uri);
 
         AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", null);
@@ -21,7 +21,7 @@ public class UriInfoTest
     [Fact]
     public void Constructor_WithQuery()
     {
-        var uri = "mysql://joe:joes_password@localhost:1527/big_db?p1=v1&p2=v2";
+        string uri = "mysql://joe:joes_password@localhost:1527/big_db?p1=v1&p2=v2";
         var result = new UriInfo(uri);
 
         AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", "p1=v1&p2=v2");
@@ -31,7 +31,7 @@ public class UriInfoTest
     [Fact]
     public void Constructor_NoUsernamePassword()
     {
-        var uri = "mysql://localhost:1527/big_db";
+        string uri = "mysql://localhost:1527/big_db";
         var result = new UriInfo(uri);
 
         AssertUriInfoEquals(result, "localhost", 1527, null, null, "big_db", null);
@@ -41,7 +41,7 @@ public class UriInfoTest
     [Fact]
     public void Constructor_WithUsernameNoPassword()
     {
-        var uri = "mysql://joe@localhost:1527/big_db";
+        string uri = "mysql://joe@localhost:1527/big_db";
         var ex = Assert.Throws<ArgumentException>(() => new UriInfo(uri));
         Assert.Contains("joe", ex.Message);
     }
@@ -49,7 +49,7 @@ public class UriInfoTest
     [Fact]
     public void Constructor_WithExplicitParameters()
     {
-        var uri = "mysql://joe:joes_password@localhost:1527/big_db";
+        string uri = "mysql://joe:joes_password@localhost:1527/big_db";
         var result = new UriInfo("mysql", "localhost", 1527, "joe", "joes_password", "big_db");
 
         AssertUriInfoEquals(result, "localhost", 1527, "joe", "joes_password", "big_db", null);

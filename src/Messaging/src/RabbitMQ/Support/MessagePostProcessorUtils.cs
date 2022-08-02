@@ -14,7 +14,8 @@ public static class MessagePostProcessorUtils
         var priorityOrdered = new List<IPriorityOrdered>();
         var ordered = new List<IOrdered>();
         var unOrdered = new List<IMessagePostProcessor>();
-        foreach (var processor in processors)
+
+        foreach (IMessagePostProcessor processor in processors)
         {
             switch (processor)
             {

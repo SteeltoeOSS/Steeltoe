@@ -14,13 +14,13 @@ public static class ServiceProviderExtensions
 {
     public static RabbitTemplate GetRabbitTemplate(this IServiceProvider provider, string name = null)
     {
-        var serviceName = name ?? RabbitTemplate.DefaultServiceName;
+        string serviceName = name ?? RabbitTemplate.DefaultServiceName;
         return provider.GetServices<RabbitTemplate>().SingleOrDefault(t => t.ServiceName == serviceName);
     }
 
     public static RabbitAdmin GetRabbitAdmin(this IServiceProvider provider, string name = null)
     {
-        var serviceName = name ?? RabbitAdmin.DefaultServiceName;
+        string serviceName = name ?? RabbitAdmin.DefaultServiceName;
         return provider.GetServices<RabbitAdmin>().SingleOrDefault(t => t.ServiceName == serviceName);
     }
 
@@ -61,7 +61,7 @@ public static class ServiceProviderExtensions
 
     public static IConnectionFactory GetRabbitConnectionFactory(this IServiceProvider provider, string factoryName = null)
     {
-        var serviceName = factoryName ?? CachingConnectionFactory.DefaultServiceName;
+        string serviceName = factoryName ?? CachingConnectionFactory.DefaultServiceName;
         return provider.GetServices<IConnectionFactory>().SingleOrDefault(t => t.ServiceName == serviceName);
     }
 }

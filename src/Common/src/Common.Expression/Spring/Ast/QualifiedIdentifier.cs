@@ -21,9 +21,11 @@ public class QualifiedIdentifier : SpelNode
         if (_value == null)
         {
             var sb = new StringBuilder();
-            for (var i = 0; i < ChildCount; i++)
+
+            for (int i = 0; i < ChildCount; i++)
             {
-                var value = children[i].GetValueInternal(state).Value;
+                object value = children[i].GetValueInternal(state).Value;
+
                 if (i > 0 && (value == null || !value.ToString().StartsWith("$")))
                 {
                     sb.Append('.');
@@ -41,13 +43,14 @@ public class QualifiedIdentifier : SpelNode
     public override string ToStringAst()
     {
         var sb = new StringBuilder();
+
         if (_value != null)
         {
             sb.Append(_value.Value);
         }
         else
         {
-            for (var i = 0; i < ChildCount; i++)
+            for (int i = 0; i < ChildCount; i++)
             {
                 if (i > 0)
                 {

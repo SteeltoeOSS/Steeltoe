@@ -12,30 +12,30 @@ public abstract class AbstractTransformer : ITransformer
 {
     private IMessageBuilderFactory _messageBuilderFactory;
 
-    protected AbstractTransformer(IApplicationContext context)
-    {
-        ApplicationContext = context;
-    }
-
     public IApplicationContext ApplicationContext { get; }
 
     public virtual IMessageBuilderFactory MessageBuilderFactory
     {
         get
         {
-            _messageBuilderFactory ??=
-                ApplicationContext.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
+            _messageBuilderFactory ??= ApplicationContext.GetService<IMessageBuilderFactory>() ?? new DefaultMessageBuilderFactory();
             return _messageBuilderFactory;
         }
 
         set => _messageBuilderFactory = value;
     }
 
+    protected AbstractTransformer(IApplicationContext context)
+    {
+        ApplicationContext = context;
+    }
+
     public IMessage Transform(IMessage message)
     {
         try
         {
-            var result = DoTransform(message);
+            object result = DoTransform(message);
+
             if (result == null)
             {
                 return null;

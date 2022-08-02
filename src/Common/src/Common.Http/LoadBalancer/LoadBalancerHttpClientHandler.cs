@@ -8,28 +8,36 @@ using Steeltoe.Common.LoadBalancer;
 namespace Steeltoe.Common.Http.LoadBalancer;
 
 /// <summary>
-/// Same as <see cref="LoadBalancerDelegatingHandler"/> except is an <see cref="HttpClientHandler"/>, for non-HttpClientFactory use.
+/// Same as <see cref="LoadBalancerDelegatingHandler" /> except is an <see cref="HttpClientHandler" />, for non-HttpClientFactory use.
 /// </summary>
 public class LoadBalancerHttpClientHandler : HttpClientHandler
 {
     private readonly ILoadBalancer _loadBalancer;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
-    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>.
+    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler" /> class.
+    /// <para />
+    /// For use with <see cref="HttpClient" /> without <see cref="IHttpClientFactory" />.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use.</param>
+    /// <param name="loadBalancer">
+    /// Load balancer to use.
+    /// </param>
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer)
     {
         _loadBalancer = loadBalancer ?? throw new ArgumentNullException(nameof(loadBalancer));
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler"/> class. <para />
-    /// For use with <see cref="HttpClient"/> without <see cref="IHttpClientFactory"/>.
+    /// Initializes a new instance of the <see cref="LoadBalancerHttpClientHandler" /> class.
+    /// <para />
+    /// For use with <see cref="HttpClient" /> without <see cref="IHttpClientFactory" />.
     /// </summary>
-    /// <param name="loadBalancer">Load balancer to use.</param>
-    /// <param name="logger">For logging.</param>
+    /// <param name="loadBalancer">
+    /// Load balancer to use.
+    /// </param>
+    /// <param name="logger">
+    /// For logging.
+    /// </param>
     [Obsolete("Please remove ILogger parameter")]
     public LoadBalancerHttpClientHandler(ILoadBalancer loadBalancer, ILogger logger)
     {
@@ -40,16 +48,17 @@ public class LoadBalancerHttpClientHandler : HttpClientHandler
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         // record the original request
-        var originalUri = request.RequestUri;
+        Uri originalUri = request.RequestUri;
 
         // look up a service instance and update the request
-        var resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
+        Uri resolvedUri = await _loadBalancer.ResolveServiceInstanceAsync(request.RequestUri).ConfigureAwait(false);
         request.RequestUri = resolvedUri;
 
         // allow other handlers to operate and the request to continue
-        var startTime = DateTime.UtcNow;
+        DateTime startTime = DateTime.UtcNow;
 
         Exception exception = null;
+
         try
         {
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);

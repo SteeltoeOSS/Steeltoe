@@ -9,6 +9,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Attributes;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface | AttributeTargets.Method, AllowMultiple = true)]
 public class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
 {
+    internal string Name { get; }
+
+    public string Id { get; set; }
+
     public DeclareAnonymousQueueAttribute(string id)
     {
         if (string.IsNullOrEmpty(id))
@@ -19,8 +23,4 @@ public class DeclareAnonymousQueueAttribute : DeclareQueueBaseAttribute
         Id = id;
         Name = Base64UrlNamingStrategy.Default.GenerateName();
     }
-
-    public string Id { get; set; }
-
-    internal string Name { get; }
 }

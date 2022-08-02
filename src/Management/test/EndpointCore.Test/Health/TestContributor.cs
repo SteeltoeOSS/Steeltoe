@@ -11,6 +11,8 @@ internal sealed class TestContributor : IHealthContributor
     public bool Called;
     public bool Throws;
 
+    public string Id { get; }
+
     public TestContributor()
     {
         Id = "TestHealth";
@@ -26,10 +28,8 @@ internal sealed class TestContributor : IHealthContributor
     public TestContributor(string id, bool throws)
     {
         Id = id;
-        this.Throws = throws;
+        Throws = throws;
     }
-
-    public string Id { get; }
 
     public HealthCheckResult Health()
     {
@@ -39,6 +39,7 @@ internal sealed class TestContributor : IHealthContributor
         }
 
         Called = true;
+
         return new HealthCheckResult
         {
             Status = HealthStatus.Up

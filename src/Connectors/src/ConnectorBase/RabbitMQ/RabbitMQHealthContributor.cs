@@ -2,19 +2,31 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Reflection;
-using Steeltoe.Connector.Services;
-using System.Reflection;
-using System.Text;
 using Steeltoe.Common.Util;
+using Steeltoe.Connector.Services;
 
 namespace Steeltoe.Connector.RabbitMQ;
 
 public class RabbitMQHealthContributor : IHealthContributor
 {
+    private readonly ILogger<RabbitMQHealthContributor> _logger;
+    private readonly object _connFactory;
+    private object _connection;
+
+    public string Id => "RabbitMQ";
+
+    public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
+    {
+        _logger = logger;
+        _connFactory = factory.Create(null);
+    }
+
     public static IHealthContributor GetRabbitMQContributor(IConfiguration configuration, ILogger<RabbitMQHealthContributor> logger = null)
     {
         if (configuration == null)
@@ -22,7 +34,7 @@ public class RabbitMQHealthContributor : IHealthContributor
             throw new ArgumentNullException(nameof(configuration));
         }
 
-        var rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
+        Type rabbitMQImplementationType = RabbitMQTypeLocator.ConnectionFactory;
 
         var info = configuration.GetSingletonServiceInfo<RabbitMQServiceInfo>();
 
@@ -31,22 +43,11 @@ public class RabbitMQHealthContributor : IHealthContributor
         return new RabbitMQHealthContributor(factory, logger);
     }
 
-    private readonly ILogger<RabbitMQHealthContributor> _logger;
-    private readonly object _connFactory;
-    private object _connection;
-
-    public RabbitMQHealthContributor(RabbitMQProviderConnectorFactory factory, ILogger<RabbitMQHealthContributor> logger = null)
-    {
-        _logger = logger;
-        _connFactory = factory.Create(null);
-    }
-
-    public string Id => "RabbitMQ";
-
     public HealthCheckResult Health()
     {
         _logger?.LogTrace("Checking RabbitMQ connection health");
         var result = new HealthCheckResult();
+
         try
         {
             _connection ??= ReflectionHelpers.Invoke(RabbitMQTypeLocator.CreateConnectionMethod, _connFactory, null);
@@ -63,7 +64,9 @@ public class RabbitMQHealthContributor : IHealthContributor
 
             try
             {
-                var serverProperties = RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
+                var serverProperties =
+                    RabbitMQTypeLocator.ConnectionInterface.GetProperty("ServerProperties").GetValue(_connection) as Dictionary<string, object>;
+
                 result.Details.Add("version", Encoding.UTF8.GetString(serverProperties["version"] as byte[]));
             }
             catch (Exception e)

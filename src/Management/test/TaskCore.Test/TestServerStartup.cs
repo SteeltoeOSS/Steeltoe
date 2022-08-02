@@ -10,12 +10,12 @@ namespace Steeltoe.Management.TaskCore.Test;
 
 public class TestServerStartup
 {
+    public IConfiguration Configuration { get; }
+
     public TestServerStartup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; }
 
     public void ConfigureServices(IServiceCollection services)
     {

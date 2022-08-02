@@ -24,14 +24,22 @@ public class KubernetesServiceInstanceTest
 
     private void AssertServiceInstance(bool secure)
     {
-        var address = new V1EndpointAddress { Ip = "1.2.3.4" };
-        var port = new Corev1EndpointPort { Port = 8080 };
+        var address = new V1EndpointAddress
+        {
+            Ip = "1.2.3.4"
+        };
+
+        var port = new Corev1EndpointPort
+        {
+            Port = 8080
+        };
+
         var instance = new KubernetesServiceInstance("123", "myString", address, port, new Dictionary<string, string>(), secure);
-        Assert.Equal(expected: "123", actual: instance.InstanceId);
-        Assert.Equal(expected: "myString", actual: instance.ServiceId);
-        Assert.Equal(expected: "1.2.3.4", actual: instance.Host);
-        Assert.Equal(expected: 8080, actual: instance.Port);
-        Assert.Equal(expected: secure, actual: instance.IsSecure);
-        Assert.Equal(expected: secure ? "https" : "http", actual: instance.GetScheme());
+        Assert.Equal("123", instance.InstanceId);
+        Assert.Equal("myString", instance.ServiceId);
+        Assert.Equal("1.2.3.4", instance.Host);
+        Assert.Equal(8080, instance.Port);
+        Assert.Equal(secure, instance.IsSecure);
+        Assert.Equal(secure ? "https" : "http", instance.GetScheme());
     }
 }

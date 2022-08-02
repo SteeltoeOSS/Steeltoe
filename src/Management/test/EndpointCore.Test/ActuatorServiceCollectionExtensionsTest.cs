@@ -18,13 +18,15 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsDefaults()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        });
 
-        var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
         var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        var policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.True(policy.IsOriginAllowed("*"));
         Assert.Contains(policy.Methods, m => m.Equals("GET"));
         Assert.Contains(policy.Methods, m => m.Equals("POST"));
@@ -33,14 +35,17 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_ConfiguresCorsCustom()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { });
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        });
 
-        var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration, myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
-        var options = new ApplicationBuilder(host.Services)
-            .ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
+        IWebHost host = hostBuilder.ConfigureServices((context, services) =>
+            services.AddAllActuators(context.Configuration, myPolicy => myPolicy.WithOrigins("http://google.com"))).Build();
+
+        var options = new ApplicationBuilder(host.Services).ApplicationServices.GetService(typeof(IOptions<CorsOptions>)) as IOptions<CorsOptions>;
 
         Assert.NotNull(options);
-        var policy = options.Value.GetPolicy("SteeltoeManagement");
+        CorsPolicy policy = options.Value.GetPolicy("SteeltoeManagement");
         Assert.True(policy.IsOriginAllowed("http://google.com"));
         Assert.False(policy.IsOriginAllowed("http://bing.com"));
         Assert.False(policy.IsOriginAllowed("*"));
@@ -52,9 +57,12 @@ public class ActuatorServiceCollectionExtensionsTest
     public void AddAllActuators_YesCF_onCF()
     {
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
 
         Assert.NotNull(host.Services.GetService<ICloudFoundryOptions>());
         Assert.NotNull(host.Services.GetService<CloudFoundryEndpoint>());
@@ -64,9 +72,11 @@ public class ActuatorServiceCollectionExtensionsTest
     [Fact]
     public void AddAllActuators_NoCF_offCF()
     {
-        var hostBuilder = new WebHostBuilder().Configure(_ => { }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
+        IWebHostBuilder hostBuilder = new WebHostBuilder().Configure(_ =>
+        {
+        }).ConfigureAppConfiguration(cfg => cfg.AddCloudFoundry());
 
-        var host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
+        IWebHost host = hostBuilder.ConfigureServices((context, services) => services.AddAllActuators(context.Configuration)).Build();
 
         Assert.Null(host.Services.GetService<ICloudFoundryOptions>());
         Assert.Null(host.Services.GetService<CloudFoundryEndpoint>());

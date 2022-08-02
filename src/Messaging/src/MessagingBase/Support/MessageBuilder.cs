@@ -15,16 +15,14 @@ public static class MessageBuilder
 
     public static AbstractMessageBuilder FromMessage(IMessage message, Type payloadType = null)
     {
-        var genParamType = GetGenericParamType(message, payloadType);
-        var typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
+        Type genParamType = GetGenericParamType(message, payloadType);
+        Type typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
 
-        return (AbstractMessageBuilder)Activator.CreateInstance(
-            typeToCreate,
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-            null,
-            new object[] { message },
-            null,
-            null);
+        return (AbstractMessageBuilder)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null,
+            new object[]
+            {
+                message
+            }, null, null);
     }
 
     public static AbstractMessageBuilder WithPayload<TPayload>(TPayload payload)
@@ -34,16 +32,14 @@ public static class MessageBuilder
 
     public static AbstractMessageBuilder WithPayload(object payload, Type payloadType = null)
     {
-        var genParamType = GetGenericParamType(payload, payloadType);
-        var typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
+        Type genParamType = GetGenericParamType(payload, payloadType);
+        Type typeToCreate = typeof(MessageBuilder<>).MakeGenericType(genParamType);
 
-        return (AbstractMessageBuilder)Activator.CreateInstance(
-            typeToCreate,
-            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance,
-            null,
-            new[] { payload, new MessageHeaderAccessor() },
-            null,
-            null);
+        return (AbstractMessageBuilder)Activator.CreateInstance(typeToCreate, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance, null, new[]
+        {
+            payload,
+            new MessageHeaderAccessor()
+        }, null, null);
     }
 
     public static IMessage<TPayload> CreateMessage<TPayload>(TPayload payload, IMessageHeaders messageHeaders)
@@ -78,7 +74,8 @@ public static class MessageBuilder
             return messagePayloadType;
         }
 
-        var targetType = target.GetType();
+        Type targetType = target.GetType();
+
         if (targetType.IsGenericType)
         {
             return targetType.GetGenericArguments()[0];

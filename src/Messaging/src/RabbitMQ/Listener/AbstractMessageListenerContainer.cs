@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Transaction;
@@ -15,7 +16,6 @@ using Steeltoe.Messaging.RabbitMQ.Extensions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Listener.Support;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Text;
 using R = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -28,31 +28,23 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     public const bool DefaultDebatchingEnabled = true;
     public const int DefaultPrefetchCount = 250;
 
-    protected readonly object ConsumersMonitor = new ();
-    protected readonly object Lock = new ();
-    protected readonly object LifecycleMonitor = new ();
+    protected readonly object ConsumersMonitor = new();
+    protected readonly object Lock = new();
+    protected readonly object LifecycleMonitor = new();
     protected readonly ILogger Logger;
     protected readonly ILoggerFactory LoggerFactory;
-
-    protected int recoveryInterval = DefaultRecoveryInterval;
     private string _listenerId;
     private IConnectionFactory _connectionFactory;
 
-    private List<IQueue> Queues { get; set; } = new ();
+    protected int recoveryInterval = DefaultRecoveryInterval;
 
-    protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null, ILoggerFactory loggerFactory = null)
-    {
-        LoggerFactory = loggerFactory;
-        Logger = LoggerFactory?.CreateLogger(GetType());
-        ApplicationContext = applicationContext;
-        ConnectionFactory = connectionFactory;
-        ErrorHandler = new ConditionalRejectingErrorHandler(Logger);
-        MessageHeadersConverter = new DefaultMessageHeadersConverter(Logger);
-        ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
-        BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
-        TransactionAttribute = new DefaultTransactionAttribute();
-        ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
-    }
+    private List<IQueue> Queues { get; set; } = new();
+
+    protected virtual bool IsChannelLocallyTransacted => IsChannelTransacted && TransactionManager == null;
+
+    protected virtual long LastReceive { get; private set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
+    protected virtual bool ForceCloseChannel { get; set; } = true;
 
     public virtual IConnectionFactory ConnectionFactory
     {
@@ -62,10 +54,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             return _connectionFactory;
         }
 
-        set
-        {
-            _connectionFactory = value;
-        }
+        set => _connectionFactory = value;
     }
 
     public virtual bool IsChannelTransacted { get; set; }
@@ -101,7 +90,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual IConsumerTagStrategy ConsumerTagStrategy { get; set; }
 
-    public virtual Dictionary<string, object> ConsumerArguments { get; set; } = new ();
+    public virtual Dictionary<string, object> ConsumerArguments { get; set; } = new();
 
     public virtual bool Exclusive { get; set; }
 
@@ -162,6 +151,21 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual ITransactionAttribute TransactionAttribute { get; set; }
 
+    protected AbstractMessageListenerContainer(IApplicationContext applicationContext, IConnectionFactory connectionFactory, string name = null,
+        ILoggerFactory loggerFactory = null)
+    {
+        LoggerFactory = loggerFactory;
+        Logger = LoggerFactory?.CreateLogger(GetType());
+        ApplicationContext = applicationContext;
+        ConnectionFactory = connectionFactory;
+        ErrorHandler = new ConditionalRejectingErrorHandler(Logger);
+        MessageHeadersConverter = new DefaultMessageHeadersConverter(Logger);
+        ExclusiveConsumerExceptionLogger = new DefaultExclusiveConsumerLogger();
+        BatchingStrategy = new SimpleBatchingStrategy(0, 0, 0L);
+        TransactionAttribute = new DefaultTransactionAttribute();
+        ServiceName = name ?? $"{GetType().Name}@{GetHashCode()}";
+    }
+
     public virtual void SetQueueNames(params string[] queueNames)
     {
         if (queueNames == null)
@@ -170,8 +174,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         var qs = new IQueue[queueNames.Length];
-        var index = 0;
-        foreach (var name in queueNames)
+        int index = 0;
+
+        foreach (string name in queueNames)
         {
             if (name == null)
             {
@@ -198,7 +203,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         if (IsRunning)
         {
-            foreach (var queue in queues)
+            foreach (IQueue queue in queues)
             {
                 if (queue == null)
                 {
@@ -223,8 +228,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         var qs = new IQueue[queueNames.Length];
-        var index = 0;
-        foreach (var name in queueNames)
+        int index = 0;
+
+        foreach (string name in queueNames)
         {
             if (name == null)
             {
@@ -246,7 +252,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
         if (IsRunning)
         {
-            foreach (var queue in queues)
+            foreach (IQueue queue in queues)
             {
                 if (queue == null)
                 {
@@ -273,7 +279,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         var toRemove = new HashSet<string>();
-        foreach (var name in queueNames)
+
+        foreach (string name in queueNames)
         {
             if (name == null)
             {
@@ -284,7 +291,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         var copy = new List<IQueue>(Queues);
-        var filtered = copy.Where(q => !toRemove.Contains(q.ActualName)).ToList();
+        List<IQueue> filtered = copy.Where(q => !toRemove.Contains(q.ActualName)).ToList();
         Queues = filtered;
         return filtered.Count != copy.Count;
     }
@@ -296,9 +303,10 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             throw new ArgumentNullException(nameof(queues));
         }
 
-        var toRemove = new string[queues.Length];
-        var index = 0;
-        foreach (var queue in queues)
+        string[] toRemove = new string[queues.Length];
+        int index = 0;
+
+        foreach (IQueue queue in queues)
         {
             if (queue == null)
             {
@@ -319,7 +327,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         var asList = new List<IMessagePostProcessor>();
-        foreach (var p in afterReceivePostProcessors)
+
+        foreach (IMessagePostProcessor p in afterReceivePostProcessors)
         {
             if (p == null)
             {
@@ -339,9 +348,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             throw new ArgumentNullException(nameof(afterReceivePostProcessors));
         }
 
-        var current = AfterReceivePostProcessors ?? new List<IMessagePostProcessor>();
+        IList<IMessagePostProcessor> current = AfterReceivePostProcessors ?? new List<IMessagePostProcessor>();
 
-        var asList = afterReceivePostProcessors.ToList();
+        List<IMessagePostProcessor> asList = afterReceivePostProcessors.ToList();
         asList.AddRange(current);
         AfterReceivePostProcessors = MessagePostProcessorUtils.Sort(asList);
     }
@@ -353,7 +362,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             throw new ArgumentNullException(nameof(afterReceivePostProcessor));
         }
 
-        var current = AfterReceivePostProcessors;
+        IList<IMessagePostProcessor> current = AfterReceivePostProcessors;
+
         if (current != null && current.Contains(afterReceivePostProcessor))
         {
             var copy = new List<IMessagePostProcessor>(current);
@@ -372,10 +382,12 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     public virtual IConnectionFactory GetConnectionFactory()
     {
-        var connectionFactory = ConnectionFactory;
+        IConnectionFactory connectionFactory = ConnectionFactory;
+
         if (connectionFactory is IRoutingConnectionFactory routingFactory)
         {
-            var targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey());
+            IConnectionFactory targetConnectionFactory = routingFactory.GetTargetConnectionFactory(GetRoutingLookupKey());
+
             if (targetConnectionFactory != null)
             {
                 return targetConnectionFactory;
@@ -388,6 +400,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     public virtual void Initialize()
     {
         ValidateConfiguration();
+
         try
         {
             lock (LifecycleMonitor)
@@ -555,8 +568,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         {
             if (MissingQueuesFatal)
             {
-                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), "
-                                    + "for lazily loaded containers");
+                Logger?.LogWarning("'mismatchedQueuesFatal' and 'missingQueuesFatal' are ignored during the initial start(), " +
+                    "for lazily loaded containers");
             }
             else
             {
@@ -565,8 +578,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
         else if (MissingQueuesFatal)
         {
-            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), "
-                                + "for lazily loaded containers");
+            Logger?.LogWarning("'missingQueuesFatal' is ignored during the initial start(), " + "for lazily loaded containers");
         }
 
         IsLazyLoad = true;
@@ -591,7 +603,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         lock (Lock)
         {
-            var admin = RabbitAdmin;
+            IRabbitAdmin admin = RabbitAdmin;
+
             if (!IsLazyLoad && admin != null && AutoDeclare)
             {
                 try
@@ -653,20 +666,23 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     protected virtual void ActualInvokeListener(R.IModel channel, List<IMessage> data)
     {
-        var listener = MessageListener;
+        IMessageListener listener = MessageListener;
+
         if (listener is IChannelAwareMessageListener chanListener)
         {
             DoInvokeListener(chanListener, channel, data);
         }
         else if (listener != null)
         {
-            var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
+            bool bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
+
             if (bindChannel)
             {
                 var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
                 {
                     SynchronizedWithTransaction = true
                 };
+
                 TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
             }
 
@@ -691,20 +707,23 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
 
     protected virtual void ActualInvokeListener(R.IModel channel, IMessage message)
     {
-        var listener = MessageListener;
+        IMessageListener listener = MessageListener;
+
         if (listener is IChannelAwareMessageListener chanListener)
         {
             DoInvokeListener(chanListener, channel, message);
         }
         else if (listener != null)
         {
-            var bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
+            bool bindChannel = ExposeListenerChannel && IsChannelLocallyTransacted;
+
             if (bindChannel)
             {
                 var resourceHolder = new RabbitResourceHolder(channel, false, LoggerFactory?.CreateLogger<RabbitResourceHolder>())
                 {
                     SynchronizedWithTransaction = true
                 };
+
                 TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
             }
 
@@ -730,8 +749,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, List<IMessage> data)
     {
         RabbitResourceHolder resourceHolder = null;
-        var channelToUse = channel;
-        var boundHere = false;
+        R.IModel channelToUse = channel;
+        bool boundHere = false;
+
         try
         {
             boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
@@ -755,8 +775,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     protected virtual void DoInvokeListener(IChannelAwareMessageListener listener, R.IModel channel, IMessage message)
     {
         RabbitResourceHolder resourceHolder = null;
-        var channelToUse = channel;
-        var boundHere = false;
+        R.IModel channelToUse = channel;
+        bool boundHere = false;
+
         try
         {
             boundHere = HandleChannelAwareTransaction(channel, out channelToUse, out resourceHolder);
@@ -807,19 +828,20 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         resourceHolder = null;
         channelToUse = channel;
-        var boundHere = false;
+        bool boundHere = false;
+
         if (!ExposeListenerChannel)
         {
             // We need to expose a separate Channel.
             resourceHolder = GetTransactionalResourceHolder();
             channelToUse = resourceHolder.GetChannel();
+
             /*
              * If there is a real transaction, the resource will have been bound; otherwise
              * we need to bind it temporarily here. Any work done on this channel
              * will be committed in the finally block.
              */
-            if (IsChannelLocallyTransacted &&
-                !TransactionSynchronizationManager.IsActualTransactionActive())
+            if (IsChannelLocallyTransacted && !TransactionSynchronizationManager.IsActualTransactionActive())
             {
                 resourceHolder.SynchronizedWithTransaction = true;
                 TransactionSynchronizationManager.BindResource(ConnectionFactory, resourceHolder);
@@ -835,6 +857,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                 {
                     SynchronizedWithTransaction = true
                 };
+
                 TransactionSynchronizationManager.BindResource(ConnectionFactory, localResourceHolder);
                 boundHere = true;
             }
@@ -891,7 +914,8 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (RabbitAdmin == null && ApplicationContext != null)
         {
-            var admins = ApplicationContext.GetServices<IRabbitAdmin>();
+            IEnumerable<IRabbitAdmin> admins = ApplicationContext.GetServices<IRabbitAdmin>();
+
             if (admins.Count() == 1)
             {
                 RabbitAdmin = admins.Single();
@@ -901,22 +925,17 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                 if (AutoDeclare || MismatchedQueuesFatal)
                 {
                     Logger?.LogDebug(
-                        "For 'autoDeclare' and 'mismatchedQueuesFatal' to work, there must be exactly one "
-                        + "RabbitAdmin in the context or you must inject one into this container; found: {count}"
-                        + " for container {container}",
-                        admins.Count(),
+                        "For 'autoDeclare' and 'mismatchedQueuesFatal' to work, there must be exactly one " +
+                        "RabbitAdmin in the context or you must inject one into this container; found: {count}" + " for container {container}", admins.Count(),
                         ToString());
                 }
 
                 if (MismatchedQueuesFatal)
                 {
-                    throw new InvalidOperationException(
-                        string.Format(
-                            "When 'mismatchedQueuesFatal' is 'true', there must be exactly "
-                            + "one RabbitAdmin in the context or you must inject one into this container; found: {0} "
-                            + " for container {1}",
-                            admins.Count(),
-                            ToString()));
+                    throw new InvalidOperationException(string.Format(
+                        "When 'mismatchedQueuesFatal' is 'true', there must be exactly " +
+                        "one RabbitAdmin in the context or you must inject one into this container; found: {0} " + " for container {1}", admins.Count(),
+                        ToString()));
                 }
             }
         }
@@ -940,17 +959,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
                 {
                     throw new FatalListenerStartupException("Mismatched queues", e);
                 }
-                else
-                {
-                    Logger?.LogInformation(e, "Failed to get connection during Start()");
-                }
+
+                Logger?.LogInformation(e, "Failed to get connection during Start()");
             }
         }
         else
         {
             try
             {
-                var connection = ConnectionFactory.CreateConnection();
+                IConnection connection = ConnectionFactory.CreateConnection();
+
                 if (connection != null)
                 {
                     connection.Close();
@@ -962,8 +980,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
         }
     }
-
-    protected virtual bool IsChannelLocallyTransacted => IsChannelTransacted && TransactionManager == null;
 
     protected abstract void DoInitialize();
 
@@ -989,18 +1005,14 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (!(ExposeListenerChannel || !AcknowledgeMode.IsManual()))
         {
-            throw new ArgumentException(
-                "You cannot acknowledge messages manually if the channel is not exposed to the listener "
-                + "(please check your configuration and set exposeListenerChannel=true or " +
-                "acknowledgeMode!=MANUAL)");
+            throw new ArgumentException("You cannot acknowledge messages manually if the channel is not exposed to the listener " +
+                "(please check your configuration and set exposeListenerChannel=true or " + "acknowledgeMode!=MANUAL)");
         }
 
         if (IsChannelTransacted && AcknowledgeMode.IsAutoAck())
         {
-            throw new ArgumentException(
-                "The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a "
-                + "transactional channel. Either use a different AcknowledgeMode or make sure " +
-                "channelTransacted=false");
+            throw new ArgumentException("The acknowledgeMode is NONE (autoack in Rabbit terms) which is not consistent with having a " +
+                "transactional channel. Either use a different AcknowledgeMode or make sure " + "channelTransacted=false");
         }
     }
 
@@ -1008,10 +1020,6 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         return ConnectionFactory as IRoutingConnectionFactory;
     }
-
-    protected virtual long LastReceive { get; private set; } = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-    protected virtual bool ForceCloseChannel { get; set; } = true;
 
     protected virtual string GetRoutingLookupKey()
     {
@@ -1041,14 +1049,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         // if (ex instanceof Error) {
         //    return false;
         // }
-        var cause = exception.InnerException;
+        Exception cause = exception.InnerException;
+
         while (cause != null)
         {
             if (cause is ImmediateAcknowledgeException)
             {
                 return true;
             }
-            else if (cause is RabbitRejectAndDoNotRequeueException)
+
+            if (cause is RabbitRejectAndDoNotRequeueException)
             {
                 return false;
             }
@@ -1063,16 +1073,16 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (resourceHolder != null)
         {
-            resourceHolder.RequeueOnRollback = AlwaysRequeueWithTxManagerRollback ||
-                                               ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, Logger);
+            resourceHolder.RequeueOnRollback = AlwaysRequeueWithTxManagerRollback || ContainerUtils.ShouldRequeue(DefaultRequeueRejected, exception, Logger);
         }
     }
 
     private void AttemptDeclarations(IRabbitAdmin admin)
     {
-        var queueNames = GetQueueNamesAsSet();
-        var queueBeans = ApplicationContext.GetServices<IQueue>();
-        foreach (var entry in queueBeans)
+        ISet<string> queueNames = GetQueueNamesAsSet();
+        IEnumerable<IQueue> queueBeans = ApplicationContext.GetServices<IQueue>();
+
+        foreach (IQueue entry in queueBeans)
         {
             if (MismatchedQueuesFatal || (queueNames.Contains(entry.QueueName) && admin.GetQueueProperties(entry.QueueName) == null))
             {
@@ -1091,13 +1101,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             {
                 throw new FatalListenerExecutionException($"Illegal null id in message. Failed to manage retry for message: {message}", ex);
             }
-            else
-            {
-                throw new ListenerExecutionFailedException(
-                    "Cannot retry message more than once without an ID",
-                    new RabbitRejectAndDoNotRequeueException("Not retryable; rejecting and not requeuing", ex),
-                    message);
-            }
+
+            throw new ListenerExecutionFailedException("Cannot retry message more than once without an ID",
+                new RabbitRejectAndDoNotRequeueException("Not retryable; rejecting and not requeuing", ex), message);
         }
     }
 
@@ -1110,10 +1116,12 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
         }
 
         ConnectionFactoryUtils.ReleaseResources(resourceHolder);
+
         if (boundHere)
         {
             // unbind if we bound
             TransactionSynchronizationManager.UnbindResource(ConnectionFactory);
+
             if (!ExposeListenerChannel && IsChannelLocallyTransacted)
             {
                 /*
@@ -1131,10 +1139,12 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     {
         if (AfterReceivePostProcessors != null)
         {
-            var postProcessed = message;
-            foreach (var processor in AfterReceivePostProcessors)
+            IMessage postProcessed = message;
+
+            foreach (IMessagePostProcessor processor in AfterReceivePostProcessors)
             {
                 postProcessed = processor.PostProcessMessage(postProcessed);
+
                 if (postProcessed == null)
                 {
                     throw new ImmediateAcknowledgeException("Message Post Processor returned 'null', discarding message");
@@ -1142,6 +1152,7 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
             }
 
             message = postProcessed as IMessage<byte[]>;
+
             if (message == null)
             {
                 throw new InvalidOperationException("AfterReceivePostProcessors failed to return a IMessage<byte[]>");
@@ -1161,8 +1172,9 @@ public abstract class AbstractMessageListenerContainer : IMessageListenerContain
     private string GetQueuesAsListString()
     {
         var sb = new StringBuilder("[");
-        var queues = Queues;
-        foreach (var q in queues)
+        List<IQueue> queues = Queues;
+
+        foreach (IQueue q in queues)
         {
             sb.Append(q.QueueName);
             sb.Append(',');

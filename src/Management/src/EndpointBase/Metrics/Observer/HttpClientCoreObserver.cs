@@ -2,15 +2,15 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
+using System.Diagnostics.Metrics;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using OpenTelemetry.Metrics;
 using Steeltoe.Common;
 using Steeltoe.Common.Diagnostics;
 using Steeltoe.Management.OpenTelemetry;
 using Steeltoe.Management.OpenTelemetry.Metrics;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Text.RegularExpressions;
 
 namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
@@ -41,20 +41,43 @@ public class HttpClientCoreObserver : MetricsObserver
         _clientTimeMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.time");
         _clientCountMeasure = OpenTelemetryMetrics.Meter.CreateHistogram<double>("http.client.request.count");
 
-        viewRegistry.AddView(
-            "http.client.request.time",
-            new ExplicitBucketHistogramConfiguration
+        viewRegistry.AddView("http.client.request.time", new ExplicitBucketHistogramConfiguration
+        {
+            Boundaries = new[]
             {
-                Boundaries = new[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
-                TagKeys = new[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
-            });
-        viewRegistry.AddView(
-            "http.client.request.count",
-            new ExplicitBucketHistogramConfiguration
+                0.0,
+                1.0,
+                5.0,
+                10.0,
+                100.0
+            },
+            TagKeys = new[]
             {
-                Boundaries = new[] { 0.0, 1.0, 5.0, 10.0, 100.0 },
-                TagKeys = new[] { _statusTagKey, _uriTagKey, _methodTagKey, _clientTagKey },
-            });
+                _statusTagKey,
+                _uriTagKey,
+                _methodTagKey,
+                _clientTagKey
+            }
+        });
+
+        viewRegistry.AddView("http.client.request.count", new ExplicitBucketHistogramConfiguration
+        {
+            Boundaries = new[]
+            {
+                0.0,
+                1.0,
+                5.0,
+                10.0,
+                100.0
+            },
+            TagKeys = new[]
+            {
+                _statusTagKey,
+                _uriTagKey,
+                _methodTagKey,
+                _clientTagKey
+            }
+        });
     }
 
     public override void ProcessEvent(string eventName, object value)
@@ -64,13 +87,15 @@ public class HttpClientCoreObserver : MetricsObserver
             return;
         }
 
-        var current = Activity.Current;
+        Activity current = Activity.Current;
+
         if (current == null)
         {
             return;
         }
 
         var request = DiagnosticHelpers.GetProperty<HttpRequestMessage>(value, "Request");
+
         if (request == null)
         {
             return;
@@ -111,7 +136,7 @@ public class HttpClientCoreObserver : MetricsObserver
 
         if (current.Duration.TotalMilliseconds > 0)
         {
-            var labels = GetLabels(request, response, taskStatus);
+            IEnumerable<KeyValuePair<string, object>> labels = GetLabels(request, response, taskStatus);
             _clientTimeMeasure.Record(current.Duration.TotalMilliseconds, labels.AsReadonlySpan());
             _clientCountMeasure.Record(1, labels.AsReadonlySpan());
         }
@@ -119,9 +144,9 @@ public class HttpClientCoreObserver : MetricsObserver
 
     protected internal IEnumerable<KeyValuePair<string, object>> GetLabels(HttpRequestMessage request, HttpResponseMessage response, TaskStatus taskStatus)
     {
-        var uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
-        var statusCode = GetStatusCode(response, taskStatus);
-        var clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
+        string uri = request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.SafeUnescaped);
+        string statusCode = GetStatusCode(response, taskStatus);
+        string clientName = request.RequestUri.GetComponents(UriComponents.HostAndPort, UriFormat.UriEscaped);
 
         return new Dictionary<string, object>
         {
@@ -136,7 +161,7 @@ public class HttpClientCoreObserver : MetricsObserver
     {
         if (response != null)
         {
-            var val = (int)response.StatusCode;
+            int val = (int)response.StatusCode;
             return val.ToString();
         }
 

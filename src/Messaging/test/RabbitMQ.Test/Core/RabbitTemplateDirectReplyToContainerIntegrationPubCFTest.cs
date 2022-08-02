@@ -12,7 +12,7 @@ public class RabbitTemplateDirectReplyToContainerIntegrationPubCFTest : RabbitTe
 {
     protected override RabbitTemplate CreateSendAndReceiveRabbitTemplate(IConnectionFactory connectionFactory)
     {
-        var srTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
+        RabbitTemplate srTemplate = base.CreateSendAndReceiveRabbitTemplate(connectionFactory);
         srTemplate.UsePublisherConnection = true;
         return srTemplate;
     }

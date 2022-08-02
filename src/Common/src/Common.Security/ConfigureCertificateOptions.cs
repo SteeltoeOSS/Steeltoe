@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Options;
-using System.Security.Cryptography.X509Certificates;
 
 namespace Steeltoe.Common.Security;
 
@@ -27,7 +27,7 @@ public class ConfigureCertificateOptions : IConfigureNamedOptions<CertificateOpt
 
         options.Name = name;
 
-        var certPath = _config["certificate"];
+        string certPath = _config["certificate"];
 
         if (string.IsNullOrEmpty(certPath))
         {

@@ -5,6 +5,7 @@
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
+using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Stream.Binder;
@@ -23,19 +24,10 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     // private readonly IEvaluationContext _evaluationContext;
     private readonly IApplicationContext _applicationContext;
 
-    private BindingServiceOptions Options
-    {
-        get
-        {
-            return _optionsMonitor.CurrentValue;
-        }
-    }
+    private BindingServiceOptions Options => _optionsMonitor.CurrentValue;
 
-    public MessageConverterConfigurer(
-        IApplicationContext applicationContext,
-        IOptionsMonitor<BindingServiceOptions> optionsMonitor,
-        IMessageConverterFactory messageConverterFactory,
-        IEnumerable<IPartitionKeyExtractorStrategy> extractors,
+    public MessageConverterConfigurer(IApplicationContext applicationContext, IOptionsMonitor<BindingServiceOptions> optionsMonitor,
+        IMessageConverterFactory messageConverterFactory, IEnumerable<IPartitionKeyExtractorStrategy> extractors,
         IEnumerable<IPartitionSelectorStrategy> selectors)
     {
         _applicationContext = applicationContext;
@@ -58,56 +50,49 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     public void ConfigurePolledMessageSource(IPollableMessageSource binding, string name)
     {
         IBindingOptions bindingOptions = Options.GetBindingOptions(name);
-        var contentType = bindingOptions.ContentType;
-        var consumerOptions = bindingOptions.Consumer;
-        if ((consumerOptions == null || !consumerOptions.UseNativeDecoding)
-            && binding is DefaultPollableMessageSource source)
+        string contentType = bindingOptions.ContentType;
+        IConsumerOptions consumerOptions = bindingOptions.Consumer;
+
+        if ((consumerOptions == null || !consumerOptions.UseNativeDecoding) && binding is DefaultPollableMessageSource source)
         {
-            source.AddInterceptor(
-                new InboundContentTypeEnhancingInterceptor(contentType));
+            source.AddInterceptor(new InboundContentTypeEnhancingInterceptor(contentType));
         }
     }
 
     private static bool IsNativeEncodingNotSet(IProducerOptions producerOptions, IConsumerOptions consumerOptions, bool input)
-        => input
-            ? consumerOptions == null || !consumerOptions.UseNativeDecoding
-            : producerOptions == null || !producerOptions.UseNativeEncoding;
+    {
+        return input ? consumerOptions == null || !consumerOptions.UseNativeDecoding : producerOptions == null || !producerOptions.UseNativeEncoding;
+    }
 
     private void ConfigureMessageChannel(IMessageChannel channel, string channelName, bool inbound)
     {
-        if (channel is not Integration.Channel.AbstractMessageChannel messageChannel)
+        if (channel is not AbstractMessageChannel messageChannel)
         {
             throw new ArgumentException($"{nameof(channel)} not an AbstractMessageChannel");
         }
 
         IBindingOptions bindingOptions = Options.GetBindingOptions(channelName);
-        var contentType = bindingOptions.ContentType;
-        var producerOptions = bindingOptions.Producer;
+        string contentType = bindingOptions.ContentType;
+        IProducerOptions producerOptions = bindingOptions.Producer;
+
         if (!inbound && producerOptions != null && producerOptions.IsPartitioned)
         {
-            messageChannel.AddInterceptor(
-                new PartitioningInterceptor(
-                    new SpelExpressionParser(),
-                    null,
-                    bindingOptions,
-                    GetPartitionKeyExtractorStrategy(producerOptions),
-                    GetPartitionSelectorStrategy(producerOptions)));
+            messageChannel.AddInterceptor(new PartitioningInterceptor(new SpelExpressionParser(), null, bindingOptions,
+                GetPartitionKeyExtractorStrategy(producerOptions), GetPartitionSelectorStrategy(producerOptions)));
         }
 
-        var consumerOptions = bindingOptions.Consumer;
+        IConsumerOptions consumerOptions = bindingOptions.Consumer;
+
         if (IsNativeEncodingNotSet(producerOptions, consumerOptions, inbound))
         {
             if (inbound)
             {
-                messageChannel.AddInterceptor(
-                    new InboundContentTypeEnhancingInterceptor(contentType));
+                messageChannel.AddInterceptor(new InboundContentTypeEnhancingInterceptor(contentType));
             }
             else
             {
                 messageChannel.AddInterceptor(
-                    new OutboundContentTypeConvertingInterceptor(
-                        contentType,
-                        _messageConverterFactory.MessageConverterForAllRegistered));
+                    new OutboundContentTypeConvertingInterceptor(contentType, _messageConverterFactory.MessageConverterForAllRegistered));
             }
         }
     }
@@ -115,12 +100,15 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     private IPartitionKeyExtractorStrategy GetPartitionKeyExtractorStrategy(IProducerOptions options)
     {
         IPartitionKeyExtractorStrategy strategy = null;
+
         if (!string.IsNullOrEmpty(options.PartitionKeyExtractorName))
         {
             strategy = _extractors?.FirstOrDefault(s => s.ServiceName == options.PartitionKeyExtractorName);
+
             if (strategy == null)
             {
-                throw new InvalidOperationException($"PartitionKeyExtractorStrategy bean with the name '{options.PartitionKeyExtractorName}' can not be found.");
+                throw new InvalidOperationException(
+                    $"PartitionKeyExtractorStrategy bean with the name '{options.PartitionKeyExtractorName}' can not be found.");
             }
         }
         else
@@ -142,9 +130,11 @@ public class MessageConverterConfigurer : IMessageChannelAndSourceConfigurer
     private IPartitionSelectorStrategy GetPartitionSelectorStrategy(IProducerOptions options)
     {
         IPartitionSelectorStrategy strategy = null;
+
         if (!string.IsNullOrEmpty(options.PartitionSelectorName))
         {
             strategy = _selectors.FirstOrDefault(s => s.ServiceName == options.PartitionSelectorName);
+
             if (strategy == null)
             {
                 throw new InvalidOperationException($"IPartitionSelectorStrategy bean with the name '{options.PartitionSelectorName}' can not be found.");

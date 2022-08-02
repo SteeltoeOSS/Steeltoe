@@ -13,7 +13,7 @@ public class SpringBootEnvSourceTest
     public void Build__ReturnsProvider()
     {
         var source = new SpringBootEnvSource();
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<SpringBootEnvProvider>(provider);
     }
 }

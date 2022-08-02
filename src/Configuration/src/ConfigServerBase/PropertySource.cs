@@ -6,6 +6,10 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class PropertySource
 {
+    public string Name { get; set; }
+
+    public IDictionary<string, object> Source { get; set; }
+
     public PropertySource()
     {
     }
@@ -15,8 +19,4 @@ public class PropertySource
         Name = name;
         Source = properties;
     }
-
-    public string Name { get; set; }
-
-    public IDictionary<string, object> Source { get; set; }
 }

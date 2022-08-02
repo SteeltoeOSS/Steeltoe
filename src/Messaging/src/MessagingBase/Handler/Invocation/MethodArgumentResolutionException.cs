@@ -8,7 +8,7 @@ namespace Steeltoe.Messaging.Handler.Invocation;
 
 public class MethodArgumentResolutionException : MessagingException
 {
-    public ParameterInfo Parameter { get; private set; }
+    public ParameterInfo Parameter { get; }
 
     public MethodArgumentResolutionException(IMessage message, ParameterInfo parameter)
         : base(message, GetMethodParameterMessage(parameter))

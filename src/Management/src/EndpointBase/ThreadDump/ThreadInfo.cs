@@ -12,7 +12,7 @@ public class ThreadInfo
     public long BlockedCount { get; set; } // Not available
 
     [JsonPropertyName("blockedTime")]
-    public long BlockedTime { get; set; } = -1;  // Not available
+    public long BlockedTime { get; set; } = -1; // Not available
 
     [JsonPropertyName("lockedMonitors")]
     public List<MonitorInfo> LockedMonitors { get; set; }

@@ -112,7 +112,7 @@ public class NumberToNumberConverter : AbstractToNumberConverter
             (typeof(short), typeof(byte)),
             (typeof(ushort), typeof(byte)),
             (typeof(decimal), typeof(byte)),
-            (typeof(sbyte), typeof(byte)),
+            (typeof(sbyte), typeof(byte))
         };
     }
 }

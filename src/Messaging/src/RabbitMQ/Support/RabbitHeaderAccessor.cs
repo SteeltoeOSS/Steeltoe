@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Support;
 
@@ -17,68 +17,9 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     public const string BatchFormatLengthHeader4 = "lengthHeader4";
     public const string SpringAutoDecompress = "springAutoDecompress";
     public const string XDelay = "x-delay";
-    public const string DefaultContentType = Steeltoe.Messaging.MessageHeaders.ContentTypeBytes;
+    public const string DefaultContentType = Messaging.MessageHeaders.ContentTypeBytes;
 
     public const MessageDeliveryMode DefaultDeliveryMode = MessageDeliveryMode.Persistent;
-
-    public static RabbitHeaderAccessor GetAccessor(IMessage message)
-    {
-        return GetAccessor(message.Headers);
-    }
-
-    public static RabbitHeaderAccessor GetAccessor(IMessageHeaders messageHeaders)
-    {
-        if (messageHeaders is RabbitAccessorMessageHeaders accessorMessageHeaders)
-        {
-            return accessorMessageHeaders.Accessor;
-        }
-
-        if (messageHeaders is MessageHeaders msgHeaders)
-        {
-            return new RabbitHeaderAccessor(msgHeaders);
-        }
-
-        return null;
-    }
-
-    public static RabbitHeaderAccessor GetMutableAccessor(IMessage message)
-    {
-        return GetMutableAccessor(message.Headers);
-    }
-
-    public static RabbitHeaderAccessor GetMutableAccessor(IMessageHeaders headers)
-    {
-        RabbitHeaderAccessor messageHeaderAccessor = null;
-        if (headers is RabbitAccessorMessageHeaders accessorMessageHeaders)
-        {
-            var headerAccessor = accessorMessageHeaders.Accessor;
-            messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
-        }
-
-        if (messageHeaderAccessor == null && headers is MessageHeaders msgHeaders)
-        {
-            messageHeaderAccessor = new RabbitHeaderAccessor(msgHeaders);
-        }
-
-        return messageHeaderAccessor;
-    }
-
-    public RabbitHeaderAccessor()
-        : this((IMessage)null)
-    {
-    }
-
-    public RabbitHeaderAccessor(IMessage message)
-        : base(message)
-    {
-        headers = new RabbitAccessorMessageHeaders(this, message?.Headers);
-    }
-
-    protected internal RabbitHeaderAccessor(MessageHeaders headers)
-        : base(headers)
-    {
-        this.headers = new RabbitAccessorMessageHeaders(this, headers);
-    }
 
     public string AppId
     {
@@ -237,7 +178,8 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
     {
         get
         {
-            var result = ReplyTo;
+            string result = ReplyTo;
+
             if (result != null)
             {
                 return new Address(result);
@@ -293,11 +235,80 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         set => SetHeader(RabbitMessageHeaders.LastInBatch, value);
     }
 
-    public List<Dictionary<string, object>> GetXDeathHeader() => GetHeader(RabbitMessageHeaders.XDeath) as List<Dictionary<string, object>>;
+    public RabbitHeaderAccessor()
+        : this((IMessage)null)
+    {
+    }
 
-    public override IMessageHeaders ToMessageHeaders() => Messaging.MessageHeaders.From(headers);
+    public RabbitHeaderAccessor(IMessage message)
+        : base(message)
+    {
+        headers = new RabbitAccessorMessageHeaders(this, message?.Headers);
+    }
 
-    protected new RabbitHeaderAccessor CreateMutableAccessor(IMessage message) => CreateMutableAccessor(message.Headers);
+    protected internal RabbitHeaderAccessor(MessageHeaders headers)
+        : base(headers)
+    {
+        this.headers = new RabbitAccessorMessageHeaders(this, headers);
+    }
+
+    public static RabbitHeaderAccessor GetAccessor(IMessage message)
+    {
+        return GetAccessor(message.Headers);
+    }
+
+    public static RabbitHeaderAccessor GetAccessor(IMessageHeaders messageHeaders)
+    {
+        if (messageHeaders is RabbitAccessorMessageHeaders accessorMessageHeaders)
+        {
+            return accessorMessageHeaders.Accessor;
+        }
+
+        if (messageHeaders is MessageHeaders msgHeaders)
+        {
+            return new RabbitHeaderAccessor(msgHeaders);
+        }
+
+        return null;
+    }
+
+    public static RabbitHeaderAccessor GetMutableAccessor(IMessage message)
+    {
+        return GetMutableAccessor(message.Headers);
+    }
+
+    public static RabbitHeaderAccessor GetMutableAccessor(IMessageHeaders headers)
+    {
+        RabbitHeaderAccessor messageHeaderAccessor = null;
+
+        if (headers is RabbitAccessorMessageHeaders accessorMessageHeaders)
+        {
+            RabbitHeaderAccessor headerAccessor = accessorMessageHeaders.Accessor;
+            messageHeaderAccessor = headerAccessor.IsMutable ? headerAccessor : headerAccessor.CreateMutableAccessor(headers);
+        }
+
+        if (messageHeaderAccessor == null && headers is MessageHeaders msgHeaders)
+        {
+            messageHeaderAccessor = new RabbitHeaderAccessor(msgHeaders);
+        }
+
+        return messageHeaderAccessor;
+    }
+
+    public List<Dictionary<string, object>> GetXDeathHeader()
+    {
+        return GetHeader(RabbitMessageHeaders.XDeath) as List<Dictionary<string, object>>;
+    }
+
+    public override IMessageHeaders ToMessageHeaders()
+    {
+        return Messaging.MessageHeaders.From(headers);
+    }
+
+    protected new RabbitHeaderAccessor CreateMutableAccessor(IMessage message)
+    {
+        return CreateMutableAccessor(message.Headers);
+    }
 
     protected new RabbitHeaderAccessor CreateMutableAccessor(IMessageHeaders messageHeaders)
     {
@@ -309,11 +320,15 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
         return new RabbitHeaderAccessor(headers);
     }
 
-    protected override bool IsReadOnly(string headerName) => !headers.IsMutable;
+    protected override bool IsReadOnly(string headerName)
+    {
+        return !headers.IsMutable;
+    }
 
     protected override void VerifyType(string headerName, object headerValue)
     {
         base.VerifyType(headerName, headerValue);
+
         if (RabbitMessageHeaders.Priority.Equals(headerName) && headerValue is not int)
         {
             throw new ArgumentException($"The '{headerName}' header value must be an Integer.");
@@ -322,6 +337,8 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
 
     protected class RabbitAccessorMessageHeaders : AccessorMessageHeaders
     {
+        public new RabbitHeaderAccessor Accessor => accessor as RabbitHeaderAccessor;
+
         public RabbitAccessorMessageHeaders(MessageHeaderAccessor accessor, MessageHeaders headers)
             : base(accessor, headers)
         {
@@ -331,7 +348,5 @@ public class RabbitHeaderAccessor : MessageHeaderAccessor
             : base(accessor, headers)
         {
         }
-
-        public new RabbitHeaderAccessor Accessor => accessor as RabbitHeaderAccessor;
     }
 }

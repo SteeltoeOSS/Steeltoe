@@ -13,8 +13,8 @@ public class CloudFoundryScopeClaimActionTest
     [Fact]
     public void Run_AddsClaims()
     {
-        var resp = TestHelpers.GetValidTokenInfoRequestResponse();
-        var payload = JsonDocument.Parse(resp).RootElement;
+        string resp = TestHelpers.GetValidTokenInfoRequestResponse();
+        JsonElement payload = JsonDocument.Parse(resp).RootElement;
         var action = new CloudFoundryScopeClaimAction("scope", ClaimValueTypes.String);
         var ident = new ClaimsIdentity();
         action.Run(payload, ident, "Issuer");

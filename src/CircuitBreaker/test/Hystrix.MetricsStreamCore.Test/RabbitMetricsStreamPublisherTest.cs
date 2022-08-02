@@ -18,10 +18,12 @@ public class RabbitMetricsStreamPublisherTest : HystrixTestBase
     {
         var stream = HystrixDashboardStream.GetInstance();
         var factory = new HystrixConnectionFactory(new ConnectionFactory());
+
         var options = new OptionsWrapper<HystrixMetricsStreamOptions>
         {
             Value = new HystrixMetricsStreamOptions()
         };
+
         var publisher = new RabbitMetricsStreamPublisher(options, stream, factory);
         Assert.NotNull(publisher.SampleSubscription);
         Assert.NotNull(publisher.Factory);

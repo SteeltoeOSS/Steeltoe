@@ -17,8 +17,7 @@ public enum AcknowledgeMode
     Manual,
 
     /// <summary>
-    /// The container will issue the ack/nack based on whether
-    /// the listener returns normally, or throws an exception.
+    /// The container will issue the ack/nack based on whether the listener returns normally, or throws an exception.
     /// </summary>
     Auto
 }

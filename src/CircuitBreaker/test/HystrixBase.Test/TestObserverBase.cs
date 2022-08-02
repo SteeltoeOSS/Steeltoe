@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common.Util;
 using System.Reactive;
 using System.Text;
+using Steeltoe.Common.Util;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -14,12 +14,12 @@ public class TestObserverBase<T> : ObserverBase<T>
 {
     public const int StableTickCount = 2;
 
+    private readonly CountdownEvent _latch;
+    private readonly ITestOutputHelper _output;
+
     public volatile int TickCount;
 
     public volatile bool StreamRunning;
-
-    private readonly CountdownEvent _latch;
-    private readonly ITestOutputHelper _output;
 
     public TestObserverBase(ITestOutputHelper output, CountdownEvent latch)
     {
@@ -42,6 +42,7 @@ public class TestObserverBase<T> : ObserverBase<T>
     protected override void OnNextCore(T value)
     {
         TickCount++;
+
         if (TickCount >= StableTickCount)
         {
             StreamRunning = true;
@@ -49,7 +50,8 @@ public class TestObserverBase<T> : ObserverBase<T>
 
         if (_output != null)
         {
-            var toString = value.ToString();
+            string toString = value.ToString();
+
             if (value is Array array)
             {
                 toString = Join(",", array);
@@ -63,7 +65,8 @@ public class TestObserverBase<T> : ObserverBase<T>
     private string Join(string v, Array array)
     {
         var sb = new StringBuilder("[");
-        foreach (var val in array)
+
+        foreach (object val in array)
         {
             sb.Append(val);
             sb.Append(v);

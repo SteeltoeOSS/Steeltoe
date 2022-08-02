@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Invocation;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.Handler.Attributes.Support;
 
@@ -24,7 +24,10 @@ public class PayloadArgumentResolver : IHandlerMethodArgumentResolver
         _useDefaultResolution = useDefaultResolution;
     }
 
-    public bool SupportsParameter(ParameterInfo parameter) => parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
+    public bool SupportsParameter(ParameterInfo parameter)
+    {
+        return parameter.GetCustomAttribute<PayloadAttribute>() != null || _useDefaultResolution;
+    }
 
     public object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
@@ -35,43 +38,41 @@ public class PayloadArgumentResolver : IHandlerMethodArgumentResolver
             throw new InvalidOperationException("Payload Attribute expressions not supported by this resolver");
         }
 
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (IsEmptyPayload(payload))
         {
             if (ann == null || ann.Required)
             {
                 throw new MethodArgumentNotValidException(message, parameter, "Payload value must not be empty");
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
 
-        var targetClass = parameter.ParameterType;
-        var payloadClass = payload.GetType();
+        Type targetClass = parameter.ParameterType;
+        Type payloadClass = payload.GetType();
+
         if (targetClass.IsAssignableFrom(payloadClass))
         {
             return payload;
         }
+
+        if (_converter is ISmartMessageConverter smartConverter)
+        {
+            payload = smartConverter.FromMessage(message, targetClass, parameter);
+        }
         else
         {
-            if (_converter is ISmartMessageConverter smartConverter)
-            {
-                payload = smartConverter.FromMessage(message, targetClass, parameter);
-            }
-            else
-            {
-                payload = _converter.FromMessage(message, targetClass);
-            }
-
-            if (payload == null)
-            {
-                throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
-            }
-
-            return payload;
+            payload = _converter.FromMessage(message, targetClass);
         }
+
+        if (payload == null)
+        {
+            throw new MessageConversionException(message, $"Cannot convert from [{payloadClass.Name}] to [{targetClass.Name}] for {message}");
+        }
+
+        return payload;
     }
 
     protected virtual bool IsEmptyPayload(object payload)

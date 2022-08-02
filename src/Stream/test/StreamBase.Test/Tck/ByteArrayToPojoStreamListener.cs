@@ -22,6 +22,7 @@ public class ByteArrayToPojoStreamListener
             MissingMemberHandling = MissingMemberHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver()
         };
+
         var serializer = JsonSerializer.Create(settings);
         var textReader = new StreamReader(new MemoryStream(value), true);
         return (Person)serializer.Deserialize(textReader, typeof(Person));

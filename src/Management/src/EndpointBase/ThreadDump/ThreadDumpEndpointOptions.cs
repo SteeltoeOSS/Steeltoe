@@ -10,6 +10,8 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
 {
     private const string ManagementInfoPrefix = "management:endpoints:dump";
 
+    public int Duration { get; set; } = 10; // 10 ms
+
     public ThreadDumpEndpointOptions()
     {
         Id = "dump";
@@ -23,6 +25,4 @@ public class ThreadDumpEndpointOptions : AbstractEndpointOptions, IThreadDumpOpt
             Id = "dump";
         }
     }
-
-    public int Duration { get; set; } = 10; // 10 ms
 }

@@ -17,43 +17,17 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     private Type _serializedPayloadClass = typeof(byte[]);
 
-    protected AbstractMessageConverter(MimeType supportedMimeType)
-    {
-        if (supportedMimeType == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeType));
-        }
-
-        _supportedMimeTypes = new List<MimeType> { supportedMimeType };
-    }
-
-    protected AbstractMessageConverter(ICollection<MimeType> supportedMimeTypes)
-    {
-        if (supportedMimeTypes == null)
-        {
-            throw new ArgumentNullException(nameof(supportedMimeTypes));
-        }
-
-        _supportedMimeTypes = new List<MimeType>(supportedMimeTypes);
-    }
-
-    public virtual ICollection<MimeType> SupportedMimeTypes
-    {
-        get { return new List<MimeType>(_supportedMimeTypes); }
-    }
+    public virtual ICollection<MimeType> SupportedMimeTypes => new List<MimeType>(_supportedMimeTypes);
 
     public virtual IContentTypeResolver ContentTypeResolver
     {
-        get { return _contentTypeResolver; }
-        set { _contentTypeResolver = value; }
+        get => _contentTypeResolver;
+        set => _contentTypeResolver = value;
     }
 
     public virtual bool StrictContentTypeMatch
     {
-        get
-        {
-            return _strictContentTypeMatch;
-        }
+        get => _strictContentTypeMatch;
 
         set
         {
@@ -76,10 +50,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     public virtual Type SerializedPayloadClass
     {
-        get
-        {
-            return _serializedPayloadClass;
-        }
+        get => _serializedPayloadClass;
 
         set
         {
@@ -95,6 +66,29 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
     }
 
     public abstract string ServiceName { get; set; }
+
+    protected AbstractMessageConverter(MimeType supportedMimeType)
+    {
+        if (supportedMimeType == null)
+        {
+            throw new ArgumentNullException(nameof(supportedMimeType));
+        }
+
+        _supportedMimeTypes = new List<MimeType>
+        {
+            supportedMimeType
+        };
+    }
+
+    protected AbstractMessageConverter(ICollection<MimeType> supportedMimeTypes)
+    {
+        if (supportedMimeTypes == null)
+        {
+            throw new ArgumentNullException(nameof(supportedMimeTypes));
+        }
+
+        _supportedMimeTypes = new List<MimeType>(supportedMimeTypes);
+    }
 
     public virtual T FromMessage<T>(IMessage message)
     {
@@ -133,16 +127,19 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
             return null;
         }
 
-        var payloadToUse = ConvertToInternal(payload, headers, conversionHint);
+        object payloadToUse = ConvertToInternal(payload, headers, conversionHint);
+
         if (payloadToUse == null)
         {
             return null;
         }
 
-        var mimeType = GetDefaultContentType(payloadToUse);
+        MimeType mimeType = GetDefaultContentType(payloadToUse);
+
         if (headers != null)
         {
-            var accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
+            MessageHeaderAccessor accessor = MessageHeaderAccessor.GetAccessor(headers, typeof(MessageHeaderAccessor));
+
             if (accessor != null && accessor.IsMutable)
             {
                 if (mimeType != null)
@@ -154,7 +151,8 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
             }
         }
 
-        var builder = MessageBuilder.WithPayload(payloadToUse);
+        AbstractMessageBuilder builder = MessageBuilder.WithPayload(payloadToUse);
+
         if (headers != null)
         {
             builder.CopyHeaders(headers);
@@ -180,7 +178,7 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
 
     protected virtual MimeType GetDefaultContentType(object payload)
     {
-        var mimeTypes = SupportedMimeTypes;
+        ICollection<MimeType> mimeTypes = SupportedMimeTypes;
         return mimeTypes.ElementAt(0);
     }
 
@@ -191,13 +189,14 @@ public abstract class AbstractMessageConverter : ISmartMessageConverter
             return true;
         }
 
-        var mimeType = GetMimeType(headers);
+        MimeType mimeType = GetMimeType(headers);
+
         if (mimeType == null)
         {
             return !StrictContentTypeMatch;
         }
 
-        foreach (var current in SupportedMimeTypes)
+        foreach (MimeType current in SupportedMimeTypes)
         {
             if (current.Type.Equals(mimeType.Type) && current.Subtype.Equals(mimeType.Subtype))
             {

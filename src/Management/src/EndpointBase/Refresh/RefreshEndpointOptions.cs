@@ -11,6 +11,15 @@ public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
     private const string ManagementInfoPrefix = "management:endpoints:refresh";
     private const bool DefaultReturnConfiguration = true;
 
+    private bool? _returnConfiguration;
+
+    public bool ReturnConfiguration
+    {
+        get => _returnConfiguration ?? DefaultReturnConfiguration;
+
+        set => _returnConfiguration = value;
+    }
+
     public RefreshEndpointOptions()
     {
         Id = "refresh";
@@ -32,17 +41,5 @@ public class RefreshEndpointOptions : AbstractEndpointOptions, IRefreshOptions
         }
 
         _returnConfiguration ??= DefaultReturnConfiguration;
-    }
-
-    private bool? _returnConfiguration;
-
-    public bool ReturnConfiguration
-    {
-        get => _returnConfiguration ?? DefaultReturnConfiguration;
-
-        set
-        {
-            _returnConfiguration = value;
-        }
     }
 }

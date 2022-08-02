@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.EFCore;
 using Steeltoe.Connector.Services;
-using System.Reflection;
 
 namespace Steeltoe.Connector.SqlServer.EFCore;
 
@@ -25,12 +25,13 @@ public static class SqlServerDbContextOptionsExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var connection = GetConnection(config);
+        string connection = GetConnection(config);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
-    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName, object sqlServerOptionsAction = null)
+    public static DbContextOptionsBuilder UseSqlServer(this DbContextOptionsBuilder optionsBuilder, IConfiguration config, string serviceName,
+        object sqlServerOptionsAction = null)
     {
         if (optionsBuilder == null)
         {
@@ -47,12 +48,13 @@ public static class SqlServerDbContextOptionsExtensions
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var connection = GetConnection(config, serviceName);
+        string connection = GetConnection(config, serviceName);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, object sqlServerOptionsAction = null)
+    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+        object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
         if (optionsBuilder == null)
@@ -65,12 +67,13 @@ public static class SqlServerDbContextOptionsExtensions
             throw new ArgumentNullException(nameof(config));
         }
 
-        var connection = GetConnection(config);
+        string connection = GetConnection(config);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
-    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config, string serviceName, object sqlServerOptionsAction = null)
+    public static DbContextOptionsBuilder<TContext> UseSqlServer<TContext>(this DbContextOptionsBuilder<TContext> optionsBuilder, IConfiguration config,
+        string serviceName, object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
         if (optionsBuilder == null)
@@ -88,24 +91,22 @@ public static class SqlServerDbContextOptionsExtensions
             throw new ArgumentException(nameof(serviceName));
         }
 
-        var connection = GetConnection(config, serviceName);
+        string connection = GetConnection(config, serviceName);
 
         return DoUseSqlServer(optionsBuilder, connection, sqlServerOptionsAction);
     }
 
     private static MethodInfo FindUseSqlMethod(Type type, Type[] parameterTypes)
     {
-        var typeInfo = type.GetTypeInfo();
-        var declaredMethods = typeInfo.DeclaredMethods;
+        TypeInfo typeInfo = type.GetTypeInfo();
+        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
 
-        foreach (var ci in declaredMethods)
+        foreach (MethodInfo ci in declaredMethods)
         {
-            var parameters = ci.GetParameters();
-            if (parameters.Length == 3 &&
-                ci.Name.Equals("UseSqlServer", StringComparison.InvariantCultureIgnoreCase) &&
-                parameters[0].ParameterType.Equals(parameterTypes[0]) &&
-                parameters[1].ParameterType.Equals(parameterTypes[1]) &&
-                ci.IsPublic && ci.IsStatic)
+            ParameterInfo[] parameters = ci.GetParameters();
+
+            if (parameters.Length == 3 && ci.Name.Equals("UseSqlServer", StringComparison.InvariantCultureIgnoreCase) &&
+                parameters[0].ParameterType.Equals(parameterTypes[0]) && parameters[1].ParameterType.Equals(parameterTypes[1]) && ci.IsPublic && ci.IsStatic)
             {
                 return ci;
             }
@@ -116,7 +117,7 @@ public static class SqlServerDbContextOptionsExtensions
 
     private static string GetConnection(IConfiguration config, string serviceName = null)
     {
-        var info = string.IsNullOrEmpty(serviceName)
+        SqlServerServiceInfo info = string.IsNullOrEmpty(serviceName)
             ? config.GetSingletonServiceInfo<SqlServerServiceInfo>()
             : config.GetRequiredServiceInfo<SqlServerServiceInfo>(serviceName);
 
@@ -129,15 +130,26 @@ public static class SqlServerDbContextOptionsExtensions
 
     private static DbContextOptionsBuilder DoUseSqlServer(DbContextOptionsBuilder builder, string connection, object sqlServerOptionsAction = null)
     {
-        var extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
+        Type extensionType = EntityFrameworkCoreTypeLocator.SqlServerDbContextOptionsType;
 
-        var useMethod = FindUseSqlMethod(extensionType, new[] { typeof(DbContextOptionsBuilder), typeof(string) });
+        MethodInfo useMethod = FindUseSqlMethod(extensionType, new[]
+        {
+            typeof(DbContextOptionsBuilder),
+            typeof(string)
+        });
+
         if (extensionType == null)
         {
             throw new ConnectorException("Unable to find UseSqlServer extension, are you missing SqlServer EntityFramework Core assembly");
         }
 
-        var result = ReflectionHelpers.Invoke(useMethod, null, new[] { builder, connection, sqlServerOptionsAction });
+        object result = ReflectionHelpers.Invoke(useMethod, null, new[]
+        {
+            builder,
+            connection,
+            sqlServerOptionsAction
+        });
+
         if (result == null)
         {
             throw new ConnectorException($"Failed to invoke UseSqlServer extension, connection: {connection}");
@@ -146,7 +158,8 @@ public static class SqlServerDbContextOptionsExtensions
         return (DbContextOptionsBuilder)result;
     }
 
-    private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection, object sqlServerOptionsAction = null)
+    private static DbContextOptionsBuilder<TContext> DoUseSqlServer<TContext>(DbContextOptionsBuilder<TContext> builder, string connection,
+        object sqlServerOptionsAction = null)
         where TContext : DbContext
     {
         return (DbContextOptionsBuilder<TContext>)DoUseSqlServer((DbContextOptionsBuilder)builder, connection, sqlServerOptionsAction);

@@ -14,17 +14,24 @@ public static class KubernetesConfigurationBuilderExtensions
     /// <summary>
     /// Add configuration providers for ConfigMaps and Secrets.
     /// </summary>
-    /// <param name="configurationBuilder"><see cref="IConfigurationBuilder"/>.</param>
-    /// <param name="kubernetesClientConfiguration">Kubernetes client configuration customization.</param>
-    /// <param name="loggerFactory"><see cref="ILoggerFactory"/> for logging within config providers.</param>
-    public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder, Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
+    /// <param name="configurationBuilder">
+    /// <see cref="IConfigurationBuilder" />.
+    /// </param>
+    /// <param name="kubernetesClientConfiguration">
+    /// Kubernetes client configuration customization.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// <see cref="ILoggerFactory" /> for logging within config providers.
+    /// </param>
+    public static IConfigurationBuilder AddKubernetes(this IConfigurationBuilder configurationBuilder,
+        Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILoggerFactory loggerFactory = null)
     {
         if (configurationBuilder == null)
         {
             throw new ArgumentNullException(nameof(configurationBuilder));
         }
 
-        var logger = loggerFactory?.CreateLogger("Steeltoe.Extensions.Configuration.Kubernetes");
+        ILogger logger = loggerFactory?.CreateLogger("Steeltoe.Extensions.Configuration.Kubernetes");
 
         var appInfo = new KubernetesApplicationOptions(configurationBuilder.Build());
 
@@ -32,31 +39,38 @@ public static class KubernetesConfigurationBuilderExtensions
         {
             logger?.LogTrace("Steeltoe Kubernetes is enabled");
 
-            var lowercaseAppName = appInfo.Name.ToLowerInvariant();
-            var lowercaseAppEnvName = (appInfo.Name + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
+            string lowercaseAppName = appInfo.Name.ToLowerInvariant();
+            string lowercaseAppEnvName = (appInfo.Name + appInfo.NameEnvironmentSeparator + appInfo.EnvironmentName).ToLowerInvariant();
 
-            var k8sClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
+            IKubernetes k8sClient = KubernetesClientHelpers.GetKubernetesClient(appInfo, kubernetesClientConfiguration, logger);
 
             if (appInfo.Config.Enabled)
             {
                 configurationBuilder
-                    .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory)))
-                    .Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
+                    .Add(new KubernetesConfigMapSource(k8sClient,
+                        new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory))).Add(
+                        new KubernetesConfigMapSource(k8sClient,
+                            new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
 
-                foreach (var configMap in appInfo.Config.Sources)
+                foreach (NamespacedResource configMap in appInfo.Config.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient, new KubernetesConfigSourceSettings(configMap.Namespace, configMap.Name, appInfo.Reload, loggerFactory)));
+                    configurationBuilder.Add(new KubernetesConfigMapSource(k8sClient,
+                        new KubernetesConfigSourceSettings(configMap.Namespace, configMap.Name, appInfo.Reload, loggerFactory)));
                 }
             }
 
             if (appInfo.Secrets.Enabled)
             {
                 configurationBuilder
-                    .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory)))
-                    .Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
-                foreach (var secret in appInfo.Secrets.Sources)
+                    .Add(new KubernetesSecretSource(k8sClient,
+                        new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppName, appInfo.Reload, loggerFactory))).Add(
+                        new KubernetesSecretSource(k8sClient,
+                            new KubernetesConfigSourceSettings(appInfo.NameSpace, lowercaseAppEnvName, appInfo.Reload, loggerFactory)));
+
+                foreach (NamespacedResource secret in appInfo.Secrets.Sources)
                 {
-                    configurationBuilder.Add(new KubernetesSecretSource(k8sClient, new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload, loggerFactory)));
+                    configurationBuilder.Add(new KubernetesSecretSource(k8sClient,
+                        new KubernetesConfigSourceSettings(secret.Namespace, secret.Name, appInfo.Reload, loggerFactory)));
                 }
             }
         }

@@ -26,22 +26,22 @@ public class UnicastingDispatcher : AbstractDispatcher
     {
         if (Executor != null)
         {
-            Factory.StartNew(
-                () =>
+            Factory.StartNew(() =>
+            {
+                IMessageHandlingRunnable task = CreateMessageHandlingTask(message, cancellationToken);
+
+                try
                 {
-                    var task = CreateMessageHandlingTask(message, cancellationToken);
-                    try
+                    task.Run();
+                }
+                catch (Exception e)
+                {
+                    if (ErrorHandler != null)
                     {
-                        task.Run();
+                        ErrorHandler.HandleError(e);
                     }
-                    catch (Exception e)
-                    {
-                        if (ErrorHandler != null)
-                        {
-                            ErrorHandler.HandleError(e);
-                        }
-                    }
-                }, CancellationToken.None);
+                }
+            }, CancellationToken.None);
 
             return true;
         }
@@ -56,20 +56,23 @@ public class UnicastingDispatcher : AbstractDispatcher
             return true;
         }
 
-        var handlers = base.handlers;
+        List<IMessageHandler> handlers = this.handlers;
+
         if (handlers.Count == 0)
         {
             throw new MessageDispatchingException(message, "Dispatcher has no subscribers");
         }
 
-        var handlerIterator = GetHandlerEnumerator(message, handlers);
+        MessageHandlerEnumerator handlerIterator = GetHandlerEnumerator(message, handlers);
         List<Exception> exceptions = null;
         bool isLast;
-        var success = false;
+        bool success = false;
+
         do
         {
-            var handler = handlerIterator.Current;
+            IMessageHandler handler = handlerIterator.Current;
             isLast = !handlerIterator.MoveNext();
+
             try
             {
                 handler.HandleMessage(message);
@@ -78,7 +81,7 @@ public class UnicastingDispatcher : AbstractDispatcher
             }
             catch (Exception e)
             {
-                var runtimeException = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "Dispatcher failed to deliver Message", e);
+                Exception runtimeException = IntegrationUtils.WrapInDeliveryExceptionIfNecessary(message, "Dispatcher failed to deliver Message", e);
                 exceptions ??= new List<Exception>();
 
                 exceptions.Add(runtimeException);
@@ -95,7 +98,7 @@ public class UnicastingDispatcher : AbstractDispatcher
     {
         if (LoadBalancingStrategy != null)
         {
-            var index = LoadBalancingStrategy.GetNextHandlerStartIndex(message, handlers);
+            int index = LoadBalancingStrategy.GetNextHandlerStartIndex(message, handlers);
             return new MessageHandlerEnumerator(index, handlers);
         }
 
@@ -129,6 +132,14 @@ public class UnicastingDispatcher : AbstractDispatcher
 
     private sealed class MessageHandlingRunnable : IMessageHandlingRunnable
     {
+        public UnicastingDispatcher Dispatcher { get; }
+
+        public IMessage Message { get; }
+
+        public CancellationToken Token { get; }
+
+        public IMessageHandler MessageHandler { get; }
+
         public MessageHandlingRunnable(UnicastingDispatcher dispatcher, IMessage message, CancellationToken cancellationToken)
         {
             Dispatcher = dispatcher;
@@ -143,25 +154,17 @@ public class UnicastingDispatcher : AbstractDispatcher
             return true;
         }
 
-        public UnicastingDispatcher Dispatcher { get; }
-
-        public IMessage Message { get; }
-
-        public CancellationToken Token { get; }
-
-        public IMessageHandler MessageHandler { get; }
-
         private sealed class MessageHandlerDelegate : IMessageHandler
         {
             private readonly MessageHandlingRunnable _runnable;
+
+            public string ServiceName { get; set; }
 
             public MessageHandlerDelegate(MessageHandlingRunnable runnable)
             {
                 _runnable = runnable;
                 ServiceName = $"{GetType().Name}@{GetHashCode()}";
             }
-
-            public string ServiceName { get; set; }
 
             public void HandleMessage(IMessage message)
             {

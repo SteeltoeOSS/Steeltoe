@@ -17,23 +17,20 @@ public class InputOutputBindingOrderTest : AbstractTest
     [Fact]
     public async Task TestInputOutputBindingOrder()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var container = CreateStreamsContainerWithBinding(
-            searchDirectories,
-            typeof(IProcessor),
-            "spring:cloud:stream:defaultBinder=mock");
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+        ServiceCollection container = CreateStreamsContainerWithBinding(searchDirectories, typeof(IProcessor), "spring:cloud:stream:defaultBinder=mock");
 
         container.AddSingleton<SomeLifecycle>();
         container.AddSingleton<ILifecycle>(p => p.GetService<SomeLifecycle>());
-        var provider = container.BuildServiceProvider();
+        ServiceProvider provider = container.BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
-        var binder = factory.GetBinder(null, typeof(IMessageChannel));
+        IBinder binder = factory.GetBinder(null, typeof(IMessageChannel));
         var processor = provider.GetService<IProcessor>();
 
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("input", null, processor.Input, It.IsAny<ConsumerOptions>()));
 
         var lifecycle = provider.GetService<SomeLifecycle>();
@@ -42,6 +39,16 @@ public class InputOutputBindingOrderTest : AbstractTest
 
     public class SomeLifecycle : ISmartLifecycle
     {
+        public bool IsRunning { get; private set; }
+
+        public IBinderFactory Factory { get; }
+
+        public IProcessor Processor { get; }
+
+        public bool IsAutoStartup => true;
+
+        public int Phase => 0;
+
         public SomeLifecycle(IBinderFactory factory, IProcessor processor)
         {
             Factory = factory;
@@ -50,9 +57,9 @@ public class InputOutputBindingOrderTest : AbstractTest
 
         public Task Start()
         {
-            var binder = Factory.GetBinder(null, typeof(IMessageChannel));
+            IBinder binder = Factory.GetBinder(null, typeof(IMessageChannel));
 
-            var mock = Mock.Get(binder);
+            Mock<IBinder> mock = Mock.Get(binder);
             mock.Verify(b => b.BindProducer("output", Processor.Output, It.IsAny<ProducerOptions>()));
 
             IsRunning = true;
@@ -70,15 +77,5 @@ public class InputOutputBindingOrderTest : AbstractTest
             await Stop();
             callback?.Invoke();
         }
-
-        public bool IsRunning { get; private set; }
-
-        public IBinderFactory Factory { get; }
-
-        public IProcessor Processor { get; }
-
-        public bool IsAutoStartup => true;
-
-        public int Phase => 0;
     }
 }

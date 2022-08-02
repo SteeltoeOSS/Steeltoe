@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Logging;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Security.Authentication.Mtls;
 
@@ -18,15 +18,26 @@ public class CloudFoundryInstanceCertificate
     private const string ValidInstanceCertSubjectRegex =
         @"^CN=(?<instance>[0-9a-f-]+),\sOU=app:(?<app>[0-9a-f-]+)\s\+\sOU=space:(?<space>[0-9a-f-]+)\s\+\sOU=organization:(?<org>[0-9a-f-]+)$";
 
+    public string OrgId { get; private set; }
+
+    public string SpaceId { get; private set; }
+
+    public string AppId { get; private set; }
+
+    public string InstanceId { get; private set; }
+
+    public X509Certificate2 Certificate { get; private set; }
+
     public static bool TryParse(X509Certificate2 certificate, out CloudFoundryInstanceCertificate cloudFoundryInstanceCertificate, ILogger logger = null)
     {
         cloudFoundryInstanceCertificate = null;
+
         if (certificate == null)
         {
             return false;
         }
 
-        var cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), CloudFoundryInstanceCertSubjectRegex);
+        Match cfInstanceMatch = Regex.Match(certificate.Subject.Replace("\"", string.Empty), CloudFoundryInstanceCertSubjectRegex);
 
         if (!cfInstanceMatch.Success)
         {
@@ -51,14 +62,4 @@ public class CloudFoundryInstanceCertificate
 
         return cfInstanceMatch.Success;
     }
-
-    public string OrgId { get; private set; }
-
-    public string SpaceId { get; private set; }
-
-    public string AppId { get; private set; }
-
-    public string InstanceId { get; private set; }
-
-    public X509Certificate2 Certificate { get; private set; }
 }

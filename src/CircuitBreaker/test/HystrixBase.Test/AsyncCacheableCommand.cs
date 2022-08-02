@@ -8,17 +8,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class AsyncCacheableCommand : HystrixCommand<object>
 {
-    private readonly AtomicBoolean _cancelled = new (false);
+    private readonly AtomicBoolean _cancelled = new(false);
+
+    protected override string CacheKey { get; }
+
+    public bool IsCancelled => _cancelled.Value;
 
     public AsyncCacheableCommand(string arg)
-        : base(new HystrixCommandOptions { GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC") })
+        : base(new HystrixCommandOptions
+        {
+            GroupKey = HystrixCommandGroupKeyDefault.AsKey("ASYNC")
+        })
     {
         CacheKey = arg;
-    }
-
-    public bool IsCancelled
-    {
-        get { return _cancelled.Value; }
     }
 
     protected override object Run()
@@ -35,6 +37,4 @@ internal sealed class AsyncCacheableCommand : HystrixCommand<object>
             throw;
         }
     }
-
-    protected override string CacheKey { get; }
 }

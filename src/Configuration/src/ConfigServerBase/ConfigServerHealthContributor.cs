@@ -11,18 +11,6 @@ namespace Steeltoe.Extensions.Configuration.ConfigServer;
 
 public class ConfigServerHealthContributor : IHealthContributor
 {
-    public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
-    {
-        if (configuration == null)
-        {
-            throw new ArgumentNullException(nameof(configuration));
-        }
-
-        return new ConfigServerHealthContributor(configuration, logger);
-    }
-
-    public string Id => "config-server";
-
     internal ConfigServerConfigurationProvider Provider { get; set; }
 
     internal ConfigEnvironment Cached { get; set; }
@@ -33,11 +21,23 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     internal ILogger<ConfigServerHealthContributor> Logger { get; set; }
 
+    public string Id => "config-server";
+
     public ConfigServerHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
     {
         Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         Logger = logger;
         Provider = FindProvider(configuration);
+    }
+
+    public static IHealthContributor GetHealthContributor(IConfiguration configuration, ILogger<ConfigServerHealthContributor> logger = null)
+    {
+        if (configuration == null)
+        {
+            throw new ArgumentNullException(nameof(configuration));
+        }
+
+        return new ConfigServerHealthContributor(configuration, logger);
     }
 
     public HealthCheckResult Health()
@@ -60,7 +60,8 @@ public class ConfigServerHealthContributor : IHealthContributor
             return health;
         }
 
-        var sources = GetPropertySources();
+        IList<PropertySource> sources = GetPropertySources();
+
         if (sources == null || sources.Count == 0)
         {
             Logger?.LogDebug("No property sources found");
@@ -79,7 +80,8 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         health.Status = HealthStatus.Up;
         var names = new List<string>();
-        foreach (var source in sources)
+
+        foreach (PropertySource source in sources)
         {
             Logger?.LogDebug("Returning property source: {propertySource}", source.Name);
             names.Add(source.Name);
@@ -90,7 +92,8 @@ public class ConfigServerHealthContributor : IHealthContributor
 
     internal IList<PropertySource> GetPropertySources()
     {
-        var currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        long currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
         if (IsCacheStale(currentTime))
         {
             LastAccess = currentTime;
@@ -127,20 +130,18 @@ public class ConfigServerHealthContributor : IHealthContributor
 
         if (configuration is IConfigurationRoot root)
         {
-            foreach (var provider in root.Providers)
+            foreach (IConfigurationProvider provider in root.Providers)
             {
                 if (provider is PlaceholderResolverProvider placeholder)
                 {
                     result = FindProvider(placeholder.Configuration);
                     break;
                 }
-                else
+
+                if (provider is ConfigServerConfigurationProvider configServer)
                 {
-                    if (provider is ConfigServerConfigurationProvider configServer)
-                    {
-                        result = configServer;
-                        break;
-                    }
+                    result = configServer;
+                    break;
                 }
             }
         }

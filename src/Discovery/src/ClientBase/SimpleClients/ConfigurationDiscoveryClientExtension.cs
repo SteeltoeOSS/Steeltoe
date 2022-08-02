@@ -14,11 +14,14 @@ public class ConfigurationDiscoveryClientExtension : IDiscoveryClientExtension
 {
     public const string ConfigPrefix = "discovery:services";
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void ApplyServices(IServiceCollection services)
     {
-        services.AddOptions<List<ConfigurationServiceInstance>>().Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigPrefix).Bind(options));
-        services.AddSingleton<IDiscoveryClient>(serviceProvider => new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
+        services.AddOptions<List<ConfigurationServiceInstance>>()
+            .Configure<IConfiguration>((options, configuration) => configuration.GetSection(ConfigPrefix).Bind(options));
+
+        services.AddSingleton<IDiscoveryClient>(serviceProvider =>
+            new ConfigurationDiscoveryClient(serviceProvider.GetRequiredService<IOptionsMonitor<List<ConfigurationServiceInstance>>>()));
     }
 
     public bool IsConfigured(IConfiguration configuration, IServiceInfo serviceInfo = null)

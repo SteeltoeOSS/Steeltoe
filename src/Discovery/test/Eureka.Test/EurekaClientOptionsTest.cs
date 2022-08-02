@@ -38,7 +38,7 @@ public class EurekaClientOptionsTest : AbstractBaseTest
     [Fact]
     public void Constructor_ConfiguresEurekaDiscovery_Correctly()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -91,17 +91,18 @@ public class EurekaClientOptionsTest : AbstractBaseTest
                         }
                     }
                 }";
+
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
+        IConfigurationSection clientSection = config.GetSection(EurekaClientOptions.EurekaClientConfigurationPrefix);
         var co = new EurekaClientOptions();
         clientSection.Bind(co);
 

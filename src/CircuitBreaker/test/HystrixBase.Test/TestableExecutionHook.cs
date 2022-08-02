@@ -2,16 +2,20 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
-using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using System.Reactive;
 using System.Text;
+using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
+using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Xunit.Abstractions;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 public class TestableExecutionHook : HystrixCommandExecutionHook
 {
+    internal StringBuilder ExecutionSequence = new();
+    internal List<Notification<object>> CommandEmissions = new();
+    internal List<Notification<object>> ExecutionEmissions = new();
+    internal List<Notification<object>> FallbackEmissions = new();
     public ITestOutputHelper Output;
 
     public TestableExecutionHook()
@@ -20,18 +24,13 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
     public TestableExecutionHook(ITestOutputHelper output)
     {
-        this.Output = output;
+        Output = output;
     }
 
     private static void RecordHookCall(StringBuilder sequenceRecorder, string methodName)
     {
         sequenceRecorder.Append(methodName).Append(" - ");
     }
-
-    internal StringBuilder ExecutionSequence = new ();
-    internal List<Notification<object>> CommandEmissions = new ();
-    internal List<Notification<object>> ExecutionEmissions = new ();
-    internal List<Notification<object>> FallbackEmissions = new ();
 
     public bool CommandEmissionsMatch(int numOnNext, int numOnError, int numOnCompleted)
     {
@@ -164,10 +163,10 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
     private bool EventsMatch(List<Notification<object>> l, int numOnNext, int numOnError, int numOnCompleted)
     {
-        var matchFailed = false;
-        var actualOnNext = 0;
-        var actualOnError = 0;
-        var actualOnCompleted = 0;
+        bool matchFailed = false;
+        int actualOnNext = 0;
+        int actualOnError = 0;
+        int actualOnCompleted = 0;
 
         if (l.Count != numOnNext + numOnError + numOnCompleted)
         {
@@ -175,9 +174,10 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
             return false;
         }
 
-        for (var n = 0; n < numOnNext; n++)
+        for (int n = 0; n < numOnNext; n++)
         {
-            var current = l[n];
+            Notification<object> current = l[n];
+
             if (current.Kind != NotificationKind.OnNext)
             {
                 matchFailed = true;
@@ -188,9 +188,10 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
             }
         }
 
-        for (var e = numOnNext; e < numOnNext + numOnError; e++)
+        for (int e = numOnNext; e < numOnNext + numOnError; e++)
         {
-            var current = l[e];
+            Notification<object> current = l[e];
+
             if (current.Kind != NotificationKind.OnError)
             {
                 matchFailed = true;
@@ -201,9 +202,10 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
             }
         }
 
-        for (var c = numOnNext + numOnError; c < numOnNext + numOnError + numOnCompleted; c++)
+        for (int c = numOnNext + numOnError; c < numOnNext + numOnError + numOnCompleted; c++)
         {
-            var current = l[c];
+            Notification<object> current = l[c];
+
             if (current.Kind != NotificationKind.OnCompleted)
             {
                 matchFailed = true;
@@ -225,7 +227,7 @@ public class TestableExecutionHook : HystrixCommandExecutionHook
 
     private Exception GetException(List<Notification<object>> l)
     {
-        foreach (var n in l)
+        foreach (Notification<object> n in l)
         {
             if (n.Kind == NotificationKind.OnError)
             {

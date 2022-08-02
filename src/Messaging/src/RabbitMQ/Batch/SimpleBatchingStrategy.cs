@@ -2,10 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Buffers.Binary;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.RabbitMQ.Listener.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Buffers.Binary;
 
 namespace Steeltoe.Messaging.RabbitMQ.Batch;
 
@@ -14,8 +14,8 @@ public class SimpleBatchingStrategy : IBatchingStrategy
     private readonly int _batchSize;
     private readonly int _bufferLimit;
     private readonly long _timeout;
-    private readonly List<IMessage<byte[]>> _messages = new ();
-    private readonly List<MessageBatch> _empty = new ();
+    private readonly List<IMessage<byte[]>> _messages = new();
+    private readonly List<MessageBatch> _empty = new();
 
     private string _exchange;
     private string _routingKey;
@@ -49,8 +49,9 @@ public class SimpleBatchingStrategy : IBatchingStrategy
 
         _routingKey = routingKey;
 
-        var bufferUse = 4 + bytesMessage.Payload.Length;
+        int bufferUse = 4 + bytesMessage.Payload.Length;
         MessageBatch? batch = null;
+
         if (_messages.Count > 0 && _currentSize + bufferUse > _bufferLimit)
         {
             batch = DoReleaseBatch();
@@ -60,6 +61,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
 
         _currentSize += bufferUse;
         _messages.Add(bytesMessage);
+
         if (batch == null && (_messages.Count >= _batchSize || _currentSize >= _bufferLimit))
         {
             batch = DoReleaseBatch();
@@ -74,33 +76,34 @@ public class SimpleBatchingStrategy : IBatchingStrategy
         {
             return null;
         }
-        else if (_currentSize >= _bufferLimit)
+
+        if (_currentSize >= _bufferLimit)
         {
             // release immediately, we're already over the limit
             return DateTime.Now;
         }
-        else
-        {
-            return DateTime.Now + TimeSpan.FromMilliseconds(_timeout);
-        }
+
+        return DateTime.Now + TimeSpan.FromMilliseconds(_timeout);
     }
 
     public ICollection<MessageBatch> ReleaseBatches()
     {
-        var batch = DoReleaseBatch();
+        MessageBatch? batch = DoReleaseBatch();
+
         if (batch == null)
         {
             return _empty;
         }
-        else
+
+        return new List<MessageBatch>
         {
-            return new List<MessageBatch> { batch.Value };
-        }
+            batch.Value
+        };
     }
 
     public bool CanDebatch(IMessageHeaders properties)
     {
-        if (properties.TryGetValue(RabbitMessageHeaders.SpringBatchFormat, out var value))
+        if (properties.TryGetValue(RabbitMessageHeaders.SpringBatchFormat, out object value))
         {
             return value as string == RabbitMessageHeaders.BatchFormatLengthHeader4;
         }
@@ -115,28 +118,29 @@ public class SimpleBatchingStrategy : IBatchingStrategy
             throw new ArgumentException("SimpleBatchingStrategy only supports messages with byte[] payloads");
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);
         var byteBuffer = new Span<byte>(bytesMessage.Payload);
         accessor.RemoveHeader(RabbitMessageHeaders.SpringBatchFormat);
-        var bodyLength = bytesMessage.Payload.Length;
-        var index = 0;
+        int bodyLength = bytesMessage.Payload.Length;
+        int index = 0;
+
         while (index < bodyLength)
         {
             accessor = RabbitHeaderAccessor.GetMutableAccessor(bytesMessage);
-            var slice = byteBuffer.Slice(index);
-            var length = BinaryPrimitives.ReadInt32BigEndian(slice);
+            Span<byte> slice = byteBuffer.Slice(index);
+            int length = BinaryPrimitives.ReadInt32BigEndian(slice);
             index += 4;
+
             if (length < 0 || length > bodyLength - index)
             {
-                throw new ListenerExecutionFailedException(
-                    "Bad batched message received",
-                    new MessageConversionException($"Insufficient batch data at offset {index}"),
-                    bytesMessage);
+                throw new ListenerExecutionFailedException("Bad batched message received",
+                    new MessageConversionException($"Insufficient batch data at offset {index}"), bytesMessage);
             }
 
-            var body = new byte[length];
+            byte[] body = new byte[length];
             slice = byteBuffer.Slice(index);
-            for (var i = 0; i < length; i++)
+
+            for (int i = 0; i < length; i++)
             {
                 body[i] = slice[i];
             }
@@ -151,7 +155,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
                 accessor.LastInBatch = true;
             }
 
-            var fragment = Message.Create(body, accessor.MessageHeaders);
+            IMessage<byte[]> fragment = Message.Create(body, accessor.MessageHeaders);
 
             fragmentConsumer(fragment);
         }
@@ -164,7 +168,7 @@ public class SimpleBatchingStrategy : IBatchingStrategy
             return null;
         }
 
-        var message = AssembleMessage();
+        IMessage<byte[]> message = AssembleMessage();
         var messageBatch = new MessageBatch(_exchange, _routingKey, message);
         _messages.Clear();
         _currentSize = 0;
@@ -180,19 +184,21 @@ public class SimpleBatchingStrategy : IBatchingStrategy
             return _messages[0];
         }
 
-        var accessor = RabbitHeaderAccessor.GetMutableAccessor(_messages[0]);
-        var body = new byte[_currentSize];
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetMutableAccessor(_messages[0]);
+        byte[] body = new byte[_currentSize];
 
         var bytes = new Span<byte>(body);
-        var index = 0;
-        foreach (var message in _messages)
+        int index = 0;
+
+        foreach (IMessage<byte[]> message in _messages)
         {
-            var slice = bytes.Slice(index);
+            Span<byte> slice = bytes.Slice(index);
             BinaryPrimitives.WriteInt32BigEndian(slice, message.Payload.Length);
             index += 4;
 
             slice = bytes.Slice(index);
-            for (var i = 0; i < message.Payload.Length; i++)
+
+            for (int i = 0; i < message.Payload.Length; i++)
             {
                 slice[i] = message.Payload[i];
             }

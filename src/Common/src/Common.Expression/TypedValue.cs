@@ -8,7 +8,11 @@ namespace Steeltoe.Common.Expression.Internal;
 
 public class TypedValue : ITypedValue
 {
-    public static readonly TypedValue Null = new (null);
+    public static readonly TypedValue Null = new(null);
+
+    public object Value { get; }
+
+    public Type TypeDescriptor { get; }
 
     public TypedValue(object value)
     {
@@ -22,10 +26,6 @@ public class TypedValue : ITypedValue
         TypeDescriptor = typeDescriptor;
     }
 
-    public object Value { get; }
-
-    public Type TypeDescriptor { get; }
-
     public override bool Equals(object obj)
     {
         if (ReferenceEquals(this, obj))
@@ -38,12 +38,17 @@ public class TypedValue : ITypedValue
             return false;
         }
 
-        return ObjectUtils.NullSafeEquals(Value, otherTv.Value) &&
-               ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||
-                ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
+        return ObjectUtils.NullSafeEquals(Value, otherTv.Value) && ((TypeDescriptor == null && otherTv.TypeDescriptor == null) ||
+            ObjectUtils.NullSafeEquals(TypeDescriptor, otherTv.TypeDescriptor));
     }
 
-    public override int GetHashCode() => ObjectUtils.NullSafeHashCode(Value);
+    public override int GetHashCode()
+    {
+        return ObjectUtils.NullSafeHashCode(Value);
+    }
 
-    public override string ToString() => $"TypedValue: '{Value}' of [{TypeDescriptor}]";
+    public override string ToString()
+    {
+        return $"TypedValue: '{Value}' of [{TypeDescriptor}]";
+    }
 }

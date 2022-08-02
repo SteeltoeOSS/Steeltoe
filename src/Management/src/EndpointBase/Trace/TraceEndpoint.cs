@@ -11,19 +11,13 @@ public class TraceEndpoint : AbstractEndpoint<List<TraceResult>>, ITraceEndpoint
     private readonly ILogger<TraceEndpoint> _logger;
     private readonly ITraceRepository _traceRepo;
 
+    public new ITraceOptions Options => options as ITraceOptions;
+
     public TraceEndpoint(ITraceOptions options, ITraceRepository traceRepository, ILogger<TraceEndpoint> logger = null)
         : base(options)
     {
         _traceRepo = traceRepository ?? throw new ArgumentNullException(nameof(traceRepository));
         _logger = logger;
-    }
-
-    public new ITraceOptions Options
-    {
-        get
-        {
-            return options as ITraceOptions;
-        }
     }
 
     public override List<TraceResult> Invoke()

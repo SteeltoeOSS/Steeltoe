@@ -11,9 +11,15 @@ public class RedisCacheConfigurer
     /// <summary>
     /// Create a configuration object to be used to connect to Redis.
     /// </summary>
-    /// <param name="si">Redis Service Info.</param>
-    /// <param name="configuration">Configuration parameters.</param>
-    /// <returns>A dynamically typed object for use connecting to Redis.</returns>
+    /// <param name="si">
+    /// Redis Service Info.
+    /// </param>
+    /// <param name="configuration">
+    /// Configuration parameters.
+    /// </param>
+    /// <returns>
+    /// A dynamically typed object for use connecting to Redis.
+    /// </returns>
     public RedisCacheConnectorOptions Configure(RedisServiceInfo si, RedisCacheConnectorOptions configuration)
     {
         // apply service info to existing configuration

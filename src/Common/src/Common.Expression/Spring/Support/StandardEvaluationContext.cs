@@ -9,7 +9,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardEvaluationContext : IEvaluationContext
 {
-    private readonly ConcurrentDictionary<string, object> _variables = new ();
+    private readonly ConcurrentDictionary<string, object> _variables = new();
 
     private volatile List<IPropertyAccessor> _propertyAccessors;
 
@@ -27,16 +27,6 @@ public class StandardEvaluationContext : IEvaluationContext
 
     private IOperatorOverloader _operatorOverloader = new StandardOperatorOverloader();
 
-    public StandardEvaluationContext()
-    {
-        RootObject = TypedValue.Null;
-    }
-
-    public StandardEvaluationContext(object rootObject)
-    {
-        RootObject = new TypedValue(rootObject);
-    }
-
     public ITypedValue RootObject { get; private set; }
 
     public IServiceResolver ServiceResolver { get; set; }
@@ -49,10 +39,7 @@ public class StandardEvaluationContext : IEvaluationContext
             return _propertyAccessors;
         }
 
-        set
-        {
-            _propertyAccessors = value;
-        }
+        set => _propertyAccessors = value;
     }
 
     public List<IConstructorResolver> ConstructorResolvers
@@ -63,10 +50,7 @@ public class StandardEvaluationContext : IEvaluationContext
             return _constructorResolvers;
         }
 
-        set
-        {
-            _constructorResolvers = value;
-        }
+        set => _constructorResolvers = value;
     }
 
     public List<IMethodResolver> MethodResolvers
@@ -77,10 +61,7 @@ public class StandardEvaluationContext : IEvaluationContext
             return _methodResolvers;
         }
 
-        set
-        {
-            _methodResolvers = value;
-        }
+        set => _methodResolvers = value;
     }
 
     public ITypeLocator TypeLocator
@@ -91,10 +72,7 @@ public class StandardEvaluationContext : IEvaluationContext
             return _typeLocator;
         }
 
-        set
-        {
-            _typeLocator = value ?? throw new ArgumentNullException("TypeLocator can not be null");
-        }
+        set => _typeLocator = value ?? throw new ArgumentNullException("TypeLocator can not be null");
     }
 
     public ITypeConverter TypeConverter
@@ -105,30 +83,31 @@ public class StandardEvaluationContext : IEvaluationContext
             return _typeConverter;
         }
 
-        set
-        {
-            _typeConverter = value ?? throw new ArgumentNullException("TypeConverter can not be null");
-        }
+        set => _typeConverter = value ?? throw new ArgumentNullException("TypeConverter can not be null");
     }
 
     public ITypeComparator TypeComparator
     {
         get => _typeComparator;
 
-        set
-        {
-            _typeComparator = value ?? throw new ArgumentNullException("TypeComparator can not be null");
-        }
+        set => _typeComparator = value ?? throw new ArgumentNullException("TypeComparator can not be null");
     }
 
     public IOperatorOverloader OperatorOverloader
     {
         get => _operatorOverloader;
 
-        set
-        {
-            _operatorOverloader = value ?? throw new ArgumentNullException("OperatorOverloader can not be null");
-        }
+        set => _operatorOverloader = value ?? throw new ArgumentNullException("OperatorOverloader can not be null");
+    }
+
+    public StandardEvaluationContext()
+    {
+        RootObject = TypedValue.Null;
+    }
+
+    public StandardEvaluationContext(object rootObject)
+    {
+        RootObject = new TypedValue(rootObject);
     }
 
     public void SetVariable(string name, object value)
@@ -151,7 +130,7 @@ public class StandardEvaluationContext : IEvaluationContext
 
     public void SetVariables(Dictionary<string, object> variables)
     {
-        foreach (var v in variables)
+        foreach (KeyValuePair<string, object> v in variables)
         {
             SetVariable(v.Key, v.Value);
         }
@@ -164,13 +143,13 @@ public class StandardEvaluationContext : IEvaluationContext
 
     public object LookupVariable(string name)
     {
-        _variables.TryGetValue(name, out var result);
+        _variables.TryGetValue(name, out object result);
         return result;
     }
 
     public T LookupVariable<T>(string name)
     {
-        _variables.TryGetValue(name, out var result);
+        _variables.TryGetValue(name, out object result);
         return (T)result;
     }
 
@@ -217,7 +196,8 @@ public class StandardEvaluationContext : IEvaluationContext
     public void RegisterMethodFilter(Type type, IMethodFilter filter)
     {
         InitMethodResolvers();
-        var resolver = _reflectiveMethodResolver;
+        ReflectiveMethodResolver resolver = _reflectiveMethodResolver;
+
         if (resolver == null)
         {
             throw new InvalidOperationException("Method filter cannot be set as the reflective method resolver is not in use");
@@ -233,13 +213,15 @@ public class StandardEvaluationContext : IEvaluationContext
 
     private List<IPropertyAccessor> InitPropertyAccessors()
     {
-        var accessors = _propertyAccessors;
+        List<IPropertyAccessor> accessors = _propertyAccessors;
+
         if (accessors == null)
         {
             accessors = new List<IPropertyAccessor>(5)
             {
                 new ReflectivePropertyAccessor()
             };
+
             _propertyAccessors = accessors;
         }
 
@@ -248,13 +230,15 @@ public class StandardEvaluationContext : IEvaluationContext
 
     private List<IConstructorResolver> InitConstructorResolvers()
     {
-        var resolvers = _constructorResolvers;
+        List<IConstructorResolver> resolvers = _constructorResolvers;
+
         if (resolvers == null)
         {
             resolvers = new List<IConstructorResolver>(1)
             {
                 new ReflectiveConstructorResolver()
             };
+
             _constructorResolvers = resolvers;
         }
 
@@ -263,7 +247,8 @@ public class StandardEvaluationContext : IEvaluationContext
 
     private List<IMethodResolver> InitMethodResolvers()
     {
-        var resolvers = _methodResolvers;
+        List<IMethodResolver> resolvers = _methodResolvers;
+
         if (resolvers == null)
         {
             resolvers = new List<IMethodResolver>(1);

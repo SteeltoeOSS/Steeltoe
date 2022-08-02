@@ -16,55 +16,66 @@ public abstract class AbstractToNumberConverter : AbstractGenericConditionalConv
 
     public override bool Matches(Type sourceType, Type targetType)
     {
-        var targetCheck = ConversionUtils.GetNullableElementType(targetType);
-        var pair = (sourceType, targetCheck);
+        Type targetCheck = ConversionUtils.GetNullableElementType(targetType);
+        (Type sourceType, Type targetCheck) pair = (sourceType, targetCheck);
         return convertableTypes.Contains(pair);
     }
 
     public override object Convert(object source, Type sourceType, Type targetType)
     {
         targetType = ConversionUtils.GetNullableElementType(targetType);
+
         if (typeof(int) == targetType)
         {
             return System.Convert.ToInt32(source);
         }
-        else if (typeof(float) == targetType)
+
+        if (typeof(float) == targetType)
         {
             return System.Convert.ToSingle(source);
         }
-        else if (typeof(uint) == targetType)
+
+        if (typeof(uint) == targetType)
         {
             return System.Convert.ToUInt32(source);
         }
-        else if (typeof(ulong) == targetType)
+
+        if (typeof(ulong) == targetType)
         {
             return System.Convert.ToUInt64(source);
         }
-        else if (typeof(long) == targetType)
+
+        if (typeof(long) == targetType)
         {
             return System.Convert.ToInt64(source);
         }
-        else if (typeof(double) == targetType)
+
+        if (typeof(double) == targetType)
         {
             return System.Convert.ToDouble(source);
         }
-        else if (typeof(short) == targetType)
+
+        if (typeof(short) == targetType)
         {
             return System.Convert.ToInt16(source);
         }
-        else if (typeof(ushort) == targetType)
+
+        if (typeof(ushort) == targetType)
         {
             return System.Convert.ToUInt16(source);
         }
-        else if (typeof(decimal) == targetType)
+
+        if (typeof(decimal) == targetType)
         {
             return System.Convert.ToDecimal(source);
         }
-        else if (typeof(byte) == targetType)
+
+        if (typeof(byte) == targetType)
         {
             return System.Convert.ToByte(source);
         }
-        else if (typeof(sbyte) == targetType)
+
+        if (typeof(sbyte) == targetType)
         {
             return System.Convert.ToSByte(source);
         }

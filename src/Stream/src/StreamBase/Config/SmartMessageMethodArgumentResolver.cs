@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging;
 using Steeltoe.Messaging.Converter;
 using Steeltoe.Messaging.Handler.Attributes.Support;
 using Steeltoe.Messaging.Support;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Config;
 
@@ -25,19 +25,21 @@ public class SmartMessageMethodArgumentResolver : MessageMethodArgumentResolver
 
     public override object ResolveArgument(ParameterInfo parameter, IMessage message)
     {
-        var targetPayloadType = GetPayloadType(parameter, message);
+        Type targetPayloadType = GetPayloadType(parameter, message);
 
-        var payloadClass = message.Payload.GetType();
+        Type payloadClass = message.Payload.GetType();
 
         if (message is ErrorMessage || ConversionNotRequired(payloadClass, targetPayloadType))
         {
             return message;
         }
 
-        var payload = message.Payload;
+        object payload = message.Payload;
+
         if (IsEmptyPayload(payload))
         {
-            throw new MessageConversionException(message, $"Cannot convert from actual payload type '{payload.GetType()}' to expected payload type '{targetPayloadType}' when payload is empty");
+            throw new MessageConversionException(message,
+                $"Cannot convert from actual payload type '{payload.GetType()}' to expected payload type '{targetPayloadType}' when payload is empty");
         }
 
         payload = ConvertPayload(message, parameter, targetPayloadType);
@@ -45,19 +47,25 @@ public class SmartMessageMethodArgumentResolver : MessageMethodArgumentResolver
     }
 
     protected override bool IsEmptyPayload(object payload)
-        => payload switch
+    {
+        return payload switch
         {
             null => true,
             byte[] v => v.Length == 0,
             string sPayload => string.IsNullOrEmpty(sPayload),
             _ => false
         };
+    }
 
-    private bool ConversionNotRequired(Type a, Type b) => b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
+    private bool ConversionNotRequired(Type a, Type b)
+    {
+        return b == typeof(object) ? ClassUtils.IsAssignable(a, b) : ClassUtils.IsAssignable(b, a);
+    }
 
     private object ConvertPayload(IMessage message, ParameterInfo parameter, Type targetPayloadType)
     {
         object result = null;
+
         if (Converter is ISmartMessageConverter smartConverter)
         {
             result = smartConverter.FromMessage(message, targetPayloadType, parameter);
@@ -69,7 +77,8 @@ public class SmartMessageMethodArgumentResolver : MessageMethodArgumentResolver
 
         if (result == null)
         {
-            throw new MessageConversionException(message, $"No converter found from actual payload type '{message.Payload.GetType()}' to expected payload type '{targetPayloadType}'");
+            throw new MessageConversionException(message,
+                $"No converter found from actual payload type '{message.Payload.GetType()}' to expected payload type '{targetPayloadType}'");
         }
 
         return result;

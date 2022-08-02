@@ -17,22 +17,26 @@ public class RoutingConnectionFactoryTest
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connectionFactory2 = new Mock<IConnectionFactory>();
+
         var factories = new Dictionary<object, IConnectionFactory>
         {
             { true, connectionFactory1.Object },
             { false, connectionFactory2.Object }
         };
+
         var defaultConnectionFactory = new Mock<IConnectionFactory>();
 
         var lookupFlag = new AtomicBoolean(true);
         var count = new AtomicInteger();
+
         var connectionFactory = new TestAbstractRoutingConnectionFactoryFactory(lookupFlag, count)
         {
             DefaultTargetConnectionFactory = defaultConnectionFactory.Object
         };
+
         connectionFactory.SetTargetConnectionFactories(factories);
 
-        for (var i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             connectionFactory.CreateConnection();
         }
@@ -47,6 +51,7 @@ public class RoutingConnectionFactoryTest
     {
         var connectionFactory1 = new Mock<IConnectionFactory>();
         var connectionFactory2 = new Mock<IConnectionFactory>();
+
         var factories = new Dictionary<object, IConnectionFactory>
         {
             { "foo", connectionFactory1.Object },
@@ -56,15 +61,18 @@ public class RoutingConnectionFactoryTest
         var connectionFactory = new SimpleRoutingConnectionFactory();
         connectionFactory.SetTargetConnectionFactories(factories);
         var tasks = new List<Task>();
-        for (var i = 0; i < 3; i++)
+
+        for (int i = 0; i < 3; i++)
         {
-            var count = i;
-            var task = Task.Run(() =>
+            int count = i;
+
+            Task task = Task.Run(() =>
             {
                 SimpleResourceHolder.Bind(connectionFactory, count % 2 == 0 ? "foo" : "bar");
                 connectionFactory.CreateConnection();
                 SimpleResourceHolder.Unbind(connectionFactory);
             });
+
             tasks.Add(task);
         }
 
@@ -82,7 +90,7 @@ public class RoutingConnectionFactoryTest
         routingFactory.AddTargetConnectionFactory("1", targetConnectionFactory.Object);
         Assert.Equal(targetConnectionFactory.Object, routingFactory.GetTargetConnectionFactory("1"));
         Assert.Null(routingFactory.GetTargetConnectionFactory("2"));
-        var removedConnectionFactory = routingFactory.RemoveTargetConnectionFactory("1");
+        IConnectionFactory removedConnectionFactory = routingFactory.RemoveTargetConnectionFactory("1");
         Assert.Equal(targetConnectionFactory.Object, removedConnectionFactory);
         Assert.Null(routingFactory.GetTargetConnectionFactory("1"));
     }
@@ -112,15 +120,11 @@ public class RoutingConnectionFactoryTest
         var channel2 = new Mock<RC.IModel>();
         var defaultChannel = new Mock<RC.IModel>();
 
-        connectionFactory1.SetupSequence(f => f.CreateConnection())
-            .Returns(connection1.Object);
+        connectionFactory1.SetupSequence(f => f.CreateConnection()).Returns(connection1.Object);
 
-        connectionFactory2.SetupSequence(f => f.CreateConnection())
-            .Returns(connection1.Object)
-            .Returns(connection2.Object);
+        connectionFactory2.SetupSequence(f => f.CreateConnection()).Returns(connection1.Object).Returns(connection2.Object);
 
-        defaultConnectionFactory.SetupSequence(f => f.CreateConnection())
-            .Returns(defaultConnection.Object);
+        defaultConnectionFactory.SetupSequence(f => f.CreateConnection()).Returns(defaultConnection.Object);
 
         connection1.Setup(c => c.IsOpen).Returns(true);
         connection1.Setup(c => c.CreateChannel(It.IsAny<bool>())).Returns(channel1.Object);
@@ -146,6 +150,7 @@ public class RoutingConnectionFactoryTest
             LenientFallback = true,
             DefaultTargetConnectionFactory = defaultConnectionFactory.Object
         };
+
         connectionFactory.SetTargetConnectionFactories(factories);
 
         var container = new DirectMessageListenerContainer(null, connectionFactory);
@@ -201,13 +206,13 @@ public class RoutingConnectionFactoryTest
 
         var connectionMakerKey1 = new AtomicReference<object>();
         var latch = new CountdownEvent(1);
-        connectionFactory1.Setup(f => f.CreateConnection())
-            .Returns(connection1.Object)
-            .Callback(() =>
-            {
-                connectionMakerKey1.Value = connectionFactory.DetermineCurrentLookupKey();
-                latch.Signal();
-            });
+
+        connectionFactory1.Setup(f => f.CreateConnection()).Returns(connection1.Object).Callback(() =>
+        {
+            connectionMakerKey1.Value = connectionFactory.DetermineCurrentLookupKey();
+            latch.Signal();
+        });
+
         connectionFactory.SetTargetConnectionFactories(factories);
         var connectionMakerKey2 = new AtomicReference<object>();
 
@@ -249,13 +254,13 @@ public class RoutingConnectionFactoryTest
 
         var connectionMakerKey1 = new AtomicReference<object>();
         var latch = new CountdownEvent(1);
-        connectionFactory1.Setup(f => f.CreateConnection())
-            .Returns(connection1.Object)
-            .Callback(() =>
-            {
-                connectionMakerKey1.Value = connectionFactory.DetermineCurrentLookupKey();
-                latch.Signal();
-            });
+
+        connectionFactory1.Setup(f => f.CreateConnection()).Returns(connection1.Object).Callback(() =>
+        {
+            connectionMakerKey1.Value = connectionFactory.DetermineCurrentLookupKey();
+            latch.Signal();
+        });
+
         connectionFactory.SetTargetConnectionFactories(factories);
         var connectionMakerKey2 = new AtomicReference<object>();
 
@@ -264,12 +269,13 @@ public class RoutingConnectionFactoryTest
             LookupKeyQualifier = "xxx",
             ShutdownTimeout = 10
         };
+
         container.Initialize();
         await container.Start();
 
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Container started
 
-        var channelHolder = container.GetChannelHolder();
+        DirectReplyToMessageListenerContainer.ChannelHolder channelHolder = container.GetChannelHolder();
         Assert.True(latch.Wait(TimeSpan.FromSeconds(10)));
         container.ReleaseConsumerFor(channelHolder, true, "test");
         await container.Stop();
@@ -330,13 +336,13 @@ public class RoutingConnectionFactoryTest
         private readonly AtomicBoolean _lookupFlag;
         private readonly AtomicInteger _count;
 
+        public override string ServiceName { get; set; } = "TestAbstractRoutingConnectionFactoryFactory";
+
         public TestAbstractRoutingConnectionFactoryFactory(AtomicBoolean lookupFlag, AtomicInteger count)
         {
             _lookupFlag = lookupFlag;
             _count = count;
         }
-
-        public override string ServiceName { get; set; } = "TestAbstractRoutingConnectionFactoryFactory";
 
         public override object DetermineCurrentLookupKey()
         {

@@ -15,22 +15,20 @@ public static class HostBuilderExtensions
 {
     public static IHostBuilder AddStreamServices<T>(this IHostBuilder builder)
     {
-        return builder.AddSpringBootConfiguration()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddStreamServices<T>(context.Configuration);
-                services.AddHostedService<StreamLifeCycleService>();
-            });
+        return builder.AddSpringBootConfiguration().ConfigureServices((context, services) =>
+        {
+            services.AddStreamServices<T>(context.Configuration);
+            services.AddHostedService<StreamLifeCycleService>();
+        });
     }
 
     public static IWebHostBuilder AddStreamServices<T>(this IWebHostBuilder builder)
     {
-        return builder.AddSpringBootConfiguration()
-            .ConfigureServices((context, services) =>
-            {
-                services.AddStreamServices<T>(context.Configuration);
-                services.AddHostedService<StreamLifeCycleService>();
-            });
+        return builder.AddSpringBootConfiguration().ConfigureServices((context, services) =>
+        {
+            services.AddStreamServices<T>(context.Configuration);
+            services.AddHostedService<StreamLifeCycleService>();
+        });
     }
 
     public static WebApplicationBuilder AddStreamServices<T>(this WebApplicationBuilder builder)

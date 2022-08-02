@@ -11,6 +11,10 @@ namespace Steeltoe.Messaging.RabbitMQ.Transaction;
 
 public class RabbitTransactionManager : AbstractPlatformTransactionManager, IResourceTransactionManager
 {
+    public IConnectionFactory ConnectionFactory { get; set; }
+
+    public object ResourceFactory => ConnectionFactory;
+
     public RabbitTransactionManager()
     {
         TransactionSynchronization = SynchronizationNever;
@@ -21,10 +25,6 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
     {
         ConnectionFactory = connectionFactory ?? throw new ArgumentNullException(nameof(connectionFactory));
     }
-
-    public IConnectionFactory ConnectionFactory { get; set; }
-
-    public object ResourceFactory => ConnectionFactory;
 
     protected override object DoGetTransaction()
     {
@@ -47,6 +47,7 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 
         var txObject = (RabbitTransactionObject)transaction;
         RabbitResourceHolder resourceHolder = null;
+
         try
         {
             resourceHolder = ConnectionFactoryUtils.GetTransactionalResourceHolder(ConnectionFactory, true);
@@ -54,7 +55,8 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 
             txObject.ResourceHolder = resourceHolder;
             txObject.ResourceHolder.SynchronizedWithTransaction = true;
-            var timeout = DetermineTimeout(definition);
+            int timeout = DetermineTimeout(definition);
+
             if (timeout != AbstractTransactionDefinition.TimeoutDefault)
             {
                 txObject.ResourceHolder.SetTimeoutInSeconds(timeout);
@@ -89,14 +91,14 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
     protected override void DoCommit(DefaultTransactionStatus status)
     {
         var txObject = (RabbitTransactionObject)status.Transaction;
-        var resourceHolder = txObject.ResourceHolder;
+        RabbitResourceHolder resourceHolder = txObject.ResourceHolder;
         resourceHolder.CommitAll();
     }
 
     protected override void DoRollback(DefaultTransactionStatus status)
     {
         var txObject = (RabbitTransactionObject)status.Transaction;
-        var resourceHolder = txObject.ResourceHolder;
+        RabbitResourceHolder resourceHolder = txObject.ResourceHolder;
         resourceHolder.RollbackAll();
     }
 
@@ -116,14 +118,14 @@ public class RabbitTransactionManager : AbstractPlatformTransactionManager, IRes
 
     private sealed class RabbitTransactionObject : ISmartTransactionObject
     {
+        public RabbitResourceHolder ResourceHolder { get; set; }
+
+        public bool IsRollbackOnly => ResourceHolder.RollbackOnly;
+
         public RabbitTransactionObject(RabbitResourceHolder rabbitResourceHolder)
         {
             ResourceHolder = rabbitResourceHolder;
         }
-
-        public RabbitResourceHolder ResourceHolder { get; set; }
-
-        public bool IsRollbackOnly => ResourceHolder.RollbackOnly;
 
         public void Flush()
         {

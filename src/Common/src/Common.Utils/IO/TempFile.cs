@@ -10,9 +10,11 @@ namespace Steeltoe.Common.Utils.IO;
 public class TempFile : TempPath
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TempFile"/> class.
+    /// Initializes a new instance of the <see cref="TempFile" /> class.
     /// </summary>
-    /// <param name="prefix">Temporary file prefix.</param>
+    /// <param name="prefix">
+    /// Temporary file prefix.
+    /// </param>
     public TempFile(string prefix = null)
         : base(prefix)
     {
@@ -26,7 +28,7 @@ public class TempFile : TempPath
         File.Create(FullPath).Dispose();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

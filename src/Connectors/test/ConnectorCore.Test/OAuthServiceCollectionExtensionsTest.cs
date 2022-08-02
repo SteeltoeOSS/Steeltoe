@@ -59,7 +59,7 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_NoVCAPs_AddsOAuthOptions()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddOAuthServiceOptions(config);
 
@@ -71,7 +71,7 @@ public class OAuthServiceCollectionExtensionsTest
     public void AddOAuthServiceOptions_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -80,7 +80,7 @@ public class OAuthServiceCollectionExtensionsTest
     [Fact]
     public void AddOAuthServiceOptions_MultipleOAuthServices_ThrowsConnectorException()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-identity"": [{
                         ""credentials"": {
@@ -117,7 +117,7 @@ public class OAuthServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddOAuthServiceOptions(config));
         Assert.Contains("Multiple", ex.Message);
@@ -126,7 +126,7 @@ public class OAuthServiceCollectionExtensionsTest
     [Fact]
     public void AddOAuthServiceOptions_WithVCAPs_AddsOAuthOptions()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-identity"": [{
                         ""credentials"": {
@@ -150,14 +150,14 @@ public class OAuthServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddOAuthServiceOptions(config);
 
         var service = services.BuildServiceProvider().GetService<IOptions<OAuthServiceOptions>>();
         Assert.NotNull(service);
 
-        var opts = service.Value;
+        OAuthServiceOptions opts = service.Value;
         Assert.NotNull(opts);
 
         Assert.Equal("cb3efc76-bd22-46b3-a5ca-3aaa21c96073", opts.ClientId);

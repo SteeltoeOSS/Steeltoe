@@ -13,10 +13,7 @@ internal sealed class TestLogProvider : IDynamicLoggerProvider
 
     public LogLevel Level { get; set; }
 
-    public bool GetLoggerConfigurationsCalled
-    {
-        get; set;
-    }
+    public bool GetLoggerConfigurationsCalled { get; set; }
 
     public ILogger CreateLogger(string categoryName)
     {

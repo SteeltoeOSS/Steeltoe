@@ -11,7 +11,7 @@ public class QueueBuilderTest
     [Fact]
     public void BuildsDurableQueue()
     {
-        var queue = QueueBuilder.Durable("name").Build();
+        IQueue queue = QueueBuilder.Durable("name").Build();
 
         Assert.True(queue.IsDurable);
         Assert.Equal("name", queue.QueueName);
@@ -20,7 +20,7 @@ public class QueueBuilderTest
     [Fact]
     public void BuildsNonDurableQueue()
     {
-        var queue = QueueBuilder.NonDurable("name").Build();
+        IQueue queue = QueueBuilder.NonDurable("name").Build();
 
         Assert.False(queue.IsDurable);
         Assert.Equal("name", queue.QueueName);
@@ -29,7 +29,7 @@ public class QueueBuilderTest
     [Fact]
     public void BuildsAutoDeleteQueue()
     {
-        var queue = QueueBuilder.Durable("name").AutoDelete().Build();
+        IQueue queue = QueueBuilder.Durable("name").AutoDelete().Build();
 
         Assert.True(queue.IsAutoDelete);
     }
@@ -37,7 +37,7 @@ public class QueueBuilderTest
     [Fact]
     public void BuildsExclusiveQueue()
     {
-        var queue = QueueBuilder.Durable("name").Exclusive().Build();
+        IQueue queue = QueueBuilder.Durable("name").Exclusive().Build();
 
         Assert.True(queue.IsExclusive);
     }
@@ -45,12 +45,9 @@ public class QueueBuilderTest
     [Fact]
     public void AddsArguments()
     {
-        var queue = QueueBuilder.Durable("name")
-            .WithArgument("key1", "value1")
-            .WithArgument("key2", "value2")
-            .Build();
+        IQueue queue = QueueBuilder.Durable("name").WithArgument("key1", "value1").WithArgument("key2", "value2").Build();
 
-        var args = queue.Arguments;
+        Dictionary<string, object> args = queue.Arguments;
 
         Assert.Equal("value1", args["key1"]);
         Assert.Equal("value2", args["key2"]);
@@ -65,8 +62,8 @@ public class QueueBuilderTest
             { "key2", "value2" }
         };
 
-        var queue = QueueBuilder.Durable("name").WithArguments(arguments).Build();
-        var args = queue.Arguments;
+        IQueue queue = QueueBuilder.Durable("name").WithArguments(arguments).Build();
+        Dictionary<string, object> args = queue.Arguments;
 
         Assert.Equal("value1", args["key1"]);
         Assert.Equal("value2", args["key2"]);

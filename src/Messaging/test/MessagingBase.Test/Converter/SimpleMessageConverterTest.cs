@@ -12,9 +12,13 @@ public class SimpleMessageConverterTest
     [Fact]
     public void ToMessageWithPayloadAndHeaders()
     {
-        var headers = new MessageHeaders(new Dictionary<string, object> { { "foo", "bar" } });
+        var headers = new MessageHeaders(new Dictionary<string, object>
+        {
+            { "foo", "bar" }
+        });
+
         var converter = new SimpleMessageConverter();
-        var message = converter.ToMessage("payload", headers);
+        IMessage message = converter.ToMessage("payload", headers);
 
         Assert.Equal("payload", message.Payload);
         Assert.Equal("bar", message.Headers["foo"]);
@@ -26,10 +30,10 @@ public class SimpleMessageConverterTest
         var accessor = new MessageHeaderAccessor();
         accessor.SetHeader("foo", "bar");
         accessor.LeaveMutable = true;
-        var headers = accessor.MessageHeaders;
+        IMessageHeaders headers = accessor.MessageHeaders;
 
         var converter = new SimpleMessageConverter();
-        var message = converter.ToMessage("payload", headers);
+        IMessage message = converter.ToMessage("payload", headers);
 
         Assert.Equal("payload", message.Payload);
         Assert.Same(headers, message.Headers);

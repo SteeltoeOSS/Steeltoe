@@ -10,7 +10,16 @@ public class Exposure
 {
     private const string ExposurePrefix = "management:endpoints:actuator:exposure";
     private const string ExposureSecondChancePrefix = "management:endpoints:web:exposure";
-    private static readonly List<string> DefaultInclude = new () { "health", "info" };
+
+    private static readonly List<string> DefaultInclude = new()
+    {
+        "health",
+        "info"
+    };
+
+    public List<string> Include { get; set; }
+
+    public List<string> Exclude { get; set; }
 
     public Exposure()
     {
@@ -19,13 +28,15 @@ public class Exposure
 
     public Exposure(IConfiguration config)
     {
-        var section = config.GetSection(ExposurePrefix);
+        IConfigurationSection section = config.GetSection(ExposurePrefix);
+
         if (section != null)
         {
             section.Bind(this);
         }
 
-        var secondSection = config.GetSection(ExposureSecondChancePrefix);
+        IConfigurationSection secondSection = config.GetSection(ExposureSecondChancePrefix);
+
         if (secondSection.Exists())
         {
             Include = GetListFromConfigCsvString(secondSection, "include");
@@ -38,10 +49,8 @@ public class Exposure
         }
     }
 
-    public List<string> Include { get; set; }
-
-    public List<string> Exclude { get; set; }
-
     private List<string> GetListFromConfigCsvString(IConfigurationSection configSection, string key)
-        => configSection.GetValue<string>(key)?.Split(',').ToList();
+    {
+        return configSection.GetValue<string>(key)?.Split(',').ToList();
+    }
 }

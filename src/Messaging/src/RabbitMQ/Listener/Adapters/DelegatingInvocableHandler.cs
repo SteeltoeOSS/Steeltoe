@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
+using System.Reflection;
 using Steeltoe.Common.Expression.Internal;
 using Steeltoe.Common.Expression.Internal.Contexts;
 using Steeltoe.Common.Expression.Internal.Spring.Common;
@@ -9,32 +11,16 @@ using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Messaging.Handler.Attributes;
 using Steeltoe.Messaging.Handler.Invocation;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
-using System.Collections.Concurrent;
-using System.Reflection;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
 
 public class DelegatingInvocableHandler
 {
-    private static readonly SpelExpressionParser Parser = new ();
+    private static readonly SpelExpressionParser Parser = new();
     private static readonly IParserContext ParserContext = new TemplateParserContext("!{", "}");
 
-    private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new ();
-    private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new ();
-
-    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver, IServiceExpressionContext context)
-        : this(handlers, null, bean, resolver, context)
-    {
-    }
-
-    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, IInvocableHandlerMethod defaultHandler, object bean, IServiceExpressionResolver resolver, IServiceExpressionContext context)
-    {
-        Handlers = new List<IInvocableHandlerMethod>(handlers);
-        DefaultHandler = defaultHandler;
-        Bean = bean;
-        Resolver = resolver;
-        ServiceExpressionContext = context;
-    }
+    private readonly Dictionary<IInvocableHandlerMethod, IExpression> _handlerSendTo = new();
+    private readonly ConcurrentDictionary<Type, IInvocableHandlerMethod> _cachedHandlers = new();
 
     public List<IInvocableHandlerMethod> Handlers { get; }
 
@@ -48,12 +34,29 @@ public class DelegatingInvocableHandler
 
     public bool HasDefaultHandler => DefaultHandler != null;
 
+    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, object bean, IServiceExpressionResolver resolver,
+        IServiceExpressionContext context)
+        : this(handlers, null, bean, resolver, context)
+    {
+    }
+
+    public DelegatingInvocableHandler(List<IInvocableHandlerMethod> handlers, IInvocableHandlerMethod defaultHandler, object bean,
+        IServiceExpressionResolver resolver, IServiceExpressionContext context)
+    {
+        Handlers = new List<IInvocableHandlerMethod>(handlers);
+        DefaultHandler = defaultHandler;
+        Bean = bean;
+        Resolver = resolver;
+        ServiceExpressionContext = context;
+    }
+
     public InvocationResult Invoke(IMessage message, params object[] providedArgs)
     {
-        var payloadClass = message.Payload.GetType();
-        var handler = GetHandlerForPayload(payloadClass);
-        var result = handler.Invoke(message, providedArgs);
-        if (!message.Headers.TryGetValue(RabbitMessageHeaders.ReplyTo, out _) && _handlerSendTo.TryGetValue(handler, out var replyTo))
+        Type payloadClass = message.Payload.GetType();
+        IInvocableHandlerMethod handler = GetHandlerForPayload(payloadClass);
+        object result = handler.Invoke(message, providedArgs);
+
+        if (!message.Headers.TryGetValue(RabbitMessageHeaders.ReplyTo, out _) && _handlerSendTo.TryGetValue(handler, out IExpression replyTo))
         {
             return new InvocationResult(result, replyTo, handler.Method.ReturnType, handler.Handler, handler.Method);
         }
@@ -64,6 +67,7 @@ public class DelegatingInvocableHandler
     public string GetMethodNameFor(object payload)
     {
         IInvocableHandlerMethod handlerForPayload = null;
+
         try
         {
             handlerForPayload = GetHandlerForPayload(payload.GetType());
@@ -83,10 +87,11 @@ public class DelegatingInvocableHandler
 
     public InvocationResult GetInvocationResultFor(object result, object inboundPayload)
     {
-        var handler = FindHandlerForPayload(inboundPayload.GetType());
+        IInvocableHandlerMethod handler = FindHandlerForPayload(inboundPayload.GetType());
+
         if (handler != null)
         {
-            _handlerSendTo.TryGetValue(handler, out var sendTo);
+            _handlerSendTo.TryGetValue(handler, out IExpression sendTo);
             return new InvocationResult(result, sendTo, handler.Method.ReturnType, handler.Handler, handler.Method);
         }
 
@@ -95,9 +100,10 @@ public class DelegatingInvocableHandler
 
     protected IInvocableHandlerMethod GetHandlerForPayload(Type payloadClass)
     {
-        if (!_cachedHandlers.TryGetValue(payloadClass, out var handler))
+        if (!_cachedHandlers.TryGetValue(payloadClass, out IInvocableHandlerMethod handler))
         {
             handler = FindHandlerForPayload(payloadClass);
+
             if (handler == null)
             {
                 throw new RabbitException($"No method found for {payloadClass}");
@@ -113,13 +119,15 @@ public class DelegatingInvocableHandler
     protected virtual IInvocableHandlerMethod FindHandlerForPayload(Type payloadClass)
     {
         IInvocableHandlerMethod result = null;
-        foreach (var handler in Handlers)
+
+        foreach (IInvocableHandlerMethod handler in Handlers)
         {
             if (MatchHandlerMethod(payloadClass, handler))
             {
                 if (result != null)
                 {
-                    var resultIsDefault = result.Equals(DefaultHandler);
+                    bool resultIsDefault = result.Equals(DefaultHandler);
+
                     if (!handler.Equals(DefaultHandler) && !resultIsDefault)
                     {
                         throw new RabbitException($"Ambiguous methods for payload type: {payloadClass}: {result.Method.Name} and {handler.Method.Name}");
@@ -140,24 +148,23 @@ public class DelegatingInvocableHandler
 
     protected bool MatchHandlerMethod(Type payloadClass, IInvocableHandlerMethod handler)
     {
-        var method = handler.Method;
-        var parameters = method.GetParameters();
-        var parameterAnnotations = GetParameterAnnotations(method);
+        MethodInfo method = handler.Method;
+        ParameterInfo[] parameters = method.GetParameters();
+        Attribute[][] parameterAnnotations = GetParameterAnnotations(method);
 
         // Single param; no annotation or not @Header
         if (parameterAnnotations.Length == 1 && (parameterAnnotations[0].Length == 0 ||
-                                                 !parameterAnnotations[0].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
-            parameters[0].ParameterType.IsAssignableFrom(payloadClass))
+            !parameterAnnotations[0].Any(attr => attr.GetType() == typeof(HeaderAttribute))) && parameters[0].ParameterType.IsAssignableFrom(payloadClass))
         {
             return true;
         }
 
-        var foundCandidate = false;
-        for (var i = 0; i < parameterAnnotations.Length; i++)
+        bool foundCandidate = false;
+
+        for (int i = 0; i < parameterAnnotations.Length; i++)
         {
             // MethodParameter methodParameter = new MethodParameter(method, i);
-            if ((parameterAnnotations[i].Length == 0 ||
-                 !parameterAnnotations[i].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
+            if ((parameterAnnotations[i].Length == 0 || !parameterAnnotations[i].Any(attr => attr.GetType() == typeof(HeaderAttribute))) &&
                 parameters[i].ParameterType.IsAssignableFrom(payloadClass))
             {
                 if (foundCandidate)
@@ -174,10 +181,11 @@ public class DelegatingInvocableHandler
 
     private Attribute[][] GetParameterAnnotations(MethodInfo method)
     {
-        var parameters = method.GetParameters();
+        ParameterInfo[] parameters = method.GetParameters();
         var attributes = new Attribute[parameters.Length][];
-        var index = 0;
-        foreach (var parameter in parameters)
+        int index = 0;
+
+        foreach (ParameterInfo parameter in parameters)
         {
             attributes[index++] = parameter.GetCustomAttributes().ToArray();
         }
@@ -188,7 +196,8 @@ public class DelegatingInvocableHandler
     private void SetupReplyTo(IInvocableHandlerMethod handler)
     {
         string replyTo = null;
-        var method = handler.Method;
+        MethodInfo method = handler.Method;
+
         if (method != null)
         {
             var ann = method.GetCustomAttribute<SendToAttribute>();
@@ -210,9 +219,11 @@ public class DelegatingInvocableHandler
     private string ExtractSendTo(string element, SendToAttribute ann)
     {
         string replyTo = null;
+
         if (ann != null)
         {
-            var destinations = ann.Destinations;
+            string[] destinations = ann.Destinations;
+
             if (destinations.Length > 1)
             {
                 throw new InvalidOperationException($"Invalid SendToAttribute on '{element}' only one destination must be set");
@@ -228,8 +239,9 @@ public class DelegatingInvocableHandler
     {
         if (Resolver != null)
         {
-            var resolvedValue = ServiceExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
-            var newValue = Resolver.Evaluate(resolvedValue, ServiceExpressionContext);
+            string resolvedValue = ServiceExpressionContext.ApplicationContext.ResolveEmbeddedValue(value);
+            object newValue = Resolver.Evaluate(resolvedValue, ServiceExpressionContext);
+
             if (newValue is not string sValue)
             {
                 throw new InvalidOperationException("Invalid SendToAttribute expression");
@@ -237,9 +249,7 @@ public class DelegatingInvocableHandler
 
             return sValue;
         }
-        else
-        {
-            return value;
-        }
+
+        return value;
     }
 }

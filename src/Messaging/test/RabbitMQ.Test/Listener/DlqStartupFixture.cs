@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Messaging.RabbitMQ.Config;
+using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
 
 namespace Steeltoe.Messaging.RabbitMQ.Listener;
@@ -27,12 +28,11 @@ public sealed class DlqStartupFixture : IDisposable
     public ServiceCollection CreateContainer(IConfiguration config = null)
     {
         var services = new ServiceCollection();
-        config ??= new ConfigurationBuilder()
-            .AddInMemoryCollection(new Dictionary<string, string>
-            {
-                { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
-            })
-            .Build();
+
+        config ??= new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "spring:rabbitmq:listener:direct:PossibleAuthenticationFailureFatal", "False" }
+        }).Build();
 
         services.AddLogging(b =>
         {
@@ -67,7 +67,7 @@ public sealed class DlqStartupFixture : IDisposable
         services.AddRabbitListenerContainerFactory((_, f) =>
         {
             f.MismatchedQueuesFatal = true;
-            f.AcknowledgeMode = Core.AcknowledgeMode.Manual;
+            f.AcknowledgeMode = AcknowledgeMode.Manual;
         });
 
         // Add doNotRequeueFactory container factory
@@ -75,7 +75,7 @@ public sealed class DlqStartupFixture : IDisposable
         {
             f.ServiceName = "doNotRequeueFactory";
             f.MismatchedQueuesFatal = true;
-            f.AcknowledgeMode = Core.AcknowledgeMode.Manual;
+            f.AcknowledgeMode = AcknowledgeMode.Manual;
             f.DefaultRequeueRejected = false;
         });
 

@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net.Http.Json;
+using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -11,15 +13,13 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Info.Contributor;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
-using System.Net.Http.Json;
-using System.Text.Json;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private readonly Dictionary<string, string> _appSettings = new ()
+    private readonly Dictionary<string, string> _appSettings = new()
     {
         ["management:endpoints:enabled"] = "false",
         ["management:endpoints:path"] = "/management",
@@ -42,14 +42,19 @@ public class EndpointMiddlewareTest : BaseTest
         var opts = new InfoEndpointOptions();
         var managementOptions = new ActuatorManagementOptions();
         managementOptions.EndpointOptions.Add(opts);
-        var contributors = new List<IInfoContributor> { new GitInfoContributor() };
+
+        var contributors = new List<IInfoContributor>
+        {
+            new GitInfoContributor()
+        };
+
         var ep = new TestInfoEndpoint(opts, contributors);
         var middle = new InfoEndpointMiddleware(null, ep, managementOptions);
-        var context = CreateRequest("GET", "/loggers");
+        HttpContext context = CreateRequest("GET", "/loggers");
         await middle.HandleInfoRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var rdr = new StreamReader(context.Response.Body);
-        var json = await rdr.ReadToEndAsync();
+        string json = await rdr.ReadToEndAsync();
         Assert.Equal("{}", json);
     }
 
@@ -58,13 +63,15 @@ public class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>()
             .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(_appSettings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement", GetSerializerOptions());
+        HttpClient client = server.CreateClient();
+
+        var dict = await client.GetFromJsonAsync<Dictionary<string, Dictionary<string, JsonElement>>>("http://localhost/management/infomanagement",
+            GetSerializerOptions());
+
         Assert.NotNull(dict);
 
         Assert.Equal(6, dict.Count);
@@ -72,15 +79,15 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(dict.ContainsKey("NET"));
         Assert.True(dict.ContainsKey("git"));
 
-        var appNode = dict["application"];
+        Dictionary<string, JsonElement> appNode = dict["application"];
         Assert.NotNull(appNode);
         Assert.Equal("foobar", appNode["name"].ToString());
 
-        var netNode = dict["NET"];
+        Dictionary<string, JsonElement> netNode = dict["NET"];
         Assert.NotNull(netNode);
         Assert.Equal("Core", netNode["type"].ToString());
 
-        var gitNode = dict["git"];
+        Dictionary<string, JsonElement> gitNode = dict["git"];
         Assert.NotNull(gitNode);
         Assert.True(gitNode.ContainsKey("build"));
         Assert.True(gitNode.ContainsKey("branch"));
@@ -89,9 +96,9 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.True(gitNode.ContainsKey("dirty"));
         Assert.True(gitNode.ContainsKey("remote"));
         Assert.True(gitNode.ContainsKey("tags"));
-        gitNode["build"].TryGetProperty("time", out var bTime);
+        gitNode["build"].TryGetProperty("time", out JsonElement bTime);
         Assert.Equal("2017-07-12T18:40:39Z", bTime.GetString());
-        gitNode["commit"].TryGetProperty("time", out var cTime);
+        gitNode["commit"].TryGetProperty("time", out JsonElement cTime);
         Assert.Equal("2017-06-08T12:47:02Z", cTime.GetString());
     }
 
@@ -100,14 +107,16 @@ public class EndpointMiddlewareTest : BaseTest
     {
         // Note: This test pulls in from git.properties and appsettings created
         // in the Startup class
-        Dictionary<string, string> settings = new () { { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" } };
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
+        Dictionary<string, string> settings = new()
+        {
+            { "management:endpoints:CustomJsonConverters:0", "Steeltoe.Management.Endpoint.Info.EpochSecondsDateTimeConverter" }
+        };
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(settings));
 
         using var server = new TestServer(builder);
-        var client = server.CreateClient();
-        var response = await client.GetStringAsync("http://localhost/actuator/info");
+        HttpClient client = server.CreateClient();
+        string response = await client.GetStringAsync("http://localhost/actuator/info");
 
         Assert.Contains("1499884839000", response);
         Assert.DoesNotContain("2017-07-12T18:40:39Z", response);
@@ -131,6 +140,7 @@ public class EndpointMiddlewareTest : BaseTest
         {
             TraceIdentifier = Guid.NewGuid().ToString()
         };
+
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
         context.Request.Path = new PathString(path);

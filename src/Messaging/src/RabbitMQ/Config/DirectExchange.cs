@@ -6,7 +6,9 @@ namespace Steeltoe.Messaging.RabbitMQ.Config;
 
 public class DirectExchange : AbstractExchange, IDirectExchange
 {
-    public static readonly DirectExchange Default = new (string.Empty);
+    public static readonly DirectExchange Default = new(string.Empty);
+
+    public override string Type { get; } = ExchangeType.Direct;
 
     public DirectExchange(string name)
         : base(name)
@@ -22,6 +24,4 @@ public class DirectExchange : AbstractExchange, IDirectExchange
         : base(name, durable, autoDelete, arguments)
     {
     }
-
-    public override string Type { get; } = ExchangeType.Direct;
 }

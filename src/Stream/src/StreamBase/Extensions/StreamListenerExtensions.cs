@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Steeltoe.Stream.Attributes;
 using Steeltoe.Stream.Binding;
 using Steeltoe.Stream.Config;
-using System.Reflection;
 
 namespace Steeltoe.Stream.Extensions;
 
@@ -15,7 +15,9 @@ public static class StreamListenerExtensions
 {
     public static IServiceCollection AddStreamListeners<T>(this IServiceCollection services)
         where T : class
-        => services.AddStreamListeners(typeof(T));
+    {
+        return services.AddStreamListeners(typeof(T));
+    }
 
     public static IServiceCollection AddStreamListeners(this IServiceCollection services, Type type)
     {
@@ -24,13 +26,14 @@ public static class StreamListenerExtensions
             throw new ArgumentNullException(nameof(services));
         }
 
-        var targetMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+        MethodInfo[] targetMethods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 
-        var listenersAdded = false;
+        bool listenersAdded = false;
 
-        foreach (var method in targetMethods)
+        foreach (MethodInfo method in targetMethods)
         {
             var attr = method.GetCustomAttribute<StreamListenerAttribute>();
+
             if (attr != null)
             {
                 services.AddStreamListener(method, attr);
@@ -55,7 +58,8 @@ public static class StreamListenerExtensions
         return services;
     }
 
-    public static IServiceCollection AddStreamListener(this IServiceCollection services, MethodInfo method, string target, string condition = null, bool copyHeaders = true)
+    public static IServiceCollection AddStreamListener(this IServiceCollection services, MethodInfo method, string target, string condition = null,
+        bool copyHeaders = true)
     {
         if (services == null)
         {

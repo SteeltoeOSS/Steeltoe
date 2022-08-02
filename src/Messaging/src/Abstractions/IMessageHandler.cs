@@ -14,6 +14,8 @@ public interface IMessageHandler : IServiceNameAware
     /// <summary>
     /// Handle the given method.
     /// </summary>
-    /// <param name="message">the message to process.</param>
+    /// <param name="message">
+    /// the message to process.
+    /// </param>
     void HandleMessage(IMessage message);
 }

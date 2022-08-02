@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.AspNetCore.Http;
 using System.Text.Json;
+using Microsoft.AspNetCore.Http;
 
 namespace Steeltoe.Management.Endpoint.SpringBootAdminClient.Test;
 
@@ -16,11 +16,8 @@ public class MyMiddleware : IMiddleware
             var kvp = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(context.Request.Body);
             context.Response.Headers.Add("Content-Type", "application/json");
 
-            var isValid = kvp.ContainsKey("name")
-                          && kvp.ContainsKey("healthUrl")
-                          && kvp.ContainsKey("managementUrl")
-                          && kvp.ContainsKey("serviceUrl")
-                          && kvp.ContainsKey("metadata");
+            bool isValid = kvp.ContainsKey("name") && kvp.ContainsKey("healthUrl") && kvp.ContainsKey("managementUrl") && kvp.ContainsKey("serviceUrl") &&
+                kvp.ContainsKey("metadata");
 
             // Registration response
             await context.Response.WriteAsync(isValid ? "{\"Id\":\"1234567\"}" : "{\"SerializationError: invalid keys in Application object.\"}");

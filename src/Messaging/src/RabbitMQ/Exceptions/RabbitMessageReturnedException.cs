@@ -6,16 +6,6 @@ namespace Steeltoe.Messaging.RabbitMQ.Exceptions;
 
 public class RabbitMessageReturnedException : RabbitException
 {
-    public RabbitMessageReturnedException(string message, IMessage returnedMessage, int replyCode, string replyText, string exchange, string routingKey)
-        : base(message)
-    {
-        ReturnedMessage = returnedMessage;
-        ReplyCode = replyCode;
-        ReplyText = replyText;
-        Exchange = exchange;
-        RoutingKey = routingKey;
-    }
-
     public IMessage ReturnedMessage { get; }
 
     public int ReplyCode { get; }
@@ -25,6 +15,16 @@ public class RabbitMessageReturnedException : RabbitException
     public string Exchange { get; }
 
     public string RoutingKey { get; }
+
+    public RabbitMessageReturnedException(string message, IMessage returnedMessage, int replyCode, string replyText, string exchange, string routingKey)
+        : base(message)
+    {
+        ReturnedMessage = returnedMessage;
+        ReplyCode = replyCode;
+        ReplyText = replyText;
+        Exchange = exchange;
+        RoutingKey = routingKey;
+    }
 
     public override string ToString()
     {

@@ -11,7 +11,7 @@ public class MongoDbServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        var uri = "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355";
+        string uri = "mongodb://Dd6O1BPXUHdrmzbP:7E1LxXnlH2hhlPVt@192.168.0.90:27017/cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355";
         var r1 = new MongoDbServiceInfo("myId", uri);
         var r2 = new MongoDbServiceInfo("myId", "192.168.0.90", 27017, "Dd6O1BPXUHdrmzbP", "7E1LxXnlH2hhlPVt", "cf_b4f8d2fa_a3ea_4e3a_a0e8_2cd040790355");
 
@@ -37,7 +37,9 @@ public class MongoDbServiceInfoTest
     [Fact]
     public void Constructor_HandlesReplicas()
     {
-        var uri = "mongodb://a9s-brk-usr-e74b9538:a9sb8b69cc@mongodb-0.node.dc1.a9s-mongodb-consul:27017,mongodb-1.node.dc1.a9s-mongodb-consul:27017,mongodb-2.node.dc1.a9s-mongodb-consul:27017/d5584e9?replicaSet=rs0";
+        string uri =
+            "mongodb://a9s-brk-usr-e74b9538:a9sb8b69cc@mongodb-0.node.dc1.a9s-mongodb-consul:27017,mongodb-1.node.dc1.a9s-mongodb-consul:27017,mongodb-2.node.dc1.a9s-mongodb-consul:27017/d5584e9?replicaSet=rs0";
+
         var r1 = new MongoDbServiceInfo("myId", uri);
 
         Assert.Equal("myId", r1.Id);

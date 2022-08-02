@@ -17,9 +17,9 @@ internal sealed class TestExceptionResolver : AbstractExceptionHandlerMethodReso
     {
         IDictionary<Type, MethodInfo> result = new Dictionary<Type, MethodInfo>();
 
-        foreach (var method in GetExceptionHandlerMethods(handlerType))
+        foreach (MethodInfo method in GetExceptionHandlerMethods(handlerType))
         {
-            foreach (var exception in GetExceptionsFromMethodSignature(method))
+            foreach (Type exception in GetExceptionsFromMethodSignature(method))
             {
                 result.Add(exception, method);
             }
@@ -31,8 +31,9 @@ internal sealed class TestExceptionResolver : AbstractExceptionHandlerMethodReso
     private static IEnumerable<MethodInfo> GetExceptionHandlerMethods(Type handlerType)
     {
         var results = new List<MethodInfo>();
-        var methods = handlerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
-        foreach (var method in methods)
+        MethodInfo[] methods = handlerType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+
+        foreach (MethodInfo method in methods)
         {
             if (method.Name.StartsWith("Handle") && method.Name.EndsWith("Exception"))
             {

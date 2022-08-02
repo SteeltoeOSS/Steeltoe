@@ -8,37 +8,23 @@ public class HystrixCommandExecutionStarted : HystrixCommandEvent
 {
     private readonly ExecutionIsolationStrategy _isolationStrategy;
 
-    public HystrixCommandExecutionStarted(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy, int currentConcurrency)
+    public override bool IsExecutionStart => true;
+
+    public override bool IsExecutedInThread => _isolationStrategy == ExecutionIsolationStrategy.Thread;
+
+    public override bool IsResponseThreadPoolRejected => false;
+
+    public override bool IsCommandCompletion => false;
+
+    public override bool DidCommandExecute => false;
+
+    public int CurrentConcurrency { get; }
+
+    public HystrixCommandExecutionStarted(IHystrixCommandKey commandKey, IHystrixThreadPoolKey threadPoolKey, ExecutionIsolationStrategy isolationStrategy,
+        int currentConcurrency)
         : base(commandKey, threadPoolKey)
     {
         _isolationStrategy = isolationStrategy;
         CurrentConcurrency = currentConcurrency;
     }
-
-    public override bool IsExecutionStart
-    {
-        get { return true; }
-    }
-
-    public override bool IsExecutedInThread
-    {
-        get { return _isolationStrategy == ExecutionIsolationStrategy.Thread; }
-    }
-
-    public override bool IsResponseThreadPoolRejected
-    {
-        get { return false; }
-    }
-
-    public override bool IsCommandCompletion
-    {
-        get { return false; }
-    }
-
-    public override bool DidCommandExecute
-    {
-        get { return false; }
-    }
-
-    public int CurrentConcurrency { get; }
 }

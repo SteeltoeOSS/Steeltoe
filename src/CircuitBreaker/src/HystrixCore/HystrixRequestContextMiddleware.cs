@@ -23,7 +23,7 @@ public class HystrixRequestContextMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var hystrix = HystrixRequestContext.InitializeContext();
+        HystrixRequestContext hystrix = HystrixRequestContext.InitializeContext();
 
         await _next.Invoke(context).ConfigureAwait(false);
 

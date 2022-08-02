@@ -8,21 +8,7 @@ namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
 
 public class CloudFoundryJwtBearerOptionsTest
 {
-    private const string DefaultJwtTokenUrl =
-        $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}";
-
-    public static TheoryData<string, string> SetEndpointsData()
-    {
-        var data = new TheoryData<string, string>();
-        var newDomain = "http://not-the-original-domain";
-
-        data.Add(string.Empty, DefaultJwtTokenUrl);
-        data.Add("   ", DefaultJwtTokenUrl);
-        data.Add(default, DefaultJwtTokenUrl);
-        data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
-
-        return data;
-    }
+    private const string DefaultJwtTokenUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}{CloudFoundryDefaults.JwtTokenUri}";
 
     [Fact]
     public void DefaultConstructor_SetsUpDefaultOptions()
@@ -43,5 +29,18 @@ public class CloudFoundryJwtBearerOptionsTest
         options.SetEndpoints(newDomain);
 
         Assert.Equal(expectedUrl, options.JwtKeyUrl);
+    }
+
+    public static TheoryData<string, string> SetEndpointsData()
+    {
+        var data = new TheoryData<string, string>();
+        string newDomain = "http://not-the-original-domain";
+
+        data.Add(string.Empty, DefaultJwtTokenUrl);
+        data.Add("   ", DefaultJwtTokenUrl);
+        data.Add(default, DefaultJwtTokenUrl);
+        data.Add(newDomain, newDomain + CloudFoundryDefaults.JwtTokenUri);
+
+        return data;
     }
 }

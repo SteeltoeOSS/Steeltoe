@@ -8,10 +8,63 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Collapser;
 
 public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRequest<TRequestResponse, TRequestArgument>
 {
-    private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new ();
+    private readonly ConcurrentQueue<CancellationToken> _linkedTokens = new();
     private TRequestResponse _response;
     private Exception _exception;
     private bool _complete;
+
+    internal CancellationToken Token { get; }
+
+    internal TaskCompletionSource<TRequestResponse> CompletionSource { get; set; }
+
+    public TRequestArgument Argument { get; }
+
+    public bool Complete
+    {
+        get => _complete;
+
+        set
+        {
+            _complete = value;
+
+            if (!CompletionSource.Task.IsCompleted)
+            {
+                Response = default;
+            }
+        }
+    }
+
+    public Exception Exception
+    {
+        get => _exception;
+
+        set
+        {
+            _exception = value;
+            _complete = true;
+
+            if (!CompletionSource.TrySetException(value))
+            {
+                throw new InvalidOperationException($"Task has already terminated so exception can not be set : {value}");
+            }
+        }
+    }
+
+    public TRequestResponse Response
+    {
+        get => _response;
+
+        set
+        {
+            _response = value;
+            _complete = true;
+
+            if (!CompletionSource.TrySetResult(value))
+            {
+                throw new InvalidOperationException($"Task has already terminated so response can not be set : {value}");
+            }
+        }
+    }
 
     internal CollapsedRequest(TRequestArgument arg, CancellationToken token)
     {
@@ -28,10 +81,6 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
         _linkedTokens.Enqueue(token);
     }
 
-    internal CancellationToken Token { get; }
-
-    internal TaskCompletionSource<TRequestResponse> CompletionSource { get; set; }
-
     internal void SetExceptionIfResponseNotReceived(Exception e)
     {
         if (!_complete)
@@ -42,7 +91,7 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
 
     internal Exception SetExceptionIfResponseNotReceived(Exception e, string exceptionMessage)
     {
-        var newException = e;
+        Exception newException = e;
 
         if (!_complete)
         {
@@ -60,7 +109,7 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
 
     internal bool IsRequestCanceled()
     {
-        foreach (var linkedToken in _linkedTokens)
+        foreach (CancellationToken linkedToken in _linkedTokens)
         {
             if (!linkedToken.IsCancellationRequested)
             {
@@ -70,51 +119,5 @@ public class CollapsedRequest<TRequestResponse, TRequestArgument> : ICollapsedRe
 
         // All linked tokens have been cancelled
         return Token.IsCancellationRequested;
-    }
-
-    public TRequestArgument Argument { get; }
-
-    public bool Complete
-    {
-        get => _complete;
-
-        set
-        {
-            _complete = value;
-            if (!CompletionSource.Task.IsCompleted)
-            {
-                Response = default;
-            }
-        }
-    }
-
-    public Exception Exception
-    {
-        get => _exception;
-
-        set
-        {
-            _exception = value;
-            _complete = true;
-            if (!CompletionSource.TrySetException(value))
-            {
-                throw new InvalidOperationException($"Task has already terminated so exception can not be set : {value}");
-            }
-        }
-    }
-
-    public TRequestResponse Response
-    {
-        get => _response;
-
-        set
-        {
-            _response = value;
-            _complete = true;
-            if (!CompletionSource.TrySetResult(value))
-            {
-                throw new InvalidOperationException($"Task has already terminated so response can not be set : {value}");
-            }
-        }
     }
 }

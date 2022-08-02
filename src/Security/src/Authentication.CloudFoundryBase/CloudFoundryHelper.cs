@@ -2,23 +2,23 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.IdentityModel.Tokens;
 using System.Text.Json;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry;
 
 public static class CloudFoundryHelper
 {
-    private static readonly DateTime BaseTime = new (1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime BaseTime = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     public static List<string> GetScopes(JsonElement user)
     {
         var result = new List<string>();
-        var scopes = user.GetProperty("scope");
+        JsonElement scopes = user.GetProperty("scope");
 
         if (scopes.ValueKind is JsonValueKind.Array)
         {
-            foreach (var value in scopes.EnumerateArray())
+            foreach (JsonElement value in scopes.EnumerateArray())
             {
                 result.Add(value.GetString());
             }
@@ -39,13 +39,15 @@ public static class CloudFoundryHelper
                 ServerCertificateCustomValidationCallback = (_, _, _, _) => true
 #pragma warning restore S4830 // Server certificates should be verified during SSL/TLS connections
             };
+
             return handler;
         }
 
         return null;
     }
 
-    public static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler, bool validateCertificates, AuthServerOptions options = null)
+    public static TokenValidationParameters GetTokenValidationParameters(TokenValidationParameters parameters, string keyUrl, HttpMessageHandler handler,
+        bool validateCertificates, AuthServerOptions options = null)
     {
         parameters ??= new TokenValidationParameters
         {
@@ -58,7 +60,7 @@ public static class CloudFoundryHelper
         parameters.IssuerValidator = tokenValidator.ValidateIssuer;
         parameters.AudienceValidator = tokenValidator.ValidateAudience;
 
-        var tkr = options is null
+        CloudFoundryTokenKeyResolver tkr = options is null
             ? new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates)
             : new CloudFoundryTokenKeyResolver(keyUrl, handler, validateCertificates, options.ClientTimeout);
 
@@ -70,22 +72,30 @@ public static class CloudFoundryHelper
     /// <summary>
     /// Retrieves the time at which a token was issued.
     /// </summary>
-    /// <param name="payload">Contents of a JWT.</param>
-    /// <returns>The <see cref="DateTime"/> representation of a token's issued-at time.</returns>
+    /// <param name="payload">
+    /// Contents of a JWT.
+    /// </param>
+    /// <returns>
+    /// The <see cref="DateTime" /> representation of a token's issued-at time.
+    /// </returns>
     public static DateTime GetIssueTime(JsonElement payload)
     {
-        var time = payload.GetProperty("iat").GetInt64();
+        long time = payload.GetProperty("iat").GetInt64();
         return ToAbsoluteUtc(time);
     }
 
     /// <summary>
-    /// Retrieves expiration time property (exp) in a <see cref="JsonDocument"/>.
+    /// Retrieves expiration time property (exp) in a <see cref="JsonDocument" />.
     /// </summary>
-    /// <param name="payload">Contents of a JWT.</param>
-    /// <returns>The <see cref="DateTime"/> representation of a token's expiration.</returns>
+    /// <param name="payload">
+    /// Contents of a JWT.
+    /// </param>
+    /// <returns>
+    /// The <see cref="DateTime" /> representation of a token's expiration.
+    /// </returns>
     public static DateTime GetExpTime(JsonElement payload)
     {
-        var time = payload.GetProperty("exp").GetInt64();
+        long time = payload.GetProperty("exp").GetInt64();
         return ToAbsoluteUtc(time);
     }
 

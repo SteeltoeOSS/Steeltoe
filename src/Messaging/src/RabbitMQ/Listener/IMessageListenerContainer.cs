@@ -12,14 +12,14 @@ public interface IMessageListenerContainer : ISmartLifecycle, IDisposable, IServ
     /// <summary>
     /// Setup the message listener to use.
     /// </summary>
-    /// <param name="messageListener">the message listener.</param>
+    /// <param name="messageListener">
+    /// the message listener.
+    /// </param>
     void SetupMessageListener(IMessageListener messageListener);
 
     /// <summary>
-    /// Do not check for missing or mismatched queues during startup. Used for lazily
-    /// loaded message listener containers to avoid a deadlock when starting such
-    /// containers. Applications lazily loading containers should verify the queue
-    /// configuration before loading the container bean.
+    /// Do not check for missing or mismatched queues during startup. Used for lazily loaded message listener containers to avoid a deadlock when starting
+    /// such containers. Applications lazily loading containers should verify the queue configuration before loading the container bean.
     /// </summary>
     void LazyLoad();
 

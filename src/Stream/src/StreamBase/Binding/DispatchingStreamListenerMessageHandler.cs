@@ -15,9 +15,9 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
     private readonly bool _evaluateExpressions;
     private readonly IEvaluationContext _evaluationContext;
 
-    internal DispatchingStreamListenerMessageHandler(
-        IApplicationContext context,
-        ICollection<ConditionalStreamListenerMessageHandlerWrapper> handlerMethods,
+    protected override bool ShouldCopyRequestHeaders => false;
+
+    internal DispatchingStreamListenerMessageHandler(IApplicationContext context, ICollection<ConditionalStreamListenerMessageHandlerWrapper> handlerMethods,
         IEvaluationContext evaluationContext = null)
         : base(context)
     {
@@ -27,8 +27,9 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
         }
 
         _handlerMethods = new List<ConditionalStreamListenerMessageHandlerWrapper>(handlerMethods);
-        var evaluateExpressions = false;
-        foreach (var handlerMethod in handlerMethods)
+        bool evaluateExpressions = false;
+
+        foreach (ConditionalStreamListenerMessageHandlerWrapper handlerMethod in handlerMethods)
         {
             if (handlerMethod.Condition != null)
             {
@@ -38,17 +39,13 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
         }
 
         _evaluateExpressions = evaluateExpressions;
+
         if (evaluateExpressions && evaluationContext == null)
         {
             throw new ArgumentNullException(nameof(evaluationContext));
         }
 
         _evaluationContext = evaluationContext;
-    }
-
-    protected override bool ShouldCopyRequestHeaders
-    {
-        get { return false; }
     }
 
     public override void Initialize()
@@ -58,33 +55,33 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
     protected override object HandleRequestMessage(IMessage requestMessage)
     {
-        var matchingHandlers = _evaluateExpressions
-            ? FindMatchingHandlers(requestMessage) : _handlerMethods;
+        List<ConditionalStreamListenerMessageHandlerWrapper> matchingHandlers = _evaluateExpressions ? FindMatchingHandlers(requestMessage) : _handlerMethods;
+
         if (matchingHandlers.Count == 0)
         {
             return null;
         }
-        else if (matchingHandlers.Count > 1)
+
+        if (matchingHandlers.Count > 1)
         {
-            foreach (var matchingMethod in matchingHandlers)
+            foreach (ConditionalStreamListenerMessageHandlerWrapper matchingMethod in matchingHandlers)
             {
                 matchingMethod.StreamListenerMessageHandler.HandleMessage(requestMessage);
             }
 
             return null;
         }
-        else
-        {
-            var singleMatchingHandler = matchingHandlers[0];
-            singleMatchingHandler.StreamListenerMessageHandler.HandleMessage(requestMessage);
-            return null;
-        }
+
+        ConditionalStreamListenerMessageHandlerWrapper singleMatchingHandler = matchingHandlers[0];
+        singleMatchingHandler.StreamListenerMessageHandler.HandleMessage(requestMessage);
+        return null;
     }
 
     private List<ConditionalStreamListenerMessageHandlerWrapper> FindMatchingHandlers(IMessage message)
     {
         var matchingMethods = new List<ConditionalStreamListenerMessageHandlerWrapper>();
-        foreach (var wrapper in _handlerMethods)
+
+        foreach (ConditionalStreamListenerMessageHandlerWrapper wrapper in _handlerMethods)
         {
             if (wrapper.Condition == null)
             {
@@ -92,7 +89,8 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
             }
             else
             {
-                var conditionMetOnMessage = wrapper.Condition.GetValue<bool>(_evaluationContext, message);
+                bool conditionMetOnMessage = wrapper.Condition.GetValue<bool>(_evaluationContext, message);
+
                 if (conditionMetOnMessage)
                 {
                     matchingMethods.Add(wrapper);
@@ -105,6 +103,12 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
 
     internal sealed class ConditionalStreamListenerMessageHandlerWrapper
     {
+        public IExpression Condition { get; }
+
+        public bool IsVoid => StreamListenerMessageHandler.IsVoid;
+
+        public StreamListenerMessageHandler StreamListenerMessageHandler { get; }
+
         internal ConditionalStreamListenerMessageHandlerWrapper(IExpression condition, StreamListenerMessageHandler streamListenerMessageHandler)
         {
             if (streamListenerMessageHandler == null)
@@ -120,14 +124,5 @@ public class DispatchingStreamListenerMessageHandler : AbstractReplyProducingMes
             Condition = condition;
             StreamListenerMessageHandler = streamListenerMessageHandler;
         }
-
-        public IExpression Condition { get; }
-
-        public bool IsVoid
-        {
-            get { return StreamListenerMessageHandler.IsVoid; }
-        }
-
-        public StreamListenerMessageHandler StreamListenerMessageHandler { get; }
     }
 }

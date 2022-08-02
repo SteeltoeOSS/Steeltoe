@@ -17,6 +17,8 @@ public static class CancellationTokenExtensions
     {
         private readonly CancellationToken _cancellationToken;
 
+        public bool IsCompleted => _cancellationToken.IsCancellationRequested;
+
         public CancellationTokenAwaiter(CancellationToken cancellationToken)
         {
             _cancellationToken = cancellationToken;
@@ -25,14 +27,6 @@ public static class CancellationTokenExtensions
         public void GetResult()
         {
             // for future use
-        }
-
-        public bool IsCompleted
-        {
-            get
-            {
-                return _cancellationToken.IsCancellationRequested;
-            }
         }
 
         public void OnCompleted(Action continuation)

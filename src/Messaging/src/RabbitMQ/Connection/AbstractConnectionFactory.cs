@@ -12,88 +12,66 @@ namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
 public abstract class AbstractConnectionFactory : IConnectionFactory
 {
+    private const string PublisherSuffix = ".publisher";
     public const int DefaultCloseTimeout = 30000;
+    private readonly CompositeConnectionListener _connectionListener;
+    private readonly CompositeChannelListener _channelListener;
+    private readonly Random _random = new();
     protected readonly ILoggerFactory LoggerFactory;
     protected readonly ILogger Logger;
     protected readonly RC.IConnectionFactory InnerRabbitConnectionFactory;
-
-    private const string PublisherSuffix = ".publisher";
-    private readonly CompositeConnectionListener _connectionListener;
-    private readonly CompositeChannelListener _channelListener;
-    private readonly Random _random = new ();
     private int _defaultConnectionNameStrategyCounter;
 
-    protected AbstractConnectionFactory(
-        RC.IConnectionFactory rabbitConnectionFactory,
-        ILoggerFactory loggerFactory = null)
-        : this(rabbitConnectionFactory, null, loggerFactory)
-    {
-    }
-
-    protected AbstractConnectionFactory(
-        RC.IConnectionFactory rabbitConnectionFactory,
-        AbstractConnectionFactory publisherConnectionFactory,
-        ILoggerFactory loggerFactory = null)
-    {
-        LoggerFactory = loggerFactory;
-        Logger = LoggerFactory?.CreateLogger(GetType());
-        InnerRabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
-        _connectionListener = new CompositeConnectionListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
-        _channelListener = new CompositeChannelListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
-        PublisherConnectionFactory = publisherConnectionFactory;
-        RecoveryListener = new DefaultRecoveryListener(LoggerFactory?.CreateLogger<DefaultRecoveryListener>());
-        BlockedListener = new DefaultBlockedListener(LoggerFactory?.CreateLogger<DefaultBlockedListener>());
-        ServiceName = $"{GetType().Name}@{GetHashCode()}";
-    }
+    protected virtual AbstractConnectionFactory AbstractPublisherConnectionFactory => (AbstractConnectionFactory)PublisherConnectionFactory;
 
     public virtual RC.ConnectionFactory RabbitConnectionFactory => InnerRabbitConnectionFactory as RC.ConnectionFactory;
 
     public virtual string Username
     {
-        get { return InnerRabbitConnectionFactory.UserName; }
-        set { InnerRabbitConnectionFactory.UserName = value; }
+        get => InnerRabbitConnectionFactory.UserName;
+        set => InnerRabbitConnectionFactory.UserName = value;
     }
 
     public virtual string Password
     {
-        get { return InnerRabbitConnectionFactory.Password; }
-        set { InnerRabbitConnectionFactory.Password = value; }
+        get => InnerRabbitConnectionFactory.Password;
+        set => InnerRabbitConnectionFactory.Password = value;
     }
 
     public virtual Uri Uri
     {
-        get { return InnerRabbitConnectionFactory.Uri; }
-        set { InnerRabbitConnectionFactory.Uri = value; }
+        get => InnerRabbitConnectionFactory.Uri;
+        set => InnerRabbitConnectionFactory.Uri = value;
     }
 
     public virtual string Host
     {
-        get { return RabbitConnectionFactory == null ? "localhost" : RabbitConnectionFactory.HostName; }
-        set { RabbitConnectionFactory.HostName = value; }
+        get => RabbitConnectionFactory == null ? "localhost" : RabbitConnectionFactory.HostName;
+        set => RabbitConnectionFactory.HostName = value;
     }
 
     public virtual int Port
     {
-        get { return RabbitConnectionFactory?.Port ?? -1; }
-        set { RabbitConnectionFactory.Port = value; }
+        get => RabbitConnectionFactory?.Port ?? -1;
+        set => RabbitConnectionFactory.Port = value;
     }
 
     public virtual string VirtualHost
     {
-        get { return InnerRabbitConnectionFactory.VirtualHost; }
-        set { InnerRabbitConnectionFactory.VirtualHost = value; }
+        get => InnerRabbitConnectionFactory.VirtualHost;
+        set => InnerRabbitConnectionFactory.VirtualHost = value;
     }
 
     public virtual ushort RequestedHeartBeat
     {
-        get { return InnerRabbitConnectionFactory.RequestedHeartbeat; }
-        set { InnerRabbitConnectionFactory.RequestedHeartbeat = value; }
+        get => InnerRabbitConnectionFactory.RequestedHeartbeat;
+        set => InnerRabbitConnectionFactory.RequestedHeartbeat = value;
     }
 
     public virtual int ConnectionTimeout
     {
-        get { return RabbitConnectionFactory?.RequestedConnectionTimeout ?? 30000; }
-        set { RabbitConnectionFactory.RequestedConnectionTimeout = value; }
+        get => RabbitConnectionFactory?.RequestedConnectionTimeout ?? 30000;
+        set => RabbitConnectionFactory.RequestedConnectionTimeout = value;
     }
 
     public virtual int CloseTimeout { get; set; } = DefaultCloseTimeout;
@@ -122,9 +100,29 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual IChannelListener ChannelListener => _channelListener;
 
+    protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, ILoggerFactory loggerFactory = null)
+        : this(rabbitConnectionFactory, null, loggerFactory)
+    {
+    }
+
+    protected AbstractConnectionFactory(RC.IConnectionFactory rabbitConnectionFactory, AbstractConnectionFactory publisherConnectionFactory,
+        ILoggerFactory loggerFactory = null)
+    {
+        LoggerFactory = loggerFactory;
+        Logger = LoggerFactory?.CreateLogger(GetType());
+        InnerRabbitConnectionFactory = rabbitConnectionFactory ?? throw new ArgumentNullException(nameof(rabbitConnectionFactory));
+        _connectionListener = new CompositeConnectionListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
+        _channelListener = new CompositeChannelListener(LoggerFactory?.CreateLogger<CompositeConnectionListener>());
+        PublisherConnectionFactory = publisherConnectionFactory;
+        RecoveryListener = new DefaultRecoveryListener(LoggerFactory?.CreateLogger<DefaultRecoveryListener>());
+        BlockedListener = new DefaultBlockedListener(LoggerFactory?.CreateLogger<DefaultBlockedListener>());
+        ServiceName = $"{GetType().Name}@{GetHashCode()}";
+    }
+
     public virtual void SetConnectionListeners(List<IConnectionListener> listeners)
     {
         _connectionListener.SetListeners(listeners);
+
         if (PublisherConnectionFactory != null)
         {
             AbstractPublisherConnectionFactory.SetConnectionListeners(listeners);
@@ -134,6 +132,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     public virtual void AddConnectionListener(IConnectionListener connectionListener)
     {
         _connectionListener.AddListener(connectionListener);
+
         if (PublisherConnectionFactory != null)
         {
             PublisherConnectionFactory.AddConnectionListener(connectionListener);
@@ -142,7 +141,8 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     public virtual bool RemoveConnectionListener(IConnectionListener connectionListener)
     {
-        var result = _connectionListener.RemoveListener(connectionListener);
+        bool result = _connectionListener.RemoveListener(connectionListener);
+
         if (PublisherConnectionFactory != null)
         {
             PublisherConnectionFactory.RemoveConnectionListener(connectionListener);
@@ -154,6 +154,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     public virtual void ClearConnectionListeners()
     {
         _connectionListener.ClearListeners();
+
         if (PublisherConnectionFactory != null)
         {
             PublisherConnectionFactory.ClearConnectionListeners();
@@ -168,6 +169,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     public virtual void AddChannelListener(IChannelListener listener)
     {
         _channelListener.AddListener(listener);
+
         if (PublisherConnectionFactory != null)
         {
             AbstractPublisherConnectionFactory.AddChannelListener(listener);
@@ -177,6 +179,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     public virtual void SetRecoveryListener(IRecoveryListener recoveryListener)
     {
         RecoveryListener = recoveryListener;
+
         if (PublisherConnectionFactory != null)
         {
             AbstractPublisherConnectionFactory.SetRecoveryListener(recoveryListener);
@@ -186,6 +189,7 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     public virtual void SetBlockedListener(IBlockedListener blockedListener)
     {
         BlockedListener = blockedListener;
+
         if (PublisherConnectionFactory != null)
         {
             AbstractPublisherConnectionFactory.SetBlockedListener(blockedListener);
@@ -196,10 +200,12 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     {
         if (!string.IsNullOrEmpty(addresses))
         {
-            var endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
+            RC.AmqpTcpEndpoint[] endpoints = RC.AmqpTcpEndpoint.ParseMultiple(addresses);
+
             if (endpoints.Length > 0)
             {
                 Addresses = endpoints.ToList();
+
                 if (PublisherConnectionFactory != null)
                 {
                     AbstractPublisherConnectionFactory.SetAddresses(addresses);
@@ -244,21 +250,13 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
         ConnectionListener.OnShutDown(args);
     }
 
-    protected virtual AbstractConnectionFactory AbstractPublisherConnectionFactory
-    {
-        get
-        {
-            return (AbstractConnectionFactory)PublisherConnectionFactory;
-        }
-    }
-
     protected virtual IConnection CreateBareConnection()
     {
         try
         {
-            var connectionName = ObtainNewConnectionName();
+            string connectionName = ObtainNewConnectionName();
 
-            var rabbitConnection = Connect(connectionName);
+            RC.IConnection rabbitConnection = Connect(connectionName);
 
             var connection = new SimpleConnection(rabbitConnection, CloseTimeout, LoggerFactory?.CreateLogger<SimpleConnection>());
 
@@ -292,10 +290,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     protected virtual string GetDefaultHostName()
     {
         string temp;
+
         try
         {
             var inetUtils = new InetUtils(new InetOptions(), Logger);
-            var hostInfo = inetUtils.FindFirstNonLoopbackHostInfo();
+            HostInfo hostInfo = inetUtils.FindFirstNonLoopbackHostInfo();
             temp = hostInfo.Hostname;
             Logger?.LogDebug("Using hostname [{name}] for hostname.", temp);
         }
@@ -316,12 +315,14 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
     private RC.IConnection Connect(string connectionName)
     {
         RC.IConnection rabbitConnection;
+
         if (Addresses != null)
         {
-            var addressesToConnect = Addresses;
+            List<RC.AmqpTcpEndpoint> addressesToConnect = Addresses;
+
             if (ShuffleAddresses && addressesToConnect.Count > 1)
             {
-                var list = addressesToConnect.ToArray();
+                RC.AmqpTcpEndpoint[] list = addressesToConnect.ToArray();
                 Shuffle(list);
                 addressesToConnect = list.ToList();
             }
@@ -341,10 +342,11 @@ public abstract class AbstractConnectionFactory : IConnectionFactory
 
     private void Shuffle<T>(T[] array)
     {
-        var n = array.Length;
-        for (var i = 0; i < n - 1; i++)
+        int n = array.Length;
+
+        for (int i = 0; i < n - 1; i++)
         {
-            var r = i + _random.Next(n - i);
+            int r = i + _random.Next(n - i);
             (array[r], array[i]) = (array[i], array[r]);
         }
     }

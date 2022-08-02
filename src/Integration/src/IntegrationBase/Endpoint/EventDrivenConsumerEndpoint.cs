@@ -14,14 +14,6 @@ public class EventDrivenConsumerEndpoint : AbstractEndpoint
 
     private readonly IMessageHandler _handler;
 
-    public EventDrivenConsumerEndpoint(IApplicationContext context, ISubscribableChannel inputChannel, IMessageHandler handler)
-        : base(context)
-    {
-        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
-        _inputChannel = inputChannel ?? throw new ArgumentNullException(nameof(inputChannel));
-        Phase = int.MaxValue;
-    }
-
     public virtual IMessageChannel InputChannel => _inputChannel;
 
     public virtual IMessageHandler Handler => _handler;
@@ -34,20 +26,28 @@ public class EventDrivenConsumerEndpoint : AbstractEndpoint
             {
                 return producer.OutputChannel;
             }
-            else if (_handler is IMessageRouter router)
+
+            if (_handler is IMessageRouter router)
             {
                 return router.DefaultOutputChannel;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
+    }
+
+    public EventDrivenConsumerEndpoint(IApplicationContext context, ISubscribableChannel inputChannel, IMessageHandler handler)
+        : base(context)
+    {
+        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        _inputChannel = inputChannel ?? throw new ArgumentNullException(nameof(inputChannel));
+        Phase = int.MaxValue;
     }
 
     protected override Task DoStart()
     {
         _inputChannel.Subscribe(_handler);
+
         if (_handler is ILifecycle lifecycle)
         {
             return lifecycle.Start();
@@ -59,6 +59,7 @@ public class EventDrivenConsumerEndpoint : AbstractEndpoint
     protected override Task DoStop()
     {
         _inputChannel.Unsubscribe(_handler);
+
         if (_handler is ILifecycle lifecycle)
         {
             return lifecycle.Stop();

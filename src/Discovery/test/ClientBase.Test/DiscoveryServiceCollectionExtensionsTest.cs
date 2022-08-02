@@ -2,11 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Options;
@@ -22,19 +24,22 @@ using Steeltoe.Discovery.Eureka.Transport;
 using Steeltoe.Discovery.Kubernetes;
 using Steeltoe.Discovery.Kubernetes.Discovery;
 using Steeltoe.Extensions.Configuration.CloudFoundry;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Discovery.Client.Test;
 
 public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 {
-    private static readonly Dictionary<string, string> FastEureka = new () { { "eureka:client:ShouldRegisterWithEureka", "false" }, { "eureka:client:ShouldFetchRegistry", "false" } };
+    private static readonly Dictionary<string, string> FastEureka = new()
+    {
+        { "eureka:client:ShouldRegisterWithEureka", "false" },
+        { "eureka:client:ShouldFetchRegistry", "false" }
+    };
 
     [Fact]
     public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -51,16 +56,16 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddDiscoveryClient(config);
 
@@ -79,14 +84,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "eureka:instance:useNetUtils", "true" }
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddDiscoveryClient(config);
 
         var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        var instanceInfo = service.GetLocalServiceInstance();
+        IServiceInstance instanceInfo = service.GetLocalServiceInstance();
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -94,47 +99,37 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     public void AddDiscoveryClient_WithEurekaClientCertConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>(FastEureka);
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(appsettings)
-            .AddPemFiles("instance.crt", "instance.key")
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddDiscoveryClient(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+
+        var httpClient =
+            eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
-        var innerHandler = GetInnerHttpHandler(handler);
+        object innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
     }
 
-    private object GetInnerHttpHandler(object handler)
-    {
-        while (handler is not null)
-        {
-            handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
-            if (handler is HttpClientHandler)
-            {
-                break;
-            }
-        }
-
-        return handler;
-    }
-
     [Fact]
     public void AddDiscoveryClient_WithNoConfig_AddsNoOpDiscoveryClient()
     {
-        var appsettings = new Dictionary<string, string> { { "spring:application:name", "myName" } };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config);
+        var appsettings = new Dictionary<string, string>
+        {
+            { "spring:application:name", "myName" }
+        };
+
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config);
 
         services.AddDiscoveryClient();
         var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
@@ -149,7 +144,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     public void AddDiscoveryClient_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -158,7 +153,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddDiscoveryClient_MultipleRegistryServices_ThrowsConnectorException()
     {
-        var env1 = @"
+        string env1 = @"
                 {
                     ""limits"": {
                     ""fds"": 16384,
@@ -180,7 +175,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                     ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
                     ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
                 }";
-        var env2 = @"
+
+        string env2 = @"
                 {
                     ""p-service-registry"": [
                     {
@@ -230,7 +226,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDiscoveryClient(config));
         Assert.Contains("Multiple", ex.Message);
@@ -239,7 +235,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddDiscoveryClient_WithConsulConfiguration_AddsDiscoveryClient()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -258,20 +254,20 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(config);
         services.AddOptions();
         services.AddDiscoveryClient(config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var service = provider.GetService<IDiscoveryClient>();
         Assert.NotNull(service);
@@ -302,11 +298,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:deregister", "false" }
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddDiscoveryClient(config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         Assert.NotNull(provider.GetService<IDiscoveryClient>());
         Assert.NotNull(provider.GetService<IConsulClient>());
@@ -328,10 +324,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "spring:cloud:kubernetes:discovery:enabled", "true" },
             { "spring:cloud:kubernetes:namespace", "notdefault" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
 
-        var provider = services.AddDiscoveryClient(config).BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+
+        ServiceProvider provider = services.AddDiscoveryClient(config).BuildServiceProvider();
 
         var service = provider.GetService<IDiscoveryClient>();
         var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
@@ -344,14 +341,17 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     {
         const IServiceCollection serviceCollection = null;
 
-        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(_ => { }));
+        var ex = Assert.Throws<ArgumentNullException>(() => serviceCollection.AddServiceDiscovery(_ =>
+        {
+        }));
+
         Assert.Contains(nameof(serviceCollection), ex.Message);
     }
 
     [Fact]
     public void AddServiceDiscovery_AddsNoOpClientIfBuilderActionNull()
     {
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         services.AddServiceDiscovery();
         var client = services.BuildServiceProvider().GetRequiredService<IDiscoveryClient>();
@@ -364,7 +364,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_WithConfiguration_AddsAndWorks()
     {
-        var appsettings = @"
+        string appsettings = @"
 {
     ""discovery"": {
         ""services"": [
@@ -375,17 +375,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         ]
     }
 }";
-        using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var sCollection = new ServiceCollection()
-            .AddOptions()
-            .AddSingleton<IConfiguration>(
-                new ConfigurationBuilder()
-                    .SetBasePath(Path.GetDirectoryName(path))
-                    .AddJsonFile(Path.GetFileName(path))
-                    .Build());
 
-        var services = sCollection.AddServiceDiscovery(builder => builder.UseConfiguredInstances()).BuildServiceProvider();
+        using var sandbox = new Sandbox();
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+
+        IServiceCollection sCollection = new ServiceCollection().AddOptions()
+            .AddSingleton<IConfiguration>(new ConfigurationBuilder().SetBasePath(Path.GetDirectoryName(path)).AddJsonFile(Path.GetFileName(path)).Build());
+
+        ServiceProvider services = sCollection.AddServiceDiscovery(builder => builder.UseConfiguredInstances()).BuildServiceProvider();
 
         var client = services.GetService<IDiscoveryClient>();
         Assert.NotNull(client);
@@ -399,7 +396,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_WithEurekaConfig_AddsDiscoveryClient()
     {
-        var appsettings = @"
+        string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -416,16 +413,16 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                 }";
 
         using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.SetBasePath(directory);
 
         configurationBuilder.AddJsonFile(fileName);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddServiceDiscovery(builder => builder.UseEureka());
 
@@ -446,14 +443,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "eureka:instance:useNetUtils", "true" }
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddServiceDiscovery(builder => builder.UseEureka());
 
         var service = services.BuildServiceProvider().GetService<IDiscoveryClient>();
         Assert.NotNull(service);
-        var instanceInfo = service.GetLocalServiceInstance();
+        IServiceInstance instanceInfo = service.GetLocalServiceInstance();
         Assert.Equal("fromtest", instanceInfo.Host);
     }
 
@@ -461,22 +458,22 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     public void AddServiceDiscovery_WithEurekaClientCertConfig_AddsDiscoveryClient()
     {
         var appsettings = new Dictionary<string, string>(FastEureka);
-        var config = new ConfigurationBuilder()
-            .AddInMemoryCollection(appsettings)
-            .AddPemFiles("instance.crt", "instance.key")
-            .Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).AddPemFiles("instance.crt", "instance.key").Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddSingleton<IConfigureOptions<CertificateOptions>, PemConfigureCertificateOptions>();
         services.AddSingleton<IHostApplicationLifetime>(new TestApplicationLifetime());
         services.AddServiceDiscovery(builder => builder.UseEureka());
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var discoveryClient = serviceProvider.GetService<IDiscoveryClient>() as EurekaDiscoveryClient;
         var eurekaHttpClient = discoveryClient.HttpClient as EurekaHttpClient;
-        var httpClient = eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+
+        var httpClient =
+            eurekaHttpClient.GetType().GetRuntimeFields().FirstOrDefault(n => n.Name.Equals("httpClient")).GetValue(eurekaHttpClient) as HttpClient;
+
         var handler = httpClient.GetType().BaseType.GetRuntimeFields().FirstOrDefault(f => f.Name.Equals("_handler")).GetValue(httpClient) as DelegatingHandler;
-        var innerHandler = GetInnerHttpHandler(handler);
+        object innerHandler = GetInnerHttpHandler(handler);
 
         Assert.NotNull(discoveryClient);
         Assert.IsType<ClientCertificateHttpHandler>(innerHandler);
@@ -489,7 +486,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         services.AddServiceDiscovery(builder => builder.UseEureka("foobar"));
-        var sp = services.BuildServiceProvider();
+        ServiceProvider sp = services.BuildServiceProvider();
 
         var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
         Assert.Contains("foobar", ex.Message);
@@ -498,7 +495,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_MultipleRegistryServices_ThrowsConnectorException()
     {
-        var env1 = @"
+        string env1 = @"
                 {
                     ""limits"": {
                     ""fds"": 16384,
@@ -520,7 +517,8 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                     ""application_version"": ""07e112f7-2f71-4f5a-8a34-db51dbed30a3"",
                     ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
                 }";
-        var env2 = @"
+
+        string env2 = @"
                 {
                     ""p-service-registry"": [
                     {
@@ -571,7 +569,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddCloudFoundry().Build());
 
         services.AddServiceDiscovery(options => options.UseEureka());
-        var sp = services.BuildServiceProvider();
+        ServiceProvider sp = services.BuildServiceProvider();
 
         var ex = Assert.Throws<ConnectorException>(() => sp.GetService<IDiscoveryClient>());
         Assert.Contains("Multiple", ex.Message);
@@ -587,14 +585,14 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:register", "false" },
             { "consul:discovery:deregister", "false" },
             { "consul:discovery:instanceid", "instanceid" },
-            { "consul:discovery:port", "1234" },
+            { "consul:discovery:port", "1234" }
         };
 
         var services = new ServiceCollection();
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddOptions();
         services.AddServiceDiscovery(builder => builder.UseConsul());
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         var service = provider.GetService<IDiscoveryClient>();
         Assert.NotNull(service);
@@ -625,11 +623,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:deregister", "false" }
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddServiceDiscovery(builder => builder.UseConsul());
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         Assert.NotNull(provider.GetService<IDiscoveryClient>());
         Assert.NotNull(provider.GetService<IConsulClient>());
@@ -653,11 +651,11 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:deregister", "false" }
         };
 
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
         services.AddDiscoveryClient(config);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider provider = services.BuildServiceProvider();
 
         Assert.NotNull(provider.GetService<IDiscoveryClient>());
         Assert.NotNull(provider.GetService<IConsulClient>());
@@ -682,9 +680,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:deregister", "false" },
             { "Consul:Discovery:UseAspNetCoreUrls", "false" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        ServiceProvider provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
         var reg = provider.GetService<IConsulRegistration>();
 
         Assert.NotNull(reg);
@@ -705,9 +704,10 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "consul:discovery:deregister", "false" },
             { "Consul:Discovery:Port", "8080" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
 
-        var provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+
+        ServiceProvider provider = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions().AddDiscoveryClient(config).BuildServiceProvider();
         var reg = provider.GetService<IConsulRegistration>();
 
         Assert.NotNull(reg);
@@ -721,7 +721,12 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     public void AddServiceDiscovery_WithMultipleConfiguredClients_NotAllowed()
     {
         var serviceCollection = new ServiceCollection();
-        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string> { { "consul:discovery:cachettl", "1" }, { "eureka:client:cachettl", "1" } }).Build());
+
+        serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(new Dictionary<string, string>
+        {
+            { "consul:discovery:cachettl", "1" },
+            { "eureka:client:cachettl", "1" }
+        }).Build());
 
         var exception = Assert.Throws<AmbiguousMatchException>(() => serviceCollection.AddServiceDiscovery(builder =>
         {
@@ -753,7 +758,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(FastEureka).Build());
 
-        var provider = serviceCollection.AddServiceDiscovery(builder =>
+        ServiceProvider provider = serviceCollection.AddServiceDiscovery(builder =>
         {
             builder.UseConsul();
             builder.UseEureka();
@@ -772,15 +777,31 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
             { "spring:cloud:kubernetes:discovery:enabled", "true" },
             { "spring:cloud:kubernetes:namespace", "notdefault" }
         };
-        var config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
-        var services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
 
-        var provider = services.AddServiceDiscovery(builder => builder.UseKubernetes()).BuildServiceProvider();
+        IConfigurationRoot config = new ConfigurationBuilder().AddInMemoryCollection(appsettings).Build();
+        IServiceCollection services = new ServiceCollection().AddSingleton<IConfiguration>(config).AddOptions();
+
+        ServiceProvider provider = services.AddServiceDiscovery(builder => builder.UseKubernetes()).BuildServiceProvider();
 
         var service = provider.GetService<IDiscoveryClient>();
         var options = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
         Assert.True(service.GetType().IsAssignableFrom(typeof(KubernetesDiscoveryClient)));
         Assert.Equal("notdefault", options.Value.Namespace);
+    }
+
+    private object GetInnerHttpHandler(object handler)
+    {
+        while (handler is not null)
+        {
+            handler = handler.GetType().GetProperty("InnerHandler").GetValue(handler);
+
+            if (handler is HttpClientHandler)
+            {
+                break;
+            }
+        }
+
+        return handler;
     }
 
     public void Dispose()

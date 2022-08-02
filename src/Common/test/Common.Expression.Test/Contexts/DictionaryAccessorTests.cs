@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
-using System.Collections;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Contexts;
@@ -14,13 +14,13 @@ public class DictionaryAccessorTests
     [Fact]
     public void MapAccessorCompilable()
     {
-        var testMap = GetSimpleTestDictionary();
+        Dictionary<string, object> testMap = GetSimpleTestDictionary();
         var sec = new StandardEvaluationContext();
         sec.AddPropertyAccessor(new DictionaryAccessor());
         var sep = new SpelExpressionParser();
 
         // basic
-        var ex = sep.ParseExpression("foo");
+        IExpression ex = sep.ParseExpression("foo");
         Assert.Equal("bar", ex.GetValue(sec, testMap));
 
         // assertThat(SpelCompiler.compile(ex)).isTrue();
@@ -34,7 +34,7 @@ public class DictionaryAccessorTests
         // assertThat(ex.getValue(sec, testMap)).isEqualTo("BAR");
 
         // nested map
-        var nestedMap = GetNestedTestDictionary();
+        Dictionary<string, Dictionary<string, object>> nestedMap = GetNestedTestDictionary();
         ex = sep.ParseExpression("aaa.foo.ToUpper()");
         Assert.Equal("BAR", ex.GetValue(sec, nestedMap));
 
@@ -56,6 +56,7 @@ public class DictionaryAccessorTests
         {
             { "foo", "bar" }
         };
+
         return map;
     }
 
@@ -65,22 +66,24 @@ public class DictionaryAccessorTests
         {
             { "foo", "bar" }
         };
+
         var map2 = new Dictionary<string, Dictionary<string, object>>
         {
             { "aaa", map }
         };
+
         return map2;
     }
 
     public class MapGetter
     {
-        private readonly Dictionary<string, object> _map = new ();
+        private readonly Dictionary<string, object> _map = new();
+
+        public IDictionary Map => _map;
 
         public MapGetter()
         {
             _map.Add("foo", "bar");
         }
-
-        public IDictionary Map => _map;
     }
 }

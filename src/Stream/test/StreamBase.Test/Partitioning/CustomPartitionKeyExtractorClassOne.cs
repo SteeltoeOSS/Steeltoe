@@ -9,12 +9,12 @@ namespace Steeltoe.Stream.Partitioning;
 
 public class CustomPartitionKeyExtractorClassOne : IPartitionKeyExtractorStrategy
 {
+    public string ServiceName { get; set; }
+
     public CustomPartitionKeyExtractorClassOne()
     {
         ServiceName = GetType().Name;
     }
-
-    public string ServiceName { get; set; }
 
     public object ExtractKey(IMessage message)
     {

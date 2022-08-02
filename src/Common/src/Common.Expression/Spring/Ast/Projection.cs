@@ -28,9 +28,9 @@ public class Projection : SpelNode
 
     protected internal override IValueRef GetValueRef(ExpressionState state)
     {
-        var op = state.GetActiveContextObject();
+        ITypedValue op = state.GetActiveContextObject();
 
-        var operand = op.Value;
+        object operand = op.Value;
         var operandAsArray = operand as Array;
 
         // When the input is a map, we push a special context object on the stack
@@ -41,7 +41,8 @@ public class Projection : SpelNode
         if (operand is IDictionary mapData)
         {
             var result = new List<object>();
-            foreach (var entry in mapData)
+
+            foreach (object entry in mapData)
             {
                 try
                 {
@@ -63,13 +64,15 @@ public class Projection : SpelNode
         {
             var result = new List<object>();
             Type arrayElementType = null;
-            foreach (var element in data)
+
+            foreach (object element in data)
             {
                 try
                 {
                     state.PushActiveContextObject(new TypedValue(element));
                     state.EnterScope("index", result.Count);
-                    var value = children[0].GetValueInternal(state).Value;
+                    object value = children[0].GetValueInternal(state).Value;
+
                     if (value != null && operandAsArray != null)
                     {
                         arrayElementType = DetermineCommonType(arrayElementType, value.GetType());
@@ -121,7 +124,8 @@ public class Projection : SpelNode
             return oldType;
         }
 
-        var nextType = newType;
+        Type nextType = newType;
+
         while (nextType != typeof(object))
         {
             if (nextType.IsAssignableFrom(oldType))
@@ -132,8 +136,9 @@ public class Projection : SpelNode
             nextType = nextType.BaseType;
         }
 
-        var interfaces = newType.FindInterfaces((_, _) => true, null);
-        foreach (var nextInterface in interfaces)
+        Type[] interfaces = newType.FindInterfaces((_, _) => true, null);
+
+        foreach (Type nextInterface in interfaces)
         {
             if (nextInterface.IsAssignableFrom(oldType))
             {

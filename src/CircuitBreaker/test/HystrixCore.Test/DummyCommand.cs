@@ -8,17 +8,11 @@ internal sealed class DummyCommand : HystrixCommand, IDummyCommand
 {
     private readonly IHystrixCommandOptions _opts;
 
+    public HystrixCommandOptions Options => _opts as HystrixCommandOptions;
+
     public DummyCommand(IHystrixCommandOptions opts)
         : base(opts)
     {
         _opts = opts;
-    }
-
-    public HystrixCommandOptions Options
-    {
-        get
-        {
-            return _opts as HystrixCommandOptions;
-        }
     }
 }

@@ -26,7 +26,7 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
     public void ShouldYieldNoExecutedTasksOnStartup()
     {
         // given
-        var instances = HystrixThreadPoolMetrics.GetInstances();
+        ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
         // then
         Assert.Equal(0, instances.Count);
@@ -44,12 +44,12 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
         await cmd.ExecuteAsync();
         Time.Wait(250);
 
-        var instances = HystrixThreadPoolMetrics.GetInstances();
+        ICollection<HystrixThreadPoolMetrics> instances = HystrixThreadPoolMetrics.GetInstances();
 
         // then
         _output.WriteLine($"Instance count: {instances.Count}");
         Assert.Equal(1, instances.Count);
-        var metrics = instances.First();
+        HystrixThreadPoolMetrics metrics = instances.First();
         _output.WriteLine($"RollingCountThreadsExecuted: {metrics.RollingCountThreadsExecuted}");
         Assert.Equal(1, metrics.RollingCountThreadsExecuted);
     }
@@ -76,6 +76,7 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
             {
                 MetricsRollingStatisticalWindowInMilliseconds = 100
             };
+
             return opts;
         }
 
@@ -87,6 +88,7 @@ public class HystrixThreadPoolMetricsTest : HystrixTestBase
                 ThreadPoolKey = TpKey,
                 ThreadPoolOptions = GetThreadPoolOptions()
             };
+
             return opts;
         }
     }

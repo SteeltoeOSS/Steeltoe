@@ -30,7 +30,7 @@ public class RandomValueSourceTest
     public void Build__ReturnsProvider()
     {
         var source = new RandomValueSource();
-        var provider = source.Build(new ConfigurationBuilder());
+        IConfigurationProvider provider = source.Build(new ConfigurationBuilder());
         Assert.IsType<RandomValueProvider>(provider);
     }
 }

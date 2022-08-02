@@ -27,15 +27,15 @@ public abstract class AbstractMessageCondition<T> : IMessageCondition<T>
             return false;
         }
 
-        var thisContent = GetContent();
-        var otherContent = other.GetContent();
+        IList thisContent = GetContent();
+        IList otherContent = other.GetContent();
 
         if (thisContent.Count != otherContent.Count)
         {
             return false;
         }
 
-        for (var i = 0; i < thisContent.Count; i++)
+        for (int i = 0; i < thisContent.Count; i++)
         {
             if (!Equals(thisContent[i], otherContent[i]))
             {
@@ -53,10 +53,11 @@ public abstract class AbstractMessageCondition<T> : IMessageCondition<T>
 
     public override string ToString()
     {
-        var infix = GetToStringInfix();
+        string infix = GetToStringInfix();
 
         var joiner = new StringBuilder("[");
-        foreach (var expression in GetContent())
+
+        foreach (object expression in GetContent())
         {
             joiner.Append(expression + infix);
         }

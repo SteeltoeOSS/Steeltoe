@@ -33,9 +33,10 @@ public class PostgresProviderConfigurer
             configuration.Password = si.Password;
             configuration.Host = si.Host;
             configuration.Database = si.Path;
+
             if (si.Query != null)
             {
-                foreach (var kvp in UriExtensions.ParseQuerystring(si.Query))
+                foreach (KeyValuePair<string, string> kvp in UriExtensions.ParseQuerystring(si.Query))
                 {
                     if (kvp.Key.Equals("sslmode", StringComparison.InvariantCultureIgnoreCase))
                     {

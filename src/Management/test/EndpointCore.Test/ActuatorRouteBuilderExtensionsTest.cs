@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
@@ -17,7 +18,6 @@ using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.ThreadDump;
 using Steeltoe.Management.Endpoint.Trace;
-using System.Reflection;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint;
@@ -28,10 +28,18 @@ public class ActuatorRouteBuilderExtensionsTest
     {
         get
         {
-            static bool Query(Type t) => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-            var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(Query).ToList();
+            static bool Query(Type t)
+            {
+                return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
+            }
+
+            List<Type> types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Where(Query).ToList();
             types.AddRange(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes().Where(Query));
-            return types.Select(t => new object[] { t });
+
+            return types.Select(t => new object[]
+            {
+                t
+            });
         }
     }
 
@@ -39,14 +47,26 @@ public class ActuatorRouteBuilderExtensionsTest
     {
         get
         {
-            static bool Query(Type t) => t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
-            static bool SupportedOnPlatform(Type t) => !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump"))
-                                                       || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows)
-                                                       || t.Name.StartsWith("HeapDump");
-            var types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes()
-                .Union(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes())
+            static bool Query(Type t)
+            {
+                return t.GetInterfaces().Any(type => type.FullName == "Steeltoe.Management.IEndpoint");
+            }
+
+            static bool SupportedOnPlatform(Type t)
+            {
+                return !(t.Name.StartsWith("ThreadDump") || t.Name.StartsWith("HeapDump")) || (t.Name.StartsWith("ThreadDump") && Platform.IsWindows) ||
+                    t.Name.StartsWith("HeapDump");
+            }
+
+            List<Type> types = Assembly.Load("Steeltoe.Management.EndpointBase").GetTypes().Union(Assembly.Load("Steeltoe.Management.EndpointCore").GetTypes())
                 .Where(Query).Where(SupportedOnPlatform).ToList();
-            return from t in types select new object[] { t };
+
+            return
+                from t in types
+                select new object[]
+                {
+                    t
+                };
         }
     }
 
@@ -54,7 +74,7 @@ public class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointImplementations))]
     public void LookupMiddlewareTest(Type type)
     {
-        var (middleware, options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+        (Type middleware, Type options) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
         Assert.NotNull(middleware);
         Assert.NotNull(options);
     }
@@ -63,7 +83,7 @@ public class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthSuccess(Type type)
     {
-        var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
+        IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
         await ActAndAssert(type, hostBuilder, true);
     }
 
@@ -71,55 +91,55 @@ public class ActuatorRouteBuilderExtensionsTest
     [MemberData(nameof(EndpointImplementationsForCurrentPlatform))]
     public async Task MapTestAuthFail(Type type)
     {
-        var hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
+        IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
         await ActAndAssert(type, hostBuilder, false);
     }
 
     private static IHostBuilder GetHostBuilder(Type type, Action<AuthorizationPolicyBuilder> policyAction)
-        => new HostBuilder()
-            .AddDynamicLogging()
-            .ConfigureServices((context, s) =>
-            {
-                s.AddTraceActuator(context.Configuration, MediaTypeVersion.V1);
-                s.AddThreadDumpActuator(context.Configuration, MediaTypeVersion.V1);
-                s.AddCloudFoundryActuator(context.Configuration);
-                s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
-                s.AddRouting();
-                s.AddAuthentication(TestAuthHandler.AuthenticationScheme)
-                    .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.AuthenticationScheme, _ => { });
-                s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
-                s.AddServerSideBlazor();
-            })
-            .ConfigureWebHost(builder =>
-            {
-                builder
-                    .Configure(app =>
-                        app
-                            .UseRouting()
-                            .UseAuthentication()
-                            .UseAuthorization()
-                            .UseEndpoints(endpoints => MapEndpoints(type, endpoints)))
-                    .UseTestServer();
-            });
+    {
+        return new HostBuilder().AddDynamicLogging().ConfigureServices((context, s) =>
+        {
+            s.AddTraceActuator(context.Configuration, MediaTypeVersion.V1);
+            s.AddThreadDumpActuator(context.Configuration, MediaTypeVersion.V1);
+            s.AddCloudFoundryActuator(context.Configuration);
+            s.AddAllActuators(context.Configuration); // Add all of them, but map one at a time
+            s.AddRouting();
+
+            s.AddAuthentication(TestAuthHandler.AuthenticationScheme).AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(
+                TestAuthHandler.AuthenticationScheme, _ =>
+                {
+                });
+
+            s.AddAuthorization(options => options.AddPolicy("TestAuth", policyAction)); // setup Auth based on test Case
+            s.AddServerSideBlazor();
+        }).ConfigureWebHost(builder =>
+        {
+            builder.Configure(app => app.UseRouting().UseAuthentication().UseAuthorization().UseEndpoints(endpoints => MapEndpoints(type, endpoints)))
+                .UseTestServer();
+        });
+    }
 
     private static IManagementOptions GetManagementContext(Type type, IServiceProvider services)
-        => type.IsAssignableFrom(typeof(CloudFoundryEndpoint))
+    {
+        return type.IsAssignableFrom(typeof(CloudFoundryEndpoint))
             ? services.GetRequiredService<CloudFoundryManagementOptions>()
             : services.GetRequiredService<ActuatorManagementOptions>();
+    }
 
     private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
     {
-        using var host = await hostBuilder.StartAsync();
-        var (_, optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
+        using IHost host = await hostBuilder.StartAsync();
+        (_, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);
         var options = host.Services.GetService(optionsType) as IEndpointOptions;
-        var path = options.GetContextPath(GetManagementContext(type, host.Services));
+        string path = options.GetContextPath(GetManagementContext(type, host.Services));
 
         Assert.NotNull(path);
 
-        using var server = host.GetTestServer();
-        var response = await server.CreateClient().GetAsync(path);
+        using TestServer server = host.GetTestServer();
+        HttpResponseMessage response = await server.CreateClient().GetAsync(path);
 
-        Assert.True(expectedSuccess == response.IsSuccessStatusCode, $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");
+        Assert.True(expectedSuccess == response.IsSuccessStatusCode,
+            $"Expected {(expectedSuccess ? "success" : "failure")}, but got {response.StatusCode} for {path} and type {type}");
     }
 
     private static void MapEndpoints(Type type, IEndpointRouteBuilder endpoints)

@@ -13,7 +13,7 @@ public class StringLiteral : Literal
     public StringLiteral(string payload, int startPos, int endPos, string value)
         : base(payload, startPos, endPos)
     {
-        var valueWithinQuotes = value.Substring(1, value.Length - 1 - 1);
+        string valueWithinQuotes = value.Substring(1, value.Length - 1 - 1);
         valueWithinQuotes = valueWithinQuotes.Replace("''", "'");
         valueWithinQuotes = valueWithinQuotes.Replace("\"\"", "\"");
         _value = new TypedValue(valueWithinQuotes);

@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Logging;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -16,5 +16,8 @@ public class DefaultPublisherCallbackFactory : IPublisherCallbackChannelFactory
         _loggerFactory = loggerFactory;
     }
 
-    public IPublisherCallbackChannel CreateChannel(RC.IModel channel) => new PublisherCallbackChannel(channel, _loggerFactory?.CreateLogger<PublisherCallbackChannel>());
+    public IPublisherCallbackChannel CreateChannel(RC.IModel channel)
+    {
+        return new PublisherCallbackChannel(channel, _loggerFactory?.CreateLogger<PublisherCallbackChannel>());
+    }
 }

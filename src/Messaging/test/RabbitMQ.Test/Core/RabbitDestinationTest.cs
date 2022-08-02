@@ -12,9 +12,9 @@ public class RabbitDestinationTest
     public void TestConvertRabbitDestinationToString()
     {
         var d = new RabbitDestination("foo", "bar");
-        var str = d;
+        RabbitDestination str = d;
         Assert.Equal("foo/bar", str);
-        var returned = ReceiveStringReturnDestination(str);
+        RabbitDestination returned = ReceiveStringReturnDestination(str);
         Assert.Equal("foo", returned.ExchangeName);
         Assert.Equal("bar", returned.RoutingKey);
         Assert.Equal("bar", returned.QueueName);
@@ -36,7 +36,7 @@ public class RabbitDestinationTest
         Assert.Equal("bar", d.RoutingKey);
         Assert.Equal("bar", d.QueueName);
 
-        var returned = ReceiveDestinationReturnString(d);
+        string returned = ReceiveDestinationReturnString(d);
         Assert.Equal("foo/bar", returned);
 
         d = "bar";

@@ -2,26 +2,39 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Steeltoe.Common;
 using System.Collections.Concurrent;
+using Steeltoe.Common;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.Strategy.Metrics;
 
 public class HystrixMetricsPublisherFactory
 {
-    private static HystrixMetricsPublisherFactory _singleton = new ();
+    private static HystrixMetricsPublisherFactory _singleton = new();
 
-    public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new();
+
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new();
+
+    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new();
+
+    internal HystrixMetricsPublisherFactory()
+    {
+    }
+
+    public static IHystrixMetricsPublisherThreadPool CreateOrRetrievePublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey,
+        HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
     {
         return _singleton.GetPublisherForThreadPool(threadPoolKey, metrics, properties);
     }
 
-    public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    public static IHystrixMetricsPublisherCommand CreateOrRetrievePublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner,
+        HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
     {
         return _singleton.GetPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
     }
 
-    public static IHystrixMetricsPublisherCollapser CreateOrRetrievePublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
+    public static IHystrixMetricsPublisherCollapser CreateOrRetrievePublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics,
+        IHystrixCollapserOptions properties)
     {
         return _singleton.GetPublisherForCollapser(collapserKey, metrics, properties);
     }
@@ -34,41 +47,36 @@ public class HystrixMetricsPublisherFactory
         _singleton.CollapserPublishers.Clear();
     }
 
-    internal HystrixMetricsPublisherFactory()
-    {
-    }
-
-    internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner, HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
+    internal IHystrixMetricsPublisherCommand GetPublisherForCommand(IHystrixCommandKey commandKey, IHystrixCommandGroupKey commandOwner,
+        HystrixCommandMetrics metrics, ICircuitBreaker circuitBreaker, IHystrixCommandOptions properties)
     {
         return CommandPublishers.GetOrAddEx(commandKey.Name, _ =>
         {
-            var newPublisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+            IHystrixMetricsPublisherCommand newPublisher =
+                HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCommand(commandKey, commandOwner, metrics, circuitBreaker, properties);
+
             newPublisher.Initialize();
             return newPublisher;
         });
     }
 
-    internal IHystrixMetricsPublisherThreadPool GetPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics, IHystrixThreadPoolOptions properties)
+    internal IHystrixMetricsPublisherThreadPool GetPublisherForThreadPool(IHystrixThreadPoolKey threadPoolKey, HystrixThreadPoolMetrics metrics,
+        IHystrixThreadPoolOptions properties)
     {
         return ThreadPoolPublishers.GetOrAddEx(threadPoolKey.Name, _ =>
         {
-            var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
+            IHystrixMetricsPublisherThreadPool publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForThreadPool(threadPoolKey, metrics, properties);
             publisher.Initialize();
             return publisher;
         });
     }
 
-    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCommand> CommandPublishers { get; } = new ();
-
-    internal ConcurrentDictionary<string, IHystrixMetricsPublisherThreadPool> ThreadPoolPublishers { get; } = new ();
-
-    internal ConcurrentDictionary<string, IHystrixMetricsPublisherCollapser> CollapserPublishers { get; } = new ();
-
-    internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics, IHystrixCollapserOptions properties)
+    internal IHystrixMetricsPublisherCollapser GetPublisherForCollapser(IHystrixCollapserKey collapserKey, HystrixCollapserMetrics metrics,
+        IHystrixCollapserOptions properties)
     {
         return CollapserPublishers.GetOrAddEx(collapserKey.Name, _ =>
         {
-            var publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
+            IHystrixMetricsPublisherCollapser publisher = HystrixPlugins.MetricsPublisher.GetMetricsPublisherForCollapser(collapserKey, metrics, properties);
             publisher.Initialize();
             return publisher;
         });

@@ -14,7 +14,11 @@ public interface IContentTypeResolver
     /// <summary>
     /// Determine the MimeType of a message from the given message headers.
     /// </summary>
-    /// <param name="headers">the headers to use.</param>
-    /// <returns>the resolved MimeType.</returns>
+    /// <param name="headers">
+    /// the headers to use.
+    /// </param>
+    /// <returns>
+    /// the resolved MimeType.
+    /// </returns>
     MimeType Resolve(IMessageHeaders headers);
 }

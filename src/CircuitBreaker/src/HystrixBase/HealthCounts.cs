@@ -6,10 +6,19 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public class HealthCounts
 {
+    public static HealthCounts Empty { get; } = new(0, 0);
+
+    public long TotalRequests { get; }
+
+    public long ErrorCount { get; }
+
+    public int ErrorPercentage { get; }
+
     internal HealthCounts(long total, long error)
     {
         TotalRequests = total;
         ErrorCount = error;
+
         if (TotalRequests > 0)
         {
             ErrorPercentage = (int)(ErrorCount * 100 / TotalRequests);
@@ -20,29 +29,21 @@ public class HealthCounts
         }
     }
 
-    public long TotalRequests { get; }
-
-    public long ErrorCount { get; }
-
-    public int ErrorPercentage { get; }
-
     public HealthCounts Plus(long[] eventTypeCounts)
     {
-        var updatedTotalCount = TotalRequests;
-        var updatedErrorCount = ErrorCount;
+        long updatedTotalCount = TotalRequests;
+        long updatedErrorCount = ErrorCount;
 
-        var successCount = eventTypeCounts[(int)HystrixEventType.Success];
-        var failureCount = eventTypeCounts[(int)HystrixEventType.Failure];
-        var timeoutCount = eventTypeCounts[(int)HystrixEventType.Timeout];
-        var threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.ThreadPoolRejected];
-        var semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SemaphoreRejected];
+        long successCount = eventTypeCounts[(int)HystrixEventType.Success];
+        long failureCount = eventTypeCounts[(int)HystrixEventType.Failure];
+        long timeoutCount = eventTypeCounts[(int)HystrixEventType.Timeout];
+        long threadPoolRejectedCount = eventTypeCounts[(int)HystrixEventType.ThreadPoolRejected];
+        long semaphoreRejectedCount = eventTypeCounts[(int)HystrixEventType.SemaphoreRejected];
 
         updatedTotalCount += successCount + failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;
         updatedErrorCount += failureCount + timeoutCount + threadPoolRejectedCount + semaphoreRejectedCount;
         return new HealthCounts(updatedTotalCount, updatedErrorCount);
     }
-
-    public static HealthCounts Empty { get; } = new (0, 0);
 
     public override string ToString()
     {

@@ -59,11 +59,11 @@ public class MySqlDbContextServiceCollectionExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddDbContext<GoodMySqlDbContext>(config);
 
-        var serviceProvider = services.BuildServiceProvider();
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
         var service = serviceProvider.GetService<GoodMySqlDbContext>();
         var serviceHealth = serviceProvider.GetService<IHealthContributor>();
         Assert.NotNull(service);
@@ -75,7 +75,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
@@ -91,7 +91,7 @@ public class MySqlDbContextServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var ex = Assert.Throws<ConnectorException>(() => services.AddDbContext<GoodMySqlDbContext>(config));
         Assert.Contains("Multiple", ex.Message);
@@ -107,12 +107,12 @@ public class MySqlDbContextServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddDbContext<GoodMySqlDbContext>(config);
         services.AddDbContext<Good2MySqlDbContext>(config);
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodMySqlDbContext>();
         Assert.NotNull(service);
 

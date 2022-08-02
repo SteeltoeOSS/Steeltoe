@@ -16,27 +16,22 @@ public class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
     [Fact]
     public async Task TestArbitraryInterfaceChannelsBound()
     {
-        var searchDirectories = GetSearchDirectories("MockBinder");
-        var provider = CreateStreamsContainerWithBinding(
-                searchDirectories,
-                typeof(IFooChannels),
-                "spring:cloud:stream:defaultBinder=mock",
-                "spring:cloud:stream:bindings:Foo:destination=someQueue.0",
-                "spring:cloud:stream:bindings:Bar:destination=someQueue.1",
-                "spring:cloud:stream:bindings:Baz:destination=someQueue.2",
-                "spring:cloud:stream:bindings:Qux:destination=someQueue.3")
-            .BuildServiceProvider();
+        List<string> searchDirectories = GetSearchDirectories("MockBinder");
+
+        ServiceProvider provider = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock",
+            "spring:cloud:stream:bindings:Foo:destination=someQueue.0", "spring:cloud:stream:bindings:Bar:destination=someQueue.1",
+            "spring:cloud:stream:bindings:Baz:destination=someQueue.2", "spring:cloud:stream:bindings:Qux:destination=someQueue.3").BuildServiceProvider();
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
-        var binder = factory.GetBinder(null, typeof(IMessageChannel));
+        IBinder binder = factory.GetBinder(null, typeof(IMessageChannel));
         Assert.NotNull(binder);
         var fooChannels = provider.GetService<IFooChannels>();
         Assert.NotNull(fooChannels);
 
-        var mock = Mock.Get(binder);
+        Mock<IBinder> mock = Mock.Get(binder);
         mock.Verify(b => b.BindConsumer("someQueue.0", null, fooChannels.Foo, It.IsAny<ConsumerOptions>()));
         mock.Verify(b => b.BindConsumer("someQueue.1", null, fooChannels.Bar, It.IsAny<ConsumerOptions>()));
 

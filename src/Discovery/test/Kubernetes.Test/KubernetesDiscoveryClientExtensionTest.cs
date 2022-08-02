@@ -19,7 +19,7 @@ public class KubernetesDiscoveryClientExtensionTest
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);
@@ -29,11 +29,16 @@ public class KubernetesDiscoveryClientExtensionTest
     public void ClientDisabledBySpringCloudDiscoveryEnabledFalse()
     {
         var services = new ServiceCollection();
-        var appSettings = new Dictionary<string, string> { { "spring:cloud:discovery:enabled", "false" } };
+
+        var appSettings = new Dictionary<string, string>
+        {
+            { "spring:cloud:discovery:enabled", "false" }
+        };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.False(clientOptions.Value.Enabled);
@@ -43,15 +48,17 @@ public class KubernetesDiscoveryClientExtensionTest
     public void ClientFavorsKubernetesDiscoveryEnabled()
     {
         var services = new ServiceCollection();
+
         var appSettings = new Dictionary<string, string>
         {
             { "spring:cloud:discovery:enabled", "false" },
             { "spring:cloud:kubernetes:discovery:enabled", "true" }
         };
+
         services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         KubernetesDiscoveryClientExtension.ConfigureKubernetesServices(services);
-        var provider = services.BuildServiceProvider();
+        ServiceProvider? provider = services.BuildServiceProvider();
         var clientOptions = provider.GetRequiredService<IOptions<KubernetesDiscoveryOptions>>();
 
         Assert.True(clientOptions.Value.Enabled);

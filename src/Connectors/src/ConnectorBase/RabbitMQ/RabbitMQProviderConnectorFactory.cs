@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reflection;
 using Steeltoe.Common.Reflection;
 using Steeltoe.Connector.Services;
-using System.Reflection;
 
 namespace Steeltoe.Connector.RabbitMQ;
 
@@ -12,8 +12,10 @@ public class RabbitMQProviderConnectorFactory
 {
     private readonly RabbitMQServiceInfo _info;
     private readonly RabbitMQProviderConnectorOptions _config;
-    private readonly RabbitMQProviderConfigurer _configurer = new ();
+    private readonly RabbitMQProviderConfigurer _configurer = new();
     private readonly MethodInfo _setUri;
+
+    protected Type ConnectorType { get; set; }
 
     public RabbitMQProviderConnectorFactory(RabbitMQServiceInfo serviceInfo, RabbitMQProviderConnectorOptions options, Type connectFactory)
     {
@@ -21,6 +23,7 @@ public class RabbitMQProviderConnectorFactory
         ConnectorType = connectFactory ?? throw new ArgumentNullException(nameof(connectFactory));
         _info = serviceInfo;
         _setUri = FindSetUriMethod(ConnectorType);
+
         if (_setUri == null)
         {
             throw new ConnectorException("Unable to find ConnectionFactory.SetUri(), incompatible RabbitMQ assembly");
@@ -31,14 +34,12 @@ public class RabbitMQProviderConnectorFactory
     {
     }
 
-    protected Type ConnectorType { get; set; }
-
     public static MethodInfo FindSetUriMethod(Type type)
     {
-        var typeInfo = type.GetTypeInfo();
-        var declaredMethods = typeInfo.DeclaredMethods;
+        TypeInfo typeInfo = type.GetTypeInfo();
+        IEnumerable<MethodInfo> declaredMethods = typeInfo.DeclaredMethods;
 
-        foreach (var ci in declaredMethods)
+        foreach (MethodInfo ci in declaredMethods)
         {
             if (ci.Name.Equals("SetUri"))
             {
@@ -51,8 +52,9 @@ public class RabbitMQProviderConnectorFactory
 
     public virtual object Create(IServiceProvider provider)
     {
-        var connectionString = CreateConnectionString();
+        string connectionString = CreateConnectionString();
         object result = null;
+
         if (connectionString != null)
         {
             result = CreateConnection(connectionString);
@@ -73,7 +75,8 @@ public class RabbitMQProviderConnectorFactory
 
     public virtual object CreateConnection(string connectionString)
     {
-        var inst = ReflectionHelpers.CreateInstance(ConnectorType);
+        object inst = ReflectionHelpers.CreateInstance(ConnectorType);
+
         if (inst == null)
         {
             return null;
@@ -81,7 +84,11 @@ public class RabbitMQProviderConnectorFactory
 
         var uri = new Uri(connectionString, UriKind.Absolute);
 
-        ReflectionHelpers.Invoke(_setUri, inst, new object[] { uri });
+        ReflectionHelpers.Invoke(_setUri, inst, new object[]
+        {
+            uri
+        });
+
         return inst;
     }
 }

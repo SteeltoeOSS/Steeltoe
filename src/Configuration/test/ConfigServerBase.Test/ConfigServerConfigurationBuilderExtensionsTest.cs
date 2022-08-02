@@ -36,318 +36,6 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-    [Fact]
-    public void AddConfigServer_ThrowsIfConfigBuilderNull()
-    {
-        const IConfigurationBuilder configurationBuilder = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(new ConfigServerClientSettings()));
-        Assert.Contains(nameof(configurationBuilder), ex.Message);
-    }
-
-    [Fact]
-    public void AddConfigServer_ThrowsIfSettingsNull()
-    {
-        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
-        const ConfigServerClientSettings defaultSettings = null;
-
-        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(defaultSettings));
-        Assert.Contains(nameof(defaultSettings), ex.Message);
-    }
-
-    [Fact]
-    public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-        var settings = new ConfigServerClientSettings { Timeout = 10 };
-
-        configurationBuilder
-            .AddPemFiles("instance.crt", "instance.key")
-            .AddConfigServer(settings);
-        configurationBuilder.Build();
-
-        var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(configServerSource);
-        Assert.NotNull(configServerSource.DefaultSettings.ClientCertificate);
-    }
-
-    [Fact]
-    public void AddConfigServer_AddsConfigServerSourceToList()
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-        var settings = new ConfigServerClientSettings();
-
-        configurationBuilder.AddConfigServer(settings);
-
-        var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
-        Assert.NotNull(configServerSource);
-    }
-
-    [Fact]
-    public void AddConfigServer_WithLoggerFactorySucceeds()
-    {
-        var configurationBuilder = new ConfigurationBuilder();
-        var loggerFactory = new LoggerFactory();
-        var settings = new ConfigServerClientSettings();
-
-        configurationBuilder.AddConfigServer(settings, loggerFactory);
-
-        var configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
-
-        Assert.NotNull(configServerSource);
-        Assert.NotNull(configServerSource.LogFactory);
-    }
-
-    [Fact]
-    public void AddConfigServer_JsonAppSettingsConfiguresClient()
-    {
-        var appsettings = @"
-                {
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                    },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword"",
-                            ""timeout"": 10000,
-                            ""token"" : ""vaulttoken"",
-                            ""retry"": {
-                                ""enabled"":""false"",
-                                ""initialInterval"":55555,
-                                ""maxInterval"": 55555,
-                                ""multiplier"": 5.5,
-                                ""maxAttempts"": 55555
-                            }
-                        }
-                      }
-                    }
-                }";
-
-        using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        var clientSettings = new ConfigServerClientSettings();
-        configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientSettings);
-        var config = configurationBuilder.Build();
-
-        var configServerProvider =
-            config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-        Assert.NotNull(configServerProvider);
-
-        var settings = configServerProvider.Settings;
-
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-        Assert.False(settings.RetryEnabled);
-        Assert.Equal(55555, settings.RetryAttempts);
-        Assert.Equal(55555, settings.RetryInitialInterval);
-        Assert.Equal(55555, settings.RetryMaxInterval);
-        Assert.Equal(5.5, settings.RetryMultiplier);
-        Assert.Equal(10000, settings.Timeout);
-        Assert.Equal("vaulttoken", settings.Token);
-    }
-
-    [Fact]
-    public void AddConfigServer_XmlAppSettingsConfiguresClient()
-    {
-        var appsettings = @"
-<settings>
-    <spring>
-      <cloud>
-        <config>
-            <uri>https://foo.com:9999</uri>
-            <enabled>false</enabled>
-            <failFast>false</failFast>
-            <label>myLabel</label>
-            <name>myName</name>
-            <username>myUsername</username>
-            <password>myPassword</password>
-        </config>
-      </cloud>
-    </spring>
-</settings>";
-        using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        var clientSettings = new ConfigServerClientSettings();
-        configurationBuilder.AddXmlFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientSettings);
-        var config = configurationBuilder.Build();
-
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
-
-        Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
-
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-    }
-
-    [Fact]
-    public void AddConfigServer_IniAppSettingsConfiguresClient()
-    {
-        var appsettings = @"
-[spring:cloud:config]
-    uri=https://foo.com:9999
-    enabled=false
-    failFast=false
-    label=myLabel
-    name=myName
-    username=myUsername
-    password=myPassword
-";
-        using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        var clientSettings = new ConfigServerClientSettings();
-        configurationBuilder.AddIniFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientSettings);
-        var config = configurationBuilder.Build();
-
-        var configServerProvider =
-            config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
-        Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
-
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-    }
-
-    [Fact]
-    public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
-    {
-        var appsettings = new[]
-        {
-            "spring:cloud:config:enabled=false",
-            "--spring:cloud:config:failFast=false",
-            "/spring:cloud:config:uri=https://foo.com:9999",
-            "--spring:cloud:config:name", "myName",
-            "/spring:cloud:config:label", "myLabel",
-            "--spring:cloud:config:username", "myUsername",
-            "--spring:cloud:config:password", "myPassword"
-        };
-
-        var configurationBuilder = new ConfigurationBuilder();
-        var clientSettings = new ConfigServerClientSettings();
-        configurationBuilder.AddCommandLine(appsettings);
-
-        configurationBuilder.AddConfigServer(clientSettings);
-        var config = configurationBuilder.Build();
-        var configServerProvider =
-            config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
-        Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
-
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal("myName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-    }
-
-    [Fact]
-    public void AddConfigServer_HandlesPlaceHolders()
-    {
-        var appsettings = @"
-                {
-                    ""foo"": {
-                        ""bar"": {
-                            ""name"": ""testName""
-                        },
-                    },
-                    ""spring"": {
-                        ""application"": {
-                            ""name"": ""myName""
-                        },
-                      ""cloud"": {
-                        ""config"": {
-                            ""uri"": ""https://user:password@foo.com:9999"",
-                            ""enabled"": false,
-                            ""failFast"": false,
-                            ""name"": ""${foo:bar:name?foobar}"",
-                            ""label"": ""myLabel"",
-                            ""username"": ""myUsername"",
-                            ""password"": ""myPassword""
-                        }
-                      }
-                    }
-                }";
-
-        using var sandbox = new Sandbox();
-        var path = sandbox.CreateFile("appsettings.json", appsettings);
-
-        var directory = Path.GetDirectoryName(path);
-        var fileName = Path.GetFileName(path);
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.SetBasePath(directory);
-
-        var clientSettings = new ConfigServerClientSettings();
-        configurationBuilder.AddJsonFile(fileName);
-
-        configurationBuilder.AddConfigServer(clientSettings);
-        var config = configurationBuilder.Build();
-
-        var configServerProvider =
-            config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
-
-        Assert.NotNull(configServerProvider);
-        var settings = configServerProvider.Settings;
-
-        Assert.False(settings.Enabled);
-        Assert.False(settings.FailFast);
-        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
-        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
-        Assert.Equal("testName", settings.Name);
-        Assert.Equal("myLabel", settings.Label);
-        Assert.Equal("myUsername", settings.Username);
-        Assert.Equal("myPassword", settings.Password);
-    }
-
     private const string VcapServicesV2 = @"
                 {
                     ""p-config-server"": [
@@ -423,6 +111,322 @@ public class ConfigServerConfigurationBuilderExtensionsTest
                     }]
                 }";
 
+    [Fact]
+    public void AddConfigServer_ThrowsIfConfigBuilderNull()
+    {
+        const IConfigurationBuilder configurationBuilder = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(new ConfigServerClientSettings()));
+        Assert.Contains(nameof(configurationBuilder), ex.Message);
+    }
+
+    [Fact]
+    public void AddConfigServer_ThrowsIfSettingsNull()
+    {
+        IConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        const ConfigServerClientSettings defaultSettings = null;
+
+        var ex = Assert.Throws<ArgumentNullException>(() => configurationBuilder.AddConfigServer(defaultSettings));
+        Assert.Contains(nameof(defaultSettings), ex.Message);
+    }
+
+    [Fact]
+    public void AddConfigServer_WithPemFiles_AddsConfigServerSourceWithCertificate()
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+
+        var settings = new ConfigServerClientSettings
+        {
+            Timeout = 10
+        };
+
+        configurationBuilder.AddPemFiles("instance.crt", "instance.key").AddConfigServer(settings);
+        configurationBuilder.Build();
+
+        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+        Assert.NotNull(configServerSource);
+        Assert.NotNull(configServerSource.DefaultSettings.ClientCertificate);
+    }
+
+    [Fact]
+    public void AddConfigServer_AddsConfigServerSourceToList()
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        var settings = new ConfigServerClientSettings();
+
+        configurationBuilder.AddConfigServer(settings);
+
+        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+        Assert.NotNull(configServerSource);
+    }
+
+    [Fact]
+    public void AddConfigServer_WithLoggerFactorySucceeds()
+    {
+        var configurationBuilder = new ConfigurationBuilder();
+        var loggerFactory = new LoggerFactory();
+        var settings = new ConfigServerClientSettings();
+
+        configurationBuilder.AddConfigServer(settings, loggerFactory);
+
+        ConfigServerConfigurationSource configServerSource = configurationBuilder.Sources.OfType<ConfigServerConfigurationSource>().SingleOrDefault();
+
+        Assert.NotNull(configServerSource);
+        Assert.NotNull(configServerSource.LogFactory);
+    }
+
+    [Fact]
+    public void AddConfigServer_JsonAppSettingsConfiguresClient()
+    {
+        string appsettings = @"
+                {
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                    },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""https://user:password@foo.com:9999"",
+                            ""enabled"": false,
+                            ""failFast"": false,
+                            ""label"": ""myLabel"",
+                            ""username"": ""myUsername"",
+                            ""password"": ""myPassword"",
+                            ""timeout"": 10000,
+                            ""token"" : ""vaulttoken"",
+                            ""retry"": {
+                                ""enabled"":""false"",
+                                ""initialInterval"":55555,
+                                ""maxInterval"": 55555,
+                                ""multiplier"": 5.5,
+                                ""maxAttempts"": 55555
+                            }
+                        }
+                      }
+                    }
+                }";
+
+        using var sandbox = new Sandbox();
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
+
+        var clientSettings = new ConfigServerClientSettings();
+        configurationBuilder.AddJsonFile(fileName);
+
+        configurationBuilder.AddConfigServer(clientSettings);
+        IConfigurationRoot config = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+        Assert.NotNull(configServerProvider);
+
+        ConfigServerClientSettings settings = configServerProvider.Settings;
+
+        Assert.False(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("myName", settings.Name);
+        Assert.Equal("myLabel", settings.Label);
+        Assert.Equal("myUsername", settings.Username);
+        Assert.Equal("myPassword", settings.Password);
+        Assert.False(settings.RetryEnabled);
+        Assert.Equal(55555, settings.RetryAttempts);
+        Assert.Equal(55555, settings.RetryInitialInterval);
+        Assert.Equal(55555, settings.RetryMaxInterval);
+        Assert.Equal(5.5, settings.RetryMultiplier);
+        Assert.Equal(10000, settings.Timeout);
+        Assert.Equal("vaulttoken", settings.Token);
+    }
+
+    [Fact]
+    public void AddConfigServer_XmlAppSettingsConfiguresClient()
+    {
+        string appsettings = @"
+<settings>
+    <spring>
+      <cloud>
+        <config>
+            <uri>https://foo.com:9999</uri>
+            <enabled>false</enabled>
+            <failFast>false</failFast>
+            <label>myLabel</label>
+            <name>myName</name>
+            <username>myUsername</username>
+            <password>myPassword</password>
+        </config>
+      </cloud>
+    </spring>
+</settings>";
+
+        using var sandbox = new Sandbox();
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
+
+        var clientSettings = new ConfigServerClientSettings();
+        configurationBuilder.AddXmlFile(fileName);
+
+        configurationBuilder.AddConfigServer(clientSettings);
+        IConfigurationRoot config = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+
+        Assert.NotNull(configServerProvider);
+        ConfigServerClientSettings settings = configServerProvider.Settings;
+
+        Assert.False(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("https://foo.com:9999", settings.Uri);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("myName", settings.Name);
+        Assert.Equal("myLabel", settings.Label);
+        Assert.Equal("myUsername", settings.Username);
+        Assert.Equal("myPassword", settings.Password);
+    }
+
+    [Fact]
+    public void AddConfigServer_IniAppSettingsConfiguresClient()
+    {
+        string appsettings = @"
+[spring:cloud:config]
+    uri=https://foo.com:9999
+    enabled=false
+    failFast=false
+    label=myLabel
+    name=myName
+    username=myUsername
+    password=myPassword
+";
+
+        using var sandbox = new Sandbox();
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
+
+        var clientSettings = new ConfigServerClientSettings();
+        configurationBuilder.AddIniFile(fileName);
+
+        configurationBuilder.AddConfigServer(clientSettings);
+        IConfigurationRoot config = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+
+        Assert.NotNull(configServerProvider);
+        ConfigServerClientSettings settings = configServerProvider.Settings;
+
+        Assert.False(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("https://foo.com:9999", settings.Uri);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("myName", settings.Name);
+        Assert.Equal("myLabel", settings.Label);
+        Assert.Equal("myUsername", settings.Username);
+        Assert.Equal("myPassword", settings.Password);
+    }
+
+    [Fact]
+    public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
+    {
+        string[] appsettings = new[]
+        {
+            "spring:cloud:config:enabled=false",
+            "--spring:cloud:config:failFast=false",
+            "/spring:cloud:config:uri=https://foo.com:9999",
+            "--spring:cloud:config:name",
+            "myName",
+            "/spring:cloud:config:label",
+            "myLabel",
+            "--spring:cloud:config:username",
+            "myUsername",
+            "--spring:cloud:config:password",
+            "myPassword"
+        };
+
+        var configurationBuilder = new ConfigurationBuilder();
+        var clientSettings = new ConfigServerClientSettings();
+        configurationBuilder.AddCommandLine(appsettings);
+
+        configurationBuilder.AddConfigServer(clientSettings);
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+
+        Assert.NotNull(configServerProvider);
+        ConfigServerClientSettings settings = configServerProvider.Settings;
+
+        Assert.False(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("https://foo.com:9999", settings.Uri);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("myName", settings.Name);
+        Assert.Equal("myLabel", settings.Label);
+        Assert.Equal("myUsername", settings.Username);
+        Assert.Equal("myPassword", settings.Password);
+    }
+
+    [Fact]
+    public void AddConfigServer_HandlesPlaceHolders()
+    {
+        string appsettings = @"
+                {
+                    ""foo"": {
+                        ""bar"": {
+                            ""name"": ""testName""
+                        },
+                    },
+                    ""spring"": {
+                        ""application"": {
+                            ""name"": ""myName""
+                        },
+                      ""cloud"": {
+                        ""config"": {
+                            ""uri"": ""https://user:password@foo.com:9999"",
+                            ""enabled"": false,
+                            ""failFast"": false,
+                            ""name"": ""${foo:bar:name?foobar}"",
+                            ""label"": ""myLabel"",
+                            ""username"": ""myUsername"",
+                            ""password"": ""myPassword""
+                        }
+                      }
+                    }
+                }";
+
+        using var sandbox = new Sandbox();
+        string path = sandbox.CreateFile("appsettings.json", appsettings);
+
+        string directory = Path.GetDirectoryName(path);
+        string fileName = Path.GetFileName(path);
+        var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.SetBasePath(directory);
+
+        var clientSettings = new ConfigServerClientSettings();
+        configurationBuilder.AddJsonFile(fileName);
+
+        configurationBuilder.AddConfigServer(clientSettings);
+        IConfigurationRoot config = configurationBuilder.Build();
+
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().SingleOrDefault();
+
+        Assert.NotNull(configServerProvider);
+        ConfigServerClientSettings settings = configServerProvider.Settings;
+
+        Assert.False(settings.Enabled);
+        Assert.False(settings.FailFast);
+        Assert.Equal("https://user:password@foo.com:9999", settings.Uri);
+        Assert.Equal(ConfigServerClientSettings.DefaultEnvironment, settings.Environment);
+        Assert.Equal("testName", settings.Name);
+        Assert.Equal("myLabel", settings.Label);
+        Assert.Equal("myUsername", settings.Username);
+        Assert.Equal("myPassword", settings.Password);
+    }
+
     [Theory]
     [InlineData(VcapServicesV2)]
     [InlineData(VcapServicesV3)]
@@ -433,13 +437,17 @@ public class ConfigServerConfigurationBuilderExtensionsTest
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", VcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
-        var settings = new ConfigServerClientSettings { Uri = "https://uri-from-settings", RetryEnabled = false, Timeout = 10 };
 
-        configurationBuilder
-            .AddEnvironmentVariables()
-            .AddConfigServer(settings);
-        var config = configurationBuilder.Build();
-        var configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        var settings = new ConfigServerClientSettings
+        {
+            Uri = "https://uri-from-settings",
+            RetryEnabled = false,
+            Timeout = 10
+        };
+
+        configurationBuilder.AddEnvironmentVariables().AddConfigServer(settings);
+        IConfigurationRoot config = configurationBuilder.Build();
+        ConfigServerConfigurationProvider configServerProvider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(configServerProvider);
         Assert.IsType<ConfigServerConfigurationProvider>(configServerProvider);
@@ -465,10 +473,11 @@ public class ConfigServerConfigurationBuilderExtensionsTest
             Timeout = 10,
             RetryEnabled = false
         };
-        var builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
 
-        var config = builder.Build();
-        var provider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
+        IConfigurationBuilder builder = new ConfigurationBuilder().AddConfigServer(configServerClientSettings);
+
+        IConfigurationRoot config = builder.Build();
+        ConfigServerConfigurationProvider provider = config.Providers.OfType<ConfigServerConfigurationProvider>().FirstOrDefault();
 
         Assert.NotNull(provider);
         Assert.Equal("testConfigLabel", provider.Settings.Label);

@@ -12,13 +12,6 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
     // Note: this key is shared between tracing and metrics to mirror the Spring boot configuration settings.
     public const string WavefrontPrefix = "management:metrics:export:wavefront";
 
-    public WavefrontExporterOptions(IConfiguration config)
-    {
-        var section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
-        section.Bind(this);
-        ApplicationOptions = new WavefrontApplicationOptions(config);
-    }
-
     public string Uri { get; set; }
 
     public string ApiToken { get; set; }
@@ -38,4 +31,11 @@ public class WavefrontExporterOptions : IWavefrontExporterOptions
     public string Service => ApplicationOptions?.Service ?? "SteeltoeAppService";
 
     public string Cluster { get; set; }
+
+    public WavefrontExporterOptions(IConfiguration config)
+    {
+        IConfigurationSection section = config?.GetSection(WavefrontPrefix) ?? throw new ArgumentNullException(nameof(config));
+        section.Bind(this);
+        ApplicationOptions = new WavefrontApplicationOptions(config);
+    }
 }

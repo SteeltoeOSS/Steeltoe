@@ -8,18 +8,7 @@ public abstract class AbstractTransactionStatus : ITransactionStatus
 {
     public abstract bool IsNewTransaction { get; }
 
-    public virtual void SetRollbackOnly()
-    {
-        IsLocalRollbackOnly = true;
-    }
-
-    public virtual bool IsRollbackOnly
-    {
-        get
-        {
-            return IsLocalRollbackOnly || IsGlobalRollbackOnly;
-        }
-    }
+    public virtual bool IsRollbackOnly => IsLocalRollbackOnly || IsGlobalRollbackOnly;
 
     public virtual bool IsLocalRollbackOnly { get; set; }
 
@@ -31,6 +20,11 @@ public abstract class AbstractTransactionStatus : ITransactionStatus
 
     public virtual bool HasSavepoint => Savepoint != null;
 
+    public virtual void SetRollbackOnly()
+    {
+        IsLocalRollbackOnly = true;
+    }
+
     public virtual void CreateAndHoldSavepoint()
     {
         Savepoint = GetSavepointManager().CreateSavepoint();
@@ -38,7 +32,8 @@ public abstract class AbstractTransactionStatus : ITransactionStatus
 
     public virtual void RollbackToHeldSavepoint()
     {
-        var savepoint = Savepoint;
+        object savepoint = Savepoint;
+
         if (savepoint == null)
         {
             throw new TransactionUsageException("Cannot roll back to savepoint - no savepoint associated with current transaction");
@@ -51,7 +46,8 @@ public abstract class AbstractTransactionStatus : ITransactionStatus
 
     public virtual void ReleaseHeldSavepoint()
     {
-        var savepoint = Savepoint;
+        object savepoint = Savepoint;
+
         if (savepoint == null)
         {
             throw new TransactionUsageException("Cannot release savepoint - no savepoint associated with current transaction");
@@ -80,5 +76,8 @@ public abstract class AbstractTransactionStatus : ITransactionStatus
     {
     }
 
-    protected virtual ISavepointManager GetSavepointManager() => throw new NestedTransactionNotSupportedException("This transaction does not support savepoints");
+    protected virtual ISavepointManager GetSavepointManager()
+    {
+        throw new NestedTransactionNotSupportedException("This transaction does not support savepoints");
+    }
 }

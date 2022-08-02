@@ -45,11 +45,12 @@ public class MetricsObserverOptionsTest : BaseTest
             ["management:metrics:observer:threadPoolEvents"] = "false",
             ["management:metrics:observer:httpClientCore"] = "true",
             ["management:metrics:observer:httpClientDesktop"] = "true",
-            ["management:metrics:observer:hystrixEvents"] = "true",
+            ["management:metrics:observer:hystrixEvents"] = "true"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var opts = new MetricsObserverOptions(config);
         Assert.Equal("pattern", opts.IngressIgnorePattern);

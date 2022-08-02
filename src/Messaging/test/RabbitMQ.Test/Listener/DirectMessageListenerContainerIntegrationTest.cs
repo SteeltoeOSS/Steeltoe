@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Listener.Adapters;
@@ -33,17 +34,10 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
     {
         _adminCf = new CachingConnectionFactory("localhost");
         _admin = new RabbitAdmin(_adminCf);
-        _admin.DeclareQueue(new Config.Queue(Q1));
-        _admin.DeclareQueue(new Config.Queue(Q2));
+        _admin.DeclareQueue(new Queue(Q1));
+        _admin.DeclareQueue(new Queue(Q2));
         _testName = $"DirectMessageListenerContainerIntegrationTest-{_testNumber++}";
         _output = output;
-    }
-
-    public void Dispose()
-    {
-        _admin.DeleteQueue(Q1);
-        _admin.DeleteQueue(Q2);
-        _adminCf.Dispose();
     }
 
     [Fact]
@@ -72,15 +66,24 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         cf.Destroy();
     }
 
+    public void Dispose()
+    {
+        _admin.DeleteQueue(Q1);
+        _admin.DeleteQueue(Q2);
+        _adminCf.Dispose();
+    }
+
     private async Task<bool> ConsumersOnQueue(string queue, int expected)
     {
-        var n = 0;
-        var currentQueueCount = -1;
+        int n = 0;
+        int currentQueueCount = -1;
         _output.WriteLine(queue + " waiting for " + expected);
+
         while (n++ < 600)
         {
-            var queueProperties = _admin.GetQueueProperties(queue);
-            if (queueProperties != null && queueProperties.TryGetValue(RabbitAdmin.QueueConsumerCount, out var count))
+            Dictionary<string, object> queueProperties = _admin.GetQueueProperties(queue);
+
+            if (queueProperties != null && queueProperties.TryGetValue(RabbitAdmin.QueueConsumerCount, out object count))
             {
                 currentQueueCount = (int)(uint)count;
             }
@@ -100,8 +103,9 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
 
     private async Task<bool> ActiveConsumerCount(DirectMessageListenerContainer container, int expected)
     {
-        var n = 0;
-        var consumers = container.Consumers;
+        int n = 0;
+        List<DirectMessageListenerContainer.SimpleConsumer> consumers = container.Consumers;
+
         while (n++ < 600 && consumers.Count != expected)
         {
             await Task.Delay(100);
@@ -118,10 +122,8 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
             {
                 return input.ToUpper();
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
     }
 
@@ -130,12 +132,12 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         private readonly string _testName;
         private int _n;
 
+        public string ServiceName { get; set; } = nameof(TestConsumerTagStrategy);
+
         public TestConsumerTagStrategy(string testName)
         {
             _testName = testName;
         }
-
-        public string ServiceName { get; set; } = nameof(TestConsumerTagStrategy);
 
         public string CreateConsumerTag(string queue)
         {

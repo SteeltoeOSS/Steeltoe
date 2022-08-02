@@ -11,6 +11,12 @@ internal sealed class SingleThreadedPoolWithQueue : IHystrixThreadPool
     private readonly HystrixThreadPoolOptions _options;
     private readonly IHystrixTaskScheduler _scheduler;
 
+    public bool IsQueueSpaceAvailable => _scheduler.IsQueueSpaceAvailable;
+
+    public int CurrentQueueSize => _scheduler.CurrentQueueSize;
+
+    public bool IsShutdown => _scheduler.IsShutdown;
+
     public SingleThreadedPoolWithQueue(int queueSize)
         : this(queueSize, 100)
     {
@@ -26,6 +32,7 @@ internal sealed class SingleThreadedPoolWithQueue : IHystrixThreadPool
             KeepAliveTimeMinutes = 1,
             QueueSizeRejectionThreshold = rejectionQueueSizeThreshold
         };
+
         _scheduler = new HystrixQueuedTaskScheduler(_options);
     }
 
@@ -57,20 +64,5 @@ internal sealed class SingleThreadedPoolWithQueue : IHystrixThreadPool
     public void Dispose()
     {
         _scheduler.Dispose();
-    }
-
-    public bool IsQueueSpaceAvailable
-    {
-        get { return _scheduler.IsQueueSpaceAvailable; }
-    }
-
-    public int CurrentQueueSize
-    {
-        get { return _scheduler.CurrentQueueSize; }
-    }
-
-    public bool IsShutdown
-    {
-        get { return _scheduler.IsShutdown; }
     }
 }

@@ -20,6 +20,7 @@ public class HystrixRollingNumberTest
     public void TestCreatesBuckets()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -33,7 +34,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(0, counter.Buckets.Size);
 
             // add a success in each interval which should result in all 10 buckets being created with 1 success in each
-            for (var i = 0; i < counter.NumberOfBuckets; i++)
+            for (int i = 0; i < counter.NumberOfBuckets; i++)
             {
                 counter.Increment(HystrixRollingNumberEvent.Success);
                 time.Increment(counter.BucketSizeInMilliseconds);
@@ -57,6 +58,7 @@ public class HystrixRollingNumberTest
     public void TestResetBuckets()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -90,6 +92,7 @@ public class HystrixRollingNumberTest
     public void TestEmptyBucketsFillIn()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -120,6 +123,7 @@ public class HystrixRollingNumberTest
     public void TestIncrementInSingleBucket()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -152,6 +156,7 @@ public class HystrixRollingNumberTest
     public void TestTimeout()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -192,6 +197,7 @@ public class HystrixRollingNumberTest
     public void TestShortCircuited()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -256,6 +262,7 @@ public class HystrixRollingNumberTest
     public void TestIncrementInMultipleBuckets()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -320,6 +327,7 @@ public class HystrixRollingNumberTest
     public void TestCounterRetrievalRefreshesBuckets()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -370,6 +378,7 @@ public class HystrixRollingNumberTest
     public void TestUpdateMax1()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -397,7 +406,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(20, counter.Buckets.Last.GetMaxUpdater(HystrixRollingNumberEvent.ThreadMaxActive).Max);
 
             // counts per bucket
-            var values = counter.GetValues(HystrixRollingNumberEvent.ThreadMaxActive);
+            long[] values = counter.GetValues(HystrixRollingNumberEvent.ThreadMaxActive);
             Assert.Equal(10, values[0]); // oldest bucket
             Assert.Equal(0, values[1]);
             Assert.Equal(0, values[2]);
@@ -414,6 +423,7 @@ public class HystrixRollingNumberTest
     public void TestUpdateMax2()
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);
@@ -445,7 +455,7 @@ public class HystrixRollingNumberTest
             Assert.Equal(50, counter.GetValueOfLatestBucket(HystrixRollingNumberEvent.ThreadMaxActive));
 
             // values per bucket
-            var values = counter.GetValues(HystrixRollingNumberEvent.ThreadMaxActive);
+            long[] values = counter.GetValues(HystrixRollingNumberEvent.ThreadMaxActive);
             Assert.Equal(30, values[0]); // oldest bucket
             Assert.Equal(0, values[1]);
             Assert.Equal(0, values[2]);
@@ -462,6 +472,7 @@ public class HystrixRollingNumberTest
     public void TestMaxValue()
     {
         var time = new MockedTime();
+
         try
         {
             var type = HystrixRollingNumberEvent.ThreadMaxActive;
@@ -529,10 +540,11 @@ public class HystrixRollingNumberTest
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         // iterate over 20 buckets on a queue sized for 2
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             // first bucket
             counter.GetCurrentBucket();
+
             try
             {
                 time.Increment(counter.BucketSizeInMilliseconds);
@@ -561,10 +573,11 @@ public class HystrixRollingNumberTest
         Assert.Equal(0, counter.GetCumulativeSum(type));
 
         // iterate over 20 buckets on a queue sized for 2
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             // first bucket
             counter.Increment(type);
+
             try
             {
                 time.Increment(counter.BucketSizeInMilliseconds);
@@ -593,10 +606,11 @@ public class HystrixRollingNumberTest
         Assert.Equal(0, counter.GetCumulativeSum(type));
 
         // iterate over 20 buckets on a queue sized for 2
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             // first bucket
             counter.Increment(type);
+
             try
             {
                 time.Increment(counter.BucketSizeInMilliseconds);
@@ -636,7 +650,7 @@ public class HystrixRollingNumberTest
         counter.Increment(type);
 
         // iterate over 20 buckets on a queue sized for 2
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             try
             {
@@ -677,7 +691,7 @@ public class HystrixRollingNumberTest
         counter.Increment(type);
 
         // iterate over 20 buckets on a queue sized for 2
-        for (var i = 0; i < 20; i++)
+        for (int i = 0; i < 20; i++)
         {
             try
             {
@@ -702,6 +716,7 @@ public class HystrixRollingNumberTest
     private void TestCounterType(HystrixRollingNumberEvent type)
     {
         var time = new MockedTime();
+
         try
         {
             var counter = new HystrixRollingNumber(time, 200, 10);

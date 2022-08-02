@@ -37,7 +37,7 @@ public class OAuthConnectorOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new OAuthConnectorOptions(config);
         Assert.Equal("accesstokenuri", options.AccessTokenUri);
@@ -60,11 +60,12 @@ public class OAuthConnectorOptionsTest
         // arrange a configuration with validateCertificates=false
         var appsettings = new Dictionary<string, string>
         {
-            ["security:oauth2:client:validateCertificates"] = "false",
+            ["security:oauth2:client:validateCertificates"] = "false"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new OAuthConnectorOptions(config);
 
@@ -77,11 +78,12 @@ public class OAuthConnectorOptionsTest
         // arrange a configuration with validateCertificates=false
         var appsettings = new Dictionary<string, string>
         {
-            ["security:oauth2:client:validate_certificates"] = "false",
+            ["security:oauth2:client:validate_certificates"] = "false"
         };
+
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
 
         var options = new OAuthConnectorOptions(config);
 

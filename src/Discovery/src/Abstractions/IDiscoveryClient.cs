@@ -9,9 +9,11 @@ namespace Steeltoe.Discovery;
 public interface IDiscoveryClient : IServiceInstanceProvider
 {
     /// <summary>
-    ///  ServiceInstance with information used to register the local service.
+    /// ServiceInstance with information used to register the local service.
     /// </summary>
-    /// <returns>The IServiceInstance.</returns>
+    /// <returns>
+    /// The IServiceInstance.
+    /// </returns>
     IServiceInstance GetLocalServiceInstance();
 
     Task ShutdownAsync();

@@ -22,7 +22,7 @@ public abstract class AbstractOptions
 
         if (!string.IsNullOrEmpty(sectionPrefix))
         {
-            var section = root.GetSection(sectionPrefix);
+            IConfigurationSection section = root.GetSection(sectionPrefix);
             section.Bind(this);
         }
         else

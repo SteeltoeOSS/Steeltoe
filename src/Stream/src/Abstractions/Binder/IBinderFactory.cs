@@ -11,21 +11,29 @@ namespace Steeltoe.Stream.Binder;
 public interface IBinderFactory // : IDisposable
 {
     /// <summary>
-    /// Returns the binder instance associated with the given configuration name. Instance
-    /// caching is a requirement, and implementations must return the same instance on
-    /// subsequent invocations with the same arguments.
+    /// Returns the binder instance associated with the given configuration name. Instance caching is a requirement, and implementations must return the same
+    /// instance on subsequent invocations with the same arguments.
     /// </summary>
-    /// <param name="name">the name of the binder in configuration.</param>
-    /// <returns>the binder.</returns>
+    /// <param name="name">
+    /// the name of the binder in configuration.
+    /// </param>
+    /// <returns>
+    /// the binder.
+    /// </returns>
     IBinder GetBinder(string name);
 
     /// <summary>
-    /// Returns the binder instance associated with the given configuration name. Instance
-    /// caching is a requirement, and implementations must return the same instance on
-    /// subsequent invocations with the same arguments.
+    /// Returns the binder instance associated with the given configuration name. Instance caching is a requirement, and implementations must return the same
+    /// instance on subsequent invocations with the same arguments.
     /// </summary>
-    /// <param name="name">the name of the binder in configuration.</param>
-    /// <param name="bindableType">the binding target type.</param>
-    /// <returns>the binder.</returns>
+    /// <param name="name">
+    /// the name of the binder in configuration.
+    /// </param>
+    /// <param name="bindableType">
+    /// the binding target type.
+    /// </param>
+    /// <returns>
+    /// the binder.
+    /// </returns>
     IBinder GetBinder(string name, Type bindableType);
 }

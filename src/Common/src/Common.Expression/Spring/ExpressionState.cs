@@ -12,6 +12,18 @@ public class ExpressionState
 
     private Stack<ITypedValue> _scopeRootObjects;
 
+    public List<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;
+
+    public IEvaluationContext EvaluationContext { get; }
+
+    public SpelParserOptions Configuration { get; }
+
+    public ITypedValue RootContextObject { get; }
+
+    public ITypeComparator TypeComparator => EvaluationContext.TypeComparator;
+
+    public ITypeConverter TypeConverter => EvaluationContext.TypeConverter;
+
     public ExpressionState(IEvaluationContext context)
         : this(context, context.RootObject, new SpelParserOptions(false, false))
     {
@@ -33,18 +45,6 @@ public class ExpressionState
         RootContextObject = rootObject;
         Configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
-
-    public List<IPropertyAccessor> PropertyAccessors => EvaluationContext.PropertyAccessors;
-
-    public IEvaluationContext EvaluationContext { get; }
-
-    public SpelParserOptions Configuration { get; }
-
-    public ITypedValue RootContextObject { get; }
-
-    public ITypeComparator TypeComparator => EvaluationContext.TypeComparator;
-
-    public ITypeConverter TypeConverter => EvaluationContext.TypeConverter;
 
     public ITypedValue GetActiveContextObject()
     {
@@ -87,7 +87,7 @@ public class ExpressionState
 
     public ITypedValue LookupVariable(string name)
     {
-        var value = EvaluationContext.LookupVariable(name);
+        object value = EvaluationContext.LookupVariable(name);
         return value != null ? new TypedValue(value) : TypedValue.Null;
     }
 
@@ -98,7 +98,8 @@ public class ExpressionState
 
     public object ConvertValue(object value, Type targetTypeDescriptor)
     {
-        var result = EvaluationContext.TypeConverter.ConvertValue(value, value?.GetType(), targetTypeDescriptor);
+        object result = EvaluationContext.TypeConverter.ConvertValue(value, value?.GetType(), targetTypeDescriptor);
+
         if (result == null)
         {
             throw new InvalidOperationException($"Null conversion result for value [{value}]");
@@ -109,7 +110,7 @@ public class ExpressionState
 
     public object ConvertValue(ITypedValue value, Type targetTypeDescriptor)
     {
-        var val = value.Value;
+        object val = value.Value;
         return EvaluationContext.TypeConverter.ConvertValue(val, val?.GetType(), targetTypeDescriptor);
     }
 
@@ -144,7 +145,7 @@ public class ExpressionState
 
     public object LookupLocalVariable(string name)
     {
-        foreach (var scope in InitVariableScopes())
+        foreach (VariableScope scope in InitVariableScopes())
         {
             if (scope.DefinesVariable(name))
             {
@@ -157,18 +158,17 @@ public class ExpressionState
 
     public ITypedValue Operate(Operation op, object left, object right)
     {
-        var overloader = EvaluationContext.OperatorOverloader;
+        IOperatorOverloader overloader = EvaluationContext.OperatorOverloader;
+
         if (overloader.OverridesOperation(op, left, right))
         {
-            var returnValue = overloader.Operate(op, left, right);
+            object returnValue = overloader.Operate(op, left, right);
             return new TypedValue(returnValue);
         }
-        else
-        {
-            var leftType = left == null ? "null" : left.GetType().FullName;
-            var rightType = right == null ? "null" : right.GetType().FullName;
-            throw new SpelEvaluationException(SpelMessage.OperatorNotSupportedBetweenTypes, op, leftType, rightType);
-        }
+
+        string leftType = left == null ? "null" : left.GetType().FullName;
+        string rightType = right == null ? "null" : right.GetType().FullName;
+        throw new SpelEvaluationException(SpelMessage.OperatorNotSupportedBetweenTypes, op, leftType, rightType);
     }
 
     private Stack<VariableScope> InitVariableScopes()
@@ -192,7 +192,7 @@ public class ExpressionState
 
     private sealed class VariableScope
     {
-        private readonly Dictionary<string, object> _vars = new ();
+        private readonly Dictionary<string, object> _vars = new();
 
         public VariableScope()
         {
@@ -202,7 +202,7 @@ public class ExpressionState
         {
             if (arguments != null)
             {
-                foreach (var args in arguments)
+                foreach (KeyValuePair<string, object> args in arguments)
                 {
                     _vars[args.Key] = args.Value;
                 }
@@ -216,7 +216,7 @@ public class ExpressionState
 
         public object LookupVariable(string name)
         {
-            _vars.TryGetValue(name, out var val);
+            _vars.TryGetValue(name, out object val);
             return val;
         }
 

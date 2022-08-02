@@ -15,6 +15,7 @@ public class HypermediaStartupFilter : IStartupFilter
         return app =>
         {
             next(app);
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.Map<ActuatorEndpoint>();

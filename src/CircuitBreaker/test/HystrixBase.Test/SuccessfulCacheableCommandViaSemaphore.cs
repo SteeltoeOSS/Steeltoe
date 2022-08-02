@@ -6,30 +6,9 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixCommand<string>
 {
-    public volatile bool Executed;
     private readonly bool _cacheEnabled;
     private readonly string _value;
-
-    public SuccessfulCacheableCommandViaSemaphore(TestCircuitBreaker circuitBreaker, bool cacheEnabled, string value)
-        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
-            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
-    {
-        _value = value;
-        _cacheEnabled = cacheEnabled;
-    }
-
-    public bool IsCommandRunningInThread
-    {
-        get { return CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread); }
-    }
-
-    protected override string Run()
-    {
-        Executed = true;
-
-        Output?.WriteLine("successfully executed");
-        return _value;
-    }
+    public volatile bool Executed;
 
     protected override string CacheKey
     {
@@ -39,11 +18,27 @@ internal sealed class SuccessfulCacheableCommandViaSemaphore : TestHystrixComman
             {
                 return _value;
             }
-            else
-            {
-                return null;
-            }
+
+            return null;
         }
+    }
+
+    public bool IsCommandRunningInThread => CommandOptions.ExecutionIsolationStrategy.Equals(ExecutionIsolationStrategy.Thread);
+
+    public SuccessfulCacheableCommandViaSemaphore(TestCircuitBreaker circuitBreaker, bool cacheEnabled, string value)
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
+            .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
+    {
+        _value = value;
+        _cacheEnabled = cacheEnabled;
+    }
+
+    protected override string Run()
+    {
+        Executed = true;
+
+        Output?.WriteLine("successfully executed");
+        return _value;
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)

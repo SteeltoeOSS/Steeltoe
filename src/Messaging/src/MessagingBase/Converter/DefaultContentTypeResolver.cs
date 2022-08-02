@@ -17,24 +17,28 @@ public class DefaultContentTypeResolver : IContentTypeResolver
             return DefaultMimeType;
         }
 
-        var value = headers[MessageHeaders.ContentType];
+        object value = headers[MessageHeaders.ContentType];
+
         if (value == null)
         {
             return null;
         }
-        else if (value is MimeType mimeType)
+
+        if (value is MimeType mimeType)
         {
             return mimeType;
         }
-        else if (value is string stringVal)
+
+        if (value is string stringVal)
         {
             return MimeType.ToMimeType(stringVal);
         }
-        else
-        {
-            throw new ArgumentException($"Unknown type for contentType header value: {value.GetType()}");
-        }
+
+        throw new ArgumentException($"Unknown type for contentType header value: {value.GetType()}");
     }
 
-    public override string ToString() => $"DefaultContentTypeResolver[defaultMimeType={DefaultMimeType}]";
+    public override string ToString()
+    {
+        return $"DefaultContentTypeResolver[defaultMimeType={DefaultMimeType}]";
+    }
 }

@@ -11,62 +11,32 @@ public class TestResponse : IHttpResponseFeature
 {
     public Stream Body
     {
-        get
-        {
-            throw new NotImplementedException();
-        }
+        get => throw new NotImplementedException();
 
-        set
-        {
-            throw new NotImplementedException();
-        }
+        set => throw new NotImplementedException();
     }
 
-    public bool HasStarted
-    {
-        get
-        {
-            throw new NotImplementedException();
-        }
-    }
+    public bool HasStarted => throw new NotImplementedException();
 
     public IHeaderDictionary Headers
     {
-        get
-        {
-            throw new NotImplementedException();
-        }
+        get => throw new NotImplementedException();
 
-        set
-        {
-            throw new NotImplementedException();
-        }
+        set => throw new NotImplementedException();
     }
 
     public string ReasonPhrase
     {
-        get
-        {
-            throw new NotImplementedException();
-        }
+        get => throw new NotImplementedException();
 
-        set
-        {
-            throw new NotImplementedException();
-        }
+        set => throw new NotImplementedException();
     }
 
     public int StatusCode
     {
-        get
-        {
-            throw new NotImplementedException();
-        }
+        get => throw new NotImplementedException();
 
-        set
-        {
-            throw new NotImplementedException();
-        }
+        set => throw new NotImplementedException();
     }
 
     public void OnCompleted(Func<object, Task> callback, object state)

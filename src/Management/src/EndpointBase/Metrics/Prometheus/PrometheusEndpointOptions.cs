@@ -10,6 +10,8 @@ public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEnd
 {
     internal const string ManagementInfoPrefix = "management:endpoints:prometheus";
 
+    public long ScrapeResponseCacheDurationMilliseconds { get; set; }
+
     public PrometheusEndpointOptions()
     {
         Id = "prometheus";
@@ -26,6 +28,4 @@ public class PrometheusEndpointOptions : AbstractEndpointOptions, IPrometheusEnd
 
         ExactMatch = false;
     }
-
-    public long ScrapeResponseCacheDurationMilliseconds { get; set; }
 }

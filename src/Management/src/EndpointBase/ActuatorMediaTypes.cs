@@ -18,8 +18,8 @@ public static class ActuatorMediaTypes
 
     public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
     {
-        var contentHeader = AppJson;
-        var versionContentHeader = GetContentTypeHeaderForVersion(version);
+        string contentHeader = AppJson;
+        string versionContentHeader = GetContentTypeHeaderForVersion(version);
 
         if (acceptHeaders != null && acceptHeaders.Any(x => x == Any || x == versionContentHeader))
         {

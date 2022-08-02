@@ -18,18 +18,16 @@ internal sealed class TestCommandRejection : TestHystrixCommand<bool>
     private readonly int _sleepTime;
     private readonly ITestOutputHelper _outputHelper;
 
-    public TestCommandRejection(ITestOutputHelper outputHelper, IHystrixCommandKey key, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int sleepTime, int timeout, int fallbackBehavior)
+    public TestCommandRejection(ITestOutputHelper outputHelper, IHystrixCommandKey key, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool,
+        int sleepTime, int timeout, int fallbackBehavior)
         : this(key, circuitBreaker, threadPool, sleepTime, timeout, fallbackBehavior)
     {
         _outputHelper = outputHelper;
     }
 
-    public TestCommandRejection(IHystrixCommandKey key, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int sleepTime, int timeout, int fallbackBehavior)
-        : base(TestPropsBuilder()
-            .SetCommandKey(key)
-            .SetThreadPool(threadPool)
-            .SetCircuitBreaker(circuitBreaker)
-            .SetMetrics(circuitBreaker.Metrics)
+    public TestCommandRejection(IHystrixCommandKey key, TestCircuitBreaker circuitBreaker, IHystrixThreadPool threadPool, int sleepTime, int timeout,
+        int fallbackBehavior)
+        : base(TestPropsBuilder().SetCommandKey(key).SetThreadPool(threadPool).SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions(), timeout)))
     {
         _fallbackBehavior = fallbackBehavior;
@@ -38,8 +36,9 @@ internal sealed class TestCommandRejection : TestHystrixCommand<bool>
 
     protected override bool Run()
     {
-        var start = DateTime.Now.Ticks / 10000;
+        long start = DateTime.Now.Ticks / 10000;
         _outputHelper?.WriteLine(">>> TestCommandRejection running " + _sleepTime);
+
         try
         {
             Time.WaitUntil(() => Token.IsCancellationRequested, _sleepTime);
@@ -61,15 +60,14 @@ internal sealed class TestCommandRejection : TestHystrixCommand<bool>
         {
             return false;
         }
-        else if (_fallbackBehavior == FallbackFailure)
+
+        if (_fallbackBehavior == FallbackFailure)
         {
             throw new Exception("failed on fallback");
         }
-        else
-        {
-            // FALLBACK_NOT_IMPLEMENTED
-            return base.RunFallback();
-        }
+
+        // FALLBACK_NOT_IMPLEMENTED
+        return base.RunFallback();
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions, int timeout)

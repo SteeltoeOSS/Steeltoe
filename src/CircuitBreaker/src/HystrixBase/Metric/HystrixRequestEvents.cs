@@ -6,11 +6,6 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Metric;
 
 public class HystrixRequestEvents
 {
-    public HystrixRequestEvents(ICollection<IHystrixInvokableInfo> executions)
-    {
-        Executions = executions;
-    }
-
     public ICollection<IHystrixInvokableInfo> Executions { get; }
 
     public IDictionary<ExecutionSignature, List<int>> ExecutionsMappedToLatencies
@@ -19,13 +14,15 @@ public class HystrixRequestEvents
         {
             var cachingDetector = new Dictionary<CommandAndCacheKey, int>();
             var nonCachedExecutions = new List<IHystrixInvokableInfo>(Executions.Count);
-            foreach (var execution in Executions)
+
+            foreach (IHystrixInvokableInfo execution in Executions)
             {
                 if (execution.PublicCacheKey != null)
                 {
                     // eligible for caching - might be the initial, or might be from cache
                     var key = new CommandAndCacheKey(execution.CommandKey.Name, execution.PublicCacheKey);
-                    if (cachingDetector.TryGetValue(key, out var count))
+
+                    if (cachingDetector.TryGetValue(key, out int count))
                     {
                         // key already seen
                         cachingDetector[key] = count + 1;
@@ -44,17 +41,19 @@ public class HystrixRequestEvents
             }
 
             var commandDeduper = new Dictionary<ExecutionSignature, List<int>>();
-            foreach (var execution in nonCachedExecutions)
+
+            foreach (IHystrixInvokableInfo execution in nonCachedExecutions)
             {
-                var cachedCount = 0;
-                var cacheKey = execution.PublicCacheKey;
+                int cachedCount = 0;
+                string cacheKey = execution.PublicCacheKey;
+
                 if (cacheKey != null)
                 {
                     var key = new CommandAndCacheKey(execution.CommandKey.Name, cacheKey);
                     cachingDetector.TryGetValue(key, out cachedCount);
                 }
 
-                var signature = cachedCount > 0
+                ExecutionSignature signature = cachedCount > 0
 
                     // this has a RESPONSE_FROM_CACHE and needs to get split off
                     ? ExecutionSignature.From(execution, cacheKey, cachedCount)
@@ -62,7 +61,7 @@ public class HystrixRequestEvents
                     // nothing cached from this, can collapse further
                     : ExecutionSignature.From(execution);
 
-                if (commandDeduper.TryGetValue(signature, out var currentLatencyList))
+                if (commandDeduper.TryGetValue(signature, out List<int> currentLatencyList))
                 {
                     currentLatencyList.Add(execution.ExecutionTimeInMilliseconds);
                 }
@@ -72,11 +71,17 @@ public class HystrixRequestEvents
                     {
                         execution.ExecutionTimeInMilliseconds
                     };
+
                     commandDeduper.Add(signature, newLatencyList);
                 }
             }
 
             return commandDeduper;
         }
+    }
+
+    public HystrixRequestEvents(ICollection<IHystrixInvokableInfo> executions)
+    {
+        Executions = executions;
     }
 }

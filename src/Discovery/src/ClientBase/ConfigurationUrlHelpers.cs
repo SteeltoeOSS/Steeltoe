@@ -12,17 +12,19 @@ public static class ConfigurationUrlHelpers
 
     public static List<Uri> GetAspNetCoreUrls(this IConfiguration config)
     {
-        var urls = config["urls"];
+        string urls = config["urls"];
         var uris = new List<Uri>();
+
         if (!string.IsNullOrEmpty(urls))
         {
-            var addresses = urls.Split(';');
-            foreach (var address in addresses)
+            string[] addresses = urls.Split(';');
+
+            foreach (string address in addresses)
             {
-                if (!Uri.TryCreate(address, UriKind.Absolute, out var uri)
-                    && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
+                if (!Uri.TryCreate(address, UriKind.Absolute, out Uri uri) && (address.Contains("*") || address.Contains("::") || address.Contains("+")))
                 {
-                    Uri.TryCreate(address.Replace("*", WildcardHost).Replace("::", $"{WildcardHost}:").Replace("+", $"{WildcardHost}"), UriKind.Absolute, out uri);
+                    Uri.TryCreate(address.Replace("*", WildcardHost).Replace("::", $"{WildcardHost}:").Replace("+", $"{WildcardHost}"), UriKind.Absolute,
+                        out uri);
                 }
 
                 uris.Add(uri);

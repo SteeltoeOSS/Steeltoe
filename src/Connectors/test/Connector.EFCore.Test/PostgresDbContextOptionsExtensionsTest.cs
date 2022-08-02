@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -65,7 +66,7 @@ public class PostgresDbContextOptionsExtensionsTest
     {
         var optionsBuilder = new DbContextOptionsBuilder();
         var goodBuilder = new DbContextOptionsBuilder<GoodDbContext>();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
         const string serviceName = null;
 
         var ex2 = Assert.Throws<ArgumentException>(() => optionsBuilder.UseNpgsql(config, serviceName));
@@ -79,14 +80,13 @@ public class PostgresDbContextOptionsExtensionsTest
     public void AddDbContext_NoVCAPs_AddsDbContext_WithPostgresConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config));
 
         var service = services.BuildServiceProvider().GetService<GoodDbContext>();
         Assert.NotNull(service);
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         Assert.NotNull(con as NpgsqlConnection);
     }
@@ -95,10 +95,9 @@ public class PostgresDbContextOptionsExtensionsTest
     public void AddDbContext_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config, "foobar"));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config, "foobar"));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("foobar", ex.Message);
@@ -114,10 +113,9 @@ public class PostgresDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config));
 
         var ex = Assert.Throws<ConnectorException>(() => services.BuildServiceProvider().GetService<GoodDbContext>());
         Assert.Contains("Multiple", ex.Message);
@@ -133,21 +131,20 @@ public class PostgresDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config));
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
         Assert.NotNull(service);
 
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         var postCon = con as NpgsqlConnection;
         Assert.NotNull(postCon);
 
-        var connString = con.ConnectionString;
+        string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
         Assert.Contains("1e9e5dae-ed26-43e7-abb4-169b4c3beaff", connString);
@@ -167,21 +164,20 @@ public class PostgresDbContextOptionsExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config));
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
         Assert.NotNull(service);
 
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         var postCon = con as NpgsqlConnection;
         Assert.NotNull(postCon);
 
-        var connString = con.ConnectionString;
+        string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
         Assert.Contains("Host=10.194.59.205", connString);
@@ -204,21 +200,20 @@ public class PostgresDbContextOptionsExtensionsTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appsettings);
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        services.AddDbContext<GoodDbContext>(options =>
-            options.UseNpgsql(config));
+        services.AddDbContext<GoodDbContext>(options => options.UseNpgsql(config));
 
-        var built = services.BuildServiceProvider();
+        ServiceProvider built = services.BuildServiceProvider();
         var service = built.GetService<GoodDbContext>();
         Assert.NotNull(service);
 
-        var con = service.Database.GetDbConnection();
+        DbConnection con = service.Database.GetDbConnection();
         Assert.NotNull(con);
         var postCon = con as NpgsqlConnection;
         Assert.NotNull(postCon);
 
-        var connString = con.ConnectionString;
+        string connString = con.ConnectionString;
         Assert.NotNull(connString);
 
         Assert.Contains("Host=10.194.59.205", connString);

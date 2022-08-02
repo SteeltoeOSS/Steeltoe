@@ -11,12 +11,7 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 {
     public const string DefaultServiceName = nameof(RabbitListenerEndpointRegistrar);
 
-    private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new ();
-
-    public RabbitListenerEndpointRegistrar(IMessageHandlerMethodFactory messageHandlerMethodFactory = null)
-    {
-        MessageHandlerMethodFactory = messageHandlerMethodFactory;
-    }
+    private readonly List<RabbitListenerEndpointDescriptor> _endpointDescriptors = new();
 
     public IRabbitListenerEndpointRegistry EndpointRegistry { get; set; }
 
@@ -31,6 +26,11 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
     public bool StartImmediately { get; set; }
 
     public string ServiceName { get; set; } = DefaultServiceName;
+
+    public RabbitListenerEndpointRegistrar(IMessageHandlerMethodFactory messageHandlerMethodFactory = null)
+    {
+        MessageHandlerMethodFactory = messageHandlerMethodFactory;
+    }
 
     public void Initialize()
     {
@@ -56,10 +56,12 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 
         // Factory may be null, we defer the resolution right before actually creating the container
         var descriptor = new RabbitListenerEndpointDescriptor(endpoint, factory);
+
         lock (_endpointDescriptors)
         {
             if (StartImmediately)
-            { // Register and start immediately
+            {
+                // Register and start immediately
                 EndpointRegistry.RegisterListenerContainer(descriptor.Endpoint, ResolveContainerFactory(descriptor), true);
             }
             else
@@ -83,12 +85,12 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
 
         lock (_endpointDescriptors)
         {
-            foreach (var descriptor in _endpointDescriptors)
+            foreach (RabbitListenerEndpointDescriptor descriptor in _endpointDescriptors)
             {
                 EndpointRegistry.RegisterListenerContainer(descriptor.Endpoint, ResolveContainerFactory(descriptor));
             }
 
-            StartImmediately = true;  // trigger immediate startup
+            StartImmediately = true; // trigger immediate startup
         }
     }
 
@@ -98,11 +100,13 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
         {
             return descriptor.ContainerFactory;
         }
-        else if (ContainerFactory != null)
+
+        if (ContainerFactory != null)
         {
             return ContainerFactory;
         }
-        else if (ContainerFactoryServiceName != null)
+
+        if (ContainerFactoryServiceName != null)
         {
             if (ApplicationContext == null)
             {
@@ -112,22 +116,21 @@ public class RabbitListenerEndpointRegistrar : IRabbitListenerEndpointRegistrar
             ContainerFactory = ApplicationContext.GetService<IRabbitListenerContainerFactory>(ContainerFactoryServiceName);
             return ContainerFactory;
         }
-        else
-        {
-            throw new InvalidOperationException($"Could not resolve the IRabbitListenerContainerFactory to use for [{descriptor.Endpoint}] no factory was given and no default is set.");
-        }
+
+        throw new InvalidOperationException(
+            $"Could not resolve the IRabbitListenerContainerFactory to use for [{descriptor.Endpoint}] no factory was given and no default is set.");
     }
 
     private sealed class RabbitListenerEndpointDescriptor
     {
+        public IRabbitListenerEndpoint Endpoint { get; }
+
+        public IRabbitListenerContainerFactory ContainerFactory { get; }
+
         public RabbitListenerEndpointDescriptor(IRabbitListenerEndpoint endpoint, IRabbitListenerContainerFactory containerFactory)
         {
             Endpoint = endpoint;
             ContainerFactory = containerFactory;
         }
-
-        public IRabbitListenerEndpoint Endpoint { get; }
-
-        public IRabbitListenerContainerFactory ContainerFactory { get; }
     }
 }

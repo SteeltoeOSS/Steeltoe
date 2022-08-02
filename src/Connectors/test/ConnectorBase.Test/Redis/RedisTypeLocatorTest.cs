@@ -13,12 +13,12 @@ public class RedisTypeLocatorTest
     public void Property_Can_Locate_ConnectionTypes()
     {
         // arrange -- handled by including a compatible Redis NuGet package
-        var microsoftInterface = RedisTypeLocator.MicrosoftInterface;
-        var microsoftImplementation = RedisTypeLocator.MicrosoftImplementation;
-        var microsoftOptions = RedisTypeLocator.MicrosoftOptions;
-        var stackInterface = RedisTypeLocator.StackExchangeInterface;
-        var stackImplement = RedisTypeLocator.StackExchangeImplementation;
-        var stackOptions = RedisTypeLocator.StackExchangeOptions;
+        Type microsoftInterface = RedisTypeLocator.MicrosoftInterface;
+        Type microsoftImplementation = RedisTypeLocator.MicrosoftImplementation;
+        Type microsoftOptions = RedisTypeLocator.MicrosoftOptions;
+        Type stackInterface = RedisTypeLocator.StackExchangeInterface;
+        Type stackImplement = RedisTypeLocator.StackExchangeImplementation;
+        Type stackOptions = RedisTypeLocator.StackExchangeOptions;
 
         Assert.NotNull(microsoftInterface);
         Assert.NotNull(microsoftImplementation);
@@ -31,16 +31,27 @@ public class RedisTypeLocatorTest
     [Fact(Skip = "Changing the expected assemblies breaks other tests when collections don't work as expected")]
     public void Throws_When_ConnectionType_NotFound()
     {
-        var microsoftAssemblies = RedisTypeLocator.MicrosoftAssemblies;
-        var stackAssemblies = RedisTypeLocator.StackExchangeAssemblies;
-        RedisTypeLocator.MicrosoftAssemblies = new[] { "something-Wrong" };
-        RedisTypeLocator.StackExchangeAssemblies = new[] { "something-Wrong" };
+        string[] microsoftAssemblies = RedisTypeLocator.MicrosoftAssemblies;
+        string[] stackAssemblies = RedisTypeLocator.StackExchangeAssemblies;
+
+        RedisTypeLocator.MicrosoftAssemblies = new[]
+        {
+            "something-Wrong"
+        };
+
+        RedisTypeLocator.StackExchangeAssemblies = new[]
+        {
+            "something-Wrong"
+        };
 
         var microsoftException = Assert.Throws<ConnectorException>(() => RedisTypeLocator.MicrosoftInterface);
         var stackException = Assert.Throws<ConnectorException>(() => RedisTypeLocator.StackExchangeInterface);
 
-        Assert.Equal($"Unable to find {RedisTypeLocator.MicrosoftInterfaceTypeNames[0]}, are you missing a Microsoft Caching NuGet Reference?", microsoftException.Message);
-        Assert.Equal($"Unable to find {RedisTypeLocator.StackExchangeInterfaceTypeNames[0]}, are you missing a Stack Exchange Redis NuGet Reference?", stackException.Message);
+        Assert.Equal($"Unable to find {RedisTypeLocator.MicrosoftInterfaceTypeNames[0]}, are you missing a Microsoft Caching NuGet Reference?",
+            microsoftException.Message);
+
+        Assert.Equal($"Unable to find {RedisTypeLocator.StackExchangeInterfaceTypeNames[0]}, are you missing a Stack Exchange Redis NuGet Reference?",
+            stackException.Message);
 
         // reset
         RedisTypeLocator.MicrosoftAssemblies = microsoftAssemblies;

@@ -24,6 +24,7 @@ public class DiscoveryHttpClientHandlerBase
     public virtual Uri LookupService(Uri current)
     {
         logger?.LogDebug("LookupService({0})", current.ToString());
+
         if (!current.IsDefaultPort)
         {
             return current;
@@ -35,6 +36,7 @@ public class DiscoveryHttpClientHandlerBase
     public virtual async Task<Uri> LookupServiceAsync(Uri current)
     {
         logger?.LogDebug("LookupService({0})", current.ToString());
+
         if (!current.IsDefaultPort)
         {
             return current;

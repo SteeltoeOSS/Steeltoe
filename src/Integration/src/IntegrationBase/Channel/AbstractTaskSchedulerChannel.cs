@@ -16,6 +16,26 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
     protected TaskScheduler executor;
     protected int taskSchedulerInterceptorsSize;
 
+    public override List<IChannelInterceptor> ChannelInterceptors
+    {
+        get => base.ChannelInterceptors;
+
+        set
+        {
+            base.ChannelInterceptors = value;
+
+            foreach (IChannelInterceptor interceptor in value)
+            {
+                if (interceptor is ITaskSchedulerChannelInterceptor)
+                {
+                    taskSchedulerInterceptorsSize++;
+                }
+            }
+        }
+    }
+
+    public virtual bool HasTaskSchedulerInterceptors => taskSchedulerInterceptorsSize > 0;
+
     protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, ILogger logger = null)
         : this(context, dispatcher, null, logger)
     {
@@ -26,35 +46,17 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
     {
     }
 
-    protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, TaskScheduler executor, string name, ILogger logger = null)
+    protected AbstractTaskSchedulerChannel(IApplicationContext context, IMessageDispatcher dispatcher, TaskScheduler executor, string name,
+        ILogger logger = null)
         : base(context, dispatcher, name, logger)
     {
         this.executor = executor;
     }
 
-    public override List<IChannelInterceptor> ChannelInterceptors
-    {
-        get
-        {
-            return base.ChannelInterceptors;
-        }
-
-        set
-        {
-            base.ChannelInterceptors = value;
-            foreach (var interceptor in value)
-            {
-                if (interceptor is ITaskSchedulerChannelInterceptor)
-                {
-                    taskSchedulerInterceptorsSize++;
-                }
-            }
-        }
-    }
-
     public override void AddInterceptor(IChannelInterceptor interceptor)
     {
         base.AddInterceptor(interceptor);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             taskSchedulerInterceptorsSize++;
@@ -64,6 +66,7 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
     public override void AddInterceptor(int index, IChannelInterceptor interceptor)
     {
         base.AddInterceptor(index, interceptor);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             taskSchedulerInterceptorsSize++;
@@ -72,7 +75,8 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
     public override bool RemoveInterceptor(IChannelInterceptor interceptor)
     {
-        var removed = base.RemoveInterceptor(interceptor);
+        bool removed = base.RemoveInterceptor(interceptor);
+
         if (removed && interceptor is ITaskSchedulerChannelInterceptor)
         {
             taskSchedulerInterceptorsSize--;
@@ -83,7 +87,8 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
     public override IChannelInterceptor RemoveInterceptor(int index)
     {
-        var interceptor = base.RemoveInterceptor(index);
+        IChannelInterceptor interceptor = base.RemoveInterceptor(index);
+
         if (interceptor is ITaskSchedulerChannelInterceptor)
         {
             taskSchedulerInterceptorsSize--;
@@ -92,16 +97,15 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
         return interceptor;
     }
 
-    public virtual bool HasTaskSchedulerInterceptors
-    {
-        get { return taskSchedulerInterceptorsSize > 0; }
-    }
-
     protected class MessageHandlingTask : IMessageHandlingRunnable
     {
         private readonly IMessageHandlingRunnable _runnable;
         private readonly AbstractTaskSchedulerChannel _channel;
         private readonly ILogger _logger;
+
+        public IMessage Message => _runnable.Message;
+
+        public IMessageHandler MessageHandler => _runnable.MessageHandler;
 
         public MessageHandlingTask(AbstractTaskSchedulerChannel channel, IMessageHandlingRunnable task, ILogger logger)
         {
@@ -110,25 +114,24 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
             _logger = logger;
         }
 
-        public IMessage Message { get => _runnable.Message; }
-
-        public IMessageHandler MessageHandler { get => _runnable.MessageHandler; }
-
         public bool Run()
         {
-            var message = _runnable.Message;
-            var messageHandler = _runnable.MessageHandler;
+            IMessage message = _runnable.Message;
+            IMessageHandler messageHandler = _runnable.MessageHandler;
+
             if (messageHandler == null)
             {
                 throw new InvalidOperationException("'messageHandler' must not be null");
             }
 
             var interceptorStack = new Queue<ITaskSchedulerChannelInterceptor>();
+
             try
             {
                 if (_channel.HasTaskSchedulerInterceptors)
                 {
                     message = ApplyBeforeHandle(message, interceptorStack);
+
                     if (message == null)
                     {
                         return true;
@@ -156,19 +159,21 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
                     throw new MessagingExceptionWrapperException(message, exception);
                 }
 
-                var description = $"Failed to handle {message} to {this} in {messageHandler}";
+                string description = $"Failed to handle {message} to {this} in {messageHandler}";
                 throw new MessageDeliveryException(message, description, ex);
             }
         }
 
         private IMessage ApplyBeforeHandle(IMessage message, Queue<ITaskSchedulerChannelInterceptor> interceptorStack)
         {
-            var theMessage = message;
-            foreach (var interceptor in _channel.ChannelInterceptors)
+            IMessage theMessage = message;
+
+            foreach (IChannelInterceptor interceptor in _channel.ChannelInterceptors)
             {
                 if (interceptor is ITaskSchedulerChannelInterceptor executorInterceptor)
                 {
                     theMessage = executorInterceptor.BeforeHandled(theMessage, _channel, _runnable.MessageHandler);
+
                     if (theMessage == null)
                     {
                         _logger?.LogDebug(executorInterceptor.GetType().Name + " returned null from beforeHandle, i.e. precluding the send.");
@@ -185,8 +190,9 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
         private void TriggerAfterMessageHandled(IMessage message, Exception ex, Queue<ITaskSchedulerChannelInterceptor> interceptorStack)
         {
-            var iterator = interceptorStack.Reverse();
-            foreach (var interceptor in iterator)
+            IEnumerable<ITaskSchedulerChannelInterceptor> iterator = interceptorStack.Reverse();
+
+            foreach (ITaskSchedulerChannelInterceptor interceptor in iterator)
             {
                 try
                 {
@@ -211,7 +217,8 @@ public abstract class AbstractTaskSchedulerChannel : AbstractSubscribableChannel
 
         public IMessageHandlingRunnable Decorate(IMessageHandlingRunnable messageHandlingRunnable)
         {
-            var runnable = messageHandlingRunnable;
+            IMessageHandlingRunnable runnable = messageHandlingRunnable;
+
             if (_channel.HasTaskSchedulerInterceptors)
             {
                 runnable = new MessageHandlingTask(_channel, messageHandlingRunnable, _channel.Logger);

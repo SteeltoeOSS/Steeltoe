@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive.Linq;
+using System.Reactive.Observable.Aliases;
 using Microsoft.AspNetCore.Mvc;
 using Steeltoe.CircuitBreaker.Hystrix.Metric.Consumer;
 using Steeltoe.CircuitBreaker.Hystrix.Serial;
-using System.Reactive.Linq;
-using System.Reactive.Observable.Aliases;
 
 namespace Steeltoe.CircuitBreaker.Hystrix.MetricsEvents.Controllers;
 

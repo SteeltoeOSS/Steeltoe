@@ -9,10 +9,14 @@ namespace Steeltoe.Security.DataProtection.CredHub;
 public class JsonSetRequest : CredentialSetRequest
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
+    /// Initializes a new instance of the <see cref="JsonSetRequest" /> class.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="value">Value of the credential to set.</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="value">
+    /// Value of the credential to set.
+    /// </param>
     public JsonSetRequest(string credentialName, JsonElement value)
     {
         Name = credentialName;
@@ -21,10 +25,14 @@ public class JsonSetRequest : CredentialSetRequest
     }
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="JsonSetRequest"/> class.
+    /// Initializes a new instance of the <see cref="JsonSetRequest" /> class.
     /// </summary>
-    /// <param name="credentialName">Name of credential.</param>
-    /// <param name="value">Value of the credential to set.</param>
+    /// <param name="credentialName">
+    /// Name of credential.
+    /// </param>
+    /// <param name="value">
+    /// Value of the credential to set.
+    /// </param>
     public JsonSetRequest(string credentialName, string value)
     {
         Name = credentialName;

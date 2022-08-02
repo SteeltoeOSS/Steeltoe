@@ -8,6 +8,8 @@ namespace Steeltoe.Messaging.RabbitMQ.Support.PostProcessor;
 
 public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostProcessor
 {
+    public virtual CompressionLevel Level { get; set; } = CompressionLevel.Fastest;
+
     protected AbstractDeflaterPostProcessor()
     {
     }
@@ -16,6 +18,4 @@ public abstract class AbstractDeflaterPostProcessor : AbstractCompressingPostPro
         : base(autoDecompress)
     {
     }
-
-    public virtual CompressionLevel Level { get; set; } = CompressionLevel.Fastest;
 }

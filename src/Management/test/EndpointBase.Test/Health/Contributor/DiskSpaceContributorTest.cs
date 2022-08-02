@@ -22,7 +22,7 @@ public class DiskSpaceContributorTest : BaseTest
     {
         var contrib = new DiskSpaceContributor();
         Assert.Equal("diskSpace", contrib.Id);
-        var result = contrib.Health();
+        HealthCheckResult result = contrib.Health();
         Assert.NotNull(result);
         Assert.Equal(HealthStatus.Up, result.Status);
         Assert.NotNull(result.Details);

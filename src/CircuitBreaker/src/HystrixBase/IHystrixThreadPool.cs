@@ -8,6 +8,10 @@ namespace Steeltoe.CircuitBreaker.Hystrix;
 
 public interface IHystrixThreadPool : IDisposable
 {
+    bool IsQueueSpaceAvailable { get; }
+
+    bool IsShutdown { get; }
+
     IHystrixTaskScheduler GetScheduler();
 
     TaskScheduler GetTaskScheduler();
@@ -17,8 +21,4 @@ public interface IHystrixThreadPool : IDisposable
     void MarkThreadCompletion();
 
     void MarkThreadRejection();
-
-    bool IsQueueSpaceAvailable { get; }
-
-    bool IsShutdown { get; }
 }

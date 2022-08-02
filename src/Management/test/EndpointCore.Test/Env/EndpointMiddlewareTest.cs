@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
@@ -13,21 +15,19 @@ using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.CloudFoundry;
 using Steeltoe.Management.Endpoint.Hypermedia;
 using Steeltoe.Management.Endpoint.Test;
-using System.Net;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Env.Test;
 
 public class EndpointMiddlewareTest : BaseTest
 {
-    private static readonly Dictionary<string, string> AppSettings = new ()
+    private static readonly Dictionary<string, string> AppSettings = new()
     {
         ["Logging:IncludeScopes"] = "false",
         ["Logging:LogLevel:Default"] = "Warning",
         ["Logging:LogLevel:Pivotal"] = "Information",
         ["Logging:LogLevel:Steeltoe"] = "Information",
-        ["management:endpoints:enabled"] = "true",
+        ["management:endpoints:enabled"] = "true"
     };
 
     private readonly IHostEnvironment _host = HostingHelpers.GetHostingEnvironment();
@@ -39,18 +39,21 @@ public class EndpointMiddlewareTest : BaseTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(AppSettings);
-        var config = configurationBuilder.Build();
+        IConfigurationRoot config = configurationBuilder.Build();
         var options = new ActuatorManagementOptions();
         options.EndpointOptions.Add(opts);
         var ep = new EnvEndpoint(opts, config, _host);
         var middle = new EnvEndpointMiddleware(null, ep, options);
 
-        var context = CreateRequest("GET", "/env");
+        HttpContext context = CreateRequest("GET", "/env");
         await middle.HandleEnvRequestAsync(context);
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
-        var json = await reader.ReadLineAsync();
-        var expected = "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+        string json = await reader.ReadLineAsync();
+
+        string expected =
+            "{\"activeProfiles\":[\"EnvironmentName\"],\"propertySources\":[{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+
         Assert.Equal(expected, json);
     }
 
@@ -58,23 +61,26 @@ public class EndpointMiddlewareTest : BaseTest
     public async Task EnvActuator_ReturnsExpectedData()
     {
         // Some developers set ASPNETCORE_ENVIRONMENT in their environment, which will break this test if we don't un-set it
-        var originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        string originalEnv = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
         Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", null);
-        var builder = new WebHostBuilder()
-            .UseStartup<Startup>()
-            .ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
+
+        IWebHostBuilder builder = new WebHostBuilder().UseStartup<Startup>().ConfigureAppConfiguration((_, config) => config.AddInMemoryCollection(AppSettings))
             .ConfigureLogging((webHostContext, loggingBuilder) =>
             {
                 loggingBuilder.AddConfiguration(webHostContext.Configuration);
                 loggingBuilder.AddDynamicConsole();
             });
+
         using (var server = new TestServer(builder))
         {
-            var client = server.CreateClient();
-            var result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
+            HttpClient client = server.CreateClient();
+            HttpResponseMessage result = await client.GetAsync("http://localhost/cloudfoundryapplication/env");
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-            var json = await result.Content.ReadAsStringAsync();
-            var expected = "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointCore.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+            string json = await result.Content.ReadAsStringAsync();
+
+            string expected =
+                "{\"activeProfiles\":[\"Production\"],\"propertySources\":[{\"name\":\"ChainedConfigurationProvider\",\"properties\":{\"applicationName\":{\"value\":\"Steeltoe.Management.EndpointCore.Test\"}}},{\"name\":\"MemoryConfigurationProvider\",\"properties\":{\"Logging:IncludeScopes\":{\"value\":\"false\"},\"Logging:LogLevel:Default\":{\"value\":\"Warning\"},\"Logging:LogLevel:Pivotal\":{\"value\":\"Information\"},\"Logging:LogLevel:Steeltoe\":{\"value\":\"Information\"},\"management:endpoints:enabled\":{\"value\":\"true\"}}}]}";
+
             Assert.Equal(expected, json);
         }
 
@@ -97,6 +103,7 @@ public class EndpointMiddlewareTest : BaseTest
         {
             TraceIdentifier = Guid.NewGuid().ToString()
         };
+
         context.Response.Body = new MemoryStream();
         context.Request.Method = method;
         context.Request.Path = new PathString(path);

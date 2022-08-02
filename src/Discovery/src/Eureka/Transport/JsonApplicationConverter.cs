@@ -17,6 +17,7 @@ internal sealed class JsonApplicationConverter : JsonConverter<List<JsonApplicat
     public override List<JsonApplication> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         List<JsonApplication> result = null;
+
         try
         {
             if (reader.TokenType == JsonTokenType.StartArray)
@@ -26,6 +27,7 @@ internal sealed class JsonApplicationConverter : JsonConverter<List<JsonApplicat
             else
             {
                 var singleInst = JsonSerializer.Deserialize<JsonApplication>(ref reader, options);
+
                 if (singleInst != null)
                 {
                     result = new List<JsonApplication>

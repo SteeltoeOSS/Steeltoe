@@ -2,9 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
+using Microsoft.Extensions.Configuration;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Info;
-using System.Globalization;
 using Xunit;
 
 namespace Steeltoe.Management.Endpoint.Info.Contributor.Test;
@@ -14,23 +15,23 @@ public class GitInfoContributorTest : BaseTest
     [Fact]
     public void ReadGitPropertiesMissingPropertiesFile()
     {
-        var config = new GitInfoContributor().ReadGitProperties("foobar");
+        IConfiguration config = new GitInfoContributor().ReadGitProperties("foobar");
         Assert.Null(config);
     }
 
     [Fact]
     public void ReadEmptyGitPropertiesFile()
     {
-        var path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
-        var config = new GitInfoContributor().ReadGitProperties(path);
+        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}empty.git.properties";
+        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
         Assert.Null(config);
     }
 
     [Fact]
     public void ReadMalformedGitPropertiesFile()
     {
-        var path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
-        var config = new GitInfoContributor().ReadGitProperties(path);
+        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}garbage.git.properties";
+        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
         Assert.NotNull(config);
         Assert.Null(config["git"]);
     }
@@ -38,8 +39,8 @@ public class GitInfoContributorTest : BaseTest
     [Fact]
     public void ReadGoodPropertiesFile()
     {
-        var path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
-        var config = new GitInfoContributor().ReadGitProperties(path);
+        string path = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}git.properties";
+        IConfiguration config = new GitInfoContributor().ReadGitProperties(path);
         Assert.NotNull(config);
         Assert.Equal("true", config["git:dirty"]);
 
@@ -65,7 +66,7 @@ public class GitInfoContributorTest : BaseTest
         var builder = new InfoBuilder();
         contrib.Contribute(builder);
 
-        var result = builder.Build();
+        Dictionary<string, object> result = builder.Build();
         Assert.NotNull(result);
         var gitDict = result["git"] as Dictionary<string, object>;
         Assert.NotNull(gitDict);
@@ -83,7 +84,7 @@ public class GitInfoContributorTest : BaseTest
         Assert.True(gitBuildDict.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        var gitBuildTime = gitBuildDict["time"];
+        object gitBuildTime = gitBuildDict["time"];
         Assert.Equal(DateTime.Parse("2017-07-12T18:40:39Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitBuildTime);
 
         var gitCommitDict = gitDict["commit"] as Dictionary<string, object>;
@@ -91,7 +92,7 @@ public class GitInfoContributorTest : BaseTest
         Assert.True(gitCommitDict.ContainsKey("time"));
 
         // Verify that datetime values are normalized correctly
-        var gitCommitTime = gitCommitDict["time"];
+        object gitCommitTime = gitCommitDict["time"];
         Assert.Equal(DateTime.Parse("2017-06-08T12:47:02Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), gitCommitTime);
     }
 }

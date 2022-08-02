@@ -25,14 +25,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         const IServiceCollection services = null;
         const IConfigurationRoot config = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddRabbitMQConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config));
         Assert.Contains(nameof(services), ex.Message);
 
-        var ex2 =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddRabbitMQConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, "foobar"));
         Assert.Contains(nameof(services), ex2.Message);
     }
 
@@ -42,14 +38,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         const IConfigurationRoot config = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddRabbitMQConnection(config));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config));
         Assert.Contains(nameof(config), ex.Message);
 
-        var ex2 =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddRabbitMQConnection(config, "foobar"));
+        var ex2 = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, "foobar"));
         Assert.Contains(nameof(config), ex2.Message);
     }
 
@@ -60,9 +52,7 @@ public class RabbitMQServiceCollectionExtensionsTest
         const IConfigurationRoot config = null;
         const string serviceName = null;
 
-        var ex =
-            Assert.Throws<ArgumentNullException>(
-                () => services.AddRabbitMQConnection(config, serviceName));
+        var ex = Assert.Throws<ArgumentNullException>(() => services.AddRabbitMQConnection(config, serviceName));
         Assert.Contains(nameof(serviceName), ex.Message);
     }
 
@@ -70,7 +60,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_NoVCAPs_AddsConfiguredConnection()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
         services.AddRabbitMQConnection(config);
 
@@ -82,18 +72,16 @@ public class RabbitMQServiceCollectionExtensionsTest
     public void AddRabbitMQConnection_WithServiceName_NoVCAPs_ThrowsConnectorException()
     {
         IServiceCollection services = new ServiceCollection();
-        var config = new ConfigurationBuilder().Build();
+        IConfigurationRoot config = new ConfigurationBuilder().Build();
 
-        var ex =
-            Assert.Throws<ConnectorException>(
-                () => services.AddRabbitMQConnection(config, "foobar"));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(config, "foobar"));
         Assert.Contains("foobar", ex.Message);
     }
 
     [Fact]
     public void AddRabbitMQConnection_MultipleRabbitMQServices_ThrowsConnectorException()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -132,18 +120,16 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
-        var ex =
-            Assert.Throws<ConnectorException>(
-                () => services.AddRabbitMQConnection(config));
+        var ex = Assert.Throws<ConnectorException>(() => services.AddRabbitMQConnection(config));
         Assert.Contains("Multiple", ex.Message);
     }
 
     [Fact]
     public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesNotThrow_IfNameUsed()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -182,7 +168,7 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRabbitMQConnection(config, "myRabbitMQService2");
         var service = services.BuildServiceProvider().GetService<IConnectionFactory>() as ConnectionFactory;
@@ -197,7 +183,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     [Fact]
     public void AddRabbitMQConnection_WithVCAPs_AddsRabbitMQConnection()
     {
-        var env2 = @"
+        string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -222,7 +208,7 @@ public class RabbitMQServiceCollectionExtensionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRabbitMQConnection(config);
 
@@ -241,7 +227,7 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         services.AddRabbitMQConnection(config);
         var healthContributor = services.BuildServiceProvider().GetService<IHealthContributor>() as RabbitMQHealthContributor;
@@ -255,10 +241,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<RabbitMQConnectionInfo>();
+        Connection ci = cm.Get<RabbitMQConnectionInfo>();
         services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
         services.AddRabbitMQConnection(config);
@@ -273,10 +259,10 @@ public class RabbitMQServiceCollectionExtensionsTest
         IServiceCollection services = new ServiceCollection();
         var builder = new ConfigurationBuilder();
         builder.AddCloudFoundry();
-        var config = builder.Build();
+        IConfigurationRoot config = builder.Build();
 
         var cm = new ConnectionStringManager(config);
-        var ci = cm.Get<RabbitMQConnectionInfo>();
+        Connection ci = cm.Get<RabbitMQConnectionInfo>();
         services.AddHealthChecks().AddRabbitMQ(ci.ConnectionString, name: ci.Name);
 
         services.AddRabbitMQConnection(config, addSteeltoeHealthChecks: true);

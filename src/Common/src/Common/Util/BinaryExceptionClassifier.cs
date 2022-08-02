@@ -21,7 +21,8 @@ public class BinaryExceptionClassifier : SubclassClassifier<Exception, bool>
         if (exceptionClasses != null)
         {
             var map = new ConcurrentDictionary<Type, bool>();
-            foreach (var type in exceptionClasses)
+
+            foreach (Type type in exceptionClasses)
             {
                 map.TryAdd(type, !DefaultValue);
             }
@@ -47,7 +48,8 @@ public class BinaryExceptionClassifier : SubclassClassifier<Exception, bool>
 
     public override bool Classify(Exception classifiable)
     {
-        var classified = base.Classify(classifiable);
+        bool classified = base.Classify(classifiable);
+
         if (!TraverseInnerExceptions)
         {
             return classified;
@@ -55,7 +57,8 @@ public class BinaryExceptionClassifier : SubclassClassifier<Exception, bool>
 
         if (classified == DefaultValue)
         {
-            var cause = classifiable;
+            Exception cause = classifiable;
+
             do
             {
                 if (TypeMap.TryGetValue(cause.GetType(), out classified))

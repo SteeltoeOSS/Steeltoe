@@ -20,8 +20,8 @@ public class RabbitHeaderAccessorTest
     public void ValidateAmqpHeaders()
     {
         var accessor = new RabbitHeaderAccessor();
-        var correlationId = "correlation-id-1234";
-        var time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+        string correlationId = "correlation-id-1234";
+        long time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         accessor.AppId = "app-id-1234";
         accessor.ClusterId = "cluster-id-1234";
         accessor.ContentEncoding = "UTF-16";
@@ -45,9 +45,9 @@ public class RabbitHeaderAccessorTest
         accessor.ConsumerTag = "consumer.tag";
         accessor.ConsumerQueue = "consumer.queue";
 
-        var message = RabbitMessageBuilder.WithPayload("test").SetHeaders(accessor).Build();
+        IMessage message = RabbitMessageBuilder.WithPayload("test").SetHeaders(accessor).Build();
 
-        var headerAccessor = RabbitHeaderAccessor.GetAccessor(message);
+        RabbitHeaderAccessor headerAccessor = RabbitHeaderAccessor.GetAccessor(message);
 
         Assert.Equal("app-id-1234", headerAccessor.AppId);
         Assert.Equal("cluster-id-1234", headerAccessor.ClusterId);
@@ -79,8 +79,8 @@ public class RabbitHeaderAccessorTest
     [Fact]
     public void PrioritySet()
     {
-        var message = RabbitMessageBuilder.WithPayload("payload").SetHeader(RabbitMessageHeaders.Priority, 90).Build();
-        var accessor = RabbitHeaderAccessor.GetAccessor(message);
+        IMessage message = RabbitMessageBuilder.WithPayload("payload").SetHeader(RabbitMessageHeaders.Priority, 90).Build();
+        RabbitHeaderAccessor accessor = RabbitHeaderAccessor.GetAccessor(message);
         Assert.Equal(90, accessor.Priority.Value);
     }
 

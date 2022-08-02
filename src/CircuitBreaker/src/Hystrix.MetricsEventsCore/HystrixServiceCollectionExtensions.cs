@@ -39,7 +39,9 @@ public static class HystrixServiceCollectionExtensions
 
     [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
     public static void AddHystrixRequestEventStream(this IServiceCollection services, IConfiguration config)
-        => AddHystrixRequestEventStream(services);
+    {
+        AddHystrixRequestEventStream(services);
+    }
 
     public static void AddHystrixRequestEventStream(this IServiceCollection services)
     {
@@ -53,7 +55,9 @@ public static class HystrixServiceCollectionExtensions
 
     [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
     public static void AddHystrixUtilizationStream(this IServiceCollection services, IConfiguration config)
-        => AddHystrixUtilizationStream(services);
+    {
+        AddHystrixUtilizationStream(services);
+    }
 
     public static void AddHystrixUtilizationStream(this IServiceCollection services)
     {
@@ -67,7 +71,9 @@ public static class HystrixServiceCollectionExtensions
 
     [Obsolete("The IConfiguration parameter is not used, this method signature will be removed in a future release")]
     public static void AddHystrixConfigStream(this IServiceCollection services, IConfiguration config)
-        => AddHystrixConfigStream(services);
+    {
+        AddHystrixConfigStream(services);
+    }
 
     public static void AddHystrixConfigStream(this IServiceCollection services)
     {

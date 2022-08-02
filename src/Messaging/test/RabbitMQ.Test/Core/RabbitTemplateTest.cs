@@ -33,6 +33,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
         var connectionFactory = new CachingConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             IsChannelTransacted = true
@@ -42,10 +43,12 @@ public class RabbitTemplateTest
         {
             template.ConvertAndSend("foo", "bar");
         });
+
         txTemplate.Execute(_ =>
         {
             template.ConvertAndSend("baz", "qux");
         });
+
         mockConnectionFactory.Verify(c => c.CreateConnection(It.IsAny<string>()), Times.Once);
         mockConnection.Verify(c => c.CreateModel(), Times.Once);
     }
@@ -54,8 +57,8 @@ public class RabbitTemplateTest
     public void TestConvertBytes()
     {
         var template = new RabbitTemplate();
-        var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
-        var message = template.ConvertMessageIfNecessary(payload);
+        byte[] payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
+        IMessage message = template.ConvertMessageIfNecessary(payload);
         Assert.Same(payload, message.Payload);
     }
 
@@ -63,9 +66,9 @@ public class RabbitTemplateTest
     public void TestConvertString()
     {
         var template = new RabbitTemplate();
-        var payload = "Hello, world!";
-        var message = template.ConvertMessageIfNecessary(payload);
-        var messageString = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Payload);
+        string payload = "Hello, world!";
+        IMessage message = template.ConvertMessageIfNecessary(payload);
+        string messageString = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Payload);
         Assert.Equal(payload, messageString);
     }
 
@@ -73,9 +76,9 @@ public class RabbitTemplateTest
     public void TestConvertMessage()
     {
         var template = new RabbitTemplate();
-        var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
-        var input = Message.Create(payload, new MessageHeaders());
-        var message = template.ConvertMessageIfNecessary(input);
+        byte[] payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
+        IMessage<byte[]> input = Message.Create(payload, new MessageHeaders());
+        IMessage message = template.ConvertMessageIfNecessary(input);
         Assert.Same(message, input);
     }
 
@@ -94,17 +97,25 @@ public class RabbitTemplateTest
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
         var consumer = new AtomicReference<RC.IBasicConsumer>();
-        mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+
+        mockChannel.Setup(c =>
+                c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(new RC.QueueDeclareOk("foo", 0, 0));
-        mockChannel.Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
+
+        mockChannel
+            .Setup(c => c.BasicConsume(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(),
+                It.IsAny<IDictionary<string, object>>(), It.IsAny<RC.IBasicConsumer>()))
             .Callback<string, bool, string, bool, bool, IDictionary<string, object>, RC.IBasicConsumer>((_, _, _, _, _, _, arg7) => consumer.Value = arg7);
+
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 1
         };
-        var payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
-        var input = Message.Create(payload, new MessageHeaders());
+
+        byte[] payload = EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!");
+        IMessage<byte[]> input = Message.Create(payload, new MessageHeaders());
         template.DoSendAndReceiveWithTemporary("foo", "bar", input, null, default);
 
         // used to hang here because of the SynchronousQueue and doSendAndReceive() already exited
@@ -116,15 +127,17 @@ public class RabbitTemplateTest
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var count = new AtomicInteger();
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() => count.IncrementAndGet())
+
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() => count.IncrementAndGet())
             .Throws(new AuthenticationFailureException("foo"));
 
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1)
         };
+
         try
         {
             template.ConvertAndSend("foo", "bar", "baz");
@@ -141,8 +154,7 @@ public class RabbitTemplateTest
     public void TestEvaluateDirectReplyToWithConnectException()
     {
         var mockConnectionFactory = new Mock<IConnectionFactory>();
-        mockConnectionFactory.Setup(f => f.CreateConnection())
-            .Throws(new RabbitConnectException(null));
+        mockConnectionFactory.Setup(f => f.CreateConnection()).Throws(new RabbitConnectException(null));
         var template = new RabbitTemplate(mockConnectionFactory.Object);
         Assert.Throws<RabbitConnectException>(() => template.ConvertSendAndReceive<object>("foo"));
         Assert.False(template.EvaluatedFastReplyTo);
@@ -152,8 +164,7 @@ public class RabbitTemplateTest
     public void TestEvaluateDirectReplyToWithIOException()
     {
         var mockConnectionFactory = new Mock<IConnectionFactory>();
-        mockConnectionFactory.Setup(f => f.CreateConnection())
-            .Throws(new RabbitIOException(null));
+        mockConnectionFactory.Setup(f => f.CreateConnection()).Throws(new RabbitIOException(null));
         var template = new RabbitTemplate(mockConnectionFactory.Object);
         Assert.Throws<RabbitIOException>(() => template.ConvertSendAndReceive<object>("foo"));
         Assert.False(template.EvaluatedFastReplyTo);
@@ -171,14 +182,21 @@ public class RabbitTemplateTest
 
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        mockChannel.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+
+        mockChannel.Setup(c =>
+                c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Throws(new ShutdownSignalException(new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
+
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Throws(new ShutdownSignalException(
+            new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty, RabbitUtils.QueueClassId, RabbitUtils.DeclareMethodId)));
+
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 1
         };
+
         template.ConvertSendAndReceive<object>("foo");
         Assert.True(template.EvaluatedFastReplyTo);
         Assert.False(template.UsingFastReplyTo);
@@ -196,13 +214,14 @@ public class RabbitTemplateTest
 
         mockChannel.Setup(c => c.IsOpen).Returns(true);
         mockChannel.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
-        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo))
-            .Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
+        mockChannel.Setup(c => c.QueueDeclarePassive(Address.AmqRabbitMQReplyTo)).Returns(() => new RC.QueueDeclareOk(Address.AmqRabbitMQReplyTo, 0, 0));
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 1
         };
+
         template.ConvertSendAndReceive<object>("foo");
         Assert.True(template.EvaluatedFastReplyTo);
         Assert.True(template.UsingFastReplyTo);
@@ -213,10 +232,12 @@ public class RabbitTemplateTest
     {
         var mockConnectionFactory = new Mock<RC.IConnectionFactory>();
         var count = new AtomicInteger();
-        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>()))
-            .Callback(() => count.IncrementAndGet())
+
+        mockConnectionFactory.Setup(f => f.CreateConnection(It.IsAny<string>())).Callback(() => count.IncrementAndGet())
             .Throws(new AuthenticationFailureException("foo"));
+
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             RetryTemplate = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1)
@@ -238,8 +259,7 @@ public class RabbitTemplateTest
         mockChannel.Setup(m => m.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         mockConnectionFactory.Setup(f => f.IsPublisherConfirms).Returns(true);
         mockConnectionFactory.Setup(f => f.IsPublisherReturns).Returns(true);
-        mockConnectionFactory.Setup(f => f.CreateConnection())
-            .Returns(mockConnection.Object);
+        mockConnectionFactory.Setup(f => f.CreateConnection()).Returns(mockConnection.Object);
         mockConnection.Setup(c => c.CreateChannel(false)).Returns(mockChannel.Object);
         var template = new RabbitTemplate(mockConnectionFactory.Object);
         template.ConvertAndSend("foo");
@@ -260,6 +280,7 @@ public class RabbitTemplateTest
         {
             ReplyAddress = Address.AmqRabbitMQReplyTo
         };
+
         Assert.Throws<InvalidOperationException>(() => template.GetExpectedQueueNames());
     }
 
@@ -290,20 +311,29 @@ public class RabbitTemplateTest
         mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
         mockChannel2.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-        mockChannel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+        mockChannel1.Setup(c =>
+                c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
+
         var ccf = new CachingConnectionFactory(mockConnectionFactory.Object);
 
         var rabbitTemplate = new RabbitTemplate(ccf)
         {
             IsChannelTransacted = true
         };
+
         var admin = new RabbitAdmin(rabbitTemplate);
         var mockContext = new Mock<IApplicationContext>();
-        mockContext.Setup(c => c.GetServices<IQueue>()).Returns(new List<IQueue> { new Queue("foo") });
+
+        mockContext.Setup(c => c.GetServices<IQueue>()).Returns(new List<IQueue>
+        {
+            new Queue("foo")
+        });
+
         admin.ApplicationContext = mockContext.Object;
         var templateChannel = new AtomicReference<RC.IModel>();
         var transTemplate = new TransactionTemplate(new TestTransactionManager());
+
         transTemplate.Execute(_ =>
         {
             return rabbitTemplate.Execute(c =>
@@ -312,8 +342,12 @@ public class RabbitTemplateTest
                 return true;
             });
         });
+
         mockChannel1.Verify(c => c.TxSelect());
-        mockChannel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()));
+
+        mockChannel1.Verify(c =>
+            c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()));
+
         mockChannel1.Verify(c => c.TxCommit());
         Assert.Same(templateChannel.Value, mockChannel1.Object);
     }
@@ -333,23 +367,28 @@ public class RabbitTemplateTest
 
         mockChannel1.Setup(c => c.CreateBasicProperties()).Returns(new MockRabbitBasicProperties());
 
-        mockChannel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+        mockChannel1.Setup(c =>
+                c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
             .Returns(() => new RC.QueueDeclareOk("foo", 0, 0));
 
         var listener = new AtomicReference<EventHandler<RC.ShutdownEventArgs>>();
         var shutdownLatch = new CountdownEvent(1);
-        mockChannel1.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>())
-            .Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
-            {
-                listener.Value = handler;
-                shutdownLatch.Signal();
-            });
+
+        mockChannel1.SetupAdd(m => m.ModelShutdown += It.IsAny<EventHandler<RC.ShutdownEventArgs>>()).Callback<EventHandler<RC.ShutdownEventArgs>>(handler =>
+        {
+            listener.Value = handler;
+            shutdownLatch.Signal();
+        });
+
         var connectionFactory = new SingleConnectionFactory(mockConnectionFactory.Object);
+
         var template = new RabbitTemplate(connectionFactory)
         {
             ReplyTimeout = 60_000
         };
-        var input = Message.Create(EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!"), new MessageHeaders());
+
+        IMessage<byte[]> input = Message.Create(EncodingUtils.GetDefaultEncoding().GetBytes("Hello, world!"), new MessageHeaders());
+
         Task.Run(() =>
         {
             try
@@ -363,6 +402,7 @@ public class RabbitTemplateTest
 
             listener.Value.Invoke(null, new RC.ShutdownEventArgs(RC.ShutdownInitiator.Peer, RabbitUtils.NotFound, string.Empty));
         });
+
         try
         {
             template.DoSendAndReceiveWithTemporary("foo", "bar", input, null, default);
@@ -370,7 +410,7 @@ public class RabbitTemplateTest
         }
         catch (RabbitException e)
         {
-            var cause = e.InnerException;
+            Exception cause = e.InnerException;
             Assert.IsType<ShutdownSignalException>(cause);
         }
     }
@@ -384,7 +424,7 @@ public class RabbitTemplateTest
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddBeforePublishPostProcessors(mpp1, mpp2);
         rabbitTemplate.AddBeforePublishPostProcessors(mpp3);
-        var removed = rabbitTemplate.RemoveBeforePublishPostProcessor(mpp1);
+        bool removed = rabbitTemplate.RemoveBeforePublishPostProcessor(mpp1);
         Assert.True(removed);
         Assert.Equal(2, rabbitTemplate.BeforePublishPostProcessors.Count);
         Assert.Contains(mpp2, rabbitTemplate.BeforePublishPostProcessors);
@@ -400,7 +440,7 @@ public class RabbitTemplateTest
         var rabbitTemplate = new RabbitTemplate();
         rabbitTemplate.AddAfterReceivePostProcessors(mpp1, mpp2);
         rabbitTemplate.AddAfterReceivePostProcessors(mpp3);
-        var removed = rabbitTemplate.RemoveAfterReceivePostProcessor(mpp1);
+        bool removed = rabbitTemplate.RemoveAfterReceivePostProcessor(mpp1);
         Assert.True(removed);
         Assert.Equal(2, rabbitTemplate.AfterReceivePostProcessors.Count);
         Assert.Contains(mpp2, rabbitTemplate.AfterReceivePostProcessors);
@@ -413,6 +453,7 @@ public class RabbitTemplateTest
         var cf = new Mock<IConnectionFactory>();
         var pcf = new Mock<IConnectionFactory>();
         cf.SetupGet(c => c.PublisherConnectionFactory).Returns(pcf.Object);
+
         var template = new RabbitTemplate(cf.Object)
         {
             UsePublisherConnection = true
@@ -434,6 +475,7 @@ public class RabbitTemplateTest
         var cf = new Mock<IConnectionFactory>();
         var pcf = new Mock<IConnectionFactory>();
         cf.SetupGet(c => c.PublisherConnectionFactory).Returns(pcf.Object);
+
         var template = new RabbitTemplate(cf.Object)
         {
             UsePublisherConnection = true,
@@ -466,12 +508,12 @@ public class RabbitTemplateTest
 
     private sealed class TestRecoveryRecoveryCallback : IRecoveryCallback<object>
     {
+        public AtomicBoolean Boolean { get; }
+
         public TestRecoveryRecoveryCallback(AtomicBoolean boolean)
         {
             Boolean = boolean;
         }
-
-        public AtomicBoolean Boolean { get; }
 
         public object Recover(IRetryContext context)
         {

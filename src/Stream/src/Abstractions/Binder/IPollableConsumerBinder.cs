@@ -12,9 +12,11 @@ public interface IPollableConsumerBinder
 }
 
 /// <summary>
-///  A binder that supports pollable message sources.
+/// A binder that supports pollable message sources.
 /// </summary>
-/// <typeparam name="THandler">the polled consumer handler type.</typeparam>
+/// <typeparam name="THandler">
+/// the polled consumer handler type.
+/// </typeparam>
 public interface IPollableConsumerBinder<THandler> : IBinder<IPollableSource<THandler>>, IPollableConsumerBinder
 {
 }

@@ -11,9 +11,26 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 
 public class OpPlus : Operator
 {
-    private static readonly MethodInfo AppendStringMethod = typeof(StringBuilder).GetMethod(nameof(StringBuilder.Append), new[] { typeof(string) });
+    private static readonly MethodInfo AppendStringMethod = typeof(StringBuilder).GetMethod(nameof(StringBuilder.Append), new[]
+    {
+        typeof(string)
+    });
+
     private static readonly MethodInfo ToStringMethod = typeof(StringBuilder).GetMethod(nameof(StringBuilder.ToString), Type.EmptyTypes);
     private static readonly ConstructorInfo StringBuilderConstructor = typeof(StringBuilder).GetConstructor(Type.EmptyTypes);
+
+    public override SpelNode RightOperand
+    {
+        get
+        {
+            if (children.Length < 2)
+            {
+                throw new InvalidOperationException("No right operand");
+            }
+
+            return children[1];
+        }
+    }
 
     public OpPlus(int startPos, int endPos, params SpelNode[] operands)
         : base("+", startPos, endPos, operands)
@@ -26,12 +43,13 @@ public class OpPlus : Operator
 
     public override ITypedValue GetValueInternal(ExpressionState state)
     {
-        var leftOp = LeftOperand;
+        SpelNode leftOp = LeftOperand;
 
         if (children.Length < 2)
         {
             // if only one operand, then this is unary plus
-            var operandOne = leftOp.GetValueInternal(state).Value;
+            object operandOne = leftOp.GetValueInternal(state).Value;
+
             if (IsNumber(operandOne))
             {
                 if (operandOne is double)
@@ -57,10 +75,10 @@ public class OpPlus : Operator
             return state.Operate(Operation.Add, operandOne, null);
         }
 
-        var operandOneValue = leftOp.GetValueInternal(state);
-        var leftOperand = operandOneValue.Value;
-        var operandTwoValue = RightOperand.GetValueInternal(state);
-        var rightOperand = operandTwoValue.Value;
+        ITypedValue operandOneValue = leftOp.GetValueInternal(state);
+        object leftOperand = operandOneValue.Value;
+        ITypedValue operandTwoValue = RightOperand.GetValueInternal(state);
+        object rightOperand = operandTwoValue.Value;
 
         if (IsNumber(leftOperand) && IsNumber(rightOperand))
         {
@@ -69,43 +87,47 @@ public class OpPlus : Operator
 
             if (leftNumber is decimal || rightNumber is decimal)
             {
-                var leftVal = leftNumber.ToDecimal(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToDecimal(CultureInfo.InvariantCulture);
+                decimal leftVal = leftNumber.ToDecimal(CultureInfo.InvariantCulture);
+                decimal rightVal = rightNumber.ToDecimal(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
-            else if (leftNumber is double || rightNumber is double)
+
+            if (leftNumber is double || rightNumber is double)
             {
                 exitTypeDescriptor = TypeDescriptor.D;
-                var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
+                double rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
-            else if (leftNumber is float || rightNumber is float)
+
+            if (leftNumber is float || rightNumber is float)
             {
                 exitTypeDescriptor = TypeDescriptor.F;
-                var leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
+                float leftVal = leftNumber.ToSingle(CultureInfo.InvariantCulture);
+                float rightVal = rightNumber.ToSingle(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
-            else if (leftNumber is long || rightNumber is long)
+
+            if (leftNumber is long || rightNumber is long)
             {
                 exitTypeDescriptor = TypeDescriptor.J;
-                var leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
+                long leftVal = leftNumber.ToInt64(CultureInfo.InvariantCulture);
+                long rightVal = rightNumber.ToInt64(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
-            else if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
+
+            if (CodeFlow.IsIntegerForNumericOp(leftNumber) || CodeFlow.IsIntegerForNumericOp(rightNumber))
             {
                 exitTypeDescriptor = TypeDescriptor.I;
-                var leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
+                int leftVal = leftNumber.ToInt32(CultureInfo.InvariantCulture);
+                int rightVal = rightNumber.ToInt32(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
             else
             {
                 // Unknown Number subtypes -> best guess is double addition
-                var leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
-                var rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
+                double leftVal = leftNumber.ToDouble(CultureInfo.InvariantCulture);
+                double rightVal = rightNumber.ToDouble(CultureInfo.InvariantCulture);
                 return new TypedValue(leftVal + rightVal);
             }
         }
@@ -140,19 +162,6 @@ public class OpPlus : Operator
         return base.ToStringAst();
     }
 
-    public override SpelNode RightOperand
-    {
-        get
-        {
-            if (children.Length < 2)
-            {
-                throw new InvalidOperationException("No right operand");
-            }
-
-            return children[1];
-        }
-    }
-
     public override bool IsCompilable()
     {
         if (!LeftOperand.IsCompilable())
@@ -180,19 +189,21 @@ public class OpPlus : Operator
         else
         {
             children[0].GenerateCode(gen, cf);
-            var leftDesc = children[0].ExitDescriptor;
-            var exitDesc = exitTypeDescriptor;
+            TypeDescriptor leftDesc = children[0].ExitDescriptor;
+            TypeDescriptor exitDesc = exitTypeDescriptor;
+
             if (exitDesc == null)
             {
                 throw new InvalidOperationException("No exit type descriptor");
             }
 
             CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, leftDesc, exitDesc);
+
             if (children.Length > 1)
             {
                 cf.EnterCompilationScope();
                 children[1].GenerateCode(gen, cf);
-                var rightDesc = children[1].ExitDescriptor;
+                TypeDescriptor rightDesc = children[1].ExitDescriptor;
                 cf.ExitCompilationScope();
                 CodeFlow.InsertNumericUnboxOrPrimitiveTypeCoercion(gen, rightDesc, exitDesc);
                 gen.Emit(OpCodes.Add);
@@ -204,11 +215,12 @@ public class OpPlus : Operator
 
     private static string ConvertTypedValueToString(ITypedValue value, ExpressionState state)
     {
-        var typeConverter = state.EvaluationContext.TypeConverter;
-        var typeDescriptor = typeof(string);
+        ITypeConverter typeConverter = state.EvaluationContext.TypeConverter;
+        Type typeDescriptor = typeof(string);
+
         if (typeConverter.CanConvert(value.TypeDescriptor, typeDescriptor))
         {
-            var val = typeConverter.ConvertValue(value.Value, value.TypeDescriptor, typeDescriptor);
+            object val = typeConverter.ConvertValue(value.Value, value.TypeDescriptor, typeDescriptor);
             return val == null ? "null" : val.ToString();
         }
 
@@ -226,6 +238,7 @@ public class OpPlus : Operator
         {
             cf.EnterCompilationScope();
             operand.GenerateCode(gen, cf);
+
             if (cf.LastDescriptor() != TypeDescriptor.String)
             {
                 gen.Emit(OpCodes.Castclass, typeof(string));

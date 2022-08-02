@@ -41,17 +41,17 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> superCmd3 = new SuperCommand("no-cache", true);
         Assert.Equal(1, superCmd3.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        var reqLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, reqLog.AllExecutedCommands.Count);
         var infos = new List<IHystrixInvokableInfo>(reqLog.AllExecutedCommands);
-        var info1 = infos[0];
+        IHystrixInvokableInfo info1 = infos[0];
         Assert.Equal("SuperCommand", info1.CommandKey.Name);
         Assert.Single(info1.ExecutionEvents);
-        var info2 = infos[1];
+        IHystrixInvokableInfo info2 = infos[1];
         Assert.Equal("SuperCommand", info2.CommandKey.Name);
         Assert.Equal(2, info2.ExecutionEvents.Count);
         Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
-        var info3 = infos[2];
+        IHystrixInvokableInfo info3 = infos[2];
         Assert.Equal("SuperCommand", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);
     }
@@ -66,18 +66,18 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> subCmd3 = new SubCommandNoOverride("no-cache", true);
         Assert.Equal(1, subCmd3.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        var reqLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(3, reqLog.AllExecutedCommands.Count);
         var infos = new List<IHystrixInvokableInfo>(reqLog.AllExecutedCommands);
 
-        var info1 = infos[0];
+        IHystrixInvokableInfo info1 = infos[0];
         Assert.Equal("SubCommandNoOverride", info1.CommandKey.Name);
         Assert.Single(info1.ExecutionEvents);
-        var info2 = infos[1];
+        IHystrixInvokableInfo info2 = infos[1];
         Assert.Equal("SubCommandNoOverride", info2.CommandKey.Name);
         Assert.Equal(2, info2.ExecutionEvents.Count);
         Assert.Equal(HystrixEventType.ResponseFromCache, info2.ExecutionEvents[1]);
-        var info3 = infos[2];
+        IHystrixInvokableInfo info3 = infos[2];
         Assert.Equal("SubCommandNoOverride", info3.CommandKey.Name);
         Assert.Single(info3.ExecutionEvents);
     }
@@ -88,9 +88,9 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> superCmd = new SuperCommand("cache", true);
         Assert.Equal(1, superCmd.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        var reqLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(1, reqLog.AllExecutedCommands.Count);
-        var info = reqLog.AllExecutedCommands.ToList()[0];
+        IHystrixInvokableInfo info = reqLog.AllExecutedCommands.ToList()[0];
         Assert.Equal("SuperCommand", info.CommandKey.Name);
     }
 
@@ -100,15 +100,17 @@ public class HystrixSubclassCommandTest : HystrixTestBase
         HystrixCommand<int> subCmd = new SubCommandNoOverride("cache", true);
         Assert.Equal(1, subCmd.Execute());
         _output.WriteLine("REQ LOG : " + HystrixRequestLog.CurrentRequestLog.GetExecutedCommandsAsString());
-        var reqLog = HystrixRequestLog.CurrentRequestLog;
+        HystrixRequestLog reqLog = HystrixRequestLog.CurrentRequestLog;
         Assert.Equal(1, reqLog.AllExecutedCommands.Count);
-        var info = reqLog.AllExecutedCommands.ToList()[0];
+        IHystrixInvokableInfo info = reqLog.AllExecutedCommands.ToList()[0];
         Assert.Equal("SubCommandNoOverride", info.CommandKey.Name);
     }
 
     private class SuperCommand : HystrixCommand<int>
     {
         private readonly bool _shouldSucceed;
+
+        protected override string CacheKey { get; }
 
         public SuperCommand(string uniqueArg, bool shouldSucceed)
             : base(GroupKey)
@@ -124,18 +126,14 @@ public class HystrixSubclassCommandTest : HystrixTestBase
             {
                 return 1;
             }
-            else
-            {
-                throw new Exception("unit test failure");
-            }
+
+            throw new Exception("unit test failure");
         }
 
         protected override int RunFallback()
         {
             return 2;
         }
-
-        protected override string CacheKey { get; }
     }
 
     private sealed class SubCommandNoOverride : SuperCommand

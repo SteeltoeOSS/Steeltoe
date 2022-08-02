@@ -8,6 +8,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Support;
 
 public class StandardTypeConverter : ITypeConverter
 {
+    public IConversionService ConversionService { get; set; }
+
     public StandardTypeConverter()
     {
         ConversionService = DefaultConversionService.Singleton;
@@ -17,8 +19,6 @@ public class StandardTypeConverter : ITypeConverter
     {
         ConversionService = conversionService ?? throw new ArgumentNullException(nameof(conversionService));
     }
-
-    public IConversionService ConversionService { get; set; }
 
     public bool CanConvert(Type sourceType, Type targetType)
     {
@@ -33,7 +33,8 @@ public class StandardTypeConverter : ITypeConverter
         }
         catch (ConversionException ex)
         {
-            var message = "null";
+            string message = "null";
+
             if (sourceType != null)
             {
                 message = sourceType.ToString();

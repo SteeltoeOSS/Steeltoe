@@ -18,16 +18,24 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds options and services to use Cloud Foundry container identity certificates.
     /// </summary>
-    /// <param name="services">Service collection.</param>
-    /// <param name="configuration">Application Configuration.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Application Configuration.
+    /// </param>
     [Obsolete("The IConfiguration parameter is not used")]
     public static void AddCloudFoundryContainerIdentity(this IServiceCollection services, IConfiguration configuration)
-        => AddCloudFoundryContainerIdentity(services);
+    {
+        AddCloudFoundryContainerIdentity(services);
+    }
 
     /// <summary>
     /// Adds options and services to use Cloud Foundry container identity certificates.
     /// </summary>
-    /// <param name="services">Service collection.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
     public static void AddCloudFoundryContainerIdentity(this IServiceCollection services)
     {
         if (services == null)
@@ -48,42 +56,71 @@ public static class ServiceCollectionExtensions
     /// <summary>
     /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
     /// </summary>
-    /// <param name="services">Service collection.</param>
-    /// <param name="configuration">Application Configuration.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="configuration">
+    /// Application Configuration.
+    /// </param>
     [Obsolete("The IConfiguration parameter is not used")]
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, IConfiguration configuration)
-        => AddCloudFoundryCertificateAuth(services);
+    {
+        AddCloudFoundryCertificateAuth(services);
+    }
 
     /// <summary>
     /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
     /// </summary>
-    /// <param name="services">Service collection.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services)
-        => AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme);
+    {
+        AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme);
+    }
 
     /// <summary>
     /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
     /// </summary>
-    /// <param name="services">Service collection.</param>
-    /// <param name="configurer">Used to configure the <see cref="MutualTlsAuthenticationOptions"/>.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="configurer">
+    /// Used to configure the <see cref="MutualTlsAuthenticationOptions" />.
+    /// </param>
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, Action<MutualTlsAuthenticationOptions> configurer)
-        => AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme, configurer);
+    {
+        AddCloudFoundryCertificateAuth(services, CertificateAuthenticationDefaults.AuthenticationScheme, configurer);
+    }
 
     /// <summary>
     /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
     /// </summary>
-    /// <param name="services">Service collection.</param>
-    /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme"/>.</param>
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="authenticationScheme">
+    /// An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme" />.
+    /// </param>
     public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme)
-        => AddCloudFoundryCertificateAuth(services, authenticationScheme, null);
+    {
+        AddCloudFoundryCertificateAuth(services, authenticationScheme, null);
+    }
 
     /// <summary>
     /// Adds options and services for Cloud Foundry container identity certificates along with certificate-based authentication and authorization.
     /// </summary>
-    /// <param name="services">Service collection.</param>
-    /// <param name="authenticationScheme">An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme"/>.</param>
-    /// <param name="configurer">Used to configure the <see cref="MutualTlsAuthenticationOptions"/>.</param>
-    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme, Action<MutualTlsAuthenticationOptions> configurer)
+    /// <param name="services">
+    /// Service collection.
+    /// </param>
+    /// <param name="authenticationScheme">
+    /// An identifier for this authentication mechanism. Default value is <see cref="CertificateAuthenticationDefaults.AuthenticationScheme" />.
+    /// </param>
+    /// <param name="configurer">
+    /// Used to configure the <see cref="MutualTlsAuthenticationOptions" />.
+    /// </param>
+    public static void AddCloudFoundryCertificateAuth(this IServiceCollection services, string authenticationScheme,
+        Action<MutualTlsAuthenticationOptions> configurer)
     {
         if (services is null)
         {
@@ -92,9 +129,7 @@ public static class ServiceCollectionExtensions
 
         services.AddCloudFoundryContainerIdentity();
 
-        services
-            .AddAuthentication(authenticationScheme)
-            .AddCloudFoundryIdentityCertificate(authenticationScheme, configurer);
+        services.AddAuthentication(authenticationScheme).AddCloudFoundryIdentityCertificate(authenticationScheme, configurer);
 
         services.AddAuthorization(cfg =>
         {

@@ -19,12 +19,14 @@ public class ServiceFactoryResolver : IServiceResolver
     {
         Type result = null;
         name = serviceName;
+
         if (serviceName.StartsWith("T(") && context.TypeLocator != null)
         {
-            var endParen = serviceName.LastIndexOf(")");
+            int endParen = serviceName.LastIndexOf(")");
+
             if (endParen > 0)
             {
-                var serviceTypeName = serviceName.Substring(2, endParen - 2);
+                string serviceTypeName = serviceName.Substring(2, endParen - 2);
                 result = context.TypeLocator.FindType(serviceTypeName);
                 name = serviceName.Substring(endParen + 1);
             }
@@ -37,8 +39,8 @@ public class ServiceFactoryResolver : IServiceResolver
     {
         try
         {
-            var serviceType = GetServiceNameAndType(context, serviceName, out var lookupName);
-            var result = serviceType != null ? _applicationContext.GetService(lookupName, serviceType) : _applicationContext.GetService(serviceName);
+            Type serviceType = GetServiceNameAndType(context, serviceName, out string lookupName);
+            object result = serviceType != null ? _applicationContext.GetService(lookupName, serviceType) : _applicationContext.GetService(serviceName);
 
             if (result == null)
             {

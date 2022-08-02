@@ -8,6 +8,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal sealed class RequestCacheNullPointerExceptionCase : TestHystrixCommand<bool>
 {
+    protected override string CacheKey => "A";
+
     public RequestCacheNullPointerExceptionCase(TestCircuitBreaker circuitBreaker)
         : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetCommandOptionDefaults(GetTestOptions(HystrixCommandOptionsTest.GetUnitTestOptions())))
@@ -26,11 +28,6 @@ internal sealed class RequestCacheNullPointerExceptionCase : TestHystrixCommand<
     protected override bool RunFallback()
     {
         return false;
-    }
-
-    protected override string CacheKey
-    {
-        get { return "A"; }
     }
 
     private static HystrixCommandOptions GetTestOptions(HystrixCommandOptions hystrixCommandOptions)

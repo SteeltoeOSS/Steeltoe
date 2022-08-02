@@ -19,7 +19,11 @@ public interface IServiceInstanceProvider
     /// <summary>
     /// Get all ServiceInstances associated with a particular serviceId.
     /// </summary>
-    /// <param name="serviceId">the serviceId to lookup.</param>
-    /// <returns>List of service instances.</returns>
+    /// <param name="serviceId">
+    /// the serviceId to lookup.
+    /// </param>
+    /// <returns>
+    /// List of service instances.
+    /// </returns>
     IList<IServiceInstance> GetInstances(string serviceId);
 }

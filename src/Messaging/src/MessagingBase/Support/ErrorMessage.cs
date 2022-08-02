@@ -6,6 +6,8 @@ namespace Steeltoe.Messaging.Support;
 
 public class ErrorMessage : Message<Exception>
 {
+    public IMessage OriginalMessage { get; }
+
     public ErrorMessage(Exception payload)
         : base(payload)
     {
@@ -41,8 +43,6 @@ public class ErrorMessage : Message<Exception>
     {
         OriginalMessage = originalMessage;
     }
-
-    public IMessage OriginalMessage { get; }
 
     public override string ToString()
     {

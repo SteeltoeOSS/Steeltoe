@@ -11,12 +11,12 @@ namespace Steeltoe.Stream.Binding;
 
 public class BindingService : IBindingService
 {
-    internal IDictionary<string, IBinding> ProducerBindings = new Dictionary<string, IBinding>();
-    internal IDictionary<string, List<IBinding>> ConsumerBindings = new Dictionary<string, List<IBinding>>();
     private readonly IBinderFactory _binderFactory;
     private readonly BindingServiceOptions _bindingServiceOptions;
     private readonly IOptionsMonitor<BindingServiceOptions> _optionsMonitor;
     private readonly ILogger<BindingService> _logger;
+    internal IDictionary<string, IBinding> ProducerBindings = new Dictionary<string, IBinding>();
+    internal IDictionary<string, List<IBinding>> ConsumerBindings = new Dictionary<string, List<IBinding>>();
 
     public BindingServiceOptions Options
     {
@@ -48,22 +48,29 @@ public class BindingService : IBindingService
     public ICollection<IBinding> BindConsumer<T>(T inputChannel, string name)
     {
         var bindings = new List<IBinding>();
-        var binder = GetBinder<T>(name);
+        IBinder binder = GetBinder<T>(name);
         IConsumerOptions consumerOptions = Options.GetConsumerOptions(name);
 
         ValidateOptions(consumerOptions);
 
-        var bindingTarget = Options.GetBindingDestination(name);
+        string bindingTarget = Options.GetBindingDestination(name);
+
         if (consumerOptions.Multiplex)
         {
             bindings.Add(DoBindConsumer(inputChannel, name, binder, consumerOptions, bindingTarget));
         }
         else
         {
-            var bindingTargets = bindingTarget == null ? Array.Empty<string>() : bindingTarget.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var target in bindingTargets)
+            string[] bindingTargets = bindingTarget == null
+                ? Array.Empty<string>()
+                : bindingTarget.Split(new[]
+                {
+                    ','
+                }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string target in bindingTargets)
             {
-                var binding = DoBindConsumer(inputChannel, name, binder, consumerOptions, target);
+                IBinding binding = DoBindConsumer(inputChannel, name, binder, consumerOptions, target);
                 bindings.Add(binding);
             }
         }
@@ -74,11 +81,11 @@ public class BindingService : IBindingService
 
     public IBinding BindProducer<T>(T outputChannel, string name)
     {
-        var bindingTarget = Options.GetBindingDestination(name);
-        var binder = GetBinder<T>(name);
-        var producerOptions = Options.GetProducerOptions(name);
+        string bindingTarget = Options.GetBindingDestination(name);
+        IBinder binder = GetBinder<T>(name);
+        ProducerOptions producerOptions = Options.GetProducerOptions(name);
         ValidateOptions(producerOptions);
-        var binding = DoBindProducer(outputChannel, bindingTarget, binder, producerOptions);
+        IBinding binding = DoBindProducer(outputChannel, bindingTarget, binder, producerOptions);
         ProducerBindings[name] = binding;
         return binding;
     }
@@ -89,10 +96,8 @@ public class BindingService : IBindingService
         {
             return binder.BindConsumer(bindingTarget, Options.GetGroup(name), inputTarget, consumerOptions);
         }
-        else
-        {
-            return DoBindConsumerWithRetry(inputTarget, name, binder, consumerOptions, bindingTarget);
-        }
+
+        return DoBindConsumerWithRetry(inputTarget, name, binder, consumerOptions, bindingTarget);
     }
 
     public IBinding DoBindConsumerWithRetry<T>(T inputChan, string name, IBinder binder, IConsumerOptions consumerOptions, string bindingTarget)
@@ -119,10 +124,8 @@ public class BindingService : IBindingService
         {
             return binder.BindProducer(bindingTarget, outputChan, producerOptions);
         }
-        else
-        {
-            return DoBindProducerWithRetry(outputChan, bindingTarget, binder, producerOptions);
-        }
+
+        return DoBindProducerWithRetry(outputChan, bindingTarget, binder, producerOptions);
     }
 
     public IBinding DoBindProducerWithRetry<T>(T outputChan, string bindingTarget, IBinder binder, IProducerOptions producerOptions)
@@ -145,36 +148,29 @@ public class BindingService : IBindingService
 
     public void UnbindProducers(string outputName)
     {
-        if (ProducerBindings.TryGetValue(outputName, out var binding))
+        if (ProducerBindings.TryGetValue(outputName, out IBinding binding))
         {
             ProducerBindings.Remove(outputName);
             binding.Unbind();
-        }
-        else
-        {
-            // Log failure
         }
     }
 
     public void UnbindConsumers(string inputName)
     {
-        if (ConsumerBindings.TryGetValue(inputName, out var bindings))
+        if (ConsumerBindings.TryGetValue(inputName, out List<IBinding> bindings))
         {
             ConsumerBindings.Remove(inputName);
-            foreach (var binding in bindings)
+
+            foreach (IBinding binding in bindings)
             {
                 binding.Unbind();
             }
-        }
-        else
-        {
-            // Log
         }
     }
 
     protected IBinder GetBinder<T>(string channelName)
     {
-        var configName = Options.GetBinder(channelName);
+        string configName = Options.GetBinder(channelName);
         return _binderFactory.GetBinder(configName, typeof(T));
     }
 

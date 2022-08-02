@@ -14,29 +14,29 @@ namespace Steeltoe.Discovery.Client.Test;
 
 public class DiscoveryHostBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string> EurekaSettings = new ()
+    private static readonly Dictionary<string, string> EurekaSettings = new()
     {
         ["eureka:client:shouldRegister"] = "true",
         ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "0",
-        ["eureka:client:eurekaServer:retryCount"] = "0",
+        ["eureka:client:eurekaServer:retryCount"] = "0"
     };
 
-    private static readonly Dictionary<string, string> ConsulSettings = new ()
+    private static readonly Dictionary<string, string> ConsulSettings = new()
     {
         ["consul:discovery:serviceName"] = "testhost",
         ["consul:discovery:enabled"] = "true",
         ["consul:discovery:failfast"] = "false",
-        ["consul:discovery:register"] = "false",
+        ["consul:discovery:register"] = "false"
     };
 
     [Fact]
     public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Eureka()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
-        var host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
-        var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-        var hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
+        IHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).Build();
+        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        IHostedService hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
         Assert.Single(discoveryClient);
         Assert.IsType<EurekaDiscoveryClient>(discoveryClient.First());
@@ -47,7 +47,7 @@ public class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public async Task AddServiceDiscovery_IHostBuilder_StartsUp()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
 
         await hostBuilder.AddServiceDiscovery(builder => builder.UseEureka()).StartAsync();
 
@@ -57,11 +57,11 @@ public class DiscoveryHostBuilderExtensionsTest
     [Fact]
     public void AddServiceDiscovery_IHostBuilder_AddsServiceDiscovery_Consul()
     {
-        var hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
+        IHostBuilder hostBuilder = new HostBuilder().ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(ConsulSettings));
 
-        var host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
-        var discoveryClient = host.Services.GetServices<IDiscoveryClient>();
-        var hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
+        IHost host = hostBuilder.AddServiceDiscovery(builder => builder.UseConsul()).Build();
+        IEnumerable<IDiscoveryClient> discoveryClient = host.Services.GetServices<IDiscoveryClient>();
+        IHostedService hostedService = host.Services.GetServices<IHostedService>().FirstOrDefault();
 
         Assert.Single(discoveryClient);
         Assert.IsType<ConsulDiscoveryClient>(discoveryClient.First());

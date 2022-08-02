@@ -2,6 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,9 +15,6 @@ using Steeltoe.Messaging.RabbitMQ.Config;
 using Steeltoe.Messaging.RabbitMQ.Connection;
 using Steeltoe.Messaging.RabbitMQ.Exceptions;
 using Steeltoe.Messaging.RabbitMQ.Extensions;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
 using Xunit;
 using static Steeltoe.Messaging.RabbitMQ.Config.Binding;
 using RC = RabbitMQ.Client;
@@ -37,14 +37,16 @@ public class RabbitAdminTest : AbstractTest
     public void TestNoFailOnStartupWithMissingBroker()
 #pragma warning restore S2699 // Tests should include assertions
     {
-        var serviceCollection = CreateContainer();
+        ServiceCollection serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
+
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "foo";
             f.Port = 434343;
         });
-        var provider = serviceCollection.BuildServiceProvider();
+
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
@@ -52,27 +54,31 @@ public class RabbitAdminTest : AbstractTest
         {
             AutoStartup = true
         };
+
         connectionFactory.Destroy();
     }
 
     [Fact]
     public void TestFailOnFirstUseWithMissingBroker()
     {
-        var serviceCollection = CreateContainer();
+        ServiceCollection serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("foo"));
+
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
             f.Port = 434343;
         });
 
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
+
         var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory)
         {
             AutoStartup = true
         };
+
         Assert.Throws<RabbitConnectException>(() => rabbitAdmin.DeclareQueue());
         connectionFactory.Destroy();
     }
@@ -80,32 +86,37 @@ public class RabbitAdminTest : AbstractTest
     [Fact]
     public async Task TestGetQueueProperties()
     {
-        var serviceCollection = CreateContainer();
+        ServiceCollection serviceCollection = CreateContainer();
+
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
-        var provider = serviceCollection.BuildServiceProvider();
+
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
         var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory);
-        var queueName = $"test.properties.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+        string queueName = $"test.properties.{DateTimeOffset.Now.ToUnixTimeMilliseconds()}";
+
         try
         {
             rabbitAdmin.DeclareQueue(new Queue(queueName));
             var template = new RabbitTemplate(connectionFactory);
             template.ConvertAndSend(queueName, "foo");
-            var n = 0;
+            int n = 0;
+
             while (n++ < 100 && MessageCount(rabbitAdmin, queueName) == 0)
             {
                 await Task.Delay(100);
             }
 
             Assert.True(n < 100);
-            var channel = connectionFactory.CreateConnection().CreateChannel();
+            RC.IModel channel = connectionFactory.CreateConnection().CreateChannel();
             var consumer = new RC.DefaultBasicConsumer(channel);
             RC.IModelExensions.BasicConsume(channel, queueName, true, consumer);
             n = 0;
+
             while (n++ < 100 && MessageCount(rabbitAdmin, queueName) > 0)
             {
                 await Task.Delay(100);
@@ -113,8 +124,8 @@ public class RabbitAdminTest : AbstractTest
 
             Assert.True(n < 100);
 
-            var props = rabbitAdmin.GetQueueProperties(queueName);
-            Assert.True(props.TryGetValue(RabbitAdmin.QueueConsumerCount, out var consumerCount));
+            Dictionary<string, object> props = rabbitAdmin.GetQueueProperties(queueName);
+            Assert.True(props.TryGetValue(RabbitAdmin.QueueConsumerCount, out object consumerCount));
             Assert.Equal(1U, consumerCount);
             channel.Close();
         }
@@ -128,7 +139,7 @@ public class RabbitAdminTest : AbstractTest
     [Fact]
     public void TestTemporaryLogs()
     {
-        var serviceCollection = CreateContainer();
+        ServiceCollection serviceCollection = CreateContainer();
         serviceCollection.AddRabbitQueue(new Queue("testq.nonDur", false, false, false));
         serviceCollection.AddRabbitQueue(new Queue("testq.ad", true, false, true));
         serviceCollection.AddRabbitQueue(new Queue("testq.excl", true, true, false));
@@ -136,21 +147,25 @@ public class RabbitAdminTest : AbstractTest
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.nonDur", false, false));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.ad", true, true));
         serviceCollection.AddRabbitExchange(new DirectExchange("testex.all", false, true));
+
         serviceCollection.AddRabbitConnectionFactory<SingleConnectionFactory>((_, f) =>
         {
             f.Host = "localhost";
         });
-        var provider = serviceCollection.BuildServiceProvider();
+
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
         var applicationContext = provider.GetService<IApplicationContext>();
         var connectionFactory = applicationContext.GetService<IConnectionFactory>();
 
         var logs = new List<string>();
         var mockLogger = new Mock<ILogger>();
-        mockLogger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()))
-            .Callback(new InvocationAction(invocation =>
-            {
-                logs.Add(invocation.Arguments[2].ToString());
-            }));
+
+        mockLogger.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(),
+            (Func<It.IsAnyType, Exception, string>)It.IsAny<object>())).Callback(new InvocationAction(invocation =>
+        {
+            logs.Add(invocation.Arguments[2].ToString());
+        }));
+
         var rabbitAdmin = new RabbitAdmin(applicationContext, connectionFactory, mockLogger.Object);
 
         try
@@ -184,32 +199,25 @@ public class RabbitAdminTest : AbstractTest
         serviceCollection.AddRabbitExchange(e1);
         var q1 = new Queue("q1", false, false, true);
         serviceCollection.AddRabbitQueue(q1);
-        var binding = BindingBuilder.Bind(q1).To(e1).With("k1");
+        IBinding binding = BindingBuilder.Bind(q1).To(e1).With("k1");
         serviceCollection.AddRabbitBinding(binding);
-        var es = new Declarables(
-            "es",
-            new DirectExchange("e2", false, true),
-            new DirectExchange("e3", false, true));
+        var es = new Declarables("es", new DirectExchange("e2", false, true), new DirectExchange("e3", false, true));
         serviceCollection.AddSingleton(es);
-        var qs = new Declarables(
-            "qs",
-            new Queue("q2", false, false, true),
-            new Queue("q3", false, false, true));
+        var qs = new Declarables("qs", new Queue("q2", false, false, true), new Queue("q3", false, false, true));
         serviceCollection.AddSingleton(qs);
-        var bs = new Declarables(
-            "bs",
-            new Binding("b1", "q2", DestinationType.Queue, "e2", "k2", null),
+
+        var bs = new Declarables("bs", new Binding("b1", "q2", DestinationType.Queue, "e2", "k2", null),
             new Binding("b2", "q3", DestinationType.Queue, "e3", "k3", null));
+
         serviceCollection.AddSingleton(bs);
-        var ds = new Declarables(
-            "ds",
-            new DirectExchange("e4", false, true),
-            new Queue("q4", false, false, true),
+
+        var ds = new Declarables("ds", new DirectExchange("e4", false, true), new Queue("q4", false, false, true),
             new Binding("b3", "q4", DestinationType.Queue, "e4", "k4", null));
+
         serviceCollection.AddSingleton(ds);
-        var provider = serviceCollection.BuildServiceProvider();
-        var admin = provider.GetRabbitAdmin();
-        var template = admin.RabbitTemplate;
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
+        RabbitAdmin admin = provider.GetRabbitAdmin();
+        RabbitTemplate template = admin.RabbitTemplate;
         template.ConvertAndSend("e1", "k1", "foo");
         template.ConvertAndSend("e2", "k2", "bar");
         template.ConvertAndSend("e3", "k3", "baz");
@@ -230,13 +238,13 @@ public class RabbitAdminTest : AbstractTest
         var ctx = provider.GetService<IApplicationContext>();
         var mixedDeclarables = ctx.GetService<Declarables>("ds");
         Assert.NotNull(mixedDeclarables);
-        var queues = mixedDeclarables.GetDeclarablesByType<IQueue>();
+        IEnumerable<IQueue> queues = mixedDeclarables.GetDeclarablesByType<IQueue>();
         Assert.Single(queues);
         Assert.Equal("q4", queues.Single().QueueName);
-        var exchanges = mixedDeclarables.GetDeclarablesByType<IExchange>();
+        IEnumerable<IExchange> exchanges = mixedDeclarables.GetDeclarablesByType<IExchange>();
         Assert.Single(exchanges);
         Assert.Equal("e4", exchanges.Single().ExchangeName);
-        var bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
+        IEnumerable<IBinding> bindings = mixedDeclarables.GetDeclarablesByType<IBinding>();
         Assert.Single(bindings);
         Assert.Equal("q4", bindings.Single().Destination);
         provider.Dispose();
@@ -247,8 +255,9 @@ public class RabbitAdminTest : AbstractTest
     {
         var cf = new CachingConnectionFactory("localhost");
         var admin = new RabbitAdmin(cf);
-        var bytes = new byte[300];
-        var longName = Encoding.UTF8.GetString(bytes).Replace('\u0000', 'x');
+        byte[] bytes = new byte[300];
+        string longName = Encoding.UTF8.GetString(bytes).Replace('\u0000', 'x');
+
         try
         {
             admin.DeclareQueue(new Queue(longName));
@@ -259,7 +268,7 @@ public class RabbitAdminTest : AbstractTest
             // Ignore
         }
 
-        var goodName = "foobar";
+        string goodName = "foobar";
         admin.DeclareQueue(new Queue(goodName));
         Assert.Null(admin.GetQueueProperties(longName));
         Assert.NotNull(admin.GetQueueProperties(goodName));
@@ -274,13 +283,14 @@ public class RabbitAdminTest : AbstractTest
         var toBeThrown = new TimeoutException("test");
         rabbitConnectionFactory.Setup(c => c.CreateConnection(It.IsAny<string>())).Throws(toBeThrown);
         var ccf = new CachingConnectionFactory(rabbitConnectionFactory.Object);
+
         var admin = new RabbitAdmin(ccf)
         {
             IgnoreDeclarationExceptions = true
         };
 
         admin.DeclareQueue(new AnonymousQueue("test"));
-        var lastEvent = admin.LastDeclarationExceptionEvent;
+        DeclarationExceptionEvent lastEvent = admin.LastDeclarationExceptionEvent;
         Assert.Same(admin, lastEvent.Source);
         Assert.Same(toBeThrown, lastEvent.Exception.InnerException);
         Assert.IsType<AnonymousQueue>(lastEvent.Declarable);
@@ -316,7 +326,10 @@ public class RabbitAdminTest : AbstractTest
 
         connection.SetupSequence(c => c.CreateChannel(false)).Returns(channel1.Object).Returns(channel2.Object);
         var declareOk = new RC.QueueDeclareOk("foo", 0, 0);
-        channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Returns(declareOk);
+
+        channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            .Returns(declareOk);
+
         var template = new RabbitTemplate(connectionFactory.Object);
         var admin = new RabbitAdmin(template);
 
@@ -328,8 +341,12 @@ public class RabbitAdminTest : AbstractTest
             admin.DeclareQueue();
             return null;
         });
+
         connection.Verify(c => c.CreateChannel(false), Times.Once);
-        channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(4));
+
+        channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Exactly(4));
+
         channel1.Verify(c => c.Close(), Times.Once);
         channel2.VerifyNoOtherCalls();
     }
@@ -345,22 +362,29 @@ public class RabbitAdminTest : AbstractTest
         var channel1 = new Mock<RC.IModel>();
         channel1.Setup(c => c.IsOpen).Returns(true);
         connection.Setup(c => c.CreateModel()).Returns(channel1.Object);
-        channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>())).Throws<Exception>();
+
+        channel1.Setup(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()))
+            .Throws<Exception>();
+
         var ccf = new CachingConnectionFactory(connectionFactory.Object);
 
         var rtt = new PollyRetryTemplate(new Dictionary<Type, bool>(), 3, true, 1, 1, 1);
-        var serviceCollection = CreateContainer();
+        ServiceCollection serviceCollection = CreateContainer();
         serviceCollection.AddSingleton<IConnectionFactory>(ccf);
+
         serviceCollection.AddRabbitAdmin((_, a) =>
         {
             a.RetryTemplate = rtt;
         });
+
         var foo = new AnonymousQueue("foo");
         serviceCollection.AddRabbitQueue(foo);
-        var provider = serviceCollection.BuildServiceProvider();
+        ServiceProvider provider = serviceCollection.BuildServiceProvider();
         _ = provider.GetRabbitAdmin();
         Assert.Throws<RabbitUncategorizedException>(() => ccf.CreateConnection());
-        channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()), Times.Exactly(3));
+
+        channel1.Verify(c => c.QueueDeclare(It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>()),
+            Times.Exactly(3));
     }
 
     [Fact]
@@ -370,16 +394,18 @@ public class RabbitAdminTest : AbstractTest
         {
             Uri = new Uri("amqp://guest:guest@localhost:5672/")
         };
+
         var cf = new CachingConnectionFactory(factory);
         var admin = new RabbitAdmin(cf);
         var queue = new AnonymousQueue();
         admin.DeclareQueue(queue);
         var client = new HttpClient();
-        var authToken = Encoding.ASCII.GetBytes("guest:guest");
+        byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
 
-        var result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
-        var n = 0;
+        HttpResponseMessage result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
+        int n = 0;
+
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
@@ -387,7 +413,7 @@ public class RabbitAdminTest : AbstractTest
         }
 
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
-        var content = await result.Content.ReadAsStringAsync();
+        string content = await result.Content.ReadAsStringAsync();
         Assert.Contains("x-queue-master-locator", content);
         Assert.Contains("client-local", content);
 
@@ -395,10 +421,12 @@ public class RabbitAdminTest : AbstractTest
         {
             MasterLocator = null
         };
+
         admin.DeclareQueue(queue);
 
         result = await client.GetAsync($"http://localhost:15672/api/queues/%3F/{queue.QueueName}");
         n = 0;
+
         while (n++ < 100 && result.StatusCode == HttpStatusCode.NotFound)
         {
             await Task.Delay(100);
@@ -425,7 +453,7 @@ public class RabbitAdminTest : AbstractTest
 
     private uint MessageCount(RabbitAdmin rabbitAdmin, string queueName)
     {
-        var info = rabbitAdmin.GetQueueInfo(queueName);
+        QueueInformation info = rabbitAdmin.GetQueueInfo(queueName);
         Assert.NotNull(info);
         return info.MessageCount;
     }

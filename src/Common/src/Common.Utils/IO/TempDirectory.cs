@@ -10,9 +10,11 @@ namespace Steeltoe.Common.Utils.IO;
 public class TempDirectory : TempPath
 {
     /// <summary>
-    /// Initializes a new instance of the <see cref="TempDirectory"/> class.
+    /// Initializes a new instance of the <see cref="TempDirectory" /> class.
     /// </summary>
-    /// <param name="prefix">Temporary directory prefix.</param>
+    /// <param name="prefix">
+    /// Temporary directory prefix.
+    /// </param>
     public TempDirectory(string prefix = null)
         : base(prefix)
     {
@@ -26,7 +28,7 @@ public class TempDirectory : TempPath
         Directory.CreateDirectory(FullPath);
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     protected override void Dispose(bool disposing)
     {
         if (disposing)

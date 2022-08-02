@@ -2,17 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
-
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.RabbitMQ.Core;
 using Steeltoe.Messaging.RabbitMQ.Support;
-using System.Collections.Concurrent;
 using static Steeltoe.Messaging.RabbitMQ.Connection.CorrelationData;
 using static Steeltoe.Messaging.RabbitMQ.Connection.IPublisherCallbackChannel;
-using RC=RabbitMQ.Client;
+using RC = RabbitMQ.Client;
 
 namespace Steeltoe.Messaging.RabbitMQ.Connection;
 
@@ -21,15 +20,88 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     public const string ReturnedMessageCorrelationKey = "spring_returned_message_correlation";
     public const string ReturnListenerCorrelationKey = "spring_listener_return_correlation";
     public const string ReturnListenerError = $"No '{ReturnListenerCorrelationKey}' header in returned message";
-    private readonly List<PendingConfirm> _emptyConfirms = new ();
+    private readonly List<PendingConfirm> _emptyConfirms = new();
     private readonly IMessageHeadersConverter _converter = new DefaultMessageHeadersConverter();
     private readonly ILogger _logger;
-    private readonly object _lock = new ();
-    private readonly ConcurrentDictionary<IListener, SortedDictionary<ulong, PendingConfirm>> _pendingConfirms = new ();
-    private readonly ConcurrentDictionary<string, IListener> _listeners = new ();
-    private readonly SortedDictionary<ulong, IListener> _listenerForSeq = new ();
-    private readonly ConcurrentDictionary<string, PendingConfirm> _pendingReturns = new ();
+    private readonly object _lock = new();
+    private readonly ConcurrentDictionary<IListener, SortedDictionary<ulong, PendingConfirm>> _pendingConfirms = new();
+    private readonly ConcurrentDictionary<string, IListener> _listeners = new();
+    private readonly SortedDictionary<ulong, IListener> _listenerForSeq = new();
+    private readonly ConcurrentDictionary<string, PendingConfirm> _pendingReturns = new();
     private Action<RC.IModel> _afterAckCallback;
+
+    public virtual RC.IModel Channel { get; }
+
+    public virtual int ChannelNumber => Channel.ChannelNumber;
+
+    public virtual RC.ShutdownEventArgs CloseReason => Channel.CloseReason;
+
+    public virtual RC.IBasicConsumer DefaultConsumer
+    {
+        get => Channel.DefaultConsumer;
+        set => Channel.DefaultConsumer = value;
+    }
+
+    public virtual bool IsClosed => Channel.IsClosed;
+
+    public virtual bool IsOpen => Channel.IsOpen;
+
+    public virtual ulong NextPublishSeqNo => Channel.NextPublishSeqNo;
+
+    public virtual TimeSpan ContinuationTimeout
+    {
+        get => Channel.ContinuationTimeout;
+        set => Channel.ContinuationTimeout = value;
+    }
+
+    public virtual event EventHandler<BasicAckEventArgs> BasicAcks
+    {
+        add => Channel.BasicAcks += value;
+
+        remove => Channel.BasicAcks -= value;
+    }
+
+    public virtual event EventHandler<BasicNackEventArgs> BasicNacks
+    {
+        add => Channel.BasicNacks += value;
+
+        remove => Channel.BasicNacks -= value;
+    }
+
+    public virtual event EventHandler<EventArgs> BasicRecoverOk
+    {
+        add => Channel.BasicRecoverOk += value;
+
+        remove => Channel.BasicRecoverOk -= value;
+    }
+
+    public virtual event EventHandler<BasicReturnEventArgs> BasicReturn
+    {
+        add => Channel.BasicReturn += value;
+
+        remove => Channel.BasicReturn -= value;
+    }
+
+    public virtual event EventHandler<CallbackExceptionEventArgs> CallbackException
+    {
+        add => Channel.CallbackException += value;
+
+        remove => Channel.CallbackException -= value;
+    }
+
+    public virtual event EventHandler<FlowControlEventArgs> FlowControl
+    {
+        add => Channel.FlowControl += value;
+
+        remove => Channel.FlowControl -= value;
+    }
+
+    public virtual event EventHandler<RC.ShutdownEventArgs> ModelShutdown
+    {
+        add => Channel.ModelShutdown += value;
+
+        remove => Channel.ModelShutdown -= value;
+    }
 
     public PublisherCallbackChannel(RC.IModel channel, ILogger logger = null)
     {
@@ -38,46 +110,45 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         channel.ModelShutdown += ShutdownCompleted;
     }
 
-    public virtual RC.IModel Channel { get; }
-
     public virtual IList<PendingConfirm> Expire(IListener listener, long cutoffTime)
     {
         lock (_lock)
         {
-            if (!_pendingConfirms.TryGetValue(listener, out var pendingConfirmsForListener))
+            if (!_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> pendingConfirmsForListener))
             {
                 return _emptyConfirms;
             }
-            else
+
+            var expired = new List<PendingConfirm>();
+            var toRemove = new List<ulong>();
+
+            foreach (KeyValuePair<ulong, PendingConfirm> kvp in pendingConfirmsForListener)
             {
-                var expired = new List<PendingConfirm>();
-                var toRemove = new List<ulong>();
-                foreach (var kvp in pendingConfirmsForListener)
+                PendingConfirm pendingConfirm = kvp.Value;
+
+                if (pendingConfirm.Timestamp < cutoffTime)
                 {
-                    var pendingConfirm = kvp.Value;
-                    if (pendingConfirm.Timestamp < cutoffTime)
+                    expired.Add(pendingConfirm);
+                    toRemove.Add(kvp.Key);
+                    CorrelationData correlationData = pendingConfirm.CorrelationInfo;
+
+                    if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
                     {
-                        expired.Add(pendingConfirm);
-                        toRemove.Add(kvp.Key);
-                        var correlationData = pendingConfirm.CorrelationInfo;
-                        if (correlationData != null && !string.IsNullOrEmpty(correlationData.Id))
-                        {
-                            _pendingReturns.Remove(correlationData.Id, out var _);
-                        }
-                    }
-                    else
-                    {
-                        break;
+                        _pendingReturns.Remove(correlationData.Id, out PendingConfirm _);
                     }
                 }
-
-                foreach (var key in toRemove)
+                else
                 {
-                    pendingConfirmsForListener.Remove(key);
+                    break;
                 }
-
-                return expired;
             }
+
+            foreach (ulong key in toRemove)
+            {
+                pendingConfirmsForListener.Remove(key);
+            }
+
+            return expired;
         }
     }
 
@@ -85,14 +156,12 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
         lock (_lock)
         {
-            if (!_pendingConfirms.TryGetValue(listener, out var pendingConfirmsForListener))
+            if (!_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> pendingConfirmsForListener))
             {
                 return 0;
             }
-            else
-            {
-                return pendingConfirmsForListener.Count;
-            }
+
+            return pendingConfirmsForListener.Count;
         }
     }
 
@@ -100,10 +169,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
         lock (_lock)
         {
-            return _pendingConfirms
-                .Values
-                .Select(p => p.Count)
-                .Sum();
+            return _pendingConfirms.Values.Select(p => p.Count).Sum();
         }
     }
 
@@ -132,16 +198,18 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
         lock (_lock)
         {
-            if (!_pendingConfirms.TryGetValue(listener, out var pendingConfirmsForListener))
+            if (!_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> pendingConfirmsForListener))
             {
                 throw new ArgumentException(nameof(listener));
             }
 
             pendingConfirmsForListener[sequence] = pendingConfirm;
             _listenerForSeq[sequence] = listener;
+
             if (pendingConfirm.CorrelationInfo != null)
             {
-                var returnCorrelation = pendingConfirm.CorrelationInfo.Id;
+                string returnCorrelation = pendingConfirm.CorrelationInfo.Id;
+
                 if (!string.IsNullOrEmpty(returnCorrelation))
                 {
                     _pendingReturns[returnCorrelation] = pendingConfirm;
@@ -162,140 +230,71 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         }
     }
 
-    public virtual int ChannelNumber => Channel.ChannelNumber;
-
-    public virtual RC.ShutdownEventArgs CloseReason => Channel.CloseReason;
-
-    public virtual RC.IBasicConsumer DefaultConsumer { get => Channel.DefaultConsumer; set => Channel.DefaultConsumer = value; }
-
-    public virtual bool IsClosed => Channel.IsClosed;
-
-    public virtual bool IsOpen => Channel.IsOpen;
-
-    public virtual ulong NextPublishSeqNo => Channel.NextPublishSeqNo;
-
-    public virtual TimeSpan ContinuationTimeout { get => Channel.ContinuationTimeout; set => Channel.ContinuationTimeout = value; }
-
-    public virtual event EventHandler<BasicAckEventArgs> BasicAcks
+    public virtual void Abort()
     {
-        add
-        {
-            Channel.BasicAcks += value;
-        }
-
-        remove
-        {
-            Channel.BasicAcks -= value;
-        }
+        Channel.Abort();
     }
 
-    public virtual event EventHandler<BasicNackEventArgs> BasicNacks
+    public virtual void Abort(ushort replyCode, string replyText)
     {
-        add
-        {
-            Channel.BasicNacks += value;
-        }
-
-        remove
-        {
-            Channel.BasicNacks -= value;
-        }
+        Channel.Abort(replyCode, replyText);
     }
 
-    public virtual event EventHandler<EventArgs> BasicRecoverOk
+    public virtual void BasicAck(ulong deliveryTag, bool multiple)
     {
-        add
-        {
-            Channel.BasicRecoverOk += value;
-        }
-
-        remove
-        {
-            Channel.BasicRecoverOk -= value;
-        }
+        Channel.BasicAck(deliveryTag, multiple);
     }
 
-    public virtual event EventHandler<BasicReturnEventArgs> BasicReturn
+    public virtual void BasicCancel(string consumerTag)
     {
-        add
-        {
-            Channel.BasicReturn += value;
-        }
-
-        remove
-        {
-            Channel.BasicReturn -= value;
-        }
+        Channel.BasicCancel(consumerTag);
     }
 
-    public virtual event EventHandler<CallbackExceptionEventArgs> CallbackException
+    public virtual string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments,
+        RC.IBasicConsumer consumer)
     {
-        add
-        {
-            Channel.CallbackException += value;
-        }
-
-        remove
-        {
-            Channel.CallbackException -= value;
-        }
+        return Channel.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, consumer);
     }
 
-    public virtual event EventHandler<FlowControlEventArgs> FlowControl
+    public virtual RC.BasicGetResult BasicGet(string queue, bool autoAck)
     {
-        add
-        {
-            Channel.FlowControl += value;
-        }
-
-        remove
-        {
-            Channel.FlowControl -= value;
-        }
+        return Channel.BasicGet(queue, autoAck);
     }
 
-    public virtual event EventHandler<RC.ShutdownEventArgs> ModelShutdown
+    public virtual void BasicNack(ulong deliveryTag, bool multiple, bool requeue)
     {
-        add
-        {
-            Channel.ModelShutdown += value;
-        }
-
-        remove
-        {
-            Channel.ModelShutdown -= value;
-        }
+        Channel.BasicNack(deliveryTag, multiple, requeue);
     }
-
-    public virtual void Abort() => Channel.Abort();
-
-    public virtual void Abort(ushort replyCode, string replyText) => Channel.Abort(replyCode, replyText);
-
-    public virtual void BasicAck(ulong deliveryTag, bool multiple) => Channel.BasicAck(deliveryTag, multiple);
-
-    public virtual void BasicCancel(string consumerTag) => Channel.BasicCancel(consumerTag);
-
-    public virtual string BasicConsume(string queue, bool autoAck, string consumerTag, bool noLocal, bool exclusive, IDictionary<string, object> arguments, RC.IBasicConsumer consumer)
-        => Channel.BasicConsume(queue, autoAck, consumerTag, noLocal, exclusive, arguments, consumer);
-
-    public virtual RC.BasicGetResult BasicGet(string queue, bool autoAck) => Channel.BasicGet(queue, autoAck);
-
-    public virtual void BasicNack(ulong deliveryTag, bool multiple, bool requeue) => Channel.BasicNack(deliveryTag, multiple, requeue);
 
     public virtual void BasicPublish(string exchange, string routingKey, bool mandatory, RC.IBasicProperties basicProperties, byte[] body)
-        => Channel.BasicPublish(exchange, routingKey, mandatory, basicProperties, body);
+    {
+        Channel.BasicPublish(exchange, routingKey, mandatory, basicProperties, body);
+    }
 
-    public virtual void BasicQos(uint prefetchSize, ushort prefetchCount, bool global) => Channel.BasicQos(prefetchSize, prefetchCount, global);
+    public virtual void BasicQos(uint prefetchSize, ushort prefetchCount, bool global)
+    {
+        Channel.BasicQos(prefetchSize, prefetchCount, global);
+    }
 
-    public virtual void BasicRecover(bool requeue) => Channel.BasicRecover(requeue);
+    public virtual void BasicRecover(bool requeue)
+    {
+        Channel.BasicRecover(requeue);
+    }
 
-    public virtual void BasicRecoverAsync(bool requeue) => Channel.BasicRecoverAsync(requeue);
+    public virtual void BasicRecoverAsync(bool requeue)
+    {
+        Channel.BasicRecoverAsync(requeue);
+    }
 
-    public virtual void BasicReject(ulong deliveryTag, bool requeue) => Channel.BasicReject(deliveryTag, requeue);
+    public virtual void BasicReject(ulong deliveryTag, bool requeue)
+    {
+        Channel.BasicReject(deliveryTag, requeue);
+    }
 
     public virtual void Close()
     {
         _logger?.LogDebug("Closing channel {channel}", Channel);
+
         try
         {
             Channel.Close();
@@ -313,78 +312,160 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         Channel.Close(replyCode, replyText);
     }
 
-    public virtual void ConfirmSelect() => Channel.ConfirmSelect();
+    public virtual void ConfirmSelect()
+    {
+        Channel.ConfirmSelect();
+    }
 
-    public virtual uint ConsumerCount(string queue) => Channel.ConsumerCount(queue);
+    public virtual uint ConsumerCount(string queue)
+    {
+        return Channel.ConsumerCount(queue);
+    }
 
-    public virtual RC.IBasicProperties CreateBasicProperties() => Channel.CreateBasicProperties();
+    public virtual RC.IBasicProperties CreateBasicProperties()
+    {
+        return Channel.CreateBasicProperties();
+    }
 
-    public virtual RC.IBasicPublishBatch CreateBasicPublishBatch() => Channel.CreateBasicPublishBatch();
+    public virtual RC.IBasicPublishBatch CreateBasicPublishBatch()
+    {
+        return Channel.CreateBasicPublishBatch();
+    }
 
     public virtual void ExchangeBind(string destination, string source, string routingKey, IDictionary<string, object> arguments)
-        => Channel.ExchangeBind(destination, source, routingKey, arguments);
+    {
+        Channel.ExchangeBind(destination, source, routingKey, arguments);
+    }
 
     public virtual void ExchangeBindNoWait(string destination, string source, string routingKey, IDictionary<string, object> arguments)
-        => Channel.ExchangeBindNoWait(destination, source, routingKey, arguments);
+    {
+        Channel.ExchangeBindNoWait(destination, source, routingKey, arguments);
+    }
 
     public virtual void ExchangeDeclare(string exchange, string type, bool durable, bool autoDelete, IDictionary<string, object> arguments)
-        => Channel.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
+    {
+        Channel.ExchangeDeclare(exchange, type, durable, autoDelete, arguments);
+    }
 
     public virtual void ExchangeDeclareNoWait(string exchange, string type, bool durable, bool autoDelete, IDictionary<string, object> arguments)
-        => Channel.ExchangeDeclareNoWait(exchange, type, durable, autoDelete, arguments);
+    {
+        Channel.ExchangeDeclareNoWait(exchange, type, durable, autoDelete, arguments);
+    }
 
-    public virtual void ExchangeDeclarePassive(string exchange) => Channel.ExchangeDeclarePassive(exchange);
+    public virtual void ExchangeDeclarePassive(string exchange)
+    {
+        Channel.ExchangeDeclarePassive(exchange);
+    }
 
-    public virtual void ExchangeDelete(string exchange, bool ifUnused) => Channel.ExchangeDelete(exchange, ifUnused);
+    public virtual void ExchangeDelete(string exchange, bool ifUnused)
+    {
+        Channel.ExchangeDelete(exchange, ifUnused);
+    }
 
-    public virtual void ExchangeDeleteNoWait(string exchange, bool ifUnused) => Channel.ExchangeDeleteNoWait(exchange, ifUnused);
+    public virtual void ExchangeDeleteNoWait(string exchange, bool ifUnused)
+    {
+        Channel.ExchangeDeleteNoWait(exchange, ifUnused);
+    }
 
     public virtual void ExchangeUnbind(string destination, string source, string routingKey, IDictionary<string, object> arguments)
-        => Channel.ExchangeUnbind(destination, source, routingKey, arguments);
+    {
+        Channel.ExchangeUnbind(destination, source, routingKey, arguments);
+    }
 
     public virtual void ExchangeUnbindNoWait(string destination, string source, string routingKey, IDictionary<string, object> arguments)
-        => Channel.ExchangeUnbindNoWait(destination, source, routingKey, arguments);
+    {
+        Channel.ExchangeUnbindNoWait(destination, source, routingKey, arguments);
+    }
 
-    public virtual uint MessageCount(string queue) => Channel.MessageCount(queue);
+    public virtual uint MessageCount(string queue)
+    {
+        return Channel.MessageCount(queue);
+    }
 
     public virtual void QueueBind(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
-        => Channel.QueueBind(queue, exchange, routingKey, arguments);
+    {
+        Channel.QueueBind(queue, exchange, routingKey, arguments);
+    }
 
     public virtual void QueueBindNoWait(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
-        => Channel.QueueBindNoWait(queue, exchange, routingKey, arguments);
+    {
+        Channel.QueueBindNoWait(queue, exchange, routingKey, arguments);
+    }
 
     public virtual RC.QueueDeclareOk QueueDeclare(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
-        => Channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
+    {
+        return Channel.QueueDeclare(queue, durable, exclusive, autoDelete, arguments);
+    }
 
     public virtual void QueueDeclareNoWait(string queue, bool durable, bool exclusive, bool autoDelete, IDictionary<string, object> arguments)
-        => Channel.QueueDeclareNoWait(queue, durable, exclusive, autoDelete, arguments);
+    {
+        Channel.QueueDeclareNoWait(queue, durable, exclusive, autoDelete, arguments);
+    }
 
-    public virtual RC.QueueDeclareOk QueueDeclarePassive(string queue) => Channel.QueueDeclarePassive(queue);
+    public virtual RC.QueueDeclareOk QueueDeclarePassive(string queue)
+    {
+        return Channel.QueueDeclarePassive(queue);
+    }
 
-    public virtual uint QueueDelete(string queue, bool ifUnused, bool ifEmpty) => Channel.QueueDelete(queue, ifUnused, ifEmpty);
+    public virtual uint QueueDelete(string queue, bool ifUnused, bool ifEmpty)
+    {
+        return Channel.QueueDelete(queue, ifUnused, ifEmpty);
+    }
 
-    public virtual void QueueDeleteNoWait(string queue, bool ifUnused, bool ifEmpty) => Channel.QueueDeleteNoWait(queue, ifUnused, ifEmpty);
+    public virtual void QueueDeleteNoWait(string queue, bool ifUnused, bool ifEmpty)
+    {
+        Channel.QueueDeleteNoWait(queue, ifUnused, ifEmpty);
+    }
 
-    public virtual uint QueuePurge(string queue) => Channel.QueuePurge(queue);
+    public virtual uint QueuePurge(string queue)
+    {
+        return Channel.QueuePurge(queue);
+    }
 
     public virtual void QueueUnbind(string queue, string exchange, string routingKey, IDictionary<string, object> arguments)
-        => Channel.QueueBind(queue, exchange, routingKey, arguments);
+    {
+        Channel.QueueBind(queue, exchange, routingKey, arguments);
+    }
 
-    public virtual void TxCommit() => Channel.TxCommit();
+    public virtual void TxCommit()
+    {
+        Channel.TxCommit();
+    }
 
-    public virtual void TxRollback() => Channel.TxRollback();
+    public virtual void TxRollback()
+    {
+        Channel.TxRollback();
+    }
 
-    public virtual void TxSelect() => Channel.TxSelect();
+    public virtual void TxSelect()
+    {
+        Channel.TxSelect();
+    }
 
-    public virtual bool WaitForConfirms() => Channel.WaitForConfirms();
+    public virtual bool WaitForConfirms()
+    {
+        return Channel.WaitForConfirms();
+    }
 
-    public virtual bool WaitForConfirms(TimeSpan timeout) => Channel.WaitForConfirms(timeout);
+    public virtual bool WaitForConfirms(TimeSpan timeout)
+    {
+        return Channel.WaitForConfirms(timeout);
+    }
 
-    public virtual bool WaitForConfirms(TimeSpan timeout, out bool timedOut) => Channel.WaitForConfirms(timeout, out timedOut);
+    public virtual bool WaitForConfirms(TimeSpan timeout, out bool timedOut)
+    {
+        return Channel.WaitForConfirms(timeout, out timedOut);
+    }
 
-    public virtual void WaitForConfirmsOrDie() => Channel.WaitForConfirmsOrDie();
+    public virtual void WaitForConfirmsOrDie()
+    {
+        Channel.WaitForConfirmsOrDie();
+    }
 
-    public virtual void WaitForConfirmsOrDie(TimeSpan timeout) => Channel.WaitForConfirmsOrDie(timeout);
+    public virtual void WaitForConfirmsOrDie(TimeSpan timeout)
+    {
+        Channel.WaitForConfirmsOrDie(timeout);
+    }
 
     public void Dispose()
     {
@@ -410,10 +491,11 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
     {
         lock (_lock)
         {
-            foreach (var entry in _pendingConfirms)
+            foreach (KeyValuePair<IListener, SortedDictionary<ulong, PendingConfirm>> entry in _pendingConfirms)
             {
-                var listener = entry.Key;
-                foreach (var confirmEntry in entry.Value)
+                IListener listener = entry.Key;
+
+                foreach (KeyValuePair<ulong, PendingConfirm> confirmEntry in entry.Value)
                 {
                     confirmEntry.Value.Cause = cause;
                     _logger?.LogDebug("{channel} PC:Nack:(close):{confirmEntry}", ToString(), confirmEntry.Key);
@@ -432,16 +514,21 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
     private void HandleReturn(object sender, BasicReturnEventArgs args)
     {
-        var properties = args.BasicProperties;
-        var messageProperties = _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
-        if (properties.Headers.TryGetValue(ReturnedMessageCorrelationKey, out var returnCorrelation) && _pendingReturns.Remove(returnCorrelation.ToString(), out var confirm) && confirm.CorrelationInfo != null)
+        RC.IBasicProperties properties = args.BasicProperties;
+
+        IMessageHeaders messageProperties =
+            _converter.ToMessageHeaders(properties, new Envelope(0, false, args.Exchange, args.RoutingKey), EncodingUtils.GetDefaultEncoding());
+
+        if (properties.Headers.TryGetValue(ReturnedMessageCorrelationKey, out object returnCorrelation) &&
+            _pendingReturns.Remove(returnCorrelation.ToString(), out PendingConfirm confirm) && confirm.CorrelationInfo != null)
         {
             confirm.CorrelationInfo.ReturnedMessage = Message.Create(args.Body, messageProperties);
         }
 
-        var uuidObject = messageProperties.Get<string>(ReturnListenerCorrelationKey);
+        string uuidObject = messageProperties.Get<string>(ReturnListenerCorrelationKey);
 
         IListener listener = null;
+
         if (uuidObject != null)
         {
             _listeners.TryGetValue(uuidObject, out listener);
@@ -458,7 +545,7 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         else
         {
             // _hasReturned = true;
-            var listenerToInvoke = listener;
+            IListener listenerToInvoke = listener;
 
             try
             {
@@ -467,13 +554,6 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
             catch (Exception e)
             {
                 _logger?.LogError(e, "Exception delivering returned message ");
-            }
-            finally
-            {
-                // TODO: Not sure this latch is needed ..
-                // I think its is to ensure the callback for return and confirm are not done at same time?
-                // Returns should happen first and then confirms
-                // _returnLatch.countDown();
             }
         }
     }
@@ -513,10 +593,11 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         }
         else
         {
-            if (_listenerForSeq.TryGetValue(seq, out var listener))
+            if (_listenerForSeq.TryGetValue(seq, out IListener listener))
             {
                 PendingConfirm pendingConfirm = null;
-                if (_pendingConfirms.TryGetValue(listener, out var confirmsForListener))
+
+                if (_pendingConfirms.TryGetValue(listener, out SortedDictionary<ulong, PendingConfirm> confirmsForListener))
                 {
                     if (remove)
                     {
@@ -530,10 +611,12 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
 
                 if (pendingConfirm != null)
                 {
-                    var correlationData = pendingConfirm.CorrelationInfo;
+                    CorrelationData correlationData = pendingConfirm.CorrelationInfo;
+
                     if (correlationData != null)
                     {
                         correlationData.FutureSource.SetResult(new Confirm(ack, pendingConfirm.Cause));
+
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
                             _pendingReturns.Remove(correlationData.Id, out _);
@@ -555,30 +638,32 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         // Piggy-backed ack - extract all Listeners for this and earlier
         // sequences. Then, for each Listener, handle each of it's acks.
         // Finally, remove the sequences from listenerForSeq.
-        var involvedListeners = _listenerForSeq.Where(kvp => kvp.Key < seq + 1);
+        IEnumerable<KeyValuePair<ulong, IListener>> involvedListeners = _listenerForSeq.Where(kvp => kvp.Key < seq + 1);
 
         // eliminate duplicates
-        var listenersForAcks = involvedListeners.Select(kvp => kvp.Value).Distinct();
+        IEnumerable<IListener> listenersForAcks = involvedListeners.Select(kvp => kvp.Value).Distinct();
 
         // Set<Listener> listenersForAcks = new HashSet<IListener>(involvedListeners.values());
-        foreach (var involvedListener in listenersForAcks)
+        foreach (IListener involvedListener in listenersForAcks)
         {
             // find all unack'd confirms for this listener and handle them
-            if (_pendingConfirms.TryGetValue(involvedListener, out var confirmsMap))
+            if (_pendingConfirms.TryGetValue(involvedListener, out SortedDictionary<ulong, PendingConfirm> confirmsMap))
             {
-                var confirms = confirmsMap.Where(kvp => kvp.Key < seq + 1);
+                IEnumerable<KeyValuePair<ulong, PendingConfirm>> confirms = confirmsMap.Where(kvp => kvp.Key < seq + 1);
 
                 // Iterator<Entry<Long, PendingConfirm>> iterator = confirms.entrySet().iterator();
                 // while (iterator.hasNext())
                 // {
-                foreach (var entry in confirms)
+                foreach (KeyValuePair<ulong, PendingConfirm> entry in confirms)
                 {
                     // Entry<Long, PendingConfirm> entry = iterator.next();
-                    var value = entry.Value;
-                    var correlationData = value.CorrelationInfo;
+                    PendingConfirm value = entry.Value;
+                    CorrelationData correlationData = value.CorrelationInfo;
+
                     if (correlationData != null)
                     {
                         correlationData.FutureSource.SetResult(new Confirm(ack, value.Cause));
+
                         if (!string.IsNullOrEmpty(correlationData.Id))
                         {
                             _pendingReturns.Remove(correlationData.Id, out _);
@@ -592,7 +677,8 @@ public class PublisherCallbackChannel : IPublisherCallbackChannel
         }
 
         var sequence = new List<ulong>(involvedListeners.Select(kvp => kvp.Key));
-        foreach (var key in sequence)
+
+        foreach (ulong key in sequence)
         {
             _listenerForSeq.Remove(key);
         }

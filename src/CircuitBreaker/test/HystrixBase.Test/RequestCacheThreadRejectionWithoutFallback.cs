@@ -8,10 +8,10 @@ internal sealed class RequestCacheThreadRejectionWithoutFallback : TestHystrixCo
 {
     private readonly CountdownEvent _completionLatch;
 
+    protected override string CacheKey => "A";
+
     public RequestCacheThreadRejectionWithoutFallback(TestCircuitBreaker circuitBreaker, CountdownEvent completionLatch)
-        : base(TestPropsBuilder()
-            .SetCircuitBreaker(circuitBreaker)
-            .SetMetrics(circuitBreaker.Metrics)
+        : base(TestPropsBuilder().SetCircuitBreaker(circuitBreaker).SetMetrics(circuitBreaker.Metrics)
             .SetThreadPool(new RequestCacheThreadRejectionWithoutFallbackThreadPool()))
     {
         _completionLatch = completionLatch;
@@ -25,10 +25,5 @@ internal sealed class RequestCacheThreadRejectionWithoutFallback : TestHystrixCo
         }
 
         return true;
-    }
-
-    protected override string CacheKey
-    {
-        get { return "A"; }
     }
 }

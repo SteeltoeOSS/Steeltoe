@@ -2,12 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Security;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using Xunit;
 
 namespace Steeltoe.Security.Authentication.CloudFoundry.Test;
@@ -24,9 +24,10 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_AcceptsSameSpace()
     {
-        using var host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync();
 
-        var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch)
+            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -34,9 +35,10 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_AcceptsSameOrg()
     {
-        using var host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync();
 
-        var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgAndSpaceMatch)
+            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
     }
@@ -44,9 +46,10 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_RejectsOrgMismatch()
     {
-        using var host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync();
 
-        var response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.SpaceMatch)
+            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameOrganizationAuthorizationPolicy}");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -54,9 +57,10 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task CloudFoundryCertificateAuth_RejectsSpaceMismatch()
     {
-        using var host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync();
 
-        var response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch).GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await ClientWithCertificate(host.GetTestClient(), Certificates.OrgMatch)
+            .GetAsync($"https://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
         Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
     }
@@ -64,9 +68,9 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     [Fact]
     public async Task AddCloudFoundryCertificateAuth_ForbiddenWithoutCert()
     {
-        using var host = await GetHostBuilder().StartAsync();
+        using IHost host = await GetHostBuilder().StartAsync();
 
-        var response = await host.GetTestClient().GetAsync($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
+        HttpResponseMessage response = await host.GetTestClient().GetAsync($"http://localhost/{CloudFoundryDefaults.SameSpaceAuthorizationPolicy}");
 
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
     }
@@ -75,8 +79,7 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     {
         return new HostBuilder()
             .ConfigureAppConfiguration(cfg => cfg.AddCloudFoundryContainerIdentity(_fixture.ServerOrgId.ToString(), _fixture.ServerSpaceId.ToString()))
-            .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>())
-            .ConfigureWebHost(webBuilder =>
+            .ConfigureWebHostDefaults(webHost => webHost.UseStartup<TestServerCertificateStartup>()).ConfigureWebHost(webBuilder =>
             {
                 webBuilder.UseTestServer();
             });
@@ -84,8 +87,8 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
 
     private HttpClient ClientWithCertificate(HttpClient httpClient, X509Certificate2 certificate)
     {
-        var bytes = certificate.GetRawCertData();
-        var b64 = Convert.ToBase64String(bytes);
+        byte[] bytes = certificate.GetRawCertData();
+        string b64 = Convert.ToBase64String(bytes);
         httpClient.DefaultRequestHeaders.Add("X-Forwarded-Client-Cert", b64);
         return httpClient;
     }
@@ -93,20 +96,21 @@ public class CloudFoundryContainerIdentityMtlsTest : IClassFixture<ClientCertifi
     private static class Certificates
     {
         public static X509Certificate2 OrgAndSpaceMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("OrgAndSpaceMatchCert.pem"))
-                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgAndSpaceMatchKey.pem"))));
+            new X509Certificate2(GetFullyQualifiedFilePath("OrgAndSpaceMatchCert.pem")).CopyWithPrivateKey(
+                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgAndSpaceMatchKey.pem"))));
 
         public static X509Certificate2 OrgMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("OrgMatchCert.pem"))
-                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgMatchKey.pem"))));
+            new X509Certificate2(GetFullyQualifiedFilePath("OrgMatchCert.pem")).CopyWithPrivateKey(
+                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("OrgMatchKey.pem"))));
 
         public static X509Certificate2 SpaceMatch { get; } =
-            new X509Certificate2(GetFullyQualifiedFilePath("SpaceMatchCert.pem"))
-                .CopyWithPrivateKey(PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("SpaceMatchKey.pem"))));
+            new X509Certificate2(GetFullyQualifiedFilePath("SpaceMatchCert.pem")).CopyWithPrivateKey(
+                PemConfigureCertificateOptions.ReadRsaKeyFromString(File.ReadAllText(GetFullyQualifiedFilePath("SpaceMatchKey.pem"))));
 
         private static string GetFullyQualifiedFilePath(string filename)
         {
-            var filePath = Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", filename);
+            string filePath = Path.Combine(LocalCertificateWriter.AppBasePath, "GeneratedCertificates", filename);
+
             if (!File.Exists(filePath))
             {
                 throw new FileNotFoundException(filePath);

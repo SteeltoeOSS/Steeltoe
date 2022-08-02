@@ -2,14 +2,19 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 
 namespace Steeltoe.Messaging.Support;
 
 public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 {
-    protected List<ITaskSchedulerChannelInterceptor> schedulerInterceptors = new ();
-    private readonly object _lock = new ();
+    private readonly object _lock = new();
+    protected List<ITaskSchedulerChannelInterceptor> schedulerInterceptors = new();
+
+    protected TaskScheduler Scheduler { get; }
+
+    protected TaskFactory Factory { get; }
 
     public TaskSchedulerSubscribableChannel(ILogger logger = null)
         : this(null, logger)
@@ -20,6 +25,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         : base(logger)
     {
         Scheduler = scheduler;
+
         if (Scheduler != null)
         {
             Factory = new TaskFactory(Scheduler);
@@ -29,17 +35,15 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         Reader = new NotSupportedChannelReader();
     }
 
-    protected TaskScheduler Scheduler { get; }
-
-    protected TaskFactory Factory { get; }
-
     public override void SetInterceptors(List<IChannelInterceptor> interceptors)
     {
         base.SetInterceptors(interceptors);
+
         lock (_lock)
         {
             var newInterceptors = new List<ITaskSchedulerChannelInterceptor>();
-            foreach (var interceptor in interceptors)
+
+            foreach (IChannelInterceptor interceptor in interceptors)
             {
                 if (interceptor is ITaskSchedulerChannelInterceptor interceptor1)
                 {
@@ -47,7 +51,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
                 }
             }
 
-            this.schedulerInterceptors = newInterceptors;
+            schedulerInterceptors = newInterceptors;
         }
     }
 
@@ -65,10 +69,10 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
     protected override bool DoSendInternal(IMessage message, CancellationToken cancellationToken)
     {
-        var interceptors = schedulerInterceptors;
-        var handlers = Handlers;
+        List<ITaskSchedulerChannelInterceptor> interceptors = schedulerInterceptors;
+        HashSet<IMessageHandler> handlers = Handlers;
 
-        foreach (var handler in handlers)
+        foreach (IMessageHandler handler in handlers)
         {
             if (Scheduler == null)
             {
@@ -76,7 +80,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             }
             else
             {
-                var task = Factory.StartNew(() =>
+                ConfiguredTaskAwaitable task = Factory.StartNew(() =>
                 {
                     Invoke(interceptors, message, handler);
                 }).ConfigureAwait(false);
@@ -114,7 +118,7 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
                 throw;
             }
 
-            var description = $"Failed to handle {message} to {this} in {handler}";
+            string description = $"Failed to handle {message} to {this} in {handler}";
             throw new MessageDeliveryException(message, description, ex);
         }
     }
@@ -125,11 +129,12 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         {
             lock (_lock)
             {
-                var interceptors = new List<ITaskSchedulerChannelInterceptor>(this.schedulerInterceptors)
+                var interceptors = new List<ITaskSchedulerChannelInterceptor>(schedulerInterceptors)
                 {
                     interceptor1
                 };
-                this.schedulerInterceptors = interceptors;
+
+                schedulerInterceptors = interceptors;
             }
         }
     }
@@ -140,7 +145,8 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
         private readonly List<ITaskSchedulerChannelInterceptor> _interceptors;
         private int _interceptorIndex;
 
-        public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message, IMessageHandler messageHandler)
+        public SendTask(TaskSchedulerSubscribableChannel channel, List<ITaskSchedulerChannelInterceptor> interceptors, IMessage message,
+            IMessageHandler messageHandler)
         {
             _channel = channel;
             Message = message;
@@ -155,10 +161,12 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
 
         public bool Run()
         {
-            var message = Message;
+            IMessage message = Message;
+
             try
             {
                 message = ApplyBeforeHandled(message);
+
                 if (message == null)
                 {
                     return false;
@@ -171,12 +179,13 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
             catch (Exception ex)
             {
                 TriggerAfterMessageHandled(message, ex);
+
                 if (ex is MessagingException)
                 {
                     throw;
                 }
 
-                var description = $"Failed to handle {message} to {this} in {MessageHandler}";
+                string description = $"Failed to handle {message} to {this} in {MessageHandler}";
                 throw new MessageDeliveryException(message, description, ex);
             }
         }
@@ -188,13 +197,15 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
                 return message;
             }
 
-            var messageToUse = message;
-            foreach (var interceptor in _interceptors)
+            IMessage messageToUse = message;
+
+            foreach (ITaskSchedulerChannelInterceptor interceptor in _interceptors)
             {
                 messageToUse = interceptor.BeforeHandled(messageToUse, _channel, MessageHandler);
+
                 if (messageToUse == null)
                 {
-                    var name = interceptor.GetType().Name;
+                    string name = interceptor.GetType().Name;
                     _channel.Logger?.LogDebug("{name} returned null from beforeHandle, i.e. precluding the send.", name);
                     TriggerAfterMessageHandled(message, null);
                     return null;
@@ -213,9 +224,10 @@ public class TaskSchedulerSubscribableChannel : AbstractSubscribableChannel
                 return;
             }
 
-            for (var i = _interceptorIndex; i >= 0; i--)
+            for (int i = _interceptorIndex; i >= 0; i--)
             {
-                var interceptor = _channel.schedulerInterceptors[i];
+                ITaskSchedulerChannelInterceptor interceptor = _channel.schedulerInterceptors[i];
+
                 try
                 {
                     interceptor.AfterMessageHandled(message, _channel, MessageHandler, ex);

@@ -2,21 +2,16 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections;
 using Steeltoe.Common.Expression.Internal.Spring.Standard;
 using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
-using System.Collections;
 using Xunit;
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 {
-    public static string Repeat(string s)
-    {
-        return s + s;
-    }
-
     [Fact]
     public void TestScenario_UsingStandardInfrastructure()
     {
@@ -26,13 +21,13 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
             var parser = new SpelExpressionParser();
 
             // Parse an expression
-            var expr = parser.ParseRaw("new String('hello world')");
+            IExpression expr = parser.ParseRaw("new String('hello world')");
 
             // Evaluate it using a 'standard' context
-            var value1 = expr.GetValue();
+            object value1 = expr.GetValue();
 
             // They are reusable
-            var value2 = expr.GetValue();
+            object value2 = expr.GetValue();
 
             Assert.Equal(value1, value2);
             Assert.Equal("hello world", value2);
@@ -57,11 +52,22 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         // Use the standard evaluation context
         var ctx = new StandardEvaluationContext();
         ctx.SetVariable("favouriteColour", "blue");
-        var primes = new List<int> { 2, 3, 5, 7, 11, 13, 17 };
+
+        var primes = new List<int>
+        {
+            2,
+            3,
+            5,
+            7,
+            11,
+            13,
+            17
+        };
+
         ctx.SetVariable("primes", primes);
 
-        var expr = parser.ParseRaw("#favouriteColour");
-        var value = expr.GetValue(ctx);
+        IExpression expr = parser.ParseRaw("#favouriteColour");
+        object value = expr.GetValue(ctx);
         Assert.Equal("blue", value);
 
         expr = parser.ParseRaw("#primes[1]");
@@ -92,11 +98,12 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
             Property = 42,
             Str = "wibble"
         };
+
         ctx.SetRootObject(tc);
 
         // read it, set it, read it again
-        var expr = parser.ParseRaw("Str");
-        var value = expr.GetValue(ctx);
+        IExpression expr = parser.ParseRaw("Str");
+        object value = expr.GetValue(ctx);
         Assert.Equal("wibble", value);
         expr = parser.ParseRaw("Str");
         expr.SetValue(ctx, "wobble");
@@ -136,10 +143,14 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
             // Use the standard evaluation context
             var ctx = new StandardEvaluationContext();
-            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod(nameof(ExpressionLanguageScenarioTests.Repeat), new[] { typeof(string) }));
 
-            var expr = parser.ParseRaw("#Repeat('hello')");
-            var value = expr.GetValue(ctx);
+            ctx.RegisterFunction("Repeat", typeof(ExpressionLanguageScenarioTests).GetMethod(nameof(Repeat), new[]
+            {
+                typeof(string)
+            }));
+
+            IExpression expr = parser.ParseRaw("#Repeat('hello')");
+            object value = expr.GetValue(ctx);
             Assert.Equal("hellohello", value);
         }
         catch (EvaluationException ex)
@@ -162,8 +173,8 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         ctx.AddPropertyAccessor(new FruitColorAccessor());
-        var expr = parser.ParseRaw("Orange");
-        var value = expr.GetValue(ctx);
+        IExpression expr = parser.ParseRaw("Orange");
+        object value = expr.GetValue(ctx);
         Assert.Equal(Color.Orange, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
         Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
@@ -179,16 +190,21 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
         var ctx = new StandardEvaluationContext();
 
         ctx.AddPropertyAccessor(new VegetableColorAccessor());
-        var expr = parser.ParseRaw("Pea");
-        var value = expr.GetValue(ctx);
+        IExpression expr = parser.ParseRaw("Pea");
+        object value = expr.GetValue(ctx);
         Assert.Equal(Color.Green, value);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.SetValue(ctx, Color.Blue));
         Assert.Equal(SpelMessage.PropertyOrFieldNotWritableOnNull, ex.MessageCode);
     }
 
+    public static string Repeat(string s)
+    {
+        return s + s;
+    }
+
     public class FruitColorAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> PropertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new();
 
         static FruitColorAccessor()
         {
@@ -209,7 +225,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            PropertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out Color value);
             return new TypedValue(value);
         }
 
@@ -225,7 +241,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
     public class VegetableColorAccessor : IPropertyAccessor
     {
-        private static readonly Dictionary<string, Color> PropertyMap = new ();
+        private static readonly Dictionary<string, Color> PropertyMap = new();
 
         static VegetableColorAccessor()
         {
@@ -245,7 +261,7 @@ public class ExpressionLanguageScenarioTests : AbstractExpressionTests
 
         public ITypedValue Read(IEvaluationContext context, object target, string name)
         {
-            PropertyMap.TryGetValue(name, out var value);
+            PropertyMap.TryGetValue(name, out Color value);
             return new TypedValue(value);
         }
 

@@ -12,10 +12,8 @@ public class HystrixConcurrencyStrategy
         {
             return new HystrixSyncTaskScheduler(options);
         }
-        else
-        {
-            return new HystrixQueuedTaskScheduler(options);
-        }
+
+        return new HystrixQueuedTaskScheduler(options);
     }
 
     public virtual IHystrixRequestVariable<T> GetRequestVariable<T>(T value)

@@ -13,12 +13,12 @@ namespace Steeltoe.Management.Endpoint.DbMigrations.Test;
 
 public class Startup
 {
+    public IConfiguration Configuration { get; set; }
+
     public Startup(IConfiguration configuration)
     {
         Configuration = configuration;
     }
-
-    public IConfiguration Configuration { get; set; }
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -27,8 +27,17 @@ public class Startup
         services.AddEntityFrameworkInMemoryDatabase().AddDbContext<MockDbContext>();
         services.AddDbMigrationsActuator(Configuration);
         var helper = Substitute.For<DbMigrationsEndpoint.DbMigrationsEndpointHelper>();
-        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[] { "pending" });
-        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[] { "applied" });
+
+        helper.GetPendingMigrations(Arg.Any<DbContext>()).Returns(new[]
+        {
+            "pending"
+        });
+
+        helper.GetAppliedMigrations(Arg.Any<DbContext>()).Returns(new[]
+        {
+            "applied"
+        });
+
         helper.ScanRootAssembly.Returns(typeof(MockDbContext).Assembly);
         services.AddSingleton(helper);
         services.AddRouting();
@@ -37,6 +46,7 @@ public class Startup
     public void Configure(IApplicationBuilder app)
     {
         app.UseRouting();
+
         app.UseEndpoints(endpoints =>
         {
             endpoints.Map<CloudFoundryEndpoint>();

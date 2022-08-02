@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Extensions.Logging;
 using Steeltoe.Management.Endpoint.Test;
 using Steeltoe.Management.Endpoint.Test.Infrastructure;
 using Xunit;
@@ -24,10 +25,12 @@ public class LoggersEndpointTest : BaseTest
     public void AddLevels_AddsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
 
         var dict = new Dictionary<string, object>();
@@ -55,10 +58,12 @@ public class LoggersEndpointTest : BaseTest
 #pragma warning restore S2699 // Tests should include assertions
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
 
         ep.SetLogLevel(null, null, null);
@@ -68,10 +73,12 @@ public class LoggersEndpointTest : BaseTest
     public void SetLogLevel_ThrowsIfNullName()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
 
         Assert.Throws<ArgumentException>(() => ep.SetLogLevel(new TestLogProvider(), null, null));
@@ -81,10 +88,12 @@ public class LoggersEndpointTest : BaseTest
     public void SetLogLevel_CallsProvider()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
         var provider = new TestLogProvider();
         ep.SetLogLevel(provider, "foobar", "WARN");
@@ -97,12 +106,14 @@ public class LoggersEndpointTest : BaseTest
     public void GetLoggerConfigurations_NullProvider()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
-        var result = ep.GetLoggerConfigurations(null);
+        ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(null);
         Assert.NotNull(result);
     }
 
@@ -110,13 +121,15 @@ public class LoggersEndpointTest : BaseTest
     public void GetLoggerConfiguration_CallsProvider()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
         var provider = new TestLogProvider();
-        var result = ep.GetLoggerConfigurations(provider);
+        ICollection<ILoggerConfiguration> result = ep.GetLoggerConfigurations(provider);
         Assert.NotNull(result);
         Assert.True(provider.GetLoggerConfigurationsCalled);
     }
@@ -125,13 +138,15 @@ public class LoggersEndpointTest : BaseTest
     public void DoInvoke_NoChangeRequest_ReturnsExpected()
     {
         using var tc = new TestContext(_output);
+
         tc.AdditionalServices = (services, configuration) =>
         {
             services.AddLoggersActuatorServices(configuration);
         };
+
         var ep = tc.GetService<ILoggersEndpoint>();
 
-        var result = ep.Invoke(null);
+        Dictionary<string, object> result = ep.Invoke(null);
         Assert.NotNull(result);
         Assert.True(result.ContainsKey("levels"));
         var levels = result["levels"] as List<string>;

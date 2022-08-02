@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Text;
 using Steeltoe.Common.Util;
 using Steeltoe.Messaging.Support;
-using System.Text;
 using Xunit;
 
 namespace Steeltoe.Messaging.Converter.Test;
@@ -14,8 +14,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromByteArrayMessage()
     {
-        var message = MessageBuilder.WithPayload(
-            Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new StringMessageConverter();
         Assert.Equal("ABC", converter.FromMessage<string>(message));
     }
@@ -23,8 +22,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromStringMessage()
     {
-        var message = MessageBuilder.WithPayload(
-            "ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
+        IMessage message = MessageBuilder.WithPayload("ABC").SetHeader(MessageHeaders.ContentType, MimeTypeUtils.TextPlain).Build();
         var converter = new StringMessageConverter();
         Assert.Equal("ABC", converter.FromMessage<string>(message));
     }
@@ -32,7 +30,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageNoContentTypeHeader()
     {
-        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
         var converter = new StringMessageConverter();
         Assert.Equal("ABC", converter.FromMessage<string>(message));
     }
@@ -40,10 +38,12 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageCharset()
     {
-        var payload = "H\u00e9llo W\u00f6rld";
-        var bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(payload);
-        var message = MessageBuilder.WithPayload(bytes)
+        string payload = "H\u00e9llo W\u00f6rld";
+        byte[] bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(payload);
+
+        IMessage message = MessageBuilder.WithPayload(bytes)
             .SetHeader(MessageHeaders.ContentType, new MimeType("text", "plain", Encoding.GetEncoding("ISO-8859-1"))).Build();
+
         var converter = new StringMessageConverter();
         Assert.Equal(payload, converter.FromMessage<string>(message));
     }
@@ -51,9 +51,9 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageDefaultCharset()
     {
-        var payload = "H\u00e9llo W\u00f6rld";
-        var bytes = Encoding.UTF8.GetBytes(payload);
-        var message = MessageBuilder.WithPayload(bytes).Build();
+        string payload = "H\u00e9llo W\u00f6rld";
+        byte[] bytes = Encoding.UTF8.GetBytes(payload);
+        IMessage message = MessageBuilder.WithPayload(bytes).Build();
         var converter = new StringMessageConverter();
         Assert.Equal(payload, converter.FromMessage<string>(message));
     }
@@ -61,7 +61,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageTargetClassNotSupported()
     {
-        var message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
+        IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes("ABC")).Build();
         var converter = new StringMessageConverter();
         Assert.Null(converter.FromMessage<object>(message));
     }
@@ -73,10 +73,11 @@ public class StringMessageConverterTest
         {
             { MessageHeaders.ContentType, MimeTypeUtils.TextPlain }
         };
+
         var headers = new MessageHeaders(map);
         var converter = new StringMessageConverter();
-        var message = converter.ToMessage("ABC", headers);
-        var result = Encoding.UTF8.GetString((byte[])message.Payload);
+        IMessage message = converter.ToMessage("ABC", headers);
+        string result = Encoding.UTF8.GetString((byte[])message.Payload);
         Assert.Equal("ABC", result);
     }
 }

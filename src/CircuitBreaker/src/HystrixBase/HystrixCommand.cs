@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using Microsoft.Extensions.Logging;
 using Steeltoe.CircuitBreaker.Hystrix.Exceptions;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.ExecutionHook;
 using Steeltoe.CircuitBreaker.Hystrix.Strategy.Options;
-using System.Reactive;
-using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 namespace Steeltoe.CircuitBreaker.Hystrix;
 
@@ -27,41 +27,39 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
     {
     }
 
-    public HystrixCommand(IHystrixCommandGroupKey group, int executionIsolationThreadTimeoutInMilliseconds, Action run = null, Action fallback = null, ILogger logger = null)
-        : this(group, null, null, null, null, new HystrixCommandOptions { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, int executionIsolationThreadTimeoutInMilliseconds, Action run = null, Action fallback = null,
+        ILogger logger = null)
+        : this(group, null, null, null, null, new HystrixCommandOptions
+        {
+            ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds
+        }, null, null, null, null, null, null, run, fallback, logger)
     {
     }
 
-    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, int executionIsolationThreadTimeoutInMilliseconds, Action run = null, Action fallback = null, ILogger logger = null)
-        : this(group, null, threadPool, null, null, new HystrixCommandOptions { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, int executionIsolationThreadTimeoutInMilliseconds, Action run = null,
+        Action fallback = null, ILogger logger = null)
+        : this(group, null, threadPool, null, null, new HystrixCommandOptions
+        {
+            ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds
+        }, null, null, null, null, null, null, run, fallback, logger)
     {
     }
 
     public HystrixCommand(IHystrixCommandOptions commandOptions, Action run = null, Action fallback = null, ILogger logger = null)
-        : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback, logger)
+        : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions,
+            null, null, null, null, null, run, fallback, logger)
     {
     }
 
-    public HystrixCommand(
-        IHystrixCommandGroupKey group,
-        IHystrixCommandKey key,
-        IHystrixThreadPoolKey threadPoolKey,
-        ICircuitBreaker circuitBreaker,
-        IHystrixThreadPool threadPool,
-        IHystrixCommandOptions commandOptionsDefaults,
-        IHystrixThreadPoolOptions threadPoolOptionsDefaults,
-        HystrixCommandMetrics metrics,
-        SemaphoreSlim fallbackSemaphore,
-        SemaphoreSlim executionSemaphore,
-        HystrixOptionsStrategy optionsStrategy,
-        HystrixCommandExecutionHook executionHook,
-        Action run,
-        Action fallback,
-        ILogger logger = null)
-        : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, null, null, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixCommandKey key, IHystrixThreadPoolKey threadPoolKey, ICircuitBreaker circuitBreaker,
+        IHystrixThreadPool threadPool, IHystrixCommandOptions commandOptionsDefaults, IHystrixThreadPoolOptions threadPoolOptionsDefaults,
+        HystrixCommandMetrics metrics, SemaphoreSlim fallbackSemaphore, SemaphoreSlim executionSemaphore, HystrixOptionsStrategy optionsStrategy,
+        HystrixCommandExecutionHook executionHook, Action run, Action fallback, ILogger logger = null)
+        : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore,
+            executionSemaphore, optionsStrategy, executionHook, null, null, logger)
     {
-        this.RunCallback = run ?? Run;
-        this.FallbackCallback = fallback ?? RunFallback;
+        RunCallback = run ?? Run;
+        FallbackCallback = fallback ?? RunFallback;
     }
 
     public new void Execute()
@@ -79,9 +77,15 @@ public class HystrixCommand : HystrixCommand<Unit>, IHystrixExecutable
         return base.ExecuteAsync();
     }
 
-    protected new virtual void Run() => RunAsync().GetAwaiter().GetResult();
+    protected new virtual void Run()
+    {
+        RunAsync().GetAwaiter().GetResult();
+    }
 
-    protected new virtual void RunFallback() => RunFallbackAsync().GetAwaiter().GetResult();
+    protected new virtual void RunFallback()
+    {
+        RunFallbackAsync().GetAwaiter().GetResult();
+    }
 
     protected override Unit DoRun()
     {
@@ -106,46 +110,45 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
     }
 
-    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
+    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, Func<TResult> run = null, Func<TResult> fallback = null,
+        ILogger logger = null)
         : this(group, null, threadPool, null, null, null, null, null, null, null, null, null, run, fallback, logger)
     {
     }
 
-    public HystrixCommand(IHystrixCommandGroupKey group, int executionIsolationThreadTimeoutInMilliseconds, Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
-        : this(group, null, null, null, null, new HystrixCommandOptions { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, int executionIsolationThreadTimeoutInMilliseconds, Func<TResult> run = null,
+        Func<TResult> fallback = null, ILogger logger = null)
+        : this(group, null, null, null, null, new HystrixCommandOptions
+        {
+            ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds
+        }, null, null, null, null, null, null, run, fallback, logger)
     {
     }
 
-    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, int executionIsolationThreadTimeoutInMilliseconds, Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
-        : this(group, null, threadPool, null, null, new HystrixCommandOptions { ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds }, null, null, null, null, null, null, run, fallback, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixThreadPoolKey threadPool, int executionIsolationThreadTimeoutInMilliseconds,
+        Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
+        : this(group, null, threadPool, null, null, new HystrixCommandOptions
+        {
+            ExecutionTimeoutInMilliseconds = executionIsolationThreadTimeoutInMilliseconds
+        }, null, null, null, null, null, null, run, fallback, logger)
     {
     }
 
     public HystrixCommand(IHystrixCommandOptions commandOptions, Func<TResult> run = null, Func<TResult> fallback = null, ILogger logger = null)
-        : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions, null, null, null, null, null, run, fallback, logger)
+        : this(commandOptions.GroupKey, commandOptions.CommandKey, commandOptions.ThreadPoolKey, null, null, commandOptions, commandOptions.ThreadPoolOptions,
+            null, null, null, null, null, run, fallback, logger)
     {
     }
 
-    public HystrixCommand(
-        IHystrixCommandGroupKey group,
-        IHystrixCommandKey key,
-        IHystrixThreadPoolKey threadPoolKey,
-        ICircuitBreaker circuitBreaker,
-        IHystrixThreadPool threadPool,
-        IHystrixCommandOptions commandOptionsDefaults,
-        IHystrixThreadPoolOptions threadPoolOptionsDefaults,
-        HystrixCommandMetrics metrics,
-        SemaphoreSlim fallbackSemaphore,
-        SemaphoreSlim executionSemaphore,
-        HystrixOptionsStrategy optionsStrategy,
-        HystrixCommandExecutionHook executionHook,
-        Func<TResult> run,
-        Func<TResult> fallback,
-        ILogger logger = null)
-        : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore, executionSemaphore, optionsStrategy, executionHook, logger)
+    public HystrixCommand(IHystrixCommandGroupKey group, IHystrixCommandKey key, IHystrixThreadPoolKey threadPoolKey, ICircuitBreaker circuitBreaker,
+        IHystrixThreadPool threadPool, IHystrixCommandOptions commandOptionsDefaults, IHystrixThreadPoolOptions threadPoolOptionsDefaults,
+        HystrixCommandMetrics metrics, SemaphoreSlim fallbackSemaphore, SemaphoreSlim executionSemaphore, HystrixOptionsStrategy optionsStrategy,
+        HystrixCommandExecutionHook executionHook, Func<TResult> run, Func<TResult> fallback, ILogger logger = null)
+        : base(group, key, threadPoolKey, circuitBreaker, threadPool, commandOptionsDefaults, threadPoolOptionsDefaults, metrics, fallbackSemaphore,
+            executionSemaphore, optionsStrategy, executionHook, logger)
     {
-        this.RunCallback = run ?? Run;
-        this.FallbackCallback = fallback ?? RunFallback;
+        RunCallback = run ?? Run;
+        FallbackCallback = fallback ?? RunFallback;
     }
 
     public TResult Execute()
@@ -164,7 +167,8 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
         UsersToken = token;
 
-        var toStart = ToTask();
+        Task<TResult> toStart = ToTask();
+
         if (!toStart.IsCompleted)
         {
             if (ExecThreadTask != null)
@@ -189,25 +193,26 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     public IObservable<TResult> Observe()
     {
         var subject = new ReplaySubject<TResult>();
-        var observable = ToObservable();
-        var disposable = observable.Subscribe(subject);
+        IObservable<TResult> observable = ToObservable();
+        IDisposable disposable = observable.Subscribe(subject);
         return subject.Finally(() => disposable.Dispose());
     }
 
     public IObservable<TResult> Observe(CancellationToken token)
     {
         var subject = new ReplaySubject<TResult>();
-        var observable = ToObservable();
+        IObservable<TResult> observable = ToObservable();
         observable.Subscribe(subject, token);
         return observable;
     }
 
     public IObservable<TResult> ToObservable()
     {
-        var observable = Observable.FromAsync(ct =>
+        IObservable<TResult> observable = Observable.FromAsync(ct =>
         {
             UsersToken = ct;
-            var toStart = ToTask();
+            Task<TResult> toStart = ToTask();
+
             if (!toStart.IsCompleted)
             {
                 if (ExecThreadTask != null)
@@ -223,6 +228,7 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
 
             return toStart;
         });
+
         return observable;
     }
 
@@ -230,9 +236,9 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
         Setup();
 
-        if (PutInCacheIfAbsent(tcs.Task, out var fromCache))
+        if (PutInCacheIfAbsent(tcs.Task, out Task<TResult> fromCache))
         {
-            var task = fromCache;
+            Task<TResult> task = fromCache;
             return task;
         }
 

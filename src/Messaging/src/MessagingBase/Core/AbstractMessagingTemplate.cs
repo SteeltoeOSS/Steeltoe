@@ -4,9 +4,7 @@
 
 namespace Steeltoe.Messaging.Core;
 
-public abstract class AbstractMessagingTemplate<TDestination>
-    : AbstractMessageReceivingTemplate<TDestination>,
-        IMessageRequestReplyOperations<TDestination>
+public abstract class AbstractMessagingTemplate<TDestination> : AbstractMessageReceivingTemplate<TDestination>, IMessageRequestReplyOperations<TDestination>
 {
     public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, CancellationToken cancellationToken = default)
     {
@@ -18,31 +16,36 @@ public abstract class AbstractMessagingTemplate<TDestination>
         return ConvertSendAndReceiveAsync<T>(destination, request, (IDictionary<string, object>)null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(destination, request, headers, null, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(object request, IMessagePostProcessor requestPostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(RequiredDefaultSendDestination, request, requestPostProcessor, cancellationToken);
     }
 
-    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+    public virtual Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IMessagePostProcessor requestPostProcessor,
+        CancellationToken cancellationToken = default)
     {
         return ConvertSendAndReceiveAsync<T>(destination, request, null, requestPostProcessor, cancellationToken);
     }
 
-    public virtual async Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
+    public virtual async Task<T> ConvertSendAndReceiveAsync<T>(TDestination destination, object request, IDictionary<string, object> headers,
+        IMessagePostProcessor requestPostProcessor, CancellationToken cancellationToken = default)
     {
-        var requestMessage = DoConvert(request, headers, requestPostProcessor);
-        var replyMessage = await SendAndReceiveAsync(destination, requestMessage);
+        IMessage requestMessage = DoConvert(request, headers, requestPostProcessor);
+        IMessage replyMessage = await SendAndReceiveAsync(destination, requestMessage);
+
         if (replyMessage != null)
         {
             return DoConvert<T>(replyMessage);
         }
 
-        return default(T);
+        return default;
     }
 
     public virtual Task<IMessage> SendAndReceiveAsync(IMessage requestMessage, CancellationToken cancellationToken = default)
@@ -80,10 +83,12 @@ public abstract class AbstractMessagingTemplate<TDestination>
         return ConvertSendAndReceive<T>(destination, request, null, requestPostProcessor);
     }
 
-    public virtual T ConvertSendAndReceive<T>(TDestination destination, object request, IDictionary<string, object> headers, IMessagePostProcessor requestPostProcessor)
+    public virtual T ConvertSendAndReceive<T>(TDestination destination, object request, IDictionary<string, object> headers,
+        IMessagePostProcessor requestPostProcessor)
     {
-        var requestMessage = DoConvert(request, headers, requestPostProcessor);
-        var replyMessage = SendAndReceive(destination, requestMessage);
+        IMessage requestMessage = DoConvert(request, headers, requestPostProcessor);
+        IMessage replyMessage = SendAndReceive(destination, requestMessage);
+
         if (replyMessage != null)
         {
             return DoConvert<T>(replyMessage);

@@ -6,6 +6,12 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Common;
 
 public class TemplateParserContext : IParserContext
 {
+    public bool IsTemplate { get; } = true;
+
+    public string ExpressionPrefix { get; }
+
+    public string ExpressionSuffix { get; }
+
     public TemplateParserContext()
         : this("#{", "}")
     {
@@ -16,10 +22,4 @@ public class TemplateParserContext : IParserContext
         ExpressionPrefix = expressionPrefix;
         ExpressionSuffix = expressionSuffix;
     }
-
-    public bool IsTemplate { get; } = true;
-
-    public string ExpressionPrefix { get; }
-
-    public string ExpressionSuffix { get; }
 }
