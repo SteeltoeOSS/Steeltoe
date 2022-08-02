@@ -19,6 +19,17 @@ jobs:
   pool:
     vmImage: windows-latest
   steps:
+  - task: PowerShell@2
+    displayName: DebugDump
+    inputs:
+      targetType: 'inline'
+      script: |
+        if (-not $env:SYSTEM_PULLREQUEST_TARGETBRANCH) {
+          Write-Output "Running on all files in branch."
+        }
+        else {
+          Write-Output "Running on files in pull request."
+        }
   - checkout: self
     persistCredentials: true
   - task: PowerShell@2
