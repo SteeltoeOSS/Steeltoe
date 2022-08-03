@@ -3,6 +3,11 @@
     <NoWarn>$(NoWarn);SA0001</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="$(MSBuildThisFileDirectory)\src\Common\test\Common.TestResources\Steeltoe.Common.TestResources.csproj" />
   </ItemGroup>
