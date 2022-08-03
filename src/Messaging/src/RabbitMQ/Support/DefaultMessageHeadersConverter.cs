@@ -146,7 +146,7 @@ public class DefaultMessageHeadersConverter : IMessageHeadersConverter
         target.AppId = source.AppId;
         target.ClusterId = source.ClusterId;
         target.Type = source.Type;
-        int deliveryMode = (int)source.DeliveryMode;
+        int deliveryMode = source.DeliveryMode;
         target.ReceivedDeliveryMode = (MessageDeliveryMode)Enum.ToObject(typeof(MessageDeliveryMode), deliveryMode);
         target.DeliveryMode = null;
         target.Expiration = source.Expiration;

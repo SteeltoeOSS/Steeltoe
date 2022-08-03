@@ -15,7 +15,7 @@ public class MutableMessageTest
         var uuid = Guid.NewGuid();
         long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();
 
-        object payload = new object();
+        object payload = new();
 
         var headerDictionary = new Dictionary<string, object>
         {
@@ -33,7 +33,7 @@ public class MutableMessageTest
     [Fact]
     public void TestMessageHeaderIsSettable()
     {
-        object payload = new object();
+        object payload = new();
         var headerDictionary = new Dictionary<string, object>();
         var additional = new Dictionary<string, object>();
 
@@ -52,7 +52,7 @@ public class MutableMessageTest
     [Fact]
     public void TestMessageHeaderIsSerializable()
     {
-        object payload = new object();
+        object payload = new();
 
         var uuid = Guid.NewGuid();
         long timestamp = DateTimeOffset.Now.ToUnixTimeMilliseconds();

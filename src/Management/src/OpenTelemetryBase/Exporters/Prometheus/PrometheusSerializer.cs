@@ -92,7 +92,7 @@ internal static class PrometheusSerializer
     {
         foreach (char ch in value)
         {
-            ushort ordinal = (ushort)ch;
+            ushort ordinal = ch;
 
             switch (ordinal)
             {
@@ -118,7 +118,7 @@ internal static class PrometheusSerializer
     {
         Debug.Assert(!string.IsNullOrEmpty(value), $"{nameof(value)} should not be null or empty.");
 
-        ushort ordinal = (ushort)value[0];
+        ushort ordinal = value[0];
 
         if (ordinal >= '0' && ordinal <= '9')
         {
@@ -149,7 +149,7 @@ internal static class PrometheusSerializer
 
         foreach (char ch in value)
         {
-            ushort ordinal = (ushort)ch;
+            ushort ordinal = ch;
 
             switch (ordinal)
             {
@@ -195,7 +195,7 @@ internal static class PrometheusSerializer
 
         foreach (char ch in metricName)
         {
-            ushort ordinal = (ushort)ch;
+            ushort ordinal = ch;
 
             switch (ordinal)
             {
@@ -215,7 +215,7 @@ internal static class PrometheusSerializer
 
             foreach (char ch in metricUnit)
             {
-                ushort ordinal = (ushort)ch;
+                ushort ordinal = ch;
 
                 if ((ordinal >= 'A' && ordinal <= 'Z') || (ordinal >= 'a' && ordinal <= 'z') || (ordinal >= '0' && ordinal <= '9'))
                 {

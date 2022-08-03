@@ -1257,7 +1257,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("test.generic.list", ContainerFactory = "jsonListenerContainerFactory")]
         public List<JsonObject> GenericList(JsonObject input)
         {
-            return new()
+            return new List<JsonObject>
             {
                 input
             };
@@ -1266,7 +1266,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         [RabbitListener("test.generic.map", ContainerFactory = "jsonListenerContainerFactory")]
         public Dictionary<string, JsonObject> GenericMap(JsonObject input)
         {
-            return new()
+            return new Dictionary<string, JsonObject>
             {
                 { "key", input }
             };

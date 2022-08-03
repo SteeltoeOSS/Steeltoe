@@ -81,7 +81,7 @@ public class BindingBuilderTest
     [Fact]
     public void CustomBinding()
     {
-        object argumentObject = new object();
+        object argumentObject = new();
         var customExchange = new CustomExchange("c");
         string routingKey = "r";
 

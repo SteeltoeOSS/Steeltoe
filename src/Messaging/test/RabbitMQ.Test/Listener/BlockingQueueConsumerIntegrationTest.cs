@@ -81,7 +81,7 @@ public class BlockingQueueConsumerIntegrationTest
     public void TestAvoidHangAMQP_508()
     {
         using var connectionFactory = new CachingConnectionFactory("localhost");
-        string longName = new string('x', 300);
+        string longName = new('x', 300);
 
         var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory, new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, null, longName, "foobar");

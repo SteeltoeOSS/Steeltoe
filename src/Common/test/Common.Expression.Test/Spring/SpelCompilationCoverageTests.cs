@@ -4608,9 +4608,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         short[] ss =
         {
-            (short)33,
-            (short)44,
-            (short)55
+            33,
+            44,
+            55
         };
 
         float[] fs =
@@ -4622,9 +4622,9 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         byte[] bs =
         {
-            (byte)2,
-            (byte)3,
-            (byte)4
+            2,
+            3,
+            4
         };
 
         char[] cs =

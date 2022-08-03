@@ -15,7 +15,7 @@ public class HandlerMethodArgumentResolverComposite : IHandlerMethodArgumentReso
 
     public int Count => _argumentResolvers.Count;
 
-    public List<IHandlerMethodArgumentResolver> Resolvers => new List<IHandlerMethodArgumentResolver>(_argumentResolvers);
+    public List<IHandlerMethodArgumentResolver> Resolvers => new(_argumentResolvers);
 
     public HandlerMethodArgumentResolverComposite AddResolver(IHandlerMethodArgumentResolver argumentResolver)
     {

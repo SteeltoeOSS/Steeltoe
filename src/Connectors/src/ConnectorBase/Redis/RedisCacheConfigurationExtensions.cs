@@ -52,20 +52,20 @@ public static class RedisCacheConfigurationExtensions
             throw new ArgumentNullException(nameof(connectorOptions));
         }
 
-        string[] redisAssemblies = new[]
+        string[] redisAssemblies =
         {
             "StackExchange.Redis",
             "StackExchange.Redis.StrongName",
             "Microsoft.Extensions.Caching.Redis"
         };
 
-        string[] redisTypeNames = new[]
+        string[] redisTypeNames =
         {
             "StackExchange.Redis.ConnectionMultiplexer",
             "Microsoft.Extensions.Caching.Distributed.IDistributedCache"
         };
 
-        string[] redisOptionNames = new[]
+        string[] redisOptionNames =
         {
             "StackExchange.Redis.ConfigurationOptions",
             "Microsoft.Extensions.Caching.Redis.RedisCacheOptions"

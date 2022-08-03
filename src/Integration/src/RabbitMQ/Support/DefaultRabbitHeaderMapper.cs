@@ -104,11 +104,11 @@ public class DefaultRabbitHeaderMapper : AbstractHeaderMapper<IMessageHeaders>, 
 
     public static DefaultRabbitHeaderMapper GetInboundMapper(ILogger logger)
     {
-        return new(InboundRequestHeaders, InboundReplyHeaders, logger);
+        return new DefaultRabbitHeaderMapper(InboundRequestHeaders, InboundReplyHeaders, logger);
     }
 
     public static DefaultRabbitHeaderMapper GetOutboundMapper(ILogger logger)
     {
-        return new(OutboundRequestHeaders, OutboundReplyHeaders, logger);
+        return new DefaultRabbitHeaderMapper(OutboundRequestHeaders, OutboundReplyHeaders, logger);
     }
 }

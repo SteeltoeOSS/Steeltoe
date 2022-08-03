@@ -14,9 +14,9 @@ public class MessagePostProcessorUtilsTest
     [Fact]
     public void TestOrderIng()
     {
-        MessagePostProcessor[] pps = new[]
+        MessagePostProcessor[] pps =
         {
-            new MessagePostProcessor(),
+            new(),
             new OrderedMessagePostProcessor().Order(3),
             new OrderedMessagePostProcessor().Order(1),
             new PriorityOrderedMessagePostProcessor().Order(6),

@@ -391,7 +391,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
         });
 
         // basic conversion int>String
-        object[] args = new object[]
+        object[] args =
         {
             3
         };
@@ -448,7 +448,7 @@ public class ReflectionHelperTests : AbstractExpressionTests
         });
 
         // Simple conversion: int to string
-        object[] args = new object[]
+        object[] args =
         {
             3
         };

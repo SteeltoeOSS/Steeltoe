@@ -161,7 +161,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         moduleOutputChannel1.Send(message1);
         moduleOutputChannel2.Send(message2);
 
-        IMessage[] messages = new[]
+        IMessage[] messages =
         {
             Receive(moduleInputChannel),
             Receive(moduleInputChannel)

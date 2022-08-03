@@ -300,7 +300,7 @@ public class IndexingTests
     [Fact]
     public void IndexIntoGenericPropertyContainingArray()
     {
-        string[] property = new[]
+        string[] property =
         {
             "bar"
         };

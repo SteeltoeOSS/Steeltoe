@@ -84,7 +84,7 @@ public class JsonMessageConverterTest
     [Fact]
     public void TestAmqp330StringArray()
     {
-        string[] testData = new[]
+        string[] testData =
         {
             "test"
         };
@@ -98,7 +98,7 @@ public class JsonMessageConverterTest
     [Fact]
     public void TestAmqp330ObjectArray()
     {
-        SimpleTrade[] testData = new[]
+        SimpleTrade[] testData =
         {
             _trade
         };

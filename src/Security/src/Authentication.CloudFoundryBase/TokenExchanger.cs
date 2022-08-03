@@ -190,7 +190,7 @@ public class TokenExchanger
     {
         _logger?.LogTrace("Building identity with claims from token");
 #if DEBUG
-        foreach (var claim in claims)
+        foreach (Claim claim in claims)
         {
             _logger?.LogTrace(claim.Type + " : " + claim.Value);
         }

@@ -14,7 +14,7 @@ public class TaskRunTest
     [Fact]
     public void DelegatingTask_WebHost_ExecutesRun()
     {
-        string[] args = new[]
+        string[] args =
         {
             "runtask=test"
         };
@@ -25,7 +25,7 @@ public class TaskRunTest
     [Fact]
     public void DelegatingTask_WebHost_StopsIfNoTask()
     {
-        string[] args = new[]
+        string[] args =
         {
             "runtask=test"
         };
@@ -40,7 +40,7 @@ public class TaskRunTest
     [Fact]
     public void DelegatingTask_GenericHost_ExecutesRun()
     {
-        string[] args = new[]
+        string[] args =
         {
             "runtask=test"
         };
@@ -52,7 +52,7 @@ public class TaskRunTest
     [Fact]
     public void DelegatingTask_GenericHost_StopsIfNoTask()
     {
-        string[] args = new[]
+        string[] args =
         {
             "runtask=test"
         };
