@@ -1,6 +1,28 @@
 <Project>
-  <Import Project="$(MSBuildThisFileDirectory)\versions.props" />
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Debug.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)\Steeltoe.Release.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json" Visible="false" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\versions.props" />
   <Import Condition="!$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedproject.props" />
   <Import Condition="$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedtest.props" />
+
+  <ItemGroup>
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="$(SonarAnalyzerVersion)" PrivateAssets="All" />
+    <PackageReference Include="StyleCop.Analyzers" Version="$(StyleCopVersion)" PrivateAssets="All" />
+  </ItemGroup>
 </Project>
