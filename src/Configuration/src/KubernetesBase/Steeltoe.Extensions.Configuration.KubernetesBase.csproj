@@ -6,8 +6,7 @@
     <PackageTags>configuration;Kubernetes</PackageTags>
   </PropertyGroup>
 
-   <Import Project="..\..\..\..\versions.props" />
-   <Import Project="..\..\..\..\sharedproject.props" />
+   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Extensions.Configuration.Abstractions.csproj" />

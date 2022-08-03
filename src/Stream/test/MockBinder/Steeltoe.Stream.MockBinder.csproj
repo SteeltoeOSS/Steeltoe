@@ -4,8 +4,7 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="$(MoqVersion)" />

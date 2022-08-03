@@ -1,0 +1,6 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)\versions.props" />
+
+  <Import Condition="!$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedproject.props" />
+  <Import Condition="$(MSBuildProjectName.EndsWith('.Test'))" Project="$(MSBuildThisFileDirectory)\sharedtest.props" />
+</Project>

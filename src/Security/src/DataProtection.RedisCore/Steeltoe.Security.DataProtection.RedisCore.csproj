@@ -6,8 +6,7 @@
     <PackageTags>CloudFoundry;aspnetcore;security;dataprotection;redis</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="$(ExtensionsVersion)" />

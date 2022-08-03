@@ -6,8 +6,7 @@
     <PackageTags>CloudFoundry;NET Core;Security;DataProtection;CredHub</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="Portable.BouncyCastle" Version="$(BouncyCastleVersion)" />

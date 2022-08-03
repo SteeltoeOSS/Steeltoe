@@ -5,8 +5,7 @@
     <PackageTags>tasks;management;monitoring;aspnetcore;Spring Cloud;cf run-task</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
   
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="$(ExtensionsVersion)" />

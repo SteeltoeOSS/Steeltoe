@@ -8,8 +8,7 @@
     <RootNamespace>Steeltoe.Management.OpenTelemetry</RootNamespace>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="OpenTelemetry" Version="$(OpenTelemetryVersion)" />
