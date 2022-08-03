@@ -1,9 +1,7 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
 using Microsoft.Extensions.Configuration;
@@ -13,17 +11,19 @@ using Steeltoe.Integration;
 using Steeltoe.Integration.Channel;
 using Steeltoe.Messaging;
 
+namespace Benchmark;
+
 [MemoryDiagnoser]
-public class Program
+public sealed class Program
 {
-    //|                                                Method |     Mean |   Error |  StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
-    //|------------------------------------------------------ |---------:|--------:|--------:|------:|------:|------:|----------:|
-    //|           DirectChannel_Send_10_000_000_SingleHandler | 229.1 ms | 2.47 ms | 2.31 ms |     - |     - |     - |   5.97 KB |
-    //|      DirectChannel_SendAsync_10_000_000_SingleHandler | 233.5 ms | 1.50 ms | 1.33 ms |     - |     - |     - |   4.73 KB |
-    //|             DirectChannel_Send_10_000_000_TwoHandlers | 472.9 ms | 5.28 ms | 4.41 ms |     - |     - |     - |    6.6 KB |
-    //|            DirectChannel_Send_10_000_000_FourHandlers | 469.4 ms | 2.77 ms | 2.45 ms |     - |     - |     - |   5.29 KB |
-    //| PublishSubscribeChannel_Send_10_000_000_SingleHandler | 387.0 ms | 2.89 ms | 2.56 ms |     - |     - |     - |   6.13 KB |
-    //|   PublishSubscribeChannel_Send_10_000_000_TwoHandlers | 468.5 ms | 3.60 ms | 3.37 ms |     - |     - |     - |   6.32 KB |
+    // |                                                Method |     Mean |   Error |  StdDev | Gen 0 | Gen 1 | Gen 2 | Allocated |
+    // |------------------------------------------------------ |---------:|--------:|--------:|------:|------:|------:|----------:|
+    // |           DirectChannel_Send_10_000_000_SingleHandler | 229.1 ms | 2.47 ms | 2.31 ms |     - |     - |     - |   5.97 KB |
+    // |      DirectChannel_SendAsync_10_000_000_SingleHandler | 233.5 ms | 1.50 ms | 1.33 ms |     - |     - |     - |   4.73 KB |
+    // |             DirectChannel_Send_10_000_000_TwoHandlers | 472.9 ms | 5.28 ms | 4.41 ms |     - |     - |     - |    6.6 KB |
+    // |            DirectChannel_Send_10_000_000_FourHandlers | 469.4 ms | 2.77 ms | 2.45 ms |     - |     - |     - |   5.29 KB |
+    // | PublishSubscribeChannel_Send_10_000_000_SingleHandler | 387.0 ms | 2.89 ms | 2.56 ms |     - |     - |     - |   6.13 KB |
+    // |   PublishSubscribeChannel_Send_10_000_000_TwoHandlers | 468.5 ms | 3.60 ms | 3.37 ms |     - |     - |     - |   6.32 KB |
 
     private static void Main()
     {
@@ -99,12 +99,12 @@ public class Program
             channel.Send(message);
         }
 
-        if (count1.Count != 5000000)
+        if (count1.Count != 5_000_000)
         {
             throw new InvalidOperationException("Handler count1 invalid");
         }
 
-        if (count2.Count != 5000000)
+        if (count2.Count != 5_000_000)
         {
             throw new InvalidOperationException("Handler count2 invalid");
         }
