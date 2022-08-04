@@ -5,8 +5,7 @@
     <PackageTags>Kubernetes</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="KubernetesClient" Version="$(KubernetesClientVersion)" />

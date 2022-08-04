@@ -9,6 +9,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{851768A8-7E3B-49DF-9DA2-512FAC8118C5}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\nuget.config = ..\..\nuget.config
+		..\..\shared.props = ..\..\shared.props
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\stylecop.json = ..\..\stylecop.json

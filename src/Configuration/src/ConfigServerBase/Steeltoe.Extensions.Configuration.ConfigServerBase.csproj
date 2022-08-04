@@ -6,8 +6,7 @@
     <PackageTags>configuration;Spring Cloud;Spring Cloud Config Server</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <PackageReference Include="System.Net.Http.Json" Version="$(SystemVersion)" />

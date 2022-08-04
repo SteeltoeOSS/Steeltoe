@@ -84,7 +84,7 @@ public class HystrixEventSourceServiceTests : HystrixTestBase
 
         protected override void OnEventWritten(EventWrittenEventArgs eventData)
         {
-            if (Enum.TryParse<EventTypes>(eventData.EventName, out EventTypes eventType))
+            if (Enum.TryParse(eventData.EventName, out EventTypes eventType))
             {
                 switch (eventType)
                 {

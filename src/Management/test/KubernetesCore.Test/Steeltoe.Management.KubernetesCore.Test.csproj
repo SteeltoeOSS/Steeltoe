@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <IsPackable>false</IsPackable>
   </PropertyGroup>
   
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedtest.props" />
+  <Import Project="..\..\..\..\shared.props" />
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\KubernetesCore\Steeltoe.Management.KubernetesCore.csproj" />
     <ProjectReference Include="..\EndpointCore.Test\Steeltoe.Management.EndpointCore.Test.csproj" />

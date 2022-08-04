@@ -52,7 +52,7 @@ public class ConsulRegistration : IConsulRegistration
     public bool IsSecure => Options.Scheme == "https";
 
     /// <inheritdoc />
-    public Uri Uri => new Uri($"{Options.Scheme}://{Host}:{Port}");
+    public Uri Uri => new($"{Options.Scheme}://{Host}:{Port}");
 
     /// <inheritdoc />
     public IDictionary<string, string> Metadata { get; private set; }

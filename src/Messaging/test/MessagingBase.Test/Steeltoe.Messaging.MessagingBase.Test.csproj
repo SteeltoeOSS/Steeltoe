@@ -5,8 +5,7 @@
     <RootNamespace>Steeltoe.Messaging</RootNamespace>
   </PropertyGroup>
   
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedtest.props" />
+  <Import Project="..\..\..\..\shared.props" />
   
   <ItemGroup>
     <None Update="xunit.runner.json">

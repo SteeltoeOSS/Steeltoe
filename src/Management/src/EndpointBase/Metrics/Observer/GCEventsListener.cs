@@ -85,7 +85,7 @@ public class GCEventsListener : EventSourceListener
 
         for (int i = 0; i < GC.MaxGeneration; i++)
         {
-            long count = (long)GC.CollectionCount(i);
+            long count = GC.CollectionCount(i);
             counts.Add(count);
 
             if (_previousCollectionCounts != null && i < _previousCollectionCounts.Count && _previousCollectionCounts[i] <= count)

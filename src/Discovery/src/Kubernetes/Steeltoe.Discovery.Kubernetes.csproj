@@ -7,8 +7,7 @@
     <RootNamespace>Steeltoe.Discovery.Kubernetes</RootNamespace>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Common.Kubernetes\Steeltoe.Common.Kubernetes.csproj" />

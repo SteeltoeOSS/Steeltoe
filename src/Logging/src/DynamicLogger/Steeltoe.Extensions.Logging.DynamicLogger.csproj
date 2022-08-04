@@ -5,8 +5,7 @@
     <PackageTags>logging;dynamic logging;console;management;monitoring;Spring Cloud;</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <FrameworkReference Include="Microsoft.AspNetCore.App" />

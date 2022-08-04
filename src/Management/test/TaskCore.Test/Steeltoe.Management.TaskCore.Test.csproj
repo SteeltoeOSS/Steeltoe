@@ -3,8 +3,7 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedtest.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TaskCore\Steeltoe.Management.TaskCore.csproj" />

@@ -6,8 +6,7 @@
     <PackageTags>actuator;management;monitoring;aspnetcore;CloudFoundry;Spring Cloud;</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\EndpointCore\Steeltoe.Management.EndpointCore.csproj" />

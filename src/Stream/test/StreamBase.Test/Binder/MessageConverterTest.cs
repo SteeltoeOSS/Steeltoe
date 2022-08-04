@@ -34,7 +34,7 @@ public class MessageConverterTest
         IMessage<byte[]> message = IntegrationMessageBuilder<byte[]>.WithPayload(Encoding.UTF8.GetBytes("Hello")).SetHeader("foo", "bar")
             .SetHeader("baz", "quxx").SetHeader("contentType", "text/plain").Build();
 
-        string[] headers = new[]
+        string[] headers =
         {
             "foo"
         };
@@ -108,7 +108,7 @@ public class MessageConverterTest
     [Fact]
     public void TestBadDecode()
     {
-        byte[] bytes = new byte[]
+        byte[] bytes =
         {
             0xff,
             99

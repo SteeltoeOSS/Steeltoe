@@ -5,8 +5,9 @@
     <TargetFrameworks>net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-  <Import Project="..\..\..\..\versions.props" />
-  
+
+  <Import Project="..\..\..\..\shared.props" />
+
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="$(BenchmarkDotNetVersion)" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="$(ExtensionsVersion)" />

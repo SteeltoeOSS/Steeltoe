@@ -6,6 +6,7 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{F6717524-0492-4BB1-BD53-76B01BE6F8E5}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\nuget.config = ..\..\nuget.config
+		..\..\shared.props = ..\..\shared.props
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\versions.props = ..\..\versions.props

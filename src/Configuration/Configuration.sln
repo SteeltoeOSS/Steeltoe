@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "config", "config", "{2D89EFD8-0718-443C-B615-AF6C4D6DFB8D}"
 	ProjectSection(SolutionItems) = preProject
 		..\..\nuget.config = ..\..\nuget.config
+		..\..\shared.props = ..\..\shared.props
 		..\..\sharedproject.props = ..\..\sharedproject.props
 		..\..\sharedtest.props = ..\..\sharedtest.props
 		..\..\stylecop.json = ..\..\stylecop.json
@@ -20,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.CloudFoundryCore.Test", "test\CloudFoundryCore.Test\Steeltoe.Extensions.Configuration.CloudFoundryCore.Test.csproj", "{30130916-223A-444F-B321-5FF023F5B73A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.ITest", "test\ConfigServer.ITest\Steeltoe.Extensions.Configuration.ConfigServer.ITest.csproj", "{CDFBDF7F-A64D-4B2C-A06C-1BF62B449918}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test", "test\ConfigServer.Integration.Test\Steeltoe.Extensions.Configuration.ConfigServer.Integration.Test.csproj", "{CDFBDF7F-A64D-4B2C-A06C-1BF62B449918}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Steeltoe.Extensions.Configuration.ConfigServerCore", "src\ConfigServerCore\Steeltoe.Extensions.Configuration.ConfigServerCore.csproj", "{FBC24547-609E-4FEE-A21E-E91C1E931BEC}"
 EndProject

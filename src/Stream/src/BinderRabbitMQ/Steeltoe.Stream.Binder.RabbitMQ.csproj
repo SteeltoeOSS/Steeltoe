@@ -7,8 +7,8 @@
     <PackageTags>Streams, ASPNET Core, Spring, Spring Cloud, RabbitMQ, Binder</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
+
   <ItemGroup>
     <ProjectReference Include="..\..\..\Integration\src\RabbitMQ\Steeltoe.Integration.RabbitMQ.csproj" />
     <ProjectReference Include="..\..\..\Messaging\src\RabbitMQ\Steeltoe.Messaging.RabbitMQ.csproj" />

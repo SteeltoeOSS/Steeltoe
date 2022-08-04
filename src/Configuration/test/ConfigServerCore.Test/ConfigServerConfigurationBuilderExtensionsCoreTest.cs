@@ -311,7 +311,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_CommandLineAppSettingsConfiguresClient()
     {
-        string[] appsettings = new[]
+        string[] appsettings =
         {
             "spring:cloud:config:enabled=false",
             "--spring:cloud:config:failFast=false",

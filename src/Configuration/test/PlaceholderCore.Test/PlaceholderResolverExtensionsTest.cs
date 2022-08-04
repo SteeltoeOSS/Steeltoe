@@ -85,7 +85,7 @@ public class PlaceholderResolverExtensionsTest
     name=${spring:line:name?noName}
 ";
 
-        string[] appsettingsLine = new[]
+        string[] appsettingsLine =
         {
             "--spring:line:name=${spring:json:name?noName}"
         };

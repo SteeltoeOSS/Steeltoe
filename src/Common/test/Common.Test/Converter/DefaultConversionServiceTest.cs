@@ -293,7 +293,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableInterface()
     {
-        string[] array = new[]
+        string[] array =
         {
             "1",
             "2",
@@ -308,7 +308,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableStringInterface()
     {
-        string[] array = new[]
+        string[] array =
         {
             "1",
             "2",
@@ -323,7 +323,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToEnumerableGenericTypeConversion()
     {
-        string[] array = new[]
+        string[] array =
         {
             "1",
             "2",
@@ -441,7 +441,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObject()
     {
-        long[] array = new[]
+        long[] array =
         {
             3L
         };
@@ -453,7 +453,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObjectWithElementConversion()
     {
-        string[] array = new[]
+        string[] array =
         {
             "3"
         };
@@ -465,7 +465,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToObjectAssignableTargetType()
     {
-        long[] array = new[]
+        long[] array =
         {
             3L
         };
@@ -757,7 +757,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void ConvertArrayToArrayAssignable()
     {
-        int[] orig = new[]
+        int[] orig =
         {
             1,
             2,
@@ -1065,7 +1065,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void MultidimensionalArrayToListConversionShouldConvertEntriesCorrectly()
     {
-        string[][] grid = new[]
+        string[][] grid =
         {
             new[]
             {

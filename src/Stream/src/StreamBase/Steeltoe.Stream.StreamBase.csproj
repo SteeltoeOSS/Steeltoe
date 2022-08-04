@@ -6,8 +6,7 @@
     <PackageTags>Streams, NET Core, Spring, Spring Cloud</PackageTags>
   </PropertyGroup>
 
-  <Import Project="..\..\..\..\versions.props" />
-  <Import Project="..\..\..\..\sharedproject.props" />
+  <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\Steeltoe.Stream.Abstractions.csproj" />

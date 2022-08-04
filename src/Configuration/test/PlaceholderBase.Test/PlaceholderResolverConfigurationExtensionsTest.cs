@@ -151,7 +151,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_CommandLineAppSettingsResolvesPlaceholders()
     {
-        string[] appsettings = new[]
+        string[] appsettings =
         {
             "spring:bar:name=myName",
             "--spring:cloud:config:name=${spring:bar:name?noName}"
@@ -199,7 +199,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     name=${spring:line:name?noName}
 ";
 
-        string[] appsettingsLine = new[]
+        string[] appsettingsLine =
         {
             "--spring:line:name=${spring:json:name?noName}"
         };
