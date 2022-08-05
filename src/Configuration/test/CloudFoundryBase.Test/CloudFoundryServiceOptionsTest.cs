@@ -26,7 +26,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithSingleServiceConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -80,7 +80,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithComplexSingleServiceConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -182,7 +182,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithMultipleSameServicesConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {
@@ -251,7 +251,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithIConfigurationRootBinds()
     {
-        string configJson = @"
+        const string configJson = @"
 {
     ""vcap"": {
         ""services"" : {
@@ -308,7 +308,7 @@ public class CloudFoundryServiceOptionsTest
     [Fact]
     public void Constructor_WithIConfigurationBinds()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {

@@ -14,9 +14,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class EventCounterListener : EventListener
 {
+    private const string EventSourceName = "System.Runtime";
+    private const string EventName = "EventCounters";
     private readonly ILogger<EventCounterListener> _logger;
-    private readonly string _eventSourceName = "System.Runtime";
-    private readonly string _eventName = "EventCounters";
     private readonly IMetricsObserverOptions _options;
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();
@@ -46,7 +46,7 @@ public class EventCounterListener : EventListener
 
         try
         {
-            if (eventData.EventName.Equals(_eventName, StringComparison.OrdinalIgnoreCase))
+            if (eventData.EventName.Equals(EventName, StringComparison.OrdinalIgnoreCase))
             {
                 foreach (IDictionary<string, object> payload in eventData.Payload)
                 {
@@ -67,7 +67,7 @@ public class EventCounterListener : EventListener
             throw new ArgumentNullException(nameof(eventSource));
         }
 
-        if (_eventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
+        if (EventSourceName.Equals(eventSource.Name, StringComparison.OrdinalIgnoreCase))
         {
             var refreshInterval = new Dictionary<string, string>
             {

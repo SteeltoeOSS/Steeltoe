@@ -11,8 +11,8 @@ namespace Steeltoe.Common.Expression.Internal.Contexts;
 
 public class StandardServiceExpressionResolver : IServiceExpressionResolver
 {
-    public static readonly string DefaultExpressionPrefix = "#{";
-    public static readonly string DefaultExpressionSuffix = "}";
+    public const string DefaultExpressionPrefix = "#{";
+    public const string DefaultExpressionSuffix = "}";
 
     private readonly ConcurrentDictionary<string, IExpression> _expressionCache = new();
     private readonly ConcurrentDictionary<IServiceExpressionContext, IEvaluationContext> _evaluationCache = new();

@@ -53,11 +53,11 @@ public class CloudFoundryOAuthOptionsTest
     public static TheoryData<string, string, string, string, string> SetEndpointsData()
     {
         var data = new TheoryData<string, string, string, string, string>();
-        string newDomain = "http://not-the-original-domain";
-        string newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
-        string newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
-        string newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
-        string newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
+        const string newDomain = "http://not-the-original-domain";
+        const string newAccessTokenUrl = newDomain + CloudFoundryDefaults.AccessTokenUri;
+        const string newAuthorizationUrl = newDomain + CloudFoundryDefaults.AuthorizationUri;
+        const string newCheckTokenUrl = newDomain + CloudFoundryDefaults.CheckTokenUri;
+        const string newUserInfoUrl = newDomain + CloudFoundryDefaults.UserInfoUri;
 
         data.Add(string.Empty, default, default, default, default);
         data.Add("   ", default, default, default, default);

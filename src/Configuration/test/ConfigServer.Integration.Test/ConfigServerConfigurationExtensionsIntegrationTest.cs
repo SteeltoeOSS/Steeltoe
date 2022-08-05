@@ -26,7 +26,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_ReturnsExpectedDefaultData()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -68,7 +68,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
         // These settings match the default java config server
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -110,7 +110,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv_ReturnsExpectedDefaultData_AsInjectedOptions()
     {
-        string vcapApplication = @" 
+        const string vcapApplication = @" 
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                     ""application_name"": ""foo"",
@@ -134,7 +134,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -156,7 +156,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
 
-        string appSettings = @"
+        const string appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -199,7 +199,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public async Task SpringCloudConfigServer_ConfiguredViaCloudfoundryEnv()
     {
-        string vcapApplication = @" 
+        const string vcapApplication = @" 
                 {
                     ""limits"": {
                     ""mem"": 1024,
@@ -222,7 +222,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
                     ""users"": null
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-config-server"": [
                     {
@@ -246,7 +246,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", vcapApplication);
         Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
 
-        string appSettings = @"
+        const string appSettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -335,7 +335,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     [Trait("Category", "Integration")]
     public void SpringCloudConfigServer_DiscoveryFirst_ReturnsExpectedDefaultData()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {
@@ -385,7 +385,7 @@ public class ConfigServerConfigurationExtensionsIntegrationTest
     public async Task SpringCloudConfigServer_WithHealthEnabled_ReturnsHealth()
     {
         // These settings match the default java config server
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {

@@ -281,8 +281,8 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
             Field = "bar"
         };
 
-        string exchange = "multi.json.exch";
-        string routingKey = "multi.json.rk";
+        const string exchange = "multi.json.exch";
+        const string routingKey = "multi.json.rk";
         string reply = template.ConvertSendAndReceive<string>(exchange, routingKey, bar);
         Assert.Equal("BAR: barMultiListenerJsonService", reply);
 

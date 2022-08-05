@@ -11,8 +11,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Ast;
 public class VariableReference : SpelNode
 {
     // Well known variables:
-    private static readonly string This = "this"; // currently active context object
-    private static readonly string Root = "root"; // root context object
+    private const string This = "this"; // currently active context object
+    private const string Root = "root"; // root context object
 
     private readonly string _name;
     private MethodInfo _method;

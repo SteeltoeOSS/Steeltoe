@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.PostgreSql.EFCore.Test;
 
 public static class PostgresTestHelpers
 {
-    public static string SingleServerVcapEdb = @"
+    public const string SingleServerVcapEdb = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                     ""credentials"": {
@@ -24,7 +24,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string TwoServerVcapEdb = @"
+    public const string TwoServerVcapEdb = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                         ""credentials"": {
@@ -56,7 +56,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string SingleServerVcapCrunchy = @"
+    public const string SingleServerVcapCrunchy = @"
             {
                 ""postgresql-9.5-odb"": [{
                     ""credentials"": {
@@ -88,7 +88,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string SingleServerEncodedVcapCrunchy = @"
+    public const string SingleServerEncodedVcapCrunchy = @"
             {
                 ""postgresql-9.5-odb"": [{
                     ""credentials"": {

@@ -46,7 +46,7 @@ public class NewtonJsonMessageConverterTest
     {
         var converter = new NewtonJsonMessageConverter();
 
-        string payload = "{" + "\"bytes\":\"AQI=\"," + "\"array\":[\"Foo\",\"Bar\"]," + "\"number\":42," + "\"string\":\"Foo\"," + "\"bool\":true," +
+        const string payload = "{" + "\"bytes\":\"AQI=\"," + "\"array\":[\"Foo\",\"Bar\"]," + "\"number\":42," + "\"string\":\"Foo\"," + "\"bool\":true," +
             "\"fraction\":42.0}";
 
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
@@ -76,7 +76,7 @@ public class NewtonJsonMessageConverterTest
     public void FromMessageUntyped()
     {
         var converter = new NewtonJsonMessageConverter();
-        string payload = "{\"bytes\":\"AQI=\",\"array\":[\"Foo\",\"Bar\"]," + "\"number\":42,\"string\":\"Foo\",\"bool\":true,\"fraction\":42.0}";
+        const string payload = "{\"bytes\":\"AQI=\",\"array\":[\"Foo\",\"Bar\"]," + "\"number\":42,\"string\":\"Foo\",\"bool\":true,\"fraction\":42.0}";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
 
@@ -109,7 +109,7 @@ public class NewtonJsonMessageConverterTest
     public void FromMessageInvalidJson()
     {
         var converter = new NewtonJsonMessageConverter();
-        string payload = "FooBar";
+        const string payload = "FooBar";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
         Assert.Throws<MessageConversionException>(() => converter.FromMessage<MyBean>(message));
@@ -119,7 +119,7 @@ public class NewtonJsonMessageConverterTest
     public void FromMessageValidJsonWithUnknownProperty()
     {
         var converter = new NewtonJsonMessageConverter();
-        string payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
+        const string payload = "{\"string\":\"string\",\"unknownProperty\":\"value\"}";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
         var myBean = converter.FromMessage<MyBean>(message);
@@ -130,7 +130,7 @@ public class NewtonJsonMessageConverterTest
     public void FromMessageToList()
     {
         var converter = new NewtonJsonMessageConverter();
-        string payload = "[1, 2, 3, 4, 5, 6, 7, 8, 9]";
+        const string payload = "[1, 2, 3, 4, 5, 6, 7, 8, 9]";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
 
@@ -157,7 +157,7 @@ public class NewtonJsonMessageConverterTest
     public void FromMessageToMessageWithPojo()
     {
         var converter = new NewtonJsonMessageConverter();
-        string payload = "{\"string\":\"foo\"}";
+        const string payload = "{\"string\":\"foo\"}";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
 
@@ -217,10 +217,10 @@ public class NewtonJsonMessageConverterTest
         };
 
         var headers = new MessageHeaders(map);
-        string payload = "H\u00e9llo W\u00f6rld";
+        const string payload = "H\u00e9llo W\u00f6rld";
         IMessage message = converter.ToMessage(payload, headers);
         string actual = encoding.GetString((byte[])message.Payload);
-        string expected = $"\"{payload}\"";
+        const string expected = $"\"{payload}\"";
         Assert.Equal(expected, actual);
         Assert.Equal(contentType, message.Headers[MessageHeaders.ContentType]);
     }
@@ -242,7 +242,7 @@ public class NewtonJsonMessageConverterTest
         };
 
         var headers = new MessageHeaders(map);
-        string payload = "H\u00e9llo W\u00f6rld";
+        const string payload = "H\u00e9llo W\u00f6rld";
         IMessage message = converter.ToMessage(payload, headers);
 
         Assert.Equal($"\"{payload}\"", message.Payload);

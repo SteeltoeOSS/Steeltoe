@@ -239,7 +239,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         _provider = _services.BuildServiceProvider();
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
-        string exchangeName = "test.exchange.internal";
+        const string exchangeName = "test.exchange.internal";
 
         AbstractExchange exchange = new DirectExchange(exchangeName)
         {
@@ -263,7 +263,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _provider = _services.BuildServiceProvider();
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
         var exchange = new DirectExchange(string.Empty);
-        string queueName = "test.queue";
+        const string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
         var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
@@ -278,7 +278,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var exchange = new DirectExchange(string.Empty);
         _services.AddRabbitExchange(exchange);
-        string queueName = "test.queue";
+        const string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
         var binding = new Binding("mybinding", queueName, DestinationType.Queue, exchange.ExchangeName, queueName, null);
@@ -301,7 +301,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _provider = _services.BuildServiceProvider();
         RabbitAdmin rabbitAdmin = _provider.GetRabbitAdmin();
 
-        string queueName = "test.queue";
+        const string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
@@ -319,7 +319,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
 
         var exchange = new DirectExchange(string.Empty);
 
-        string queueName = "test.queue";
+        const string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         rabbitAdmin.DeclareQueue(queue);
 
@@ -343,7 +343,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
     {
         var exchange = new DirectExchange(string.Empty);
         _services.AddRabbitExchange(exchange);
-        string queueName = "test.queue";
+        const string queueName = "test.queue";
         var queue = new Queue(queueName, false, false, false);
         _services.AddRabbitQueue(queue);
         var binding = new Binding("baz", queueName, DestinationType.Queue, exchange.ExchangeName, "test.routingKey", null);

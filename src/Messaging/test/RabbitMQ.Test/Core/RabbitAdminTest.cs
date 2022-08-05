@@ -268,7 +268,7 @@ public class RabbitAdminTest : AbstractTest
             // Ignore
         }
 
-        string goodName = "foobar";
+        const string goodName = "foobar";
         admin.DeclareQueue(new Queue(goodName));
         Assert.Null(admin.GetQueueProperties(longName));
         Assert.NotNull(admin.GetQueueProperties(goodName));

@@ -24,7 +24,7 @@ public class ReadinessHealthContributorTest
     [Fact]
     public void HandlesAccepting()
     {
-        _availability.SetAvailabilityState(_availability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
+        _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "tests");
         var contributor = new ReadinessHealthContributor(_availability);
 
         HealthCheckResult result = contributor.Health();
@@ -35,7 +35,7 @@ public class ReadinessHealthContributorTest
     [Fact]
     public void HandlesRefusing()
     {
-        _availability.SetAvailabilityState(_availability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
+        _availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "tests");
         var contributor = new ReadinessHealthContributor(_availability);
 
         HealthCheckResult result = contributor.Health();

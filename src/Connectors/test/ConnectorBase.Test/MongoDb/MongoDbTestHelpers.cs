@@ -9,7 +9,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF.
     /// </summary>
-    public static string SingleBindingA9SSingleServerVcap = @"
+    public const string SingleBindingA9SSingleServerVcap = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -45,7 +45,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas.
     /// </summary>
-    public static string SingleBindingA9SWithReplicasVcap = @"
+    public const string SingleBindingA9SWithReplicasVcap = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -89,7 +89,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF.
     /// </summary>
-    public static string SingleServerEnterpriseVcap = @"
+    public const string SingleServerEnterpriseVcap = @"
             {
                 ""mongodb-odb"": [{
                     ""name"": ""steeltoe"",
@@ -118,7 +118,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for Azure's CosmoDB via MongoDB API.
     /// </summary>
-    public static string SingleServerCosmosDbVcap = @"
+    public const string SingleServerCosmosDbVcap = @"
             {
                 ""azure-cosmosdb"": [{
                     ""label"": ""azure-cosmosdb"",

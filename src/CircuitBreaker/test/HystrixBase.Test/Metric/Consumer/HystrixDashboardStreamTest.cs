@@ -34,7 +34,7 @@ public class HystrixDashboardStreamTest : CommandStreamTest
     {
         var commandShowsUp = new AtomicBoolean(false);
         var latch = new CountdownEvent(1);
-        int num = 10;
+        const int num = 10;
 
         for (int i = 0; i < 2; i++)
         {

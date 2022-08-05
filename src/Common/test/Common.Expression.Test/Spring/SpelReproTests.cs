@@ -461,7 +461,7 @@ public class SpelReproTests : AbstractExpressionTests
         // var exp = parser.ParseExpression(el1);
         // var evaluated = exp.GetValue(context);
         // Assert.Equal("Arthur", evaluated);
-        string el2 = "#root['value']['givenName']";
+        const string el2 = "#root['value']['givenName']";
         IExpression exp = parser.ParseExpression(el2);
         object evaluated = exp.GetValue(context);
         Assert.Equal("Arthur", evaluated);
@@ -472,7 +472,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        string el1 = "Ls.![#this.Equals('abc')]";
+        const string el1 = "Ls.![#this.Equals('abc')]";
         IExpression exp = parser.ParseRaw(el1);
         var value = (List<object>)exp.GetValue(context);
 
@@ -487,7 +487,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        string el1 = "As.![#this.Equals('abc')]";
+        const string el1 = "As.![#this.Equals('abc')]";
         IExpression exp = parser.ParseRaw(el1);
         bool[] value = (bool[])exp.GetValue(context);
 
@@ -502,7 +502,7 @@ public class SpelReproTests : AbstractExpressionTests
     {
         var context = new StandardEvaluationContext(new C());
         var parser = new SpelExpressionParser();
-        string el1 = "Ms.![Key.Equals('abc')]";
+        const string el1 = "Ms.![Key.Equals('abc')]";
         IExpression exp = parser.ParseRaw(el1);
         var value = (List<object>)exp.GetValue(context);
 
@@ -528,18 +528,18 @@ public class SpelReproTests : AbstractExpressionTests
         var context = new StandardEvaluationContext(list);
         var parser = new SpelExpressionParser();
 
-        string el1 = "#root.?[A < 'hhh']";
+        const string el1 = "#root.?[A < 'hhh']";
         IExpression exp = parser.ParseRaw(el1);
         var value = exp.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(aaa),D(bbb),D(),D(ccc),D()", string.Join(",", value));
 
-        string el2 = "#root.?[A > 'hhh']";
+        const string el2 = "#root.?[A > 'hhh']";
         IExpression exp2 = parser.ParseRaw(el2);
         var value2 = exp2.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(zzz)", string.Join(",", value2));
 
         // trim out the nulls first
-        string el3 = "#root.?[A!=null].?[A < 'hhh']";
+        const string el3 = "#root.?[A!=null].?[A < 'hhh']";
         IExpression exp3 = parser.ParseRaw(el3);
         var value3 = exp3.GetValue(context) as IEnumerable<object>;
         Assert.Equal("D(aaa),D(bbb),D(ccc)", string.Join(",", value3));
@@ -548,7 +548,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void ConversionPriority_SPR8224()
     {
-        int integer = 7;
+        const int integer = 7;
 
         var emptyEvalContext = new StandardEvaluationContext();
 
@@ -585,7 +585,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void WideningPrimitiveConversion_SPR8224()
     {
-        int integerValue = 7;
+        const int integerValue = 7;
         var target = new WideningPrimitiveConversion();
         var emptyEvalContext = new StandardEvaluationContext();
 
@@ -816,7 +816,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_AddFloatWithDouble()
     {
-        double expectedNumber = 10.21f + 10.2;
+        const double expectedNumber = 10.21f + 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f + 10.2");
@@ -827,7 +827,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_AddFloatWithFloat()
     {
-        float expectedNumber = 10.21f + 10.2f;
+        const float expectedNumber = 10.21f + 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f + 10.2f");
@@ -838,7 +838,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_SubtractFloatWithDouble()
     {
-        double expectedNumber = 10.21f - 10.2;
+        const double expectedNumber = 10.21f - 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f - 10.2");
@@ -849,7 +849,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_SubtractFloatWithFloat()
     {
-        float expectedNumber = 10.21f - 10.2f;
+        const float expectedNumber = 10.21f - 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f - 10.2f");
@@ -860,7 +860,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_MultiplyFloatWithDouble()
     {
-        double expectedNumber = 10.21f * 10.2;
+        const double expectedNumber = 10.21f * 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f * 10.2");
@@ -871,7 +871,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_MultiplyFloatWithFloat()
     {
-        float expectedNumber = 10.21f * 10.2f;
+        const float expectedNumber = 10.21f * 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f * 10.2f");
@@ -882,7 +882,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatDivideByFloat()
     {
-        float expectedNumber = -10.21f / -10.2f;
+        const float expectedNumber = -10.21f / -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f / -10.2f");
@@ -893,7 +893,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatDivideByDouble()
     {
-        double expectedNumber = -10.21f / -10.2;
+        const double expectedNumber = -10.21f / -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f / -10.2");
@@ -964,7 +964,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatLessThanFloat()
     {
-        bool expectedNumber = -10.21f < -10.2f;
+        const bool expectedNumber = -10.21f < -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f < -10.2f");
@@ -975,7 +975,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatLessThanDouble()
     {
-        bool expectedNumber = -10.21f < -10.2;
+        const bool expectedNumber = -10.21f < -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f < -10.2");
@@ -986,7 +986,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatLessThanOrEqualFloat()
     {
-        bool expectedNumber = -10.21f <= -10.22f;
+        const bool expectedNumber = -10.21f <= -10.22f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f <= -10.22f");
@@ -997,7 +997,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatLessThanOrEqualDouble()
     {
-        bool expectedNumber = -10.21f <= -10.2;
+        const bool expectedNumber = -10.21f <= -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f <= -10.2");
@@ -1008,7 +1008,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatGreaterThanFloat()
     {
-        bool expectedNumber = -10.21f > -10.2f;
+        const bool expectedNumber = -10.21f > -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f > -10.2f");
@@ -1019,7 +1019,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatGreaterThanDouble()
     {
-        bool expectedResult = -10.21f > -10.2;
+        const bool expectedResult = -10.21f > -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f > -10.2");
@@ -1030,7 +1030,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatGreaterThanOrEqualFloat()
     {
-        bool expectedNumber = -10.21f >= -10.2f;
+        const bool expectedNumber = -10.21f >= -10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f >= -10.2f");
@@ -1041,7 +1041,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatGreaterThanEqualDouble()
     {
-        bool expectedResult = -10.21f >= -10.2;
+        const bool expectedResult = -10.21f >= -10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("-10.21f >= -10.2");
@@ -1052,7 +1052,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatModulusFloat()
     {
-        float expectedResult = 10.21f % 10.2f;
+        const float expectedResult = 10.21f % 10.2f;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f % 10.2f");
@@ -1063,7 +1063,7 @@ public class SpelReproTests : AbstractExpressionTests
     [Fact]
     public void SPR9486_FloatModulusDouble()
     {
-        double expectedResult = 10.21f % 10.2;
+        const double expectedResult = 10.21f % 10.2;
         var parser = new SpelExpressionParser();
         var context = new StandardEvaluationContext();
         IExpression expression = parser.ParseExpression("10.21f % 10.2");
@@ -1429,7 +1429,7 @@ public class SpelReproTests : AbstractExpressionTests
 
         var parser = new SpelExpressionParser();
 
-        string ex = "#root.![T(String).Join(',', #this.Values)]";
+        const string ex = "#root.![T(String).Join(',', #this.Values)]";
         string res = parser.ParseExpression(ex).GetValue<string>(context);
         Assert.Equal("test11,test12,test21,test22", res);
 

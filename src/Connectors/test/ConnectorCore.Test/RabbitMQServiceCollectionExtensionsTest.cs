@@ -81,7 +81,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     [Fact]
     public void AddRabbitMQConnection_MultipleRabbitMQServices_ThrowsConnectorException()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -129,7 +129,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     [Fact]
     public void AddRabbitMQConnection_MultipleRabbitMQServices_DoesNotThrow_IfNameUsed()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {
@@ -183,7 +183,7 @@ public class RabbitMQServiceCollectionExtensionsTest
     [Fact]
     public void AddRabbitMQConnection_WithVCAPs_AddsRabbitMQConnection()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {

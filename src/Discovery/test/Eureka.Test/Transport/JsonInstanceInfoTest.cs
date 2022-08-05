@@ -14,7 +14,7 @@ public class JsonInstanceInfoTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
 { 
     ""instanceId"":""localhost:foo"",
     ""hostName"":""localhost"",

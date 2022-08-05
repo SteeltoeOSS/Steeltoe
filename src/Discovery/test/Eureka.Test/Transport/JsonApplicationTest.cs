@@ -13,7 +13,7 @@ public class JsonApplicationTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
 {
     ""name"":""FOO"",
     ""instance"":[{ 

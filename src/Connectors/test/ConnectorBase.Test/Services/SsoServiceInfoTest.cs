@@ -11,9 +11,9 @@ public class SsoServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        string clientId = "clientId";
-        string clientSecret = "clientSecret";
-        string authDomain = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
+        const string clientId = "clientId";
+        const string clientSecret = "clientSecret";
+        const string authDomain = "https://p-spring-cloud-services.uaa.my-cf.com/oauth/token";
         var r1 = new SsoServiceInfo("myId", clientId, clientSecret, authDomain);
         Assert.Equal("myId", r1.Id);
         Assert.Equal("clientId", r1.ClientId);

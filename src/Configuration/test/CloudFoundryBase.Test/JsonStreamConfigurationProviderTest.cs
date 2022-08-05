@@ -11,7 +11,7 @@ public class JsonStreamConfigurationProviderTest
     [Fact]
     public void Load_LoadsProvidedStream()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""p-config-server"": [{
                         ""name"": ""myConfigServer"",

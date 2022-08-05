@@ -39,7 +39,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddDiscoveryClient_WithEurekaConfig_AddsDiscoveryClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -153,7 +153,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddDiscoveryClient_MultipleRegistryServices_ThrowsConnectorException()
     {
-        string env1 = @"
+        const string env1 = @"
                 {
                     ""limits"": {
                     ""fds"": 16384,
@@ -176,7 +176,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                     ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
                 }";
 
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-service-registry"": [
                     {
@@ -235,7 +235,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddDiscoveryClient_WithConsulConfiguration_AddsDiscoveryClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -364,7 +364,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_WithConfiguration_AddsAndWorks()
     {
-        string appsettings = @"
+        const string appsettings = @"
 {
     ""discovery"": {
         ""services"": [
@@ -396,7 +396,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_WithEurekaConfig_AddsDiscoveryClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -495,7 +495,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
     [Fact]
     public void AddServiceDiscovery_MultipleRegistryServices_ThrowsConnectorException()
     {
-        string env1 = @"
+        const string env1 = @"
                 {
                     ""limits"": {
                     ""fds"": 16384,
@@ -518,7 +518,7 @@ public sealed class DiscoveryServiceCollectionExtensionsTest : IDisposable
                     ""application_id"": ""798c2495-fe75-49b1-88da-b81197f2bf06""
                 }";
 
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-service-registry"": [
                     {

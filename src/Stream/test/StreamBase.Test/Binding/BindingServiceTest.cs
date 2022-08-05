@@ -219,7 +219,7 @@ public class BindingServiceTest : AbstractTest
 #pragma warning restore S2699 // Tests should include assertions
     {
         List<string> searchDirectories = GetSearchDirectories("MockBinder");
-        string mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
+        const string mockBinder = "Steeltoe.Stream.MockBinder.Startup" + "," + "Steeltoe.Stream.MockBinder";
         string mockAssembly = $"{searchDirectories[0]}{Path.DirectorySeparatorChar}Steeltoe.Stream.MockBinder.dll";
 
         ServiceProvider provider = CreateStreamsContainer(searchDirectories, "spring.cloud.stream.bindings.input.destination=fooInput",

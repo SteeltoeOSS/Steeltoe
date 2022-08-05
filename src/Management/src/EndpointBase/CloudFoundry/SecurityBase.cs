@@ -14,19 +14,19 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class SecurityBase
 {
+    public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
+    public const string ApplicationIdMissingMessage = "Application id is not available";
+    public const string EndpointNotConfiguredMessage = "Endpoint is not available";
+    public const string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
+    public const string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
+    public const string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
+    public const string AccessDeniedMessage = "Access denied";
+    public const string AuthorizationHeader = "Authorization";
+    public const string Bearer = "bearer";
+    public const string ReadSensitiveData = "read_sensitive_data";
     private readonly ICloudFoundryOptions _options;
     private readonly IManagementOptions _managementOptions;
     private readonly ILogger _logger;
-    public readonly int DefaultGetPermissionsTimeout = 5000; // Milliseconds
-    public readonly string ApplicationIdMissingMessage = "Application id is not available";
-    public readonly string EndpointNotConfiguredMessage = "Endpoint is not available";
-    public readonly string AuthorizationHeaderInvalid = "Authorization header is missing or invalid";
-    public readonly string CloudfoundryApiMissingMessage = "Cloud controller URL is not available";
-    public readonly string CloudfoundryNotReachableMessage = "Cloud controller not reachable";
-    public readonly string AccessDeniedMessage = "Access denied";
-    public readonly string AuthorizationHeader = "Authorization";
-    public readonly string Bearer = "bearer";
-    public readonly string ReadSensitiveData = "read_sensitive_data";
     private HttpClient _httpClient;
 
     public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)

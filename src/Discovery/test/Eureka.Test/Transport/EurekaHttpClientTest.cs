@@ -75,7 +75,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
         var config = new EurekaInstanceConfig();
         var info = InstanceInfo.FromInstanceConfig(config);
@@ -102,7 +102,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaInstanceConfig
@@ -173,7 +173,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaInstanceConfig
@@ -205,7 +205,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task GetApplicationsAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        string json = @"
+        const string json = @"
                 { 
                     ""applications"": { 
                         ""versions__delta"":""1"",
@@ -244,7 +244,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -312,7 +312,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task GetApplicationAsync_InvokesServer_ReturnsExpectedApplications()
     {
-        string json = @"
+        const string json = @"
                 {
                     ""application"": {
                         ""name"":""FOO"",
@@ -347,7 +347,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -385,7 +385,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task GetApplicationAsync__FirstServerFails_InvokesSecondServer_ReturnsExpectedApplications()
     {
-        string json = @"
+        const string json = @"
                 {
                     ""application"": {
                         ""name"":""FOO"",
@@ -421,7 +421,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -486,7 +486,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task GetInstanceAsync_InvokesServer_ReturnsExpectedInstances()
     {
-        string json = @"
+        const string json = @"
                 { 
                     ""instance"": {
                         ""instanceId"":""DESKTOP-GNQ5SUT"",
@@ -523,7 +523,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -552,7 +552,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
     [Fact]
     public async System.Threading.Tasks.Task GetInstanceAsync_FirstServerFails_InvokesSecondServer_ReturnsExpectedInstances()
     {
-        string json = @"
+        const string json = @"
                 { 
                     ""instance"":{
                         ""instanceId"":""DESKTOP-GNQ5SUT"",
@@ -590,7 +590,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -643,7 +643,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -699,7 +699,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig
@@ -763,7 +763,7 @@ public class EurekaHttpClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var clientConfig = new EurekaClientConfig

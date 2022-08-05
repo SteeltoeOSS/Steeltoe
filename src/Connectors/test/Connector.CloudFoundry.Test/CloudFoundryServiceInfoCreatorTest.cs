@@ -78,7 +78,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void BuildServiceInfos_WithCloudFoundryServices_BuildsExpected()
     {
-        string environment2 = @"
+        const string environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -205,7 +205,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void GetServiceInfosType_WithVCAPs_ReturnsExpected()
     {
-        string environment2 = @"
+        const string environment2 = @"
                 {
                     ""p-mysql"": [{
                         ""credentials"": {
@@ -288,7 +288,7 @@ public class CloudFoundryServiceInfoCreatorTest
     [Fact]
     public void BuildServiceInfos_WithCloudFoundryServices_WithInvalidURIInMongoBinding_BuildsExpected()
     {
-        string environment2 = @"
+        const string environment2 = @"
                 {
                     ""p-redis"": [{
                         ""credentials"": {

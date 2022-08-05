@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.MySql.EFCore.Test;
 
 public static class MySqlTestHelpers
 {
-    public static string SingleServerVcap = @"
+    public const string SingleServerVcap = @"
             {
                 ""p-mysql"": [{
                     ""credentials"": {
@@ -30,7 +30,7 @@ public static class MySqlTestHelpers
                 }]
             }";
 
-    public static string TwoServerVcap = @"
+    public const string TwoServerVcap = @"
             {
                 ""p-mysql"": [{
                     ""credentials"": {

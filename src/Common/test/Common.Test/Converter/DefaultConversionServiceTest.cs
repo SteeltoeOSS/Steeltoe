@@ -128,8 +128,8 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestShortToString()
     {
-        short signedThree = 3;
-        ushort unsignedThree = 3;
+        const short signedThree = 3;
+        const ushort unsignedThree = 3;
         Assert.Equal("3", ConversionService.Convert<string>(signedThree));
         Assert.Equal("3", ConversionService.Convert<string>(unsignedThree));
     }
@@ -195,7 +195,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestStringToDecimal()
     {
-        decimal result = 1.0m;
+        const decimal result = 1.0m;
         Assert.Equal(result, ConversionService.Convert<decimal>("1.0"));
         Assert.Equal(result, ConversionService.Convert<decimal?>("1.0"));
     }
@@ -203,7 +203,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestDecimalToString()
     {
-        decimal source = 300.00m;
+        const decimal source = 300.00m;
         Assert.Equal("300.00", ConversionService.Convert<string>(source));
     }
 
@@ -238,7 +238,7 @@ public class DefaultConversionServiceTest
     [Fact]
     public void TestStringToString()
     {
-        string str = "test";
+        const string str = "test";
         Assert.Same(str, ConversionService.Convert<string>(str));
     }
 

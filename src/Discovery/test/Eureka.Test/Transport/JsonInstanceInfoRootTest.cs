@@ -14,7 +14,7 @@ public class JsonInstanceInfoRootTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
 { 
     ""instance"":
     {

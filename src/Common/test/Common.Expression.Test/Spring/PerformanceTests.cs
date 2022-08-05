@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 #pragma warning disable xUnit1004 // Test methods should not be skipped
 public class PerformanceTests
 {
-    private static readonly int Iterations = 10000;
+    private const int Iterations = 10000;
     private static readonly bool IsDebug = bool.Parse(bool.FalseString);
     private static readonly IExpressionParser Parser = new SpelExpressionParser();
     private static readonly IEvaluationContext EContext = TestScenarioCreator.GetTestEvaluationContext();

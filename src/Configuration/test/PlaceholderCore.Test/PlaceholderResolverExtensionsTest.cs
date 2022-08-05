@@ -57,7 +57,7 @@ public class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_WebHostBuilder_WrapsApplicationsConfiguration()
     {
-        string appsettingsJson = @"
+        const string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -71,7 +71,7 @@ public class PlaceholderResolverExtensionsTest
                     }
                 }";
 
-        string appsettingsXml = @"
+        const string appsettingsXml = @"
                 <settings>
                     <spring>
                         <xml>
@@ -80,7 +80,7 @@ public class PlaceholderResolverExtensionsTest
                     </spring>
                 </settings>";
 
-        string appsettingsIni = @"
+        const string appsettingsIni = @"
 [spring:ini]
     name=${spring:line:name?noName}
 ";
@@ -118,7 +118,7 @@ public class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolver_HostBuilder_WrapsApplicationsConfiguration()
     {
-        string appsettingsJson = @"
+        const string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -132,7 +132,7 @@ public class PlaceholderResolverExtensionsTest
                     }
                 }";
 
-        string appsettingsXml = @"
+        const string appsettingsXml = @"
                 <settings>
                     <spring>
                         <xml>
@@ -163,7 +163,7 @@ public class PlaceholderResolverExtensionsTest
     [Fact]
     public void AddPlaceholderResolverViaWebApplicationBuilderWorks()
     {
-        string appsettingsJson = @"
+        const string appsettingsJson = @"
             {
                 ""spring"": {
                     ""json"": {
@@ -177,7 +177,7 @@ public class PlaceholderResolverExtensionsTest
                 }
             }";
 
-        string appsettingsXml = @"
+        const string appsettingsXml = @"
             <settings>
                 <spring>
                     <xml>

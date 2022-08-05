@@ -599,8 +599,8 @@ public class ClientCertificateAuthenticationTests
 
     private static class Certificates
     {
-        private static readonly string ServerEku = "1.3.6.1.5.5.7.3.1";
-        private static readonly string ClientEku = "1.3.6.1.5.5.7.3.2";
+        private const string ServerEku = "1.3.6.1.5.5.7.3.1";
+        private const string ClientEku = "1.3.6.1.5.5.7.3.2";
 
         private static readonly X509KeyUsageExtension DigitalSignatureOnlyUsage = new(X509KeyUsageFlags.DigitalSignature, true);
 

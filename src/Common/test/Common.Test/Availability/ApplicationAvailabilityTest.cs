@@ -23,8 +23,8 @@ public class ApplicationAvailabilityTest
         var availability = new ApplicationAvailability(_logger);
 
         availability.SetAvailabilityState("Test", LivenessState.Broken, GetType().Name);
-        availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, GetType().Name);
-        availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, GetType().Name);
+        availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, GetType().Name);
+        availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, GetType().Name);
 
         Assert.Equal(LivenessState.Broken, availability.GetAvailabilityState("Test"));
         Assert.Equal(LivenessState.Correct, availability.GetLivenessState());
@@ -48,8 +48,10 @@ public class ApplicationAvailabilityTest
     {
         var availability = new ApplicationAvailability(_logger);
 
-        Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(availability.LivenessKey, ReadinessState.AcceptingTraffic, null));
-        Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(availability.ReadinessKey, LivenessState.Correct, null));
+        Assert.Throws<InvalidOperationException>(() =>
+            availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null));
+
+        Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, LivenessState.Correct, null));
     }
 
     [Fact]
@@ -59,12 +61,12 @@ public class ApplicationAvailabilityTest
         availability.LivenessChanged += Availability_LivenessChanged;
         availability.ReadinessChanged += Availability_ReadinessChanged;
 
-        availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Broken, null);
+        availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, null);
         Assert.Equal(LivenessState.Broken, _lastLivenessState);
-        availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, null);
+        availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, null);
         Assert.Equal(ReadinessState.RefusingTraffic, _lastReadinessState);
-        availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, null);
-        availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+        availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
+        availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         Assert.Equal(2, _livenessChanges);
         Assert.Equal(LivenessState.Correct, _lastLivenessState);

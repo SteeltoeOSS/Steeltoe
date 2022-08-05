@@ -15,14 +15,14 @@ public class AddressTest
     public void ToStringCheck()
     {
         var address = new Address("my-exchange", "routing-key");
-        string replyToUri = "my-exchange/routing-key";
+        const string replyToUri = "my-exchange/routing-key";
         Assert.Equal(replyToUri, address.ToString());
     }
 
     [Fact]
     public void Parse()
     {
-        string replyToUri = "direct://my-exchange/routing-key";
+        const string replyToUri = "direct://my-exchange/routing-key";
         var address = new Address(replyToUri);
         Assert.Equal("my-exchange", address.ExchangeName);
         Assert.Equal("routing-key", address.RoutingKey);
@@ -75,7 +75,7 @@ public class AddressTest
     [Fact]
     public void TestDirectReplyTo()
     {
-        string replyTo = $"{Address.AmqRabbitMQReplyTo}.ab/cd/ef";
+        const string replyTo = $"{Address.AmqRabbitMQReplyTo}.ab/cd/ef";
         var headers = new MessageHeaders();
         RabbitHeaderAccessor props = RabbitHeaderAccessor.GetMutableAccessor(headers);
         props.ReplyTo = replyTo;

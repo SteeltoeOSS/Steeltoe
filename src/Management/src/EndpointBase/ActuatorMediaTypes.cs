@@ -6,15 +6,11 @@ namespace Steeltoe.Management.Endpoint;
 
 public static class ActuatorMediaTypes
 {
-    public static readonly string V1Json = "application/vnd.spring-boot.actuator.v1+json";
-
-    public static readonly string V2Json = "application/vnd.spring-boot.actuator.v2+json";
-
-    public static readonly string V3Json = "application/vnd.spring-boot.actuator.v3+json";
-
-    public static readonly string AppJson = "application/json";
-
-    public static readonly string Any = "*/*";
+    public const string V1Json = "application/vnd.spring-boot.actuator.v1+json";
+    public const string V2Json = "application/vnd.spring-boot.actuator.v2+json";
+    public const string V3Json = "application/vnd.spring-boot.actuator.v3+json";
+    public const string AppJson = "application/json";
+    public const string Any = "*/*";
 
     public static string GetContentHeaders(List<string> acceptHeaders, MediaTypeVersion version = MediaTypeVersion.V2)
     {

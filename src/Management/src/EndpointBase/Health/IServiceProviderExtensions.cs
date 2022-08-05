@@ -26,12 +26,12 @@ public static class ServiceProviderExtensions
 
             lifetime.ApplicationStarted.Register(() =>
             {
-                availability.SetAvailabilityState(availability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
-                availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
+                availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "ApplicationStarted");
+                availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, "ApplicationStarted");
             });
 
             lifetime.ApplicationStopping.Register(() =>
-                availability.SetAvailabilityState(availability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
+                availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.RefusingTraffic, "ApplicationStopping"));
         }
 
         return serviceProvider;

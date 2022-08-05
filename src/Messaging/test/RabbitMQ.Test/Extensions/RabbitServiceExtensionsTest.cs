@@ -499,10 +499,10 @@ public class RabbitServiceExtensionsTest
     [Fact]
     public void ConfigureRabbitOptions_Configure()
     {
-        string hostPrefix = "spring:rabbitmq:host";
-        string portPrefix = "spring:rabbitmq:port";
-        string usernamePrefix = "spring:rabbitmq:username";
-        string passwordPrefix = "spring:rabbitmq:password";
+        const string hostPrefix = "spring:rabbitmq:host";
+        const string portPrefix = "spring:rabbitmq:port";
+        const string usernamePrefix = "spring:rabbitmq:username";
+        const string passwordPrefix = "spring:rabbitmq:password";
         var services = new ServiceCollection();
 
         var appsettings = new Dictionary<string, string>
@@ -531,8 +531,8 @@ public class RabbitServiceExtensionsTest
     [Fact]
     public void ConfigureRabbitOptions_OverrideAddressWithServiceInfo()
     {
-        string usernamePrefix = "spring:rabbitmq:username";
-        string passwordPrefix = "spring:rabbitmq:password";
+        const string usernamePrefix = "spring:rabbitmq:username";
+        const string passwordPrefix = "spring:rabbitmq:password";
         var services = new ServiceCollection();
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);

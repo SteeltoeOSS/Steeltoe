@@ -35,7 +35,7 @@ public class CloudFoundryOpenIdConnectConfigurerTest
     [Fact]
     public void Configure_WithServiceInfo_ReturnsExpected()
     {
-        string authUrl = "https://domain";
+        const string authUrl = "https://domain";
         var connectOptions = new OpenIdConnectOptions();
         var info = new SsoServiceInfo("foobar", "clientId", "secret", authUrl);
 

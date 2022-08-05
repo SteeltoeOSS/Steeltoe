@@ -48,7 +48,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseCharset()
     {
-        string s = "text/html; charset=iso-8859-1";
+        const string s = "text/html; charset=iso-8859-1";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("text", mimeType.Type);
         Assert.Equal("html", mimeType.Subtype);
@@ -58,7 +58,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseQuotedCharset()
     {
-        string s = "application/xml;charset=\"utf-8\"";
+        const string s = "application/xml;charset=\"utf-8\"";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("application", mimeType.Type);
         Assert.Equal("xml", mimeType.Subtype);
@@ -68,7 +68,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseQuotedSeparator()
     {
-        string s = "application/xop+xml;charset=utf-8;type=\"application/soap+xml;action=\\\"https://x.y.z\\\"\"";
+        const string s = "application/xop+xml;charset=utf-8;type=\"application/soap+xml;action=\\\"https://x.y.z\\\"\"";
         var mimeType = MimeType.ToMimeType(s);
         Assert.Equal("application", mimeType.Type);
         Assert.Equal("xop+xml", mimeType.Subtype);
@@ -157,7 +157,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseMimeType()
     {
-        string s = "audio/*";
+        const string s = "audio/*";
         MimeType mimeType = MimeTypeUtils.ParseMimeType(s);
         Assert.Equal("audio", mimeType.Type);
         Assert.Equal("*", mimeType.Subtype);
@@ -266,7 +266,7 @@ public class MimeTypeTest
     [Fact]
     public void ParseMimeTypes()
     {
-        string s = "text/plain, text/html, text/x-dvi, text/x-c";
+        const string s = "text/plain, text/html, text/x-dvi, text/x-c";
         List<MimeType> mimeTypes = MimeTypeUtils.ParseMimeTypes(s);
         Assert.NotNull(mimeTypes);
         Assert.Equal(4, mimeTypes.Count);

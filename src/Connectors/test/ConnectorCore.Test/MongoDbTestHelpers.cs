@@ -9,7 +9,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample User-Provided Service.
     /// </summary>
-    public static string SingleUserProvidedService = @"
+    public const string SingleUserProvidedService = @"
             {
                 ""user-provided"": [{
                     ""name"": ""mongodb-user-provided-service"",
@@ -28,7 +28,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for a9s MongoDB for PCF.
     /// </summary>
-    public static string SingleBindingA9SSingleServerVcap = @"
+    public const string SingleBindingA9SSingleServerVcap = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -68,7 +68,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for a9s MongoDB with replicas.
     /// </summary>
-    public static string SingleBindingA9SWithReplicasVcap = @"
+    public const string SingleBindingA9SWithReplicasVcap = @"
             {
                 ""a9s-mongodb36"": [{
                     ""name"": ""steeltoe"",
@@ -112,7 +112,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for MongoDB Enterprise Service for PCF.
     /// </summary>
-    public static string SingleBindingEnterpriseVcap = @"
+    public const string SingleBindingEnterpriseVcap = @"
             {
                 ""mongodb-odb"": [{
                     ""name"": ""steeltoe"",
@@ -141,7 +141,7 @@ public static class MongoDbTestHelpers
     /// <summary>
     /// Sample VCAP_SERVICES entry for two instances of MongoDB Enterprise Service for PCF.
     /// </summary>
-    public static string DoubleBindingEnterpriseVcap = @"
+    public const string DoubleBindingEnterpriseVcap = @"
             {
                 ""mongodb-odb"": [{
                     ""name"": ""steeltoe"",

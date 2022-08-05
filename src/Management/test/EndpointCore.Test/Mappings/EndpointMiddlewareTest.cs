@@ -55,7 +55,7 @@ public class EndpointMiddlewareTest : BaseTest
         context.Response.Body.Seek(0, SeekOrigin.Begin);
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();
-        string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
+        const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"dispatcherServlet\":[]}}}}}";
         Assert.Equal(expected, json);
     }
 
@@ -75,7 +75,7 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 
-        string expected =
+        const string expected =
             "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
 
         Assert.Equal(expected, json);

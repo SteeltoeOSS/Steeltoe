@@ -43,7 +43,7 @@ public class ContentTypeTckTest : AbstractTest
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
         byte[] payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
@@ -61,7 +61,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
         byte[] payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
@@ -81,7 +81,7 @@ public class ContentTypeTckTest : AbstractTest
 
         var source = provider.GetService<InputDestination>();
         var target = provider.GetService<OutputDestination>();
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
 
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).SetHeader(MessageHeaders.ContentType, "text/plain")
             .SetHeader("originalContentType", "application/json;charset=UTF-8").Build();
@@ -106,7 +106,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
         byte[] payload = outputMessage.Payload as byte[];
         Assert.NotNull(payload);
@@ -124,7 +124,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         byte[] payload = outputMessage.Payload as byte[];
@@ -143,7 +143,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
         byte[] payload = outputMessage.Payload as byte[];
@@ -164,7 +164,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -184,7 +184,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -205,7 +205,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -226,7 +226,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -248,7 +248,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -269,7 +269,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -290,7 +290,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -311,7 +311,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -330,7 +330,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
 
         IMessage outputMessage = DoSendReceive(provider, jsonPayload,
             new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeType.ToMimeType("text/plain")));
@@ -353,7 +353,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
 
         IMessage outputMessage = DoSendReceive(provider, jsonPayload,
             new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeType.ToMimeType("text/plain")));
@@ -374,7 +374,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, new MimeType("text")));
 
         Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -394,7 +394,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload, new KeyValuePair<string, object>(MessageHeaders.ContentType, MimeTypeUtils.TextPlain));
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -415,7 +415,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -434,7 +434,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
 
         IMessage<byte[]> message = Message.Create(Encoding.UTF8.GetBytes(jsonPayload), new MessageHeaders(new Dictionary<string, object>
         {
@@ -459,7 +459,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -482,7 +482,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -500,7 +500,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -521,7 +521,7 @@ public class ContentTypeTckTest : AbstractTest
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -541,7 +541,7 @@ public class ContentTypeTckTest : AbstractTest
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.ApplicationJson, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -561,7 +561,7 @@ public class ContentTypeTckTest : AbstractTest
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         Assert.Equal(MimeTypeUtils.TextPlain, outputMessage.Headers.Get<MimeType>(MessageHeaders.ContentType));
@@ -583,7 +583,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -605,7 +605,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -626,7 +626,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         DoSendReceive(provider, jsonPayload, typeof(MessagingException));
     }
 
@@ -642,7 +642,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         DoSendReceive(provider, jsonPayload, typeof(MessageConversionException));
     }
 
@@ -656,7 +656,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "[{\"person\":{\"name\":\"jon\"},\"id\":123},{\"person\":{\"name\":\"jane\"},\"id\":456}]";
+        const string jsonPayload = "[{\"person\":{\"name\":\"jon\"},\"id\":123},{\"person\":{\"name\":\"jane\"},\"id\":456}]";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -685,7 +685,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -703,7 +703,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -721,7 +721,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "[\"foo\",\"bar\"]";
+        const string jsonPayload = "[\"foo\",\"bar\"]";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -739,7 +739,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "{\"name\":\"oleg\"}";
+        const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
 
         byte[] payload = outputMessage.Payload as byte[];
@@ -759,7 +759,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
-        string jsonPayload = "[\"foo\",\"bar\"]";
+        const string jsonPayload = "[\"foo\",\"bar\"]";
 
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).SetHeader(MessageHeaders.ContentType, MimeTypeUtils.ApplicationJson)
             .Build();
@@ -782,7 +782,7 @@ public class ContentTypeTckTest : AbstractTest
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-        string jsonPayload = "[\"foo\",\"bar\"]";
+        const string jsonPayload = "[\"foo\",\"bar\"]";
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).Build();
         IMessage outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 
@@ -802,7 +802,7 @@ public class ContentTypeTckTest : AbstractTest
 
         await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
 
-        string jsonPayload = "[\"foo\",\"bar\"]";
+        const string jsonPayload = "[\"foo\",\"bar\"]";
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).Build();
         IMessage outputMessage = DoSendReceive(provider, (IMessage<byte[]>)message);
 

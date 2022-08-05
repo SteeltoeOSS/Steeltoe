@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.MySql.Test;
 
 public static class MySqlTestHelpers
 {
-    public static string SingleServerVcap = @"
+    public const string SingleServerVcap = @"
             {
                 ""p-mysql"": [
                 {
@@ -31,7 +31,7 @@ public static class MySqlTestHelpers
                 }]
             }";
 
-    public static string SingleServerAzureVcap = @"
+    public const string SingleServerAzureVcap = @"
             {
                 ""azure-mysql-5-7"": [{
                     ""name"": ""azure-beetmysql"",
@@ -64,7 +64,7 @@ public static class MySqlTestHelpers
                 }]
             }";
 
-    public static string TwoServerVcap = @"
+    public const string TwoServerVcap = @"
             {
                 ""p-mysql"": [
                 {

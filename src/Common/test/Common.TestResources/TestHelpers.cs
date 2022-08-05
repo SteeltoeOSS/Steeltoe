@@ -14,7 +14,7 @@ namespace Steeltoe;
 
 public static class TestHelpers
 {
-    public static readonly string VcapApplication = @"
+    public const string VcapApplication = @"
             {
                 ""limits"": {
                     ""fds"": 16384,

@@ -13,7 +13,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesSinglePlaceholder()
     {
-        string text = "foo=${foo}";
+        const string text = "foo=${foo}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -31,7 +31,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesSingleSpringPlaceholder()
     {
-        string text = "foo=${foo.bar}";
+        const string text = "foo=${foo.bar}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -49,7 +49,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultiplePlaceholders()
     {
-        string text = "foo=${foo},bar=${bar}";
+        const string text = "foo=${foo},bar=${bar}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -67,7 +67,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleSpringPlaceholders()
     {
-        string text = "foo=${foo.boo},bar=${bar.far}";
+        const string text = "foo=${foo.boo},bar=${bar.far}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -85,7 +85,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursivePlaceholders()
     {
-        string text = "foo=${bar}";
+        const string text = "foo=${bar}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -104,7 +104,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveSpringPlaceholders()
     {
-        string text = "foo=${bar.boo}";
+        const string text = "foo=${bar.boo}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -123,7 +123,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveInPlaceholders()
     {
-        string text1 = "foo=${b${inner}}";
+        const string text1 = "foo=${b${inner}}";
         var builder1 = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -135,7 +135,7 @@ public class PropertyPlaceholderHelperTest
         builder1.AddInMemoryCollection(dic1);
         IConfigurationRoot config1 = builder1.Build();
 
-        string text2 = "${top}";
+        const string text2 = "${top}";
         var builder2 = new ConfigurationBuilder();
 
         var dic2 = new Dictionary<string, string>
@@ -158,7 +158,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesMultipleRecursiveInSpringPlaceholders()
     {
-        string text1 = "foo=${b${inner.placeholder}}";
+        const string text1 = "foo=${b${inner.placeholder}}";
         var builder1 = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -170,7 +170,7 @@ public class PropertyPlaceholderHelperTest
         builder1.AddInMemoryCollection(dic1);
         IConfigurationRoot config1 = builder1.Build();
 
-        string text2 = "${top}";
+        const string text2 = "${top}";
         var builder2 = new ConfigurationBuilder();
 
         var dic2 = new Dictionary<string, string>
@@ -193,7 +193,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_UnresolvedPlaceholderIsIgnored()
     {
-        string text = "foo=${foo},bar=${bar}";
+        const string text = "foo=${foo},bar=${bar}";
         var builder = new ConfigurationBuilder();
 
         var dic1 = new Dictionary<string, string>
@@ -211,7 +211,7 @@ public class PropertyPlaceholderHelperTest
     [Fact]
     public void ResolvePlaceholders_ResolvesArrayRefPlaceholder()
     {
-        string json1 = @"
+        const string json1 = @"
 {
     ""vcap"": {
         ""application"": {
@@ -249,7 +249,7 @@ public class PropertyPlaceholderHelperTest
         builder.AddJsonFile(fileName);
         IConfigurationRoot config = builder.Build();
 
-        string text = "foo=${vcap:application:uris[1]}";
+        const string text = "foo=${vcap:application:uris[1]}";
 
         string result = PropertyPlaceholderHelper.ResolvePlaceholders(text, config);
         Assert.Equal("foo=my-app2.10.244.0.34.xip.io", result);

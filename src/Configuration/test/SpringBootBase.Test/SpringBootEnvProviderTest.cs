@@ -22,7 +22,7 @@ public class SpringBootEnvProviderTest
     [Fact]
     public void TryGet_Tree()
     {
-        string configString = @"{
+        const string configString = @"{
                     ""a.b.c"": {
                                     ""e.f"": {
                                             ""g"":""h"",

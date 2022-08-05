@@ -20,7 +20,7 @@ public class RabbitHeaderAccessorTest
     public void ValidateAmqpHeaders()
     {
         var accessor = new RabbitHeaderAccessor();
-        string correlationId = "correlation-id-1234";
+        const string correlationId = "correlation-id-1234";
         long time = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         accessor.AppId = "app-id-1234";
         accessor.ClusterId = "cluster-id-1234";

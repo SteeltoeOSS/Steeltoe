@@ -136,14 +136,14 @@ public class SsoServiceInfoFactoryTest
     [Fact]
     public void UpdateUaaScheme_UpdatesSchemeProperly()
     {
-        string uaa1 = "uaa://sso.login.system.testcloud.com";
+        const string uaa1 = "uaa://sso.login.system.testcloud.com";
         var factory = new SsoServiceInfoFactory();
         string result = factory.UpdateUaaScheme(uaa1);
         Assert.Equal("https://sso.login.system.testcloud.com", result);
-        string uaa2 = "uaa://uaa.system.testcloud.com";
+        const string uaa2 = "uaa://uaa.system.testcloud.com";
         result = factory.UpdateUaaScheme(uaa2);
         Assert.Equal("https://uaa.system.testcloud.com", result);
-        string nonUaa = "https://uaa.system.testcloud.com";
+        const string nonUaa = "https://uaa.system.testcloud.com";
         result = factory.UpdateUaaScheme(nonUaa);
         Assert.Equal(nonUaa, result);
     }

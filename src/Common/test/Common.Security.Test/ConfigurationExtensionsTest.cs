@@ -109,7 +109,7 @@ public class ConfigurationExtensionsTest
         var filename = sandbox.CreateFile("fakeCertificate.p12", "cert1");
         */
 
-        string filename = "fakeCertificate.p12";
+        const string filename = "fakeCertificate.p12";
         await File.WriteAllTextAsync(filename, "cert1");
 
         IConfigurationRoot config = new ConfigurationBuilder().AddCertificateFile(filename).Build();

@@ -65,8 +65,8 @@ public class ConnectionStringConfigurationProviderTest
     [Fact]
     public void ProviderSeesConfigUpdates()
     {
-        string appSettings1 = @"{ ""redis"": { ""client"": { ""host"": ""testHost"" } } }";
-        string appSettings2 = @"{ ""redis"": { ""client"": { ""host"": ""updatedTestHost"" } } }";
+        const string appSettings1 = @"{ ""redis"": { ""client"": { ""host"": ""testHost"" } } }";
+        const string appSettings2 = @"{ ""redis"": { ""client"": { ""host"": ""updatedTestHost"" } } }";
         using var sandbox = new Sandbox();
         string path = sandbox.CreateFile("appsettings.json", appSettings1);
         string directory = Path.GetDirectoryName(path);

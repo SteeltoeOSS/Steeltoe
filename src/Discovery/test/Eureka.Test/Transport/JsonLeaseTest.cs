@@ -13,7 +13,7 @@ public class JsonLeaseTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
 {   
     ""renewalIntervalInSecs"":30,
     ""durationInSecs"":90,

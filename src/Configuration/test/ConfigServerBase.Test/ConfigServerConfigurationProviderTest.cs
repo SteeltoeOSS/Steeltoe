@@ -432,7 +432,7 @@ public class ConfigServerConfigurationProviderTest
     public async Task Create_WithPollingTimer()
     {
         // Arrange
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""testname"",
                     ""profiles"": [""Production""],
@@ -476,7 +476,7 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void DoLoad_MultipleLabels_ChecksAllLabels()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""testname"",
                     ""profiles"": [""Production""],
@@ -526,7 +526,7 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task RemoteLoadAsync_ConfigServerReturnsGood()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""testname"",
                     ""profiles"": [""Production""],
@@ -815,7 +815,7 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Load_ChangesDataDictionary()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""testname"",
                     ""profiles"": [""Production""],
@@ -859,7 +859,7 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void ReLoad_DataDictionary_With_New_Configurations()
     {
-        string environment = @"
+        const string environment = @"
                     {
                         ""name"": ""testname"",
                         ""profiles"": [""Production""],
@@ -1260,7 +1260,7 @@ public class ConfigServerConfigurationProviderTest
     [Fact]
     public void Reload_And_Bind_Without_Throwing_Exception()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""testname"",
                     ""profiles"": [""Production""],

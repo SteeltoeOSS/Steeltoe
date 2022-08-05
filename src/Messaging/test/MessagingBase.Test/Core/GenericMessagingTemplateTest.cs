@@ -328,7 +328,7 @@ public class GenericMessagingTemplateTest
             }
             catch (MessageDeliveryException ex)
             {
-                string expected = "Reply message received but the receiving thread has exited due to a timeout";
+                const string expected = "Reply message received but the receiving thread has exited due to a timeout";
                 string actual = ex.Message;
 
                 if (!expected.Equals(actual))

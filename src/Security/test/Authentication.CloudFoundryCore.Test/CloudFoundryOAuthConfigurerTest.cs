@@ -17,7 +17,7 @@ public class CloudFoundryOAuthConfigurerTest
         var opts = new CloudFoundryOAuthOptions();
         CloudFoundryOAuthConfigurer.Configure(null, opts);
 
-        string authUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}";
+        const string authUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}";
         Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
         Assert.Equal(CloudFoundryDefaults.ClientId, opts.ClientId);
         Assert.Equal(CloudFoundryDefaults.ClientSecret, opts.ClientSecret);
@@ -40,7 +40,7 @@ public class CloudFoundryOAuthConfigurerTest
         var info = new SsoServiceInfo("foobar", "clientId", "secret", "http://domain");
         CloudFoundryOAuthConfigurer.Configure(info, opts);
 
-        string authUrl = "http://domain";
+        const string authUrl = "http://domain";
         Assert.Equal(CloudFoundryDefaults.AuthenticationScheme, opts.ClaimsIssuer);
         Assert.Equal("clientId", opts.ClientId);
         Assert.Equal("secret", opts.ClientSecret);

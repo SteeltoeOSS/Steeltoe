@@ -13,7 +13,7 @@ public class JsonSerializationTest : AbstractBaseTest
     [Fact]
     public void Deserialize_BadJson_Throws()
     {
-        string json = @"
+        const string json = @"
 { 
     'instanceId':'localhost:foo',
     'hostName':'localhost',

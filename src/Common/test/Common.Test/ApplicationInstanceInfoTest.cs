@@ -37,7 +37,7 @@ public class ApplicationInstanceInfoTest
     [Fact]
     public void ConstructorReadsApplicationConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
             {
                 ""Application"" : {
                     ""Name"": ""my-app"",

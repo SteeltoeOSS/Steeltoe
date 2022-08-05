@@ -589,7 +589,7 @@ public abstract class AbstractPlatformTransactionManager : IPlatformTransactionM
         }
         catch (Exception)
         {
-            string exMessage = "Inner transaction begin exception overridden by outer transaction resume exception";
+            const string exMessage = "Inner transaction begin exception overridden by outer transaction resume exception";
             Logger?.LogError(beginEx, exMessage);
             throw;
         }

@@ -209,7 +209,7 @@ public class ObjectUtilsTest
     [Fact]
     public void NullSafeHashCodeWithObject()
     {
-        string str = "Luke";
+        const string str = "Luke";
         Assert.Equal(str.GetHashCode(), ObjectUtils.NullSafeHashCode(str));
     }
 

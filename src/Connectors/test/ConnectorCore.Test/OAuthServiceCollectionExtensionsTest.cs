@@ -80,7 +80,7 @@ public class OAuthServiceCollectionExtensionsTest
     [Fact]
     public void AddOAuthServiceOptions_MultipleOAuthServices_ThrowsConnectorException()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-identity"": [{
                         ""credentials"": {
@@ -126,7 +126,7 @@ public class OAuthServiceCollectionExtensionsTest
     [Fact]
     public void AddOAuthServiceOptions_WithVCAPs_AddsOAuthOptions()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-identity"": [{
                         ""credentials"": {

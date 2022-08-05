@@ -11,7 +11,7 @@ public class RedisServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        string uri = "redis://joe:joes_password@localhost:1527/";
+        const string uri = "redis://joe:joes_password@localhost:1527/";
         var r1 = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "localhost", 1527, "joes_password");
         var r2 = new RedisServiceInfo("myId", uri);
 
@@ -36,7 +36,7 @@ public class RedisServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected_withSecure()
     {
-        string uri = "rediss://:joes_password@localhost:6380/";
+        const string uri = "rediss://:joes_password@localhost:6380/";
         var r1 = new RedisServiceInfo("myId", RedisServiceInfo.RedisScheme, "localhost", 1527, "joes_password");
         var r2 = new RedisServiceInfo("myId", uri);
 

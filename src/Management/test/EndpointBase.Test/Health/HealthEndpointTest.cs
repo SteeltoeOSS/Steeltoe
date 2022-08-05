@@ -190,7 +190,7 @@ public class HealthEndpointTest : BaseTest
             "liVeness"
         });
 
-        appAvailability.SetAvailabilityState(appAvailability.LivenessKey, LivenessState.Correct, null);
+        appAvailability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, null);
 
         HealthEndpointResponse result = ep.Invoke(context);
 
@@ -230,7 +230,7 @@ public class HealthEndpointTest : BaseTest
             "readiness"
         });
 
-        appAvailability.SetAvailabilityState(appAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
+        appAvailability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, ReadinessState.AcceptingTraffic, null);
 
         HealthEndpointResponse result = ep.Invoke(context);
 

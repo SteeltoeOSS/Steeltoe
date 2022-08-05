@@ -12,7 +12,7 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public static string AuthenticationScheme = "TestScheme";
+    public const string AuthenticationScheme = "TestScheme";
 
     public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options, ILoggerFactory logger, UrlEncoder encoder, ISystemClock clock)
         : base(options, logger, encoder, clock)

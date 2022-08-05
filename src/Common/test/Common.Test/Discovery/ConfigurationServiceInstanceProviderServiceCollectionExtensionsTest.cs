@@ -14,7 +14,7 @@ public class ConfigurationServiceInstanceProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddConfigurationDiscoveryClient_AddsClientWithOptions()
     {
-        string appsettings = @"
+        const string appsettings = @"
 {
     ""discovery"": {
         ""services"": [

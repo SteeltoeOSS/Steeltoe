@@ -17,16 +17,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class HttpClientDesktopObserver : MetricsObserver
 {
+    private const string StatusTagKey = "status";
+    private const string UriTagKey = "uri";
+    private const string MethodTagKey = "method";
+    private const string ClientTagKey = "clientName";
     internal const string DiagnosticName = "System.Net.Http.Desktop";
     internal const string DefaultObserverName = "HttpClientDesktopObserver";
 
     internal const string StopEvent = "System.Net.Http.Desktop.HttpRequestOut.Stop";
     internal const string StopExEvent = "System.Net.Http.Desktop.HttpRequestOut.Ex.Stop";
-
-    private readonly string _statusTagKey = "status";
-    private readonly string _uriTagKey = "uri";
-    private readonly string _methodTagKey = "method";
-    private readonly string _clientTagKey = "clientName";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
@@ -55,10 +54,10 @@ public class HttpClientDesktopObserver : MetricsObserver
             },
             TagKeys = new[]
             {
-                _statusTagKey,
-                _uriTagKey,
-                _methodTagKey,
-                _clientTagKey
+                StatusTagKey,
+                UriTagKey,
+                MethodTagKey,
+                ClientTagKey
             }
         });
 
@@ -74,10 +73,10 @@ public class HttpClientDesktopObserver : MetricsObserver
             },
             TagKeys = new[]
             {
-                _statusTagKey,
-                _uriTagKey,
-                _methodTagKey,
-                _clientTagKey
+                StatusTagKey,
+                UriTagKey,
+                MethodTagKey,
+                ClientTagKey
             }
         });
     }
@@ -152,10 +151,10 @@ public class HttpClientDesktopObserver : MetricsObserver
 
         return new Dictionary<string, object>
         {
-            { _uriTagKey, uri },
-            { _statusTagKey, status },
-            { _clientTagKey, clientName },
-            { _methodTagKey, request.Method }
+            { UriTagKey, uri },
+            { StatusTagKey, status },
+            { ClientTagKey, clientName },
+            { MethodTagKey, request.Method }
         };
     }
 }
