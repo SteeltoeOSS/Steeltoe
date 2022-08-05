@@ -76,17 +76,17 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IBinding foo2ProducerBinding = binder.BindProducer($"foo{delimiter}2", CreateBindableChannel("output", GetDefaultBindingOptions()),
             GetProducerOptions("output2", bindingsOptions));
 
-        foo0ProducerBinding.Unbind();
+        foo0ProducerBinding.UnbindAsync();
         Assert.False(foo0ProducerBinding.IsRunning);
 
-        foo0ConsumerBinding.Unbind();
-        foo1ProducerBinding.Unbind();
+        foo0ConsumerBinding.UnbindAsync();
+        foo1ProducerBinding.UnbindAsync();
 
         Assert.False(foo0ConsumerBinding.IsRunning);
         Assert.False(foo1ProducerBinding.IsRunning);
 
-        foo1ConsumerBinding.Unbind();
-        foo2ProducerBinding.Unbind();
+        foo1ConsumerBinding.UnbindAsync();
+        foo2ProducerBinding.UnbindAsync();
 
         Assert.False(foo1ConsumerBinding.IsRunning);
         Assert.False(foo2ProducerBinding.IsRunning);
@@ -128,8 +128,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage actual = inboundMessageRef.Value;
         Assert.Equal("foo".GetBytes(), actual.Payload);
         Assert.Equal("text/plain", actual.Headers.ContentType());
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -173,10 +173,10 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload1);
         Assert.Contains(messages, m => ((byte[])m.Payload).GetString() == testPayload2);
 
-        producerBinding1.Unbind();
-        producerBinding2.Unbind();
-        consumerBinding1.Unbind();
-        consumerBinding2.Unbind();
+        producerBinding1.UnbindAsync();
+        producerBinding2.UnbindAsync();
+        consumerBinding1.UnbindAsync();
+        consumerBinding2.UnbindAsync();
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         Assert.Equal("foo", ((byte[])inboundMessageRef.Value.Payload).GetString());
         Assert.Equal("text/plain", inboundMessageRef.Value.Headers.ContentType());
 
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -251,8 +251,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage replyMessage = replyChannel.Receive(5000);
 
         Assert.IsType<Station>(replyMessage.Payload);
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -285,8 +285,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
 
         Assert.NotNull(reply);
         Assert.IsType<Station>(reply.Payload);
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -319,8 +319,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage reply = channel.Receive(5000);
         Assert.NotNull(reply);
         Assert.IsType<string>(reply.Payload);
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -370,8 +370,8 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IMessage reply = channel.Receive(5000);
         Assert.NotNull(reply);
         Assert.IsType<Station>(reply.Payload);
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     protected CachingConnectionFactory GetResource()

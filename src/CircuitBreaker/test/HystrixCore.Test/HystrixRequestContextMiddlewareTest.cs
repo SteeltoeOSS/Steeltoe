@@ -23,7 +23,7 @@ public class HystrixRequestContextMiddlewareTest
         var life = new TestLifecycle();
         var reqContext = new HystrixRequestContextMiddleware(del, life);
         HttpContext context = new DefaultHttpContext();
-        await reqContext.Invoke(context);
+        await reqContext.InvokeAsync(context);
         Assert.False(HystrixRequestContext.IsCurrentThreadInitialized);
         life.StopApplication();
     }

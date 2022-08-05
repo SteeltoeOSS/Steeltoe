@@ -104,9 +104,9 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         Assert.False(container.IsAutoStartup);
         Assert.False(container.IsRunning);
         container.IsAutoStartup = true;
-        await registry.Start();
+        await registry.StartAsync();
         Assert.True(container.IsRunning);
-        await container.Stop();
+        await container.StopAsync();
     }
 
     [Fact]
@@ -153,7 +153,7 @@ public class EnableRabbitIntegrationTest : IClassFixture<StartupFixture>
         var registry = _context.GetService<IRabbitListenerEndpointRegistry>() as RabbitListenerEndpointRegistry;
         var container = registry.GetListenerContainer("direct") as DirectMessageListenerContainer;
         Assert.False(container.IsRunning);
-        await container.Start();
+        await container.StartAsync();
         RabbitTemplate template = _context.GetRabbitTemplate();
         string reply = template.ConvertSendAndReceive<string>("test.simple.direct", "foo");
         Assert.StartsWith("FOOfoo", reply);

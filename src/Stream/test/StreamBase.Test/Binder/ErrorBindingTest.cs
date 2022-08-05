@@ -26,7 +26,7 @@ public class ErrorBindingTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithIProcessorBinding(searchDirectories, "spring:cloud:stream:defaultBinder=mock")
             .BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);
@@ -48,7 +48,7 @@ public class ErrorBindingTest : AbstractTest
         container.AddStreamListeners<ErrorConfigurationDefault>();
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -67,7 +67,7 @@ public class ErrorBindingTest : AbstractTest
         container.AddStreamListeners<ErrorConfigurationWithCustomErrorHandler>();
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();

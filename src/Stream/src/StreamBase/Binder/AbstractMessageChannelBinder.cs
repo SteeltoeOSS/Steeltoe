@@ -78,7 +78,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
         if (producerOptions.AutoStartup && producerMessageHandler is ILifecycle producerMsgHandlerLifecycle)
         {
-            producerMsgHandlerLifecycle.Start();
+            producerMsgHandlerLifecycle.StartAsync();
         }
 
         PostProcessOutputChannel(subscribableChannel, producerOptions);
@@ -142,7 +142,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
 
             if (consumerOptions.AutoStartup && consumerEndpoint is ILifecycle lifecycle)
             {
-                lifecycle.Start();
+                lifecycle.StartAsync();
             }
 
             IBinding binding = new DefaultConsumerMessageChannelBinding(this, name, group, inputTarget, consumerEndpoint as ILifecycle, consumerOptions,
@@ -154,7 +154,7 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
             if (consumerEndpoint is ILifecycle lifecycle)
             {
-                lifecycle.Stop();
+                lifecycle.StopAsync();
             }
 
             if (e is BinderException)
@@ -598,21 +598,21 @@ public abstract class AbstractMessageChannelBinder : AbstractBinder<IMessageChan
         {
         }
 
-        public Task Start()
+        public Task StartAsync()
         {
             if (_handler is ILifecycle lifecycle)
             {
-                return lifecycle.Start();
+                return lifecycle.StartAsync();
             }
 
             return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             if (_handler is ILifecycle lifecycle)
             {
-                return lifecycle.Stop();
+                return lifecycle.StopAsync();
             }
 
             return Task.CompletedTask;

@@ -247,7 +247,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         };
 
         rabbitAdmin.DeclareExchange(exchange);
-        IConfiguration exchange2 = await GetExchange(exchangeName);
+        IConfiguration exchange2 = await GetExchangeAsync(exchangeName);
         Assert.Equal("direct", exchange2.GetValue<string>("type"));
 
         // TODO: No way to declare internal exchange in .NET, is possible in Java
@@ -441,7 +441,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         long t2 = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         long dif = t2 - t1;
         Assert.InRange(dif, 950, 1250);
-        IConfiguration config = await GetExchange(exchangeName);
+        IConfiguration config = await GetExchangeAsync(exchangeName);
         Assert.Equal("direct", config.GetValue<string>("x-delayed-type") ?? config.GetValue<string>("arguments:x-delayed-type"));
         Assert.Equal("x-delayed-message", config.GetValue<string>("type"));
     }
@@ -454,7 +454,7 @@ public sealed class RabbitAdminIntegrationTest : IDisposable
         _provider.Dispose();
     }
 
-    private async Task<IConfiguration> GetExchange(string exchangeName)
+    private async Task<IConfiguration> GetExchangeAsync(string exchangeName)
     {
         var client = new HttpClient();
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");

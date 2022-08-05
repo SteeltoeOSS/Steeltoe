@@ -75,7 +75,7 @@ public class SecurityBase
 
         try
         {
-            _logger?.LogDebug("GetPermissions({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
+            _logger?.LogDebug("GetPermissionsAsync({0}, {1})", checkPermissionsUri, SecurityUtilities.SanitizeInput(token));
             _httpClient ??= HttpClientHelper.GetHttpClient(_options.ValidateCertificates, DefaultGetPermissionsTimeout);
             using HttpResponseMessage response = await _httpClient.SendAsync(request).ConfigureAwait(false);
 
@@ -89,7 +89,7 @@ public class SecurityBase
                     : new SecurityResult(HttpStatusCode.ServiceUnavailable, CloudfoundryNotReachableMessage);
             }
 
-            return new SecurityResult(await GetPermissions(response).ConfigureAwait(false));
+            return new SecurityResult(await GetPermissionsAsync(response).ConfigureAwait(false));
         }
         catch (Exception e)
         {
@@ -104,7 +104,7 @@ public class SecurityBase
         }
     }
 
-    public async Task<Permissions> GetPermissions(HttpResponseMessage response)
+    public async Task<Permissions> GetPermissionsAsync(HttpResponseMessage response)
     {
         string json = string.Empty;
         var permissions = Permissions.None;
@@ -113,7 +113,7 @@ public class SecurityBase
         {
             json = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
-            _logger?.LogDebug("GetPermissions returned json: {0}", SecurityUtilities.SanitizeInput(json));
+            _logger?.LogDebug("GetPermissionsAsync returned json: {0}", SecurityUtilities.SanitizeInput(json));
 
             var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
 
@@ -129,7 +129,7 @@ public class SecurityBase
             throw;
         }
 
-        _logger?.LogDebug("GetPermissions returning: {0}", permissions);
+        _logger?.LogDebug("GetPermissionsAsync returning: {0}", permissions);
         return permissions;
     }
 }

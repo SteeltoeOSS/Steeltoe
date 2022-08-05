@@ -45,7 +45,7 @@ public class CorrelationIdTest
         };
 
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpoint.Start();
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
@@ -66,7 +66,7 @@ public class CorrelationIdTest
         };
 
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpoint.Start();
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor1 = new IntegrationMessageHeaderAccessor(reply);
@@ -88,7 +88,7 @@ public class CorrelationIdTest
         };
 
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpoint.Start();
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);
@@ -108,7 +108,7 @@ public class CorrelationIdTest
         };
 
         var endpoint = new EventDrivenConsumerEndpoint(_provider.GetService<IApplicationContext>(), inputChannel, serviceActivator);
-        await endpoint.Start();
+        await endpoint.StartAsync();
         Assert.True(inputChannel.Send(message));
         IMessage reply = outputChannel.Receive(0);
         var accessor = new IntegrationMessageHeaderAccessor(reply);

@@ -25,7 +25,7 @@ public class StreamLifeCycleService : IHostedService
     {
         var lifecycleProcessor = _applicationContext.GetService<ILifecycleProcessor>();
 
-        await lifecycleProcessor.OnRefresh();
+        await lifecycleProcessor.OnRefreshAsync();
         var attributeProcessor = _applicationContext.GetService<StreamListenerAttributeProcessor>();
 
         attributeProcessor.Initialize();
@@ -34,6 +34,6 @@ public class StreamLifeCycleService : IHostedService
     public Task StopAsync(CancellationToken cancellationToken)
     {
         var lifecycleProcessor = _applicationContext.GetService<ILifecycleProcessor>();
-        return lifecycleProcessor.Stop();
+        return lifecycleProcessor.StopAsync();
     }
 }

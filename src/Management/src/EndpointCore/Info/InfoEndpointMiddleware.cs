@@ -20,9 +20,9 @@ public class InfoEndpointMiddleware : EndpointMiddleware<Dictionary<string, obje
         _next = next;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
-        logger.LogDebug("Info middleware Invoke({0})", context.Request.Path.Value);
+        logger.LogDebug("Info middleware InvokeAsync({0})", context.Request.Path.Value);
 
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

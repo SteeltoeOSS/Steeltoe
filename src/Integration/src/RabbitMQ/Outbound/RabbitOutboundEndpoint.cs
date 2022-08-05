@@ -77,7 +77,7 @@ public class RabbitOutboundEndpoint : AbstractRabbitOutboundEndpoint, IConfirmCa
 
     protected override void DoStop()
     {
-        Template.Stop().Wait();
+        Template.StopAsync().Wait();
     }
 
     protected override object HandleRequestMessage(IMessage requestMessage)

@@ -547,7 +547,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         container.SetQueues(replyQueue);
         container.MessageListener = rabbitTemplate;
         container.Initialize();
-        container.Start();
+        container.StartAsync();
 
         var headers = new RabbitHeaderAccessor(new MessageHeaders())
         {
@@ -563,8 +563,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive();
         Assert.Null(reply);
-        rabbitTemplate.Stop().Wait();
-        container.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
+        container.StopAsync().Wait();
         cachingConnectionFactory.Destroy();
     }
 
@@ -604,7 +604,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
         cachingConnectionFactory.Destroy();
     }
 
@@ -644,7 +644,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("test-message", Encoding.UTF8.GetString((byte[])reply.Payload));
         reply = rabbitTemplate.Receive(Route);
         Assert.Null(reply);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
         cachingConnectionFactory.Destroy();
     }
 
@@ -683,7 +683,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.Equal("message", received.Result);
         string result = rabbitTemplate.ReceiveAndConvert<string>();
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
         cachingConnectionFactory.Destroy();
     }
 
@@ -720,7 +720,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
     }
 
     [Fact]
@@ -756,7 +756,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
     }
 
     [Fact]
@@ -796,7 +796,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>();
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
         cachingConnectionFactory.Destroy();
     }
 
@@ -833,7 +833,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
     }
 
     [Fact]
@@ -869,7 +869,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
 
         result = rabbitTemplate.ReceiveAndConvert<string>(Route);
         Assert.Null(result);
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
     }
 
     [Fact]
@@ -919,7 +919,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         container.ConnectionFactory = rabbitTemplate.ConnectionFactory;
         container.SetQueueNames(ReplyQueueName);
         container.MessageListener = rabbitTemplate;
-        container.Start().Wait();
+        container.StartAsync().Wait();
 
         const int count = 10;
         var results = new ConcurrentDictionary<double, object>();
@@ -983,7 +983,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         while (receiveCount.Value < count * 2);
 
         Task.WaitAll(tasks.ToArray());
-        container.Stop().Wait();
+        container.StopAsync().Wait();
         Assert.Equal(count * 2, results.Count);
 
         foreach (KeyValuePair<double, object> entry in results)
@@ -1008,7 +1008,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         Assert.NotNull(result);
         Assert.Equal("TEST", Encoding.UTF8.GetString((byte[])result.Payload));
         Assert.Equal(messageId, result.Headers.CorrelationId());
-        rabbitTemplate.Stop().Wait();
+        rabbitTemplate.StopAsync().Wait();
     }
 
     [Fact]
@@ -1045,7 +1045,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         messageListener.SetBeforeSendReplyPostProcessors(new GZipPostProcessor());
         container.MessageListener = messageListener;
         container.Initialize();
-        container.Start().Wait();
+        container.StartAsync().Wait();
         using RabbitTemplate rabbitTemplate = CreateSendAndReceiveRabbitTemplate(template.ConnectionFactory);
 
         try
@@ -1065,8 +1065,8 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         finally
         {
-            rabbitTemplate.Stop().Wait();
-            container.Stop().Wait();
+            rabbitTemplate.StopAsync().Wait();
+            container.StopAsync().Wait();
         }
     }
 
@@ -1268,11 +1268,11 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
             };
 
             container.MessageListener = messageListenerAdapter;
-            container.Start().Wait();
+            container.StartAsync().Wait();
             rabbitTemplate.DefaultReceiveQueue = Route;
             rabbitTemplate.RoutingKey = Route;
             string result = rabbitTemplate.ConvertSendAndReceive<string>("foo");
-            container.Stop().Wait();
+            container.StopAsync().Wait();
             Assert.Equal("FOO", result);
 
             if (expectUsedTemp)
@@ -1290,7 +1290,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         }
         finally
         {
-            rabbitTemplate.Stop().Wait();
+            rabbitTemplate.StopAsync().Wait();
         }
     }
 

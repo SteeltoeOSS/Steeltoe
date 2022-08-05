@@ -21,7 +21,7 @@ public class HealthEndpointMiddleware : EndpointMiddleware<HealthEndpointRespons
         _next = next;
     }
 
-    public Task Invoke(HttpContext context, HealthEndpointCore endpoint)
+    public Task InvokeAsync(HttpContext context, HealthEndpointCore endpoint)
     {
         this.endpoint = endpoint;
 

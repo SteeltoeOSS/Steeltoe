@@ -21,7 +21,7 @@ public class HystrixRequestContextMiddleware
         applicationLifetime.ApplicationStopping.Register(HystrixShutdown.ShutdownThreads);
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         HystrixRequestContext hystrix = HystrixRequestContext.InitializeContext();
 

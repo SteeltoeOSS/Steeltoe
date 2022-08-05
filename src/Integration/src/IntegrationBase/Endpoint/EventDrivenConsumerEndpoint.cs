@@ -44,25 +44,25 @@ public class EventDrivenConsumerEndpoint : AbstractEndpoint
         Phase = int.MaxValue;
     }
 
-    protected override Task DoStart()
+    protected override Task DoStartAsync()
     {
         _inputChannel.Subscribe(_handler);
 
         if (_handler is ILifecycle lifecycle)
         {
-            return lifecycle.Start();
+            return lifecycle.StartAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    protected override Task DoStop()
+    protected override Task DoStopAsync()
     {
         _inputChannel.Unsubscribe(_handler);
 
         if (_handler is ILifecycle lifecycle)
         {
-            return lifecycle.Stop();
+            return lifecycle.StopAsync();
         }
 
         return Task.CompletedTask;

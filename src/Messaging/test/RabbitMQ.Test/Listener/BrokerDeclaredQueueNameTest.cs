@@ -45,7 +45,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         using var container = provider.GetRequiredService<DirectMessageListenerContainer>();
         using var cf = provider.GetRequiredService<IConnectionFactory>() as CachingConnectionFactory;
 
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10))); // Really wait for container to start
 
         var queue = provider.GetRequiredService<IQueue>();
@@ -69,7 +69,7 @@ public class BrokerDeclaredQueueNameTest : AbstractTest
         Assert.True(latch4.Wait(TimeSpan.FromSeconds(10)));
         body = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Value.Payload);
         Assert.Equal("bar", body);
-        await container.Stop();
+        await container.StopAsync();
     }
 
     private DirectMessageListenerContainer CreateDmlcContainer(IServiceProvider services, CountdownEvent latch3, CountdownEvent latch4,

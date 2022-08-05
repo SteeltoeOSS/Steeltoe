@@ -28,7 +28,7 @@ public class DynamicDestinationsBindable : AbstractBindable
 
             if (binding != null)
             {
-                binding.Unbind();
+                binding.UnbindAsync();
             }
         }
     }

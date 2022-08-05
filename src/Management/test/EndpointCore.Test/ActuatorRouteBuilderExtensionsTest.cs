@@ -84,7 +84,7 @@ public class ActuatorRouteBuilderExtensionsTest
     public async Task MapTestAuthSuccess(Type type)
     {
         IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "actuators.read"));
-        await ActAndAssert(type, hostBuilder, true);
+        await ActAndAssertAsync(type, hostBuilder, true);
     }
 
     [Theory]
@@ -92,7 +92,7 @@ public class ActuatorRouteBuilderExtensionsTest
     public async Task MapTestAuthFail(Type type)
     {
         IHostBuilder hostBuilder = GetHostBuilder(type, policy => policy.RequireClaim("scope", "invalidscope"));
-        await ActAndAssert(type, hostBuilder, false);
+        await ActAndAssertAsync(type, hostBuilder, false);
     }
 
     private static IHostBuilder GetHostBuilder(Type type, Action<AuthorizationPolicyBuilder> policyAction)
@@ -126,7 +126,7 @@ public class ActuatorRouteBuilderExtensionsTest
             : services.GetRequiredService<ActuatorManagementOptions>();
     }
 
-    private async Task ActAndAssert(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
+    private async Task ActAndAssertAsync(Type type, IHostBuilder hostBuilder, bool expectedSuccess)
     {
         using IHost host = await hostBuilder.StartAsync();
         (_, Type optionsType) = ActuatorRouteBuilderExtensions.LookupMiddleware(type);

@@ -108,7 +108,7 @@ public class HttpClientDesktopObserverTest : BaseTest
         observer.HandleStopEvent(act, req, HttpStatusCode.InternalServerError);
         observer.HandleStopEvent(act, req, HttpStatusCode.OK);
 
-        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollect().Result;
+        var collectionResponse = (SteeltoeCollectionResponse)exporter.CollectionManager.EnterCollectAsync().Result;
 
         KeyValuePair<string, List<MetricSample>>
             timeSample = collectionResponse.MetricSamples.SingleOrDefault(x => x.Key == "http.desktop.client.request.time");

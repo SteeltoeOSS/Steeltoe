@@ -30,7 +30,7 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("secondQueue").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(null, queues, typeof(SimpleMessageListenerTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(SimpleMessageListenerTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -68,7 +68,7 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("secondQueue").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(config, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(config, queues, typeof(SimpleMessageListenerWithMixedAnnotationsTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -101,7 +101,7 @@ public class RabbitListenerAttributeProcessorTest
             QueueBuilder.Durable("metaTestQueue2").Build()
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(null, queues, typeof(MultipleQueueNamesTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -129,7 +129,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(null, queues, typeof(MultipleQueuesTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MultipleQueuesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -156,7 +156,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(null, queues, typeof(MixedQueuesAndQueueNamesTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -193,7 +193,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        ServiceProvider provider = await Config.CreateAndStartServices(config, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
+        ServiceProvider provider = await Config.CreateAndStartServicesAsync(config, queues, typeof(PropertyPlaceholderResolvingToQueueTestBean));
         var context = provider.GetService<IApplicationContext>();
         var factory = context.GetService<IRabbitListenerContainerFactory>() as RabbitListenerContainerTestFactory;
         Assert.Single(factory.GetListenerContainers());
@@ -221,7 +221,7 @@ public class RabbitListenerAttributeProcessorTest
             queue2
         };
 
-        await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServices(null, queues, typeof(InvalidValueInAnnotationTestBean)));
+        await Assert.ThrowsAsync<ExpressionException>(() => Config.CreateAndStartServicesAsync(null, queues, typeof(InvalidValueInAnnotationTestBean)));
     }
 
     [Fact]
@@ -240,7 +240,7 @@ public class RabbitListenerAttributeProcessorTest
 
     public static class Config
     {
-        public static async Task<ServiceProvider> CreateAndStartServices(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
+        public static async Task<ServiceProvider> CreateAndStartServicesAsync(IConfiguration configuration, List<IQueue> queues, params Type[] listeners)
         {
             var mockConnectionFactory = new Mock<IConnectionFactory>();
             var mockConnection = new Mock<IConnection>();

@@ -29,9 +29,9 @@ public class CloudFoundrySecurityMiddleware
         _base = new SecurityBase(options, _managementOptions, logger);
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
-        _logger?.LogDebug("Invoke({0}) contextPath: {1}", context.Request.Path.Value, _managementOptions.Path);
+        _logger?.LogDebug("InvokeAsync({0}) contextPath: {1}", context.Request.Path.Value, _managementOptions.Path);
 
         bool isEndpointExposed = _managementOptions == null || _options.IsExposed(_managementOptions);
 
@@ -42,7 +42,7 @@ public class CloudFoundrySecurityMiddleware
                 _logger?.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage))
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage))
                     .ConfigureAwait(false);
 
                 return;
@@ -50,7 +50,7 @@ public class CloudFoundrySecurityMiddleware
 
             if (string.IsNullOrEmpty(_options.CloudFoundryApi))
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage))
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage))
                     .ConfigureAwait(false);
 
                 return;
@@ -60,17 +60,17 @@ public class CloudFoundrySecurityMiddleware
 
             if (target == null)
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage))
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage))
                     .ConfigureAwait(false);
 
                 return;
             }
 
-            SecurityResult sr = await GetPermissions(context).ConfigureAwait(false);
+            SecurityResult sr = await GetPermissionsAsync(context).ConfigureAwait(false);
 
             if (sr.Code != HttpStatusCode.OK)
             {
-                await ReturnError(context, sr).ConfigureAwait(false);
+                await ReturnErrorAsync(context, sr).ConfigureAwait(false);
                 return;
             }
 
@@ -78,7 +78,7 @@ public class CloudFoundrySecurityMiddleware
 
             if (!target.IsAccessAllowed(permissions))
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage)).ConfigureAwait(false);
+                await ReturnErrorAsync(context, new SecurityResult(HttpStatusCode.Forbidden, SecurityBase.AccessDeniedMessage)).ConfigureAwait(false);
                 return;
             }
         }
@@ -101,7 +101,7 @@ public class CloudFoundrySecurityMiddleware
         return null;
     }
 
-    internal Task<SecurityResult> GetPermissions(HttpContext context)
+    internal Task<SecurityResult> GetPermissionsAsync(HttpContext context)
     {
         string token = GetAccessToken(context.Request);
         return _base.GetPermissionsAsync(token);
@@ -140,7 +140,7 @@ public class CloudFoundrySecurityMiddleware
         return null;
     }
 
-    private Task ReturnError(HttpContext context, SecurityResult error)
+    private Task ReturnErrorAsync(HttpContext context, SecurityResult error)
     {
         LogError(context, error);
         context.Response.Headers.Add("Content-Type", "application/json;charset=UTF-8");

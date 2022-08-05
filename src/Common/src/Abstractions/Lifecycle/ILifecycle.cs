@@ -20,7 +20,7 @@ public interface ILifecycle
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task Start();
+    Task StartAsync();
 
     /// <summary>
     /// Stop this component.
@@ -28,5 +28,5 @@ public interface ILifecycle
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task Stop();
+    Task StopAsync();
 }

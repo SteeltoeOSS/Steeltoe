@@ -111,7 +111,7 @@ public class MetricsEndpoint : AbstractEndpoint<IMetricsResponse, MetricsRequest
 
     protected internal void GetMetricsCollection(out MetricsCollection<List<MetricSample>> metricSamples, out MetricsCollection<List<MetricTag>> availTags)
     {
-        ICollectionResponse response = _exporter.CollectionManager.EnterCollect().Result;
+        ICollectionResponse response = _exporter.CollectionManager.EnterCollectAsync().Result;
 
         if (response is SteeltoeCollectionResponse collectionResponse)
         {

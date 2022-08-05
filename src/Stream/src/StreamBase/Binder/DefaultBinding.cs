@@ -70,47 +70,47 @@ public class DefaultBinding<T> : AbstractBinding
         _restartable = true;
     }
 
-    public override Task Start()
+    public override Task StartAsync()
     {
         if (!IsRunning && Lifecycle != null && _restartable)
         {
-            return Lifecycle.Start();
+            return Lifecycle.StartAsync();
         } // else this.logger.warn("Can not re-bind an anonymous binding")
 
         return Task.CompletedTask;
     }
 
-    public override Task Stop()
+    public override Task StopAsync()
     {
         if (IsRunning)
         {
-            return Lifecycle.Stop();
+            return Lifecycle.StopAsync();
         }
 
         return Task.CompletedTask;
     }
 
-    public override async Task Pause()
+    public override async Task PauseAsync()
     {
         if (Lifecycle is IPausable pausable)
         {
-            await pausable.Pause();
+            await pausable.PauseAsync();
             _paused = true;
         }
     }
 
-    public override async Task Resume()
+    public override async Task ResumeAsync()
     {
         if (Lifecycle is IPausable pausable)
         {
-            await pausable.Resume();
+            await pausable.ResumeAsync();
             _paused = false;
         }
     }
 
-    public override async Task Unbind()
+    public override async Task UnbindAsync()
     {
-        await Stop();
+        await StopAsync();
         AfterUnbind();
     }
 

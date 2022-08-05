@@ -849,7 +849,7 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
             f = command1.ExecuteAsync(); // Running
             Time.Wait(50); // Let first start
             f2 = command2.ExecuteAsync(); // In Queue
-            await command3.ExecuteAsync(); // Start, queue rejected
+            await command3.ExecuteAsync(); // StartAsync, queue rejected
             Assert.True(false, "we shouldn't get here");
         }
         catch (Exception e)

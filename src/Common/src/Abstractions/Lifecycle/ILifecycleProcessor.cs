@@ -20,7 +20,7 @@ public interface ILifecycleProcessor : IDisposable
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task Start();
+    Task StartAsync();
 
     /// <summary>
     /// Stop this component.
@@ -28,7 +28,7 @@ public interface ILifecycleProcessor : IDisposable
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task Stop();
+    Task StopAsync();
 
     /// <summary>
     /// Call to refresh the lifecycle processor.
@@ -36,7 +36,7 @@ public interface ILifecycleProcessor : IDisposable
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task OnRefresh();
+    Task OnRefreshAsync();
 
     /// <summary>
     /// Call to shutdown the lifecycle processor.
@@ -44,5 +44,5 @@ public interface ILifecycleProcessor : IDisposable
     /// <returns>
     /// a task to signal completion.
     /// </returns>
-    Task OnClose();
+    Task OnCloseAsync();
 }

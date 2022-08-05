@@ -36,7 +36,7 @@ public class PartitionedConsumerTest : AbstractTest
                 captured = d;
             });
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         mockBinder.Verify(b => b.BindConsumer("partIn", null, sink.Input, It.IsAny<IConsumerOptions>()));
 

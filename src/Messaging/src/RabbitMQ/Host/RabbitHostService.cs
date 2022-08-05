@@ -51,7 +51,7 @@ public class RabbitHostService : IHostedService
 
         if (processor != null)
         {
-            await processor.OnRefresh();
+            await processor.OnRefreshAsync();
         }
         else
         {

@@ -108,14 +108,14 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
             _admin = new RabbitAdmin(cf);
         }
 
-        public Task Start()
+        public Task StartAsync()
         {
             _running = true;
             _admin.DeclareQueue(_queue);
             return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             // Prior to the fix for AMQP-546, this threw an exception and
             // running was not reset.
@@ -124,9 +124,9 @@ public class ConnectionFactoryLifecycleTest : AbstractTest
             return Task.CompletedTask;
         }
 
-        public async Task Stop(Action callback)
+        public async Task StopAsync(Action callback)
         {
-            await Stop();
+            await StopAsync();
             callback();
         }
     }

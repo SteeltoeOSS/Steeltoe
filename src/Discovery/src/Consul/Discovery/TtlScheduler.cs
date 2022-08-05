@@ -99,7 +99,7 @@ public class TtlScheduler : IScheduler
 
             var timer = new Timer(async s =>
             {
-                await PassTtl(s.ToString()).ConfigureAwait(false);
+                await PassTtlAsync(s.ToString()).ConfigureAwait(false);
             }, checkId, TimeSpan.Zero, interval);
 
             ServiceHeartbeats.AddOrUpdate(instanceId, timer, (_, oldTimer) =>
@@ -148,7 +148,7 @@ public class TtlScheduler : IScheduler
         }
     }
 
-    private async Task PassTtl(string serviceId)
+    private async Task PassTtlAsync(string serviceId)
     {
         _logger?.LogDebug("Sending consul heartbeat for: {serviceId} ", serviceId);
 

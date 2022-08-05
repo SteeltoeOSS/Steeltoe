@@ -27,7 +27,7 @@ public class PrometheusScraperEndpoint : AbstractEndpoint<string>, IPrometheusSc
 
         try
         {
-            ICollectionResponse response = _exporter.CollectionManager.EnterCollect().Result;
+            ICollectionResponse response = _exporter.CollectionManager.EnterCollectAsync().Result;
 
             if (response is PrometheusCollectionResponse collectionResponse)
             {

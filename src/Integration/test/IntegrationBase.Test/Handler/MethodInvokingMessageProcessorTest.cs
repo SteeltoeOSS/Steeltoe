@@ -40,7 +40,7 @@ public class MethodInvokingMessageProcessorTest
         serviceCollection.AddSingleton<IMessageHandlerMethodFactory>(f);
 
         ServiceProvider container = serviceCollection.BuildServiceProvider();
-        ILifecycleProcessor lifeCycleProcessor = await Start(container);
+        ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("foo");
@@ -48,7 +48,7 @@ public class MethodInvokingMessageProcessorTest
         var outChan = appContext.GetService<IPollableChannel>("out");
         Assert.Equal("Person: Bob Smith", outChan.Receive().Payload);
 
-        await lifeCycleProcessor.Stop();
+        await lifeCycleProcessor.StopAsync();
     }
 
     [Fact]
@@ -58,7 +58,7 @@ public class MethodInvokingMessageProcessorTest
 
         serviceCollection.AddServiceActivators<B1>();
         ServiceProvider container = serviceCollection.BuildServiceProvider();
-        ILifecycleProcessor lifeCycleProcessor = await Start(container);
+        ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
@@ -67,7 +67,7 @@ public class MethodInvokingMessageProcessorTest
         IMessage received = outChan.Receive();
         Assert.Equal("A1", received.Headers.Get<string>("A1"));
 
-        await lifeCycleProcessor.Stop();
+        await lifeCycleProcessor.StopAsync();
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public class MethodInvokingMessageProcessorTest
 
         serviceCollection.AddServiceActivators<C2>();
         ServiceProvider container = serviceCollection.BuildServiceProvider();
-        ILifecycleProcessor lifeCycleProcessor = await Start(container);
+        ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
@@ -86,7 +86,7 @@ public class MethodInvokingMessageProcessorTest
         IMessage received = outChan.Receive();
         Assert.Equal("C2", received.Headers.Get<string>("C2"));
 
-        await lifeCycleProcessor.Stop();
+        await lifeCycleProcessor.StopAsync();
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class MethodInvokingMessageProcessorTest
 
         serviceCollection.AddServiceActivators<C3>();
         ServiceProvider container = serviceCollection.BuildServiceProvider();
-        ILifecycleProcessor lifeCycleProcessor = await Start(container);
+        ILifecycleProcessor lifeCycleProcessor = await StartAsync(container);
 
         var appContext = container.GetService<IApplicationContext>();
         var channel = appContext.GetService<IMessageChannel>("in");
@@ -105,7 +105,7 @@ public class MethodInvokingMessageProcessorTest
         IMessage received = outChan.Receive();
         Assert.Equal("C3", received.Headers.Get<string>("C3"));
 
-        await lifeCycleProcessor.Stop();
+        await lifeCycleProcessor.StopAsync();
     }
 
     [Fact]
@@ -362,13 +362,13 @@ public class MethodInvokingMessageProcessorTest
         return context;
     }
 
-    private async Task<ILifecycleProcessor> Start(ServiceProvider container)
+    private async Task<ILifecycleProcessor> StartAsync(ServiceProvider container)
     {
         var saProcessor = container.GetRequiredService<ServiceActivatorAttributeProcessor>();
         saProcessor.Initialize();
 
         var lifeCycleProcessor = container.GetRequiredService<ILifecycleProcessor>();
-        await lifeCycleProcessor.Start();
+        await lifeCycleProcessor.StartAsync();
         return lifeCycleProcessor;
     }
 

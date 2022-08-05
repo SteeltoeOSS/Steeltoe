@@ -162,9 +162,9 @@ public class HttpClientHelperTest
     [Fact]
     public void GetAccessToken_ThrowsNulls()
     {
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken(string.Empty, null, null));
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", null, null));
-        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessToken("https://foo/bar", "clientid", null));
+        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync(string.Empty, null, null));
+        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync("https://foo/bar", null, null));
+        Assert.ThrowsAsync<ArgumentException>(() => HttpClientHelper.GetAccessTokenAsync("https://foo/bar", "clientid", null));
     }
 
     [Fact]

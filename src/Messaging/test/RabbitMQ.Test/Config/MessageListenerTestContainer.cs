@@ -36,7 +36,7 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
     {
         if (!StopInvoked)
         {
-            Stop().Wait();
+            StopAsync().Wait();
         }
 
         DestroyInvoked = true;
@@ -55,7 +55,7 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
     {
     }
 
-    public Task Start()
+    public Task StartAsync()
     {
         if (!InitializationInvoked)
         {
@@ -71,14 +71,14 @@ public sealed class MessageListenerTestContainer : IMessageListenerContainer
         return Task.CompletedTask;
     }
 
-    public Task Stop(Action callback)
+    public Task StopAsync(Action callback)
     {
         StopInvoked = true;
         callback();
         return Task.CompletedTask;
     }
 
-    public Task Stop()
+    public Task StopAsync()
     {
         if (StopInvoked)
         {

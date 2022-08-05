@@ -52,7 +52,7 @@ public class DirectMessageListenerContainerMockTest
         container.PrefetchCount = 2;
         container.MonitorInterval = 100;
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
@@ -61,7 +61,7 @@ public class DirectMessageListenerContainerMockTest
         isOpen.Value = false;
 
         Assert.True(latch2.Wait(TimeSpan.FromSeconds(10)));
-        await container.Stop();
+        await container.StopAsync();
     }
 
     [Fact]
@@ -129,7 +129,7 @@ public class DirectMessageListenerContainerMockTest
         container.AckTimeout = 100;
         container.MessageListener = new TestListener();
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
@@ -173,7 +173,7 @@ public class DirectMessageListenerContainerMockTest
             latch5.Signal();
         });
 
-        await container.Stop();
+        await container.StopAsync();
         Assert.True(latch5.Wait(TimeSpan.FromSeconds(10)));
         channel.Verify(c => c.BasicAck(20ul, true));
     }
@@ -241,7 +241,7 @@ public class DirectMessageListenerContainerMockTest
         container.RecoveryInterval = 100;
         container.ShutdownTimeout = 1;
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
@@ -260,7 +260,7 @@ public class DirectMessageListenerContainerMockTest
             c => c.BasicConsume("test2", It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<bool>(), It.IsAny<bool>(), It.IsAny<IDictionary<string, object>>(),
                 It.IsAny<RC.IBasicConsumer>()), Times.Exactly(2));
 
-        await container.Stop();
+        await container.StopAsync();
     }
 
     [Fact]
@@ -306,14 +306,14 @@ public class DirectMessageListenerContainerMockTest
         container.MonitorInterval = 100;
         container.MessageListener = new Mock<IMessageListener>().Object;
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         var props = new MockRabbitBasicProperties();
         consumer.Value.HandleBasicDeliver("consumerTag", 1ul, false, string.Empty, string.Empty, props, new byte[1]);
         Assert.True(latch2.Wait(TimeSpan.FromSeconds(10)));
-        await container.Stop();
+        await container.StopAsync();
     }
 
     [Fact]
@@ -361,14 +361,14 @@ public class DirectMessageListenerContainerMockTest
         container.MessageListener = new TestListener2(target, rabbitChannel2.Object);
         container.AcknowledgeMode = AcknowledgeMode.Manual;
         container.Initialize();
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         Assert.True(latch1.Wait(TimeSpan.FromSeconds(10)));
         var props = new MockRabbitBasicProperties();
         consumer.Value.HandleBasicDeliver("consumerTag", 1ul, false, string.Empty, string.Empty, props, new byte[1]);
         Assert.True(latch2.Wait(TimeSpan.FromSeconds(10)));
-        await container.Stop();
+        await container.StopAsync();
     }
 
     private sealed class TestListener2 : IMessageListener

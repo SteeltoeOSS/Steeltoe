@@ -21,7 +21,7 @@ public class ArbitraryInterfaceWithDefaultsTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithBinding(searchDirectories, typeof(IFooChannels), "spring:cloud:stream:defaultBinder=mock")
             .BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

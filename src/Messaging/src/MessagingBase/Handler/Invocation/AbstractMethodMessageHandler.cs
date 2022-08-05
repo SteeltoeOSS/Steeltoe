@@ -304,7 +304,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
 
         if (matches.Count == 0)
         {
-            HandleNoMatch(_handlerMethods.Keys, lookupDestination, message);
+            HandleNoMatchAsync(_handlerMethods.Keys, lookupDestination, message);
             return;
         }
 
@@ -417,7 +417,7 @@ public abstract class AbstractMethodMessageHandler<T> : IMessageHandler
         return null;
     }
 
-    protected virtual Task HandleNoMatch(ICollection<T> ts, string lookupDestination, IMessage message)
+    protected virtual Task HandleNoMatchAsync(ICollection<T> ts, string lookupDestination, IMessage message)
     {
         return Task.CompletedTask;
     }

@@ -1333,16 +1333,16 @@ public class RabbitTemplate
     {
         if (disposing)
         {
-            Stop().Wait();
+            StopAsync().Wait();
         }
     }
 
-    public virtual async Task Start()
+    public virtual async Task StartAsync()
     {
-        await DoStart();
+        await DoStartAsync();
     }
 
-    public virtual async Task Stop()
+    public virtual async Task StopAsync()
     {
         lock (DirectReplyToContainers)
         {
@@ -1350,14 +1350,14 @@ public class RabbitTemplate
             {
                 if (c.IsRunning)
                 {
-                    c.Stop();
+                    c.StopAsync();
                 }
             }
 
             DirectReplyToContainers.Clear();
         }
 
-        await DoStop();
+        await DoStopAsync();
     }
 
     protected internal virtual IMessage ConvertMessageIfNecessary(object message)
@@ -1584,7 +1584,7 @@ public class RabbitTemplate
                         container.ErrorHandler = ReplyErrorHandler;
                     }
 
-                    container.Start();
+                    container.StartAsync();
                     DirectReplyToContainers.TryAdd(connectionFactory, container);
                     _replyAddress = Address.AmqRabbitMQReplyTo;
                 }
@@ -1816,12 +1816,12 @@ public class RabbitTemplate
     {
     }
 
-    protected virtual Task DoStart()
+    protected virtual Task DoStartAsync()
     {
         return Task.CompletedTask;
     }
 
-    protected virtual Task DoStop()
+    protected virtual Task DoStopAsync()
     {
         return Task.CompletedTask;
     }

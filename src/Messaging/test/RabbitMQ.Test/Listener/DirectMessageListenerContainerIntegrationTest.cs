@@ -52,17 +52,17 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         container.MessageListener = adapter;
         container.ServiceName = "simple";
         container.ConsumerTagStrategy = new TestConsumerTagStrategy(_testName);
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
         var template = new RabbitTemplate(cf);
         Assert.Equal("FOO", template.ConvertSendAndReceive<string>(Q1, "foo"));
         Assert.Equal("BAR", template.ConvertSendAndReceive<string>(Q2, "bar"));
-        await container.Stop();
-        Assert.True(await ConsumersOnQueue(Q1, 0));
-        Assert.True(await ConsumersOnQueue(Q2, 0));
-        Assert.True(await ActiveConsumerCount(container, 0));
+        await container.StopAsync();
+        Assert.True(await ConsumersOnQueueAsync(Q1, 0));
+        Assert.True(await ConsumersOnQueueAsync(Q2, 0));
+        Assert.True(await ActiveConsumerCountAsync(container, 0));
         Assert.Empty(container.ConsumersByQueue);
-        await template.Stop();
+        await template.StopAsync();
         cf.Destroy();
     }
 
@@ -73,7 +73,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         _adminCf.Dispose();
     }
 
-    private async Task<bool> ConsumersOnQueue(string queue, int expected)
+    private async Task<bool> ConsumersOnQueueAsync(string queue, int expected)
     {
         int n = 0;
         int currentQueueCount = -1;
@@ -101,7 +101,7 @@ public sealed class DirectMessageListenerContainerIntegrationTest : IDisposable
         return currentQueueCount == expected;
     }
 
-    private async Task<bool> ActiveConsumerCount(DirectMessageListenerContainer container, int expected)
+    private async Task<bool> ActiveConsumerCountAsync(DirectMessageListenerContainer container, int expected)
     {
         int n = 0;
         List<DirectMessageListenerContainer.SimpleConsumer> consumers = container.Consumers;

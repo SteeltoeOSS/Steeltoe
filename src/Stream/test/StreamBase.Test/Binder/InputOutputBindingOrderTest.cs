@@ -24,7 +24,7 @@ public class InputOutputBindingOrderTest : AbstractTest
         container.AddSingleton<ILifecycle>(p => p.GetService<SomeLifecycle>());
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         IBinder binder = factory.GetBinder(null, typeof(IMessageChannel));
@@ -55,7 +55,7 @@ public class InputOutputBindingOrderTest : AbstractTest
             Processor = processor;
         }
 
-        public Task Start()
+        public Task StartAsync()
         {
             IBinder binder = Factory.GetBinder(null, typeof(IMessageChannel));
 
@@ -66,15 +66,15 @@ public class InputOutputBindingOrderTest : AbstractTest
             return Task.CompletedTask;
         }
 
-        public Task Stop()
+        public Task StopAsync()
         {
             IsRunning = false;
             return Task.CompletedTask;
         }
 
-        public async Task Stop(Action callback)
+        public async Task StopAsync(Action callback)
         {
-            await Stop();
+            await StopAsync();
             callback?.Invoke();
         }
     }

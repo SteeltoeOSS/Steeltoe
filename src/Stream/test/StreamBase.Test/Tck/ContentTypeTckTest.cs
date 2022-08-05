@@ -39,7 +39,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToMapStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -56,7 +56,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToMapMessageStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -74,7 +74,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToMapMessageStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -101,7 +101,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddSingleton<IMessageChannel>(p => new DirectChannel(p.GetService<IApplicationContext>(), "internalchannel"));
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -119,7 +119,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -138,7 +138,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToStringStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -159,7 +159,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToStringStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -179,7 +179,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToByteArrayStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -200,7 +200,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToByteArrayStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -221,7 +221,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -243,7 +243,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -265,7 +265,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -286,7 +286,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -307,7 +307,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -326,7 +326,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessMessageToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -349,7 +349,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessToMessageStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -370,7 +370,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessToMessageTextOnlyContentTypeStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -390,7 +390,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -411,7 +411,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<ByteArrayToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -430,7 +430,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -455,7 +455,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -478,7 +478,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<ByteArrayToByteArrayStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -496,7 +496,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoMessageToStringMessageStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -519,7 +519,7 @@ public class ContentTypeTckTest : AbstractTest
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
@@ -539,7 +539,7 @@ public class ContentTypeTckTest : AbstractTest
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
@@ -559,7 +559,7 @@ public class ContentTypeTckTest : AbstractTest
         var activatorProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         activatorProcessor.Initialize();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         const string jsonPayload = "{\"name\":\"oleg\"}";
         IMessage outputMessage = DoSendReceive(provider, jsonPayload);
@@ -579,7 +579,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddSingleton<IMessageConverter, AlwaysStringMessageConverter>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -601,7 +601,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddSingleton<IMessageConverter, FooBarMessageConverter>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -622,7 +622,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<PojoToPojoStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -638,7 +638,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<StringToStringStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -652,7 +652,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<CollectionWithParameterizedTypesStreamListener>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -681,7 +681,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<MapInputConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -699,7 +699,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<MapPayloadConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -717,7 +717,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<ListInputConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -735,7 +735,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<MessageHeadersInputConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -755,7 +755,7 @@ public class ContentTypeTckTest : AbstractTest
         _container.AddStreamListeners<TypelessPayloadConfiguration>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
 
@@ -780,7 +780,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         streamProcessor.Initialize();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         const string jsonPayload = "[\"foo\",\"bar\"]";
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).Build();
@@ -800,7 +800,7 @@ public class ContentTypeTckTest : AbstractTest
         var streamProcessor = provider.GetRequiredService<ServiceActivatorAttributeProcessor>();
         streamProcessor.Initialize();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         const string jsonPayload = "[\"foo\",\"bar\"]";
         IMessage message = MessageBuilder.WithPayload(Encoding.UTF8.GetBytes(jsonPayload)).Build();

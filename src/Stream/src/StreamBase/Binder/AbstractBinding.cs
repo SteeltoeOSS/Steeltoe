@@ -17,27 +17,27 @@ public abstract class AbstractBinding : IBinding
 
     public virtual bool IsRunning => false;
 
-    public virtual Task Pause()
+    public virtual Task PauseAsync()
     {
-        return Stop();
+        return StopAsync();
     }
 
-    public virtual Task Resume()
+    public virtual Task ResumeAsync()
     {
-        return Start();
+        return StartAsync();
     }
 
-    public virtual Task Start()
-    {
-        return Task.CompletedTask;
-    }
-
-    public virtual Task Stop()
+    public virtual Task StartAsync()
     {
         return Task.CompletedTask;
     }
 
-    public virtual Task Unbind()
+    public virtual Task StopAsync()
+    {
+        return Task.CompletedTask;
+    }
+
+    public virtual Task UnbindAsync()
     {
         return Task.CompletedTask;
     }

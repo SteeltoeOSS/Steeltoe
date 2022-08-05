@@ -23,7 +23,7 @@ public static class HealthCheckExtensions
         };
     }
 
-    public static async Task<HealthCheckResult> HealthCheck(this HealthCheckRegistration registration, IServiceProvider provider)
+    public static async Task<HealthCheckResult> HealthCheckAsync(this HealthCheckRegistration registration, IServiceProvider provider)
     {
         var context = new HealthCheckContext
         {

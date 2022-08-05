@@ -58,7 +58,7 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         _listener = new AppendingListener();
         var adapter = new MessageListenerAdapter(null, _listener);
         _listenerContainer1.MessageListener = adapter;
-        _listenerContainer1.Start();
+        _listenerContainer1.StartAsync();
         _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         // Conditional declarations
@@ -101,8 +101,8 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         rabbitTemplate.ConvertAndSend(Exchange1, Q1, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
-        _listenerContainer1.Stop();
-        _listenerContainer1.Start();
+        _listenerContainer1.StopAsync();
+        _listenerContainer1.StartAsync();
         _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(Exchange1, Q1, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
@@ -113,14 +113,14 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
     public void TestStopStartConditionalDeclarations()
     {
         var rabbitTemplate = new RabbitTemplate(_connectionFactory);
-        _listenerContainer2.Start();
+        _listenerContainer2.StartAsync();
         _listenerContainer2.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         rabbitTemplate.ConvertAndSend(Exchange2, Q3, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
-        _listenerContainer2.Stop();
-        _listenerContainer2.Start();
+        _listenerContainer2.StopAsync();
+        _listenerContainer2.StartAsync();
         _listenerContainer1.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(Exchange2, Q3, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
@@ -131,14 +131,14 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
     public void TestRedeclareXExpiresQueue()
     {
         var rabbitTemplate = new RabbitTemplate(_connectionFactory);
-        _listenerContainer3.Start();
+        _listenerContainer3.StartAsync();
         _listenerContainer3.StartedLatch.Wait(TimeSpan.FromSeconds(10));
         rabbitTemplate.ConvertAndSend(_expiringQueue.QueueName, "foo");
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
 
-        _listenerContainer3.Stop();
-        _listenerContainer3.Start();
+        _listenerContainer3.StopAsync();
+        _listenerContainer3.StartAsync();
         _listenerContainer3.StartedLatch.Wait(TimeSpan.FromSeconds(10));
 
         rabbitTemplate.ConvertAndSend(_expiringQueue.QueueName, "foo");
@@ -154,12 +154,12 @@ public sealed class ListenFromAutoDeleteQueueTest : IDisposable
         _listener.Latch.Wait(TimeSpan.FromSeconds(10));
         Assert.NotEmpty(_listener.Queue);
 
-        _listenerContainer4.Stop();
+        _listenerContainer4.StopAsync();
         var testAdminMock = new Mock<IRabbitAdmin>();
         testAdminMock.Setup(m => m.Initialize()).Throws(new Exception("Should not be called!"));
         _listenerContainer4.RabbitAdmin = testAdminMock.Object;
-        _listenerContainer4.Stop();
-        _listenerContainer4.Start();
+        _listenerContainer4.StopAsync();
+        _listenerContainer4.StartAsync();
         testAdminMock.Verify(m => m.Initialize(), Times.Never);
     }
 

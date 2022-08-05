@@ -63,14 +63,14 @@ public class RabbitInboundChannelAdapter : MessageProducerSupportEndpoint
         MessageListenerContainer.Initialize();
     }
 
-    protected override Task DoStart()
+    protected override Task DoStartAsync()
     {
-        return MessageListenerContainer.Start();
+        return MessageListenerContainer.StartAsync();
     }
 
-    protected override Task DoStop()
+    protected override Task DoStopAsync()
     {
-        return MessageListenerContainer.Stop();
+        return MessageListenerContainer.StopAsync();
     }
 
     protected override IAttributeAccessor GetErrorMessageAttributes(IMessage message)

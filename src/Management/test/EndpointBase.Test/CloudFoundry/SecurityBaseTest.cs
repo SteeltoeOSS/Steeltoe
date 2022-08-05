@@ -49,7 +49,7 @@ public class SecurityBaseTest : BaseTest
         };
 
         response.Content = JsonContent.Create(perms);
-        Permissions result = await securityBase.GetPermissions(response);
+        Permissions result = await securityBase.GetPermissionsAsync(response);
         Assert.Equal(Permissions.Full, result);
     }
 }

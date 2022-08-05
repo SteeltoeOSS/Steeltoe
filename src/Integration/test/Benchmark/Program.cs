@@ -58,7 +58,7 @@ public sealed class Program
     }
 
     [Benchmark]
-    public async Task DirectChannel_SendAsync_10_000_000_SingleHandler()
+    public async Task DirectChannel_SendAsync_10_000_000_SingleHandlerAsync()
     {
         var services = new ServiceCollection();
         services.AddSingleton<IIntegrationServices, IntegrationServices>();

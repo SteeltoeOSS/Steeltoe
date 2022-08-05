@@ -80,7 +80,10 @@ public class CredHubClient : ICredHubClient
             if (string.IsNullOrEmpty(uaaOverrideUrl))
             {
                 HttpResponseMessage info = await _httpClient.GetAsync($"{_baseCredHubUrl.Replace("/api", "/info")}").ConfigureAwait(false);
-                CredHubServerInfo infoResponse = await HandleErrorParseResponse<CredHubServerInfo>(info, "GET /info from CredHub Server").ConfigureAwait(false);
+
+                CredHubServerInfo infoResponse =
+                    await HandleErrorParseResponseAsync<CredHubServerInfo>(info, "GET /info from CredHub Server").ConfigureAwait(false);
+
                 tokenUri = new Uri($"{infoResponse.AuthServer.First().Value}/oauth/token");
                 _logger?.LogInformation($"Targeted CredHub server uses UAA server at {tokenUri}");
             }
@@ -91,7 +94,7 @@ public class CredHubClient : ICredHubClient
             }
 
             // login to UAA
-            string token = await HttpClientHelper.GetAccessToken(tokenUri, options.ClientId, options.ClientSecret,
+            string token = await HttpClientHelper.GetAccessTokenAsync(tokenUri, options.ClientId, options.ClientSecret,
                 additionalParams: new Dictionary<string, string>
                 {
                     { "response_type", "token" }
@@ -127,7 +130,7 @@ public class CredHubClient : ICredHubClient
             HttpResponseMessage response =
                 await _httpClient.PutAsJsonAsync($"{_baseCredHubUrl}/v1/data", credentialRequest, SerializerOptions).ConfigureAwait(false);
 
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
+            return await HandleErrorParseResponseAsync<CredHubCredential<T>>(response, $"Write  {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
         {
@@ -147,7 +150,7 @@ public class CredHubClient : ICredHubClient
             HttpResponseMessage response =
                 await _httpClient.PostAsJsonAsync($"{_baseCredHubUrl}/v1/data", requestParameters, SerializerOptions).ConfigureAwait(false);
 
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
+            return await HandleErrorParseResponseAsync<CredHubCredential<T>>(response, $"Generate {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
         {
@@ -179,7 +182,7 @@ public class CredHubClient : ICredHubClient
                 { "name", name }
             }).ConfigureAwait(false);
 
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
+            return await HandleErrorParseResponseAsync<CredHubCredential<T>>(response, $"Regenerate  {typeof(T).Name}").ConfigureAwait(false);
         }
         finally
         {
@@ -211,7 +214,7 @@ public class CredHubClient : ICredHubClient
                 { "signed_by", certificateAuthority }
             }).ConfigureAwait(false);
 
-            return await HandleErrorParseResponse<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
+            return await HandleErrorParseResponseAsync<RegeneratedCertificates>(response, "Bulk Regenerate Credentials").ConfigureAwait(false);
         }
         finally
         {
@@ -238,7 +241,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}v1/data/{id}");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}v1/data/{id}").ConfigureAwait(false);
-            return await HandleErrorParseResponse<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
+            return await HandleErrorParseResponseAsync<CredHubCredential<T>>(response, $"Get {typeof(T).Name} by Id").ConfigureAwait(false);
         }
         finally
         {
@@ -265,7 +268,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&current=true");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&current=true").ConfigureAwait(false);
-            return (await HandleErrorParseResponse<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name").ConfigureAwait(false)).Data.First();
+            return (await HandleErrorParseResponseAsync<CredHubResponse<T>>(response, $"Get {typeof(T).Name} by Name").ConfigureAwait(false)).Data.First();
         }
         finally
         {
@@ -292,7 +295,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name={name}&versions={entries}");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name={name}&versions={entries}").ConfigureAwait(false);
-            return (await HandleErrorParseResponse<CredHubResponse<T>>(response, "Get credential by name with History").ConfigureAwait(false)).Data;
+            return (await HandleErrorParseResponseAsync<CredHubResponse<T>>(response, "Get credential by name with History").ConfigureAwait(false)).Data;
         }
         finally
         {
@@ -319,7 +322,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?name-like={name}");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?name-like={name}").ConfigureAwait(false);
-            return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find credential by Name").ConfigureAwait(false)).Credentials;
+            return (await HandleErrorParseResponseAsync<CredentialFindResponse>(response, "Find credential by Name").ConfigureAwait(false)).Credentials;
         }
         finally
         {
@@ -346,7 +349,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/data?path={path}");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/data?path={path}").ConfigureAwait(false);
-            return (await HandleErrorParseResponse<CredentialFindResponse>(response, "Find by Path").ConfigureAwait(false)).Credentials;
+            return (await HandleErrorParseResponseAsync<CredentialFindResponse>(response, "Find by Path").ConfigureAwait(false)).Credentials;
         }
         finally
         {
@@ -406,7 +409,7 @@ public class CredHubClient : ICredHubClient
         {
             _logger?.LogTrace($"About to GET {_baseCredHubUrl}/v1/permissions?credential_name={name}");
             HttpResponseMessage response = await _httpClient.GetAsync($"{_baseCredHubUrl}/v1/permissions?credential_name={name}").ConfigureAwait(false);
-            return (await HandleErrorParseResponse<CredentialPermissions>(response, "Get Permissions").ConfigureAwait(false)).Permissions;
+            return (await HandleErrorParseResponseAsync<CredentialPermissions>(response, "Get Permissions").ConfigureAwait(false)).Permissions;
         }
         finally
         {
@@ -531,7 +534,7 @@ public class CredHubClient : ICredHubClient
         }
     }
 
-    private async Task<T> HandleErrorParseResponse<T>(HttpResponseMessage response, string operation)
+    private async Task<T> HandleErrorParseResponseAsync<T>(HttpResponseMessage response, string operation)
     {
         if (response.IsSuccessStatusCode)
         {

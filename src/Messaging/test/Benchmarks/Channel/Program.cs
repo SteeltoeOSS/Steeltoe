@@ -33,7 +33,7 @@ public sealed class Program
     }
 
     [Benchmark]
-    public async ValueTask TaskSchedulerSubscribableChannel_WriteAsync_10_000_000()
+    public async ValueTask TaskSchedulerSubscribableChannel_WriteAsync_10_000_000Async()
     {
         var channel = new TaskSchedulerSubscribableChannel();
         var handler = new CounterHandler();

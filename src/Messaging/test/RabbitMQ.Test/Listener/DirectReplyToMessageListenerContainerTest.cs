@@ -39,7 +39,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
 
         byte[] fooBytes = EncodingUtils.GetDefaultEncoding().GetBytes("foo");
         byte[] barBytes = EncodingUtils.GetDefaultEncoding().GetBytes("bar");
-        await container.Start();
+        await container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         DirectReplyToMessageListenerContainer.ChannelHolder channel1 = container.GetChannelHolder();
@@ -69,7 +69,7 @@ public sealed class DirectReplyToMessageListenerContainerTest : IDisposable
         Assert.Single(inUse);
         container.ReleaseConsumerFor(channel2, false, null);
         Assert.Empty(inUse);
-        await container.Stop();
+        await container.StopAsync();
         connectionFactory.Destroy();
     }
 

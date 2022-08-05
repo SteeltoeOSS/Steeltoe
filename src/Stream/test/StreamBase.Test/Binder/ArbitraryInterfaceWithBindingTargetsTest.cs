@@ -22,7 +22,7 @@ public class ArbitraryInterfaceWithBindingTargetsTest : AbstractTest
             "spring:cloud:stream:bindings:Foo:destination=someQueue.0", "spring:cloud:stream:bindings:Bar:destination=someQueue.1",
             "spring:cloud:stream:bindings:Baz:destination=someQueue.2", "spring:cloud:stream:bindings:Qux:destination=someQueue.3").BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

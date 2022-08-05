@@ -30,7 +30,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
@@ -49,7 +49,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         Assert.True(foundPartInterceptor);
 
-        await provider.GetRequiredService<ILifecycleProcessor>().Stop();
+        await provider.GetRequiredService<ILifecycleProcessor>().StopAsync();
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
@@ -83,7 +83,7 @@ public class CustomPartitionedProducerTest : AbstractTest
         }
 
         Assert.True(foundPartInterceptor);
-        await provider.GetRequiredService<ILifecycleProcessor>().Stop();
+        await provider.GetRequiredService<ILifecycleProcessor>().StopAsync();
     }
 
     [Fact]
@@ -104,7 +104,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var source = provider.GetService<ISource>();
         var messageChannel = source.Output as DirectChannel;
@@ -123,7 +123,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         Assert.True(foundPartInterceptor);
 
-        await provider.GetRequiredService<ILifecycleProcessor>().Stop();
+        await provider.GetRequiredService<ILifecycleProcessor>().StopAsync();
     }
 
     [Fact]
@@ -146,7 +146,7 @@ public class CustomPartitionedProducerTest : AbstractTest
 
         try
         {
-            await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+            await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
         }
         catch (Exception)
         {

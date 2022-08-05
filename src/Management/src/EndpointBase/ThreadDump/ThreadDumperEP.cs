@@ -85,7 +85,7 @@ public class ThreadDumperEp : IThreadDumper
 
         try
         {
-            traceFileName = CreateTraceFile(session).Result;
+            traceFileName = CreateTraceFileAsync(session).Result;
 
             if (traceFileName != null)
             {
@@ -421,7 +421,7 @@ public class ThreadDumperEp : IThreadDumper
         return null;
     }
 
-    private async Task<string> CreateTraceFile(EventPipeSession session)
+    private async Task<string> CreateTraceFileAsync(EventPipeSession session)
     {
         string tempNetTraceFilename = $"{Path.GetRandomFileName()}.nettrace";
 

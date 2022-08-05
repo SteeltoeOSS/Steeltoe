@@ -45,7 +45,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         }
 
         // get next instance, or wrap back to first instance if we reach the end of the list
-        int nextInstanceIndex = await GetOrInitNextIndex(cacheKey, 0).ConfigureAwait(false);
+        int nextInstanceIndex = await GetOrInitNextIndexAsync(cacheKey, 0).ConfigureAwait(false);
 
         if (nextInstanceIndex >= availableServiceInstances.Count)
         {
@@ -55,7 +55,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         // get next instance, or wrap back to first instance if we reach the end of the list
         IServiceInstance serviceInstance = availableServiceInstances[nextInstanceIndex];
         _logger?.LogDebug("Resolved {url} to {service}", request.Host, serviceInstance.Host);
-        await SetNextIndex(cacheKey, nextInstanceIndex).ConfigureAwait(false);
+        await SetNextIndexAsync(cacheKey, nextInstanceIndex).ConfigureAwait(false);
         return new Uri(serviceInstance.Uri, request.PathAndQuery);
     }
 
@@ -64,7 +64,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         return Task.CompletedTask;
     }
 
-    private async Task<int> GetOrInitNextIndex(string cacheKey, int initValue)
+    private async Task<int> GetOrInitNextIndexAsync(string cacheKey, int initValue)
     {
         int index = initValue;
 
@@ -85,7 +85,7 @@ public class RoundRobinLoadBalancer : ILoadBalancer
         return index;
     }
 
-    private async Task SetNextIndex(string cacheKey, int currentValue)
+    private async Task SetNextIndexAsync(string cacheKey, int currentValue)
     {
         if (DistributedCache != null)
         {

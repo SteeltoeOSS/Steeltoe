@@ -29,7 +29,7 @@ public class ErrorHandlingTest : AbstractTest
         _container.AddStreamListeners<GlobalErrorHandlerWithErrorMessageConfig>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();
@@ -46,7 +46,7 @@ public class ErrorHandlingTest : AbstractTest
         _container.AddStreamListeners<GlobalErrorHandlerWithExceptionConfig>();
         ServiceProvider provider = _container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var streamProcessor = provider.GetRequiredService<StreamListenerAttributeProcessor>();
         streamProcessor.Initialize();

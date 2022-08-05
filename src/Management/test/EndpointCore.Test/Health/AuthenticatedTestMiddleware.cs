@@ -16,7 +16,7 @@ internal sealed class AuthenticatedTestMiddleware
         _next = next;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         var claimsIdentity = new ClaimsIdentity(new List<Claim>
         {

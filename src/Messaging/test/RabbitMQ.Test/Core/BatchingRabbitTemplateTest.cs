@@ -203,7 +203,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var batchSize = new AtomicInteger();
         container.MessageListener = new TestDebatchListener(received, lastInBatch, batchSize, latch);
         container.Initialize();
-        container.Start();
+        container.StartAsync();
 
         try
         {
@@ -231,7 +231,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         }
         finally
         {
-            container.Stop();
+            container.StopAsync();
             container.Dispose();
         }
     }
@@ -252,7 +252,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         container.PrefetchCount = 1000;
         container.BatchingStrategy = new SimpleBatchingStrategy(1000, int.MaxValue, 30000);
         container.Initialize();
-        container.Start();
+        container.StartAsync();
 
         try
         {
@@ -281,7 +281,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         }
         finally
         {
-            container.Stop();
+            container.StopAsync();
             container.Dispose();
         }
     }
@@ -300,7 +300,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         var errorHandler = new TestConditionalRejectingErrorHandler();
         container.ErrorHandler = errorHandler;
         container.Initialize();
-        container.Start();
+        container.StartAsync();
 
         try
         {
@@ -322,7 +322,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         }
         finally
         {
-            container.Stop();
+            container.StopAsync();
             container.Dispose();
         }
     }

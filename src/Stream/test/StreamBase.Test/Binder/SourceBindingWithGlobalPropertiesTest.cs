@@ -22,7 +22,7 @@ public class SourceBindingWithGlobalPropertiesTest : AbstractTest
             "spring.cloud.stream.default.producer.partitionCount=1", "spring.cloud.stream.bindings.output.producer.headerMode=none",
             "spring.cloud.stream.bindings.output.producer.partitionCount=4", "spring.cloud.stream.defaultBinder=mock").BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var factory = provider.GetService<IBinderFactory>();
         Assert.NotNull(factory);

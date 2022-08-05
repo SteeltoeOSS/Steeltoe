@@ -11,7 +11,7 @@ namespace Steeltoe.Stream.Binder;
 /// </summary>
 public interface IPausable : ILifecycle
 {
-    Task Pause();
+    Task PauseAsync();
 
-    Task Resume();
+    Task ResumeAsync();
 }

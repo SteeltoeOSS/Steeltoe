@@ -40,7 +40,7 @@ public class HostBuilderExtensionsTest
         using IHost host = await hostBuilder.AddKubernetesActuators().StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        await AssertActuatorResponses(testClient);
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class HostBuilderExtensionsTest
         using IHost host = await hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        await AssertActuatorResponses(testClient, MediaTypeVersion.V1);
+        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
@@ -62,7 +62,7 @@ public class HostBuilderExtensionsTest
         using IHost host = await hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).StartAsync();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        await AssertActuatorResponses(testClient);
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public class HostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddKubernetesActuators().Start();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        await AssertActuatorResponses(testClient);
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public class HostBuilderExtensionsTest
         using IWebHost host = hostBuilder.AddKubernetesActuators(MediaTypeVersion.V1).Start();
         HttpClient testClient = host.GetTestServer().CreateClient();
 
-        await AssertActuatorResponses(testClient, MediaTypeVersion.V1);
+        await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
     }
 
     [Fact]
@@ -97,7 +97,7 @@ public class HostBuilderExtensionsTest
 
         using IWebHost host = hostBuilder.AddKubernetesActuators(ep => ep.RequireAuthorization("TestAuth")).Start();
         HttpClient testClient = host.GetTestServer().CreateClient();
-        await AssertActuatorResponses(testClient);
+        await AssertActuatorResponsesAsync(testClient);
     }
 
     [Fact]
@@ -111,7 +111,7 @@ public class HostBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
             HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponses(testClient);
+            await AssertActuatorResponsesAsync(testClient);
         }
         finally
         {
@@ -130,7 +130,7 @@ public class HostBuilderExtensionsTest
             host.UseRouting();
             await host.StartAsync();
             HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponses(testClient, MediaTypeVersion.V1);
+            await AssertActuatorResponsesAsync(testClient, MediaTypeVersion.V1);
         }
         finally
         {
@@ -147,7 +147,7 @@ public class HostBuilderExtensionsTest
         {
             await host.StartAsync();
             HttpClient testClient = host.GetTestServer().CreateClient();
-            await AssertActuatorResponses(testClient);
+            await AssertActuatorResponsesAsync(testClient);
         }
         finally
         {
@@ -174,7 +174,7 @@ public class HostBuilderExtensionsTest
         return app;
     }
 
-    private async Task AssertActuatorResponses(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
+    private async Task AssertActuatorResponsesAsync(HttpClient testClient, MediaTypeVersion mediaTypeVersion = MediaTypeVersion.V2)
     {
         HttpResponseMessage response = await testClient.GetAsync("/actuator");
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

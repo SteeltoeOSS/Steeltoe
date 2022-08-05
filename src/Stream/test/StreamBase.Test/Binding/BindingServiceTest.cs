@@ -41,7 +41,7 @@ public class BindingServiceTest : AbstractTest
         service.UnbindConsumers("input");
 
         mockBinder.Verify(b => b.BindConsumer("foo", null, inputChannel, It.IsAny<ConsumerOptions>()));
-        mockBinding.Verify(b => b.Unbind());
+        mockBinding.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -72,8 +72,8 @@ public class BindingServiceTest : AbstractTest
         mockBinder.Verify(b => b.BindConsumer("foo", null, inputChannel, It.IsAny<ConsumerOptions>()));
         mockBinder.Verify(b => b.BindConsumer("bar", null, inputChannel, It.IsAny<ConsumerOptions>()));
 
-        mockBinding1.Verify(b => b.Unbind());
-        mockBinding2.Verify(b => b.Unbind());
+        mockBinding1.Verify(b => b.UnbindAsync());
+        mockBinding2.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -100,7 +100,7 @@ public class BindingServiceTest : AbstractTest
         service.UnbindConsumers("input");
 
         mockBinder.Verify(b => b.BindConsumer("foo,bar", null, inputChannel, It.IsAny<ConsumerOptions>()));
-        mockBinding.Verify(b => b.Unbind());
+        mockBinding.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -127,7 +127,7 @@ public class BindingServiceTest : AbstractTest
         service.UnbindConsumers("input");
 
         mockBinder.Verify(b => b.BindConsumer("foo", "fooGroup", inputChannel, It.IsAny<ConsumerOptions>()));
-        mockBinding.Verify(b => b.Unbind());
+        mockBinding.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -159,7 +159,7 @@ public class BindingServiceTest : AbstractTest
 
         ServiceProvider provider = container.BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var bindServiceOptions = provider.GetService<IOptionsMonitor<BindingServiceOptions>>();
         Dictionary<string, BindingOptions> bindings = bindServiceOptions.CurrentValue.Bindings;
@@ -281,7 +281,7 @@ public class BindingServiceTest : AbstractTest
         Assert.Single(bindings);
         Assert.Same(mockBinding.Object, bindings.Single());
         service.UnbindConsumers("input");
-        mockBinding.Verify(b => b.Unbind());
+        mockBinding.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -325,7 +325,7 @@ public class BindingServiceTest : AbstractTest
         Assert.NotNull(binding);
         Assert.Same(mockBinding.Object, binding);
         service.UnbindProducers("output");
-        mockBinding.Verify(b => b.Unbind());
+        mockBinding.Verify(b => b.UnbindAsync());
     }
 
     [Fact]
@@ -336,7 +336,7 @@ public class BindingServiceTest : AbstractTest
         ServiceProvider provider = CreateStreamsContainerWithISinkBinding(searchDirectories, "spring.cloud.stream.bindings.input.consumer.autostartup=false")
             .BuildServiceProvider();
 
-        await provider.GetRequiredService<ILifecycleProcessor>().OnRefresh(); // Only starts Autostart
+        await provider.GetRequiredService<ILifecycleProcessor>().OnRefreshAsync(); // Only starts Autostart
 
         var service = provider.GetService<BindingService>();
         IDictionary<string, List<IBinding>> bindings = service.ConsumerBindings;

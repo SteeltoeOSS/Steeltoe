@@ -30,7 +30,7 @@ internal sealed class PullMetricsCollectionManager
         _onCollectRef = OnCollect;
     }
 
-    public Task<ICollectionResponse> EnterCollect()
+    public Task<ICollectionResponse> EnterCollectAsync()
     {
         EnterGlobalLock();
 

@@ -45,7 +45,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs1()
     {
-        IConfiguration config = await GetQueueConfiguration("all.args.1");
+        IConfiguration config = await GetQueueConfigurationAsync("all.args.1");
         IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
@@ -62,7 +62,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs2()
     {
-        IConfiguration config = await GetQueueConfiguration("all.args.2");
+        IConfiguration config = await GetQueueConfigurationAsync("all.args.2");
         IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
@@ -79,7 +79,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQueueArgs3()
     {
-        IConfiguration config = await GetQueueConfiguration("all.args.3");
+        IConfiguration config = await GetQueueConfigurationAsync("all.args.3");
         IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(1000, arguments.GetValue<int>("x-message-ttl"));
         Assert.Equal(200000, arguments.GetValue<int>("x-expires"));
@@ -92,7 +92,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         Assert.Equal("lazy", arguments.GetValue<string>("x-queue-mode"));
         Assert.Equal("random", arguments.GetValue<string>("x-queue-master-locator"));
 
-        IConfiguration exchangeConfig = await GetExchangeConfiguration("dlx.test.requestEx");
+        IConfiguration exchangeConfig = await GetExchangeConfigurationAsync("dlx.test.requestEx");
         IConfigurationSection arguments2 = exchangeConfig.GetSection("arguments");
         Assert.Equal("alternate", arguments2.GetValue<string>("alternate-exchange"));
     }
@@ -100,13 +100,13 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
     [Fact]
     public async Task TestQuorumArgs()
     {
-        IConfiguration config = await GetQueueConfiguration("test.quorum");
+        IConfiguration config = await GetQueueConfigurationAsync("test.quorum");
         IConfigurationSection arguments = config.GetSection("arguments");
         Assert.Equal(10, arguments.GetValue<int>("x-delivery-limit"));
         Assert.Equal("quorum", arguments.GetValue<string>("x-queue-type"));
     }
 
-    private async Task<IConfiguration> GetQueueConfiguration(string queueName)
+    private async Task<IConfiguration> GetQueueConfigurationAsync(string queueName)
     {
         var client = new HttpClient();
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");
@@ -127,7 +127,7 @@ public class FixedReplyQueueDeadLetterTest : IClassFixture<FixedReplyStartupFixt
         return config;
     }
 
-    private async Task<IConfiguration> GetExchangeConfiguration(string exchangeName)
+    private async Task<IConfiguration> GetExchangeConfigurationAsync(string exchangeName)
     {
         var client = new HttpClient();
         byte[] authToken = Encoding.ASCII.GetBytes("guest:guest");

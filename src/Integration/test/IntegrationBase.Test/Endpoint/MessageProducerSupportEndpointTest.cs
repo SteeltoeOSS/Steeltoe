@@ -43,7 +43,7 @@ public class MessageProducerSupportEndpointTest
             OutputChannel = outChannel
         };
 
-        await mps.Start();
+        await mps.StartAsync();
         Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
     }
 
@@ -63,7 +63,7 @@ public class MessageProducerSupportEndpointTest
             ErrorChannel = errorChannel
         };
 
-        await mps.Start();
+        await mps.StartAsync();
         Assert.Throws<MessageDeliveryException>(() => mps.SendMessage(Message.Create("hello")));
     }
 
@@ -85,7 +85,7 @@ public class MessageProducerSupportEndpointTest
             ErrorChannel = errorChannel
         };
 
-        await mps.Start();
+        await mps.StartAsync();
         IMessage<string> message = Message.Create("hello");
         mps.SendMessage(message);
         Assert.IsType<ErrorMessage>(errorService.LastMessage);
@@ -105,7 +105,7 @@ public class MessageProducerSupportEndpointTest
             OutputChannelName = "foo"
         };
 
-        await mps.Start();
+        await mps.StartAsync();
         Assert.NotNull(mps.OutputChannel);
         Assert.Equal("foo", mps.OutputChannel.ServiceName);
     }
@@ -117,10 +117,10 @@ public class MessageProducerSupportEndpointTest
         var endpoint = new CustomEndpoint(provider.GetService<IApplicationContext>());
         Assert.Equal(0, endpoint.Count);
         Assert.False(endpoint.IsRunning);
-        await endpoint.Start();
+        await endpoint.StartAsync();
         Assert.True(endpoint.IsRunning);
 
-        await endpoint.Stop(() =>
+        await endpoint.StopAsync(() =>
         {
             // Do nothing
         });
@@ -168,22 +168,22 @@ public class MessageProducerSupportEndpointTest
         {
         }
 
-        protected override Task DoStart()
+        protected override Task DoStartAsync()
         {
             Stopped = false;
             return Task.CompletedTask;
         }
 
-        protected override Task DoStop()
+        protected override Task DoStopAsync()
         {
             Stopped = true;
             return Task.CompletedTask;
         }
 
-        protected override Task DoStop(Action callback)
+        protected override Task DoStopAsync(Action callback)
         {
             Count++;
-            return base.DoStop(callback);
+            return base.DoStopAsync(callback);
         }
     }
 }

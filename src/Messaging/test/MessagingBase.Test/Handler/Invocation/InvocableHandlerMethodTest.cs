@@ -260,7 +260,7 @@ public class InvocableHandlerMethodTest
         var messageMock = new Mock<IMessage>();
         _message = messageMock.Object;
         _resolvers = new HandlerMethodArgumentResolverComposite();
-        MethodInfo method = typeof(Handler2).GetMethod(nameof(Handler2.HandleAsyncVoidMethod));
+        MethodInfo method = typeof(Handler2).GetMethod(nameof(Handler2.HandleAsyncVoidMethodAsync));
         var result = Invoke(handler, method, 1.0d) as Task;
         await result;
         Assert.Equal(1, handler.InvocationCount);
@@ -274,7 +274,7 @@ public class InvocableHandlerMethodTest
         var messageMock = new Mock<IMessage>();
         _message = messageMock.Object;
         _resolvers = new HandlerMethodArgumentResolverComposite();
-        MethodInfo method = typeof(Handler2).GetMethod(nameof(Handler2.HandleAsyncStringMethod));
+        MethodInfo method = typeof(Handler2).GetMethod(nameof(Handler2.HandleAsyncStringMethodAsync));
         var result = Invoke(handler, method, 10, "stringArg") as Task<string>;
         string str = await result;
         Assert.Equal(1, handler.InvocationCount);
@@ -385,14 +385,14 @@ public class InvocableHandlerMethodTest
             throw ex;
         }
 
-        public Task HandleAsyncVoidMethod(double value)
+        public Task HandleAsyncVoidMethodAsync(double value)
         {
             InvocationCount++;
             DoubleValue = value;
             return Task.CompletedTask;
         }
 
-        public Task<string> HandleAsyncStringMethod(int? intArg, string stringArg)
+        public Task<string> HandleAsyncStringMethodAsync(int? intArg, string stringArg)
         {
             InvocationCount++;
             string result = $"{(intArg == null ? "null" : intArg.Value.ToString())}-{stringArg ?? "null"}";

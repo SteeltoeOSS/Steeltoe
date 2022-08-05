@@ -93,7 +93,7 @@ public class BatchingRabbitTemplate : RabbitTemplate
                 {
                     _cancellationTokenSource = new CancellationTokenSource();
                     TimeSpan delay = next.Value - DateTime.Now;
-                    _scheduledTask = Task.Run(() => ReleaseBatches(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
+                    _scheduledTask = Task.Run(() => ReleaseBatchesAsync(delay, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
                 }
             }
         }
@@ -106,10 +106,10 @@ public class BatchingRabbitTemplate : RabbitTemplate
 
     public async Task FlushAsync(CancellationToken cancellationToken)
     {
-        await ReleaseBatches(TimeSpan.Zero, cancellationToken);
+        await ReleaseBatchesAsync(TimeSpan.Zero, cancellationToken);
     }
 
-    private async Task ReleaseBatches(TimeSpan delay, CancellationToken cancellationToken)
+    private async Task ReleaseBatchesAsync(TimeSpan delay, CancellationToken cancellationToken)
     {
         await Task.Delay(delay, cancellationToken);
 

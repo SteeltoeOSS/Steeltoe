@@ -42,7 +42,7 @@ public class ContainerShutDownTest : AbstractTest
         var channels = (SessionManager)field.GetValue(connection.Target.Connection);
         Assert.NotNull(channels);
 
-        container.Start();
+        container.StartAsync();
         Assert.True(container.StartedLatch.Wait(TimeSpan.FromSeconds(10)));
 
         try
@@ -62,7 +62,7 @@ public class ContainerShutDownTest : AbstractTest
         }
         finally
         {
-            container.Stop();
+            container.StopAsync();
             Assert.Equal(1, channels.Count);
             container.Dispose();
 

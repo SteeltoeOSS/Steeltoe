@@ -36,5 +36,5 @@ public interface IBinding : IPausable
     /// <returns>
     /// task to signal results.
     /// </returns>
-    Task Unbind();
+    Task UnbindAsync();
 }

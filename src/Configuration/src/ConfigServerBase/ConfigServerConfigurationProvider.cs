@@ -908,7 +908,7 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
 
     protected internal virtual void RenewToken(string token)
     {
-        tokenRenewTimer ??= new Timer(RefreshVaultTokenAsync, null, TimeSpan.FromMilliseconds(settings.TokenRenewRate),
+        tokenRenewTimer ??= new Timer(RefreshVaultToken, null, TimeSpan.FromMilliseconds(settings.TokenRenewRate),
             TimeSpan.FromMilliseconds(settings.TokenRenewRate));
     }
 
@@ -925,13 +925,13 @@ public class ConfigServerConfigurationProvider : ConfigurationProvider, IConfigu
             return null;
         }
 
-        return HttpClientHelper.GetAccessToken(settings.AccessTokenUri, settings.ClientId, settings.ClientSecret, settings.Timeout,
+        return HttpClientHelper.GetAccessTokenAsync(settings.AccessTokenUri, settings.ClientId, settings.ClientSecret, settings.Timeout,
             settings.ValidateCertificates, httpClient, logger).GetAwaiter().GetResult();
     }
 
     // fire and forget
 #pragma warning disable S3168 // "async" methods should not return "void"
-    protected internal async void RefreshVaultTokenAsync(object state)
+    protected internal async void RefreshVaultToken(object state)
 #pragma warning restore S3168 // "async" methods should not return "void"
     {
         if (string.IsNullOrEmpty(Settings.Token))

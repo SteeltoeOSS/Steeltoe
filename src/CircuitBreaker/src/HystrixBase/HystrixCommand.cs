@@ -167,7 +167,7 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
     {
         UsersToken = token;
 
-        Task<TResult> toStart = ToTask();
+        Task<TResult> toStart = ToTaskAsync();
 
         if (!toStart.IsCompleted)
         {
@@ -211,7 +211,7 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
         IObservable<TResult> observable = Observable.FromAsync(ct =>
         {
             UsersToken = ct;
-            Task<TResult> toStart = ToTask();
+            Task<TResult> toStart = ToTaskAsync();
 
             if (!toStart.IsCompleted)
             {
@@ -232,7 +232,7 @@ public class HystrixCommand<TResult> : AbstractCommand<TResult>, IHystrixExecuta
         return observable;
     }
 
-    internal Task<TResult> ToTask()
+    internal Task<TResult> ToTaskAsync()
     {
         Setup();
 

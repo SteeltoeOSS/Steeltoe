@@ -19,7 +19,7 @@ public class ThreadDumpEndpointMiddlewareV2 : EndpointMiddleware<ThreadDumpResul
         _next = next;
     }
 
-    public Task Invoke(HttpContext context)
+    public Task InvokeAsync(HttpContext context)
     {
         if (endpoint.ShouldInvoke(managementOptions, logger))
         {

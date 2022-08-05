@@ -60,7 +60,7 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload1, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        binding2.Unbind();
+        binding2.UnbindAsync();
 
         string testPayload2 = $"foo-{Guid.NewGuid()}";
 
@@ -81,9 +81,9 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload3, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        producerBinding.Unbind();
-        binding1.Unbind();
-        binding2.Unbind();
+        producerBinding.UnbindAsync();
+        binding1.UnbindAsync();
+        binding2.UnbindAsync();
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage1);
         Assert.Equal(testPayload, Encoding.UTF8.GetString(receivedMessage1.Payload));
 
-        producerBinding.Unbind();
-        consumerBinding.Unbind();
+        producerBinding.UnbindAsync();
+        consumerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -158,9 +158,9 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
         Assert.NotNull(receivedMessage2);
         Assert.Equal(testPayload, Encoding.UTF8.GetString(receivedMessage2.Payload));
 
-        consumerBinding1.Unbind();
-        consumerBinding2.Unbind();
-        producerBinding.Unbind();
+        consumerBinding1.UnbindAsync();
+        consumerBinding2.UnbindAsync();
+        producerBinding.UnbindAsync();
     }
 
     [Fact]
@@ -272,10 +272,10 @@ public abstract class PartitionCapableBinderTests<TTestBinder, TBinder> : Abstra
             Assert.Single(receivedMessages.Where(payloadIs2).Where(correlationHeadersForPayload2));
         }
 
-        input0Binding.Unbind();
-        input1Binding.Unbind();
-        input2Binding.Unbind();
-        outputBinding.Unbind();
+        input0Binding.UnbindAsync();
+        input1Binding.UnbindAsync();
+        input2Binding.UnbindAsync();
+        outputBinding.UnbindAsync();
     }
 
     protected abstract string GetEndpointRouting(object endpoint);

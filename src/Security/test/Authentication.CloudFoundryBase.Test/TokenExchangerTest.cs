@@ -107,7 +107,7 @@ public class TokenExchangerTest
 
         var exchanger = new TokenExchanger(options, GetMockHttpClient());
 
-        ClaimsIdentity identity = await exchanger.ExchangeAuthCodeForClaimsIdentity("goodCode");
+        ClaimsIdentity identity = await exchanger.ExchangeAuthCodeForClaimsIdentityAsync("goodCode");
 
         Assert.IsType<ClaimsIdentity>(identity);
     }
@@ -123,7 +123,7 @@ public class TokenExchangerTest
         // TODO: replace with mock that does stuff
         var exchanger = new TokenExchanger(options, GetMockHttpClient());
 
-        ClaimsIdentity identity = await exchanger.ExchangeAuthCodeForClaimsIdentity("badCode");
+        ClaimsIdentity identity = await exchanger.ExchangeAuthCodeForClaimsIdentityAsync("badCode");
 
         Assert.Null(identity);
     }
