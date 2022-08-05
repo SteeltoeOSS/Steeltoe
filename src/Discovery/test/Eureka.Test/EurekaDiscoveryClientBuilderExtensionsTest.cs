@@ -85,7 +85,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesIgnoresCFManagementOptions()
     {
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-service-registry"": [{
                         ""credentials"": {

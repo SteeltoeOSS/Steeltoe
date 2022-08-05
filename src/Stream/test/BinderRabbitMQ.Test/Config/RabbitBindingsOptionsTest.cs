@@ -196,14 +196,14 @@ public class RabbitBindingsOptionsTest
         Assert.NotNull(outputBinding);
         Assert.NotSame(options.Default.Producer, outputBinding);
 
-        string inputBindingsKey = "bindings:input:consumer";
+        const string inputBindingsKey = "bindings:input:consumer";
 
         foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(config, inputBinding, inputBindingsKey))
         {
             AssertOptionEquals.Equal(tuple.Item3, tuple.Item2, $"{inputBindingsKey}:{tuple.Item1}");
         }
 
-        string outputBindingsKey = "bindings:output:producer";
+        const string outputBindingsKey = "bindings:output:producer";
 
         foreach (Tuple<string, string, string> tuple in GetOptionsConfigPairs(config, outputBinding, outputBindingsKey))
         {

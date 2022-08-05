@@ -178,7 +178,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -244,7 +244,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
 <settings>
     <spring>
       <cloud>
@@ -292,7 +292,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
 [spring:cloud:config]
     uri=https://foo.com:9999
     enabled=false
@@ -373,7 +373,7 @@ public class ConfigServerConfigurationBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_HandlesPlaceHolders()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""foo"": {
                         ""bar"": {

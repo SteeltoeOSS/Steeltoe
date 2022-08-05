@@ -31,7 +31,7 @@ public class BindingBuilderTest
     public void DirectBinding()
     {
         var directExchange = new DirectExchange("d");
-        string routingKey = "r";
+        const string routingKey = "r";
         IBinding binding = BindingBuilder.Bind(_queue).To(directExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(directExchange.ExchangeName, binding.Exchange);
@@ -56,7 +56,7 @@ public class BindingBuilderTest
     public void TopicBinding()
     {
         var topicExchange = new TopicExchange("t");
-        string routingKey = "r";
+        const string routingKey = "r";
         IBinding binding = BindingBuilder.Bind(_queue).To(topicExchange).With(routingKey);
         Assert.NotNull(binding);
         Assert.Equal(topicExchange.ExchangeName, binding.Exchange);
@@ -69,7 +69,7 @@ public class BindingBuilderTest
     public void HeaderBinding()
     {
         var headersExchange = new HeadersExchange("h");
-        string headerKey = "headerKey";
+        const string headerKey = "headerKey";
         IBinding binding = BindingBuilder.Bind(_queue).To(headersExchange).Where(headerKey).Exists();
         Assert.NotNull(binding);
         Assert.Equal(headersExchange.ExchangeName, binding.Exchange);
@@ -83,7 +83,7 @@ public class BindingBuilderTest
     {
         object argumentObject = new();
         var customExchange = new CustomExchange("c");
-        string routingKey = "r";
+        const string routingKey = "r";
 
         IBinding binding = BindingBuilder.Bind(_queue).To(customExchange).With(routingKey).And(new Dictionary<string, object>
         {

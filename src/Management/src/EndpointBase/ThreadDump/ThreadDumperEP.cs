@@ -115,7 +115,7 @@ public class ThreadDumperEp : IThreadDumper
                         stackIndex = stackSource.GetCallerIndex(stackIndex);
                     }
 
-                    string template = "Thread (";
+                    const string template = "Thread (";
                     string threadFrame = stackSource.GetFrameName(stackSource.GetFrameIndex(stackIndex), false);
                     int threadId = int.Parse(threadFrame.Substring(template.Length, threadFrame.Length - (template.Length + 1)));
 

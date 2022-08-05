@@ -423,8 +423,8 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         Assert.False(container.IsRunning);
 
         var client = new HttpClient();
-        string scheme = "http://";
-        string vhost = "%2F";
+        const string scheme = "http://";
+        const string vhost = "%2F";
         byte[] byteArray = "guest:guest".GetBytes();
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
 
@@ -500,7 +500,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         // properties.Extension.DelayedExchange = true; // requires delayed message
 
         // exchange plugin; tested locally
-        string group = "infra";
+        const string group = "infra";
         IBinding consumerBinding = binder.BindConsumer("propsUser2", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         ILifecycle endpoint = ExtractEndpoint(consumerBinding);
         var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
@@ -728,7 +728,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         rabbitConsumerOptions.QueueBindingArguments = queueBindingArguments;
         rabbitConsumerOptions.DlqBindingArguments = queueBindingArguments;
 
-        string group = "bindingArgs";
+        const string group = "bindingArgs";
         IBinding consumerBinding = binder.BindConsumer("propsHeader", group, CreateBindableChannel("input", GetDefaultBindingOptions()), properties);
         ILifecycle endpoint = ExtractEndpoint(consumerBinding);
         var container = GetPropertyValue<DirectMessageListenerContainer>(endpoint, "MessageListenerContainer");
@@ -1194,7 +1194,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var template = new RabbitTemplate(GetResource());
         template.ReceiveTimeout = 10000;
 
-        string streamDlqName = "bindertest.partDLQ.0.dlqPartGrp.dlq";
+        const string streamDlqName = "bindertest.partDLQ.0.dlqPartGrp.dlq";
 
         IMessage received = template.Receive(streamDlqName);
         Assert.NotNull(received);
@@ -1308,7 +1308,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
         var template = new RabbitTemplate(GetResource());
         template.ReceiveTimeout = 10000;
 
-        string streamDlqName = "bindertest.partDLQ.1.dlqPartGrp.dlq";
+        const string streamDlqName = "bindertest.partDLQ.1.dlqPartGrp.dlq";
 
         IMessage received = template.Receive(streamDlqName);
         Assert.NotNull(received);
@@ -2132,7 +2132,7 @@ public sealed class RabbitBinderTests : RabbitBinderTestBase
 
         template.ReceiveTimeout = 10000;
 
-        string streamDlqName = "bindertest.partPubDLQ.0.dlqPartGrp.dlq";
+        const string streamDlqName = "bindertest.partPubDLQ.0.dlqPartGrp.dlq";
 
         IMessage received = template.Receive(streamDlqName);
         Assert.NotNull(received);

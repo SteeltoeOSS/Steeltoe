@@ -210,7 +210,7 @@ public class ConsulRegistrationTest
         options.Heartbeat = null;
         Assert.Throws<ArgumentException>(() => ConsulRegistration.CreateCheck(0, options));
 
-        int port = 1234;
+        const int port = 1234;
         result = ConsulRegistration.CreateCheck(port, options);
         var uri = new Uri($"{options.Scheme}://{options.HostName}:{port}{options.HealthCheckPath}");
         Assert.Equal(uri.ToString(), result.HTTP);

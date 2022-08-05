@@ -131,7 +131,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_NoServiceInfo_ConfiguresEurekaDiscovery_Correctly()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -265,7 +265,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_HostName_ConfiguresEurekaDiscovery_Correctly()
     {
-        string vcapApplication = @"
+        const string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -289,7 +289,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -330,7 +330,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""cloud"": {
@@ -481,7 +481,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_Route_ConfiguresEurekaDiscovery_Correctly()
     {
-        string vcapApplication = @"
+        const string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -505,7 +505,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -545,7 +545,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {
@@ -689,7 +689,7 @@ public class EurekaPostConfigurerTest
     [Fact]
     public void UpdateConfiguration_WithVCAPEnvVariables_AppName_Overrides_VCAPBinding()
     {
-        string vcapApplication = @"
+        const string vcapApplication = @"
                 {
                     ""limits"": {
                         ""fds"": 16384,
@@ -713,7 +713,7 @@ public class EurekaPostConfigurerTest
                     ""instance_id"": ""instance_id""
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""p-config-server"": [{
                         ""credentials"": {
@@ -753,7 +753,7 @@ public class EurekaPostConfigurerTest
                     }]
                 }";
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {

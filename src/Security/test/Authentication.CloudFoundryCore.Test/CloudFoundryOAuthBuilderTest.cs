@@ -12,7 +12,7 @@ public class CloudFoundryOAuthBuilderTest
     [Fact]
     public async Task ShouldKeepDefaultServiceUrlsIfAuthDomainNotPresent()
     {
-        string expectedAuthorizationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
+        const string expectedAuthorizationUrl = $"http://{CloudFoundryDefaults.OAuthServiceUrl}/oauth/authorize";
         using var webApplicationFactory = new TestApplicationFactory<TestServerStartup>();
         HttpClient client = webApplicationFactory.CreateDefaultClient();
         HttpResponseMessage result = await client.GetAsync("http://localhost/");
@@ -25,8 +25,8 @@ public class CloudFoundryOAuthBuilderTest
     [Fact]
     public async Task ShouldAddAuthDomainToServiceUrlsIfPresent()
     {
-        string authDomain = "http://this-config-server-url";
-        string expectedAuthorizationUrl = $"{authDomain}/oauth/authorize";
+        const string authDomain = "http://this-config-server-url";
+        const string expectedAuthorizationUrl = $"{authDomain}/oauth/authorize";
         string expectedClientId = Guid.NewGuid().ToString();
 
         var configuration = new Dictionary<string, string>

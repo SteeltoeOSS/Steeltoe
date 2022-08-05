@@ -83,7 +83,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     [Fact]
     public void ConfigureCloudFoundryService_ConfiguresService()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                   ""vcap"": {
                     ""services"" : {
@@ -153,7 +153,7 @@ public class CloudFoundryServiceCollectionExtensionsTest
     [Fact]
     public void ConfigureCloudFoundryServices_ConfiguresServices()
     {
-        string configJson = @"
+        const string configJson = @"
                 {
                     ""vcap"": {
                         ""services"" : {

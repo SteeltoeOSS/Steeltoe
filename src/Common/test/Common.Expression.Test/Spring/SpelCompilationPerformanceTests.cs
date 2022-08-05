@@ -373,7 +373,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("DR[0].DRFixedSection.Duration lt 0.1");
         bool b = false;
         long iTotal = 0;
-        long cTotal = 0;
+        const long cTotal = 0;
 
         // warmup
         for (int i = 0; i < _count; i++)
@@ -442,7 +442,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingMethodReference()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;
@@ -510,7 +510,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingPropertyReferenceField()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;
@@ -578,7 +578,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingPropertyReferenceNestedField()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;
@@ -646,7 +646,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingPropertyReferenceNestedMixedFieldGetter()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;
@@ -714,7 +714,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingNestedMixedFieldPropertyReferenceMethodReference()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;
@@ -782,7 +782,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     public void CompilingPropertyReferenceGetter()
     {
         long interpretedTotal = 0;
-        long compiledTotal = 0;
+        const long compiledTotal = 0;
         long startTime;
         long endTime;
         string interpretedResult = null;

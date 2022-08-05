@@ -150,7 +150,7 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestDuplicateArgumentsWithRequestCachingOn()
     {
-        int num = 10;
+        const int num = 10;
 
         var observables = new List<IObservable<int>>();
 
@@ -185,7 +185,7 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestDuplicateArgumentsWithRequestCachingOff()
     {
-        int num = 10;
+        const int num = 10;
 
         var observables = new List<IObservable<int>>();
 
@@ -258,7 +258,7 @@ public class HystrixCollapserTest : HystrixTestBase
     [Fact]
     public void TestUnsubscribeFromSomeDuplicateArgsDoesNotRemoveFromBatch()
     {
-        int num = 10;
+        const int num = 10;
 
         var observables = new List<IObservable<int>>();
         var collapsers = new List<MyCollapser>();
@@ -2086,7 +2086,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class ATask
     {
-        private readonly int _delay = 10;
+        private const int _delay = 10;
         private readonly object _lock = new();
         private readonly ITestOutputHelper _output;
         public readonly TestTimerListener Task;

@@ -21,7 +21,7 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_BindsConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
             {
                 ""vcap"": {
                     ""services"" : {
@@ -84,7 +84,7 @@ public class AbstractServiceOptionsTest
     [Fact]
     public void Bind_DoesNotBindsConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
             {
                 ""foo"": {
                     ""bar"" : {

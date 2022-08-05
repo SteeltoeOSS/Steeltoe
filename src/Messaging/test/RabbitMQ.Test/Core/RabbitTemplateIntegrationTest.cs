@@ -921,7 +921,7 @@ public abstract class RabbitTemplateIntegrationTest : IDisposable
         container.MessageListener = rabbitTemplate;
         container.Start().Wait();
 
-        int count = 10;
+        const int count = 10;
         var results = new ConcurrentDictionary<double, object>();
         rabbitTemplate.CorrelationKey = "CorrelationKey";
         var tasks = new List<Task>();

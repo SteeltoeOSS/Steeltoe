@@ -32,7 +32,7 @@ public class MessageHeaderTest
     public void TestDelayHeader()
     {
         var properties = new RabbitHeaderAccessor();
-        int delay = 100;
+        const int delay = 100;
         properties.Delay = delay;
         IMessageHeaders headers = properties.ToMessageHeaders();
         Assert.Equal(delay, headers.Get<int>(RabbitHeaderAccessor.XDelay));

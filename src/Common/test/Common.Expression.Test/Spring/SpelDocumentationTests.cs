@@ -429,7 +429,7 @@ public class SpelDocumentationTests : AbstractExpressionTests
         Parser.ParseExpression("Name").SetValue(societyContext, "IEEE");
         societyContext.SetVariable("queryName", "Nikola Tesla");
 
-        string expression = "IsMember(#queryName)? #queryName + ' is a member of the ' " +
+        const string expression = "IsMember(#queryName)? #queryName + ' is a member of the ' " +
             "+ Name + ' Society' : #queryName + ' is not a member of the ' + Name + ' Society'";
 
         string queryResultString = Parser.ParseExpression(expression).GetValue<string>(societyContext);

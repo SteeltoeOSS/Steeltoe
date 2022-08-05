@@ -22,7 +22,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestGetErrorPercentage()
     {
-        string key = "cmd-metrics-A";
+        const string key = "cmd-metrics-A";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         HystrixCommandMetrics metrics = cmd1.InnerMetrics;
@@ -84,7 +84,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestBadRequestsDoNotAffectErrorPercentage()
     {
-        string key = "cmd-metrics-B";
+        const string key = "cmd-metrics-B";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         HystrixCommandMetrics metrics = cmd1.InnerMetrics;
@@ -142,7 +142,7 @@ public class HystrixCommandMetricsTest : HystrixTestBase
     [Fact]
     public void TestCurrentConcurrentExecutionCount()
     {
-        string key = "cmd-metrics-C";
+        const string key = "cmd-metrics-C";
 
         HystrixCommandMetrics metrics = null;
         var cmdResults = new List<IObservable<bool>>();

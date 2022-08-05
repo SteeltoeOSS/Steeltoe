@@ -101,8 +101,6 @@ public class CloudFoundryTokenValidator
             return false; // no scopes at all
         }
 
-        bool found = false;
-
         foreach (Claim claim in validJwt.Claims)
         {
             if (claim.Type.Equals("scope") || (claim.Type.Equals("authorities") && _options.RequiredScopes.Any(x => x.Equals(claim.Value))))
@@ -111,6 +109,6 @@ public class CloudFoundryTokenValidator
             }
         }
 
-        return found;
+        return false;
     }
 }

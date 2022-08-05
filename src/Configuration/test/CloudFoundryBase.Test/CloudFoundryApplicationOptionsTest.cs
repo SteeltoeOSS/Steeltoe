@@ -50,7 +50,7 @@ public class CloudFoundryApplicationOptionsTest
     [Fact]
     public void Constructor_WithVcapApplicationConfiguration()
     {
-        string configJson = @"
+        const string configJson = @"
             {
                 ""vcap"": {
                     ""application"" : {

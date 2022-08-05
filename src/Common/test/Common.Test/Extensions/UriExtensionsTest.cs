@@ -13,7 +13,7 @@ public class UriExtensionsTest
     public void MaskExistingBasicAuthenticationToString()
     {
         var uri = new Uri("http://username:password@www.example.com/");
-        string expected = "http://****:****@www.example.com/";
+        const string expected = "http://****:****@www.example.com/";
 
         string masked = uri.ToMaskedString();
 

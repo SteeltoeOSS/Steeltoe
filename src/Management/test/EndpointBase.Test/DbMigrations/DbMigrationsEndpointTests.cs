@@ -69,7 +69,7 @@ public class DbMigrationsEndpointTests : BaseTest
         var sut = tc.GetService<IDbMigrationsEndpoint>();
         Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
 
-        string contextName = nameof(MockDbContext);
+        const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
         result[contextName].AppliedMigrations.Should().Equal("applied");
         result[contextName].PendingMigrations.Should().Equal("pending");
@@ -98,7 +98,7 @@ public class DbMigrationsEndpointTests : BaseTest
         var sut = tc.GetService<IDbMigrationsEndpoint>();
         Dictionary<string, DbMigrationsDescriptor> result = sut.Invoke();
 
-        string contextName = nameof(MockDbContext);
+        const string contextName = nameof(MockDbContext);
         result.Should().ContainKey(contextName);
         result[contextName].AppliedMigrations.Should().BeEmpty();
         result[contextName].PendingMigrations.Should().Equal("migration");

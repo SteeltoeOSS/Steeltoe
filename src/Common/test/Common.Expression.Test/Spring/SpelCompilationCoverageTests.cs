@@ -141,7 +141,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False((bool)_expression.GetValue(root1));
 
-        string root2 = "howdy";
+        const string root2 = "howdy";
         _expression = Parse("#root instanceof T(System.Object)");
         Assert.True((bool)_expression.GetValue(root2));
         AssertCanCompile(_expression);
@@ -486,7 +486,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(expression); // Now been down both
         Assert.True(resultI);
 
-        bool b = false;
+        const bool b = false;
         expression = Parse("#root or #root");
         bool resultI2 = expression.GetValue<bool>(b);
         AssertCanCompile(expression);
@@ -549,7 +549,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         resultI = expression.GetValue<bool>(tc);
         Assert.True(resultI);
 
-        bool b = true;
+        const bool b = true;
         expression = Parse("#root and #root");
         bool resultI2 = expression.GetValue<bool>(b);
         AssertCanCompile(expression);
@@ -815,7 +815,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal("a", resultI);
         Assert.Equal("a", resultC);
 
-        string s = "abc";
+        const string s = "abc";
         expression = Parser.ParseExpression("#root?:'b'");
         AssertCantCompile(expression);
         resultI = expression.GetValue<string>(s);
@@ -828,7 +828,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void VariableReference_Root()
     {
-        string s = "hello";
+        const string s = "hello";
         IExpression expression = Parser.ParseExpression("#root");
         string resultI = expression.GetValue<string>(s);
         AssertCanCompile(expression);
@@ -1379,7 +1379,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root<300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1510,7 +1510,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root<=300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1641,7 +1641,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root>300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1772,7 +1772,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root>=300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
@@ -1842,7 +1842,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
     [Fact]
     public void OpEq()
     {
-        string value = "35";
+        const string value = "35";
         _expression = Parse("#root == 35");
         Assert.False(_expression.GetValue<bool>());
         AssertCanCompile(_expression);
@@ -1933,13 +1933,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root==300l");
         Assert.True(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
         Assert.True(_expression.GetValue<bool>(l));
 
-        bool b = true;
+        const bool b = true;
         _expression = Parse("#root==true");
         Assert.True(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
@@ -2090,13 +2090,13 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(f));
 
-        long l = 300L;
+        const long l = 300L;
         _expression = Parse("#root!=300l");
         Assert.False(_expression.GetValue<bool>(l));
         AssertCanCompile(_expression);
         Assert.False(_expression.GetValue<bool>(l));
 
-        bool b = true;
+        const bool b = true;
         _expression = Parse("#root!=true");
         Assert.False(_expression.GetValue<bool>(b));
         AssertCanCompile(_expression);
@@ -3881,7 +3881,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         // Assert.Equal("123", _expression.GetValue());
         // AssertCanCompile(_expression);
         // Assert.Equal("123", _expression.GetValue());
-        string testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
+        const string testClass8 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass8";
 
         // multi arg ctor that includes primitives
         _expression = Parser.ParseExpression($"new {testClass8}(42,'123',4.0d,True)");
@@ -3905,7 +3905,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
         Assert.Equal(42, tc8.I);
 
         // private class, can't compile it
-        string testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
+        const string testClass9 = "Steeltoe.Common.Expression.Internal.Spring.SpelCompilationCoverageTests$TestClass9";
         _expression = Parser.ParseExpression($"new {testClass9}(42)");
         Assert.IsType<TestClass9>(_expression.GetValue());
         AssertCantCompile(_expression);
@@ -6833,7 +6833,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
         public static void Reset()
         {
-            string s = "UK 123";
+            const string s = "UK 123";
             Property = s.Split(' ')[0];
         }
     }

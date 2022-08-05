@@ -38,7 +38,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageCharset()
     {
-        string payload = "H\u00e9llo W\u00f6rld";
+        const string payload = "H\u00e9llo W\u00f6rld";
         byte[] bytes = Encoding.GetEncoding("ISO-8859-1").GetBytes(payload);
 
         IMessage message = MessageBuilder.WithPayload(bytes)
@@ -51,7 +51,7 @@ public class StringMessageConverterTest
     [Fact]
     public void FromMessageDefaultCharset()
     {
-        string payload = "H\u00e9llo W\u00f6rld";
+        const string payload = "H\u00e9llo W\u00f6rld";
         byte[] bytes = Encoding.UTF8.GetBytes(payload);
         IMessage message = MessageBuilder.WithPayload(bytes).Build();
         var converter = new StringMessageConverter();

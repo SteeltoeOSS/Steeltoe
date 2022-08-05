@@ -14,7 +14,7 @@ public class KubernetesApplicationOptionsTest
     [Fact]
     public void ConstructorBindsValuesFromConfig()
     {
-        string json = @"
+        const string json = @"
             {
                 ""spring"": {
                     ""application"": {

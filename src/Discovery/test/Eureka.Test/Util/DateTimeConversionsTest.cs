@@ -27,7 +27,7 @@ public class DateTimeConversionsTest
     [Fact]
     public void FromJavaMillis()
     {
-        long millis = 1_457_973_741_708;
+        const long millis = 1_457_973_741_708;
         DateTime dt = DateTimeConversions.FromJavaMillis(millis);
         Assert.Equal(3, dt.Month);
         Assert.Equal(14, dt.Day);

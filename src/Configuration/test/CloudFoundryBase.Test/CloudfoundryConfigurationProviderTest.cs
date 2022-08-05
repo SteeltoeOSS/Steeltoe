@@ -18,7 +18,7 @@ public class CloudFoundryConfigurationProviderTest
     [Fact]
     public void Load_VCAP_APPLICATION_ChangesDataDictionary()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                     ""application_name"": ""my-app"",
@@ -54,7 +54,7 @@ public class CloudFoundryConfigurationProviderTest
     [Fact]
     public void Load_VCAP_SERVICES_ChangesDataDictionary()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""elephantsql"": [{
                         ""name"": ""elephantsql-c6c60"",
@@ -92,7 +92,7 @@ public class CloudFoundryConfigurationProviderTest
     [Fact]
     public void Load_VCAP_SERVICES_MultiServices_ChangesDataDictionary()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""p-config-server"": [{
                         ""name"": ""myConfigServer"",
@@ -178,7 +178,7 @@ public class CloudFoundryConfigurationProviderTest
     [Fact]
     public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""name"": ""my-app"",
                     ""version"": ""fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca""

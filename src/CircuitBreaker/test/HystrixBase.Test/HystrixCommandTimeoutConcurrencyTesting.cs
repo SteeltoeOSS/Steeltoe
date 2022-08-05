@@ -23,7 +23,7 @@ public class HystrixCommandTimeoutConcurrencyTesting : HystrixTestBase
     [Fact]
     public async Task TestTimeoutRace()
     {
-        int numTrials = 10;
+        const int numTrials = 10;
 
         for (int i = 0; i < numTrials; i++)
         {

@@ -242,7 +242,7 @@ public sealed class BatchingRabbitTemplateTest : IDisposable
         ServiceProvider provider = new ServiceCollection().BuildServiceProvider();
         IConfigurationRoot config = new ConfigurationBuilder().Build();
         var received = new List<IMessage>();
-        int count = 10_000;
+        const int count = 10_000;
         var latch = new CountdownEvent(count);
         var context = new GenericApplicationContext(provider, config);
         context.ServiceExpressionResolver = new StandardServiceExpressionResolver();

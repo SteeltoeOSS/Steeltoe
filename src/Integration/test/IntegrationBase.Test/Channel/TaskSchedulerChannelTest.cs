@@ -46,7 +46,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void RoundRobinLoadBalancing()
     {
-        int numberOfMessages = 12;
+        const int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
@@ -77,7 +77,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void VerifyFailoverWithLoadBalancing()
     {
-        int numberOfMessages = 12;
+        const int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);
@@ -109,7 +109,7 @@ public class TaskSchedulerChannelTest
     [Fact]
     public void VerifyFailoverWithoutLoadBalancing()
     {
-        int numberOfMessages = 12;
+        const int numberOfMessages = 12;
         var channel = new TaskSchedulerChannel(_provider.GetService<IApplicationContext>(), TaskScheduler.Default);
         var latch = new CountdownEvent(numberOfMessages);
         var handler1 = new TestHandler(latch);

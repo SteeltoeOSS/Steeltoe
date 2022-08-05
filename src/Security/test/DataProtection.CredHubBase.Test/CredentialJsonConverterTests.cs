@@ -23,7 +23,7 @@ public class CredentialJsonConverterTests
     [Fact]
     public void ValueConverter_Deserializes_StringProperty_AsClass()
     {
-        string serialized = "\"thisIsAValue\"";
+        const string serialized = "\"thisIsAValue\"";
 
         var valueCredential = JsonSerializer.Deserialize<ValueCredential>(serialized);
 

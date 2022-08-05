@@ -112,7 +112,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -144,7 +144,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -171,7 +171,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -220,7 +220,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -247,7 +247,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -289,7 +289,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -331,7 +331,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -375,7 +375,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -411,7 +411,7 @@ public class DiscoveryClientTest : AbstractBaseTest
         IWebHostBuilder builder = new WebHostBuilder().UseStartup<TestConfigServerStartup>().UseEnvironment(environment.EnvironmentName);
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig
@@ -899,7 +899,7 @@ public class DiscoveryClientTest : AbstractBaseTest
 
         var server = new TestServer(builder);
 
-        string uri = "http://localhost:8888/";
+        const string uri = "http://localhost:8888/";
         server.BaseAddress = new Uri(uri);
 
         var config = new EurekaClientConfig

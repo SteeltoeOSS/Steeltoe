@@ -197,7 +197,7 @@ public class RabbitMQServiceInfoFactoryTest
 
     private static Service CreateRabbitMQService()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""p-rabbitmq"": [{
                         ""credentials"": {

@@ -45,7 +45,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanGlobalDynamicOverrideOfCodeDefault()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -74,7 +74,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceBuilderOverrideOfGlobalDynamicOverride1()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -106,7 +106,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceBuilderOverrideOfGlobalDynamicOverride2()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -138,7 +138,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestBooleanInstanceDynamicOverrideOfEverything()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -194,7 +194,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerGlobalDynamicOverrideOfCodeDefault()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -224,7 +224,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerInstanceBuilderOverrideOfGlobalDynamicOverride()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {
@@ -258,7 +258,7 @@ public class HystrixCommandOptionsTest
     [Fact]
     public void TestIntegerInstanceDynamicOverrideOfEverything()
     {
-        string configSettings = @"
+        const string configSettings = @"
             {
                 ""hystrix"": {
                     ""command"": {

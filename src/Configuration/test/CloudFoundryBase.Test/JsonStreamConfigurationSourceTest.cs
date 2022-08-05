@@ -21,7 +21,7 @@ public class JsonStreamConfigurationSourceTest
     [Fact]
     public void Build_WithStreamSource_ReturnsExpected()
     {
-        string environment = @"
+        const string environment = @"
                 {
                   ""application_id"": ""fa05c1a9-0fc1-4fbd-bae1-139850dec7a3"",
                   ""application_name"": ""my-app"",

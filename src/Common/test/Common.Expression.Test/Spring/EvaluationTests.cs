@@ -175,8 +175,8 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void TestMatchesWithPatternAccessThreshold()
     {
-        string pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
-        string expression = $"'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches '{pattern}'";
+        const string pattern = "^(?=[a-z0-9-]{1,47})([a-z0-9]+[-]{0,1}){1,47}[a-z0-9]{1}$";
+        const string expression = $"'abcde-fghijklmn-o42pasdfasdfasdf.qrstuvwxyz10x.xx.yyy.zasdfasfd' matches '{pattern}'";
         IExpression expr = Parser.ParseExpression(expression);
         var ex = Assert.Throws<SpelEvaluationException>(() => expr.GetValue());
         Assert.IsType<RegexMatchTimeoutException>(ex.InnerException);
@@ -687,7 +687,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Increment01Root()
     {
-        int i = 42;
+        const int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         IExpression e = parser.ParseExpression("#this++");
@@ -823,7 +823,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Increment04()
     {
-        int i = 42;
+        const int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         IExpression e1 = parser.ParseExpression("++1");
@@ -837,7 +837,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Decrement01Root()
     {
-        int i = 42;
+        const int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         IExpression e = parser.ParseExpression("#this--");
@@ -973,7 +973,7 @@ public class EvaluationTests : AbstractExpressionTests
     [Fact]
     public void Decrement04()
     {
-        int i = 42;
+        const int i = 42;
         var ctx = new StandardEvaluationContext(i);
         var parser = new SpelExpressionParser(new SpelParserOptions(true, true));
         IExpression e1 = parser.ParseExpression("--1");

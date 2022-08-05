@@ -45,8 +45,8 @@ public class DefaultComparatorUnitTests
     {
         var comparator = new StandardTypeComparator();
 
-        decimal bdOne = 1;
-        decimal bdTwo = 2;
+        const decimal bdOne = 1;
+        const decimal bdTwo = 2;
 
         Assert.True(comparator.Compare(bdOne, bdTwo) < 0);
         Assert.True(comparator.Compare(bdOne, 1M) == 0);

@@ -321,8 +321,8 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        int numThreads = 1000; // .NET Core StackOverflow
-        int numIterations = 1_000_000;
+        const int numThreads = 1000; // .NET Core StackOverflow
+        const int numIterations = 1_000_000;
 
         var latch = new CountdownEvent(numThreads);
 
@@ -382,8 +382,8 @@ public class HystrixRollingPercentileTest
         var time = new MockedTime();
         var p = new HystrixRollingPercentile(time, 100, 25, 1000, true);
 
-        int numThreads = 10;
-        int numIterations = 1000;
+        const int numThreads = 10;
+        const int numIterations = 1000;
 
         var latch = new CountdownEvent(numThreads);
 

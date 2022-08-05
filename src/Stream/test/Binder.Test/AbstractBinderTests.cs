@@ -274,8 +274,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IBinding producerBinding = binder.BindProducer($"bad{delimiter}0d", moduleOutputChannel, producerBindingProperties.Producer);
         IBinding consumerBinding = binder.BindConsumer($"bad{delimiter}0d", "test-4", moduleInputChannel, consumerBindingProperties.Consumer);
 
-        string value =
-            "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
+        const string value = "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
 
         IMessage message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.ApplicationJson).Build();
         moduleInputChannel.Subscribe(handler);
@@ -308,8 +307,7 @@ public abstract class AbstractBinderTests<TTestBinder, TBinder>
         IBinding producerBinding = binder.BindProducer($"bad{delimiter}0e", moduleOutputChannel, producerBindingProperties.Producer);
         IBinding consumerBinding = binder.BindConsumer($"bad{delimiter}0e", "test-5", moduleInputChannel, consumerBindingProperties.Consumer);
 
-        string value =
-            "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
+        const string value = "{\"readings\":[{\"stationid\":\"fgh\",\"customerid\":\"12345\",\"timestamp\":null},{\"stationid\":\"hjk\",\"customerid\":\"222\",\"timestamp\":null}]}";
 
         IMessage message = MessageBuilder.WithPayload(value).SetHeader("contentType", MimeTypeUtils.ApplicationJson).Build();
 

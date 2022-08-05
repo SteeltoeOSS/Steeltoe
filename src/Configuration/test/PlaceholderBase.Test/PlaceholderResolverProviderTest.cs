@@ -124,7 +124,7 @@ public class PlaceholderResolverProviderTest
     [Trait("Category", "SkipOnMacOS")]
     public void GetReloadToken_ReturnsExpected_NotifyChanges()
     {
-        string appsettings1 = @"
+        const string appsettings1 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -138,7 +138,7 @@ public class PlaceholderResolverProviderTest
                     }
                 }";
 
-        string appsettings2 = @"
+        const string appsettings2 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -209,7 +209,7 @@ public class PlaceholderResolverProviderTest
     [Trait("Category", "SkipOnMacOS")]
     public void Load_ReloadsConfiguration()
     {
-        string appsettings1 = @"
+        const string appsettings1 = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -223,7 +223,7 @@ public class PlaceholderResolverProviderTest
                     }
                 }";
 
-        string appsettings2 = @"
+        const string appsettings2 = @"
                 {
                     ""spring"": {
                         ""bar"": {

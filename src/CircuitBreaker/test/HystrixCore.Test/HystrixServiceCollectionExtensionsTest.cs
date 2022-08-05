@@ -16,7 +16,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     [Fact]
     public void AddHystrixCommand_ThrowsIfServiceContainerNull()
     {
-        string stringKey = "DummyCommand";
+        const string stringKey = "DummyCommand";
         const string servicesParameterName = "services";
 
         var ex = Assert.Throws<ArgumentNullException>(() => HystrixServiceCollectionExtensions.AddHystrixCommand<DummyCommand>(null, _groupKey, null));
@@ -59,7 +59,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfGroupKeyNull()
     {
         IServiceCollection services = new ServiceCollection();
-        string stringKey = "DummyCommand";
+        const string stringKey = "DummyCommand";
         const string groupKeyParameterName = "groupKey";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>((IHystrixCommandGroupKey)null, null));
@@ -84,7 +84,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfConfigNull()
     {
         IServiceCollection services = new ServiceCollection();
-        string stringKey = "DummyCommand";
+        const string stringKey = "DummyCommand";
         const string configParameterName = "config";
 
         var ex = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null));
@@ -109,7 +109,7 @@ public class HystrixServiceCollectionExtensionsTest : HystrixTestBase
     public void AddHystrixCommand_ThrowsIfCommandKeyNull()
     {
         IServiceCollection services = new ServiceCollection();
-        string stringKey = "DummyCommand";
+        const string stringKey = "DummyCommand";
         const string commandKeyParameterName = "commandKey";
 
         var ex5 = Assert.Throws<ArgumentNullException>(() => services.AddHystrixCommand<DummyCommand>(_groupKey, null, null));

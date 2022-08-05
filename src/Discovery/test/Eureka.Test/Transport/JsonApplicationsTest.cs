@@ -13,7 +13,7 @@ public class JsonApplicationsTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
                 { 
                     ""versions__delta"":""1"",
                     ""apps__hashcode"":""UP_1_"",

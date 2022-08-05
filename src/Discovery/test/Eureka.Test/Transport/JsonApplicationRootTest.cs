@@ -14,7 +14,7 @@ public class JsonApplicationRootTest : AbstractBaseTest
     [Fact]
     public void Deserialize_GoodJson()
     {
-        string json = @"
+        const string json = @"
                 {
                     ""application"":
                     {

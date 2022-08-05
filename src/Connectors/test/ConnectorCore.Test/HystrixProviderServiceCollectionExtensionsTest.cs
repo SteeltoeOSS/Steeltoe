@@ -80,7 +80,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddHystrixConnection_MultipleHystrixServices_ThrowsConnectorException()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                         ""credentials"": {
@@ -208,7 +208,7 @@ public class HystrixProviderServiceCollectionExtensionsTest
     [Fact]
     public void AddHystrixConnection_WithVCAPs_AddsHystrixConnectionFactory()
     {
-        string env2 = @"
+        const string env2 = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                     ""credentials"": {

@@ -66,7 +66,7 @@ public class RabbitTemplateTest
     public void TestConvertString()
     {
         var template = new RabbitTemplate();
-        string payload = "Hello, world!";
+        const string payload = "Hello, world!";
         IMessage message = template.ConvertMessageIfNecessary(payload);
         string messageString = EncodingUtils.GetDefaultEncoding().GetString((byte[])message.Payload);
         Assert.Equal(payload, messageString);

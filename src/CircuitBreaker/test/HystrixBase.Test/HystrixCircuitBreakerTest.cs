@@ -25,7 +25,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestTripCircuitAsync()
     {
-        string key = "cmd-A";
+        const string key = "cmd-A";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         HystrixCommand<bool> cmd2 = new SuccessCommand(key, 0);
@@ -71,7 +71,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestTripCircuitOnFailuresAboveThreshold()
     {
-        string key = "cmd-B";
+        const string key = "cmd-B";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
@@ -111,7 +111,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestCircuitDoesNotTripOnFailuresBelowThreshold()
     {
-        string key = "cmd-C";
+        const string key = "cmd-C";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
@@ -151,7 +151,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestTripCircuitOnTimeouts()
     {
-        string key = "cmd-D";
+        const string key = "cmd-D";
 
         HystrixCommand<bool> cmd1 = new TimeoutCommand(key);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
@@ -182,7 +182,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestTripCircuitOnTimeoutsAboveThreshold()
     {
-        string key = "cmd-E";
+        const string key = "cmd-E";
 
         HystrixCommand<bool> cmd1 = new SuccessCommand(key, 0);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
@@ -229,7 +229,7 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestSingleTestOnOpenCircuitAfterTimeWindow()
     {
-        string key = "cmd-F";
+        const string key = "cmd-F";
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
@@ -270,9 +270,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestCircuitClosedAfterSuccess()
     {
-        string key = "cmd-G";
+        const string key = "cmd-G";
 
-        int sleepWindow = 400;
+        const int sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow);
         var cb = (HystrixCircuitBreakerImpl)cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
@@ -325,9 +325,9 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestMultipleTimeWindowRetriesBeforeClosingCircuit()
     {
-        string key = "cmd-H";
+        const string key = "cmd-H";
 
-        int sleepWindow = 400;
+        const int sleepWindow = 400;
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;
         Assert.True(WaitForHealthCountToUpdate(key, 1000, _output), "Health count stream failed to start");
@@ -429,10 +429,10 @@ public class HystrixCircuitBreakerTest : HystrixTestBase
     [Fact]
     public async Task TestLowVolumeDoesNotTripCircuit()
     {
-        string key = "cmd-I";
+        const string key = "cmd-I";
 
-        int sleepWindow = 400;
-        int lowVolume = 5;
+        const int sleepWindow = 400;
+        const int lowVolume = 5;
 
         HystrixCommand<bool> cmd1 = new FailureCommand(key, 0, sleepWindow, lowVolume);
         ICircuitBreaker cb = cmd1.InnerCircuitBreaker;

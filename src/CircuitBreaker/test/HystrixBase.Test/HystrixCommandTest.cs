@@ -2683,12 +2683,12 @@ public class HystrixCommandTest : CommonHystrixCommandTests<TestHystrixCommand<i
     [Fact]
     public void TestSemaphoreThreadSafety()
     {
-        int numPermits = 1;
+        const int numPermits = 1;
         var s = new SemaphoreSlim(numPermits);
 
-        int numThreads = 10;
+        const int numThreads = 10;
 
-        int numTrials = 50;
+        const int numTrials = 50;
 
         for (int t = 0; t < numTrials; t++)
         {

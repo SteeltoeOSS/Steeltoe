@@ -47,7 +47,7 @@ public class MessageBuilderTest
     [Fact]
     public void TestTimestampValueReadOnly()
     {
-        long timestamp = 12345L;
+        const long timestamp = 12345L;
         Assert.Throws<ArgumentException>(() => MessageBuilder.WithPayload("test").SetHeader(MessageHeaders.TimestampName, timestamp).Build());
     }
 

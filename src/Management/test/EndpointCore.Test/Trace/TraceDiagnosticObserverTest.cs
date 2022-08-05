@@ -258,7 +258,7 @@ public class TraceDiagnosticObserverTest : BaseTest
         obs.Subscribe(listener);
 
         HttpContext context = CreateRequest();
-        string activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
+        const string activityName = "Microsoft.AspNetCore.Hosting.HttpRequestIn";
         var current = new Activity(activityName);
 
         listener.StartActivity(current, new

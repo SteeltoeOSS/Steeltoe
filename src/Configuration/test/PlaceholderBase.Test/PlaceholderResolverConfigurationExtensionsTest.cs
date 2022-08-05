@@ -58,7 +58,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_JsonAppSettingsResolvesPlaceholders()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""bar"": {
@@ -92,7 +92,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_XmlAppSettingsResolvesPlaceholders()
     {
-        string appsettings = @"
+        const string appsettings = @"
 <settings>
     <spring>
         <bar>
@@ -126,7 +126,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_IniAppSettingsResolvesPlaceholders()
     {
-        string appsettings = @"
+        const string appsettings = @"
 [spring:bar]
     name=myName
 [spring:cloud:config]
@@ -171,7 +171,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     [Trait("Category", "SkipOnMacOS")]
     public void AddPlaceholderResolver_HandlesRecursivePlaceHolders()
     {
-        string appsettingsJson = @"
+        const string appsettingsJson = @"
                 {
                     ""spring"": {
                         ""json"": {
@@ -185,7 +185,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
                     }
                 }";
 
-        string appsettingsXml = @"
+        const string appsettingsXml = @"
 <settings>
     <spring>
         <xml>
@@ -194,7 +194,7 @@ public class PlaceholderResolverConfigurationExtensionsTest
     </spring>
 </settings>";
 
-        string appsettingsIni = @"
+        const string appsettingsIni = @"
 [spring:ini]
     name=${spring:line:name?noName}
 ";

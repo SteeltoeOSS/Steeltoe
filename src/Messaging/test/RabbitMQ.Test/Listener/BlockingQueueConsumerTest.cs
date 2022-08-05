@@ -123,8 +123,8 @@ public class BlockingQueueConsumerTest
         connection.Setup(c => c.IsOpen).Returns(true);
         channel.Setup(c => c.IsOpen).Returns(true);
 
-        string queue = "testQ";
-        bool noLocal = true;
+        const string queue = "testQ";
+        const bool noLocal = true;
 
         var blockingQueueConsumer = new BlockingQueueConsumer(connectionFactory.Object, new DefaultMessageHeadersConverter(),
             new ActiveObjectCounter<BlockingQueueConsumer>(), AcknowledgeMode.Auto, true, 1, true, null, noLocal, false, null, queue);

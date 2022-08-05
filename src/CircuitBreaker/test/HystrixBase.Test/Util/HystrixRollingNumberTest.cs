@@ -475,7 +475,7 @@ public class HystrixRollingNumberTest
 
         try
         {
-            var type = HystrixRollingNumberEvent.ThreadMaxActive;
+            const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.ThreadMaxActive;
 
             var counter = new HystrixRollingNumber(time, 200, 10);
 
@@ -509,7 +509,7 @@ public class HystrixRollingNumberTest
     public void TestEmptySum()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.Collapsed;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.Collapsed;
         var counter = new HystrixRollingNumber(time, 200, 10);
         Assert.Equal(0, counter.GetRollingSum(type));
     }
@@ -518,7 +518,7 @@ public class HystrixRollingNumberTest
     public void TestEmptyMax()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.ThreadMaxActive;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.ThreadMaxActive;
         var counter = new HystrixRollingNumber(time, 200, 10);
         Assert.Equal(0, counter.GetRollingMaxValue(type));
     }
@@ -527,7 +527,7 @@ public class HystrixRollingNumberTest
     public void TestEmptyLatestValue()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.ThreadMaxActive;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.ThreadMaxActive;
         var counter = new HystrixRollingNumber(time, 200, 10);
         Assert.Equal(0, counter.GetValueOfLatestBucket(type));
     }
@@ -536,7 +536,7 @@ public class HystrixRollingNumberTest
     public void TestRolling()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.ThreadMaxActive;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.ThreadMaxActive;
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         // iterate over 20 buckets on a queue sized for 2
@@ -567,7 +567,7 @@ public class HystrixRollingNumberTest
     public void TestCumulativeCounterAfterRolling()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.Success;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.Success;
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         Assert.Equal(0, counter.GetCumulativeSum(type));
@@ -600,7 +600,7 @@ public class HystrixRollingNumberTest
     public void TestCumulativeCounterAfterRollingAndReset()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.Success;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.Success;
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         Assert.Equal(0, counter.GetCumulativeSum(type));
@@ -640,7 +640,7 @@ public class HystrixRollingNumberTest
     public void TestCumulativeCounterAfterRollingAndReset2()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.Success;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.Success;
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         Assert.Equal(0, counter.GetCumulativeSum(type));
@@ -681,7 +681,7 @@ public class HystrixRollingNumberTest
     public void TestCumulativeCounterAfterRollingAndReset3()
     {
         var time = new MockedTime();
-        var type = HystrixRollingNumberEvent.Success;
+        const HystrixRollingNumberEvent type = HystrixRollingNumberEvent.Success;
         var counter = new HystrixRollingNumber(time, 20, 2);
 
         Assert.Equal(0, counter.GetCumulativeSum(type));

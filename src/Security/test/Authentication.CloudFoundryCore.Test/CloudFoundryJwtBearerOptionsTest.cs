@@ -34,7 +34,7 @@ public class CloudFoundryJwtBearerOptionsTest
     public static TheoryData<string, string> SetEndpointsData()
     {
         var data = new TheoryData<string, string>();
-        string newDomain = "http://not-the-original-domain";
+        const string newDomain = "http://not-the-original-domain";
 
         data.Add(string.Empty, DefaultJwtTokenUrl);
         data.Add("   ", DefaultJwtTokenUrl);

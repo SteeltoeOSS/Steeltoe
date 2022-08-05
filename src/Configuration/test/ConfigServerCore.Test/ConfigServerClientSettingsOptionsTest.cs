@@ -38,7 +38,7 @@ public class ConfigServerClientSettingsOptionsTest
     {
         IServiceCollection services = new ServiceCollection().AddOptions();
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""application"": {

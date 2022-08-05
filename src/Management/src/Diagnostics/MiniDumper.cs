@@ -58,7 +58,7 @@ internal sealed class MiniDumper
 
     internal static MiniDumpTypes GetMiniDumpType()
     {
-        MiniDumpTypes minidumpFlags = MiniDumpTypes.MiniDumpWithDataSegs | MiniDumpTypes.MiniDumpWithTokenInformation |
+        const MiniDumpTypes minidumpFlags = MiniDumpTypes.MiniDumpWithDataSegs | MiniDumpTypes.MiniDumpWithTokenInformation |
             MiniDumpTypes.MiniDumpWithPrivateWriteCopyMemory | MiniDumpTypes.MiniDumpWithPrivateReadWriteMemory | MiniDumpTypes.MiniDumpWithUnloadedModules |
             MiniDumpTypes.MiniDumpWithFullMemory | MiniDumpTypes.MiniDumpWithHandleData | MiniDumpTypes.MiniDumpWithThreadInfo |
             MiniDumpTypes.MiniDumpWithFullMemoryInfo | MiniDumpTypes.MiniDumpWithProcessThreadData | MiniDumpTypes.MiniDumpWithModuleHeaders;

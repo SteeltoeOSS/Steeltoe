@@ -68,7 +68,7 @@ public class HttpClientHelperTest
         ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
 
         const RemoteCertificateValidationCallback prevValidator = null;
-        var protocolType = SecurityProtocolType.Tls;
+        const SecurityProtocolType protocolType = SecurityProtocolType.Tls;
 
         HttpClientHelper.RestoreCertificateValidation(false, protocolType, prevValidator);
 
@@ -92,7 +92,7 @@ public class HttpClientHelperTest
         ServicePointManager.ServerCertificateValidationCallback = (_, _, _, _) => true;
 
         const RemoteCertificateValidationCallback prevValidator = null;
-        var protocolType = SecurityProtocolType.Tls;
+        const SecurityProtocolType protocolType = SecurityProtocolType.Tls;
 
         HttpClientHelper.RestoreCertificateValidation(true, protocolType, prevValidator);
 

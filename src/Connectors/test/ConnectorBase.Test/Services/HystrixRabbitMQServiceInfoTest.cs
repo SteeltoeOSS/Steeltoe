@@ -11,7 +11,7 @@ public class HystrixRabbitMQServiceInfoTest
     [Fact]
     public void Constructor_CreatesExpected()
     {
-        string uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
+        const string uri = "amqp://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@192.168.0.81:5672/fb03d693-91fe-4dc5-8203-ff7a6390df66";
 
         var uris = new List<string>
         {
@@ -20,7 +20,7 @@ public class HystrixRabbitMQServiceInfoTest
 
         // string managementUri = "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/";
         // List<string> managementUris = new List<string>() { "https://03c7a684-6ff1-4bd0-ad45-d10374ffb2af:l5oq2q0unl35s6urfsuib0jvpo@pivotal-rabbitmq.system.testcloud.com/api/" };
-        bool isSslEnabled = false;
+        const bool isSslEnabled = false;
 
         var r1 = new HystrixRabbitMQServiceInfo("myId", uri, isSslEnabled);
         var r2 = new HystrixRabbitMQServiceInfo("myId", uri, uris, isSslEnabled);

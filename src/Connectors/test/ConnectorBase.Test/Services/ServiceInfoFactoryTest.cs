@@ -21,7 +21,7 @@ public class ServiceInfoFactoryTest
     [Fact]
     public void Constructor_ThrowsIfTagsNull()
     {
-        string scheme = "scheme";
+        const string scheme = "scheme";
         const Tags tags = null;
 
         var ex = Assert.Throws<ArgumentNullException>(() => new TestServiceInfoFactory(tags, scheme));
@@ -37,7 +37,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -61,7 +61,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -85,7 +85,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -110,7 +110,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -135,7 +135,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -164,7 +164,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
 
@@ -198,7 +198,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         string username = sif.GetUsernameFromCredentials(credentials);
@@ -231,7 +231,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         string pwd = sif.GetPasswordFromCredentials(credentials);
@@ -255,7 +255,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         int port = sif.GetPortFromCredentials(credentials);
@@ -279,7 +279,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         string host = sif.GetHostFromCredentials(credentials);
@@ -312,7 +312,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         string uri = sif.GetUriFromCredentials(credentials);
@@ -351,7 +351,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         List<string> list = sif.GetListFromCredentials(credentials, "uris");
@@ -385,7 +385,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         var ex = Assert.Throws<ConnectorException>(() => sif.GetListFromCredentials(credentials, "foo"));
@@ -407,7 +407,7 @@ public class ServiceInfoFactoryTest
             "bar"
         });
 
-        string scheme = "scheme";
+        const string scheme = "scheme";
 
         var sif = new TestServiceInfoFactory(tags, scheme);
         Assert.Throws<FormatException>(() => sif.GetIntFromCredentials(credentials, "key"));

@@ -38,7 +38,7 @@ public class EurekaClientOptionsTest : AbstractBaseTest
     [Fact]
     public void Constructor_ConfiguresEurekaDiscovery_Correctly()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""eureka"": {
                         ""client"": {

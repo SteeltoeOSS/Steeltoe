@@ -208,7 +208,7 @@ public class HystrixRabbitMQServiceInfoFactoryTest
 
     private static Service CreateHystrixService()
     {
-        string environment = @"
+        const string environment = @"
                 {
                     ""p-circuit-breaker-dashboard"": [{
                         ""credentials"": {

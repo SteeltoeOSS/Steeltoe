@@ -122,8 +122,8 @@ public class CredHubClientTests
             "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":null,\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
-        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        const string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        const string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
         CredHubCredential<CertificateCredential> response =
             await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", null, certificate, privateKey));
@@ -148,9 +148,9 @@ public class CredHubClientTests
             "{\"type\":\"certificate\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"657dd2f0-c2e4-4e28-b84a-171a730916b2\",\"name\":\"/example-certificate\",\"value\":{\"ca\":\"-----BEGIN PUBLIC KEY-----\\nFakeCAKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"certificate\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
-        string certificateAuthority = "-----BEGIN PUBLIC KEY-----\nFakeCAKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
-        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        const string certificateAuthority = "-----BEGIN PUBLIC KEY-----\nFakeCAKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        const string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        const string certificate = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
         CredHubCredential<CertificateCredential> response =
             await client.WriteAsync<CertificateCredential>(new CertificateSetRequest("example-certificate", privateKey, certificate, certificateAuthority));
@@ -175,8 +175,8 @@ public class CredHubClientTests
             "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
-        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        const string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        const string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
         CredHubCredential<RsaCredential> response = await client.WriteAsync<RsaCredential>(new RsaSetRequest("example-rsa", privateKey, publicKey));
 
@@ -199,8 +199,8 @@ public class CredHubClientTests
             "{\"type\":\"ssh\",\"version_created_at\":\"2017-11-10T15:55:24Z\",\"id\":\"2af5191f-9c05-4746-b72c-78b3283aef46\",\"name\":\"/example-ssh\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
-        string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
-        string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
+        const string privateKey = "-----BEGIN RSA PRIVATE KEY-----\nFakePrivateKeyTextEAAQ==\n-----END RSA PRIVATE KEY-----\n";
+        const string publicKey = "-----BEGIN PUBLIC KEY-----\nFakePublicKeyTextEAAQ==\n-----END PUBLIC KEY-----\n";
 
         CredHubCredential<SshCredential> response = await client.WriteAsync<SshCredential>(new SshSetRequest("example-ssh", privateKey, publicKey));
 
@@ -270,7 +270,7 @@ public class CredHubClientTests
     [Fact]
     public async Task GetByNameWithHistoryAsync_Gets()
     {
-        int revisionCount = 3;
+        const int revisionCount = 3;
         MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
         MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Get, $"{_credHubBase}/v1/data?name=/example&versions={revisionCount}").Respond(
@@ -664,7 +664,7 @@ public class CredHubClientTests
     [Fact]
     public async Task AddPermissionsAsync_AddsAndReturnsPermissions()
     {
-        string credentialName = "/generated-password";
+        const string credentialName = "/generated-password";
         MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
         MockedRequest mockAddRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{_credHubBase}/v1/permissions")
@@ -780,8 +780,7 @@ public class CredHubClientTests
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        string serviceData =
-            "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
+        const string serviceData = "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
 
         string response = await client.InterpolateServiceDataAsync(serviceData);
 

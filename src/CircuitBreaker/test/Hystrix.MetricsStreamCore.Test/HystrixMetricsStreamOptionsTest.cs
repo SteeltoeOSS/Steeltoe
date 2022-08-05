@@ -16,7 +16,7 @@ public class HystrixMetricsStreamOptionsTest : HystrixTestBase
     [Fact]
     public void Configure_SetsProperties()
     {
-        string json = @"
+        const string json = @"
                 {
                     ""hystrix"" : {
                         ""stream"": {

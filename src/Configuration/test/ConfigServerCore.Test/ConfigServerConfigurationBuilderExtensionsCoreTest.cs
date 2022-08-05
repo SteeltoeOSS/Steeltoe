@@ -71,7 +71,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_JsonAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -145,7 +145,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_ValidateCertificates_DisablesCertValidation()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""cloud"": {
@@ -181,7 +181,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_Validate_Certificates_DisablesCertValidation()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                       ""cloud"": {
@@ -217,7 +217,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_XmlAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
 <settings>
     <spring>
       <cloud>
@@ -267,7 +267,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_IniAppSettingsConfiguresClient()
     {
-        string appsettings = @"
+        const string appsettings = @"
 [spring:cloud:config]
     uri=https://foo.com:9999
     enabled=false
@@ -354,7 +354,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_HandlesPlaceHolders()
     {
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""foo"": {
                         ""bar"": {
@@ -410,7 +410,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
     {
-        string vcapApplication = @" 
+        const string vcapApplication = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -438,7 +438,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -461,7 +461,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
@@ -512,7 +512,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
     {
-        string vcapApplication = @" 
+        const string vcapApplication = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -540,7 +540,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string vcapServices = @"
+        const string vcapServices = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -568,7 +568,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string appsettings = @"
+        const string appsettings = @"
                 {
                     ""spring"": {
                         ""application"": {
