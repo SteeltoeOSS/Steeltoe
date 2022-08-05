@@ -20,7 +20,7 @@ public static class KubernetesClientHelpers
     public static IKubernetes GetKubernetesClient(KubernetesApplicationOptions appInfo,
         Action<KubernetesClientConfiguration> kubernetesClientConfiguration = null, ILogger logger = null)
     {
-        KubernetesClientConfiguration k8sConfig = null;
+        KubernetesClientConfiguration configuration = null;
 
         try
         {
@@ -31,7 +31,7 @@ public static class KubernetesClientHelpers
                 Environment.SetEnvironmentVariable("KUBECONFIG", joinedPaths);
             }
 
-            k8sConfig = KubernetesClientConfiguration.BuildDefaultConfig();
+            configuration = KubernetesClientConfiguration.BuildDefaultConfig();
         }
         catch (KubeConfigException e)
         {
@@ -40,13 +40,13 @@ public static class KubernetesClientHelpers
         }
 
         // BuildDefaultConfig() doesn't set a host if KubeConfigException is thrown
-        k8sConfig ??= new KubernetesClientConfiguration
+        configuration ??= new KubernetesClientConfiguration
         {
             Host = "http://localhost:8080"
         };
 
-        kubernetesClientConfiguration?.Invoke(k8sConfig);
+        kubernetesClientConfiguration?.Invoke(configuration);
 
-        return new k8s.Kubernetes(k8sConfig);
+        return new k8s.Kubernetes(configuration);
     }
 }

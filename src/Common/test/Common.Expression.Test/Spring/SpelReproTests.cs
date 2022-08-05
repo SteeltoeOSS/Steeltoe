@@ -11,6 +11,9 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Util;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
+#pragma warning disable S100 // Methods and properties should be named in PascalCase
+
 namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public class SpelReproTests : AbstractExpressionTests

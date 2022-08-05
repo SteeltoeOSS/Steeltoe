@@ -85,7 +85,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
     [Fact]
     public void ApplyServicesIgnoresCFManagementOptions()
     {
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""p-service-registry"": [{
                         ""credentials"": {
@@ -109,7 +109,7 @@ public class EurekaDiscoveryClientBuilderExtensionsTest
                 }";
 
         Environment.SetEnvironmentVariable("VCAP_APPLICATION", TestHelpers.VcapApplication);
-        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcap_services);
+        Environment.SetEnvironmentVariable("VCAP_SERVICES", vcapServices);
 
         var appSettings = new Dictionary<string, string>
         {

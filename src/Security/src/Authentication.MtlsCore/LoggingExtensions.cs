@@ -8,29 +8,29 @@ namespace Steeltoe.Security.Authentication.Mtls;
 
 internal static class LoggingExtensions
 {
-    private static readonly Action<ILogger, Exception> _noCertificate = LoggerMessage.Define(eventId: new EventId(0, "NoCertificate"), logLevel: LogLevel.Debug,
-        formatString: "No client certificate found.");
+    private static readonly Action<ILogger, Exception> OnNoCertificate = LoggerMessage.Define(eventId: new EventId(0, "NoCertificate"),
+        logLevel: LogLevel.Debug, formatString: "No client certificate found.");
 
-    private static readonly Action<ILogger, string, string, Exception> _certRejected = LoggerMessage.Define<string, string>(
+    private static readonly Action<ILogger, string, string, Exception> OnCertificateRejected = LoggerMessage.Define<string, string>(
         eventId: new EventId(1, "CertificateRejected"), logLevel: LogLevel.Warning,
         formatString: "{CertificateType} certificate rejected, subject was {Subject}.");
 
-    private static readonly Action<ILogger, string, string, Exception> _certFailedValidation = LoggerMessage.Define<string, string>(
+    private static readonly Action<ILogger, string, string, Exception> OnCertificateFailedValidation = LoggerMessage.Define<string, string>(
         eventId: new EventId(2, "CertificateFailedValidation"), logLevel: LogLevel.Warning,
         formatString: $"Certificate validation failed, subject was {{Subject}}.{Environment.NewLine}{{ChainErrors}}");
 
     public static void NoCertificate(this ILogger logger)
     {
-        _noCertificate(logger, null);
+        OnNoCertificate(logger, null);
     }
 
     public static void CertificateRejected(this ILogger logger, string certificateType, string subject)
     {
-        _certRejected(logger, certificateType, subject, null);
+        OnCertificateRejected(logger, certificateType, subject, null);
     }
 
     public static void CertificateFailedValidation(this ILogger logger, string subject, IEnumerable<string> chainedErrors)
     {
-        _certFailedValidation(logger, subject, string.Join(Environment.NewLine, chainedErrors), null);
+        OnCertificateFailedValidation(logger, subject, string.Join(Environment.NewLine, chainedErrors), null);
     }
 }

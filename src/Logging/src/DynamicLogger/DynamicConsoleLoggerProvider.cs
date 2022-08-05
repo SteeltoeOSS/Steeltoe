@@ -12,7 +12,7 @@ namespace Steeltoe.Extensions.Logging;
 [ProviderAlias("Dynamic")]
 public class DynamicConsoleLoggerProvider : DynamicLoggerProviderBase
 {
-    protected readonly IOptionsMonitor<LoggerFilterOptions> _filterOptions;
+    protected readonly IOptionsMonitor<LoggerFilterOptions> FilterOptions;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="DynamicConsoleLoggerProvider" /> class.

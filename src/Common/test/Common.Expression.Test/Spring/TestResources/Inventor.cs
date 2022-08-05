@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
 #pragma warning disable IDE1006 // Naming Styles
+
+namespace Steeltoe.Common.Expression.Internal.Spring.TestResources;
+
 public class Inventor
 {
     private PlaceOfBirth _placeOfBirth;
@@ -22,8 +24,10 @@ public class Inventor
     };
 
     public int Counter;
+    // ReSharper disable InconsistentNaming
     public string _name;
     public string _name_;
+    // ReSharper restore InconsistentNaming
     public string RandomField;
     public Dictionary<string, string> TestDictionary;
     public string PublicName;

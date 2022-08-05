@@ -21,7 +21,9 @@ public static class Platform
 
     public static bool IsWindows => RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
 
+#pragma warning disable S100 // Methods and properties should be named in PascalCase
     public static bool IsOSX => RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+#pragma warning restore S100 // Methods and properties should be named in PascalCase
 
     /// <summary>
     /// Gets a value indicating whether or not the application appears to be running in a container.

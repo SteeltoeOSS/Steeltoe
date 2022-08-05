@@ -154,12 +154,12 @@ public class WindowsNetworkFileShare : IDisposable
     /// </returns>
     internal static string GetErrorForNumber(int errNum)
     {
-        if (!ErrorList.Any(e => e._num == errNum))
+        if (!ErrorList.Any(e => e.Num == errNum))
         {
             return $"Error: Unknown, {errNum}";
         }
 
-        return ErrorList.First(e => e._num == errNum)._message;
+        return ErrorList.First(e => e.Num == errNum).Message;
     }
 
     /// <summary>
@@ -222,13 +222,13 @@ public class WindowsNetworkFileShare : IDisposable
 
     private struct ErrorClass
     {
-        public readonly int _num;
-        public readonly string _message;
+        public readonly int Num;
+        public readonly string Message;
 
         public ErrorClass(int num, string message)
         {
-            _num = num;
-            _message = message;
+            Num = num;
+            Message = message;
         }
     }
 

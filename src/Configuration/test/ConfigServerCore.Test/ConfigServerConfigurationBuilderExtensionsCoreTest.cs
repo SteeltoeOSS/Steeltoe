@@ -410,7 +410,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironment_ConfiguresClientCorrectly()
     {
-        string vcap_application = @" 
+        string vcapApplication = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -438,7 +438,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -474,10 +474,10 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
         string appsettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
         string appSettingsFileName = Path.GetFileName(appsettingsPath);
 
-        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
+        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
         string vcapAppFileName = Path.GetFileName(vcapAppPath);
 
-        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
+        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");
@@ -512,7 +512,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
     [Fact]
     public void AddConfigServer_WithCloudfoundryEnvironmentSCS3_ConfiguresClientCorrectly()
     {
-        string vcap_application = @" 
+        string vcapApplication = @" 
                 {
                     ""vcap"": {
                         ""application"": {
@@ -540,7 +540,7 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
                     }
                 }";
 
-        string vcap_services = @"
+        string vcapServices = @"
                 {
                     ""vcap"": {
                         ""services"": {
@@ -581,10 +581,10 @@ public class ConfigServerConfigurationBuilderExtensionsCoreTest
         string appSettingsPath = sandbox.CreateFile("appsettings.json", appsettings);
         string appSettingsFileName = Path.GetFileName(appSettingsPath);
 
-        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcap_application);
+        string vcapAppPath = sandbox.CreateFile("vcapapp.json", vcapApplication);
         string vcapAppFileName = Path.GetFileName(vcapAppPath);
 
-        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcap_services);
+        string vcapServicesPath = sandbox.CreateFile("vcapservices.json", vcapServices);
         string vcapServicesFileName = Path.GetFileName(vcapServicesPath);
 
         IHostEnvironment environment = HostingHelpers.GetHostingEnvironment("Production");

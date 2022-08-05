@@ -10,7 +10,7 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 #pragma warning disable xUnit1004 // Test methods should not be skipped
 public class SpelCompilationPerformanceTests : AbstractExpressionTests
 {
-    private static readonly bool _noisyTests = true;
+    private static readonly bool NoisyTests = true;
 
     private readonly int _count = 50000; // number of evaluations that are timed in one run
 
@@ -866,7 +866,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     private void Log(string message)
     {
-        if (_noisyTests)
+        if (NoisyTests)
         {
             _output.WriteLine(message);
         }
@@ -874,7 +874,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
     private void LogLn(params string[] messages)
     {
-        if (_noisyTests)
+        if (NoisyTests)
         {
             _output.WriteLine(messages.Length > 0 ? messages[0] : string.Empty);
         }
@@ -885,6 +885,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.True(SpelCompiler.Compile(expression));
     }
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable IDE1006 // Naming Styles
 
     public class HW

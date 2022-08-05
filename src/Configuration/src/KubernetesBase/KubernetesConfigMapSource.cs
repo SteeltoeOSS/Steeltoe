@@ -9,18 +9,18 @@ namespace Steeltoe.Extensions.Configuration.Kubernetes;
 
 internal sealed class KubernetesConfigMapSource : IConfigurationSource
 {
-    private IKubernetes K8sClient { get; }
+    private IKubernetes KubernetesClient { get; }
 
     private KubernetesConfigSourceSettings ConfigSettings { get; }
 
     internal KubernetesConfigMapSource(IKubernetes kubernetesClient, KubernetesConfigSourceSettings settings)
     {
-        K8sClient = kubernetesClient;
+        KubernetesClient = kubernetesClient;
         ConfigSettings = settings;
     }
 
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
-        return new KubernetesConfigMapProvider(K8sClient, ConfigSettings);
+        return new KubernetesConfigMapProvider(KubernetesClient, ConfigSettings);
     }
 }

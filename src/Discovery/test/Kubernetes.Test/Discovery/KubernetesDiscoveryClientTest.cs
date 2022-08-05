@@ -287,13 +287,13 @@ public class KubernetesDiscoveryClientTest
             Host = "http://localhost"
         }, mockHttpMessageHandler.ToHttpClient());
 
-        var k8sOptions = new KubernetesDiscoveryOptions
+        var discoveryOptions = new KubernetesDiscoveryOptions
         {
             Enabled = false,
             Namespace = "test"
         };
 
-        var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(k8sOptions);
+        var options = new TestOptionsMonitor<KubernetesDiscoveryOptions>(discoveryOptions);
 
         var discoveryClient = new KubernetesDiscoveryClient(new DefaultIsServicePortSecureResolver(options.CurrentValue), client, options);
 
@@ -303,7 +303,7 @@ public class KubernetesDiscoveryClientTest
         Assert.Empty(services);
 
         // turn it on
-        k8sOptions.Enabled = true;
+        discoveryOptions.Enabled = true;
 
         services = discoveryClient.Services;
 

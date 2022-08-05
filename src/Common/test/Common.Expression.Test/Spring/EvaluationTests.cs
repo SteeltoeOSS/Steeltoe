@@ -10,6 +10,7 @@ using Steeltoe.Common.Expression.Internal.Spring.Support;
 using Steeltoe.Common.Expression.Internal.Spring.TestResources;
 using Xunit;
 
+// ReSharper disable InconsistentNaming
 #pragma warning disable S3443 // Type should not be examined on "System.Type" instances
 
 namespace Steeltoe.Common.Expression.Internal.Spring;
