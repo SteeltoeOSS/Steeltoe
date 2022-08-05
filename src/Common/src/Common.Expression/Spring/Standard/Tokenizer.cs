@@ -7,6 +7,10 @@ namespace Steeltoe.Common.Expression.Internal.Spring.Standard;
 
 internal sealed class Tokenizer
 {
+    private const byte IsDigitFlag = 0x01;
+    private const byte IsHexDigitFlag = 0x02;
+    private const byte IsAlphaFlag = 0x04;
+
     // If this gets changed, it must remain sorted...
     private static readonly string[] AlternativeOperatorNames =
     {
@@ -23,18 +27,9 @@ internal sealed class Tokenizer
 
     private static readonly byte[] Flags = new byte[256];
 
-    private const byte IsDigitFlag = 0x01;
-
-    private const byte IsHexDigitFlag = 0x02;
-
-    private const byte IsAlphaFlag = 0x04;
-
     private readonly int _max;
-
     private readonly List<Token> _tokens = new();
-
     private readonly string _expressionString;
-
     private readonly char[] _charsToProcess;
 
     private int _pos;
@@ -43,7 +38,7 @@ internal sealed class Tokenizer
     {
         for (int ch = '0'; ch <= '9'; ch++)
         {
-            Flags[ch] |= (byte)(IsDigitFlag | IsHexDigitFlag);
+            Flags[ch] |= IsDigitFlag | IsHexDigitFlag;
         }
 
         for (int ch = 'A'; ch <= 'F'; ch++)

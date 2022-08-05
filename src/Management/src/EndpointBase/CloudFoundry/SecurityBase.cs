@@ -14,9 +14,6 @@ namespace Steeltoe.Management.Endpoint.CloudFoundry;
 
 public class SecurityBase
 {
-    private readonly ICloudFoundryOptions _options;
-    private readonly IManagementOptions _managementOptions;
-    private readonly ILogger _logger;
     public const int DefaultGetPermissionsTimeout = 5000; // Milliseconds
     public const string ApplicationIdMissingMessage = "Application id is not available";
     public const string EndpointNotConfiguredMessage = "Endpoint is not available";
@@ -27,6 +24,9 @@ public class SecurityBase
     public const string AuthorizationHeader = "Authorization";
     public const string Bearer = "bearer";
     public const string ReadSensitiveData = "read_sensitive_data";
+    private readonly ICloudFoundryOptions _options;
+    private readonly IManagementOptions _managementOptions;
+    private readonly ILogger _logger;
     private HttpClient _httpClient;
 
     public SecurityBase(ICloudFoundryOptions options, IManagementOptions managementOptions, ILogger logger = null, HttpClient httpClient = null)

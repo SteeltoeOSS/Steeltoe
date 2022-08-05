@@ -14,9 +14,9 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class EventCounterListener : EventListener
 {
-    private readonly ILogger<EventCounterListener> _logger;
     private const string EventSourceName = "System.Runtime";
     private const string EventName = "EventCounters";
+    private readonly ILogger<EventCounterListener> _logger;
     private readonly IMetricsObserverOptions _options;
 
     private readonly ConcurrentDictionary<string, ObservableGauge<double>> _doubleMeasureMetrics = new();

@@ -48,7 +48,8 @@ public class EndpointMiddlewareTest : BaseTest
         var reader = new StreamReader(context.Response.Body, Encoding.UTF8);
         string json = await reader.ReadLineAsync();
 
-        const string expected = "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
+        const string expected =
+            "[\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\"]";
 
         Assert.Equal(expected, json);
     }
@@ -73,7 +74,8 @@ public class EndpointMiddlewareTest : BaseTest
             Assert.Equal(HttpStatusCode.OK, result.StatusCode);
             string json = await result.Content.ReadAsStringAsync();
 
-            const string expected = "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
+            const string expected =
+                "[\"urls\",\"management\",\"management:endpoints\",\"management:endpoints:enabled\",\"Logging\",\"Logging:LogLevel\",\"Logging:LogLevel:Steeltoe\",\"Logging:LogLevel:Pivotal\",\"Logging:LogLevel:Default\",\"Logging:IncludeScopes\",\"environment\",\"applicationName\"]";
 
             Assert.Equal(expected, json);
         }

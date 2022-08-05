@@ -21,13 +21,13 @@ public class GCEventsListener : EventSourceListener
     private const string GCHeapStatsV2 = "GCHeapStats_V2";
     private const EventKeywords GCEventsKeywords = (EventKeywords)0x1;
     private const string GenerationTagValueName = "gen";
+    private const string GenerationKey = "generation";
 
     private static readonly string[] IgnorePayloadNames =
     {
         "ClrInstanceID"
     };
 
-    private const string GenerationKey = "generation";
     private readonly ILogger<EventSourceListener> _logger;
     private readonly Counter<long> _collectionCount;
     private readonly Counter<double> _memoryUsed;

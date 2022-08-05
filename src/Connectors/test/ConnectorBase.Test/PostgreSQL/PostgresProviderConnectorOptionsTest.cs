@@ -74,7 +74,8 @@ public class PostgresProviderConnectorOptionsTest
             ["postgres:client:SearchPath"] = "fakeSchema"
         };
 
-        const string expected = "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
+        const string expected =
+            "Host=fake-db.host;Port=3000;Username=fakeUsername;Password=fakePassword;Database=fakeDB;Timeout=15;Command Timeout=30;Search Path=fakeSchema;";
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appsettings);

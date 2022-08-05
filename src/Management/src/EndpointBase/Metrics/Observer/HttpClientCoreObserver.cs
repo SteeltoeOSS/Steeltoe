@@ -16,16 +16,15 @@ namespace Steeltoe.Management.Endpoint.Metrics.Observer;
 
 public class HttpClientCoreObserver : MetricsObserver
 {
+    private const string StatusTagKey = "status";
+    private const string UriTagKey = "uri";
+    private const string MethodTagKey = "method";
+    private const string ClientTagKey = "clientName";
     internal const string DiagnosticName = "HttpHandlerDiagnosticListener";
     internal const string DefaultObserverName = "HttpClientCoreObserver";
 
     internal const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
     internal const string ExceptionEvent = "System.Net.Http.Exception";
-
-    private const string StatusTagKey = "status";
-    private const string UriTagKey = "uri";
-    private const string MethodTagKey = "method";
-    private const string ClientTagKey = "clientName";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 

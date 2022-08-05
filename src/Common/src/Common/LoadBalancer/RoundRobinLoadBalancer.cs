@@ -11,12 +11,12 @@ namespace Steeltoe.Common.LoadBalancer;
 
 public class RoundRobinLoadBalancer : ILoadBalancer
 {
+    public const string IndexKeyPrefix = "LoadBalancerIndex-";
     private readonly DistributedCacheEntryOptions _cacheOptions;
     private readonly ILogger _logger;
     internal readonly IServiceInstanceProvider ServiceInstanceProvider;
     internal readonly IDistributedCache DistributedCache;
     internal readonly ConcurrentDictionary<string, int> NextIndexForService = new();
-    public const string IndexKeyPrefix = "LoadBalancerIndex-";
 
     public RoundRobinLoadBalancer(IServiceInstanceProvider serviceInstanceProvider, IDistributedCache distributedCache = null,
         DistributedCacheEntryOptions cacheEntryOptions = null, ILogger logger = null)

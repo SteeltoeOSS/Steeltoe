@@ -48,7 +48,9 @@ public class ApplicationAvailabilityTest
     {
         var availability = new ApplicationAvailability(_logger);
 
-        Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null));
+        Assert.Throws<InvalidOperationException>(() =>
+            availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, ReadinessState.AcceptingTraffic, null));
+
         Assert.Throws<InvalidOperationException>(() => availability.SetAvailabilityState(ApplicationAvailability.ReadinessKey, LivenessState.Correct, null));
     }
 

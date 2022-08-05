@@ -75,7 +75,8 @@ public class EndpointMiddlewareTest : BaseTest
         Assert.Equal(HttpStatusCode.OK, result.StatusCode);
         string json = await result.Content.ReadAsStringAsync();
 
-        const string expected = "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
+        const string expected =
+            "{\"contexts\":{\"application\":{\"mappings\":{\"dispatcherServlets\":{\"Steeltoe.Management.Endpoint.Mappings.Test.HomeController\":[{\"handler\":\"Steeltoe.Management.Endpoint.Mappings.Test.Person Index()\",\"predicate\":\"{[/Home/Index],methods=[GET],produces=[text/plain || application/json || text/json]}\"}]}}}}}";
 
         Assert.Equal(expected, json);
     }

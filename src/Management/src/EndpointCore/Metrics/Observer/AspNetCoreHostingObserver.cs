@@ -18,12 +18,12 @@ public class AspNetCoreHostingObserver : MetricsObserver
 {
     private const string DefaultObserverName = "AspNetCoreHostingObserver";
     private const string DiagnosticName = "Microsoft.AspNetCore";
-    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
-
     private const string StatusTagKey = "status";
     private const string ExceptionTagKey = "exception";
     private const string MethodTagKey = "method";
     private const string UriTagKey = "uri";
+    internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
+
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
     private readonly IViewRegistry _viewRegistry;

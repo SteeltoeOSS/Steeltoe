@@ -9,32 +9,31 @@ namespace Steeltoe.Common.Util;
 
 public static class MimeTypeUtils
 {
+    public const string AllValue = "*/*";
+    public const string ApplicationJsonValue = "application/json";
+    public const string ApplicationOctetStreamValue = "application/octet-stream";
+    public const string ApplicationXmlValue = "application/xml";
+    public const string ImageGifValue = "image/gif";
+    public const string ImageJpegValue = "image/jpeg";
+    public const string ImagePngValue = "image/png";
+    public const string TextHtmlValue = "text/html";
+    public const string TextPlainValue = "text/plain";
+    public const string TextXmlValue = "text/xml";
+
     private static readonly ConcurrentDictionary<string, MimeType> CachedMimeTypes = new();
-
     private static readonly char[] BoundaryChars = "-_1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-
     private static readonly object Lock = new();
     public static readonly IComparer<MimeType> SpecificityComparator = new MimeType.SpecificityComparator<MimeType>();
     public static readonly MimeType All = new("*", "*");
-    public const string AllValue = "*/*";
     public static readonly MimeType ApplicationJson = new("application", "json");
-    public const string ApplicationJsonValue = "application/json";
     public static readonly MimeType ApplicationOctetStream = new("application", "octet-stream");
-    public const string ApplicationOctetStreamValue = "application/octet-stream";
     public static readonly MimeType ApplicationXml = new("application", "xml");
-    public const string ApplicationXmlValue = "application/xml";
     public static readonly MimeType ImageGif = new("image", "gif");
-    public const string ImageGifValue = "image/gif";
     public static readonly MimeType ImageJpeg = new("image", "jpeg");
-    public const string ImageJpegValue = "image/jpeg";
     public static readonly MimeType ImagePng = new("image", "png");
-    public const string ImagePngValue = "image/png";
     public static readonly MimeType TextHtml = new("text", "html");
-    public const string TextHtmlValue = "text/html";
     public static readonly MimeType TextPlain = new("text", "plain");
-    public const string TextPlainValue = "text/plain";
     public static readonly MimeType TextXml = new("text", "xml");
-    public const string TextXmlValue = "text/xml";
 
     private static volatile Random _random;
 

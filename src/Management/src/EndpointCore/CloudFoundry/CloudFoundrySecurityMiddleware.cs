@@ -42,13 +42,17 @@ public class CloudFoundrySecurityMiddleware
                 _logger?.LogCritical(
                     "The Application Id could not be found. Make sure the Cloud Foundry Configuration Provider has been added to the application configuration.");
 
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.ApplicationIdMissingMessage))
+                    .ConfigureAwait(false);
+
                 return;
             }
 
             if (string.IsNullOrEmpty(_options.CloudFoundryApi))
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.CloudfoundryApiMissingMessage))
+                    .ConfigureAwait(false);
+
                 return;
             }
 
@@ -56,7 +60,9 @@ public class CloudFoundrySecurityMiddleware
 
             if (target == null)
             {
-                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage)).ConfigureAwait(false);
+                await ReturnError(context, new SecurityResult(HttpStatusCode.ServiceUnavailable, SecurityBase.EndpointNotConfiguredMessage))
+                    .ConfigureAwait(false);
+
                 return;
             }
 

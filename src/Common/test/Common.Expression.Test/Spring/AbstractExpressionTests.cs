@@ -12,8 +12,8 @@ namespace Steeltoe.Common.Expression.Internal.Spring;
 
 public abstract class AbstractExpressionTests
 {
-    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
     protected const bool ShouldBeWritable = true;
+    private static readonly bool IsDebug = bool.Parse(bool.FalseString);
     protected static readonly bool ShouldNotBeWritable;
     protected readonly IExpressionParser Parser = new SpelExpressionParser();
     protected readonly StandardEvaluationContext Context = TestScenarioCreator.GetTestEvaluationContext();

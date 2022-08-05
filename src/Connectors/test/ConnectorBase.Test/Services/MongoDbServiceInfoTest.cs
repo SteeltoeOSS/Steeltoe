@@ -37,7 +37,8 @@ public class MongoDbServiceInfoTest
     [Fact]
     public void Constructor_HandlesReplicas()
     {
-        const string uri = "mongodb://a9s-brk-usr-e74b9538:a9sb8b69cc@mongodb-0.node.dc1.a9s-mongodb-consul:27017,mongodb-1.node.dc1.a9s-mongodb-consul:27017,mongodb-2.node.dc1.a9s-mongodb-consul:27017/d5584e9?replicaSet=rs0";
+        const string uri =
+            "mongodb://a9s-brk-usr-e74b9538:a9sb8b69cc@mongodb-0.node.dc1.a9s-mongodb-consul:27017,mongodb-1.node.dc1.a9s-mongodb-consul:27017,mongodb-2.node.dc1.a9s-mongodb-consul:27017/d5584e9?replicaSet=rs0";
 
         var r1 = new MongoDbServiceInfo("myId", uri);
 

@@ -462,8 +462,8 @@ public class CredHubClientTests
     {
         MockHttpMessageHandler mockHttpMessageHandler = InitializedHandlerWithLogin();
 
-        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{CredHubBase}/v1/regenerate")
-            .WithContent("{\"name\":\"regenerated-rsa\"}").Respond("application/json",
+        MockedRequest mockRequest = mockHttpMessageHandler.Expect(HttpMethod.Post, $"{CredHubBase}/v1/regenerate").WithContent("{\"name\":\"regenerated-rsa\"}")
+            .Respond("application/json",
                 "{\"type\":\"rsa\",\"version_created_at\":\"2017-11-21T18:18:28Z\",\"id\":\"1a129eff-f467-42bc-b959-772f4dec1f5e\",\"name\":\"/regenerated-rsa\",\"value\":{\"public_key\":\"-----BEGIN PUBLIC KEY-----\\nFakePublicKeyTextEAAQ==\\n-----END PUBLIC KEY-----\\n\",\"private_key\":\"-----BEGIN RSA PRIVATE KEY-----\\nFakePrivateKeyTextEAAQ==\\n-----END RSA PRIVATE KEY-----\\n\"}}");
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
@@ -780,7 +780,8 @@ public class CredHubClientTests
 
         CredHubClient client = await InitializeClientAsync(mockHttpMessageHandler);
 
-        const string serviceData = "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
+        const string serviceData =
+            "{\"p-config-server\":[{\"credentials\":{\"credhub-ref\":\"((/config-server/credentials))\"},\"label\":\"p-config-server\",\"name\":\"config-server\",\"plan\":\"standard\",\"provider\":null,\"syslog_drain_url\":null,\"tags\":[\"configuration\",\"spring-cloud\"],\"volume_mounts\":[]}]}";
 
         string response = await client.InterpolateServiceDataAsync(serviceData);
 

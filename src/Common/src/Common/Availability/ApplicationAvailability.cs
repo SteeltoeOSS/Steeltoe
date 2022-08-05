@@ -8,10 +8,10 @@ namespace Steeltoe.Common.Availability;
 
 public class ApplicationAvailability
 {
-    private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new();
-    private readonly ILogger<ApplicationAvailability> _logger;
     public const string LivenessKey = "Liveness";
     public const string ReadinessKey = "Readiness";
+    private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new();
+    private readonly ILogger<ApplicationAvailability> _logger;
 
     public event EventHandler LivenessChanged;
 
