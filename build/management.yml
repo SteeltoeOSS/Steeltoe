@@ -1,11 +1,12 @@
 pr:
-  branches:
-    include:
-    - main
   paths:
     exclude:
     - /
     include:
+    - /.editorconfig
+    - /stylecop.json
+    - /*.props
+    - /*.ruleset
     - build/templates
     - build/management.yml
     - src/Management
