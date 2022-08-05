@@ -6197,7 +6197,7 @@ public class SpelCompilationCoverageTests : AbstractExpressionTests
 
     public class Payload2
     {
-        private readonly string _var2 = "def";
+        private const string _var2 = "def";
 
         public string Var1 { get; } = "abc";
 

@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.Redis.Test;
 
 public static class RedisCacheTestHelpers
 {
-    public static string SingleServerVcap = @"
+    public const string SingleServerVcap = @"
             {
                 ""p-redis"": [{
                     ""credentials"": {
@@ -26,7 +26,7 @@ public static class RedisCacheTestHelpers
                 }]
             }";
 
-    public static string TwoServerVcap = @"
+    public const string TwoServerVcap = @"
             {
                 ""p-redis"": [{
                     ""credentials"": {

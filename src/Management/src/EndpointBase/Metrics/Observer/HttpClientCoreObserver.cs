@@ -22,10 +22,10 @@ public class HttpClientCoreObserver : MetricsObserver
     internal const string StopEvent = "System.Net.Http.HttpRequestOut.Stop";
     internal const string ExceptionEvent = "System.Net.Http.Exception";
 
-    private readonly string _statusTagKey = "status";
-    private readonly string _uriTagKey = "uri";
-    private readonly string _methodTagKey = "method";
-    private readonly string _clientTagKey = "clientName";
+    private const string StatusTagKey = "status";
+    private const string UriTagKey = "uri";
+    private const string MethodTagKey = "method";
+    private const string ClientTagKey = "clientName";
     private readonly Histogram<double> _clientTimeMeasure;
     private readonly Histogram<double> _clientCountMeasure;
 
@@ -53,10 +53,10 @@ public class HttpClientCoreObserver : MetricsObserver
             },
             TagKeys = new[]
             {
-                _statusTagKey,
-                _uriTagKey,
-                _methodTagKey,
-                _clientTagKey
+                StatusTagKey,
+                UriTagKey,
+                MethodTagKey,
+                ClientTagKey
             }
         });
 
@@ -72,10 +72,10 @@ public class HttpClientCoreObserver : MetricsObserver
             },
             TagKeys = new[]
             {
-                _statusTagKey,
-                _uriTagKey,
-                _methodTagKey,
-                _clientTagKey
+                StatusTagKey,
+                UriTagKey,
+                MethodTagKey,
+                ClientTagKey
             }
         });
     }
@@ -150,10 +150,10 @@ public class HttpClientCoreObserver : MetricsObserver
 
         return new Dictionary<string, object>
         {
-            { _uriTagKey, uri },
-            { _statusTagKey, statusCode },
-            { _clientTagKey, clientName },
-            { _methodTagKey, request.Method.ToString() }
+            { UriTagKey, uri },
+            { StatusTagKey, statusCode },
+            { ClientTagKey, clientName },
+            { MethodTagKey, request.Method.ToString() }
         };
     }
 

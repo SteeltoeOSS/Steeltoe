@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.PostgreSql.Test;
 
 public static class PostgresTestHelpers
 {
-    public static string SingleServerVcapEdb = @"
+    public const string SingleServerVcapEdb = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                     ""credentials"": {
@@ -24,7 +24,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string TwoServerVcapEdb = @"
+    public const string TwoServerVcapEdb = @"
             {
                 ""EDB-Shared-PostgreSQL"": [{
                     ""credentials"": {
@@ -56,7 +56,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string SingleServerVcapCrunchy = @"
+    public const string SingleServerVcapCrunchy = @"
             {
                 ""postgresql-10-odb"": [{
                     ""name"": ""myPostgres"",
@@ -91,7 +91,7 @@ public static class PostgresTestHelpers
                 }]
             }";
 
-    public static string SingleServerVcapAzure = @"
+    public const string SingleServerVcapAzure = @"
             {
                 ""azure-postgresql-9-6"": [{
                     ""name"": ""azure-beetmssql"",

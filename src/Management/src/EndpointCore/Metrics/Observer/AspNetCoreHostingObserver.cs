@@ -20,10 +20,10 @@ public class AspNetCoreHostingObserver : MetricsObserver
     private const string DiagnosticName = "Microsoft.AspNetCore";
     internal const string StopEvent = "Microsoft.AspNetCore.Hosting.HttpRequestIn.Stop";
 
-    private readonly string _statusTagKey = "status";
-    private readonly string _exceptionTagKey = "exception";
-    private readonly string _methodTagKey = "method";
-    private readonly string _uriTagKey = "uri";
+    private const string StatusTagKey = "status";
+    private const string ExceptionTagKey = "exception";
+    private const string MethodTagKey = "method";
+    private const string UriTagKey = "uri";
     private readonly Histogram<double> _responseTime;
     private readonly Histogram<double> _serverCount;
     private readonly IViewRegistry _viewRegistry;
@@ -113,10 +113,10 @@ public class AspNetCoreHostingObserver : MetricsObserver
 
         return new Dictionary<string, object>
         {
-            { _uriTagKey, uri },
-            { _statusTagKey, statusCode },
-            { _exceptionTagKey, exception },
-            { _methodTagKey, arg.Request.Method }
+            { UriTagKey, uri },
+            { StatusTagKey, statusCode },
+            { ExceptionTagKey, exception },
+            { MethodTagKey, arg.Request.Method }
         };
     }
 

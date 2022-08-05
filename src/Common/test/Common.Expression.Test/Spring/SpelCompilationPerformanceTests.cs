@@ -15,9 +15,9 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 {
     private const bool NoisyTests = true;
 
-    private readonly int _count = 50000; // number of evaluations that are timed in one run
+    private const int Count = 50000; // number of evaluations that are timed in one run
 
-    private readonly int _iterations = 10; // number of times to repeat 'count' evaluations (for averaging)
+    private const int Iterations = 10; // number of times to repeat 'count' evaluations (for averaging)
 
     private readonly ITestOutputHelper _output;
 
@@ -376,7 +376,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         const long cTotal = 0;
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             b = expression.GetValue<bool>(payload);
         }
@@ -386,11 +386,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             long startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 b = expression.GetValue<bool>(payload);
             }
@@ -408,11 +408,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         expression.GetValue<bool>(payload);
         Log("timing compiled: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             long startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 bc = expression.GetValue<bool>(payload);
             }
@@ -451,18 +451,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Hello()");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -480,11 +480,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -500,7 +500,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("method reference", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -519,18 +519,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Name");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -548,11 +548,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -568,7 +568,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("property reference (field)", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -587,18 +587,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Foo.Bar.Boo");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -616,11 +616,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -636,7 +636,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("property reference (nested field)", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -655,18 +655,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Foo.Baz.Boo");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -684,11 +684,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -704,7 +704,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("nested property reference (mixed field/getter)", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -723,18 +723,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Foo.Bay().Boo");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -752,11 +752,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -772,7 +772,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("nested reference(mixed field / method)", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -791,18 +791,18 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         IExpression expression = Parser.ParseExpression("Name2");
 
         // warmup
-        for (int i = 0; i < _count; i++)
+        for (int i = 0; i < Count; i++)
         {
             interpretedResult = expression.GetValue<string>(testData);
         }
 
         Log("timing interpreted: ");
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 interpretedResult = expression.GetValue<string>(testData);
             }
@@ -820,11 +820,11 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Log("timing compiled: ");
         expression.GetValue<string>(testData);
 
-        for (int i = 0; i < _iterations; i++)
+        for (int i = 0; i < Iterations; i++)
         {
             startTime = DateTime.Now.Ticks;
 
-            for (int j = 0; j < _count; j++)
+            for (int j = 0; j < Count; j++)
             {
                 compiledResult = expression.GetValue<string>(testData);
             }
@@ -840,7 +840,7 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
         Assert.Equal(interpretedResult, compiledResult);
         ReportPerformance("property reference (getter)", interpretedTotal, compiledTotal);
 
-        if (compiledTotal >= interpretedTotal)
+        if (interpretedTotal <= compiledTotal)
         {
             throw new Exception("Compiled version is slower than interpreted!");
         }
@@ -852,12 +852,12 @@ public class SpelCompilationPerformanceTests : AbstractExpressionTests
     {
         double interpretedTotal = (double)interpretedTotalTicks / 10000;
         double compiledTotal = (double)compiledTotalTicks / 10000;
-        double averageInterpreted = interpretedTotal / _iterations;
-        double averageCompiled = compiledTotal / _iterations;
+        double averageInterpreted = interpretedTotal / Iterations;
+        double averageCompiled = compiledTotal / Iterations;
         double ratio = averageCompiled / averageInterpreted * 100.0d;
 
         LogLn(
-            $">>{title}: average for {_count}: compiled={averageCompiled}ms interpreted={averageInterpreted}ms: compiled takes {(int)ratio}% of the interpreted time");
+            $">>{title}: average for {Count}: compiled={averageCompiled}ms interpreted={averageInterpreted}ms: compiled takes {(int)ratio}% of the interpreted time");
 
         if (averageCompiled > averageInterpreted)
         {

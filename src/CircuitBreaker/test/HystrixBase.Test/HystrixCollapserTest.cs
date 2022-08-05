@@ -2086,7 +2086,7 @@ public class HystrixCollapserTest : HystrixTestBase
 
     private sealed class ATask
     {
-        private const int _delay = 10;
+        private const int Delay = 10;
         private readonly object _lock = new();
         private readonly ITestOutputHelper _output;
         public readonly TestTimerListener Task;
@@ -2111,9 +2111,9 @@ public class HystrixCollapserTest : HystrixTestBase
                 {
                     if (ExecutionCount == 0)
                     {
-                        _output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + _delay);
+                        _output.WriteLine("ExecutionCount 0 => Time: " + Time + " Delay: " + Delay);
 
-                        if (Time >= _delay)
+                        if (Time >= Delay)
                         {
                             // first execution, we're past the delay time
                             ExecuteTask();
@@ -2121,9 +2121,9 @@ public class HystrixCollapserTest : HystrixTestBase
                     }
                     else
                     {
-                        _output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + _delay);
+                        _output.WriteLine("ExecutionCount 1+ => Time: " + Time + " Delay: " + Delay);
 
-                        if (Time >= _delay)
+                        if (Time >= Delay)
                         {
                             // subsequent executions, we're past the interval time
                             ExecuteTask();

@@ -6,8 +6,8 @@ namespace Steeltoe.CircuitBreaker.Hystrix.Test;
 
 internal static class FlexibleTestHystrixCommand
 {
-    public static int ExecuteValue = 1;
-    public static int FallbackValue = 11;
+    public const int ExecuteValue = 1;
+    public const int FallbackValue = 11;
 
     public static AbstractFlexibleTestHystrixCommand From(IHystrixCommandKey commandKey, ExecutionIsolationStrategy isolationStrategy,
         ExecutionResultTest executionResult, int executionLatency, FallbackResultTest fallbackResult, int fallbackLatency, TestCircuitBreaker circuitBreaker,

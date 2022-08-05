@@ -16,25 +16,25 @@ public static class MimeTypeUtils
     private static readonly object Lock = new();
     public static readonly IComparer<MimeType> SpecificityComparator = new MimeType.SpecificityComparator<MimeType>();
     public static readonly MimeType All = new("*", "*");
-    public static readonly string AllValue = "*/*";
+    public const string AllValue = "*/*";
     public static readonly MimeType ApplicationJson = new("application", "json");
-    public static readonly string ApplicationJsonValue = "application/json";
+    public const string ApplicationJsonValue = "application/json";
     public static readonly MimeType ApplicationOctetStream = new("application", "octet-stream");
-    public static readonly string ApplicationOctetStreamValue = "application/octet-stream";
+    public const string ApplicationOctetStreamValue = "application/octet-stream";
     public static readonly MimeType ApplicationXml = new("application", "xml");
-    public static readonly string ApplicationXmlValue = "application/xml";
+    public const string ApplicationXmlValue = "application/xml";
     public static readonly MimeType ImageGif = new("image", "gif");
-    public static readonly string ImageGifValue = "image/gif";
+    public const string ImageGifValue = "image/gif";
     public static readonly MimeType ImageJpeg = new("image", "jpeg");
-    public static readonly string ImageJpegValue = "image/jpeg";
+    public const string ImageJpegValue = "image/jpeg";
     public static readonly MimeType ImagePng = new("image", "png");
-    public static readonly string ImagePngValue = "image/png";
+    public const string ImagePngValue = "image/png";
     public static readonly MimeType TextHtml = new("text", "html");
-    public static readonly string TextHtmlValue = "text/html";
+    public const string TextHtmlValue = "text/html";
     public static readonly MimeType TextPlain = new("text", "plain");
-    public static readonly string TextPlainValue = "text/plain";
+    public const string TextPlainValue = "text/plain";
     public static readonly MimeType TextXml = new("text", "xml");
-    public static readonly string TextXmlValue = "text/xml";
+    public const string TextXmlValue = "text/xml";
 
     private static volatile Random _random;
 

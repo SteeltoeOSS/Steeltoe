@@ -27,7 +27,7 @@ public class GCEventsListener : EventSourceListener
         "ClrInstanceID"
     };
 
-    private readonly string _generationKey = "generation";
+    private const string GenerationKey = "generation";
     private readonly ILogger<EventSourceListener> _logger;
     private readonly Counter<long> _collectionCount;
     private readonly Counter<double> _memoryUsed;
@@ -95,7 +95,7 @@ public class GCEventsListener : EventSourceListener
 
             var genKeyLabelSet = new List<KeyValuePair<string, object>>
             {
-                new(_generationKey, GenerationTagValueName + i)
+                new(GenerationKey, GenerationTagValueName + i)
             };
 
             _collectionCount.Add(count, genKeyLabelSet.AsReadonlySpan());

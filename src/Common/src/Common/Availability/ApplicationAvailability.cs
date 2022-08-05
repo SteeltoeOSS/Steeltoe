@@ -10,8 +10,8 @@ public class ApplicationAvailability
 {
     private readonly Dictionary<string, IAvailabilityState> _availabilityStates = new();
     private readonly ILogger<ApplicationAvailability> _logger;
-    public readonly string LivenessKey = "Liveness";
-    public readonly string ReadinessKey = "Readiness";
+    public const string LivenessKey = "Liveness";
+    public const string ReadinessKey = "Readiness";
 
     public event EventHandler LivenessChanged;
 

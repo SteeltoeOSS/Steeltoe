@@ -6,7 +6,7 @@ namespace Steeltoe.Connector.SqlServer.EF6.Test;
 
 public static class SqlServerTestHelpers
 {
-    public static string SingleServerVcap = @"
+    public const string SingleServerVcap = @"
             {
                 ""SqlServer"": [
                     {
@@ -28,7 +28,7 @@ public static class SqlServerTestHelpers
                 ]
             }";
 
-    public static string TwoServerVcap = @"
+    public const string TwoServerVcap = @"
             {
                 ""SqlServer"": [{
                     ""credentials"": {

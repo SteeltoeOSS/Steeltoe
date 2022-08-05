@@ -24,7 +24,7 @@ public class LivenessHealthContributorTest
     [Fact]
     public void HandlesCorrect()
     {
-        _availability.SetAvailabilityState(_availability.LivenessKey, LivenessState.Correct, "tests");
+        _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Correct, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
         HealthCheckResult result = contributor.Health();
@@ -35,7 +35,7 @@ public class LivenessHealthContributorTest
     [Fact]
     public void HandlesBroken()
     {
-        _availability.SetAvailabilityState(_availability.LivenessKey, LivenessState.Broken, "tests");
+        _availability.SetAvailabilityState(ApplicationAvailability.LivenessKey, LivenessState.Broken, "tests");
         var contributor = new LivenessHealthContributor(_availability);
 
         HealthCheckResult result = contributor.Health();
